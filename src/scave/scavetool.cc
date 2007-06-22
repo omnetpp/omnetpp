@@ -286,14 +286,16 @@ int filterCommand(int argc, char **argv)
                     // write vectors
                     for (int i=0; i<vectorIDList.size(); i++)
                     {
-                        const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
+                        ID vectorID = vectorIDList.get(i);
+                        bool computed = opt_filterList.size() > 0;
+                        const VectorResult& vector = resultFileManager.getVector(vectorID);
                         std::string name = *vector.nameRef;
                         std::string descr = *vector.nameRef + "; "
                                           + *vector.moduleNameRef + "; "
                                           + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
                                           + vector.fileRunRef->runRef->runName;
                         XYArray *xyArray = arrayBuilders[i]->getArray();
-                        exporter->saveVector(name, descr, xyArray);
+                        exporter->saveVector(name, descr, vectorID, computed, xyArray, resultFileManager);
                         delete xyArray;
                     }
                     // write scalars

@@ -118,7 +118,7 @@ public class ExportJob extends WorkspaceJob
 			long id = vectors.get(i);
 			VectorResult vector = manager.getVector(id);
 			XYArray data = DatasetManager.getDataOfVector(manager, id);
-			exporter.saveVector(vector.getName(), "", data);
+			exporter.saveVector(vector.getName(), "", id, false, data, manager);
 			monitor.worked(1);
 		}
 		return Status.OK_STATUS;

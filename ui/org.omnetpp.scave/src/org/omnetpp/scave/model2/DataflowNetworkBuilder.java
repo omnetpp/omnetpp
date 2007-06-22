@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.scave.engine.DataflowManager;
@@ -207,13 +208,9 @@ public class DataflowNetworkBuilder {
 	private static final StringMap EMPTY_ATTRS = new StringMap();
 
 	private Node createNode(String typeName, StringMap attrs) {
-		Node node = null;
-		//FIXME Tomi FIXME FIXME FIXME: if there's no such node type, it should be IllegalArgumentException, not hiding the error under the carpet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (factory.exists(typeName)) {
-			NodeType nodeType = factory.getNodeType(typeName);
-			node = nodeType.create(dataflowManager, attrs);
-		}
-		return node;
+		Assert.isLegal(factory.exists(typeName), "Unknown node type: " + typeName);
+		NodeType nodeType = factory.getNodeType(typeName);
+		return nodeType.create(dataflowManager, attrs);
 	}
 
 	private Node getOrCreateSourceNode(long id) {

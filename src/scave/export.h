@@ -72,7 +72,8 @@ class XYDataTable : public DataTable
     private:
         const XYArray *vec;
     public:
-        XYDataTable(const std::string name, const std::string description, const XYArray *vec);
+        XYDataTable(const std::string name, const std::string description,
+            const std::string xColumnName, const std::string yColumnName, const XYArray *vec);
         virtual int numOfRows() const;
         virtual double getDoubleValue(int row, int col) const;
         virtual BigDecimal getBigDecimalValue(int row, int col) const;
@@ -118,10 +119,10 @@ class SCAVE_API ScaveExport
         void open(const std::string filename);
         void close();
         
-        // TODO: save vector attributes too (file,run,module,etc)
-        void saveVector(const std::string name, const std::string description, const XYArray *vec, int startIndex=0, int endIndex=-1);
-        void saveVectors(const std::string name, const std::string description, const IDList &vectors, ResultFileManager &manager);
-        void saveScalars(const std::string name, const std::string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager);
+        virtual void saveVector(const std::string name, const std::string description, 
+                        ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
+                        int startIndex=0, int endIndex=-1);
+        virtual void saveScalars(const std::string name, const std::string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager);
     protected:
         virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
 };
@@ -224,6 +225,9 @@ class SCAVE_API CsvExport : public ScaveExport
     public:
         CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE), columnNames(true) {}
         virtual std::string makeFileName(const std::string name);
+        virtual void saveVector(const std::string name, const std::string description, 
+                        ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
+                        int startIndex=0, int endIndex=-1);
     protected:
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:

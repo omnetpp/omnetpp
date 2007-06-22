@@ -39,11 +39,12 @@ static inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity;
 /*=====================
  *       Vectors
  *=====================*/
-XYDataTable::XYDataTable(const string name, const string description, const XYArray *vec)
+XYDataTable::XYDataTable(const string name, const string description,
+                         const string xColumnName, const string yColumnName, const XYArray *vec)
     : DataTable(name, description), vec(vec)
 {
-    header.push_back(Column("X", BIGDECIMAL));
-    header.push_back(Column("Y", DOUBLE));
+    header.push_back(Column(xColumnName, BIGDECIMAL));
+    header.push_back(Column(yColumnName, DOUBLE));
 }
 
 int XYDataTable::numOfRows() const
@@ -197,17 +198,14 @@ void ScaveExport::close()
     }
 }
 
-void ScaveExport::saveVector(const string name, const string description, const XYArray *vec, int startIndex, int endIndex)
+void ScaveExport::saveVector(const string name, const string description,
+                             ID vectorID, bool computed, const XYArray *xyarray, ResultFileManager &manager,
+                             int startIndex, int endIndex)
 {
-    const XYDataTable table(name, description, vec);
+    const XYDataTable table(name, description, "X", "Y", xyarray);
     if (endIndex == -1)
         endIndex = table.numOfRows();
     saveTable(table, startIndex, endIndex);
-}
-
-void ScaveExport::saveVectors(const string name, const string description, const IDList &vectors, ResultFileManager &manager)
-{
-    // TODO
 }
 
 void ScaveExport::saveScalars(const string name, const string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager)
@@ -481,6 +479,28 @@ string CsvExport::makeFileName(const string name)
         return fileName + ".csv";
     else
         return fileName;
+}
+
+void CsvExport::saveVector(const string name, const string description,
+                             ID vectorID, bool computed, const XYArray *xyarray, ResultFileManager &manager,
+                             int startIndex, int endIndex)
+{
+    string xColumn, yColumn;
+    if (computed) 
+    {
+        xColumn = "X"; // TODO generate proper names derived from the computation
+        yColumn = "Y";
+    }
+    else 
+    {
+        const VectorResult &vector = manager.getVector(vectorID);
+        xColumn = "time";
+        yColumn = *vector.moduleNameRef + "." + *vector.nameRef;
+    }
+    const XYDataTable table(name, description, xColumn, yColumn, xyarray);
+    if (endIndex == -1)
+        endIndex = table.numOfRows();
+    saveTable(table, startIndex, endIndex);
 }
 
 void CsvExport::saveTable(const DataTable &table, int startRow, int endRow)
