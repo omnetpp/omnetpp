@@ -24,7 +24,7 @@
  *
  * @ingroup Internals
  */
-//XXX rename to cSetting? cConfigurationSetting? cSettingDeclaration? cConfigDeclaration?
+//XXX rename to cConfigKey, cSetting? cConfigurationSetting? cSettingDeclaration? cConfigDeclaration?
 class SIM_API cConfigEntry : public cNoncopyableOwnedObject
 {
   public:

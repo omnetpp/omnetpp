@@ -232,6 +232,7 @@ int TCmdenvApp::run()
             ::fprintf(fout, "\nPreparing for Run #%d...\n", runnumber);
             ::fflush(fout);
 
+            //FIXME by default, this will want to run [General] only -- NOT GOOD!!!
             cfg->activateConfig(opt_configname.c_str(), runnumber);
             if (opt_printconfigdetails || opt_printconfigdetails2)
             {

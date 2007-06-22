@@ -21,6 +21,8 @@
 #include "valueiterator.h"
 #include "cexception.h"
 #include "scenario.h"
+#include "globals.h"
+#include "cconfigentry.h"
 
 
 //XXX optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
@@ -28,6 +30,10 @@
 //XXX make samples/database work again!
 //XXX check behavior of keys which don't contain a dot! or: forbid them?
 //XXX the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
+//XXX if Cmdenv is not linked in, all "cmdenv" config keys throw an error!!! ignore "cmdenv-*" when no such key is registered?
+
+Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "XXX todo");
+
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
 
@@ -606,7 +612,7 @@ void SectionBasedConfiguration::validateConfig() const
         "use-new-layouter", NULL
     };
 
-    // 1. warn for obsolete section names and config keys
+    // warn for obsolete section names and config keys
     for (int i=0; i<ini->getNumSections(); i++)
     {
         const char *section = ini->getSectionName(i);
@@ -622,16 +628,79 @@ void SectionBasedConfiguration::validateConfig() const
         }
     }
 
-    //TODO:
-    // 2. warn for unrecognized config[] keys
-    // 3. check for per-object configuration subkeys (".enabled", ".interval", ".use-default")
+    // check section names; also make sure names of Configs and Scenarios don't clash
+    std::set<std::string> configNames;
+    for (int i=0; i<ini->getNumSections(); i++)
+    {
+        const char *section = ini->getSectionName(i);
+        const char *configName = NULL;
+        if (strcmp(section, "General")==0)
+            ; // OK
+        else if (strncmp(section, "Config ", 7)==0)
+            configName  = section+7;
+        else if (strncmp(section, "Scenario ", 9)==0)
+            configName  = section+9;
+        else
+            throw cRuntimeError("Invalid section name [%s], should be [General], [Config <name>] or [Scenario <name>]", section);
+        if (configName)
+        {
+            for (const char *s=configName; *s; s++)
+                if (!isalnum(*s) && strchr("-_@", *s)==NULL)
+                    throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
+            if (configNames.find(configName)!=configNames.end())
+                throw cRuntimeError("Configuration name '%s' not unique", configName, section);
+            configNames.insert(configName);
+        }
 
-    //FIXME warn for invalid "extends" names
-    //FIXME warn if "Config" and "Scenario" names overlap
-    //FIXME warn for section circularity
-    //FIXME config name should  not contain space
-    //FIXME boolean entries should be true/false (yes/no is no longer accepted!)
+    }
 
+    // check keys
+    for (int i=0; i<ini->getNumSections(); i++)
+    {
+        const char *section = ini->getSectionName(i);
+        int numEntries = ini->getNumEntries(i);
+        for (int j=0; j<numEntries; j++)
+        {
+            const char *key = ini->getEntry(i, j).getKey();
+            bool containsDot = strchr(key, '.')!=NULL;
+
+            if (!containsDot)
+            {
+                // warn for unrecognized (or misplaced) config keys
+                // NOTE: values don't need to be validated here, that will be
+                // done when the config gets actually used
+                cConfigEntry *e = (cConfigEntry *) configEntries.instance()->lookup(key);
+                if (!e)
+                    throw cRuntimeError("Unknown configuration key: %s", key);
+                if (e->isPerObject())
+                    throw cRuntimeError("Configuration key %s should be specified per object, try **.%s=", key, key);
+                if (e->isGlobal() && strcmp(section, "General")!=0)
+                    throw cRuntimeError("Configuration key %s may only occur in the [General] section", key);
+
+                // check section hierarchy
+                if (strcmp(key, "extends")==0)
+                {
+                    if (strcmp(section, "General")==0)
+                        throw cRuntimeError("The [General] section cannot extend other sections");
+
+                    // warn for invalid "extends" names
+                    const char *value = ini->getEntry(i, j).getValue();
+                    if (configNames.find(value)==configNames.end())
+                        throw cRuntimeError("No such config or scenario: %s", value);
+                    //FIXME warn for section circularity
+                }
+            }
+            else
+            {
+                // check for per-object configuration subkeys (".enabled", ".interval", ".use-default")
+                std::string ownerName;
+                std::string groupName;
+                bool isApplyDefault;
+                splitKey(key, ownerName, groupName, isApplyDefault);
+                //FIXME if groupName contains '-'...; must not contain wildcard etc
+            }
+        }
+    }
 }
 
 const char *SectionBasedConfiguration::getConfigValue(const char *key) const
