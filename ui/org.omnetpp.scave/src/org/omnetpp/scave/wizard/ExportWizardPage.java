@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -20,6 +22,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.editors.ui.FileSelectionPanel;
 import org.omnetpp.scave.engine.ScalarFields;
 
 /**
@@ -32,8 +35,7 @@ public abstract class ExportWizardPage extends WizardPage {
 
 	private Button[] groupByCheckboxes;
 	private Combo precisionCombo;
-	private Text fileNameText;
-	private Button browseButton;
+	FileSelectionPanel fileSelectionPanel;
 	
 	private static final String FILENAME_KEY = "filename";
 	private static final String GROUPBY_KEY = "groupBy";
@@ -48,11 +50,11 @@ public abstract class ExportWizardPage extends WizardPage {
 	protected abstract String[] getFileDialogFilterExtensions();
 	
 	protected String getFileName() {
-		return fileNameText.getText();
+		return fileSelectionPanel.getFileName();
 	}
 	
 	protected void setFileName(String fileName) {
-		fileNameText.setText(fileName);
+		fileSelectionPanel.setFileName(fileName);
 	}
 
 	protected ScalarFields getGroupBy() {
@@ -122,29 +124,15 @@ public abstract class ExportWizardPage extends WizardPage {
 	}
 	
 	protected void createFileSelectionPanel(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		panel.setLayout(new GridLayout(3, false));
+		fileSelectionPanel = 
+			new FileSelectionPanel(parent, SWT.NONE, "To file:", SWT.SAVE, "Save to file",
+					getFileDialogFilterExtensions());
+		setControl(fileSelectionPanel);
 		
-		Label label = new Label(panel, SWT.NONE);
-		label.setText("To file:");
-		fileNameText = new Text(panel, SWT.SINGLE | SWT.BORDER);
-		fileNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		browseButton = new Button(panel, SWT.NONE);
-		browseButton.setText("Browse...");
-		
-		setControl(panel);
-		
-		fileNameText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				updatePageCompletion();
-			}
-		});
-	
-		browseButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				handleBrowseButtonPressed();
-				updatePageCompletion();
+		fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (FileSelectionPanel.PROP_FILENAME.equals(event.getProperty()))
+					updatePageCompletion();
 			}
 		});
 	}
@@ -158,18 +146,6 @@ public abstract class ExportWizardPage extends WizardPage {
 			int histograms = (int)exportWizard.selectedHistograms.size();
 			setDescription(String.format("There are %d scalars, %d vectors, %d histograms selected.",
 										scalars, vectors, histograms));
-		}
-	}
-	
-	protected void handleBrowseButtonPressed() {
-		FileDialog dialog = new FileDialog(getContainer().getShell(), SWT.SAVE);
-		dialog.setText("Save to file");
-		dialog.setFilterPath(getFileName());
-		dialog.setFilterExtensions(getFileDialogFilterExtensions());
-		String selectedFileName = dialog.open();
-
-		if (selectedFileName != null) {
-			setFileName(selectedFileName);
 		}
 	}
 	

@@ -23,11 +23,11 @@ import org.omnetpp.scave.model2.DatasetManager;
  */
 public class ExportJob extends WorkspaceJob
 {
-	String fileName;
+	private String fileName;
 	private ScaveExport exporter;
 	private ResultFileManager manager;
-	IDList scalars, vectors, histograms;
-	ScalarFields scalarsGroupBy;
+	private IDList scalars, vectors, histograms;
+	private ScalarFields scalarsGroupBy;
 	
 	public ExportJob(String fileName, ScaveExport exporter,
 			IDList scalars, IDList vectors, IDList histograms,
