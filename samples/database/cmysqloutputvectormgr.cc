@@ -14,7 +14,7 @@
 
 #include <assert.h>
 #include <omnetpp.h>
-#include "omnetapp.h" // getOutVectorConfig() -- TODO eliminate dependency
+#include "filemgrs.h" // getOutVectorConfig() -- TODO eliminate dependency
 #include "cmysqloutputvectormgr.h"
 #include "oppmysqlutils.h"
 
@@ -174,8 +174,8 @@ void *cMySQLOutputVectorManager::registerVector(const char *modulename, const ch
     vp->modulename = modulename;
     vp->vectorname = vectorname;
 
-    ev.app->getOutVectorConfig(simulation.runNumber(), modulename, vectorname,
-                               vp->enabled, vp->starttime, vp->stoptime);
+    cFileOutputVectorManager::getOutVectorConfig(modulename, vectorname,
+                                                 vp->enabled, vp->starttime, vp->stoptime); //FIXME...
     return vp;
 }
 

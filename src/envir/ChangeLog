@@ -1,3 +1,7 @@
+configuration handling rewritten...
+
+output vectors: several recording intervals can now be given, separated by comma
+
 2007-02-01 Tamas Borbely
 
 	* new [General] config entry:

@@ -139,14 +139,7 @@ class ENVIR_API TOmnetApp
     virtual void endRun();
 
     virtual void readParameter(cPar *parameter);
-
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
-
-    virtual void getOutVectorConfig(const char *modname, /*input*/
-                                    const char *vecname,
-                                    bool& enabled, /*output*/
-                                    simtime_t& starttime, simtime_t& stoptime);
-
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
     //@}
 

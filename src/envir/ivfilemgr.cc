@@ -74,12 +74,12 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
 
 void cIndexedFileOutputVectorManager::openIndexFile()
 {
-        fi = fopen(ifname.c_str(),"w");
-        if (fi==NULL)
-            throw cRuntimeError("Cannot open index file `%s'",ifname.c_str());
+    fi = fopen(ifname.c_str(),"w");
+    if (fi==NULL)
+        throw cRuntimeError("Cannot open index file `%s'",ifname.c_str());
 
-        // leave blank space for fingerprint
-        fprintf(fi, "%64s\n", "");
+    // leave blank space for fingerprint
+    fprintf(fi, "%64s\n", "");
 }
 
 void cIndexedFileOutputVectorManager::closeIndexFile()
@@ -155,6 +155,7 @@ void cIndexedFileOutputVectorManager::deregisterVector(void *vectorhandle)
     sVector *vp = (sVector *)vectorhandle;
     std::remove(vectors.begin(), vectors.end(), vp);
     finalizeVector(vp);
+    delete[] vp->intervals;
     delete vp;
 }
 
@@ -188,7 +189,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
     if (!vp->enabled)
         return false;
 
-    if (t>=vp->starttime && (vp->stoptime==0.0 || t<=vp->stoptime))
+    if (!vp->intervals || containsTime(t, vp->intervals))
     {
         if (!vp->initialized)
             initVector(vp);
@@ -318,3 +319,5 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(sVector *vp)
         block.reset();
     }
 }
+
+

@@ -36,6 +36,7 @@
 #include "ccomponenttype.h"
 #include "stringutil.h"
 #include "ivfilemgr.h"
+#include "stringtokenizer.h"
 
 using std::ostream;
 using std::ofstream;
@@ -53,7 +54,10 @@ Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_F
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
 Register_PerRunConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "omnetpp.sna", "Name of the snapshot file.");
 
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval for an output vector. Syntax: [<from>]..[<to>]. Examples: 100..200, 100.., ..200");
+
 
 #ifdef CHECK
 #undef CHECK
@@ -209,6 +213,51 @@ void cFileOutputVectorManager::endRun()
     closeFile();
 }
 
+void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char *vecname,
+                                                  bool& outEnabled, bool& outRecordEventNumbers,
+                                                  Interval *&outIntervals)
+{
+    std::string vectorfullpath = std::string(modname) + "." + vecname;
+    outEnabled = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_ENABLED);
+    outRecordEventNumbers = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_EVENT_NUMBERS);
+
+    // get interval string
+    outIntervals = NULL;
+    const char *text = ev.config()->getAsCustom(vectorfullpath.c_str(), CFGID_OUTVECTOR_INTERVAL);
+    if (text)
+    {
+        // parse the string, syntax is "start..end, start..end, start.."
+        std::vector<Interval> intervals;
+        StringTokenizer tokenizer(text, ",");
+        while (tokenizer.hasMoreTokens())
+        {
+            // parse interval string
+            const char *s = tokenizer.nextToken();
+            const char *ellipsis = strstr(s, "..");
+            if (!ellipsis)
+                throw cRuntimeError("Wrong syntax in output vector interval %s=%s", text, s);
+
+            const char *startstr = s;
+            const char *stopstr = ellipsis+2;
+            while (isspace(*startstr)) startstr++;
+            while (isspace(*stopstr)) stopstr++;
+
+            // add to vector
+            Interval interval;
+            if (startstr!=ellipsis)
+                interval.startTime = STR_SIMTIME(std::string(startstr, ellipsis-startstr).c_str());
+            if (*stopstr)
+                interval.stopTime = STR_SIMTIME(stopstr);
+            intervals.push_back(interval);
+        }
+
+        // return as plain C++ array
+        outIntervals = new Interval[intervals.size()+1]; // +1: terminating (0,0)
+        for (int i=0; i<intervals.size(); i++)
+            outIntervals[i] = intervals[i];
+    }
+}
+
 void *cFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVectorData *vp = createVectorData();
@@ -216,10 +265,7 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
     vp->initialized = false;
     vp->modulename = modulename;
     vp->vectorname = vectorname;
-    ev.app->getOutVectorConfig(modulename, vectorname, vp->enabled, vp->starttime, vp->stoptime);
-
-    vp->recordEventNumbers = ev.config()->getAsBool(modulename, CFGID_OUTVECTOR_EVENT_NUMBERS);
-
+    getOutVectorConfig(modulename, vectorname, vp->enabled, vp->recordEventNumbers, vp->intervals);
     return vp;
 }
 
@@ -231,6 +277,7 @@ cFileOutputVectorManager::sVectorData *cFileOutputVectorManager::createVectorDat
 void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
     sVectorData *vp = (sVectorData *)vectorhandle;
+    delete [] vp->intervals;
     delete vp;
 }
 
@@ -249,10 +296,11 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
     if (!vp->enabled)
         return false;
 
-    if (t>=vp->starttime && (vp->stoptime==0.0 || t<=vp->stoptime))
+    if (!vp->intervals || containsTime(t, vp->intervals))
     {
         if (!vp->initialized)
             initVector(vp);
+
         assert(f!=NULL);
         if (vp->recordEventNumbers)
         {
@@ -264,6 +312,14 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         }
         return true;
     }
+    return false;
+}
+
+bool cFileOutputVectorManager::containsTime(simtime_t t, Interval *intervals)
+{
+    for (Interval *i = intervals; i->startTime!=0 || i->stopTime!=0; i++)
+        if (i->startTime <= t && (i->stopTime == 0 || t <= i->stopTime))
+            return true;
     return false;
 }
 

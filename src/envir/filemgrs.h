@@ -52,14 +52,13 @@ class cFileOutputVectorManager : public cOutputVectorManager
        opp_string_map attributes; // vector attributes
        bool initialized;    // true if the vector declaration has been written out
        bool enabled;        // write to the output file can be enabled/disabled
-       simtime_t starttime; // write begins at starttime
-       simtime_t stoptime;  // write stops at stoptime
        bool recordEventNumbers; // record the current event number for each sample
+       Interval *intervals; // array of (starttime, stoptime) pairs terminated with (0,0), or NULL
 
        const char *getColumns() { return recordEventNumbers ? "ETV" : "TV"; }
     };
 
-    struct sRunData run;    // holds data of the current run
+    sRunData run;      // holds data of the current run
     int nextid;        // holds next free ID for output vectors
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
@@ -72,6 +71,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
     virtual void initVector(sVectorData *vp);
     virtual sVectorData *createVectorData();
     virtual void writeRunData();
+    static bool containsTime(simtime_t t, Interval *intervals);
 
   public:
     /** @name Constructors, destructor */
@@ -87,6 +87,12 @@ class cFileOutputVectorManager : public cOutputVectorManager
      */
     virtual ~cFileOutputVectorManager();
     //@}
+
+    /**
+     * Utility function for parsing the configuration of an output vector.
+     */
+    static void getOutVectorConfig(const char *modname, const char *vecname,
+                                   bool& outEnabled, bool& outRecordEventNumbers, Interval *&outIntervals);
 
     /** @name Redefined cOutputVectorManager member functions. */
     //@{

@@ -118,8 +118,6 @@ Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, NULL, "Name of the event log file to generate. If emtpy, no file is generated.");
 Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
 
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval for an output vector. Syntax: [<from>]..[<to>]. Examples: 100..200, 100.., ..200");
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_INT, NULL, "With parallel simulation: in which partition the module should be instantiated.");
 
 
@@ -631,34 +629,6 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 #else
     return true;
 #endif
-}
-
-void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*input*/
-                                   bool& enabled, simtime_t& starttime, simtime_t& stoptime /*output*/ )
-{
-    enabled = getConfig()->getAsBool(modname, CFGID_OUTVECTOR_ENABLED);
-
-    // get 'module.vector.interval=' entry
-    const char *s = getConfig()->getAsCustom(modname, CFGID_OUTVECTOR_INTERVAL);
-    if (!s)
-    {
-       starttime = 0;
-       stoptime = 0;
-       return;
-    }
-
-    // parse interval string
-    const char *ellipsis = strstr(s,"..");
-    if (!ellipsis)
-        throw cRuntimeError("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
-
-    const char *startstr = s;
-    const char *stopstr = ellipsis+2;
-    starttime = STR_SIMTIME(std::string(startstr, ellipsis-startstr).c_str()); //FIXME this won't accept empty string?
-    stoptime = STR_SIMTIME(stopstr); //FIXME this won't accept empty string?
-
-    if (startstr<ellipsis || *stopstr!='\0')
-        throw cRuntimeError("Error in output vector interval %s=%s",buffer,s);
 }
 
 cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)

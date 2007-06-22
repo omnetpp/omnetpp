@@ -130,7 +130,7 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
     {
         case NONE:                 modeString = "none"; break;
         case SAMPLE_HOLD:          modeString = "sample-hold"; break;
-        case BACKWARD_SAMPLE_HOLD: modeString = "backeward-sample-hold"; break;
+        case BACKWARD_SAMPLE_HOLD: modeString = "backward-sample-hold"; break;
         case LINEAR:               modeString = "linear"; break;
         //Note: no "default:" so that compiler can warn of incomplete coverage
     }
@@ -164,7 +164,7 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     // check timestamp
     if (t<last_t)
         throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
-                                  "than the previously recorded value", SIMTIME_STR(t));
+                                 "than the previously recorded value", SIMTIME_STR(t));
     last_t = t;
 
     num_received++;
