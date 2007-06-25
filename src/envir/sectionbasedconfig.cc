@@ -22,7 +22,7 @@
 #include "cexception.h"
 #include "scenario.h"
 #include "globals.h"
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 
 
 //XXX optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
@@ -669,7 +669,7 @@ void SectionBasedConfiguration::validateConfig() const
                 // warn for unrecognized (or misplaced) config keys
                 // NOTE: values don't need to be validated here, that will be
                 // done when the config gets actually used
-                cConfigEntry *e = (cConfigEntry *) configEntries.instance()->lookup(key);
+                cConfigKey *e = (cConfigKey *) configEntries.instance()->lookup(key);
                 if (!e)
                     throw cRuntimeError("Unknown configuration key: %s", key);
                 if (e->isPerObject())
@@ -704,7 +704,7 @@ void SectionBasedConfiguration::validateConfig() const
                 {
                     // this is a per-object config
                     //XXX groupName (probably) should not contain wildcard
-                    cConfigEntry *e = (cConfigEntry *) configEntries.instance()->lookup(groupName.c_str());
+                    cConfigKey *e = (cConfigKey *) configEntries.instance()->lookup(groupName.c_str());
                     if (!e || !e->isPerObject())
                         throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
                 }

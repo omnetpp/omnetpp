@@ -78,7 +78,7 @@ inspector.o: inspector.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -173,7 +173,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -303,7 +303,7 @@ layouterenv.o: layouterenv.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h
+  ../../include/cconfigkey.h
 modinsp.o: modinsp.cc \
   modinsp.h \
   tkapp.h \
@@ -362,7 +362,7 @@ modinsp.o: modinsp.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h
+  ../../include/cconfigkey.h
 objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -383,7 +383,7 @@ objinsp.o: objinsp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -503,7 +503,7 @@ statinsp.o: statinsp.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   inspector.h \
   tkutil.h \
   tkdefs.h
@@ -516,7 +516,7 @@ tkapp.o: tkapp.cc \
   ../../include/cscheduler.h \
   ../../include/ccomponenttype.h \
   ../../include/csimulation.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/regmacros.h \
   tkdefs.h \
   tkapp.h \
@@ -625,7 +625,7 @@ tkcmd.o: tkcmd.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   tkutil.h \
   tkdefs.h \
   ../envir/matchableobject.h
@@ -656,7 +656,7 @@ tklib.o: tklib.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
-  ../../include/cconfigentry.h
+  ../../include/cconfigkey.h
 tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
@@ -694,7 +694,7 @@ tkutil.o: tkutil.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../envir/matchableobject.h \
   tkdefs.h
 visitor.o: visitor.cc \
@@ -746,4 +746,4 @@ visitor.o: visitor.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h
+  ../../include/cconfigkey.h

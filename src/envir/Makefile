@@ -65,7 +65,7 @@ akaroarng.o: akaroarng.cc \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cstringpool.h
@@ -97,7 +97,7 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/csimulation.h \
@@ -153,7 +153,7 @@ cenvir.o: cenvir.cc \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/envirext.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -177,7 +177,7 @@ cinifile.o: cinifile.cc \
   envdefs.h \
   ../../include/cconfiguration.h \
   ../../include/cobject.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cownedobject.h \
@@ -236,7 +236,7 @@ filemgrs.o: filemgrs.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -293,7 +293,7 @@ ivfilemgr.o: ivfilemgr.cc \
   ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -357,7 +357,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   ../../include/chasher.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/regmacros.h \
   ../../include/cparsimcomm.h \
   envdefs.h \

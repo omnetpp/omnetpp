@@ -1,5 +1,5 @@
 //=========================================================================
-//  CCONFIGENTRY.CC - part of
+//  CCONFIGKEY.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -16,10 +16,10 @@
 *--------------------------------------------------------------*/
 
 
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 
 
-cConfigEntry::cConfigEntry(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
+cConfigKey::cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
                            const char *defaultValue, const char *description) :
 cNoncopyableOwnedObject(name)
 {
@@ -38,7 +38,7 @@ cNoncopyableOwnedObject(name)
     description_ = description ? description : "";
 }
 
-std::string cConfigEntry::info() const
+std::string cConfigKey::info() const
 {
     std::stringstream out;
     out << (isPerObject_ ? "per-object " : "");
@@ -50,7 +50,7 @@ std::string cConfigEntry::info() const
     return out.str();
 }
 
-const char *cConfigEntry::typeName(Type type)
+const char *cConfigKey::typeName(Type type)
 {
     switch (type)
     {

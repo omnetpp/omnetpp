@@ -23,7 +23,7 @@
 #include <string.h>
 #include <fstream>
 #include <errno.h> // SGI
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 #include "timeutil.h"
 #include "platmisc.h"
 #include "cenvir.h"

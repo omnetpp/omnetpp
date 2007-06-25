@@ -30,7 +30,7 @@
 #include "cscheduler.h"
 #include "ccomponenttype.h"
 #include "csimulation.h"
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 #include "regmacros.h"
 
 #include "tkdefs.h"

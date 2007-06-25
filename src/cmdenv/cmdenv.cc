@@ -31,7 +31,7 @@
 #include "args.h"
 #include "speedometer.h"
 #include "timeutil.h"
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 
 #define CMDENV_EXTRASTACK_KB  "8"
 

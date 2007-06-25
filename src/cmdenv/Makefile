@@ -76,7 +76,7 @@ cmdenv.o: cmdenv.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \

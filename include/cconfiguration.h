@@ -24,7 +24,7 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
-class cConfigEntry;
+class cConfigKey;
 
 
 /**
@@ -66,8 +66,7 @@ class cConfigEntry;
  *
  * @ingroup EnvirExtensions
  */
-//FIXME explain what is cConfigEntry (ie purpose: to detect unrecognized entries (ie caused by typos) in omnetpp.ini)
-//XXX cConfigEntry: rename to cConfigEntryDecl?
+//FIXME explain what is cConfigKey (ie purpose: to detect unrecognized entries (ie caused by typos) in omnetpp.ini)
 //XXX refine the above docu!
 class ENVIR_API cConfiguration : public cObject
 {
@@ -250,38 +249,38 @@ class ENVIR_API cConfiguration : public cObject
      * Returns a config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual const char *getAsCustom(cConfigEntry *entry, const char *fallbackValue=NULL);
+    virtual const char *getAsCustom(cConfigKey *entry, const char *fallbackValue=NULL);
 
     /**
      * Returns a config value as bool.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual bool getAsBool(cConfigEntry *entry, bool fallbackValue=false);
+    virtual bool getAsBool(cConfigKey *entry, bool fallbackValue=false);
 
     /**
      * Returns a config value as long.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual long getAsInt(cConfigEntry *entry, long fallbackValue=0);
+    virtual long getAsInt(cConfigKey *entry, long fallbackValue=0);
 
     /**
      * Returns a config value as double.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual double getAsDouble(cConfigEntry *entry, double fallbackValue=0);
+    virtual double getAsDouble(cConfigKey *entry, double fallbackValue=0);
 
     /**
      * Returns a config value as string.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual std::string getAsString(cConfigEntry *entry, const char *fallbackValue="");
+    virtual std::string getAsString(cConfigKey *entry, const char *fallbackValue="");
 
     /**
      * Interprets the config value as a path. If it is relative, then it will be
      * converted to an absolute path, using the base directory (see the
      * getBaseDirectoryFor() method).
      */
-    virtual std::string getAsFilename(cConfigEntry *entry);
+    virtual std::string getAsFilename(cConfigKey *entry);
 
     /**
      * Interprets the config value as a list of paths (file or directory names,
@@ -289,7 +288,7 @@ class ENVIR_API cConfiguration : public cObject
      * in the list will be converted to absolute, using the base directory
      * (see getBaseDirectoryFor() method).
      */
-    virtual std::vector<std::string> getAsFilenames(cConfigEntry *entry);
+    virtual std::vector<std::string> getAsFilenames(cConfigKey *entry);
     //@}
 
     /** @name XXX */
@@ -298,38 +297,38 @@ class ENVIR_API cConfiguration : public cObject
      * Returns a per-object config value without any conversion.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual const char *getAsCustom(const char *objectFullPath, cConfigEntry *entry, const char *fallbackValue=NULL);
+    virtual const char *getAsCustom(const char *objectFullPath, cConfigKey *entry, const char *fallbackValue=NULL);
 
     /**
      * Returns a per-object config value as bool.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual bool getAsBool(const char *objectFullPath, cConfigEntry *entry, bool fallbackValue=false);
+    virtual bool getAsBool(const char *objectFullPath, cConfigKey *entry, bool fallbackValue=false);
 
     /**
      * Returns a per-object config value as long.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual long getAsInt(const char *objectFullPath, cConfigEntry *entry, long fallbackValue=0);
+    virtual long getAsInt(const char *objectFullPath, cConfigKey *entry, long fallbackValue=0);
 
     /**
      * Returns a per-object config value as double.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual double getAsDouble(const char *objectFullPath, cConfigEntry *entry, double fallbackValue=0);
+    virtual double getAsDouble(const char *objectFullPath, cConfigKey *entry, double fallbackValue=0);
 
     /**
      * Returns a per-object config value as string.
      * fallbackValue is returned if the value is not specified in the configuration, and there is no default value.
      */
-    virtual std::string getAsString(const char *objectFullPath, cConfigEntry *entry, const char *fallbackValue="");
+    virtual std::string getAsString(const char *objectFullPath, cConfigKey *entry, const char *fallbackValue="");
 
     /**
      * Interprets the per-object config value as a path. If it is relative,
      * then it will be converted to an absolute path, using the base directory
      * (see KeyValue::getBaseDirectory()).
      */
-    virtual std::string getAsFilename(const char *objectFullPath, cConfigEntry *entry);
+    virtual std::string getAsFilename(const char *objectFullPath, cConfigKey *entry);
 
     /**
      * Interprets the per-object config value as a list of paths (file or directory
@@ -337,7 +336,7 @@ class ENVIR_API cConfiguration : public cObject
      * in the list will be converted to absolute, using the base directory
      * (see KeyValue::getBaseDirectory()).
      */
-    virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigEntry *entry);
+    virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigKey *entry);
 
     //@}
 };

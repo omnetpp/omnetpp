@@ -23,7 +23,7 @@
 
 #include "args.h"
 #include "distrib.h"
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
 #include "cenvir.h"

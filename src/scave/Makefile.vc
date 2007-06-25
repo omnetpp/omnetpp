@@ -323,10 +323,10 @@ resultfilemanager.obj: resultfilemanager.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/commonutil.h \
   ../common/bigdecimal.h \
   idlist.h \
-  enumtype.h \
-  ../common/commonutil.h
+  enumtype.h
 scaveexception.obj: scaveexception.cc \
   scaveexception.h \
   ../common/commondefs.h \

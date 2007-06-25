@@ -47,7 +47,7 @@
 #include "cxmldoccache.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
-#include "cconfigentry.h"
+#include "cconfigkey.h"
 #include "regmacros.h"
 #include "stringutil.h"
 
@@ -349,12 +349,12 @@ void TOmnetApp::dumpComponentList(const char *category)
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
-            cConfigEntry *obj = dynamic_cast<cConfigEntry *>(table->get(i));
+            cConfigKey *obj = dynamic_cast<cConfigKey *>(table->get(i));
             ASSERT(obj);
             if (!printDescriptions) ev << "  ";
             if (obj->isPerObject()) ev << "<object-full-path>.";
             ev << obj->name() << "=";
-            ev << "<" << cConfigEntry::typeName(obj->type()) << ">";
+            ev << "<" << cConfigKey::typeName(obj->type()) << ">";
             if (obj->unit())
                 ev << ", unit=\"" << obj->unit() << "\"";
             if (obj->defaultValue())

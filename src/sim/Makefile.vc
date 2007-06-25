@@ -16,7 +16,7 @@ IMPLIBS=../envir/envir.lib ../common/common.lib
 
 OBJS_STD=\
     carray.obj cbasicchannel.obj cboolpar.obj cchannel.obj \
-    cclassfactory.obj ccomponent.obj ccomponenttype.obj cconfiguration.obj cconfigentry.obj \
+    cclassfactory.obj ccomponent.obj ccomponenttype.obj cconfiguration.obj cconfigkey.obj \
     ccompoundmodule.obj ccoroutine.obj cdefaultlist.obj cdensity.obj \
     cdetect.obj cdisplaystring.obj cdoublepar.obj cdynamicexpression.obj \
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
@@ -418,8 +418,8 @@ ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-cconfigentry.obj: cconfigentry.cc \
-  ../../include/cconfigentry.h \
+cconfigkey.obj: cconfigkey.cc \
+  ../../include/cconfigkey.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/simkerneldefs.h \
@@ -437,7 +437,7 @@ cconfigentry.obj: cconfigentry.cc \
   ../../include/regmacros.h
 cconfiguration.obj: cconfiguration.cc \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
+  ../../include/cconfigkey.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
@@ -1394,7 +1394,6 @@ cscheduler.obj: cscheduler.cc \
   ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigentry.h \
   ../../include/cobject.h \
   ../../include/platdep/timeutil.h \
   ../../include/simkerneldefs.h \
@@ -1947,7 +1946,6 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
-  ../../include/cconfigentry.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
