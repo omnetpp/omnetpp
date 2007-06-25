@@ -120,6 +120,7 @@ Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, N
 Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
 
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_INT, NULL, "With parallel simulation: in which partition the module should be instantiated.");
+//FIXME register "rng-*" ?
 
 
 //-------------------------------------------------------------
@@ -175,7 +176,7 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
     config = conf;
     xmlcache = NULL;
 
-    outvectmgr = NULL;
+    outvectormgr = NULL;
     outscalarmgr = NULL;
     snapshotmgr = NULL;
 
@@ -199,7 +200,7 @@ TOmnetApp::~TOmnetApp()
     delete config;
     delete xmlcache;
 
-    delete outvectmgr;
+    delete outvectormgr;
     delete outscalarmgr;
     delete snapshotmgr;
 
@@ -247,7 +248,7 @@ void TOmnetApp::setup()
          xmlcache = new cXMLDocCache();
 
          // install output vector manager
-         CREATE_BY_CLASSNAME(outvectmgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
+         CREATE_BY_CLASSNAME(outvectormgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
 
          // install output scalar manager
          CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class.c_str(), cOutputScalarManager, "output scalar manager");
@@ -472,7 +473,7 @@ void TOmnetApp::startRun()
 {
     resetClock();
     generateRunId();
-    outvectmgr->startRun();
+    outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
     if (opt_parsim)
@@ -507,7 +508,7 @@ void TOmnetApp::endRun()
 
     snapshotmgr->endRun();
     outscalarmgr->endRun();
-    outvectmgr->endRun();
+    outvectormgr->endRun();
 }
 
 void TOmnetApp::generateRunId()
@@ -1069,24 +1070,28 @@ cRNG *TOmnetApp::rng(int k)
 
 void TOmnetApp::getRNGMappingFor(cComponent *component)
 {
-/*XXX FIXME get it working and put it back!!!!
     cConfiguration *cfg = getConfig();
-    std::vector<opp_string> entries = cfg->getEntriesWithPrefix(component->fullPath().c_str(), ".rng-");
-    if (entries.size()==0)
+    std::string componentFullPath = component->fullPath();
+    //FIXME "rng-*" should be a cConfigKey ?
+    std::vector<const char *> keys = cfg->getMatchingPerObjectConfigKeys(componentFullPath.c_str(), "rng-*");
+    if (keys.size()==0)
         return;
 
     // extract into tmpmap[]
     int mapsize=0;
     int tmpmap[100];
-    for (int i=0; i<(int)entries.size(); i+=2)
+    for (int i=0; i<(int)keys.size(); i+=2)
     {
+        //FIXME to be tested
+        const char *key = keys[i];
+        const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), key);
         char *s1, *s2;
-        int modRng = strtol(entries[i].c_str(), &s1, 10);
-        int physRng = strtol(entries[i+1].c_str(), &s2, 10);
+        int modRng = strtol(key+strlen("rng-"), &s1, 10);
+        int physRng = strtol(value, &s2, 10);
         if (*s1!='\0' || *s2!='\0')
             throw cRuntimeError("Configuration error: rng-%s=%s of module/channel %s: "
                                 "numeric RNG indices expected",
-                                entries[i].c_str(), entries[i+1].c_str(), component->fullPath().c_str());
+                                key, value, component->fullPath().c_str());
 
         if (physRng>numRNGs())
             throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
@@ -1114,33 +1119,32 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
         memcpy(map, tmpmap, mapsize*sizeof(int));
         component->setRNGMap(mapsize, map);
     }
-*/
 }
 
 //-------------------------------------------------------------
 
 void *TOmnetApp::registerOutputVector(const char *modulename, const char *vectorname)
 {
-    assert(outvectmgr);
-    return outvectmgr->registerVector(modulename, vectorname);
+    assert(outvectormgr);
+    return outvectormgr->registerVector(modulename, vectorname);
 }
 
 void TOmnetApp::deregisterOutputVector(void *vechandle)
 {
-    assert(outvectmgr);
-    outvectmgr->deregisterVector(vechandle);
+    assert(outvectormgr);
+    outvectormgr->deregisterVector(vechandle);
 }
 
 void TOmnetApp::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
-    assert(outvectmgr);
-    outvectmgr->setVectorAttribute(vechandle, name, value);
+    assert(outvectormgr);
+    outvectormgr->setVectorAttribute(vechandle, name, value);
 }
 
 bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
-    assert(outvectmgr);
-    return outvectmgr->record(vechandle, t, value);
+    assert(outvectormgr);
+    return outvectormgr->record(vechandle, t, value);
 }
 
 //-------------------------------------------------------------

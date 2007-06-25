@@ -42,19 +42,17 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-//XXX change default filenames? omnetpp.xxx to %c-%r.xxx?
-
 //XXX split up this file by classes -- it's too big
 
 Register_Class(cFileOutputVectorManager);
 
 #define DEFAULT_PRECISION  "14"
 
-Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "omnetpp.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
+Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "%c-%r.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
-Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "omnetpp.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
+Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "%c-%r.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
-Register_PerRunConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "omnetpp.sna", "Name of the snapshot file.");
+Register_PerRunConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "%c-%r.sna", "Name of the snapshot file.");
 
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
@@ -124,7 +122,7 @@ void cFileOutputVectorManager::initRun()
             run.attributes[key] = cfg->getConfigValue(key);
         }
 
-        //XXX TODO: fill in run.moduleParams[]
+        //FIXME todo: fill in run.moduleParams[]
         run.initialized = true;
     }
 }
@@ -349,6 +347,7 @@ void cFileOutputScalarManager::startRun()
     closeFile();
     fname = ev.config()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
     ev.app->processFileName(fname);
+    removeFile(fname.c_str(), "old output scalar file");
     initialized = false;
 }
 
@@ -371,6 +370,7 @@ void cFileOutputScalarManager::init()
         const char *networkname = simulation.networkType()->name();
         const char *runId = ev.app->getRunId();
         fprintf(f, "run %s\n", QUOTE(runId));
+        //FIXME write out run data here as well (not only in outvectormanager)
     }
 }
 

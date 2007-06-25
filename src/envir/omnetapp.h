@@ -101,7 +101,7 @@ class ENVIR_API TOmnetApp
 
     // Output file managers
     FILE *feventlog;  // the eventlog file; NULL if no event log is being written
-    cOutputVectorManager *outvectmgr;
+    cOutputVectorManager *outvectormgr;
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
 
