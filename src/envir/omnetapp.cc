@@ -342,10 +342,10 @@ void TOmnetApp::dumpComponentList(const char *category)
     bool wantAll = !strcmp(category, "all");
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
-        ev << "Supported configuration entries (omnetpp.ini):\n";
+        ev << "Supported configuration keys (omnetpp.ini):\n";
         bool printDescriptions = !strcmp(category, "configdetails");
 
-        cSymTable *table = configEntries.instance();
+        cSymTable *table = configKeys.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {

@@ -193,7 +193,7 @@
 // internal
 #define __Register_ConfigEntry(ID, ARGLIST) \
   cConfigKey *ID; \
-  EXECUTE_ON_STARTUP(configEntries.instance()->add(ID = new cConfigKey ARGLIST);)
+  EXECUTE_ON_STARTUP(configKeys.instance()->add(ID = new cConfigKey ARGLIST);)
 
 /**
  * Generic, with unit==NULL.

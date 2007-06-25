@@ -29,7 +29,7 @@ cRegistrationList nedFunctions("NED functions");
 cRegistrationList classes("classes");
 cRegistrationList enums("enums");
 cRegistrationList classDescriptors("class descriptors");
-cRegistrationList configEntries("supported config entries");
+cRegistrationList configKeys("supported configuration keys");
 
 
 cModuleType *findModuleType(const char *name)
