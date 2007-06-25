@@ -84,17 +84,6 @@ cOmnetAppRegistration *chooseBestOmnetApp()
     return best_appreg;
 }
 
-std::string determineIgnorableConfigKeys()
-{
-    // check if Cmdenv/Tkenv are present, for cfg->setIgnorableConfigKeyPatterns()
-    std::string tmp;
-    if (omnetapps.instance()->lookup("Cmdenv")==NULL)
-        tmp += " cmdenv-*";
-    if (omnetapps.instance()->lookup("Tkenv")==NULL)
-        tmp += " tkenv-*";
-    return tmp;
-}
-
 //========================================================================
 
 #ifdef _MSC_VER
@@ -163,26 +152,19 @@ void cEnvir::setup(int argc, char *argv[])
         for (int k=(args->optionValue('f',0) ? 0 : 1); (fname=args->argument(k))!=NULL; k++)
             inifile->readFile(fname);
 
-        //
-        // Load all libraries specified on the command line.
-        // (The user interface library also might be among them.)
-        //
-
-        // load shared libraries given with '-l' option(s)
-        const char *libname;
-        for (int k=0; (libname=args->optionValue('l',k))!=NULL; k++)
-            loadExtensionLibrary(libname);
-
         // activate [General] section so that we can read global settings from it
         bootconfig = new SectionBasedConfiguration();
-        bootconfig->setIgnorableConfigKeyPatterns(determineIgnorableConfigKeys().c_str());
         bootconfig->setConfigurationReader(inifile);
         bootconfig->activateConfig("General", 0);
 
         //
-        // Load further shared libs given in [General]/load-libs=
+        // Load all libraries specified on the command line ('-l' options),
+        // and in the configuration [General]/load-libs=.
         // (The user interface library also might be among them.)
         //
+        const char *libname;
+        for (int k=0; (libname=args->optionValue('l',k))!=NULL; k++)
+            loadExtensionLibrary(libname);
         std::vector<std::string> libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
         for (int k=0; k<libs.size(); k++)
             loadExtensionLibrary(libs[k].c_str());
@@ -200,7 +182,6 @@ void cEnvir::setup(int argc, char *argv[])
         {
             // create custom configuration object
             CREATE_BY_CLASSNAME(configobject, configclass.c_str(), cConfiguration, "configuration");
-            configobject->setIgnorableConfigKeyPatterns(determineIgnorableConfigKeys().c_str());
             configobject->initializeFrom(bootconfig);
             delete bootconfig;
             bootconfig = NULL;
@@ -211,6 +192,15 @@ void cEnvir::setup(int argc, char *argv[])
                 loadExtensionLibrary(libs[k].c_str());
         }
 
+
+        // validate the configuration, but make sure we don't report cmdenv-* keys
+        // as errors if Cmdenv is absent; same for Tkenv.
+        std::string ignorablekeys;
+        if (omnetapps.instance()->lookup("Cmdenv")==NULL)
+            ignorablekeys += " cmdenv-*";
+        if (omnetapps.instance()->lookup("Tkenv")==NULL)
+            ignorablekeys += " tkenv-*";
+        configobject->validate(ignorablekeys.c_str());
 
         //
         // Choose and set up user interface (TOmnetApp subclass). Everything else

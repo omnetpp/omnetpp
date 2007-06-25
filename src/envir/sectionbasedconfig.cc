@@ -30,9 +30,10 @@
 //XXX repetitions=10
 //XXX make samples/database work again!
 //XXX check behavior of keys which don't contain a dot! or: forbid them?
-//XXX the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
-//XXX if Cmdenv is not linked in, all "cmdenv" config keys throw an error!!! ignore "cmdenv-*" when no such key is registered?
+//XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
+//XXX error messages (exceptions) should contain file/line info!
 
+Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "XXX todo");
 
 
@@ -56,7 +57,6 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
     clear();
     this->ini = ini;
     nullEntry.setBaseDirectory(ini->getDefaultBaseDirectory());
-    validateConfig();
 }
 
 void SectionBasedConfiguration::clear()
@@ -77,16 +77,6 @@ void SectionBasedConfiguration::initializeFrom(cConfiguration *conf)
 const char *SectionBasedConfiguration::getFileName() const
 {
     return ini==NULL ? NULL : ini->getFileName();
-}
-
-void SectionBasedConfiguration::setIgnorableConfigKeyPatterns(const char *patterns)
-{
-    ignoredKeyPatterns = patterns;
-}
-
-const char *SectionBasedConfiguration::getIgnorableConfigKeyPatterns() const
-{
-    return ignoredKeyPatterns.c_str();
 }
 
 const char *SectionBasedConfiguration::getActiveConfigName() const
@@ -603,7 +593,7 @@ static int findInArray(const char *s, const char **array)
     return -1;
 }
 
-void SectionBasedConfiguration::validateConfig() const
+void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 {
     const char *obsoleteSections[] = {
         "Parameters", "Cmdenv", "Tkenv", "OutVectors", "Partitioning", "DisplayStrings", NULL
@@ -681,7 +671,7 @@ void SectionBasedConfiguration::validateConfig() const
                 // NOTE: values don't need to be validated here, that will be
                 // done when the config gets actually used
                 cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(key);
-                if (!e && isIgnorableConfigKey(key))
+                if (!e && isIgnorableConfigKey(ignorableConfigKeys, key))
                     continue;
                 if (!e)
                     throw cRuntimeError("Unknown configuration key: %s", key);
@@ -718,7 +708,7 @@ void SectionBasedConfiguration::validateConfig() const
                     // this is a per-object config
                     //XXX groupName (probably) should not contain wildcard
                     cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(groupName.c_str());
-                    if (!e && isIgnorableConfigKey(groupName.c_str()))
+                    if (!e && isIgnorableConfigKey(ignorableConfigKeys, groupName.c_str()))
                         continue;
                     if (!e || !e->isPerObject())
                         throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
@@ -728,10 +718,10 @@ void SectionBasedConfiguration::validateConfig() const
     }
 }
 
-bool SectionBasedConfiguration::isIgnorableConfigKey(const char *key) const
+bool SectionBasedConfiguration::isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key)
 {
     // see if any element in ignoredKeyPatterns matches it
-    StringTokenizer tokenizer(ignoredKeyPatterns.c_str());
+    StringTokenizer tokenizer(ignoredKeyPatterns ? ignoredKeyPatterns : "");
     while (tokenizer.hasMoreTokens())
         if (PatternMatcher(tokenizer.nextToken(), true, true, true).matches(key))
             return true;

@@ -119,11 +119,6 @@ class SectionBasedConfiguration : public cConfiguration
     };
     NullKeyValue nullEntry;
 
-    // config keys to ignore (space-separated list). Contains "cmdenv-*" when
-    // Cmdenv is unavailable (not linked in), "tkenv-*" when Tkenv is unavailable,
-    // etc, so that validate() doesn't report those keys in omnetpp.ini as errors.
-    std::string ignoredKeyPatterns;
-
   public:
     /**
      * Used during scenario resulution: stores the location of an iteration
@@ -148,7 +143,6 @@ class SectionBasedConfiguration : public cConfiguration
     std::vector<int> resolveSectionChain(const char *section) const;
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
-    void validateConfig() const;
     std::vector<IterationSpec> collectIterationSpecs(int sectionId) const;
     void validateIterations(const std::vector<IterationSpec>& list) const;
     static std::string substitute(const std::string& value, int entryId, const std::vector<IterationSpec>& iterspecs, const std::vector<std::string>& values);
@@ -156,14 +150,15 @@ class SectionBasedConfiguration : public cConfiguration
     void doActivateConfig(int sectionId);
     void doActivateScenario(int sectionId, int runNumber);
     int internalGetNumRunsInScenario(int sectionId) const;
-    bool isIgnorableConfigKey(const char *key) const;
+    static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
 
   public:
     SectionBasedConfiguration();
     virtual ~SectionBasedConfiguration();
 
     /**
-     *XXX
+     * This cConfiguration uses a cConfigurationReader as input; the reader
+     * should be passed with this method.
      */
     virtual void setConfigurationReader(cConfigurationReader *ini);
 
@@ -171,8 +166,7 @@ class SectionBasedConfiguration : public cConfiguration
     //@{
     virtual void initializeFrom(cConfiguration *conf);
     virtual const char *getFileName() const;
-    virtual void setIgnorableConfigKeyPatterns(const char *patterns);
-    virtual const char *getIgnorableConfigKeyPatterns() const;
+    virtual void validate(const char *ignorableConfigKeys) const;
     virtual std::vector<std::string> getConfigNames();
     virtual void activateConfig(const char *scenarioOrConfigName, int runNumber=0);
     virtual std::string getConfigDescription(const char *scenarioOrConfigName) const;

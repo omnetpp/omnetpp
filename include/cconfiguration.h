@@ -103,20 +103,18 @@ class ENVIR_API cConfiguration : public cObject
     virtual const char *getFileName() const = 0;
 
     /**
-     * Sets the list of config keys whose presence in the configuration should
-     * not be reported as errors even if they are not declared using cConfigKey.
-     * The list is space-separated, and items may contain wildcards.
+     * Validates the configuration: reports obsolete config keys,
+     * cycles in the section fallback chain, unrecognized keys, etc
+     * as exceptions.
      *
-     * Typically, this list will contain "cmdenv-*" when Cmdenv is unavailable
-     * (not linked in), "tkenv-*" when Tkenv is unavailable, etc, so that
-     * validate() doesn't report those keys in omnetpp.ini as errors.
+     * ignorableConfigKeys is the list of config keys whose presence in the
+     * configuration should not be reported as errors even if they are not
+     * declared using cConfigKeys. The list is space-separated, and items may
+     * contain wildcards. Typically, this list will contain "cmdenv-*" when
+     * Cmdenv is unavailable (not linked in), "tkenv-*" when Tkenv is unavailable,
+     * etc, so that validate() doesn't report those keys in omnetpp.ini as errors.
      */
-    virtual void setIgnorableConfigKeyPatterns(const char *patterns) = 0;
-
-    /**
-     * See setIgnorableConfigKeyPatterns()
-     */
-    virtual const char *getIgnorableConfigKeyPatterns() const = 0;
+    virtual void validate(const char *ignorableConfigKeys=NULL) const = 0;
 
     /** @name Activating a configuration or scenario */
     //@{
