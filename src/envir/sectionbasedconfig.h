@@ -119,6 +119,11 @@ class SectionBasedConfiguration : public cConfiguration
     };
     NullKeyValue nullEntry;
 
+    // config keys to ignore (space-separated list). Contains "cmdenv-*" when
+    // Cmdenv is unavailable (not linked in), "tkenv-*" when Tkenv is unavailable,
+    // etc, so that validate() doesn't report those keys in omnetpp.ini as errors.
+    std::string ignoredKeyPatterns;
+
   public:
     /**
      * Used during scenario resulution: stores the location of an iteration
@@ -151,6 +156,7 @@ class SectionBasedConfiguration : public cConfiguration
     void doActivateConfig(int sectionId);
     void doActivateScenario(int sectionId, int runNumber);
     int internalGetNumRunsInScenario(int sectionId) const;
+    bool isIgnorableConfigKey(const char *key) const;
 
   public:
     SectionBasedConfiguration();
@@ -165,6 +171,8 @@ class SectionBasedConfiguration : public cConfiguration
     //@{
     virtual void initializeFrom(cConfiguration *conf);
     virtual const char *getFileName() const;
+    virtual void setIgnorableConfigKeyPatterns(const char *patterns);
+    virtual const char *getIgnorableConfigKeyPatterns() const;
     virtual std::vector<std::string> getConfigNames();
     virtual void activateConfig(const char *scenarioOrConfigName, int runNumber=0);
     virtual std::string getConfigDescription(const char *scenarioOrConfigName) const;

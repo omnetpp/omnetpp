@@ -23,6 +23,7 @@
 #include "scenario.h"
 #include "globals.h"
 #include "cconfigkey.h"
+#include "stringtokenizer.h"
 
 
 //XXX optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
@@ -76,6 +77,16 @@ void SectionBasedConfiguration::initializeFrom(cConfiguration *conf)
 const char *SectionBasedConfiguration::getFileName() const
 {
     return ini==NULL ? NULL : ini->getFileName();
+}
+
+void SectionBasedConfiguration::setIgnorableConfigKeyPatterns(const char *patterns)
+{
+    ignoredKeyPatterns = patterns;
+}
+
+const char *SectionBasedConfiguration::getIgnorableConfigKeyPatterns() const
+{
+    return ignoredKeyPatterns.c_str();
 }
 
 const char *SectionBasedConfiguration::getActiveConfigName() const
@@ -670,6 +681,8 @@ void SectionBasedConfiguration::validateConfig() const
                 // NOTE: values don't need to be validated here, that will be
                 // done when the config gets actually used
                 cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(key);
+                if (!e && isIgnorableConfigKey(key))
+                    continue;
                 if (!e)
                     throw cRuntimeError("Unknown configuration key: %s", key);
                 if (e->isPerObject())
@@ -705,12 +718,24 @@ void SectionBasedConfiguration::validateConfig() const
                     // this is a per-object config
                     //XXX groupName (probably) should not contain wildcard
                     cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(groupName.c_str());
+                    if (!e && isIgnorableConfigKey(groupName.c_str()))
+                        continue;
                     if (!e || !e->isPerObject())
                         throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
                 }
             }
         }
     }
+}
+
+bool SectionBasedConfiguration::isIgnorableConfigKey(const char *key) const
+{
+    // see if any element in ignoredKeyPatterns matches it
+    StringTokenizer tokenizer(ignoredKeyPatterns.c_str());
+    while (tokenizer.hasMoreTokens())
+        if (PatternMatcher(tokenizer.nextToken(), true, true, true).matches(key))
+            return true;
+    return false;
 }
 
 const char *SectionBasedConfiguration::getConfigValue(const char *key) const
