@@ -211,7 +211,7 @@ class TOmnetTkApp : public TOmnetApp
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
       const char *getIniFileName()       {return getConfig()->getFileName();}
-      const char *getOutVectorFileName() {return outvectmgr->fileName();}
+      const char *getOutVectorFileName() {return outvectormgr->fileName();}
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
       const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}

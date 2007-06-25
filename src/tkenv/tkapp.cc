@@ -326,7 +326,7 @@ void TOmnetTkApp::doOneStep()
         updateNextModuleDisplay();
         updateInspectors();
         simstate = SIM_READY;
-        outvectmgr->flush();
+        outvectormgr->flush();
         outscalarmgr->flush();
         if (feventlog)
             fflush(feventlog);
@@ -390,7 +390,7 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
                 cont = doRunSimulation();
         }
         simstate = SIM_READY;
-        outvectmgr->flush();
+        outvectormgr->flush();
         outscalarmgr->flush();
         if (feventlog)
             fflush(feventlog);
