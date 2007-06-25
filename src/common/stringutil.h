@@ -82,6 +82,11 @@ COMMON_API std::string opp_vstringf(const char *fmt, va_list& args);
 COMMON_API char *opp_clonestr(const char *s);
 
 /**
+ * Performs find/replace within a string.
+ */
+COMMON_API std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll);
+
+/**
  * Dictionary-compare two strings, the main difference from stricmp()
  * being that integers embedded in the strings are compared in
  * numerical order.

@@ -49,6 +49,7 @@
 #include "chasher.h"
 #include "cconfigentry.h"
 #include "regmacros.h"
+#include "stringutil.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -860,7 +861,14 @@ void TOmnetApp::sputn(const char *s, int n)
 
 void TOmnetApp::processFileName(opp_string& fname)
 {
-    if (opt_fname_append_host)
+    // substitute %c and %r
+    std::string text = fname.c_str();
+    text = opp_replacesubstring(text.c_str(), "%c", ev.config()->getActiveConfigName(), true);
+    text = opp_replacesubstring(text.c_str(), "%r", opp_stringf("%d", ev.config()->getActiveRunNumber()).c_str(), true);
+
+   // append ".<hostname>.<pid>" if requested
+   // (note: parsimProcId cannot be appended because of initialization order)
+   if (opt_fname_append_host)
     {
         const char *hostname=getenv("HOST");
         if (!hostname)
@@ -873,12 +881,10 @@ void TOmnetApp::processFileName(opp_string& fname)
                                 fname.c_str());
         int pid = getpid();
 
-        // add ".<hostname>.<pid>" to fname (note: parsimProcId cannot be appended
-        // because of initialization order)
-        opp_string origfname = fname;
-        fname.reserve(strlen(origfname.c_str())+strlen(hostname)+30);
-        sprintf(fname.buffer(),"%s.%s.%d", origfname.buffer(), hostname, pid);
+        // append
+        text += opp_stringf(".%s.%d", hostname, pid);
     }
+    fname = text.c_str();
 }
 
 void TOmnetApp::readOptions()

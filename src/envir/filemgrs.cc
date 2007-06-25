@@ -42,6 +42,8 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
+//XXX change default filenames? omnetpp.xxx to %c-%r.xxx?
+
 //XXX split up this file by classes -- it's too big
 
 Register_Class(cFileOutputVectorManager);
@@ -103,57 +105,26 @@ void cFileOutputVectorManager::initRun()
 {
     if (!run.initialized)
     {
-/*XXX FIXME temporarily commented out -- update to new config api, and put back!
         // Collect the attributes and module parameters of the current run
         // from the configuration.
         //
-        // Keys for module parameters should contain an '.' and must not contain '-',
-        // otherwise they are handled as run attributes.
-        //
-        //XXX I'll need to review both the comment and the code -- Andras
-        cConfiguration *config = ev.config();
-        const char *section = config->getPerRunSectionName();
         run.runId = ev.app->getRunId();
-        const char *inifile = config->getFileName();
+        cConfiguration *cfg = ev.config();
+        run.attributes["config"] = cfg->getActiveConfigName();
+        run.attributes["run-number"] = opp_stringf("%d", cfg->getActiveRunNumber());
+        const char *inifile = cfg->getFileName();
         if (inifile)
-        {
             run.attributes["inifile"] = inifile;
-        }
 
-        int numSections = config->getNumSections();
-        for (int i=0; i<numSections; ++i)
+        // fill in run.attributes[]
+        std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
+        for (int i=0; i<keys.size(); i++)
         {
-            const char *sectionName = config->getSectionName(i);
-            bool isRunSection = strncmp(sectionName, "Run ", 4) == 0;
-            bool isCurrentRunSection = strcmp(sectionName, section) == 0;
-            if (isCurrentRunSection || !isRunSection) // skip other run sections
-            {
-                std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
-                std::vector<opp_string>::size_type size = entries.size();
-
-                if (size % 2 != 0)
-                    fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName); //FIXME use assert instead!
-
-                if (size == 0 || size % 2 != 0)
-                    continue;
-
-                for (std::vector<opp_string>::size_type j=0; j<size-1; j+=2)
-                {
-                    const char *name = entries[j].c_str();
-                    const char *value = entries[j+1].c_str();
-
-                    if (isCurrentRunSection || !config->exists(section, name))
-                    {
-                        bool isModuleParam = strchr(name, '.') && !strchr(name, '-');
-                        if (isModuleParam)
-                            run.moduleParams[name] = value;
-                        else
-                            run.attributes[name] = value;
-                    }
-                }
-            }
+            const char *key = keys[i];
+            run.attributes[key] = cfg->getConfigValue(key);
         }
-*/
+
+        //XXX TODO: fill in run.moduleParams[]
         run.initialized = true;
     }
 }
@@ -169,6 +140,7 @@ void cFileOutputVectorManager::writeRunData()
     {
         CHECK(fprintf(f, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
+    CHECK(fprintf(f, "\n"));
 }
 
 void cFileOutputVectorManager::initVector(sVectorData *vp)

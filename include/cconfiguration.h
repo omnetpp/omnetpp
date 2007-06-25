@@ -234,7 +234,7 @@ class ENVIR_API cConfiguration : public cObject
     virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const = 0;
     //@}
 
-    /** @name XXX */
+    /** @name Utility functions for parsing config entries */
     //@{
     static bool parseBool(const char *s, const char *defaultValue, bool fallbackValue=false);
     static long parseLong(const char *s, const char *defaultValue, long fallbackValue=0);

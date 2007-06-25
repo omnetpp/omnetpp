@@ -164,6 +164,21 @@ char *opp_clonestr(const char *s)
     return p;
 }
 
+std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll)
+{
+    std::string text = s;
+    std::string::size_type pos = 0;
+    do {
+        pos = text.find(substring);
+        if (pos == std::string::npos)
+            break;
+        text.replace(pos, strlen(substring), replacement);
+        pos += strlen(replacement);
+    }
+    while (replaceAll);
+    return text;
+}
+
 int strdictcmp(const char *s1, const char *s2)
 {
     int casediff = 0;
