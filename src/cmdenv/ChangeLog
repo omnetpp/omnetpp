@@ -1,3 +1,5 @@
+progress prints "xx% completed" -- it computes % both from sim-time-limit and cpu-time-limit, and prints the larger one
+
 heap.cc thrown out
 
 2006-10-21  ------ omnetpp-3.3 released ------
