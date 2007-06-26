@@ -323,6 +323,30 @@ int TCmdenvApp::run()
         return 0;
 }
 
+const char *TCmdenvApp::progressPercentage()
+{
+    double simtimeRatio = -1;
+    if (opt_simtimelimit!=0)
+         simtimeRatio = simulation.simTime() / opt_simtimelimit;
+
+    double cputimeRatio = -1;
+    if (opt_cputimelimit!=0) {
+        timeval now;
+        gettimeofday(&now, NULL);
+        long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
+        cputimeRatio = elapsedsecs / (double)opt_cputimelimit;
+    }
+
+    double ratio = std::max(simtimeRatio, cputimeRatio);
+    if (ratio == -1)
+        return "";
+    else {
+        static char buf[32];
+        sprintf(buf, "  %d%% completed", (int)(100*ratio));
+        return buf;
+    }
+}
+
 void TCmdenvApp::simulate()
 {
     startClock();
@@ -341,9 +365,10 @@ void TCmdenvApp::simulate()
                // print event banner if neccessary
                if (opt_eventbanners && mod->isEvEnabled())
                {
-                   ::fprintf(fout, "** Event #%ld  T=%s.  (%s) %s (id=%d)\n",
+                   ::fprintf(fout, "** Event #%ld  T=%s%s.  (%s) %s (id=%d)\n",
                            simulation.eventNumber(),
                            SIMTIME_STR(simulation.simTime()),
+                           progressPercentage(),
                            mod->className(),
                            mod->fullPath().c_str(),
                            mod->id()
@@ -395,10 +420,11 @@ void TCmdenvApp::simulate()
 
                    if (opt_perfdisplay)
                    {
-                       ::fprintf(fout, "** Event #%ld   T=%s    Elapsed: %s\n",
+                       ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s\n",
                                simulation.eventNumber(),
                                SIMTIME_STR(simulation.simTime()),
-                               timeToStr(totalElapsed()));
+                               timeToStr(totalElapsed()),
+                               progressPercentage());
                        ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
                                speedometer.eventsPerSec(),
                                speedometer.simSecPerSec(),
@@ -411,10 +437,11 @@ void TCmdenvApp::simulate()
                    }
                    else
                    {
-                       ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s   ev/sec=%g\n",
+                       ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s   ev/sec=%g\n",
                                simulation.eventNumber(),
                                SIMTIME_STR(simulation.simTime()),
                                timeToStr(totalElapsed()),
+                               progressPercentage(),
                                speedometer.eventsPerSec());
                    }
 

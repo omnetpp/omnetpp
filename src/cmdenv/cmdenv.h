@@ -74,6 +74,7 @@ class TCmdenvApp : public TOmnetApp
      // new functions:
      void help();
      void simulate();
+     const char *progressPercentage();
 
      // redefined I/O functions:
      virtual bool isGUI() {return false;}
