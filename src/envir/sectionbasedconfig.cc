@@ -35,6 +35,7 @@
 
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "XXX todo");
+Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "XXX todo");
 
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
@@ -198,14 +199,14 @@ void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
     std::vector<IterationSpec> iterspecs = collectIterationSpecs(sectionId);
     validateIterations(iterspecs);
 
-    // see if there's a condition given
-    int conditionEntryId = internalFindEntry(sectionId, "condition");
-    const char *condition = conditionEntryId!=-1 ? ini->getEntry(sectionId, conditionEntryId).getValue() : NULL;
+    // see if there's a constraint given
+    int constraintEntryId = internalFindEntry(sectionId, "constraint");
+    const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
 
     // determine the values to substitute into the iteration specs (${...})
     std::vector<std::string> values;
     try {
-        values = Scenario(iterspecs, condition).generate(runNumber);
+        values = Scenario(iterspecs, constraint).generate(runNumber);
     } catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
@@ -252,11 +253,11 @@ int SectionBasedConfiguration::internalGetNumRunsInScenario(int sectionId) const
     std::vector<IterationSpec> v = collectIterationSpecs(sectionId);
     validateIterations(v);
 
-    // see if there's a condition given
-    int conditionEntryId = internalFindEntry(sectionId, "condition");
-    const char *condition = conditionEntryId!=-1 ? ini->getEntry(sectionId, conditionEntryId).getValue() : NULL;
+    // see if there's a constraint given
+    int constraintEntryId = internalFindEntry(sectionId, "constraint");
+    const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
     try {
-        return Scenario(v, condition).getNumRuns();
+        return Scenario(v, constraint).getNumRuns();
     } catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
@@ -272,9 +273,9 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
     std::vector<IterationSpec> iterspecs = collectIterationSpecs(sectionId);
     validateIterations(iterspecs);
 
-    // see if there's a condition given
-    int conditionEntryId = internalFindEntry(sectionId, "condition"); //XXX use constant (multiple places here!)
-    const char *condition = conditionEntryId!=-1 ? ini->getEntry(sectionId, conditionEntryId).getValue() : NULL;
+    // see if there's a constraint given
+    int constraintEntryId = internalFindEntry(sectionId, "constraint"); //XXX use constant (multiple places here!)
+    const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
 
     // collect entryIds that we want to print out. Basically, only the entries
     // with ${...} in them -- which means the unique entryIds from the iterspecs.
@@ -288,7 +289,7 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
 
     // iterate over all runs in the scenario
     try {
-        Scenario scenario(iterspecs, condition);
+        Scenario scenario(iterspecs, constraint);
         std::vector<std::string> result;
         if (scenario.restart())
         {
@@ -339,8 +340,8 @@ std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration:
         {
             if (*(pos+1)=='{')
             {
-                if (strcmp(entry.getKey(), "condition")==0)
-                    throw cRuntimeError("Scenario generator: the ${...} syntax cannot be used within the condition= entry");
+                if (strcmp(entry.getKey(), "constraint")==0)
+                    throw cRuntimeError("Scenario generator: the ${...} syntax cannot be used within the constraint= entry");
 
                 const char *endPos = strchr(pos, '}');
                 if (!endPos)
