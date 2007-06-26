@@ -342,6 +342,8 @@ const char *TCmdenvApp::progressPercentage()
         return "";
     else {
         static char buf[32];
+        // DO NOT change the "% completed" string. The IDE launcher plugin matches
+        // against this string for detecting user input
         sprintf(buf, "  %d%% completed", (int)(100*ratio));
         return buf;
     }

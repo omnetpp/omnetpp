@@ -585,6 +585,8 @@ void TOmnetApp::readParameter(cPar *par)
         if (!prompt.empty())
             reply = ev.gets(prompt.c_str(), par->toString().c_str());
         else
+            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
+            // against this string for detecting user input
             reply = ev.gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->toString().c_str());
         //FIXME any chance to cancel?
 
