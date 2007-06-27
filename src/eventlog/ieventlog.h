@@ -19,6 +19,32 @@
 #include "eventlogdefs.h"
 #include "ievent.h"
 
+class IEventLog;
+
+class ProgressMonitor
+{
+    public:
+        typedef void (*MonitorFunction)(IEventLog *, void *);
+
+        MonitorFunction monitorFunction;
+        void *data;
+
+    public:
+        ProgressMonitor()
+        {
+            monitorFunction = NULL;
+            data = NULL;
+        }
+
+        ProgressMonitor(MonitorFunction monitorFunction, void *data)
+        {
+            this->monitorFunction = monitorFunction;
+            this->data = data;
+        }
+
+        void progress(IEventLog *eventLog) { if (monitorFunction) monitorFunction(eventLog, data); }
+};
+
 class EVENTLOG_API IEventLog
 {
     protected:
@@ -33,11 +59,13 @@ class EVENTLOG_API IEventLog
         virtual ~IEventLog() {}
 
         /**
-         * Sets the next timeout relative from now.
-         * If the timeout expires event log operations will abort with an exception.
-         * Setting it to -1 disables the timeout.
+         * Sets the progress monitor which will be notified when a long running operation has some progress.
          */
-        virtual void setNextTimeoutFromNow(double seconds) = 0;
+        virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) = 0;
+        /**
+         * Set the minimum interval between progress callbacks for long running event log operations.
+         */
+        virtual void setProgressCallInterval(double seconds) = 0;
 
         /**
          * Synchorizes state when the underlying log file changes (new events are appended).

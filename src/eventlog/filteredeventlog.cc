@@ -258,6 +258,14 @@ template <typename T> bool FilteredEventLog::matchesList(std::vector<T> &element
         return std::find(elements.begin(), elements.end(), element) != elements.end();
 }
 
+bool FilteredEventLog::isEmpty()
+{
+    if (tracedEventNumber != -1)
+        return !eventLog->getEventForEventNumber(tracedEventNumber);
+    else
+        return IEventLog::isEmpty();
+}
+
 FilteredEvent* FilteredEventLog::getFirstEvent()
 {
     if (!firstMatchingEvent && !eventLog->isEmpty())

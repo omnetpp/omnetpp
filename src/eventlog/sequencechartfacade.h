@@ -45,6 +45,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         SequenceChartFacade(IEventLog *eventLog);
         virtual ~SequenceChartFacade() {}
 
+        double calculateNonLinearFocus();
         virtual void synchronize();
 
         TimelineMode getTimelineMode() { return timelineMode; }

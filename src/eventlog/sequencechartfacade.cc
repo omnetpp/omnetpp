@@ -34,16 +34,27 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
     timelineCoordinateOriginSimulationTime = -1;
 
     nonLinearMinimumTimelineCoordinateDelta = 0.1;
-    double totalSimulationTimeDelta = eventLog->getLastEvent()->getSimulationTime().dbl() - eventLog->getFirstEvent()->getSimulationTime().dbl();
-    nonLinearFocus = totalSimulationTimeDelta / eventLog->getApproximateNumberOfEvents() / 10;
+    nonLinearFocus = calculateNonLinearFocus();
 }
 
 void SequenceChartFacade::synchronize()
 {
     EventLogFacade::synchronize();
 
+    nonLinearFocus = calculateNonLinearFocus();
+
     if (timelineCoordinateOriginEventNumber != -1)
         relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+}
+
+double SequenceChartFacade::calculateNonLinearFocus()
+{
+    if (!eventLog->isEmpty()) {
+        double totalSimulationTimeDelta = eventLog->getLastEvent()->getSimulationTime().dbl() - eventLog->getFirstEvent()->getSimulationTime().dbl();
+        return totalSimulationTimeDelta / eventLog->getApproximateNumberOfEvents() / 10;
+    }
+    else
+        return -1;
 }
 
 void SequenceChartFacade::setNonLinearMinimumTimelineCoordinateDelta(double value)

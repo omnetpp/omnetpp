@@ -101,13 +101,15 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, long stopEventNumber, bool forward);
 
         // IEventLog interface
-        virtual void setNextTimeoutFromNow(double seconds) { eventLog->setNextTimeoutFromNow(seconds); }
+        virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) { return eventLog->setProgressMonitor(progressMonitor); }
+        virtual void setProgressCallInterval(double seconds) { eventLog->setProgressCallInterval(seconds); }
         virtual void synchronize();
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }
         virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
 
+        virtual bool isEmpty();
         virtual FilteredEvent *getFirstEvent();
         virtual FilteredEvent *getLastEvent();
         virtual FilteredEvent *getNeighbourEvent(IEvent *event, long distance = 1);

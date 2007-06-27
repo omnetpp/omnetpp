@@ -40,7 +40,9 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
     protected:
         long numParsedEvents;
         long approximateNumberOfEvents;
-        long nextTimeoutClock; // as returned by clock()
+        long progressCallInterval;
+        long lastProgressCall; // as returned by clock()
+        ProgressMonitor progressMonitor;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
@@ -58,9 +60,9 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         EventLog(FileReader *index);
         ~EventLog();
 
-        long getNextTimeoutClock() { return nextTimeoutClock; }
-        void setNextTimeoutFromNow(double seconds);
-        void checkNextTimeoutElapsed() { if (nextTimeoutClock > 0 && clock() > nextTimeoutClock) throw opp_runtime_error("Timeout reached"); }
+        virtual ProgressMonitor setProgressMonitor(ProgressMonitor newProgressMonitor);
+        virtual void setProgressCallInterval(double seconds) { progressCallInterval = seconds * CLOCKS_PER_SEC; lastProgressCall = clock(); }
+        void progress(); // notify monitor
 
         void parseInitializationLogEntries();
 

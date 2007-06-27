@@ -22,7 +22,9 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
     numParsedEvents = 0;
     approximateNumberOfEvents = -1;
-    nextTimeoutClock = -1;
+    progressCallInterval = CLOCKS_PER_SEC;
+    lastProgressCall = -1;
+
     parseInitializationLogEntries();
 }
 
@@ -35,12 +37,19 @@ EventLog::~EventLog()
         delete it->second;
 }
 
-void EventLog::setNextTimeoutFromNow(double seconds)
+ProgressMonitor EventLog::setProgressMonitor(ProgressMonitor newProgressMonitor)
 {
-    if (seconds == -1)
-        nextTimeoutClock = -1;
-    else
-        nextTimeoutClock = clock() + (long)(seconds * CLOCKS_PER_SEC);
+    ProgressMonitor oldProgressMonitor = progressMonitor;
+    progressMonitor = newProgressMonitor;
+    return oldProgressMonitor;
+}
+
+void EventLog::progress()
+{
+    if (lastProgressCall + progressCallInterval < clock()) {
+        progressMonitor.progress(this);
+        lastProgressCall = clock();
+    }
 }
 
 void EventLog::synchronize()
