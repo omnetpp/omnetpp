@@ -36,6 +36,7 @@
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "XXX todo");
 Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "XXX todo");
+Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "XXX todo"); //XXX unused now
 
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
@@ -164,7 +165,7 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
     clear();
 
     activeConfig = scenarioOrConfigName==NULL ? "" : scenarioOrConfigName;
-    activeRunNumber = 0;
+    activeRunNumber = runNumber;
 
     int sectionId = resolveConfigName(scenarioOrConfigName);
     if (sectionId == -1 && !strcmp(scenarioOrConfigName, "General"))
