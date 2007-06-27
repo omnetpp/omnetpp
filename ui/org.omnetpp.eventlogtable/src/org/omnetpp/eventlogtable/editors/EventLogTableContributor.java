@@ -1,5 +1,6 @@
 package org.omnetpp.eventlogtable.editors;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IMarker;
@@ -35,6 +36,7 @@ import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.FilterEventLogDialog;
+import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
@@ -48,7 +50,7 @@ import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 
-public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener {
+public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
 	private static EventLogTableContributor singleton;
 
     public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
@@ -83,6 +85,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	
 	protected StatusLineContributionItem filterStatus;
 
+	/*************************************************************************************
+	 * CONSTRUCTION
+	 */
+
 	public EventLogTableContributor() {
 		this.separatorAction = new Separator();
 		this.searchTextAction = createSearchTextAction();
@@ -115,12 +121,20 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		singleton = null;
 	}
 
+	private IEventLog getEventLog() {
+		return eventLogTable.getEventLog();
+	}
+	
 	public static EventLogTableContributor getDefault() {
 		Assert.isTrue(singleton != null);
 
 		return singleton;
 	}
 	
+	/*************************************************************************************
+	 * CONTRIBUTIONS
+	 */
+
 	public void contributeToPopupMenu(IMenuManager menuManager) {
 		menuManager.add(searchTextAction);
 		menuManager.add(separatorAction);
@@ -152,41 +166,91 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		if (targetEditor instanceof EventLogTableEditor) {
+			EventLogInput eventLogInput;
+			if (eventLogTable != null) {
+				eventLogInput = eventLogTable.getEventLogInput();
+				if (eventLogInput != null)
+					eventLogInput.removeEventLogChangedListener(this);
+			}
+
 			if (eventLogTable != null)
 				eventLogTable.removeSelectionChangedListener(this);
 
 			eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
+
+			eventLogInput = eventLogTable.getEventLogInput();
+			if (eventLogInput != null)
+				eventLogInput.addEventLogChangedListener(this);
+
 			eventLogTable.addSelectionChangedListener(this);
 
 			update();
 		}
 	}
 
+	private void update() {
+		try {
+			for (Field field : getClass().getDeclaredFields()) {
+				Class<?> fieldType = field.getType();
+				
+				if (fieldType == EventLogTableAction.class ||
+					fieldType == EventLogTableMenuAction.class)
+				{
+					EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
+
+					fieldValue.setEnabled(true);
+					fieldValue.update();
+					if (eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
+						fieldValue.setEnabled(false);
+				}
+				
+				if (fieldType == StatusLineContributionItem.class)
+				{
+					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
+					fieldValue.update();
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/*************************************************************************************
+	 * NOTIFICATIONS
+	 */
+
 	public void selectionChanged(SelectionChangedEvent event) {
 		update();
 	}
 
-	private void update() {
-		searchTextAction.update();
-		separatorAction.update();
-		gotoEventAction.update();
-		gotoSimulationTimeAction.update();
-		separatorAction.update();
-		gotoEventCauseAction.update();
-		gotoMessageArrivalAction.update();
-		gotoMessageOriginAction.update();
-		gotoMessageReuseAction.update();
-		separatorAction.update();
-		toggleBookmarkAction.update();
-		separatorAction.update();
-		filterModeAction.update();
-		displayModeAction.update();
-		filterStatus.update();
+	public void eventLogAppended() {
+		// void
 	}
 
-	private IEventLog getEventLog() {
-		return eventLogTable.getEventLog();
+	public void eventLogFilterRemoved() {
+		update();
 	}
+
+	public void eventLogFiltered() {
+		update();
+	}
+
+	public void eventLogLongOperationEnded() {
+		update();
+	}
+
+	public void eventLogLongOperationStarted() {
+		update();
+	}
+
+	public void eventLogProgress() {
+		// void
+	}
+
+	/*************************************************************************************
+	 * ACTIONS
+	 */
 	
 	private EventLogTableAction createSearchTextAction() {
 		return new EventLogTableAction("Search raw text...") {
@@ -666,26 +730,34 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 
 			private void removeFilter() {
-				EventLogInput eventLogInput = eventLogTable.getEventLogInput();
-				eventLogInput.removeFilter();
-
-				eventLogTable.setInput(eventLogInput);
-
-				update();
+				final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
+				eventLogInput.runWithProgressMonitor(new Runnable() {
+					public void run() {
+						eventLogInput.removeFilter();
+		
+						eventLogTable.setInput(eventLogInput);
+		
+						update();
+					}
+				});
 			}
 
 			private void filter() {
-				EventLogInput eventLogInput = eventLogTable.getEventLogInput();
-				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-				FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
-
-				if (dialog.open() == Window.OK) {
-					eventLogInput.filter();
-					
-					eventLogTable.setInput(eventLogInput);
-
-					update();
-				}
+				final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
+				eventLogInput.runWithProgressMonitor(new Runnable() {
+					public void run() {
+						EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+						FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
+		
+						if (dialog.open() == Window.OK) {
+							eventLogInput.filter();
+							
+							eventLogTable.setInput(eventLogInput);
+		
+							update();
+						}
+					}
+				});
 			}
 		};
 	}

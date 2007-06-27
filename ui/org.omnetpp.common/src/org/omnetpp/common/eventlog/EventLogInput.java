@@ -1,8 +1,10 @@
 package org.omnetpp.common.eventlog;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.RecurringJob;
@@ -17,7 +19,9 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
 /**
  * Input object for event log file editors and viewers.
  */
-public class EventLogInput {
+public class EventLogInput
+	implements IEventLogProgressMonitor
+{
 	private static final boolean debug = true;
 
 	private static final String STATE_PROPERTY = "EventLogInputState";
@@ -31,6 +35,11 @@ public class EventLogInput {
 	 * The C++ wrapper around the event log reader.
 	 */
 	protected IEventLog eventLog;
+	
+	/**
+	 * Manages long running operations for the event log.
+	 */
+	protected EventLogProgressManager eventLogProgressManager;
 	
 	/**
 	 * The filter parameters applied to the event log last time.
@@ -50,7 +59,7 @@ public class EventLogInput {
 	/**
 	 * Root of the module tree present in the event log file.
 	 */
-	protected ModuleTreeItem moduleTree;
+	protected ModuleTreeItem moduleTreeRoot;
 
 	/**
 	 * A list of listeners to be notified when the contents of the event log changes.
@@ -64,25 +73,55 @@ public class EventLogInput {
 	 * Watches the event log file for changes.
 	 */
 	protected RecurringJob eventLogWatcher;
+
+	/**
+	 * True indicates a long running operation was canceled by the user.
+	 */
+	private boolean canceled;
+	
+	/**
+	 * True means a long running operation is in progress and the progress dialog is already shown.
+	 */
+	private boolean longRunningOperationInProgress;
+
+	/*************************************************************************************
+	 * CONSTRUCTION
+	 */
 	
 	public EventLogInput(IFile file, IEventLog eventLog) {
-		this.eventLog = eventLog;
 		this.file = file;
+		this.eventLogProgressManager = new EventLogProgressManager();
 		this.eventLogWatcher = new RecurringJob(1000) {
 			public void run() {
 				checkEventLogForChanges();
 			}
 		};
-
+		
+		setEventLog(eventLog);
 		restoreState();
 	}
-	
+
+	/*************************************************************************************
+	 * GETTERS
+	 */
+
 	public IFile getFile() {
 		return file;
+	}
+	
+	private void setEventLog(IEventLog eventLog) {
+		this.eventLog = eventLog;
+
+		if (eventLog != null)
+			eventLog.setJavaProgressMonitor(null, this);
 	}
 
 	public IEventLog getEventLog() {
 		return eventLog;
+	}
+	
+	public EventLogProgressManager getEventLogProgressManager() {
+		return eventLogProgressManager;
 	}
 
 	public EventLogFilterParameters getFilterParameters() {
@@ -108,7 +147,7 @@ public class EventLogInput {
 	}
 
 	public ModuleTreeItem getModuleTreeRoot() {
-		if (moduleTree == null) {
+		if (moduleTreeRoot == null) {
 			ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
 			for (int i = 1; i <= eventLog.getNumModuleCreatedEntries(); i++) {
 				ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(i);
@@ -117,10 +156,10 @@ public class EventLogInput {
 					treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName());
 			}
 	
-			moduleTree = treeBuilder.getModuleTree();
+			moduleTreeRoot = treeBuilder.getModuleTree();
 		}
 		
-		return moduleTree;
+		return moduleTreeRoot;
 	}
 
 	public ArrayList<ModuleTreeItem> getAllModules() {
@@ -143,9 +182,13 @@ public class EventLogInput {
 			return getAllModules();
 	}
 
+	/*************************************************************************************
+	 * FILTERING
+	 */
+
 	public void removeFilter() {
 		if (eventLog instanceof FilteredEventLog) {
-			eventLog = ((FilteredEventLog)eventLog).getEventLog();
+			setEventLog(((FilteredEventLog)eventLog).getEventLog());
 			eventLog.own();
 	
 			/// store event log
@@ -161,7 +204,7 @@ public class EventLogInput {
 	public void filter() {
 		// remove old filter
 		if (eventLog instanceof FilteredEventLog)
-			eventLog = ((FilteredEventLog)eventLog).getEventLog();
+			setEventLog(((FilteredEventLog)eventLog).getEventLog());
 		eventLog.disown();
 
 		// create new filter
@@ -193,7 +236,7 @@ public class EventLogInput {
 		}
 
 		// store event log
-		eventLog = filteredEventLog;
+		setEventLog(filteredEventLog);
 		getEventLogTableFacade().setEventLog(filteredEventLog);
 		getSequenceChartFacade().setEventLog(filteredEventLog);
 		
@@ -201,7 +244,11 @@ public class EventLogInput {
 
 		storeState();
 	}
-	
+
+	/*************************************************************************************
+	 * PERSISTENT STATE
+	 */
+
 	private void restoreState() {
 		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID, getClass().getClassLoader());
 
@@ -236,6 +283,10 @@ public class EventLogInput {
 		}
 	}
 
+	/*************************************************************************************
+	 * LISTENERS
+	 */
+
 	public void addEventLogChangedListener(IEventLogChangeListener listener) {
 		if (eventLogChangeListeners.size() == 0)
 			eventLogWatcher.start();
@@ -266,6 +317,91 @@ public class EventLogInput {
 			listener.eventLogFilterRemoved();
 	}
 
+	private void eventLogLongOperationStarted() {
+		for (IEventLogChangeListener listener : eventLogChangeListeners)
+			listener.eventLogLongOperationStarted();
+	}
+
+	private void eventLogLongOperationEnded() {
+		for (IEventLogChangeListener listener : eventLogChangeListeners)
+			listener.eventLogLongOperationEnded();
+	}
+
+	private void eventLogProgress() {
+		for (IEventLogChangeListener listener : eventLogChangeListeners)
+			listener.eventLogProgress();
+	}
+
+	/*************************************************************************************
+	 * MISC
+	 */
+	
+	public boolean isCanceled() {
+		return canceled;
+	}
+	
+	public void resetCanceled() {
+		canceled = false;
+	}
+
+	public void runWithProgressMonitor(Runnable runnable) {
+		try {
+			if (!eventLogProgressManager.isInRunWithProgressMonitor()) {
+				canceled = false;
+				eventLog.setProgressCallInterval(3);
+			}
+
+			eventLogProgressManager.runWithProgressMonitor(runnable);
+		}
+		catch (InvocationTargetException e) {
+			Throwable t = e.getTargetException();
+
+			if (t != null && t.getMessage() != null && t.getMessage().contains("LongRunningOperationCanceled"))
+				canceled = true;
+			else
+				throw new RuntimeException(e);
+		}
+		catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			longRunningOperationInProgress = false;
+			eventLogLongOperationEnded();
+		}
+	}
+
+	public void progress() {
+		if (eventLogProgressManager.isInRunWithProgressMonitor()) {
+			if (!longRunningOperationInProgress) {
+				longRunningOperationInProgress = true;
+				eventLogLongOperationStarted();
+			}
+
+			eventLogProgressManager.showProgressDialog();
+			eventLog.setProgressCallInterval(0.5);
+
+			while (Display.getCurrent().readAndDispatch());
+	
+			eventLogProgress();
+
+			if (eventLogProgressManager.isCanceled())
+				throw new LongRunningOperationCanceled("A long running operation from the progress monitor was cancelled by the user");
+		}
+	}
+	
+	public boolean isLongRunningOperationInProgress() {
+		return longRunningOperationInProgress;
+	}
+	
+	private static class LongRunningOperationCanceled extends RuntimeException
+	{
+		private static final long serialVersionUID = 1L;
+
+		public LongRunningOperationCanceled(String string) {
+			super(string);
+		}	
+	}
+
 	public void checkEventLogForChanges() {
 		if (eventLog.getFileReader().isChanged()) {
 			if (debug)
@@ -281,6 +417,7 @@ public class EventLogInput {
 				System.out.println("Event log append notification done");
 		}
 	}
+
 
 	@Override
 	protected void finalize() throws Throwable {

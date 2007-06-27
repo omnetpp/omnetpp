@@ -74,7 +74,7 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 	protected void addLocationProviderPaintListener(Control control) {
 		control.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				if (eventLogInput != null && !eventLogInput.getEventLog().isEmpty()) {
+				if (eventLogInput != null && canCreateNavigationLocation()) {
 					INavigationLocation currentLocation = createNavigationLocation();
 
 					if (currentLocation != null && !currentLocation.equals(lastLocation)) {
@@ -84,6 +84,10 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 				}
 			}
 		});
+	}
+	
+	protected boolean canCreateNavigationLocation() {
+		return !eventLogInput.getEventLog().isEmpty();
 	}
 
 	public void markLocation() {

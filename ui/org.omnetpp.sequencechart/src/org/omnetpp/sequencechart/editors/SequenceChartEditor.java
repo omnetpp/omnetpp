@@ -184,8 +184,13 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		return new SequenceChartLocation(0, Double.NaN);
 	}
 
+	@Override
+	protected boolean canCreateNavigationLocation() {
+		return !eventLogInput.isCanceled() && super.canCreateNavigationLocation();
+	}
+
 	public INavigationLocation createNavigationLocation() {
-		if (eventLogInput.getEventLog().isEmpty())
+		if (canCreateNavigationLocation())
 			return null;
 		else
 			return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());

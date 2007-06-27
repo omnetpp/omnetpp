@@ -186,6 +186,58 @@ namespace std {
 %enddef
 */
 
+%{
+   JNIEnv *progressDelegateJenv;
+
+   std::string fromJavaString(JNIEnv *jenv, jstring stringObject)
+   {
+      if (!stringObject)
+        return "<null>";
+      jboolean isCopy;
+      const char *buf = jenv->GetStringUTFChars(stringObject, &isCopy);
+      std::string str = buf ? buf : "";
+      jenv->ReleaseStringUTFChars(stringObject, buf);
+      return str;
+   }
+
+   void delegateProgressToJava(IEventLog *eventLog, void *data)
+   {
+      JNIEnv *jenv = progressDelegateJenv;
+      jobject object = (jobject)data;
+      jclass clazz = jenv->GetObjectClass(object); 
+      jmethodID progressMethod = jenv->GetMethodID(clazz, "progress", "()V");
+      jenv->ExceptionClear();
+      jenv->CallVoidMethod(object, progressMethod);
+
+       jthrowable exceptionObject = jenv->ExceptionOccurred();
+       if (exceptionObject)
+       {
+          jenv->ExceptionDescribe();
+          jenv->ExceptionClear();
+
+          jclass throwableClass = jenv->GetObjectClass(exceptionObject);
+          jmethodID method = jenv->GetMethodID(throwableClass, "toString", "()Ljava/lang/String;");
+          jstring msg = (jstring)jenv->CallObjectMethod(exceptionObject, method);
+          throw opp_runtime_error(fromJavaString(jenv, msg).c_str());
+      }
+   }
+%}
+
+%extend IEventLog {
+   void setJavaProgressMonitor(JNIEnv *jenv, jobject object) {
+      progressDelegateJenv = jenv;
+      ProgressMonitor newProgressMonitor(&delegateProgressToJava, jenv->NewGlobalRef(object));
+      ProgressMonitor oldProgressMonitor = self->setProgressMonitor(newProgressMonitor);
+      jobject oldObject = (jobject)oldProgressMonitor.data;
+      if (oldObject)
+         jenv->DeleteGlobalRef(oldObject);
+   }
+}
+
+%typemap(in) JNIEnv * {
+  $1 = jenv;
+}
+
 %typemap(javaout) EventLogEntry * {
    return EventLogEntry.newEventLogEntry($jnicall, $owner);
 }

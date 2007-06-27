@@ -7,12 +7,15 @@ import java.util.List;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
@@ -34,8 +37,6 @@ public class EventLogTable
 	private static final boolean debug = true;
 
 	private static final String STATE_PROPERTY = "EventLogTableState";
-
-	private boolean timeoutReached;
 
 	private boolean followEnd = false; // when the event log chan ges should we follow it or not?
 
@@ -86,32 +87,53 @@ public class EventLogTable
 	/*************************************************************************************
 	 * OVERRIDING BEHAVIOR
 	 */
-	
+
 	@Override
-	protected void paint(GC gc)
+	protected void paint(final GC gc)
 	{
-		try {
-			if (eventLog != null)
-				eventLog.setNextTimeoutFromNow(10);
-			
-			super.paint(gc);
-		}
-		catch (RuntimeException e) {
-			if (e.getMessage() != null && e.getMessage().contains("Timeout"))
-				timeoutReached = true;
-			else
-				throw e;
-		}
-		
-		if (timeoutReached) {
-			// TODO: handle timeout reached
-		}
+		if (eventLogInput.isCanceled())
+			drawCancelMessage(gc);
+		else if (eventLogInput.isLongRunningOperationInProgress())
+			drawLongRunningOperationInProgressMessage(gc);
+		else
+			eventLogInput.runWithProgressMonitor(new Runnable() {
+				public void run() {
+					EventLogTable.super.paint(gc);
+				}
+			});
 	}
 	
 	@Override
-	public void redraw() {
-		super.redraw();
-		timeoutReached = false;
+	public void refresh() {
+		eventLogInput.resetCanceled();
+		super.refresh();
+	}
+
+	protected void drawCancelMessage(GC gc) {
+		gc.setForeground(ColorFactory.RED4);
+		gc.setBackground(ColorFactory.WHITE);
+		gc.setFont(JFaceResources.getDefaultFont());
+		Point p = getSize();
+		int x = p.x/ 2;
+		int y = p.y / 2;
+		String text = "Processing of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.";
+		p = gc.textExtent(text);
+		gc.drawString(text, x - p.x / 2, y - p.y);
+		text = "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.";
+		p = gc.textExtent(text);
+		gc.drawString(text, x - p.x / 2, y);
+	}
+
+	protected void drawLongRunningOperationInProgressMessage(GC gc) {
+		gc.setForeground(ColorFactory.RED4);
+		gc.setBackground(ColorFactory.WHITE);
+		gc.setFont(JFaceResources.getDefaultFont());
+		Point p = getSize();
+		int x = p.x/ 2;
+		int y = p.y / 2;
+		String text = "Processing a long running event log operation. Please wait.";
+		p = gc.textExtent(text);
+		gc.drawString(text, x - p.x / 2, y - p.y / 2);
 	}
 
 	@Override
@@ -195,9 +217,9 @@ public class EventLogTable
 	}
 
 	/*************************************************************************************
-	 * MISC
+	 * GETTERS & SETTERS
 	 */
-
+	
 	public EventLogInput getEventLogInput() {
 		return eventLogInput;		
 	}
@@ -283,6 +305,18 @@ public class EventLogTable
 	
 	public void eventLogFilterRemoved() {
 		eventLog = eventLogInput.getEventLog();
+		redraw();
+	}
+
+	public void eventLogLongOperationStarted() {
+	}
+
+	public void eventLogLongOperationEnded() {
+	}
+
+	public void eventLogProgress() {
+		if (eventLogInput.getEventLogProgressManager().isCanceled())
+			canvas.redraw();
 	}
 
 	/*************************************************************************************

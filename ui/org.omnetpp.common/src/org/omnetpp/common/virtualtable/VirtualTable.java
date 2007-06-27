@@ -203,7 +203,7 @@ public class VirtualTable<T>
 		});
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				if (fixPointElement == null && input != null)
+				if (fixPointElement == null && input != null && contentProvider != null && contentProvider.getFirstElement() != null)
 					scrollToBegin();
 
 				paint(e.gc);
@@ -220,7 +220,7 @@ public class VirtualTable<T>
 		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.F5)
-					redraw();
+					refresh();
 				else if (e.keyCode == SWT.ARROW_LEFT)
 					scrollHorizontal(-10);
 				else if (e.keyCode == SWT.ARROW_RIGHT)
@@ -779,6 +779,10 @@ public class VirtualTable<T>
 			}
 		}
 	}
+	
+	public void refresh() {
+		redraw();
+	}
 
 	public void redraw() {
 		if (debug)
@@ -786,7 +790,7 @@ public class VirtualTable<T>
 
 		canvas.redraw();
 		
-		if (contentProvider != null && input != null && isVisible()) {
+		if (contentProvider != null && input != null && fixPointElement != null && isVisible()) {
 			T topElement = getTopVisibleElement();
 			
 			if (topElement != null)

@@ -2,6 +2,7 @@ package org.omnetpp.sequencechart.editors;
 
 import java.awt.RenderingHints;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,7 @@ import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.FilterEventLogDialog;
+import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
@@ -86,7 +88,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 
-public class SequenceChartContributor extends EditorActionBarContributor {
+public class SequenceChartContributor extends EditorActionBarContributor implements IEventLogChangeListener {
     public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
 
     public final static String IMAGE_TIMELINE_MODE = TOOLIMAGE_DIR + "timelinemode.png";
@@ -161,6 +163,10 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected StatusLineContributionItem filterStatus;
 
+	/*************************************************************************************
+	 * CONSTRUCTION
+	 */
+
 	public SequenceChartContributor() {
 		this.separatorAction = new Separator();
 		this.timelineModeAction = createTimelineModeAction();
@@ -204,6 +210,10 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return singleton;
 	}
 	
+	/*************************************************************************************
+	 * CONTRIBUTIONS
+	 */
+
 	public void contributeToPopupMenu(IMenuManager menuManager) {
 		menuManager.setRemoveAllWhenShown(true);
 		menuManager.addMenuListener(new IMenuListener() {
@@ -310,19 +320,83 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		if (targetEditor instanceof SequenceChartEditor) {
+			EventLogInput eventLogInput;
+			if (sequenceChart != null) {
+				eventLogInput = sequenceChart.getInput();
+				if (eventLogInput != null)
+					eventLogInput.removeEventLogChangedListener(this);
+			}
+
 			sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
-			timelineModeAction.update();
-			filterAction.update();
-			axisOrderingModeAction.update();
-			showEventNumbersAction.update();
-			showMessageNamesAction.update();
-			showReuseMessagesAction.update();
-			showArrowHeadsAction.update();
-			timelineModeStatus.update();
-			filterStatus.update();
+			
+			eventLogInput = sequenceChart.getInput();
+			if (eventLogInput != null)
+				eventLogInput.addEventLogChangedListener(this);
+
+			update();
+		}
+	}
+	
+	private void update() {
+		try {
+			for (Field field : getClass().getDeclaredFields()) {
+				Class<?> fieldType = field.getType();
+				
+				if (fieldType == SequenceChartAction.class ||
+					fieldType == SequenceChartMenuAction.class)
+				{
+					SequenceChartAction fieldValue = (SequenceChartAction)field.get(this);
+
+					fieldValue.setEnabled(true);
+					fieldValue.update();
+					if (sequenceChart.getInput().isLongRunningOperationInProgress())
+						fieldValue.setEnabled(false);
+				}
+				
+				if (fieldType == StatusLineContributionItem.class)
+				{
+					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
+					fieldValue.update();
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
+	/*************************************************************************************
+	 * NOTIFICATIONS
+	 */
+
+	public void eventLogAppended() {
+		// void
+	}
+
+	public void eventLogFilterRemoved() {
+		update();
+	}
+
+	public void eventLogFiltered() {
+		update();
+	}
+
+	public void eventLogLongOperationEnded() {
+		update();
+	}
+
+	public void eventLogLongOperationStarted() {
+		update();
+	}
+
+	public void eventLogProgress() {
+		// void
+	}
+
+	/*************************************************************************************
+	 * ACTIONS
+	 */
+	
 	private SequenceChartMenuAction createTimelineModeAction() {
 		return new SequenceChartMenuAction("Timeline Mode", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_TIMELINE_MODE)) {
 			@Override
@@ -606,31 +680,54 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 
 			private void removeFilter() {
-				double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+				final EventLogInput eventLogInput = sequenceChart.getInput();
+				final boolean wasCanceled = eventLogInput.isCanceled();
 
-				EventLogInput eventLogInput = sequenceChart.getInput();
-				eventLogInput.removeFilter();
+				eventLogInput.runWithProgressMonitor(new Runnable() {
+					public void run() {
+						double[] leftRightSimulationTimes = null;
 
-				sequenceChart.setInput(eventLogInput);
-				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+						if (!wasCanceled)
+							leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
 
-				update();
+						eventLogInput.removeFilter();
+						sequenceChart.setInput(eventLogInput);
+
+						if (leftRightSimulationTimes != null)
+							sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+						else
+							sequenceChart.scrollToBegin();
+
+						update();
+					}					
+				});
 			}
 
 			private void filter() {
-				EventLogInput eventLogInput = sequenceChart.getInput();
+				final EventLogInput eventLogInput = sequenceChart.getInput();
+				final boolean wasCanceled = eventLogInput.isCanceled();
 				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
 				FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
 
 				if (dialog.open() == Window.OK) {
-					double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
-
-					eventLogInput.filter();
-					
-					sequenceChart.setInput(eventLogInput);
-					sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
-
-					update();
+					eventLogInput.runWithProgressMonitor(new Runnable() {
+						public void run() {
+							double[] leftRightSimulationTimes = null;
+							
+							if (!wasCanceled)
+								leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+		
+							eventLogInput.filter();
+							sequenceChart.setInput(eventLogInput);
+		
+							if (leftRightSimulationTimes != null)
+								sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+							else
+								sequenceChart.scrollToBegin();
+		
+							update();
+						}
+					});
 				}
 			}
 		};
@@ -659,8 +756,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			
 			@Override
 			public void update() {
-				boolean showEventNumbers = sequenceChart.getShowEventNumbers();
-				setChecked(showEventNumbers);
+				setChecked(sequenceChart.getShowEventNumbers());
 			}
 		};
 	}
@@ -675,8 +771,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			
 			@Override
 			public void update() {
-				boolean showMessageNames = sequenceChart.getShowMessageNames();
-				setChecked(showMessageNames);
+				setChecked(sequenceChart.getShowMessageNames());
 			}
 		};
 	}
@@ -691,8 +786,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			
 			@Override
 			public void update() {
-				boolean showReuseMessage = sequenceChart.getShowReuseMessages();
-				setChecked(showReuseMessage);
+				setChecked(sequenceChart.getShowReuseMessages());
 			}
 		};
 	}
@@ -707,8 +801,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			
 			@Override
 			public void update() {
-				boolean showArrowHeads = sequenceChart.getShowArrowHeads();
-				setChecked(showArrowHeads);
+				setChecked(sequenceChart.getShowArrowHeads());
 			}
 		};
 	}
@@ -1178,7 +1271,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_REFRESH)) {
 			@Override
 			public void run() {
-				sequenceChart.clearCanvasCacheAndRedraw();
+				sequenceChart.refresh();
 			}
 		};
 	}

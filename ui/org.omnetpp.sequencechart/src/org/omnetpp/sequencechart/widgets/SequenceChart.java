@@ -111,7 +111,7 @@ public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
 {
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	private static final String STATE_PROPERTY = "SequenceChartState";
 
@@ -170,8 +170,6 @@ public class SequenceChart
 	/*************************************************************************************
 	 * INTERNAL STATE
 	 */
-	
-	private boolean timeoutReached;
 
 	private IEventLog eventLog; // contains the data to be displayed
 	private EventLogInput eventLogInput;
@@ -305,7 +303,7 @@ public class SequenceChart
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.F5)
-					clearCanvasCacheAndRedraw();
+					refresh();
 				else if (e.keyCode == SWT.ARROW_LEFT)
 					moveSelection(-1);
 				else if (e.keyCode == SWT.ARROW_RIGHT)
@@ -362,7 +360,7 @@ public class SequenceChart
 	 * Set chart scale (number of pixels a "timeline unit" maps to).
 	 */
 	public void setPixelPerTimelineCoordinate(double pixelPerTimelineCoordinate) {
-		Assert.isTrue(pixelPerTimelineCoordinate > 0);
+		Assert.isTrue(pixelPerTimelineCoordinate >= 0);
 		this.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
 		clearCanvasCacheAndRedraw();
 	}
@@ -558,10 +556,13 @@ public class SequenceChart
 	protected int configureHorizontalScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPos, int widgetSize) {
 		ScrollBar horizontalBar = getHorizontalBar();
 		horizontalBar.setMinimum(0);
+		
+		long[] eventPtrRange = null;
 
-		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
+		if (eventLog != null && !eventLogInput.isCanceled())
+			eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
 
-		if (eventLog != null && eventPtrRange[0] != 0 && eventPtrRange[1] != 0 &&
+		if (eventPtrRange != null && eventPtrRange[0] != 0 && eventPtrRange[1] != 0 &&
 			(sequenceChartFacade.Event_getPreviousEvent(eventPtrRange[0]) != 0 || sequenceChartFacade.Event_getNextEvent(eventPtrRange[1]) != 0))
 		{
 			long numberOfElements = eventLog.getApproximateNumberOfEvents();
@@ -584,24 +585,26 @@ public class SequenceChart
 
 	@Override
 	protected void adjustHorizontalScrollBar() {
-		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
-		long startEventPtr = eventPtrRange[0];
-		long endEventPtr = eventPtrRange[1];
-		double topPercentage = startEventPtr == 0 ? 0 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.Event_getEventNumber(startEventPtr));
-		double bottomPercentage = endEventPtr == 0 ? 1 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.Event_getEventNumber(endEventPtr));
-		double topWeight = 1 / topPercentage;
-		double bottomWeight = 1 / (1 - bottomPercentage);
-		double percentage;
-		
-		if (Double.isInfinite(topWeight))
-			percentage = topPercentage;
-		else if (Double.isInfinite(bottomWeight))
-			percentage = bottomPercentage;
-		else
-			percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
+		if (eventLog != null && !eventLogInput.isCanceled()) {
+			long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
+			long startEventPtr = eventPtrRange[0];
+			long endEventPtr = eventPtrRange[1];
+			double topPercentage = startEventPtr == 0 ? 0 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.Event_getEventNumber(startEventPtr));
+			double bottomPercentage = endEventPtr == 0 ? 1 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.Event_getEventNumber(endEventPtr));
+			double topWeight = 1 / topPercentage;
+			double bottomWeight = 1 / (1 - bottomPercentage);
+			double percentage;
 			
-		ScrollBar horizontalBar = getHorizontalBar();
-		horizontalBar.setSelection((int)((horizontalBar.getMaximum() - horizontalBar.getThumb()) * percentage));
+			if (Double.isInfinite(topWeight))
+				percentage = topPercentage;
+			else if (Double.isInfinite(bottomWeight))
+				percentage = bottomPercentage;
+			else
+				percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
+				
+			ScrollBar horizontalBar = getHorizontalBar();
+			horizontalBar.setSelection((int)((horizontalBar.getMaximum() - horizontalBar.getThumb()) * percentage));
+		}
 	}
 
 
@@ -637,12 +640,15 @@ public class SequenceChart
 	}
 
 	public void scrollToBegin() {
-		scrollToElement(eventLog.getFirstEvent(), 0);
+		if (!eventLogInput.isCanceled())
+			scrollToElement(eventLog.getFirstEvent(), 0);
 	}
 
 	public void scrollToEnd() {
-		scrollToElement(eventLog.getLastEvent(), getViewportWidth());
-		followEnd = true;
+		if (!eventLogInput.isCanceled()) {
+			scrollToElement(eventLog.getLastEvent(), getViewportWidth());
+			followEnd = true;
+		}
 	}
 
 	public void scrollAxes(int dy) {
@@ -804,42 +810,54 @@ public class SequenceChart
 	/**
 	 * Multiplies pixel per timeline coordinate by zoomFactor.
 	 */
-	public void zoomBy(double zoomFactor) {
-		double time = getViewportCenterSimulationTime();
-		setPixelPerTimelineCoordinate(getPixelPerTimelineCoordinate() * zoomFactor);	
-		calculateVirtualSize();
-		clearCanvasCacheAndRedraw();
-		scrollToSimulationTimeWithCenter(time);
+	public void zoomBy(final double zoomFactor) {
+		eventLogInput.runWithProgressMonitor(new Runnable() {
+			public void run() {
+				double time = getViewportCenterSimulationTime();
+				setPixelPerTimelineCoordinate(getPixelPerTimelineCoordinate() * zoomFactor);	
+				calculateVirtualSize();
+				clearCanvasCacheAndRedraw();
+				scrollToSimulationTimeWithCenter(time);
+			}
+		});
 	}
 
 	/**
 	 * Zoom to the given rectangle, given by viewport coordinates relative to the
 	 * top-left corner of the canvas.
 	 */
-	public void zoomToRectangle(Rectangle r) {
-		double timelineCoordinate = getTimelineCoordinateForViewportCoordinate(r.x);
-		double timelineCoordinateDelta = getTimelineCoordinateForViewportCoordinate(r.right()) - timelineCoordinate;
-		setPixelPerTimelineCoordinate(getViewportWidth() / timelineCoordinateDelta);
-		calculateVirtualSize();
-		clearCanvasCacheAndRedraw();
-		scrollHorizontal(getViewportCoordinateForTimelineCoordinate(timelineCoordinate));
+	public void zoomToRectangle(final Rectangle r) {
+		eventLogInput.runWithProgressMonitor(new Runnable() {
+			public void run() {
+				double timelineCoordinate = getTimelineCoordinateForViewportCoordinate(r.x);
+				double timelineCoordinateDelta = getTimelineCoordinateForViewportCoordinate(r.right()) - timelineCoordinate;
+				setPixelPerTimelineCoordinate(getViewportWidth() / timelineCoordinateDelta);
+				calculateVirtualSize();
+				clearCanvasCacheAndRedraw();
+				scrollHorizontal(getViewportCoordinateForTimelineCoordinate(timelineCoordinate));
+			}
+		});
 	}
 
 	/**
 	 * Scroll the canvas so to make start and end simulation times visible.
 	 */
-	public void zoomToSimulationTimeRange(double startSimulationTime, double endSimulationTime) {
-		if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
-			double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
-
-			if (timelineUnitDelta > 0)
-				setPixelPerTimelineCoordinate(getViewportWidth() / timelineUnitDelta);
-		}
-
-		scrollHorizontal(getViewportCoordinateForSimulationTime(startSimulationTime));
-
-		invalidVirtualSize = true;
-		clearCanvasCacheAndRedraw();
+	public void zoomToSimulationTimeRange(final double startSimulationTime, final double endSimulationTime) {
+		eventLogInput.runWithProgressMonitor(new Runnable() {
+			public void run() {
+				if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
+					double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
+		
+					if (timelineUnitDelta > 0)
+						setPixelPerTimelineCoordinate(getViewportWidth() / timelineUnitDelta);
+				}
+		
+				scrollHorizontal(getViewportCoordinateForSimulationTime(startSimulationTime));
+		
+				invalidVirtualSize = true;
+				clearCanvasCacheAndRedraw();
+			}
+		});
 	}
 	
 	/**
@@ -902,11 +920,15 @@ public class SequenceChart
 	/**
 	 * Sets a new EventLogInput to be displayed.
 	 */
-	public void setInput(EventLogInput input) {
+	public void setInput(final EventLogInput input) {
 		// store current settings
 		if (eventLogInput != null) {
-			eventLogInput.removeEventLogChangedListener(this);
-			storeState(eventLogInput.getFile());
+			eventLogInput.runWithProgressMonitor(new Runnable() {
+				public void run() {
+					eventLogInput.removeEventLogChangedListener(SequenceChart.this);
+					storeState(eventLogInput.getFile());
+				}
+			});
 		}
 
 		// remember input
@@ -914,33 +936,38 @@ public class SequenceChart
 		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
 		sequenceChartFacade = eventLogInput.getSequenceChartFacade();
 
-		// clear state
-		axisModules = null;
-		axisModulePositions = null;
-		axisModuleYs = null;
-		invalidVirtualSize = true;
-		clearSelection();
+		eventLogInput.runWithProgressMonitor(new Runnable() {
+			public void run() {
 
-		// restore last known settings
-		if (eventLogInput != null) {
-			eventLogInput.addEventLogChangedListener(this);
-			
-			if (!restoreState(eventLogInput.getFile())) {
-				if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1) {
-					sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
-					fixPointViewportCoordinate = 0;
+				// clear state
+				axisModules = null;
+				axisModulePositions = null;
+				axisModuleYs = null;
+				invalidVirtualSize = true;
+				clearSelection();
+
+				// restore last known settings
+				if (eventLogInput != null) {
+					eventLogInput.addEventLogChangedListener(SequenceChart.this);
+					
+					if (!restoreState(eventLogInput.getFile())) {
+						if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1) {
+							sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+							fixPointViewportCoordinate = 0;
+						}
+
+						setAxisModules(eventLogInput.getSelectedModules());
+					}
+
+					calculateAxisYs();
+					calculatePixelPerTimelineUnit();
+					configureScrollBars();
+					adjustHorizontalScrollBar();
 				}
 
-				setAxisModules(eventLogInput.getSelectedModules());
-			}
-
-			calculateAxisYs();
-			calculatePixelPerTimelineUnit();
-			configureScrollBars();
-			adjustHorizontalScrollBar();
-		}
-
-		clearCanvasCache();
+				clearCanvasCache();
+			}			
+		});
 	}
 	
 	public boolean restoreState(IResource resource) {
@@ -1087,7 +1114,7 @@ public class SequenceChart
 			}
 		}
 
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 	
 	public void eventLogFilterRemoved() {
@@ -1095,6 +1122,19 @@ public class SequenceChart
 
 		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
 			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+
+		clearCanvasCacheAndRedraw();
+	}
+
+	public void eventLogLongOperationStarted() {
+	}
+
+	public void eventLogLongOperationEnded() {
+	}
+
+	public void eventLogProgress() {
+		if (eventLogInput.getEventLogProgressManager().isCanceled())
+			redraw();
 	}
 
 	private ModuleTreeItem getAxisModule(String moduleFullPath) {
@@ -1293,44 +1333,45 @@ public class SequenceChart
 		graphics.setTextAntialias(SWT.ON);
 		return graphics;
 	}
-	
+
+	public void refresh() {
+		eventLogInput.resetCanceled();
+		
+		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
+			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+
+		clearCanvasCacheAndRedraw();
+	}
+
 	public void clearCanvasCacheAndRedraw() {
 		clearCanvasCache();
 		redraw();
 	}
 
 	@Override
-	public void clearCanvasCache() {
-		super.clearCanvasCache();
-		timeoutReached = false;
-	}
-
-	@Override
-	protected void paint(GC gc) {
-		try {
-			if (eventLog != null)
-				eventLog.setNextTimeoutFromNow(10);
-
-			if (eventLogInput != null)
-				calculateStuff();
-
-			super.paint(gc);
-
-			if (eventLogInput != null && debug)
-				System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
-		}
-		catch (RuntimeException e) {
-			if (e.getMessage() != null && e.getMessage().contains("Timeout"))
-				timeoutReached = true;
-			else
-				throw e;
-		}
-
-		if (timeoutReached) {
+	protected void paint(final GC gc) {
+		if (eventLogInput.isCanceled()) {
 			Graphics graphics = createGraphics(gc);
-			drawTimeoutWarning(graphics);
+			drawCancelMessage(graphics);
 			graphics.dispose();
 		}
+		else if (eventLogInput.isLongRunningOperationInProgress()) {
+			Graphics graphics = createGraphics(gc);
+			drawLongRunningOperationInProgressMessage(graphics);
+			graphics.dispose();
+		}
+		else
+			eventLogInput.runWithProgressMonitor(new Runnable() {
+				public void run() {
+					if (eventLogInput != null)
+						calculateStuff();
+		
+					SequenceChart.super.paint(gc);
+		
+					if (eventLogInput != null && debug)
+						System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
+				}
+			});
 	}
 
 	@Override
@@ -1413,18 +1454,29 @@ public class SequenceChart
 		}
 	}
 
-	private void drawTimeoutWarning(Graphics graphics) {
+	protected void drawCancelMessage(Graphics graphics) {
 		graphics.setForegroundColor(ColorFactory.RED4);
 		graphics.setBackgroundColor(ColorFactory.WHITE);
 		graphics.setFont(font);
-		int y = getViewportHeight() / 2;
 		int x = getViewportWidth() / 2;
-		String text = "Timeout reached during drawing, therefore the chart may be incomplete.";
+		int y = getViewportHeight() / 2;
+		String text = "Processing  of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.";
 		Point p = getTextExtent(graphics, text);
-		graphics.fillString(text, x - p.x / 2, y - 10);
-		text = "Either try changing the timeout value or the filter parameters or select refresh from the menu. Sorry for your inconvenience.";
+		graphics.fillString(text, x - p.x / 2, y - p.y);
+		text = "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.";
 		p = getTextExtent(graphics, text);
-		graphics.fillString(text, x - p.x / 2, y + 10);
+		graphics.fillString(text, x - p.x / 2, y);
+	}
+
+	protected void drawLongRunningOperationInProgressMessage(Graphics graphics) {
+		graphics.setForegroundColor(ColorFactory.RED4);
+		graphics.setBackgroundColor(ColorFactory.WHITE);
+		graphics.setFont(font);
+		int x = getViewportWidth() / 2;
+		int y = getViewportHeight() / 2;
+		String text = "Processing a long running event log operation. Please wait.";
+		Point p = getTextExtent(graphics, text);
+		graphics.fillString(text, x - p.x / 2, y - p.y / 2);
 	}
 
 	/**
@@ -2213,7 +2265,7 @@ public class SequenceChart
 		if (endEvent == null)
 			endEvent = eventLog.getLastEvent();
 
-		return new long[] {startEvent.getCPtr(), endEvent.getCPtr()};
+		return new long[] {startEvent == null ? 0 : startEvent.getCPtr(), endEvent == null ? 0 : endEvent.getCPtr()};
 	}
 	
 	private int getMaximumMessageDependencyDisplayWidth() {
@@ -2501,15 +2553,17 @@ public class SequenceChart
 		// zoom by wheel
 		addListener(SWT.MouseWheel, new Listener() {
 			public void handleEvent(Event event) {
-				if ((event.stateMask & SWT.CTRL)!=0) {
-					for (int i = 0; i < event.count; i++)
-						zoomBy(1.1);
-	
-					for (int i = 0; i < -event.count; i++)
-						zoomBy(1.0 / 1.1);
+				if (!eventLogInput.isCanceled()) {
+					if ((event.stateMask & SWT.CTRL)!=0) {
+						for (int i = 0; i < event.count; i++)
+							zoomBy(1.1);
+		
+						for (int i = 0; i < -event.count; i++)
+							zoomBy(1.0 / 1.1);
+					}
+					else if ((event.stateMask & SWT.SHIFT)!=0)
+						scrollHorizontal(-getViewportWidth() * event.count / 20);
 				}
-				else if ((event.stateMask & SWT.SHIFT)!=0)
-					scrollHorizontal(-getViewportWidth() * event.count / 20);
 			}
 		});
 
@@ -2526,97 +2580,107 @@ public class SequenceChart
 		// dragging
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
-					mouseDragged(e);
-				else {
-					setCursor(null); // restore cursor at end of drag (must do it here too, because we 
-									 // don't get the "released" event if user releases mouse outside the canvas)
-					redraw();
+				if (!eventLogInput.isCanceled()) {
+					if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
+						mouseDragged(e);
+					else {
+						setCursor(null); // restore cursor at end of drag (must do it here too, because we 
+										 // don't get the "released" event if user releases mouse outside the canvas)
+						redraw();
+					}
 				}
 			}
 
 			private void mouseDragged(MouseEvent e) {
-				if (!isDragging)
-					setCursor(DRAG_CURSOR);
-				
-				isDragging = true;
-
-				// scroll by the amount moved since last drag call
-				dragDeltaX = e.x - dragStartX;
-				dragDeltaY = e.y - dragStartY;
-				scrollHorizontal(-dragDeltaX);
-				scrollVertical(-dragDeltaY);
-				dragStartX = e.x;
-				dragStartY = e.y;
+				if (!eventLogInput.isCanceled()) {
+					if (!isDragging)
+						setCursor(DRAG_CURSOR);
+					
+					isDragging = true;
+	
+					// scroll by the amount moved since last drag call
+					dragDeltaX = e.x - dragStartX;
+					dragDeltaY = e.y - dragStartY;
+					scrollHorizontal(-dragDeltaX);
+					scrollVertical(-dragDeltaY);
+					dragStartX = e.x;
+					dragStartY = e.y;
+				}
 			}
 		});
 
 		// selection handling
 		addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent me) {
-				ArrayList<IEvent> events = new ArrayList<IEvent>();
-				ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
-				collectStuffUnderMouse(me.x, me.y, events, messageDependencies);
-
-				if (messageDependencies.size() == 1)
-					zoomToMessageDependency(messageDependencies.get(0));
-				if (eventListEquals(selectionEvents, events)) {
-					fireSelection(true);
-				}
-				else {
-					selectionEvents = events;
-					fireSelection(true);
-					fireSelectionChanged();
-					redraw();
+				if (!eventLogInput.isCanceled()) {
+					ArrayList<IEvent> events = new ArrayList<IEvent>();
+					ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
+					collectStuffUnderMouse(me.x, me.y, events, messageDependencies);
+	
+					if (messageDependencies.size() == 1)
+						zoomToMessageDependency(messageDependencies.get(0));
+					if (eventListEquals(selectionEvents, events)) {
+						fireSelection(true);
+					}
+					else {
+						selectionEvents = events;
+						fireSelection(true);
+						fireSelectionChanged();
+						redraw();
+					}
 				}
 			}
 
 			public void mouseDown(MouseEvent e) {
-				setFocus();
-
-				if (e.button == 1) {
-					dragStartX = e.x;
-					dragStartY = e.y;
-					dragStartTime = System.currentTimeMillis();
+				if (!eventLogInput.isCanceled()) {
+					setFocus();
+	
+					if (e.button == 1) {
+						dragStartX = e.x;
+						dragStartY = e.y;
+						dragStartTime = System.currentTimeMillis();
+					}
 				}
 			}
 
 			public void mouseUp(MouseEvent me) {
-				if (me.button == 1) {
-					if (!isDragging) {
-						ArrayList<IEvent> events = new ArrayList<IEvent>();
-	
-						if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
-							for (IEvent e : selectionEvents) 
-								events.add(e);
-	
-						collectStuffUnderMouse(me.x, me.y, events, null);
-						
-						if (eventListEquals(selectionEvents, events)) {
-							fireSelection(false);
+				if (!eventLogInput.isCanceled()) {
+					if (me.button == 1) {
+						if (!isDragging) {
+							ArrayList<IEvent> events = new ArrayList<IEvent>();
+		
+							if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
+								for (IEvent e : selectionEvents) 
+									events.add(e);
+		
+							collectStuffUnderMouse(me.x, me.y, events, null);
+							
+							if (eventListEquals(selectionEvents, events)) {
+								fireSelection(false);
+							}
+							else {
+								selectionEvents = events;
+								fireSelection(false);
+								fireSelectionChanged();
+								redraw();
+							}
 						}
-						else {
-							selectionEvents = events;
-							fireSelection(false);
-							fireSelectionChanged();
-							redraw();
+						else if (System.currentTimeMillis() - dragStartTime < 500){
+							ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
+							collectStuffUnderMouse(me.x, me.y, null, messageDependencies);
+							
+							if (messageDependencies.size() == 1) {
+								IMessageDependency messageDependency = messageDependencies.get(0);
+								gotoElement(dragDeltaX > 0 ? messageDependency.getConsequenceEvent() : messageDependency.getCauseEvent());
+							}
 						}
 					}
-					else if (System.currentTimeMillis() - dragStartTime < 500){
-						ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
-						collectStuffUnderMouse(me.x, me.y, null, messageDependencies);
-						
-						if (messageDependencies.size() == 1) {
-							IMessageDependency messageDependency = messageDependencies.get(0);
-							gotoElement(dragDeltaX > 0 ? messageDependency.getConsequenceEvent() : messageDependency.getCauseEvent());
-						}
-					}
+	
+					setCursor(null); // restore cursor at end of drag
+					dragStartX = dragStartY = -1;
+					dragStartTime = -1;
+					isDragging = false;
 				}
-
-				setCursor(null); // restore cursor at end of drag
-				dragStartX = dragStartY = -1;
-				dragStartTime = -1;
-				isDragging = false;
 			}
 		});
 	}
@@ -2795,14 +2859,16 @@ public class SequenceChart
 	 * Returns the axis at the given Y coordinate (with MOUSE_TOLERANCE), or null. 
 	 */
 	public ModuleTreeItem findAxisAt(int y) {
-		y += getViewportTop() - GUTTER_HEIGHT;
-
-		for (int i = 0; i < axisModuleYs.length; i++) {
-			int height = axisRenderers[i].getHeight();
-			if (axisModuleYs[i] - MOUSE_TOLERANCE <= y && y <= axisModuleYs[i] + height + MOUSE_TOLERANCE)
-				return axisModules.get(i);
+		if (!eventLogInput.isCanceled()) {
+			y += getViewportTop() - GUTTER_HEIGHT;
+	
+			for (int i = 0; i < axisModuleYs.length; i++) {
+				int height = axisRenderers[i].getHeight();
+				if (axisModuleYs[i] - MOUSE_TOLERANCE <= y && y <= axisModuleYs[i] + height + MOUSE_TOLERANCE)
+					return axisModules.get(i);
+			}
 		}
-		
+
 		return null;
 	}
 	
@@ -2816,51 +2882,56 @@ public class SequenceChart
 	 * If you're interested only in messages or only in events, pass null in the
 	 * events or msgs argument. This method does NOT clear the lists before filling them.
 	 */
-	public void collectStuffUnderMouse(int mouseX, int mouseY, List<IEvent> events, List<IMessageDependency> msgs) {
-		if (eventLog != null) {
-			long startMillis = System.currentTimeMillis();
-
-			mouseY -= GUTTER_HEIGHT;
-			calculateStuff();
-		
-			// determine start/end event numbers
-			int width = getViewportWidth();
-			long[] eventPtrRange = getFirstLastEventForPixelRange(0, width);
-			long startEventPtr = eventPtrRange[0];
-			long endEventPtr = eventPtrRange[1];
-
-			// check events
-            if (events != null && startEventPtr != 0 && endEventPtr != 0) {
-            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
-					if (eventSymbolContainsPoint(mouseX, mouseY, getEventXViewportCoordinate(eventPtr), getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
-   						events.add(sequenceChartFacade.Event_getEvent(eventPtr));
-   					
-   					if (eventPtr == endEventPtr)
-	   					break;
-	   			}
-            }
-
-            // check message arrows
-            if (msgs != null) {
-        		eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-    			startEventPtr = eventPtrRange[0];
-    			endEventPtr = eventPtrRange[1];
-    			
-    			if (startEventPtr != 0 && endEventPtr != 0) {
-	            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+	public void collectStuffUnderMouse(final int mouseX, final int mouseY, final List<IEvent> events, final List<IMessageDependency> msgs) {
+		if (!eventLogInput.isCanceled() && !eventLogInput.isLongRunningOperationInProgress()) {
+			eventLogInput.runWithProgressMonitor(new Runnable() {
+				public void run() {
+					if (eventLog != null) {
+						long startMillis = System.currentTimeMillis();
 	
-	        		for (int i = 0; i < messageDependencies.size(); i++) {
-	        			long messageDependencyPtr = messageDependencies.get(i);
+						calculateStuff();
+					
+						// determine start/end event numbers
+						int width = getViewportWidth();
+						long[] eventPtrRange = getFirstLastEventForPixelRange(0, width);
+						long startEventPtr = eventPtrRange[0];
+						long endEventPtr = eventPtrRange[1];
 	
-	        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
-	            			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
-	        		}
-    			}
-            }
-            
-            long millis = System.currentTimeMillis() - startMillis;
-            if (debug)
-				System.out.println("collectStuffUnderMouse(): " + millis + "ms - " + (events == null ? "n/a" : events.size()) + " events, " + (msgs == null ? "n/a" : msgs.size()) + " msgs");
+						// check events
+			            if (events != null && startEventPtr != 0 && endEventPtr != 0) {
+			            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
+								if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, getEventXViewportCoordinate(eventPtr), getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
+			   						events.add(sequenceChartFacade.Event_getEvent(eventPtr));
+			   					
+			   					if (eventPtr == endEventPtr)
+				   					break;
+				   			}
+			            }
+	
+			            // check message arrows
+			            if (msgs != null) {
+			        		eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+			    			startEventPtr = eventPtrRange[0];
+			    			endEventPtr = eventPtrRange[1];
+			    			
+			    			if (startEventPtr != 0 && endEventPtr != 0) {
+				            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+				
+				        		for (int i = 0; i < messageDependencies.size(); i++) {
+				        			long messageDependencyPtr = messageDependencies.get(i);
+				
+				        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
+				            			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
+				        		}
+			    			}
+			            }
+			            
+			            long millis = System.currentTimeMillis() - startMillis;
+			            if (debug)
+							System.out.println("collectStuffUnderMouse(): " + millis + "ms - " + (events == null ? "n/a" : events.size()) + " events, " + (msgs == null ? "n/a" : msgs.size()) + " msgs");
+					}
+				}
+			});
 		}
 	}
 
