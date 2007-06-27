@@ -194,12 +194,12 @@ class cFileOutputScalarManager : public cOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    void recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes=NULL);
+    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    void recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 
     /**
      * Returns the file name.

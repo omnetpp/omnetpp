@@ -266,8 +266,8 @@ class ENVIR_API TOmnetApp
 
     /** @name Methods for output scalars; called by cEnvir's similar functions */
     //@{
-    void recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes=NULL);
-    void recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
+    void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
     //@}
 
     /* @name Methods for snapshot management; called by cEnvir's similar functions. */

@@ -106,6 +106,7 @@ void cChannel::callFinish()
     // subcomponents, so just we just invoke finish() in the right context here.
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
+    recordParametersAsScalars();
     finish();
 }
 

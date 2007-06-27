@@ -18,6 +18,11 @@
 #include "cpar.h"
 #include "cparvalue.h"
 #include "crng.h"
+#include "cconfiguration.h"
+#include "cconfigkey.h"
+
+
+Register_PerObjectConfigEntry(CFGID_SAVE_AS_SCALAR, "save-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
@@ -137,4 +142,34 @@ void cComponent::finalizeParameters()
     for (int i=0; i<n; i++)
         par(i).read();
 }
+
+void cComponent::recordParametersAsScalars()
+{
+    int n = params();
+    for (int i=0; i<n; i++)
+    {
+        if (ev.config()->getAsBool(par(i).fullPath().c_str(), CFGID_SAVE_AS_SCALAR, false))
+        {
+            //XXX the following checks should probably produce a WARNING not an error
+            if (!par(i).isNumeric())
+                throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).name());
+            if (par(i).isVolatile() && (par(i).doubleValue()!=par(i).doubleValue() || par(i).doubleValue()!=par(i).doubleValue()))
+                throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).name());
+            recordScalar(par(i).name(), par(i).doubleValue());  //XXX mark value specially (as being a "param") in the file?
+        }
+    }
+}
+
+void cComponent::recordScalar(const char *name, double value, const char *unit)
+{
+    if (!unit)
+        ev.recordScalar(this, name, value);
+    else {
+        opp_string_map attributes;
+        attributes["unit"] = unit;
+        ev.recordScalar(this, name, value, &attributes);
+    }
+}
+
+
 

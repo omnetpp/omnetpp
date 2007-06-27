@@ -128,6 +128,7 @@ args.obj: args.cc \
 cenvir.obj: cenvir.cc \
   args.h \
   ../../include/distrib.h \
+  ../../include/cconfigkey.h \
   inifilereader.h \
   sectionbasedconfig.h \
   ../../include/cenvir.h \
@@ -275,6 +276,7 @@ inifilereader.obj: inifilereader.cc \
   ../../include/platdep/inttypes.h
 ivfilemgr.obj: ivfilemgr.cc \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigkey.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -285,21 +287,21 @@ ivfilemgr.obj: ivfilemgr.cc \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/opp_string.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h \
   ../../include/carray.h \
   ../../include/globals.h \
-  ../../include/cexception.h \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cownedobject.h \
-  ../../include/cnamedobject.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \

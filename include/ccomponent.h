@@ -64,6 +64,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: reallocates paramv (size must be >= numparams)
     void reallocParamv(int size);
 
+    // internal: save parameters marked with "save-as-scalars=true"
+    virtual void recordParametersAsScalars();
+
   protected:
     /** @name Initialization, finish and parameter change hooks.
      *
@@ -276,6 +279,26 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Check if a parameter exists.
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
+    //@}
+
+    /** @name Statistics collection */
+    //@{
+
+    /**
+     * Records a double into the scalar result file. Statistics objects
+     * (ones subclassed from cStatistic, e.g. cStdDev) can be recorded
+     * by calling their recordScalar() methods).
+     *
+     * @see cStatistic::recordScalar()
+     */
+    void recordScalar(const char *name, double value, const char *unit=NULL);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to recordScalar(const char *, double).
+     */
+    void recordScalar(const char *name, simtime_t value, const char *unit=NULL) {recordScalar(name, value.dbl(), unit);}
+#endif
     //@}
 };
 

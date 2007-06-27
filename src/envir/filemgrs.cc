@@ -374,7 +374,7 @@ void cFileOutputScalarManager::init()
     }
 }
 
-void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes)
+void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized)
         init();
@@ -383,13 +383,13 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!name || !name[0])
         name = "(unnamed)";
-    CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(module->fullPath().c_str()), QUOTE(name), prec, value));
+    CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->fullPath().c_str()), QUOTE(name), prec, value));
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
             CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 }
 
-void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     if (!initialized)
         init();
@@ -401,11 +401,11 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
     if (!name || !name[0])
         name = "(unnamed)";
     std::string n = name;
-    recordScalar(module, (n+".samples").c_str(), statistic->samples());
-    recordScalar(module, (n+".mean").c_str(), statistic->mean());
-    recordScalar(module, (n+".stddev").c_str(), statistic->stddev());
-    recordScalar(module, (n+".min").c_str(), statistic->min());
-    recordScalar(module, (n+".max").c_str(), statistic->max());
+    recordScalar(component, (n+".samples").c_str(), statistic->samples());
+    recordScalar(component, (n+".mean").c_str(), statistic->mean());
+    recordScalar(component, (n+".stddev").c_str(), statistic->stddev());
+    recordScalar(component, (n+".min").c_str(), statistic->min());
+    recordScalar(component, (n+".max").c_str(), statistic->max());
 
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
@@ -414,7 +414,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {
         cDensityEstBase *hist = (cDensityEstBase *)statistic;
-        CHECK(fprintf(f, "histogram %s \t%s\n", QUOTE(module->fullPath().c_str()), QUOTE(name)));
+        CHECK(fprintf(f, "histogram %s \t%s\n", QUOTE(component->fullPath().c_str()), QUOTE(name)));
 
         int n = hist->cells();
         if (n>0)

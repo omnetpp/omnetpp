@@ -197,12 +197,12 @@ class ENVIR_API cOutputScalarManager : public cObject
     /**
      * Records a double scalar result, in a default configuration into the scalar result file.
      */
-    virtual void recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes=NULL) = 0;
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL) = 0;
 
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    virtual void recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
+    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
 
     /**
      * Returns the output scalar file name. Returns NULL if this object is not

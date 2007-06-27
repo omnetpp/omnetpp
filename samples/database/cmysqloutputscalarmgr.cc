@@ -126,14 +126,14 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
     }
 }
 
-void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes)
+void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized)
         insertRunIntoDB();
 
     // fill in prepared statement parameters, and fire off the statement
     runidBuf = runId;
-    opp_mysql_assignSTRING(insScalarBind[1], moduleBuf, module->fullPath().c_str());
+    opp_mysql_assignSTRING(insScalarBind[1], moduleBuf, component->fullPath().c_str());
     opp_mysql_assignSTRING(insScalarBind[2], nameBuf, name);
     valueBuf = value;
 
@@ -148,7 +148,7 @@ void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, 
     }
 }
 
-void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     throw cRuntimeError("cMySQLOutputScalarManager: recording cStatistics objects not supported yet");
 }

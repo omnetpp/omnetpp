@@ -32,6 +32,7 @@
 #include "cproperty.h"
 #include "util.h"
 
+
 // static members:
 std::string cModule::lastmodulefullpath;
 const cModule *cModule::lastmodulefullpathmod = NULL;
@@ -905,10 +906,10 @@ void cModule::callFinish()
     for (SubmoduleIterator submod(this); !submod.end(); submod++)
         submod()->callFinish();
 
-
-    // ...then for this module, in our context
+    // ...then for this module, in our context: save parameters, then finish()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
+    recordParametersAsScalars();
     finish();
 }
 

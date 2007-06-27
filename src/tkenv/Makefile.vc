@@ -93,6 +93,7 @@ inspector.obj: inspector.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -184,6 +185,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -378,6 +380,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -499,6 +502,7 @@ tkapp.obj: tkapp.cc \
   ../../include/cscheduler.h \
   ../../include/ccomponenttype.h \
   ../../include/csimulation.h \
+  ../../include/cconfigkey.h \
   ../../include/regmacros.h \
   tkdefs.h \
   tkapp.h \

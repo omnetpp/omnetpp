@@ -218,9 +218,18 @@ class ENVIR_API cConfiguration : public cObject
      * where both key and value are NULL.
      *
      * Lifetime of the returned object might be limited, so clients
-     * should not store references to it.
+     * should not store references to it. Copying the object is not allowed
+     * either, because KeyValue is a polymorphic type (object slicing!).
      */
     virtual const KeyValue& getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
+
+    /**
+     * This method returns an array of the following form: (key1, value1,
+     * key2, value2,...), where keys and values correspond to parameter
+     * assignments in the configuration. This method should not be used
+     * for anything else than writing the header of result files.
+     */
+//XXX is this needed?    virtual std::vector<const char *> getParameterKeyValuePairs() const = 0;
 
     /**
      * TODO
@@ -235,7 +244,8 @@ class ENVIR_API cConfiguration : public cObject
      * where both key and value are NULL.
      *
      * Lifetime of the returned object might be limited, so clients
-     * should not store references to it.
+     * should not store references to it. Copying the object is not allowed
+     * either, because KeyValue is a polymorphic type (object slicing!).
      */
    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const = 0;
 

@@ -324,6 +324,8 @@ ccomponent.obj: ccomponent.cc \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/crng.h \
+  ../../include/cconfiguration.h \
+  ../../include/cconfigkey.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
@@ -1394,6 +1396,7 @@ cscheduler.obj: cscheduler.cc \
   ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
+  ../../include/cconfigkey.h \
   ../../include/cobject.h \
   ../../include/platdep/timeutil.h \
   ../../include/simkerneldefs.h \
@@ -1946,6 +1949,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
