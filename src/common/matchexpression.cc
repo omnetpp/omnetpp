@@ -14,6 +14,7 @@
 
 #include "matchexpression.h"
 #include "patternmatcher.h"
+#include "commonutil.h"
 
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
@@ -56,13 +57,15 @@ void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool full
 
     elems.clear();
 
-    parsePattern(elems, pattern, dottedpath, fullstring, casesensitive);
+    Assert(pattern);
+    if (*pattern)
+        parsePattern(elems, pattern, dottedpath, fullstring, casesensitive);
 }
 
 bool MatchExpression::matches(const Matchable *object)
 {
     if (elems.empty())
-        return true;
+        return false;
 
     const int stksize = 20;
     bool stk[stksize];

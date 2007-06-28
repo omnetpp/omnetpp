@@ -38,6 +38,7 @@ class PatternMatcher;
  * are accepted.
  *
  * Pattern examples:
+ *  - "" matches nothing
  *  - "node*"
  *  - "node* or host*"
  *  - "node* or host* or className(StandardHost*)"
