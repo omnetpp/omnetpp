@@ -319,7 +319,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
                 // store variable, and make sure it has name and id
                 if (!loc.varname.empty()) {
                     for (int j=0; j<v.size(); j++)
-                        if (v[i].varname==loc.varname)
+                        if (v[j].varname==loc.varname)
                             throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
                     loc.varid = loc.varname;
                 }
