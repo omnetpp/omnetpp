@@ -212,8 +212,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
      */
     public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
         try {
-             // FIXME remove the hardcoded name
-             Process proc = LaunchPlugin.startSimulationProcess(configuration, " -n OneFifoSce -g");
+             Process proc = LaunchPlugin.startSimulationProcess(configuration, " -n -g");
              final int BUFFERSIZE = 8192;
              byte bytes[] = new byte[BUFFERSIZE];
              StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
