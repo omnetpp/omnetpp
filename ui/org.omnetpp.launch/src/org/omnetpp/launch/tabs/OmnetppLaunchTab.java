@@ -147,4 +147,5 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
         if (embeddingTab != null)
             embeddingTab.setErrorMessage(errorMessage);
     }
+
 }

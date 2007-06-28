@@ -37,7 +37,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 	protected Text progText;
 
     private final WorkingDirectoryBlock workingDirBlock = new WorkingDirectoryBlock(this);
-    private final SimulationTab simulationBlock = new SimulationTab(this);
+    private final SimulationTab simulationBlock = new SimulationTab(this, false);
 
     /**
      * Content provider displaying possible projects in the workspace
@@ -148,22 +148,22 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
     public boolean isValid(ILaunchConfiguration config) {
 	    if (!workingDirBlock.isValid(config))
 	        return false;
-	    if (!super.isValid(config))
+
+	    String name = progText.getText().trim();
+	    if (name.length() == 0) {
+	        setErrorMessage("Simulation program not specified");
 	        return false;
-        if (!simulationBlock.isValid(config))
+	    }
+	    IFile exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
+	    if (exefile == null || !exefile.isAccessible()) {
+	        setErrorMessage("Simulation program does not exist or not accessible in workspace");
+	        return false;
+	    }
+
+	    if (!simulationBlock.isValid(config))
             return false;
 
-		String name = progText.getText().trim();
-		if (name.length() == 0) {
-			setErrorMessage("Simulation program not specified");
-			return false;
-		}
-        IFile exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
-		if (exefile == null || !exefile.isAccessible()) {
-		    setErrorMessage("Simulation program does not exist or not accessible in workspace");
-		    return false;
-		}
-		return true;
+		return super.isValid(config);
 	}
 
     public String getName() {
@@ -172,7 +172,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 
     @Override
     public String getId() {
-        return "org.omnetpp.launch.mainTab";
+        return IOmnetppLaunchConstants.OMNETPP_LAUNCH_ID+".mainTab";
     }
 
     /**

@@ -19,21 +19,24 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
@@ -44,7 +47,7 @@ import org.omnetpp.launch.LaunchPlugin;
  * A launch configuration tab that displays and edits omnetpp project
  */
 public class SimulationTab extends OmnetppLaunchTab  {
-
+    protected final String DEFAULT_RUNTOOLTIP= "The run number(s) that should be executed (eg.: 0,2,7,9-11 or * for ALL runs) (default: 0)";
 	// UI widgets
 	protected Text fInifileText;
 	protected Combo fConfigCombo;
@@ -56,7 +59,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
     protected Text fOtherEnvText;
     protected Text fLibraryText;
     protected Text fAdditionalText;
-
+    private boolean cdtContributed = true;
+    private String infoText = null;
 
     /**
      * Reads the ini file and enumerates all config sections. resolves include directives recursively
@@ -172,8 +176,14 @@ public class SimulationTab extends OmnetppLaunchTab  {
         super();
     }
 
-    public SimulationTab(OmnetppLaunchTab embeddingTab) {
+    /**
+     * @param embeddingTab
+     * @param cdtContributed Whether we are contributing to CDT (true) or using the stand-alone launcher (false)
+     *        default is true (CDT contribution)
+     */
+    SimulationTab(OmnetppLaunchTab embeddingTab, boolean cdtContributed) {
         super(embeddingTab);
+        this.cdtContributed = cdtContributed;
     }
 
     public void createControl(Composite parent) {
@@ -226,8 +236,17 @@ public class SimulationTab extends OmnetppLaunchTab  {
 		SWTFactory.createLabel(comp, "Run number:",1);
 
         fRunText = SWTFactory.createSingleText(comp, 1);
-        fRunText.setToolTipText("The run number that should be executed");
         fRunText.addModifyListener(this);
+        HoverSupport hover = new HoverSupport();
+        hover.adapt(fRunText, new IHoverTextProvider() {
+
+            public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+                if (infoText == null)
+                    infoText = LaunchPlugin.getSimulationRunInfo(getCurrentLaunchConfiguration());
+                outPreferredSize.x = 350;
+                return HoverSupport.addHTMLStyleSheet(DEFAULT_RUNTOOLTIP+"<pre>"+infoText+"</pre>");
+            }
+        });
 	}
 
     protected void createUIGroup(Composite parent, int colSpan) {
@@ -340,7 +359,6 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
             // set the controls
             fInifileText.setText(iniArgs.trim());
-            fRunText.setText(runArg.trim());
             fLibraryText.setText(libArgs.trim());
             fAdditionalText.setText(restArgs.trim());
             fOtherEnvText.setText("");
@@ -361,6 +379,13 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
             updateConfigCombo();
             setConfigName(configArg.trim());
+
+            if (cdtContributed)
+                // if we are contributed to the cdt we get the value from the command line
+                fRunText.setText(runArg.trim());
+            else
+                // otherwise we get it from a separate attribute
+                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, EMPTY_STRING));
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
@@ -389,8 +414,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
             arg += "-l "+ StringUtils.join(StringUtils.split(fLibraryText.getText())," -l ")+" ";
         if (!"".equals(getConfigName()))
             arg += "-c "+getConfigName()+" ";
-        if (!"".equals(fRunText.getText()))
-            arg += "-r "+fRunText.getText()+" ";
+        // if we are contributed to the cdt launch dialog, we should store the run parameter into the commandline
+        String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
+        if (cdtContributed) {
+            if (!"".equals(fRunText.getText()))
+                arg += "-r "+strippedRun+" ";
+        } else {
+            // otherwise (stand-alone starter) we store it into a separate attribute
+            config.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
+        }
+
         if (fCmdEnvButton.getSelection())
             arg += "-u Cmdenv ";
         if (fTkEnvButton.getSelection())
@@ -399,6 +432,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
             arg += "-u "+fOtherEnvText.getText()+" ";
         arg += fAdditionalText.getText();
         config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, arg);
+        // clear the run info text, so next time it will be re-requested
+        infoText = null;
 	}
 
 	protected void handleBrowseInifileButtonSelected() {
@@ -476,6 +511,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 return false;
             }
 
+        if ("".equals(StringUtils.deleteWhitespace(fRunText.getText())) && isScenario() ) {
+            setErrorMessage("Run number(s) must be specified if a scenario is selected");
+            return false;
+        }
+
+        if(LaunchPlugin.parseRuns(StringUtils.deleteWhitespace(fRunText.getText()), 0) == null) {
+            setErrorMessage("The run number(s) should be in a format like: 0,2,7,9-11 or use * for ALL runs");
+            return false;
+        }
+
 		return true;
 	}
 
@@ -493,7 +538,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
     @Override
     public String getId() {
-        return "org.omnetpp.launch.simulationTab";
+        return IOmnetppLaunchConstants.OMNETPP_LAUNCH_ID+".simulationTab";
     }
 
     public void widgetDefaultSelected(SelectionEvent e) {
@@ -506,16 +551,6 @@ public class SimulationTab extends OmnetppLaunchTab  {
         fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
         super.widgetSelected(e);
-    }
-
-    public void modifyText(ModifyEvent e) {
-        // enable/disable runs if config combo box has changed
-        if (e.widget == fConfigCombo) {
-            fRunText.setEnabled(isScenario());
-            if(!isScenario())
-                fRunText.setText("");
-        }
-        super.modifyText(e);
     }
 
     /**

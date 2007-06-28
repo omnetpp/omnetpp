@@ -17,7 +17,6 @@ public class StandaloneOmnetppLaunchConfigurationTabGroup extends AbstractLaunch
         ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
                 new OmnetppMainTab(),
                 new EnvironmentTab(),
-//                new CArgumentsTab(),
                 new CommonTab()
             };
             setTabs(tabs);

@@ -1,21 +1,16 @@
 package org.omnetpp.launch;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.Date;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -33,10 +28,9 @@ import org.eclipse.ui.PlatformUI;
 
 import org.omnetpp.common.util.StringUtils;
 
-// TODO add correct progress monitoring
 public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfigurationDelegate {
 
-    class BatchedSimulationLauncherJob extends Job {
+    private static class BatchedSimulationLauncherJob extends Job {
         ILaunchConfiguration configuration;
         String mode;
         ILaunch launch;
@@ -50,20 +44,17 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
             this.launch = launch;
             this.runs = runs;
         }
-        public BatchedSimulationLauncherJob(String jobName, ILaunchConfiguration configuration, String mode, ILaunch launch) {
-            this(jobName, configuration, mode, launch, null);
-        }
 
         @Override
         protected IStatus run(IProgressMonitor monitor) {
             SubMonitor smon;
             try {
-                if (runs == null) {
+                if (runs.length == 1) {
                     // execution without run specified
                     smon = SubMonitor.convert(monitor, "Running Simulation", 1);
-                    launchSimulation(configuration, mode, launch, smon.newChild(1), null);
+                    launchSimulation(configuration, mode, launch, smon.newChild(1), runs[0]);
                 } else {
-                    smon = SubMonitor.convert(monitor, "Running Simulation Batch", runs.length);
+                    smon = SubMonitor.convert(monitor, "Running Simulation Batch ("+runs.length+" runs)", runs.length);
                     for(Integer runNo : runs) {  // execute all runs
                         launchSimulation(configuration, mode, launch, smon.newChild(1), runNo);
                         if (monitor.isCanceled())
@@ -81,37 +72,38 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
         /**
          * Launches a single instance of the simulation process
          */
-        private void launchSimulation(ILaunchConfiguration configuration, String mode, ILaunch launch, final SubMonitor monitor, Integer runNo)
+        private void launchSimulation(ILaunchConfiguration configuration, String mode, ILaunch launch, final SubMonitor monitor, final Integer runNo)
                 throws CoreException {
             // check for cancellation
             if (monitor.isCanceled())
                 return;
 
-            if (runNo != null )
-                monitor.subTask("run# "+runNo);
+            monitor.subTask("run #"+runNo);
             monitor.setWorkRemaining(100);
 
-            String wdAttr = LaunchPlugin.getWorkingDirectoryPath(configuration).toString();
-            String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
-            String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
-            IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
-            String expandedWd = varman.performStringSubstitution(wdAttr);
-            String expandedProg = varman.performStringSubstitution(progAttr);
-            String expandedArg = varman.performStringSubstitution(argAttr);
-            if (runNo != null) expandedArg += " -r "+runNo;
-            IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(expandedProg));
-            String cmdLine = executableFile.getRawLocation().makeAbsolute().toString() + " " + expandedArg;
-            Process process = DebugPlugin.exec(DebugPlugin.parseArguments(cmdLine), new File(expandedWd));
-            IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(expandedProg, runNo));
-
-            // setup a stream monitor on the process output
+            Process process = LaunchPlugin.startSimulationProcess(configuration, " -r "+runNo);
+            IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
+            // setup a stream monitor on the process output, so we can track the progress
             iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
+                int prevPct = 0;
                 public void streamAppended(String text, IStreamMonitor ismon) {
-                    // for the moment use logarithmic progress reporting
-                    // TODO if we have percent based reporting, change this to linear
-                    int ticks = StringUtils.countMatches(text, "** Event");
-                    monitor.setWorkRemaining(ticks*100);
-                    monitor.worked(ticks*5);
+                    String pctStr = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(text, "% completed")," ");
+                    if (StringUtils.isNumeric(pctStr)) {
+                        try {
+                            int pct = Integer.parseInt(pctStr);
+                            monitor.worked(pct - prevPct);
+                            prevPct = pct;
+                        } catch (NumberFormatException e) {}
+                    }
+
+                    String runIdentifier = "";
+                    if (runNo != null )
+                        runIdentifier = "run #"+runNo;
+
+                    if (text.contains("Enter parameter"))
+                        monitor.subTask(runIdentifier + " - Waiting for user input... (Switch to console)");
+                    else
+                        monitor.subTask(runIdentifier+" - Executing");
                 }
             });
 
@@ -133,6 +125,19 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
         }
 
         /**
+         * @param runNo
+         * @return The process label to display with the run number.
+         * @throws CoreException
+         */
+        private String renderProcessLabel(Integer runNo) throws CoreException {
+            String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+            String expandedProg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(progAttr);
+            String format = "{0} ({1} - run #"+runNo +")";
+            String timestamp = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
+            return MessageFormat.format(format, new Object[] {expandedProg, timestamp});
+        }
+
+        /**
          * Forces a refresh of the debug view - for some reason adding/removing processes to the Launch
          * does not correctly refreshes the tree
          */
@@ -147,12 +152,6 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
             });
         }
 
-        private String renderProcessLabel(String commandLine, Integer runNo) {
-            String format = "{0} ({1}" + (runNo != null ? " - run# "+runNo : "") +")" ;
-            String timestamp = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
-            return MessageFormat.format(format, new Object[]{commandLine, timestamp});
-        }
-
     }
 
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
@@ -161,9 +160,13 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
             monitor = new NullProgressMonitor();
         }
         monitor.beginTask("Launching Simulation", 1);
-        BatchedSimulationLauncherJob job = new BatchedSimulationLauncherJob("Executing simulation job",configuration, mode, launch, new Integer[] {1 , 2, 3});
-        // TODO parse out the run numbers into tn integer string
-//        BatchedSimulationLauncherJob job = new BatchedSimulationLauncherJob("Executing simulation job",configuration, mode, launch);
+
+        Integer runs[] = LaunchPlugin.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""),
+                                                LaunchPlugin.getMaxNumberOfRuns(configuration));
+        if (runs == null)
+            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,"Invalid run numbers specified"));
+
+        BatchedSimulationLauncherJob job = new BatchedSimulationLauncherJob("Executing simulation job", configuration, mode, launch, runs);
         job.schedule();
         monitor.done();
     }

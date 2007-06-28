@@ -1,11 +1,22 @@
 package org.omnetpp.launch;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
@@ -128,4 +139,108 @@ public class LaunchPlugin extends AbstractUIPlugin {
         }
         return new Path(location);
     }
+
+    /******************************************************************************************************/
+    // run parameters and standard output parsing
+
+    /**
+     * @param runPar The provided run string (eg.: 1,2,5,9-23,44,55-70)
+     *  "*" means ALL run number: 0-(maxRunNo-1). Empty runPar means: (run#0)
+     * @param maxRunNo The maximum run number accepted by the
+     * @return An array containing all runs, or NULL on parse error
+     */
+    public static Integer[] parseRuns(String runPar, int maxRunNo) {
+        List<Integer> result = new ArrayList<Integer>();
+        runPar = StringUtils.deleteWhitespace(runPar);
+        if (StringUtils.isEmpty(runPar)) {
+            // empty means: just the first run (0)
+            result.add(0);
+        } else if ("*".equals(runPar)) {
+            // create ALL run numbers scenario
+            for(int i=0; i<maxRunNo; i++)
+                result.add(i);
+        } else {
+            // parse hand specified numbers
+            for (String current : StringUtils.split(runPar, ',')) {
+                String lowerUpper[] = StringUtils.split(current, '-');
+                int low = 0;
+                int high = 0;
+                try {
+                    if (lowerUpper.length > 0) {
+                        low = high = Math.min(Integer.parseInt(lowerUpper[0]), maxRunNo);
+                    }
+                    // if we have an upper bound too
+                    if (lowerUpper.length > 1) {
+                        high = Math.min(Integer.parseInt(lowerUpper[1]), maxRunNo);
+                    }
+                    // add all integers in the interval to the list
+                    for(int i = low; i<=high; ++i)
+                        result.add(i);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        }
+        return result.toArray(new Integer[result.size()]);
+    }
+
+    /**
+     * @param configuration
+     * @param additionalArgs extra command line arguments to be appended
+     * @return Starts the simulation program
+     * @throws CoreException
+     */
+    public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
+        String wdAttr = LaunchPlugin.getWorkingDirectoryPath(configuration).toString();
+        String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+        String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
+        IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
+        String expandedWd = varman.performStringSubstitution(wdAttr);
+        String expandedProg = varman.performStringSubstitution(progAttr);
+        String expandedArg = varman.performStringSubstitution(argAttr);
+        expandedArg += additionalArgs;
+        IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(expandedProg));
+        String cmdLine[] =DebugPlugin.parseArguments(executableFile.getRawLocation().makeAbsolute().toString() + " " + expandedArg);
+        String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+
+        return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
+    }
+
+    /**
+     * @param configuration
+     * @return The string describing all runs in the scenario or "" if error occurred
+     */
+    public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
+        try {
+             // FIXME remove the hardcoded name
+             Process proc = LaunchPlugin.startSimulationProcess(configuration, " -n OneFifoSce -g");
+             final int BUFFERSIZE = 8192;
+             byte bytes[] = new byte[BUFFERSIZE];
+             StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
+             BufferedInputStream is = new BufferedInputStream(proc.getInputStream(), BUFFERSIZE);
+             int lastRead = 0;
+             while((lastRead = is.read(bytes)) > 0) {
+                 stringBuffer.append(new String(bytes, 0, lastRead));
+             }
+
+             return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(stringBuffer.toString(), "Number of runs:", "End run of OMNeT++"));
+
+        } catch (CoreException e) {
+            LaunchPlugin.logError("Error starting the executable", e);
+        } catch (IOException e) {
+            LaunchPlugin.logError("Error getting output stream from the executable", e);
+        }
+        return "";
+    }
+
+    /**
+     * @param configuration
+     * @return The number of runs available in the given scenario
+     */
+    public static int getMaxNumberOfRuns(ILaunchConfiguration configuration) {
+        return NumberUtils.toInt(StringUtils.trimToEmpty(
+                        StringUtils.substringBetween(
+                                LaunchPlugin.getSimulationRunInfo(configuration), "Number of runs:", "\n")), 1);
+    }
+
 }
