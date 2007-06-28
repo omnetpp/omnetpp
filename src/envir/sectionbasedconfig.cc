@@ -195,7 +195,7 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
         for (int i=0; i<itervars.size(); i++)
             variables[itervars[i].varid] = scenario.getVariable(itervars[i].varid.c_str());
         variables["iterationvars"] = scenario.str();
-        //variables["repetition"] = "";  FIXME TODO
+        variables["repetition"] = "FIXME";  //FIXME TODO
     }
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());

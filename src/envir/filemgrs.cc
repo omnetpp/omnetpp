@@ -48,6 +48,10 @@ Register_Class(cFileOutputVectorManager);
 
 #define DEFAULT_PRECISION  "14"
 
+Register_PerRunConfigEntry(CFGID_EXPERIMENT, "experiment", CFG_CUSTOM, "${configname}", "Experiment name. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_MEASUREMENT, "measurement", CFG_CUSTOM, "${iterationvars}", "Measurement name. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_CUSTOM, "${repetition}", "Measurement name. This string gets recorded into result files, and may be referred to during result analysis.");
+
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${configname}-${runnumber}.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
@@ -121,6 +125,10 @@ void cFileOutputVectorManager::initRun()
             const char *key = keys[i];
             run.attributes[key] = cfg->getConfigValue(key);
         }
+
+        run.attributes["experiment"] = cfg->getAsCustom(CFGID_EXPERIMENT); //FIXME if not already in there, etc
+        run.attributes["measurement"] = cfg->getAsCustom(CFGID_MEASUREMENT);
+        run.attributes["replication"] = cfg->getAsCustom(CFGID_REPLICATION);
 
         //FIXME todo: fill in run.moduleParams[]
         run.initialized = true;
