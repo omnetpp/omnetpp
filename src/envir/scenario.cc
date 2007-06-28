@@ -38,7 +38,7 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    return new Scenario::IterationVariable(hostobject, varname);
+    return new Scenario::VariableReference(hostobject, varname);
 }
 
 Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
@@ -52,33 +52,32 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
 
 //----
 
-Scenario::Scenario(const std::vector<IterationSpec>& iterationSpecs, const char *conditionText) :
-iterspecs(iterationSpecs)
+Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraintText) :
+vars(iterationVariables)
 {
-    // store the condition
-    condition = NULL;
-    if (conditionText)
+    // store the constraint
+    constraint = NULL;
+    if (constraintText)
     {
-        condition = new Expression();
+        constraint = new Expression();
         Resolver resolver(this);
         try
         {
-            condition->parse(conditionText, &resolver);
+            constraint->parse(constraintText, &resolver);
         }
         catch (std::exception& e)
         {
-            throw cRuntimeError("Cannot parse condition expression `%s': %s", conditionText, e.what());
+            throw cRuntimeError("Cannot parse constraint expression `%s': %s", constraintText, e.what());
         }
     }
 
     // fill the variable tables
-    itervars.resize(iterspecs.size());
-    for (int i=0; i<iterspecs.size(); i++)
+    variterators.resize(vars.size());
+    for (int i=0; i<vars.size(); i++)
     {
-        if (!iterspecs[i].value.empty())
-            itervars[i].parse(iterspecs[i].value.c_str());
-        if (!iterspecs[i].varname.empty() && !iterspecs[i].value.empty())
-            namedvars[iterspecs[i].varname] = &itervars[i];
+        ASSERT(!vars[i].varid.empty() && !vars[i].value.empty());
+        variterators[i].parse(vars[i].value.c_str());
+        varmap[vars[i].varid] = &variterators[i];
     }
 }
 
@@ -88,7 +87,7 @@ Scenario::~Scenario()
 
 Expression::StkValue Scenario::getIterationVariable(const char *varname)
 {
-    std::string value = getVar(varname);
+    std::string value = getVariable(varname);
     try
     {
         if (value[0]=='"')
@@ -118,23 +117,23 @@ int Scenario::getNumRuns()
 
 bool Scenario::restart()
 {
-    if (itervars.size()==0)
+    if (variterators.size()==0)
         return true;  // it is valid to have no iterations at all
 
     // reset all iterators. If all of them are immediately at end(), there's no
     // valid state and we must return false
     bool ok = false;
-    for (int i=0; i<itervars.size(); i++)
+    for (int i=0; i<variterators.size(); i++)
     {
-        itervars[i].restart();
-        if (!itervars[i].end())
+        variterators[i].restart();
+        if (!variterators[i].end())
             ok = true;
     }
     if (ok==false)
         return false;
 
-    // if there's a condition, make sure it holds
-    while (condition && evaluateCondition()==false)
+    // if there's a constraint, make sure it holds
+    while (constraint && evaluateConstraint()==false)
         if (!inc()) return false;
     return true;
 }
@@ -143,8 +142,8 @@ bool Scenario::next()
 {
     if (!inc()) return false;
 
-    // if there's a condition, make sure it holds
-    while (condition && evaluateCondition()==false)
+    // if there's a constraint, make sure it holds
+    while (constraint && evaluateConstraint()==false)
         if (!inc()) return false;
     return true;
 }
@@ -152,74 +151,52 @@ bool Scenario::next()
 bool Scenario::inc()
 {
     // try incrementing the last iteration variable first
-    for (int k=itervars.size()-1; k>=0; k--)
+    for (int k=variterators.size()-1; k>=0; k--)
     {
-        itervars[k]++;
-        if (!itervars[k].end())
+        variterators[k]++;
+        if (!variterators[k].end())
             return true; // if incrementing was OK, we're done
         else
-            itervars[k].restart(); // reset this counter, and go on incrementing the (k-1)th one
+            variterators[k].restart(); // reset this counter, and go on incrementing the (k-1)th one
     }
     return false; // no variable could be incremented
 }
 
-bool Scenario::evaluateCondition()
+bool Scenario::evaluateConstraint()
 {
     try
     {
-        return condition->boolValue();
+        return constraint->boolValue();
     }
     catch (std::exception& e)
     {
-        throw cRuntimeError("Cannot evaluate condition expression: %s", e.what());
+        throw cRuntimeError("Cannot evaluate constraint expression: %s", e.what());
     }
 }
 
-std::vector<std::string> Scenario::generate(int runNumber)
+void Scenario::gotoRun(int runNumber)
 {
     // spin the iteration variables to the given run number
     if (!restart())
-        throw cRuntimeError("Iterators or condition too restrictive: not even one run can be generated");
+        throw cRuntimeError("Iterators or constraint too restrictive: not even one run can be generated");
     for (int i=0; i<runNumber; i++)
         if (!next())
             throw cRuntimeError("Run number %d is out of range", runNumber);
-
-    // then collect and return the variables
-    return get();
 }
 
-std::string Scenario::getVar(const char *varname) const
+std::string Scenario::getVariable(const char *varid) const
 {
-    std::map<std::string,ValueIterator*>::const_iterator it = namedvars.find(varname);
-    if (it==namedvars.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varname);
+    std::map<std::string,ValueIterator*>::const_iterator it = varmap.find(varid);
+    if (it==varmap.end())
+        throw cRuntimeError("Unknown iteration variable: %s", varid);
     return it->second->get();
-}
-
-std::vector<std::string> Scenario::get() const
-{
-    std::vector<std::string> result(iterspecs.size());
-    for (int i=0; i<iterspecs.size(); i++)
-        result[i] = !iterspecs[i].value.empty() ? itervars[i].get() : !iterspecs[i].varname.empty() ? getVar(iterspecs[i].varname.c_str()) : "";
-    return result;
 }
 
 std::string Scenario::str() const
 {
     std::stringstream out;
-    for (int i=0; i<itervars.size(); i++)
-    {
-        if (!itervars[i].get().empty()) {
-            out << (i>0 ? ", " : "");
-            if (iterspecs[i].varname.empty())
-                out << "$" << i;
-            else
-                out << "$" << iterspecs[i].varname;
-            out << "=" << itervars[i].get();
-        }
-    }
+    for (int i=0; i<vars.size(); i++)
+        out << (i>0?", ":"") << "$" << vars[i].varname << "=" << variterators[i].get();
     return out.str();
 }
-
-
 

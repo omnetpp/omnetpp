@@ -13,7 +13,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DBUILDING_COMMON /Fd"common.pdb"
 
 OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
-      stringtokenizer.obj fnamelisttokenizer.obj \
+      stringpool.obj stringtokenizer.obj fnamelisttokenizer.obj \
       expression.obj lex.expressionyy.obj expression.tab.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
       patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
@@ -159,6 +159,8 @@ patternmatcher.obj: patternmatcher.cc \
   exception.h \
   commondefs.h \
   commonutil.h
+stringpool.obj: stringpool.cc \
+  stringpool.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h

@@ -16,7 +16,7 @@
 #define __STRINGPOOL_H_
 
 #include <set>
-#include "eventlogdefs.h"
+#include "commondefs.h"
 
 /**
  * For saving memory on the storage of (largely) constant strings that occur in
@@ -26,7 +26,7 @@
  * to be released. The downside is that they will only be deallocated in the
  * stringpool object's destructor.
  */
-class EVENTLOG_API StringPool
+class COMMON_API StringPool
 {
   protected:
     struct strless {

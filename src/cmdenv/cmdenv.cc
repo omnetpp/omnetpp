@@ -140,7 +140,7 @@ void TCmdenvApp::setup()
         return;
 
     // '-n' option: print number of runs in the given scenario, and exit
-    opt_printnumruns = args->optionValue('n');
+    opt_printnumruns = args->optionGiven('n');
 
     // '-c' option: specifies configuration or scenario to activate
     opt_configname = args->optionValue('c');
@@ -186,14 +186,14 @@ int TCmdenvApp::run()
 
     cConfiguration *cfg = getConfig();
 
-    if (!opt_printnumruns.empty())
+    if (opt_printnumruns)
     {
-        ev.printf("Scenario: %s\n", opt_printnumruns.c_str());
-        ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_printnumruns.c_str()));
+        ev.printf("Scenario: %s\n", opt_configname.c_str());
+        ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_configname.c_str()));
 
         if (opt_printconfigdetails || opt_printconfigdetails2)
         {
-            std::vector<std::string> runs = cfg->unrollScenario(opt_printnumruns.c_str(), opt_printconfigdetails2);
+            std::vector<std::string> runs = cfg->unrollScenario(opt_configname.c_str(), opt_printconfigdetails2);
             for (int i=0; i<runs.size(); i++)
                 if (opt_printconfigdetails2)
                     ev.printf("Run %d:\n%s", i, runs[i].c_str());  // -G: detailed

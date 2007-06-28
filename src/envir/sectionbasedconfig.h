@@ -21,8 +21,10 @@
 #include <string>
 #include "cconfiguration.h"
 #include "cconfigreader.h"
+#include "stringpool.h"
 
 class PatternMatcher;
+class Scenario;
 
 
 /**
@@ -119,18 +121,29 @@ class SectionBasedConfiguration : public cConfiguration
     };
     NullKeyValue nullEntry;
 
+    // predefined variables (${configname} etc) and iteration variables. id-to-value map.
+    typedef std::map<std::string,std::string> StringMap;
+    StringMap variables;
+
+    // storage for values returned by substituteVariables()
+    StringPool stringPool;
+
   public:
     /**
-     * Used during scenario resulution: stores the location of an iteration
-     * spec "${...}" in the configuration. An iteration spec may be in
-     * one of the following forms: ${1,2,5,10}; ${x=1,2,5,10}; $x or ${x}.
+     * Used during scenario resolution: an iteration variable in the
+     * configuration. An iteration spec may be in one of the following forms:
+     * ${1,2,5,10}; ${x=1,2,5,10}. (Note: ${x} is just an iteration variable
+     * _reference_, not an an iteration variable itself.
+     *
+     * varid identifies the variable; for named variables it's the same as
+     * varname. For unnamed ones, it is a string like "2-5-0", composed of
+     * (sectionId, entryId, index), so that it identifies the place
+     * where the value has to be substituted back.
      */
-    struct IterationSpec {
-        int entryId;
-        int startPos;
-        int length;
-        std::string varname; // "x"; may be empty
-        std::string value;   // "1,2,5..10"; may be empty
+    struct IterationVariable {
+        std::string varid;   // identifies the variable, see above
+        std::string varname; // printable variable name ("x"); may be a generate one like "0"; never empty
+        std::string value;   // "1,2,5..10"; never empty
     };
 
   private:
@@ -139,18 +152,22 @@ class SectionBasedConfiguration : public cConfiguration
     int internalGetSectionId(const char *section) const;
     int internalFindEntry(const char *section, const char *key) const;
     int internalFindEntry(int sectionId, const char *key) const;
+    const char *internalGetValue(const std::vector<int>& sectionChain, const char *key) const;
     int resolveConfigName(const char *scenarioOrConfigName) const;
+    std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *section) const;
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
-    std::vector<IterationSpec> collectIterationSpecs(int sectionId) const;
-    void validateIterations(const std::vector<IterationSpec>& list) const;
-    static std::string substitute(const std::string& value, int entryId, const std::vector<IterationSpec>& iterspecs, const std::vector<std::string>& values);
-    KeyValue1 convert(const cConfigurationReader::KeyValue& e);
-    void doActivateConfig(int sectionId);
-    void doActivateScenario(int sectionId, int runNumber);
+    std::vector<IterationVariable> collectIterationVariables(int sectionId) const;
+    static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos);
+    std::string substituteVariables(const char *text, int sectionId, int entryId);
+    KeyValue1 convert(int sectionId, int entryId);
     int internalGetNumRunsInScenario(int sectionId) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
+
+  protected:
+    // cConfiguration method
+    virtual const char *substituteVariables(const char *value);
 
   public:
     SectionBasedConfiguration();

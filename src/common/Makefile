@@ -10,7 +10,7 @@ include ../../Makefile.inc
 COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS= lcgrandom.o filereader.o linetokenizer.o \
-      stringtokenizer.o fnamelisttokenizer.o \
+      stringpool.o stringtokenizer.o fnamelisttokenizer.o \
       expression.o lex.expressionyy.o expression.tab.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
       patternmatcher.o unitconversion.o displaystring.o fileglobber.o \

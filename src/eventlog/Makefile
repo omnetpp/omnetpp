@@ -9,7 +9,7 @@ include ../../Makefile.inc
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)/platdep -I. -I../common
 
-OBJS= ievent.o ieventlog.o eventlogfacade.o eventlogtablefacade.o sequencechartfacade.o eventlog.o eventlogindex.o messagedependency.o event.o eventlogentry.o eventlogentries.o filteredevent.o filteredeventlog.o eventlogentryfactory.o stringpool.o
+OBJS= ievent.o ieventlog.o eventlogfacade.o eventlogtablefacade.o sequencechartfacade.o eventlog.o eventlogindex.o messagedependency.o event.o eventlogentry.o eventlogentries.o filteredevent.o filteredeventlog.o eventlogentryfactory.o
 LIBS= -leventlog -lcommon
 
 #

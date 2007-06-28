@@ -31,36 +31,36 @@
 class Scenario
 {
   public:
-    typedef SectionBasedConfiguration::IterationSpec IterationSpec;
+    typedef SectionBasedConfiguration::IterationVariable IterationVariable;
 
   private:
     // the input
-    const std::vector<IterationSpec>& iterspecs;
-    Expression *condition;
+    const std::vector<IterationVariable>& vars;
+    Expression *constraint;
 
     // the iteration variables, named (${x=1..5}) and unnamed (${1..5})
-    std::vector<ValueIterator> itervars; // indices correspond to iterspecs[]
-    std::map<std::string, ValueIterator*> namedvars;
+    std::vector<ValueIterator> variterators; // indices correspond to vars[]
+    std::map<std::string, ValueIterator*> varmap; // varid-to-iterator
 
   private:
     bool inc();
-    bool evaluateCondition();
-    std::string getVar(const char *varname) const;
+    bool evaluateConstraint();
+    Expression::StkValue getIterationVariable(const char *varname);
 
   public:
     /**
      * Used in resolving and generating scenarios, it implements a $x iteration variable.
      * Currently just delegates SectonBasedConfiguration::getIterationVariable().
      */
-    class IterationVariable : public Expression::Functor
+    class VariableReference : public Expression::Functor
     {
       private:
         Scenario *hostnode;
         std::string varname;
       public:
-        IterationVariable(Scenario *node, const char *name) {hostnode = node; varname = name;}
-        virtual ~IterationVariable() {}
-        virtual Expression::Functor *dup() const {return new IterationVariable(hostnode, varname.c_str());}
+        VariableReference(Scenario *node, const char *name) {hostnode = node; varname = name;}
+        virtual ~VariableReference() {}
+        virtual Expression::Functor *dup() const {return new VariableReference(hostnode, varname.c_str());}
         virtual const char *name() const {return varname.c_str();}
         virtual const char *argTypes() const {return "";}
         virtual char returnType() const {return Expression::StkValue::DBL;}
@@ -69,11 +69,8 @@ class Scenario
         virtual std::string toString(std::string args[], int numargs) {return name();}
     };
 
-  protected:
-    Expression::StkValue getIterationVariable(const char *varname);
-
   public:
-    Scenario(const std::vector<IterationSpec>& iterationSpecs, const char *condition);
+    Scenario(const std::vector<IterationVariable>& iterationVariables, const char *constraint);
     ~Scenario();
 
     /**
@@ -84,20 +81,9 @@ class Scenario
     int getNumRuns();
 
     /**
-     * Returns the values of the iteration variables for the given run.
-     * The returned vector is the same size as the input iterationSpecs,
-     * and each element contains the value for the corresponding iteration
-     * variable.
-     *
-     * The current iteration state is NOT preserved.
+     * Spins the iteration variables to the given run.
      */
-    std::vector<std::string> generate(int runNumber);
-
-    /**
-     * Generates all runs in the given scenario, and returns them as strings.
-     * The current iteration state is NOT preserved.
-     */
-    std::vector<std::string> unroll();
+    void gotoRun(int runNumber);
 
     /**
      * Restarts the iteration. Returns false if there's no valid config at all,
@@ -112,13 +98,13 @@ class Scenario
     bool next();
 
     /**
-     * During iteration (see restart() and next()), it returns the values
-     * for the current run.
+     * XXX
      */
-    std::vector<std::string> get() const;
+    std::string getVariable(const char *varid) const;
 
     /**
-     * Returns the current iteration state as a string ("$x=100, $y=3, $2=.4")
+     * Returns the current iteration state as a string ("$x=100, $y=3, $2=.4").
+     * Used for the value of ${iterationvars} as well.
      */
     std::string str() const;
 };

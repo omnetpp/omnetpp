@@ -82,6 +82,10 @@ class ENVIR_API cConfiguration : public cObject
         virtual const char *getBaseDirectory() const = 0;
     };
 
+  protected:
+    // substituting ${configname} etc into default values
+    virtual const char *substituteVariables(const char *value) = 0;
+
   public:
     /**
      * Virtual destructor

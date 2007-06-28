@@ -13,7 +13,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_EVENTLOG /Fd"eventlog.pdb"
 IMPLIBS=../common/common.lib
 
-OBJS=ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
+OBJS=ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj
 
 #
 # Automatic rules
@@ -66,20 +66,18 @@ event.obj: event.cc \
   eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h \
-  stringpool.h \
   ieventlog.h \
   eventlogindex.h
 eventlog.obj: eventlog.cc \
-  stringpool.h \
   eventlog.h \
-  eventlogdefs.h \
   event.h \
   ieventlog.h \
   eventlogindex.h \
   ievent.h \
   eventlogentry.h \
   eventlogentries.h \
-  messagedependency.h
+  messagedependency.h \
+  eventlogdefs.h
 eventlogentries.obj: eventlogentries.cc \
   event.h \
   eventlogentries.h \
@@ -91,14 +89,13 @@ eventlogentry.obj: eventlogentry.cc \
   eventlog.h \
   eventlogentry.h \
   eventlogentryfactory.h \
-  stringpool.h \
   event.h \
   ieventlog.h \
   eventlogindex.h \
-  eventlogdefs.h \
   ievent.h \
   eventlogentries.h \
-  messagedependency.h
+  messagedependency.h \
+  eventlogdefs.h
 eventlogentryfactory.obj: eventlogentryfactory.cc \
   event.h \
   eventlogentryfactory.h \
@@ -135,7 +132,6 @@ eventlogtool.obj: eventlogtool.cc \
   eventlog.h \
   filteredeventlog.h \
   eventlogdefs.h \
-  stringpool.h \
   event.h \
   ieventlog.h \
   ievent.h \
@@ -154,7 +150,6 @@ filteredevent.obj: filteredevent.cc \
   eventlogdefs.h \
   ieventlog.h \
   eventlog.h \
-  stringpool.h \
   eventlogindex.h
 filteredeventlog.obj: filteredeventlog.cc \
   filteredeventlog.h \
@@ -166,7 +161,6 @@ filteredeventlog.obj: filteredeventlog.cc \
   eventlogentry.h \
   messagedependency.h \
   eventlogentries.h \
-  stringpool.h \
   event.h \
   eventlogindex.h
 ievent.obj: ievent.cc \
@@ -199,6 +193,3 @@ sequencechartfacade.obj: sequencechartfacade.cc \
   eventlogdefs.h \
   eventlogentries.h \
   eventlogfacade.h
-stringpool.obj: stringpool.cc \
-  stringpool.h \
-  eventlogdefs.h

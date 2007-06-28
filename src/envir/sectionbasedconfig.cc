@@ -69,6 +69,7 @@ void SectionBasedConfiguration::clear()
     config.clear();
     groups.clear();
     wildcardGroup.entries.clear();
+    variables.clear();
 }
 
 void SectionBasedConfiguration::initializeFrom(cConfiguration *conf)
@@ -119,8 +120,7 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *scenario
         throw cRuntimeError("No such config or scenario: %s", scenarioOrConfigName);
 
     // determine the list of sections, from this one up to [General]
-    const char *section = ini->getSectionName(sectionId);
-    std::vector<int> sectionChain = resolveSectionChain(section);
+    std::vector<int> sectionChain = resolveSectionChain(sectionId);
 
     // walk the list of fallback sections, and return the first "description" entry we meet
     for (int i=0; i<sectionChain.size(); i++)
@@ -172,69 +172,47 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
         return;  // allow activating "General" even if it's empty
     if (sectionId == -1)
         throw cRuntimeError("No such config or scenario: %s", scenarioOrConfigName);
-    if (ini->getSectionName(sectionId)[0] != 'S')  // "Scenario...", not "Config..." or "General"
-        doActivateConfig(sectionId);
-    else
-        doActivateScenario(sectionId, runNumber);
-}
-
-void SectionBasedConfiguration::doActivateConfig(int sectionId)
-{
-    std::string section = ini->getSectionName(sectionId);
 
     // determine the list of sections, from this one up to [General]
-    std::vector<int> sectionChain = resolveSectionChain(section.c_str());
+    std::vector<int> sectionChain = resolveSectionChain(sectionId);
 
-    // walk the list of fallback sections, and add entries to our tables (config[], groups[], etc).
-    // Entries added first will have precedence over those added later.
-    for (int i=0; i<sectionChain.size(); i++)
-        for (int j=0; j<ini->getNumEntries(sectionChain[i]); j++)
-            addEntry(convert(ini->getEntry(sectionChain[i], j)));
-}
+    variables["configname"] = getActiveConfigName();
+    variables["runnumber"] = opp_stringf("%d", getActiveRunNumber());
+    variables["network"] = opp_nulltoempty(internalGetValue(sectionChain, "network"));
+    // variables["runid"] = ""; FIXME TODO
 
-void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
-{
-    std::string section = ini->getSectionName(sectionId);
-
-    // extract all iteration specs from values within this section
-    std::vector<IterationSpec> iterspecs = collectIterationSpecs(sectionId);
-    validateIterations(iterspecs);
+    // extract all iteration vars from values within this section
+    std::vector<IterationVariable> itervars = collectIterationVariables(sectionId);
 
     // see if there's a constraint given
     int constraintEntryId = internalFindEntry(sectionId, "constraint");
     const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
 
-    // determine the values to substitute into the iteration specs (${...})
-    std::vector<std::string> values;
+    // determine the values to substitute into the iteration vars (${...})
     try {
-        values = Scenario(iterspecs, constraint).generate(runNumber);
-    } catch (std::exception& e) {
+        Scenario scenario(itervars, constraint);
+        scenario.gotoRun(runNumber);
+        for (int i=0; i<itervars.size(); i++)
+            variables[itervars[i].varid] = scenario.getVariable(itervars[i].varid.c_str());
+        variables["iterationvars"] = scenario.str();
+        //variables["repetition"] = "";  FIXME TODO
+    }
+    catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
     }
 
-    // add the resulting entries into the tables (config[], params[]),
-    // substituting the iteration values
-    for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
-    {
-        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
-        std::string value = entry.getValue();
-        std::string actualValue = substitute(value, entryId, iterspecs, values);
-
-        // add entry to our tables
-        KeyValue1 actualEntry = convert(entry);
-        actualEntry.value = actualValue;
-        addEntry(actualEntry);
-    }
-
-    // determine the list of sections, from this one up to [General]
-    std::vector<int> sectionChain = resolveSectionChain(section.c_str());
-
     // walk the list of fallback sections, and add entries to out tables (config[] and params[]).
+    // Meanswhile, substitute the iteration values.
     // Entries added first will have precedence over those added later.
-    // NOTE: Loop goes from 1, so we skip the Scenario section we already processed above.
-    for (int i=1; i<sectionChain.size(); i++)
-        for (int j=0; j<ini->getNumEntries(sectionChain[i]); j++)
-            addEntry(convert(ini->getEntry(sectionChain[i], j)));
+    for (int i=0; i<sectionChain.size(); i++)
+    {
+        int sectionId = sectionChain[i];
+        for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
+        {
+            // add entry to our tables
+            addEntry(convert(sectionId, entryId));
+        }
+    }
 }
 
 int SectionBasedConfiguration::getNumRunsInScenario(const char *scenarioName) const
@@ -250,9 +228,8 @@ int SectionBasedConfiguration::getNumRunsInScenario(const char *scenarioName) co
 
 int SectionBasedConfiguration::internalGetNumRunsInScenario(int sectionId) const
 {
-    // extract all iteration specs from values within this section
-    std::vector<IterationSpec> v = collectIterationSpecs(sectionId);
-    validateIterations(v);
+    // extract all iteration vars from values within this section
+    std::vector<IterationVariable> v = collectIterationVariables(sectionId);
 
     // see if there's a constraint given
     int constraintEntryId = internalFindEntry(sectionId, "constraint");
@@ -270,27 +247,16 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
     if (sectionId == -1)
         throw cRuntimeError("No such scenario: %s", scenarioName);
 
-    // extract all iteration specs from values within this section
-    std::vector<IterationSpec> iterspecs = collectIterationSpecs(sectionId);
-    validateIterations(iterspecs);
+    // extract all iteration vars from values within this section
+    std::vector<IterationVariable> itervars = collectIterationVariables(sectionId);
 
     // see if there's a constraint given
     int constraintEntryId = internalFindEntry(sectionId, "constraint"); //XXX use constant (multiple places here!)
     const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
 
-    // collect entryIds that we want to print out. Basically, only the entries
-    // with ${...} in them -- which means the unique entryIds from the iterspecs.
-    std::vector<int> entryIds;
-    for (int i=0; i<iterspecs.size(); i++)
-    {
-        int entryId = iterspecs[i].entryId;
-        if (std::find(entryIds.begin(), entryIds.end(), entryId)==entryIds.end())
-            entryIds.push_back(entryId);
-    }
-
     // iterate over all runs in the scenario
     try {
-        Scenario scenario(iterspecs, constraint);
+        Scenario scenario(itervars, constraint);
         std::vector<std::string> result;
         if (scenario.restart())
         {
@@ -304,16 +270,17 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
                 }
                 else
                 {
-                    std::vector<std::string> values = scenario.get();
                     runstring += std::string("\t# ") + scenario.str() + "\n";
+/*FIXME
                     for (int i=0; i<entryIds.size(); i++)
                     {
                         int entryId = entryIds[i];
                         const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
                         std::string value = entry.getValue();
-                        std::string actualValue = substitute(value, entryId, iterspecs, values);
+                        std::string actualValue = substitute(value, entryId, itervars, values);
                         runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
                     }
+*/
                 }
                 result.push_back(runstring);
 
@@ -329,108 +296,120 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
     }
 }
 
-std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration::collectIterationSpecs(int sectionId) const
+std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(int sectionId) const
 {
-    std::vector<IterationSpec> v;
+    std::vector<IterationVariable> v;
+    int unnamedCount = 0;
     for (int i=0; i<ini->getNumEntries(sectionId); i++)
     {
         const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, i);
-        const char *text = entry.getValue();
-        const char *pos = text;
-        while ((pos = strchr(pos, '$')) != NULL)
+        const char *pos = entry.getValue();
+        int k = 0;
+        while ((pos = strstr(pos, "${")) != NULL)
         {
-            if (*(pos+1)=='{')
+            IterationVariable loc;
+            try {
+                parseVariable(pos, loc.varname, loc.value, pos);
+            } catch (std::exception& e) {
+                throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
+            }
+
+            if (!loc.value.empty())
             {
-                if (strcmp(entry.getKey(), "constraint")==0)
-                    throw cRuntimeError("Scenario generator: the ${...} syntax cannot be used within the constraint= entry");
-
-                const char *endPos = strchr(pos, '}');
-                if (!endPos)
-                    throw cRuntimeError("Scenario generator: missing '}' for '${' in entry %s = %s", entry.getKey(), entry.getValue());
-
-                // parse what's inside the ${...}
-                const char *varbegin = NULL;
-                const char *varend = NULL;
-                const char *valuebegin = NULL;
-
-                const char *s = pos+2;
-                while (isspace(*s)) s++;
-                if (isalpha(*s))
-                {
-                    varbegin = varend = s;
-                    while (isalnum(*varend)) varend++;
-                    s = varend;
-                    while (isspace(*s)) s++;
-                    if (*s=='}') {
-                        // ${x} syntax -- OK
-                    }
-                    else if (*s=='=' && *(s+1)!='=') {
-                        // ${x=...} syntax -- OK
-                        valuebegin = s+1;
-                    }
-                    else {
-                        // missing equal sign: this is not a variable
-                        valuebegin = varbegin;
-                        varbegin = varend = NULL;
-                    }
-                } else {
-                    valuebegin = s;
+                // store variable, and make sure it has name and id
+                if (!loc.varname.empty()) {
+                    for (int j=0; j<v.size(); j++)
+                        if (v[i].varname==loc.varname)
+                            throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
+                    loc.varid = loc.varname;
                 }
-
-                // fill in the struct
-                IterationSpec loc;
-                loc.entryId = i;
-                loc.startPos = pos - text;
-                loc.length = endPos - pos + 1;
-                if (varbegin)
-                    loc.varname.assign(varbegin, varend-varbegin);
-                if (valuebegin)
-                    loc.value.assign(valuebegin, endPos-valuebegin);
+                else {
+                    loc.varid = opp_stringf("%d-%d-%d", sectionId, i, k);
+                    loc.varname = opp_stringf("%d", unnamedCount++);
+                }
                 v.push_back(loc);
-
-                pos = endPos;
             }
-            else
-            {
-                // nothing here, skip this '$' sign
-                pos++;
-            }
+            k++;
         }
     }
     return v;
 }
 
-void SectionBasedConfiguration::validateIterations(const std::vector<IterationSpec>& list) const
+void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos)
 {
-    // check that the same var is not defined twice, with different iteration specs
-    std::set<std::string> varnames;
-    for (int i=0; i<list.size(); i++)
+    Assert(pos[0]=='$' && pos[1]=='{'); // this is the way we've got to be invoked
+    outEndPos = strchr(pos, '}');
+    if (!outEndPos)
+        throw cRuntimeError("missing '}' for '${'");
+
+    // parse what's inside the ${...}
+    const char *varbegin = NULL;
+    const char *varend = NULL;
+    const char *valuebegin = NULL;
+
+    const char *s = pos+2;
+    while (isspace(*s)) s++;
+    if (isalpha(*s))
     {
-        const IterationSpec& loc = list[i];
-        if (!loc.varname.empty() && !loc.value.empty())
-        {
-            if (varnames.find(loc.varname) != varnames.end())
-                throw cRuntimeError("Scenario generator: iteration variable ${%s} defined multiple times in the configuration", loc.varname.c_str());
-            varnames.insert(loc.varname);
+        // must be a variable or a variable reference
+        varbegin = varend = s;
+        while (isalnum(*varend)) varend++;
+        s = varend;
+        while (isspace(*s)) s++;
+        if (*s=='}') {
+            // ${x} syntax -- OK
         }
+        else if (*s=='=' && *(s+1)!='=') {
+            // ${x=...} syntax -- OK
+            valuebegin = s+1;
+        }
+        else {
+            throw cRuntimeError("missing '=' after '${varname'");
+        }
+    } else {
+        valuebegin = s;
     }
+
+    outVarname = outValue = "";
+    if (varbegin)
+        outVarname.assign(varbegin, varend-varbegin);
+    if (valuebegin)
+        outValue.assign(valuebegin, outEndPos-valuebegin);
 }
 
-std::string SectionBasedConfiguration::substitute(const std::string& value, int entryId, const std::vector<IterationSpec>& iterspecs, const std::vector<std::string>& values)
+std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId)
 {
-    // substitute iteration values
-    std::string result = value;
-    int stringOffset = 0;
-    for (int i=0; i<iterspecs.size(); i++)
+    std::string result = text;
+    int k = 0;  // counts "${" occurrences
+    const char *pos, *endPos;
+    while ((pos = strstr(result.c_str(), "${")) != NULL)
     {
-        if (iterspecs[i].entryId==entryId) // IterationSpec refers to this key-value line
-        {
-            result.erase(iterspecs[i].startPos+stringOffset, iterspecs[i].length);
-            result.insert(iterspecs[i].startPos+stringOffset, values[i]);
-            stringOffset += values[i].length() - iterspecs[i].length;
-        }
+        std::string varname, dummy;
+        parseVariable(pos, varname, dummy, endPos);
+        std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
+        StringMap::const_iterator it = variables.find(varid.c_str());
+        if (it==variables.end())
+            throw cRuntimeError("no such variable: ${%s}", varid.c_str());
+        std::string value = it->second;
+        result.replace(pos-result.c_str(), endPos-pos+1, value);
+        k++;
     }
     return result;
+}
+
+const char *SectionBasedConfiguration::substituteVariables(const char *value)
+{
+    if (value==NULL || strstr(value, "${")==NULL)
+        return value;
+
+    // returned string needs to be stringpooled
+    std::string result = substituteVariables(value, -1, -1);
+    return stringPool.get(result.c_str());
+}
+
+std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const
+{
+    return resolveSectionChain(ini->getSectionName(sectionId));
 }
 
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
@@ -544,15 +523,18 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
     }
 }
 
-SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(const cConfigurationReader::KeyValue& e)
+SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(int sectionId, int entryId)
 {
+    const cConfigurationReader::KeyValue& e = ini->getEntry(sectionId, entryId);
+    std::string value = substituteVariables(e.getValue(), sectionId, entryId);
+
     StringSet::iterator it = basedirs.find(e.getBaseDirectory());
     if (it == basedirs.end()) {
         basedirs.insert(e.getBaseDirectory());
         it = basedirs.find(e.getBaseDirectory());
     }
     std::string *basedirRef = &(*it);
-    return KeyValue1(basedirRef, e.getKey(), e.getValue());
+    return KeyValue1(basedirRef, e.getKey(), value.c_str());
 }
 
 int SectionBasedConfiguration::internalFindSection(const char *section) const
@@ -585,6 +567,18 @@ int SectionBasedConfiguration::internalFindEntry(int sectionId, const char *key)
         if (strcmp(key, ini->getEntry(sectionId, i).getKey())==0)
             return i;
     return -1;
+}
+
+const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key) const
+{
+    for (int i=0; i<sectionChain.size(); i++)
+    {
+        int sectionId = sectionChain[i];
+        int entryId = internalFindEntry(sectionId, key);
+        if (entryId != -1)
+            return ini->getEntry(sectionId, entryId).getValue();
+    }
+    return NULL;
 }
 
 static int findInArray(const char *s, const char **array)
@@ -716,6 +710,12 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                         throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
                 }
             }
+
+            // check value: make sure ${} only occurs within Scenario sections
+            //XXX needed?
+            const char *value = ini->getEntry(i, j).getValue();
+            if (strstr(value, "${")!=NULL && section[0]!='S')
+                throw cRuntimeError("Wrong value for %s=%s : ${} variables are only allowed within Scenario sections", key, value);
         }
     }
 }
@@ -862,3 +862,5 @@ void SectionBasedConfiguration::dump() const
     for (int i=0; i<wildcardGroup.entries.size(); i++)
         printf("  %s = %s\n", wildcardGroup.entries[i].key.c_str(), wildcardGroup.entries[i].value.c_str());
 }
+
+

@@ -31,7 +31,7 @@ class TCmdenvApp : public TOmnetApp
 {
    protected:
      // new simulation options:
-     opp_string opt_printnumruns;
+     bool opt_printnumruns;
      opp_string opt_configname;
      opp_string opt_runstoexec;
      bool opt_printconfigdetails;

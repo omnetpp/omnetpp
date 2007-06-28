@@ -863,14 +863,11 @@ void TOmnetApp::sputn(const char *s, int n)
 
 void TOmnetApp::processFileName(opp_string& fname)
 {
-    // substitute %c and %r
     std::string text = fname.c_str();
-    text = opp_replacesubstring(text.c_str(), "%c", ev.config()->getActiveConfigName(), true);
-    text = opp_replacesubstring(text.c_str(), "%r", opp_stringf("%d", ev.config()->getActiveRunNumber()).c_str(), true);
 
-   // append ".<hostname>.<pid>" if requested
-   // (note: parsimProcId cannot be appended because of initialization order)
-   if (opt_fname_append_host)
+    // append ".<hostname>.<pid>" if requested
+    // (note: parsimProcId cannot be appended because of initialization order)
+    if (opt_fname_append_host)
     {
         const char *hostname=getenv("HOST");
         if (!hostname)

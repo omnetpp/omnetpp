@@ -20,11 +20,15 @@
 #include "cexception.h"
 #include "cmersennetwister.h"
 #include "cmessage.h"
+#include "cconfigkey.h"
 
 
 Register_Class(cMersenneTwister);
 
-//XXX "seed-X-mt", etc needs to be registered, otherwise it will be an error!
+//XXX '%' and '*' in cConfigKeys is not yet understood by Config::validate()
+Register_PerRunConfigEntry(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, NULL, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
+Register_PerRunConfigEntry(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, NULL, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
+
 
 void cMersenneTwister::initialize(int runNumber, int rngId, int numRngs,
                                   int parsimProcId, int parsimNumPartitions,
