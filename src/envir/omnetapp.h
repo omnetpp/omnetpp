@@ -68,6 +68,7 @@ class ENVIR_API TOmnetApp
 
     int opt_num_rngs;
     opp_string opt_rng_class;
+    int opt_seedset; // which set of seeds to use
 
     opp_string opt_outputvectormanager_class;
     opp_string opt_outputscalarmanager_class;

@@ -50,7 +50,7 @@ Register_Class(cFileOutputVectorManager);
 
 Register_PerRunConfigEntry(CFGID_EXPERIMENT, "experiment", CFG_CUSTOM, "${configname}", "Experiment label. This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_MEASUREMENT, "measurement", CFG_CUSTOM, "${iterationvars}", "Measurement label. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_CUSTOM, "seedset=${seedset}", "Replication label. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_CUSTOM, "#${repetition}, seedset=@", "Replication label. This string gets recorded into result files, and may be referred to during result analysis.");
 
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
@@ -61,6 +61,8 @@ Register_PerRunConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval for an output vector. Syntax: [<from>]..[<to>]. Examples: 100..200, 100.., ..200");
+
+extern cConfigKey *CFGID_SEED_SET;
 
 
 #ifdef CHECK
@@ -126,9 +128,11 @@ void cFileOutputVectorManager::initRun()
             run.attributes[key] = cfg->getConfigValue(key);
         }
 
+        std::string seedset = opp_stringf("%ld", cfg->getAsInt(CFGID_SEED_SET));
         run.attributes["experiment"] = cfg->getAsCustom(CFGID_EXPERIMENT); //FIXME if not already in there, etc
         run.attributes["measurement"] = cfg->getAsCustom(CFGID_MEASUREMENT);
-        run.attributes["replication"] = cfg->getAsCustom(CFGID_REPLICATION);
+        run.attributes["replication"] = opp_replacesubstring(cfg->getAsCustom(CFGID_REPLICATION), "@", seedset.c_str(), true);
+        run.attributes["seed-set"] = seedset;
 
         //FIXME todo: fill in run.moduleParams[]
         run.initialized = true;

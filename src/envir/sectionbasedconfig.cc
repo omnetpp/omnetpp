@@ -38,8 +38,7 @@
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: i < j+1.");
-Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables) but with different random number seeds. Internally it translates to seed-set=${runnumber..runnumber+n-1} (??? FIXME), where n is the repeat count.");
-Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${seedset}", "Selects the kth set of automatic random number seeds for the simulation. It is implicitly set by repeat=, or can be set explicitly.");
+Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
 
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
@@ -124,16 +123,7 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *scenario
 
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
-
-    // walk the list of fallback sections, and return the first "description" entry we meet
-    for (int i=0; i<sectionChain.size(); i++)
-    {
-        int entryId = internalFindEntry(sectionChain[i], "description");
-        const char *desc = entryId == -1 ? NULL : ini->getEntry(sectionChain[i], entryId).getValue();
-        if (desc != NULL)
-            return desc;
-    }
-    return "";
+    return opp_nulltoempty(internalGetValue(sectionChain, "description"));
 }
 
 std::string SectionBasedConfiguration::getBaseConfig(const char *scenarioOrConfigName) const
@@ -194,27 +184,12 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
     variables["configname"] = getActiveConfigName();
     variables["runnumber"] = opp_stringf("%d", getActiveRunNumber());
     variables["network"] = opp_nulltoempty(internalGetValue(sectionChain, "network"));
-    variables["processid"] = opp_stringf("%g", getpid());
+    variables["processid"] = opp_stringf("%d", (int) getpid());
     variables["datetime"] = opp_getdatetimestring();
-    variables["runid"] = runId = variables["network"]+"-"+variables["datetime"]+"-"+variables["processid"];
+    variables["runid"] = runId = variables["configname"]+"-"+variables["runnumber"]+"-"+variables["datetime"]+"-"+variables["processid"];
 
     // extract all iteration vars from values within this section
-    std::vector<IterationVariable> itervars = collectIterationVariables(sectionId);
-    //FIXME: forbidden variable names are any of the predefined ones, especially ${seedset} -- check!!!
-
-    // translate the repeat= config key to seed-set, if there's no seed-set yet
-    const char *repeat = internalGetValue(sectionChain, "repeat");
-    if (repeat!=NULL)
-    {
-        bool seedsetGiven = internalGetValue(sectionChain, "seed-set");
-        if (seedsetGiven)
-            throw cRuntimeError("Cannot specify both seed-set= and repeat= in the configuration");
-        IterationVariable seedset;
-        seedset.varid = seedset.varname = "seedset";
-        int repeatCount = (int) parseLong(repeat, NULL, 1);
-        seedset.value = opp_stringf("%d..%d", runNumber, runNumber+repeatCount-1);
-        itervars.push_back(seedset);
-    }
+    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
     int constraintEntryId = internalFindEntry(sectionId, "constraint");
@@ -225,28 +200,19 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
         Scenario scenario(itervars, constraint);
         scenario.gotoRun(runNumber);
 
+        // store iteration variables
         for (int i=0; i<itervars.size(); i++)
             variables[itervars[i].varid] = scenario.getVariable(itervars[i].varid.c_str());
-        variables["iterationvars"] = scenario.str();
+
+        // assemble ${iterationvars} as well
+        std::string iterationvars;
+        for (int i=0; i<itervars.size(); i++)
+            if (itervars[i].varname != "repetition")
+                iterationvars += std::string(i>0?", ":"") + "$" + itervars[i].varname + "=" + scenario.getVariable(itervars[i].varid.c_str());
+        variables["iterationvars"] = iterationvars;
     }
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
-    }
-
-    // register the ${seedset} variable too, which needs to handled specially.
-    // If not already present (that is, got implicitly added by repeat=),
-    // we need to fill it from the seed-set= config entry (where ${} variables
-    // need to be substituted first!). If neither repeat= nor seed-set= exist,
-    // use runNumber to be consistent with the repeat=1 case.
-    if (variables.find("seedset")==variables.end())
-    {
-        int seedsetSectionId, seedsetEntryId;
-        if (internalFindEntry(sectionChain, "seed-set", seedsetSectionId, seedsetEntryId)) {
-            const char *seedset = ini->getEntry(seedsetSectionId, seedsetEntryId).getValue();
-            variables["seedset"] = substituteVariables(seedset, seedsetSectionId, seedsetEntryId);
-        }
-        else
-            variables["seedset"] = opp_stringf("%d", runNumber);
     }
 
     // walk the list of fallback sections, and add entries to our tables
@@ -270,27 +236,16 @@ int SectionBasedConfiguration::getNumRunsInScenario(const char *scenarioName) co
         return 0;  // no such scenario or config
 
     // extract all iteration vars from values within this section
-    std::vector<IterationVariable> v = collectIterationVariables(sectionId);
+    std::vector<int> sectionChain = resolveSectionChain(sectionId);
+    std::vector<IterationVariable> v = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
     int constraintEntryId = internalFindEntry(sectionId, "constraint");
     const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
-    try {
-        // count scenarios
-        int n = Scenario(v, constraint).getNumRuns();
 
-        // if there is repeat=, we need to multiply n by it
-        std::vector<int> sectionChain = resolveSectionChain(sectionId);
-        const char *repeat = internalGetValue(sectionChain, "repeat");
-        if (repeat!=NULL)
-        {
-            bool seedsetGiven = internalGetValue(sectionChain, "seed-set");
-            if (seedsetGiven)
-                throw cRuntimeError("Cannot specify both seed-set= and repeat= in the configuration");
-            int repeatCount = (int) parseLong(repeat, NULL, 1);
-            n *= repeatCount;
-        }
-        return n;
+    // count the runs and return the result
+    try {
+        return Scenario(v, constraint).getNumRuns();
     }
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
@@ -304,13 +259,12 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
         throw cRuntimeError("No such scenario: %s", scenarioName);
 
     // extract all iteration vars from values within this section
-    std::vector<IterationVariable> itervars = collectIterationVariables(sectionId);
+    std::vector<int> sectionChain = resolveSectionChain(sectionId);
+    std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
     int constraintEntryId = internalFindEntry(sectionId, "constraint"); //XXX use constant (multiple places here!)
     const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
-
-    //FIXME take repeat= and seed-set= into account!!!
 
     // iterate over all runs in the scenario
     try {
@@ -354,8 +308,9 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
     }
 }
 
-std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(int sectionId) const
+std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(const std::vector<int>& sectionChain) const
 {
+    int sectionId = sectionChain[0]; // currently we only accept iterations in the first, Scenario section
     std::vector<IterationVariable> v;
     int unnamedCount = 0;
     for (int i=0; i<ini->getNumEntries(sectionId); i++)
@@ -390,6 +345,17 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
             k++;
         }
     }
+
+    //FIXME: forbidden variable names are any of the predefined ones! check and throw error!
+
+    // register ${repetition}, based on the repeat= config entry
+    const char *repeat = internalGetValue(sectionChain, "repeat");
+    int repeatCount = (int) parseLong(repeat, NULL, 1);
+    IterationVariable repetition;
+    repetition.varid = repetition.varname = "repetition";
+    repetition.value = opp_stringf("0..%d", repeatCount-1);
+    v.push_back(repetition);
+
     return v;
 }
 

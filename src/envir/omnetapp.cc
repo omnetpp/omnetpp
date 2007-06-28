@@ -99,8 +99,6 @@ Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
 Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
 Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "cNullMessageProtocol", "If parallel-simulation=true, it selects the parallel simulation algorithm. The class must implement the cParsimSynchronizer interface.");
-Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "Number of the random number generators.");
-Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, "cIndexedFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
 Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, "cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
 Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
@@ -115,6 +113,9 @@ Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enable
 Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit", CFG_TIME, NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", CFG_TIME, NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
 Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
+Register_PerRunConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "Number of the random number generators.");
+Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
+Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Two meaningful values are ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, NULL, "Name of the event log file to generate. If emtpy, no file is generated.");
 Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
 
@@ -889,9 +890,6 @@ void TOmnetApp::readOptions()
 #endif
     }
 
-    opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
-    opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
-
     opt_outputvectormanager_class = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
     opt_outputscalarmanager_class = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
     opt_snapshotmanager_class = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
@@ -919,6 +917,9 @@ void TOmnetApp::readPerRunOptions()
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
     opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
     opt_eventlogfilename = cfg->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
+    opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
+    opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
+    opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
 
     // install hasher object
     if (!opt_fingerprint.empty())
@@ -926,7 +927,7 @@ void TOmnetApp::readPerRunOptions()
     else
         simulation.setHasher(NULL);
 
-    // run RNG self-test    FIXME why per-run?
+    // run RNG self-test on RNG class selected for this run
     cRNG *testrng;
     CREATE_BY_CLASSNAME(testrng, opt_rng_class.c_str(), cRNG, "random number generator");
     testrng->selfTest();
@@ -934,17 +935,18 @@ void TOmnetApp::readPerRunOptions()
 
     // set up RNGs
     int i;
-    for (i = 0; i < num_rngs; i++)
+    for (i=0; i<num_rngs; i++)
          delete rngs[i];
     delete [] rngs;
 
     num_rngs = opt_num_rngs;
     rngs = new cRNG *[num_rngs];
-    for (i = 0; i < num_rngs; i++)
+    for (i=0; i<num_rngs; i++)
     {
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
+        //FIXME use seedset instead of activeRunNumber!!!!
         rngs[i]->initialize(cfg->getActiveRunNumber(), i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 

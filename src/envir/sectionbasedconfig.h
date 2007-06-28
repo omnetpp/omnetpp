@@ -160,7 +160,7 @@ class SectionBasedConfiguration : public cConfiguration
     std::vector<int> resolveSectionChain(const char *section) const;
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
-    std::vector<IterationVariable> collectIterationVariables(int sectionId) const;
+    std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId);
     KeyValue1 convert(int sectionId, int entryId);
