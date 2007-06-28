@@ -13,7 +13,6 @@ import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 
 /**
@@ -176,8 +175,15 @@ public class EventLogInput
 	}
 
 	public ArrayList<ModuleTreeItem> getSelectedModules() {
-		if (eventLog instanceof FilteredEventLog && eventLogFilterParameters.enableModuleFilter)
-			return eventLogFilterParameters.getSelectedModules();
+		if (eventLog instanceof FilteredEventLog && eventLogFilterParameters.enableModuleFilter) {
+			ArrayList<ModuleTreeItem> selectedModules = new ArrayList<ModuleTreeItem>();
+			IntVector moduleIds = ((FilteredEventLog)eventLog).getSelectedModuleIds();
+
+			for (int i = 0; i < moduleIds.size(); i++)
+				selectedModules.add(moduleTreeRoot.findDescendantModule(moduleIds.get(i)));
+			
+			return selectedModules;
+		}
 		else
 			return getAllModules();
 	}
@@ -210,29 +216,36 @@ public class EventLogInput
 		// create new filter
 		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
 
+		// general filter
 		filteredEventLog.setFirstEventNumber(eventLogFilterParameters.getFirstEventNumber());
 		filteredEventLog.setLastEventNumber(eventLogFilterParameters.getLastEventNumber());
+
+		filteredEventLog.setEnableModuleFilter(eventLogFilterParameters.enableModuleFilter);
+		if (eventLogFilterParameters.enableModuleFilter) {
+			filteredEventLog.setModuleExpression(eventLogFilterParameters.moduleFilterExpression);
+			filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
+			filteredEventLog.setModuleClassNames(eventLogFilterParameters.getModuleClassNames());
+		}
 
 		if (eventLogFilterParameters.enableTraceFilter) {
 			filteredEventLog.setTracedEventNumber(eventLogFilterParameters.tracedEventNumber);
 			filteredEventLog.setTraceCauses(eventLogFilterParameters.traceCauses);
 			filteredEventLog.setTraceConsequences(eventLogFilterParameters.traceConsequences);
+			filteredEventLog.setTraceMessageReuses(eventLogFilterParameters.traceMessageReuses);
+			filteredEventLog.setTraceSelfMessages(eventLogFilterParameters.traceSelfMessages);
 		}
-
-		if (eventLogFilterParameters.enableModuleFilter) {
-			if (eventLogFilterParameters.moduleIds != null) {
-				IntVector moduleIds = new IntVector();
-				for (int id : eventLogFilterParameters.moduleIds)
-					moduleIds.add(id);
-				filteredEventLog.setModuleIds(moduleIds);
-			}
-	
-			if (eventLogFilterParameters.moduleTypes != null) {
-				PStringVector moduleTypes = new PStringVector();
-				for (String moduleType : eventLogFilterParameters.moduleTypes)
-					moduleTypes.add(moduleType);			
-				filteredEventLog.setModuleTypes(moduleTypes);
-			}
+		else
+			filteredEventLog.setTracedEventNumber(-1);
+		
+		filteredEventLog.setEnableMessageFilter(eventLogFilterParameters.enableMessageFilter);
+		if (eventLogFilterParameters.enableMessageFilter) {
+			filteredEventLog.setMessageExpression(eventLogFilterParameters.messageFilterExpression);
+			filteredEventLog.setMessageClassNames(eventLogFilterParameters.getMessageClassNames());
+			filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
+			filteredEventLog.setMessageIds(eventLogFilterParameters.getMessageIds());
+			filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getMessageTreeIds());
+			filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getMessageEncapsulationIds());
+			filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getMessageEcapsulationTreeIds());
 		}
 
 		// store event log

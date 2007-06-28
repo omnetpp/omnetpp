@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,6 +28,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.widget.EditableList;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.PStringVector;
 
 public class FilterEventLogDialog extends TitleAreaDialog {
 
@@ -82,15 +84,23 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 
 	private Text consequenceSimulationTimeDelta;
 
-	private Text moduleFilterPattern;
+	private Text moduleFilterExpression;
 
 	private TabFolder moduleTabFolder;
 
-	private CheckboxTableViewer moduleTypes;
+	private CheckboxTableViewer moduleClassNames;
 
-	private ModuleTreeViewer moduleIds;
+	private ModuleTreeViewer moduleNameIds;
 
-	private Text messageFilterPattern;
+	private CheckboxTableViewer moduleIds;
+
+	private TabFolder messageTabFolder;
+
+	private Text messageFilterExpression;
+
+	private CheckboxTableViewer messageClassNames;
+
+	private CheckboxTableViewer messageNames;
 
 	@SuppressWarnings("unused")
 	private EditableList messageIds;
@@ -133,8 +143,10 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 						
 						if (guiControl instanceof EditableList)
 							unparseIntArray((EditableList)guiControl, (int[])parameterField.get(filterParameters));
+						else if (guiControl instanceof CheckboxTableViewer)
+							unparseIntArray((CheckboxTableViewer)guiControl, (int[])parameterField.get(filterParameters));
 						else if (guiControl instanceof ModuleTreeViewer)
-							unparseModuleIdArray((ModuleTreeViewer)guiControl, (int[])parameterField.get(filterParameters));
+							unparseModuleNameIdArray((ModuleTreeViewer)guiControl, (int[])parameterField.get(filterParameters));
 						else
 							throw new RuntimeException("Unknown gui field type");
 					}
@@ -144,7 +156,7 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 						if (guiControl instanceof EditableList)
 							unparseStringArray((EditableList)guiField.get(this), (String[])parameterField.get(filterParameters));
 						else if (guiControl instanceof CheckboxTableViewer)
-							unparseModuleTypeArray((CheckboxTableViewer)guiControl, (String[])parameterField.get(filterParameters));
+							unparseStringArray((CheckboxTableViewer)guiControl, (String[])parameterField.get(filterParameters));
 						else
 							throw new RuntimeException("Unknown gui field type");
 					}
@@ -186,12 +198,23 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		}
 	}
 
+	private void unparseIntArray(CheckboxTableViewer checkboxTableViewer, int[] values) {
+		if (values != null) {
+			Integer[] integerValues = new Integer[values.length];
+
+			for (int i = 0; i < values.length; i++)
+				integerValues[i] = values[i];
+
+			checkboxTableViewer.setCheckedElements(integerValues);
+		}
+	}
+
 	private void unparseStringArray(EditableList editableList, String[] values) {
 		if (values != null)
 			editableList.getList().setItems(values);
 	}
 
-	private void unparseModuleIdArray(ModuleTreeViewer moduleTreeViewer, int[] values) {
+	private void unparseModuleNameIdArray(ModuleTreeViewer moduleTreeViewer, int[] values) {
 		if (values != null) {
 			ModuleTreeItem[] moduleTreeItems = new ModuleTreeItem[values.length];
 	
@@ -202,7 +225,7 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		}
 	}
 
-	private void unparseModuleTypeArray(CheckboxTableViewer checkboxTableViewer, String[] values) {
+	private void unparseStringArray(CheckboxTableViewer checkboxTableViewer, String[] values) {
 		if (values != null)
 			checkboxTableViewer.setCheckedElements(values);
 	}
@@ -230,7 +253,11 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 						if (guiControl instanceof EditableList)
 							parameterField.set(filterParameters, parseIntArray((EditableList)guiControl));
 						else if (guiControl instanceof ModuleTreeViewer)
-							parameterField.set(filterParameters, parseModuleIdArray((ModuleTreeViewer)guiField.get(this)));
+							parameterField.set(filterParameters, parseModuleNameIdArray((ModuleTreeViewer)guiField.get(this)));
+						else if (guiControl instanceof CheckboxTableViewer)
+							parameterField.set(filterParameters, parseIntArray((CheckboxTableViewer)guiField.get(this)));
+						else
+							throw new RuntimeException("Unknown gui field type");
 					}
 					else if (parameterFieldType == String[].class) {
 						Object guiControl = guiField.get(this);
@@ -238,9 +265,9 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 						if (guiControl instanceof EditableList)
 							parameterField.set(filterParameters, parseStringArray((EditableList)guiField.get(this)));
 						else if (guiControl instanceof CheckboxTableViewer)
-							parameterField.set(filterParameters, parseModuleTypeArray((CheckboxTableViewer)guiField.get(this)));
-					else
-						throw new RuntimeException("Unknown gui field type");
+							parameterField.set(filterParameters, parseModuleClassNameArray((CheckboxTableViewer)guiField.get(this)));
+						else
+							throw new RuntimeException("Unknown gui field type");
 					}
 					else
 						throw new RuntimeException("Unknown parameter field type");
@@ -271,10 +298,7 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 	}
 	
 	private String parseString(Text text) {
-		if (text.getText().length() != 0)
-			return text.getText();
-		else
-			return null;
+		return text.getText();
 	}
 	
 	private int[] parseIntArray(EditableList editableList) {
@@ -287,11 +311,21 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		return intValues;
 	}
 	
+	private int[] parseIntArray(CheckboxTableViewer checkBoxTableViewer) {
+		Object[] elements = checkBoxTableViewer.getCheckedElements();
+		int[] values = new int[elements.length];
+		
+		for (int i = 0; i < elements.length; i++)
+			values[i] = (Integer)elements[i];
+		
+		return values;
+	}
+
 	private String[] parseStringArray(EditableList editableList) {
 		return editableList.getList().getItems();
 	}
 	
-	private int[] parseModuleIdArray(ModuleTreeViewer moduleTreeViewer) {
+	private int[] parseModuleNameIdArray(ModuleTreeViewer moduleTreeViewer) {
 		Object[] treeItems = moduleTreeViewer.getCheckedElements();
 		int[] values = new int[treeItems.length];
 
@@ -301,14 +335,14 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		return values;
 	}
 
-	private String[] parseModuleTypeArray(CheckboxTableViewer checkBoxTableViewer) {
+	private String[] parseModuleClassNameArray(CheckboxTableViewer checkBoxTableViewer) {
 		Object[] elements = checkBoxTableViewer.getCheckedElements();
-		String[] moduleTypes = new String[elements.length];
+		String[] moduleClassNames = new String[elements.length];
 		
 		for (int i = 0; i < elements.length; i++)
-			moduleTypes[i] = (String)elements[i];
+			moduleClassNames[i] = (String)elements[i];
 		
-		return moduleTypes;
+		return moduleClassNames;
 	}
 	
 	@Override
@@ -450,35 +484,36 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		Composite panel = createTabItem(tabFolder, "Module filter");
 
 		enableModuleFilter = new Button(panel, SWT.CHECK);
-		enableModuleFilter.setText("Filter for events occured in any of the select modules and module types");
+		enableModuleFilter.setText("Filter for events occured in any of the select modules");
 		enableModuleFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         enableModuleFilter.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean selection = enableModuleFilter.getSelection();
-				moduleFilterPattern.setEnabled(selection);
+				moduleFilterExpression.setEnabled(selection);
 				moduleTabFolder.setEnabled(selection);
-				moduleIds.getTree().setEnabled(selection);
-				moduleTypes.getTable().setEnabled(selection);
+				moduleNameIds.getTree().setEnabled(selection);
+				moduleClassNames.getTable().setEnabled(selection);
+				moduleIds.getTable().setEnabled(selection);
 			}
 		});
 		
 		Label label = new Label(panel, SWT.NONE);
-		label.setText("Module filter pattern");
+		label.setText("Module filter expression");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
-		moduleFilterPattern = new Text(panel, SWT.BORDER);
-		moduleFilterPattern.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		moduleFilterExpression = new Text(panel, SWT.BORDER);
+		moduleFilterExpression.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
+		// tab folder
 		panel = new Composite(panel, SWT.NONE);
 		panel.setLayout(new FillLayout());
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		moduleTabFolder = new TabFolder(panel, SWT.NONE);
-
-		// module type filter
-		panel = createTabItem(moduleTabFolder, "Filter by type");
-
 		IEventLog eventLog = eventLogInput.getEventLog();
+
+		// module class name filter
+		panel = createTabItem(moduleTabFolder, "Filter by class name");
 		int count = eventLog.getNumModuleCreatedEntries();
 		Set<String> moduleClassNameSet = new HashSet<String>();
 		for (int i = 0; i < count; i++) {
@@ -487,21 +522,39 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 				moduleClassNameSet.add(moduleCreatedEntry.getModuleClassName());
 		}
 
-		String[] moduleClassNames = (String[])moduleClassNameSet.toArray(new String[0]);
-		Arrays.sort(moduleClassNames);
-		moduleTypes = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
-		moduleTypes.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		for (String moduleClassName : moduleClassNames)
-			moduleTypes.add(moduleClassName);
+		String[] moduleClassNamesAsStrings = (String[])moduleClassNameSet.toArray(new String[0]);
+		Arrays.sort(moduleClassNamesAsStrings);
+		moduleClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		moduleClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		for (String moduleClassName : moduleClassNamesAsStrings)
+			moduleClassNames.add(moduleClassName);
 
-		// module instance filter
-		panel = createTabItem(moduleTabFolder, "Filter by instance");
+		// module name filter
+		panel = createTabItem(moduleTabFolder, "Filter by name");
 
-		moduleIds = new ModuleTreeViewer(panel, eventLogInput.getModuleTreeRoot());
+		moduleNameIds = new ModuleTreeViewer(panel, eventLogInput.getModuleTreeRoot());
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
         gridData.widthHint = 500;
         gridData.heightHint = 400;
-        moduleIds.getTree().setLayoutData(gridData);
+        moduleNameIds.getTree().setLayoutData(gridData);
+        
+        // module id filter
+        panel = createTabItem(moduleTabFolder, "Filter by id");
+		moduleIds = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		moduleIds.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		moduleIds.setLabelProvider(new LabelProvider() {
+			public String getText(Object element) {
+				ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule((Integer)element);
+				
+				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath();
+			}
+		});
+		for (int i = 0; i < eventLog.getNumModuleCreatedEntries(); i++) {
+			ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(i);
+			
+			if (moduleCreatedEntry != null)
+				moduleIds.add(moduleCreatedEntry.getModuleId());
+		}
 	}
 
 	private void createMessageTabItem(TabFolder tabFolder) {
@@ -514,16 +567,51 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean selection = enableMessageFilter.getSelection();
-				messageFilterPattern.setEnabled(selection);
+				messageFilterExpression.setEnabled(selection);
+				messageTabFolder.setEnabled(selection);
+				messageClassNames.getTable().setEnabled(selection);
+				messageNames.getTable().setEnabled(selection);
 			}
 		});
 		
 		Label label = new Label(panel, SWT.NONE);
-		label.setText("Message filter pattern");
+		label.setText("Message filter expression");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		
-		messageFilterPattern = new Text(panel, SWT.BORDER);
-		messageFilterPattern.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+		messageFilterExpression = new Text(panel, SWT.BORDER);
+		messageFilterExpression.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+		// tab folder
+		panel = new Composite(panel, SWT.NONE);
+		panel.setLayout(new FillLayout());
+		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		messageTabFolder = new TabFolder(panel, SWT.NONE);
+		IEventLog eventLog = eventLogInput.getEventLog();
+
+		// message class name filter
+		panel = createTabItem(messageTabFolder, "Filter by class name");
+		label = new Label(panel, SWT.NONE);
+		label.setText("The following message class names have been encountered so far");
+		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+		messageClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		messageClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		PStringVector names = eventLog.getMessageClassNames().keys();
+		for (int i = 0; i < names.size(); i++)
+			messageClassNames.add(names.get(i));
+
+		// message name filter
+		panel = createTabItem(messageTabFolder, "Filter by name");
+		label = new Label(panel, SWT.NONE);
+		label.setText("The following message names have been encountered so far");
+		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+		messageNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		messageNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		names = eventLog.getMessageNames().keys();
+		for (int i = 0; i < names.size(); i++)
+			messageNames.add(names.get(i));
+
+		// message id filter
+		panel = createTabItem(messageTabFolder, "Filter by id");
 		
 		Object[] values = createEditableList(panel, "Trace messages with ids");
 		enableMessageIdFilter = (Button)values[0];
@@ -557,16 +645,15 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		enableButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				editableList.setEnabled(enableButton.getSelection());
+				editableList.setEnabled(enableMessageFilter.getSelection() && enableButton.getSelection());
 			}
 		});
 		
 		enableMessageFilter.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				boolean selection = enableMessageFilter.getSelection();
-				editableList.setEnabled(selection);
-				enableButton.setEnabled(selection);
+				editableList.setEnabled(enableMessageFilter.getSelection() && enableButton.getSelection());
+				enableButton.setEnabled(enableMessageFilter.getSelection());
 			}
 		});
 

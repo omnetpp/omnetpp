@@ -66,51 +66,21 @@ namespace std {
        }
    %}
 
-   %typemap(javacode) vector<Run*> %{
-        public Run[] toArray() {
-            int sz = (int)size();
-            Run[] array = new Run[sz];
-            for (int i=0; i<sz; i++)
-                array[i] = get(i);
-            return array;
-        }
-   %}
-
-   %typemap(javacode) vector<ResultFile*> %{
-        public ResultFile[] toArray() {
-            int sz = (int)size();
-            ResultFile[] array = new ResultFile[sz];
-            for (int i=0; i<sz; i++)
-                array[i] = get(i);
-            return array;
-        }
-   %}
-
-   %typemap(javacode) vector<FileRun*> %{
-        public FileRun[] toArray() {
-            int sz = (int)size();
-            FileRun[] array = new FileRun[sz];
-            for (int i=0; i<sz; i++)
-                array[i] = get(i);
-            return array;
-        }
-   %}
-
-   %typemap(javacode) vector<ID> %{
-        public Long[] toArray() {
-            int sz = (int)size();
-            Long[] array = new Long[sz];
-            for (int i=0; i<sz; i++)
-                array[i] = Long.valueOf(get(i));
-            return array;
-        }
-   %}
-
    %typemap(javacode) set<int> %{
        public IntSet(boolean cMemoryOwn) {
            this(EventLogEngineJNI.new_IntSet__SWIG_0(), cMemoryOwn);
        }
    %}
+
+   %extend set<const char *> {
+       std::vector<const char *> keys() {
+           std::vector<const char *> vec;
+           vec.reserve(self->size());
+           for (std::set<const char *>::iterator it = self->begin(); it!=self->end(); it++)
+               vec.push_back(*it);
+           return vec;
+       }
+   }
 
    %extend set<string> {
        std::vector<std::string> keys() {
@@ -132,6 +102,7 @@ namespace std {
        }
    }
 
+   %template(PStringSet) set<const char *>;
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
 
