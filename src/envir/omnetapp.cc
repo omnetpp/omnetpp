@@ -946,8 +946,7 @@ void TOmnetApp::readPerRunOptions()
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        //FIXME use seedset instead of activeRunNumber!!!!
-        rngs[i]->initialize(cfg->getActiveRunNumber(), i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->initialize(opt_seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then

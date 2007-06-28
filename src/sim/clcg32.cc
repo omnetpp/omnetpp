@@ -28,7 +28,7 @@ Register_PerRunConfigEntry(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, NULL, "W
 
 //XXX how to use runNumber?
 
-void cLCG32::initialize(int runNumber, int rngId, int numRngs,
+void cLCG32::initialize(int seedSet, int rngId, int numRngs,
                         int /*parsimProcId*/, int parsimNumPartitions,
                         cConfiguration *cfg)
 {
@@ -42,7 +42,7 @@ void cLCG32::initialize(int runNumber, int rngId, int numRngs,
     const char *value = cfg->getConfigValue(key);
     if (value==NULL)
     {
-        int autoSeedIndex = runNumber*numRngs + rngId;
+        int autoSeedIndex = seedSet*numRngs + rngId;
         if (autoSeedIndex>=256)
             ev << "Warning: LCG32: out of the 256 auto seed values, wrapping around "
                   "-- decrease num-rngs=" << numRngs << " value or run numbers, "
