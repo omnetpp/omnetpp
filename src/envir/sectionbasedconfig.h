@@ -153,6 +153,7 @@ class SectionBasedConfiguration : public cConfiguration
     int internalGetSectionId(const char *section) const;
     int internalFindEntry(const char *section, const char *key) const;
     int internalFindEntry(int sectionId, const char *key) const;
+    bool internalFindEntry(const std::vector<int>& sectionChain, const char *key, int& outSectionId, int& outEntryId) const;
     const char *internalGetValue(const std::vector<int>& sectionChain, const char *key) const;
     int resolveConfigName(const char *scenarioOrConfigName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;
@@ -163,7 +164,6 @@ class SectionBasedConfiguration : public cConfiguration
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId);
     KeyValue1 convert(int sectionId, int entryId);
-    int internalGetNumRunsInScenario(int sectionId) const;
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
 
   protected:
