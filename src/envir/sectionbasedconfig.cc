@@ -24,6 +24,8 @@
 #include "globals.h"
 #include "cconfigkey.h"
 #include "stringtokenizer.h"
+#include "timeutil.h"
+#include "platmisc.h"   //getpid()
 
 
 //XXX optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
@@ -160,6 +162,17 @@ int SectionBasedConfiguration::resolveConfigName(const char *scenarioOrConfigNam
     return id;
 }
 
+static std::string opp_getdatetimestring()
+{
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char timestr[32];
+    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
+            1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
+            tm.tm_hour, tm.tm_min, tm.tm_sec);
+    return timestr;
+}
+
 void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName, int runNumber)
 {
     clear();
@@ -176,10 +189,13 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
 
+    // create variables ;FIXME use symbolic constants!
     variables["configname"] = getActiveConfigName();
     variables["runnumber"] = opp_stringf("%d", getActiveRunNumber());
     variables["network"] = opp_nulltoempty(internalGetValue(sectionChain, "network"));
-    // variables["runid"] = ""; FIXME TODO
+    variables["processid"] = opp_stringf("%g", getpid());
+    variables["datetime"] = opp_getdatetimestring();
+    variables["runid"] = runId = variables["network"]+"-"+variables["datetime"]+"-"+variables["processid"];
 
     // extract all iteration vars from values within this section
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionId);
@@ -405,6 +421,12 @@ const char *SectionBasedConfiguration::substituteVariables(const char *value)
     // returned string needs to be stringpooled
     std::string result = substituteVariables(value, -1, -1);
     return stringPool.get(result.c_str());
+}
+
+const char *SectionBasedConfiguration::getVariable(const char *varname) const
+{
+    StringMap::const_iterator it = variables.find(varname);
+    return it==variables.end() ? NULL : it->second.c_str();
 }
 
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const

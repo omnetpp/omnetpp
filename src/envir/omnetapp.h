@@ -114,10 +114,6 @@ class ENVIR_API TOmnetApp
     timeval elapsedtime; // time spent simulating
     simtime_t simulatedtime;  // sim. time after finishing simulation
 
-  protected:
-    // internal
-    virtual void generateRunId();
-
   public:
     /**
      * Constructor takes command-line args and ini file instance.

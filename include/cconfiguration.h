@@ -175,6 +175,16 @@ class ENVIR_API cConfiguration : public cObject
     virtual int getActiveRunNumber() const = 0;
 
     /**
+     * After activating a configuration, this method can be used to query
+     * iteration variables and predefined variables. These are the variables
+     * that can be referred to using the "${...}" syntax in the configuration.
+     * Some of the predefined variables are: configname, runnumber, network,
+     * processid, datetime, runid. If the variable does not exist, NULL is
+     * returned.
+     */
+    virtual const char *getVariable(const char *varname) const = 0;
+
+    /**
      * For debugging.
      */
     virtual void dump() const = 0;
@@ -365,7 +375,6 @@ class ENVIR_API cConfiguration : public cObject
      * (see KeyValue::getBaseDirectory()).
      */
     virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigKey *entry);
-
     //@}
 };
 

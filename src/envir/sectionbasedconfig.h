@@ -57,6 +57,7 @@ class SectionBasedConfiguration : public cConfiguration
     cConfigurationReader *ini;
     std::string activeConfig;
     int activeRunNumber;
+    std::string runId;
 
     typedef std::set<std::string> StringSet;
     StringSet basedirs;  // stores ini file locations (absolute paths)
@@ -200,6 +201,7 @@ class SectionBasedConfiguration : public cConfiguration
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const;
     virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const;
+    virtual const char *getVariable(const char *varname) const;
     virtual void dump() const;
     //@}
 };

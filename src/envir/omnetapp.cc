@@ -470,8 +470,9 @@ void TOmnetApp::shutdown()
 
 void TOmnetApp::startRun()
 {
+    runid = getConfig()->getVariable("runid"); //FIXME use symbolic constant
+
     resetClock();
-    generateRunId();
     outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
@@ -508,26 +509,6 @@ void TOmnetApp::endRun()
     snapshotmgr->endRun();
     outscalarmgr->endRun();
     outvectormgr->endRun();
-}
-
-void TOmnetApp::generateRunId()
-{
-    // generates and stores a new run Id of the following format:
-    // "<networkname>-<datetime>-<pid>"
-
-    const char *networkname = simulation.networkType() ? simulation.networkType()->name() : "n/a";
-    int pid = getpid();
-
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    char timestr[32];
-    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
-            1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
-            tm.tm_hour, tm.tm_min, tm.tm_sec);
-
-    std::stringstream out;
-    out << networkname << "-" << timestr << "-" << getpid();
-    runid = out.str().c_str();
 }
 
 //-------------------------------------------------------------
