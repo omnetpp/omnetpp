@@ -16,6 +16,7 @@
 #define __IEVENTLOG_H_
 
 #include <sstream>
+#include <set>
 #include "eventlogdefs.h"
 #include "ievent.h"
 
@@ -81,6 +82,14 @@ class EVENTLOG_API IEventLog
          * Returns the number of events parsed so far.
          */
         virtual long getNumParsedEvents() = 0;
+        /**
+         * Returns the message names parsed so far.
+         */
+        virtual std::set<const char *>& getMessageNames() = 0;
+        /**
+         * Returns the message class names parsed so far.
+         */
+        virtual std::set<const char *>& getMessageClassNames() = 0;
         /**
          * Returns the entry which describes the module with the given id.
          */

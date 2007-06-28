@@ -44,12 +44,14 @@ class Options
         std::vector<file_offset_t> fileOffsets;
         std::vector<long> eventNumbers;
 
-        std::vector<const char *> moduleNames;
-        std::vector<const char *> moduleTypes;
+        const char *moduleExpression;
+        std::vector<std::string> moduleNames;
+        std::vector<std::string> moduleClassNames;
         std::vector<int> moduleIds;
 
-        std::vector<const char *> messageNames;
-        std::vector<const char *> messageTypes;
+        const char *messageExpression;
+        std::vector<std::string> messageNames;
+        std::vector<std::string> messageClassNames;
         std::vector<long> messageIds;
         std::vector<long> messageTreeIds;
         std::vector<long> messageEncapsulationIds;
@@ -92,8 +94,8 @@ Options::Options()
 IEventLog *Options::createEventLog(FileReader *fileReader)
 {
     if (eventNumbers.empty() &&
-        moduleNames.empty() && moduleTypes.empty() && moduleIds.empty() &&
-        messageNames.empty() && messageTypes.empty() &&
+        moduleNames.empty() && moduleClassNames.empty() && moduleIds.empty() &&
+        messageNames.empty() && messageClassNames.empty() &&
         messageIds.empty() && messageTreeIds.empty() && messageEncapsulationIds.empty() && messageEncapsulationTreeIds.empty())
     {
         return new EventLog(fileReader);
@@ -105,12 +107,16 @@ IEventLog *Options::createEventLog(FileReader *fileReader)
         if (!eventNumbers.empty())
             filteredEventLog->setTracedEventNumber(eventNumbers.at(0));
 
+        filteredEventLog->setEnableModuleFilter(moduleExpression || !moduleNames.empty() || !moduleClassNames.empty() || !moduleIds.empty());
+        filteredEventLog->setModuleExpression(moduleExpression);
         filteredEventLog->setModuleNames(moduleNames);
-        filteredEventLog->setModuleTypes(moduleTypes);
+        filteredEventLog->setModuleClassNames(moduleClassNames);
         filteredEventLog->setModuleIds(moduleIds);
 
+        filteredEventLog->setEnableMessageFilter(messageExpression || !messageNames.empty() || !messageClassNames.empty() || !messageIds.empty() || !messageTreeIds.empty() || !messageEncapsulationIds.empty() || !messageEncapsulationTreeIds.empty());
+        filteredEventLog->setMessageExpression(messageExpression);
         filteredEventLog->setMessageNames(messageNames);
-        filteredEventLog->setMessageTypes(messageTypes);
+        filteredEventLog->setMessageClassNames(messageClassNames);
         filteredEventLog->setMessageIds(messageIds);
         filteredEventLog->setMessageTreeIds(messageTreeIds);
         filteredEventLog->setMessageEncapsulationIds(messageEncapsulationIds);
@@ -330,7 +336,7 @@ void usage(char *message)
 "                    but it may be outside of the specified event number or simulation time region.\n"
 "\n"
 "   Options: Not all options may be used for all commands. Some options optionally accept a list of\n"
-"            space separated tokens as a single parameter. Name and type filters may include patterns.\n"
+"            space separated tokens as a single parameter. Name and class name filters may include patterns.\n"
 "      input-file-name                            <file-name>\n"
 "      -o      --output                           <file-name>\n"
 "         defaults to standard output\n"
@@ -346,11 +352,11 @@ void usage(char *message)
 "         events must be present in the input file\n"
 "      -f      --file-offsets                     <integer>+\n"
 "      -mn     --module-names                     <pattern>+\n"
-"      -mt     --module-types                     <pattern>+\n"
+"      -mt     --module-class-names               <pattern>+\n"
 "      -mi     --module-ids                       <integer>+\n"
 "         compound module ids are allowed\n"
 "      -sn     --message-names                    <pattern>+\n"
-"      -st     --message-types                    <pattern>+\n"
+"      -st     --message-class-names              <pattern>+\n"
 "      -si     --message-ids                      <integer>+\n"
 "      -sti    --message-tree-ids                 <integer>+\n"
 "      -sei    --message-encapsulation-ids        <integer>+\n"
@@ -393,7 +399,7 @@ void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
         parameter.push_back(atol(tokens[j]));
 }
 
-void parseStringTokens(std::vector<const char *> &parameter, char *str)
+void parseStringTokens(std::vector<std::string> &parameter, char *str)
 {
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));
@@ -428,16 +434,20 @@ int main(int argc, char **argv)
                 parseLongTokens(options.eventNumbers, argv[++i]);
             else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
                 parseFileOffsetTokens(options.fileOffsets, argv[++i]);
+            else if (!strcmp(argv[i], "-me") || !strcmp(argv[i], "--module-expression"))
+                options.moduleExpression = argv[++i];
             else if (!strcmp(argv[i], "-mn") || !strcmp(argv[i], "--module-names"))
                 parseStringTokens(options.moduleNames, argv[++i]);
-            else if (!strcmp(argv[i], "-mt") || !strcmp(argv[i], "--module-types"))
-                parseStringTokens(options.moduleTypes, argv[++i]);
+            else if (!strcmp(argv[i], "-mt") || !strcmp(argv[i], "--module-class-names"))
+                parseStringTokens(options.moduleClassNames, argv[++i]);
             else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
                 parseIntTokens(options.moduleIds, argv[++i]);
+            else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-expression"))
+                options.messageExpression = argv[++i];
             else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-names"))
                 parseStringTokens(options.messageNames, argv[++i]);
-            else if (!strcmp(argv[i], "-st") || !strcmp(argv[i], "--message-types"))
-                parseStringTokens(options.messageTypes, argv[++i]);
+            else if (!strcmp(argv[i], "-st") || !strcmp(argv[i], "--message-class-names"))
+                parseStringTokens(options.messageClassNames, argv[++i]);
             else if (!strcmp(argv[i], "-si") || !strcmp(argv[i], "--message-ids"))
                 parseLongTokens(options.messageIds, argv[++i]);
             else if (!strcmp(argv[i], "-sti") || !strcmp(argv[i], "--message-tree-ids"))

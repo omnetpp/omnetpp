@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include "patternmatcher.h"
+#include "matchexpression.h"
 #include "eventlogdefs.h"
 #include "ieventlog.h"
 #include "eventlog.h"
@@ -36,21 +37,25 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         double approximateMatchingEventRatio;
 
         // filter parameters
-        long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         long firstEventNumber; // the first event to be considered by the filter or -1
         long lastEventNumber; // the last event to be considered by the filter or -1
 
-        // TODO: use object matcher (merge params) for modules and cache result in a map
+        bool enableModuleFilter;
+        MatchExpression moduleExpression;
         std::vector<PatternMatcher> moduleNames;
-        std::vector<PatternMatcher> moduleTypes;
+        std::vector<PatternMatcher> moduleClassNames;
         std::vector<int> moduleIds; // events outside these modules will be filtered out, NULL means include all
 
+        bool enableMessageFilter;
+        MatchExpression messageExpression;
         std::vector<PatternMatcher> messageNames;
-        std::vector<PatternMatcher> messageTypes;
+        std::vector<PatternMatcher> messageClassNames;
         std::vector<long> messageIds;
         std::vector<long> messageTreeIds;
         std::vector<long> messageEncapsulationIds;
         std::vector<long> messageEncapsulationTreeIds;
+
+        long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool traceConsequences; // only when tracedEventNumber is given
         bool traceMessageReuses;
@@ -75,30 +80,37 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         ~FilteredEventLog();
 
     public:
-        void setModuleNames(std::vector<const char *> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames); }
-        void setModuleTypes(std::vector<const char *> &moduleTypes) { setPatternMatchers(this->moduleTypes, moduleTypes); }
+        void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
+        void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
+
+        void setEnableModuleFilter(bool enableModuleFilter) { this->enableModuleFilter = enableModuleFilter; }
+        void setModuleExpression(const char *moduleExpression) { this->moduleExpression.setPattern(moduleExpression, false, true, false); }
+        void setModuleNames(std::vector<std::string> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames, true); }
+        void setModuleClassNames(std::vector<std::string> &moduleClassNames) { setPatternMatchers(this->moduleClassNames, moduleClassNames); }
         void setModuleIds(std::vector<int> &moduleIds) { this->moduleIds = moduleIds; }
-        void setMessageNames(std::vector<const char *> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
-        void setMessageTypes(std::vector<const char *> &messageTypes) { setPatternMatchers(this->messageTypes, messageTypes); }
+
+        void setEnableMessageFilter(bool enableMessageFilter) { this->enableMessageFilter = enableMessageFilter; }
+        void setMessageExpression(const char *messageExpression) { this->messageExpression.setPattern(messageExpression, false, true, false); }
+        void setMessageNames(std::vector<std::string> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
+        void setMessageClassNames(std::vector<std::string> &messageClassNames) { setPatternMatchers(this->messageClassNames, messageClassNames); }
         void setMessageIds(std::vector<long> &messageIds) { this->messageIds = messageIds; }
         void setMessageTreeIds(std::vector<long> &messageTreeIds) { this->messageTreeIds = messageTreeIds; }
         void setMessageEncapsulationIds(std::vector<long> &messageEncapsulationIds) { this->messageEncapsulationIds = messageEncapsulationIds; }
         void setMessageEncapsulationTreeIds(std::vector<long> &messageEncapsulationTreeIds) { this->messageEncapsulationTreeIds = messageEncapsulationTreeIds; }
+
         void setTracedEventNumber(long tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
         void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }
         void setTraceConsequences(bool traceConsequences) { this->traceConsequences = traceConsequences; }
         void setTraceSelfMessages(bool traceSelfMessages) { this->traceSelfMessages = traceSelfMessages; }
         void setTraceMessageReuses(bool traceMessageReuses) { this->traceMessageReuses = traceMessageReuses; }
-        void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
-        void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
 
         IEventLog *getEventLog() { return eventLog; }
         int getMaximumCauseDepth() { return maximumCauseDepth; }
         int getMaximumConsequenceDepth() { return maximumConsequenceDepth; }
 
         bool matchesFilter(IEvent *event);
-        FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward);
-        FilteredEvent *getMatchingEventInDirection(long startEventNumber, long stopEventNumber, bool forward);
+        FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward, long stopEventNumber = -1);
+        std::vector<int> getSelectedModuleIds();
 
         // IEventLog interface
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) { return eventLog->setProgressMonitor(progressMonitor); }
@@ -106,6 +118,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual void synchronize();
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
+        virtual std::set<const char *>& getMessageNames() { return eventLog->getMessageNames(); }
+        virtual std::set<const char *>& getMessageClassNames() { return eventLog->getMessageClassNames(); }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }
         virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
 
@@ -136,13 +150,16 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
          */
         bool matchesEvent(IEvent *event);
         bool matchesDependency(IEvent *event);
+        bool matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry);
+        bool matchesBeginSendEntry(BeginSendEntry *beginSendEntry);
+        bool matchesExpression(MatchExpression &matchExpression, EventLogEntry *eventLogEntry);
         bool matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str);
 
         template <typename T> bool matchesList(std::vector<T> &elements, T element);
         bool isCauseOfTracedEvent(IEvent *cause);
         bool isConsequenceOfTracedEvent(IEvent *consequence);
         double getApproximateMatchingEventRatio();
-        void setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<const char *> &patterns);
+        void setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath = false);
 };
 
 #endif

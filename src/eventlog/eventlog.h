@@ -50,6 +50,9 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
         ModuleIdToModuleCreatedEntryMap initializationModuleIdToModuleCreatedEntryMap;
 
+        std::set<const char *> messageClassNames; // message class names seen so far (see Event::parse)
+        std::set<const char *> messageNames; // message names seen so far (see Event::parse)
+
         typedef std::map<long, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
 
@@ -75,10 +78,15 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
          */
         Event *getEventForEndOffset(file_offset_t offset);
 
+        void putMessageName(const char *messageName) { messageNames.insert(messageName); }
+        void putMessageClassName(const char *messageClassName) { messageClassNames.insert(messageClassName); }
+
         // IEventLog interface
         virtual void synchronize();
         virtual FileReader *getFileReader() { return reader; }
         virtual long getNumParsedEvents() { return numParsedEvents; }
+        virtual std::set<const char *>& getMessageNames() { return messageNames; }
+        virtual std::set<const char *>& getMessageClassNames() { return messageClassNames; }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
         virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
 

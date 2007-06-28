@@ -35,6 +35,10 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     maximumNumberOfCauses = maximumNumberOfConsequences = 10;
     maximumCauseDepth = maximumConsequenceDepth = 30;
 
+    enableModuleFilter = false;
+    enableMessageFilter = false;
+    setModuleExpression("");
+    setMessageExpression("");
 }
 
 FilteredEventLog::~FilteredEventLog()
@@ -56,11 +60,11 @@ void FilteredEventLog::synchronize()
         it->second->synchronize();
 }
 
-void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<const char *> &patterns)
+void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath)
 {
-    for (std::vector<const char *>::iterator it = patterns.begin(); it != patterns.end(); it++) {
+    for (std::vector<std::string>::iterator it = patterns.begin(); it != patterns.end(); it++) {
         PatternMatcher matcher;
-        matcher.setPattern(*it, true, true, true);
+        matcher.setPattern((*it).c_str(), dottedPath, true, false);
         patternMatchers.push_back(matcher);
     }
 }
@@ -167,52 +171,40 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
     if (tracedEventNumber != -1 && event->getEventNumber() == tracedEventNumber)
         return true;
 
-    ModuleCreatedEntry *moduleCreatedEntry = event->getModuleCreatedEntry();
-
-    // event's module name
-    if (!matchesPatterns(moduleNames, moduleCreatedEntry->fullName))
-        return false;
-
-    // event's module type
-    if (!matchesPatterns(moduleTypes, moduleCreatedEntry->moduleClassName))
-        return false;
-
-    // event's module id
-    if (!matchesList(moduleIds, event->getModuleId()))
-        return false;
-
-    BeginSendEntry *beginSendEntry = event->getCauseBeginSendEntry();
-
-    if (beginSendEntry) {
-        // event's message name
-        if (!matchesPatterns(messageNames, beginSendEntry->messageFullName))
-            return false;
-
-        // event's message type
-        if (!matchesPatterns(messageTypes, beginSendEntry->messageClassName))
-            return false;
-
-        // event's message id
-        if (!matchesList(messageIds, beginSendEntry->messageId))
-            return false;
-
-        // event's message tid
-        if (!matchesList(messageTreeIds, beginSendEntry->messageTreeId))
-            return false;
-
-        // event's message eid
-        if (!matchesList(messageEncapsulationIds, beginSendEntry->messageEncapsulationId))
-            return false;
-
-        // event's message etid
-        if (!matchesList(messageEncapsulationTreeIds, beginSendEntry->messageEncapsulationTreeId))
-            return false;
-    }
-
     // event outside of considered range
     if ((firstEventNumber != -1 && event->getEventNumber() < firstEventNumber) ||
         (lastEventNumber != -1 && event->getEventNumber() > lastEventNumber))
         return false;
+
+    // event's module
+    if (enableModuleFilter) {
+        ModuleCreatedEntry *moduleCreatedEntry = event->getModuleCreatedEntry();
+
+        if (!moduleCreatedEntry || !matchesModuleCreatedEntry(moduleCreatedEntry))
+            return false;
+    }
+
+    // event's message
+    if (enableMessageFilter) {
+        BeginSendEntry *beginSendEntry = event->getCauseBeginSendEntry();
+
+        if (!beginSendEntry)
+            return false;
+
+        bool matches = matchesBeginSendEntry(beginSendEntry);
+
+        for (int i = 0; i < event->getNumEventLogEntries(); i++) {
+            beginSendEntry = dynamic_cast<BeginSendEntry *>(event->getEventLogEntry(i));
+
+            if (beginSendEntry && matchesBeginSendEntry(beginSendEntry)) {
+                matches = true;
+                break;
+            }
+        }
+
+        if (!matches)
+            return false;
+    }
 
     return true;
 }
@@ -238,10 +230,36 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
     return false;
 }
 
+bool FilteredEventLog::matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry)
+{
+    return
+        matchesExpression(moduleExpression, moduleCreatedEntry) ||
+        matchesPatterns(moduleNames, moduleCreatedEntry->fullName) ||
+        matchesPatterns(moduleClassNames, moduleCreatedEntry->moduleClassName) ||
+        matchesList(moduleIds, moduleCreatedEntry->moduleId);
+}
+
+bool FilteredEventLog::matchesBeginSendEntry(BeginSendEntry *beginSendEntry)
+{
+    return
+        matchesExpression(messageExpression, beginSendEntry) ||
+        matchesPatterns(messageNames, beginSendEntry->messageFullName) ||
+        matchesPatterns(messageClassNames, beginSendEntry->messageClassName) ||
+        matchesList(messageIds, beginSendEntry->messageId) ||
+        matchesList(messageTreeIds, beginSendEntry->messageTreeId) ||
+        matchesList(messageEncapsulationIds, beginSendEntry->messageEncapsulationId) ||
+        matchesList(messageEncapsulationTreeIds, beginSendEntry->messageEncapsulationTreeId);
+}
+
+bool FilteredEventLog::matchesExpression(MatchExpression &matchExpression, EventLogEntry *eventLogEntry)
+{
+    return matchExpression.matches(eventLogEntry);
+}
+
 bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str)
 {
     if (patterns.empty())
-        return true;
+        return false;
 
     for (std::vector<PatternMatcher>::iterator it = patterns.begin(); it != patterns.end(); it++)
         if ((*it).matches(str))
@@ -253,7 +271,7 @@ bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher> &patterns, co
 template <typename T> bool FilteredEventLog::matchesList(std::vector<T> &elements, T element)
 {
     if (elements.empty())
-        return true;
+        return false;
     else
         return std::find(elements.begin(), elements.end(), element) != elements.end();
 }
@@ -338,7 +356,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
             case FIRST_OR_PREVIOUS:
                 if (event->getSimulationTime() == simulationTime) {
                     IEvent *lastEvent = eventLog->getEventForSimulationTime(simulationTime, LAST_OR_NEXT);
-                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), lastEvent->getEventNumber(), true);
+                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), true, lastEvent->getEventNumber());
 
                     if (matchingEvent)
                         return matchingEvent;
@@ -352,7 +370,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
             case LAST_OR_NEXT:
                 if (event->getSimulationTime() == simulationTime) {
                     IEvent *firstEvent = eventLog->getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
-                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), firstEvent->getEventNumber(), false);
+                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), false, firstEvent->getEventNumber());
 
                     if (matchingEvent)
                         return matchingEvent;
@@ -377,12 +395,7 @@ EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const c
     return eventLogEntry;
 }
 
-FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
-{
-    return getMatchingEventInDirection(eventNumber, -1, forward);
-}
-
-FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, long stopEventNumber, bool forward)
+FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward, long stopEventNumber)
 {
     Assert(eventNumber >= 0);
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
@@ -416,6 +429,20 @@ FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, l
     }
 
     return NULL;
+}
+
+std::vector<int> FilteredEventLog::getSelectedModuleIds()
+{
+    std::vector<int> moduleIds;
+
+    for (int i = 0; i < eventLog->getNumModuleCreatedEntries(); i++) {
+        ModuleCreatedEntry *moduleCreatedEntry = eventLog->getModuleCreatedEntry(i);
+
+        if (moduleCreatedEntry && matchesModuleCreatedEntry(moduleCreatedEntry))
+            moduleIds.push_back(moduleCreatedEntry->moduleId);
+    }
+
+    return moduleIds;
 }
 
 bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
