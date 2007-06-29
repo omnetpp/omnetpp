@@ -200,6 +200,16 @@ class ENVIR_API cConfiguration : public cObject
     virtual const char *getVariable(const char *varname) const = 0;
 
     /**
+     * Returns the names of all iteration variables in the activated configuration.
+     */
+    virtual std::vector<const char *> getIterationVariableNames() const = 0;
+
+    /**
+     * Returns the names of all predefined variables in the activated configuration.
+     */
+    virtual std::vector<const char *> getPredefinedVariableNames() const = 0;
+
+    /**
      * For debugging.
      */
     virtual void dump() const = 0;

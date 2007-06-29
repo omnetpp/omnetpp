@@ -383,6 +383,16 @@ void cFileOutputScalarManager::init()
         const char *runId = ev.app->getRunId();
         fprintf(f, "run %s\n", QUOTE(runId));
         //FIXME write out run data here as well (not only in outvectormanager)
+
+        // save iteration variables
+        std::vector<const char *> v = ev.config()->getIterationVariableNames();
+        for (int i=0; i<v.size(); i++)
+        {
+            const char *name = v[i];
+            const char *value = ev.config()->getVariable(v[i]);
+            //FIXME TODO: if (isnumeric(value))
+                CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
+        }
     }
 }
 

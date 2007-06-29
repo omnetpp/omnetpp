@@ -160,7 +160,8 @@ patternmatcher.obj: patternmatcher.cc \
   commondefs.h \
   commonutil.h
 stringpool.obj: stringpool.cc \
-  stringpool.h
+  stringpool.h \
+  commondefs.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h

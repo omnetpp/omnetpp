@@ -333,7 +333,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
 
             if (!loc.value.empty())
             {
-                // store variable, and make sure it has name and id
+                // store variable
                 if (!loc.varname.empty())
                 {
                     // check it does not conflict with other iteration variables or predefined variables
@@ -343,12 +343,12 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
                     for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
                         if (loc.varname == *pvar)
                             throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
-
-
+                    // use name for id
                     loc.varid = loc.varname;
                 }
                 else
                 {
+                    // unnamed variable: generate id (identifies location) and name ($0,$1,$2,etc)
                     loc.varid = opp_stringf("%d-%d-%d", sectionId, i, k);
                     loc.varname = opp_stringf("%d", unnamedCount++);
                 }
@@ -445,6 +445,23 @@ const char *SectionBasedConfiguration::getVariable(const char *varname) const
 {
     StringMap::const_iterator it = variables.find(varname);
     return it==variables.end() ? NULL : it->second.c_str();
+}
+
+std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames() const
+{
+    std::vector<const char *> result;
+    for (StringMap::const_iterator it = variables.begin(); it!=variables.end(); ++it)
+        if (isalpha(it->first[0]))  // skip unnamed ones
+            result.push_back(it->first.c_str());
+    return result;
+}
+
+std::vector<const char *> SectionBasedConfiguration::getPredefinedVariableNames() const
+{
+    std::vector<const char *> result;
+    for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
+        result.push_back(*pvar);
+    return result;
 }
 
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const
