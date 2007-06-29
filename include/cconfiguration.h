@@ -33,6 +33,21 @@ class cConfigKey;
 #define CFGNAME_GENERAL "General"
 
 /**
+ * Configuration variables. Can be referred to using the ${...}
+ * syntax in the configuration.
+ */
+//@{
+#define CFGVAR_CONFIGNAME    "configname"
+#define CFGVAR_RUNNUMBER     "runnumber"
+#define CFGVAR_NETWORK       "network"
+#define CFGVAR_PROCESSID     "processid"
+#define CFGVAR_DATETIME      "datetime"
+#define CFGVAR_RUNID         "runid"
+#define CFGVAR_ITERATIONVARS "iterationvars"
+#define CFGVAR_REPETITION    "repetition"
+//@}
+
+/**
  * Abstract base class for representing the configuration (omnetpp.ini).
  * This class logically belongs to the cEnvir facade. (cEnvir presents
  * to the simulation kernel the UI, or generally, the program which embeds

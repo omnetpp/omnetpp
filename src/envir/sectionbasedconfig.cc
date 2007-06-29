@@ -33,13 +33,17 @@
 //XXX check behavior of keys which don't contain a dot! or: forbid them?
 //XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
-//XXX use CFGVAR_xxx constants for predefined ${} variables
 
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: i < j+1.");
 Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
 
+static const char *PREDEFINED_CONFIGVARS[] = {
+  CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK, CFGVAR_PROCESSID,
+  CFGVAR_DATETIME, CFGVAR_RUNID, CFGVAR_ITERATIONVARS, CFGVAR_REPETITION,
+  NULL
+};
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
 
@@ -181,12 +185,12 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
 
     // create variables ;FIXME use symbolic constants!
-    variables["configname"] = getActiveConfigName();
-    variables["runnumber"] = opp_stringf("%d", getActiveRunNumber());
-    variables["network"] = opp_nulltoempty(internalGetValue(sectionChain, "network"));
-    variables["processid"] = opp_stringf("%d", (int) getpid());
-    variables["datetime"] = opp_getdatetimestring();
-    variables["runid"] = runId = variables["configname"]+"-"+variables["runnumber"]+"-"+variables["datetime"]+"-"+variables["processid"];
+    variables[CFGVAR_CONFIGNAME] = getActiveConfigName();
+    variables[CFGVAR_RUNNUMBER] = opp_stringf("%d", getActiveRunNumber());
+    variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, "network"));
+    variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int) getpid());
+    variables[CFGVAR_DATETIME] = opp_getdatetimestring();
+    variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
     // extract all iteration vars from values within this section
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
@@ -207,9 +211,9 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
         // assemble ${iterationvars} as well
         std::string iterationvars;
         for (int i=0; i<itervars.size(); i++)
-            if (itervars[i].varname != "repetition")
+            if (itervars[i].varname != CFGVAR_REPETITION)
                 iterationvars += std::string(i>0?", ":"") + "$" + itervars[i].varname + "=" + scenario.getVariable(itervars[i].varid.c_str());
-        variables["iterationvars"] = iterationvars;
+        variables[CFGVAR_ITERATIONVARS] = iterationvars;
     }
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
@@ -330,13 +334,21 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
             if (!loc.value.empty())
             {
                 // store variable, and make sure it has name and id
-                if (!loc.varname.empty()) {
+                if (!loc.varname.empty())
+                {
+                    // check it does not conflict with other iteration variables or predefined variables
                     for (int j=0; j<v.size(); j++)
                         if (v[j].varname==loc.varname)
                             throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
+                    for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
+                        if (loc.varname == *pvar)
+                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
+
+
                     loc.varid = loc.varname;
                 }
-                else {
+                else
+                {
                     loc.varid = opp_stringf("%d-%d-%d", sectionId, i, k);
                     loc.varname = opp_stringf("%d", unnamedCount++);
                 }
@@ -346,13 +358,11 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
         }
     }
 
-    //FIXME: forbidden variable names are any of the predefined ones! check and throw error!
-
     // register ${repetition}, based on the repeat= config entry
     const char *repeat = internalGetValue(sectionChain, "repeat");
     int repeatCount = (int) parseLong(repeat, NULL, 1);
     IterationVariable repetition;
-    repetition.varid = repetition.varname = "repetition";
+    repetition.varid = repetition.varname = CFGVAR_REPETITION;
     repetition.value = opp_stringf("0..%d", repeatCount-1);
     v.push_back(repetition);
 

@@ -471,7 +471,7 @@ void TOmnetApp::shutdown()
 
 void TOmnetApp::startRun()
 {
-    runid = getConfig()->getVariable("runid"); //FIXME use symbolic constant
+    runid = getConfig()->getVariable(CFGVAR_RUNID);
 
     resetClock();
     outvectormgr->startRun();
