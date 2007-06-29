@@ -193,9 +193,13 @@ class ENVIR_API cConfiguration : public cObject
      * After activating a configuration, this method can be used to query
      * iteration variables and predefined variables. These are the variables
      * that can be referred to using the "${...}" syntax in the configuration.
-     * Some of the predefined variables are: configname, runnumber, network,
-     * processid, datetime, runid. If the variable does not exist, NULL is
-     * returned.
+     * If the variable does not exist, NULL is returned.
+     *
+     * Some of the predefined variables are: "configname", "runnumber", "network",
+     * "processid", "datetime", "runid", "repetition", "iterationvars";
+     * these names are also available as symbolic constants, see CFGVAR_CONFIGNAME
+     * and other CFGVAR_xxx names.
+     *
      */
     virtual const char *getVariable(const char *varname) const = 0;
 
@@ -206,6 +210,7 @@ class ENVIR_API cConfiguration : public cObject
 
     /**
      * Returns the names of all predefined variables in the activated configuration.
+     * See getVariable().
      */
     virtual std::vector<const char *> getPredefinedVariableNames() const = 0;
 
