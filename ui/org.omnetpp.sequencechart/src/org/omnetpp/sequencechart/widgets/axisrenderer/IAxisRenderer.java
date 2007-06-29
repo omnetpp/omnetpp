@@ -12,7 +12,8 @@ public interface IAxisRenderer {
 	public int getHeight();
 
 	/**
-	 * Does the actual drawing lazily on the given graphics in the provided simulation time interval.
+	 * Does the actual drawing lazily on the given graphics in the provided event number interval.
+	 * Implementors should use the sequence chart coordinate transformations to get further details.
 	 */
-	public void drawAxis(Graphics graphics, double startSimulationTime, double endSimulationTime);
+	public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr);
 }

@@ -15,24 +15,27 @@
 #ifndef _ARRAYBUILDER_H_
 #define _ARRAYBUILDER_H_
 
+#include "commonutil.h"
 #include "commonnodes.h"
 #include "xyarray.h"
 
+class ArrayBuilderNodeType;
 
 /**
  * Stores all data in vector (two 'double' vectors in fact).
  */
 class SCAVE_API ArrayBuilderNode : public SingleSinkNode
 {
+    friend ArrayBuilderNodeType;
     private:
         double *xvec;
         double *yvec;
-        size_t vecsize;
+        size_t veccapacity;
         size_t veclen;
         BigDecimal *xpvec;
-        size_t xpvecsize;
+        bool collectEvec;
+        long *evec; // event numbers
         void resize();
-        void resizePrec();
     public:
         ArrayBuilderNode();
         virtual ~ArrayBuilderNode();
@@ -42,18 +45,19 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
 
         void sort();
         size_t length() {return veclen;}
-        void extractVector(double *&x, double *&y, size_t &len, BigDecimal *&xp, size_t &xplen);
         XYArray *getArray();
 };
 
 
 class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
 {
+    friend ArrayBuilderNode;
     public:
         virtual const char *name() const {return "arraybuilder";}
         virtual const char *description() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
 

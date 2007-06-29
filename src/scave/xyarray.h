@@ -27,15 +27,15 @@ class SCAVE_API XYArray
         double *y;
         int len;
         BigDecimal *xp; // precise x value
-        int lenp;       // length of the xp array
+        long *evec; // event numbers
     public:
-        XYArray(double *xv, double *yv, int l) {x = xv; y = yv; len = l; xp = NULL; lenp = 0;}
-        XYArray(double *xv, double *yv, int l, BigDecimal *xpv, int lp) {x = xv; y = yv; len = l; xp = xpv; lenp = lp;}
-        ~XYArray() {delete [] x; delete [] y;}
+        XYArray(int l, double *xv, double *yv, BigDecimal *xpv = NULL, long *ev = NULL) {len = l; x = xv; y = yv; xp = xpv; evec = ev;}
+        ~XYArray() {delete [] x; delete [] y; delete [] xp; delete [] evec;}
         int length() const  {return len;}
         double getX(int i) const  {return (i>=0 && i<len) ? x[i] : 0;}
         double getY(int i) const  {return (i>=0 && i<len) ? y[i] : 0;}
-        BigDecimal getPreciseX(int i) const {return ((xp != NULL && i>=0 && i < lenp) ? xp[i] : BigDecimal::Nil);}
+        BigDecimal getPreciseX(int i) const {return ((xp != NULL && i>=0 && i < len) ? xp[i] : BigDecimal::Nil);}
+        long getEventNumber(int i) const {return ((evec != NULL && i>=0 && i<len) ? evec[i] : -1);}
 };
 
 #endif

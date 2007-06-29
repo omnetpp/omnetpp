@@ -100,6 +100,30 @@ public class EventLogInput
 		restoreState();
 	}
 
+	private void checkEventLogForChanges() {
+		if (eventLog.getFileReader().isChanged()) {
+			if (debug)
+				System.out.println("Notifying listeners about new content being appended to the event log");
+
+			eventLog.synchronize();
+			getEventLogTableFacade().synchronize();
+			getSequenceChartFacade().synchronize();
+
+			eventLogAppended();
+
+			if (debug)
+				System.out.println("Event log append notification done");
+		}
+	}
+
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		eventLogChangeListeners.clear();
+		eventLogWatcher.stop();
+	}
+
 	/*************************************************************************************
 	 * GETTERS
 	 */
@@ -346,7 +370,7 @@ public class EventLogInput
 	}
 
 	/*************************************************************************************
-	 * MISC
+	 * PROGRESS MONITORING OF LONG RUNNING OPERATIONS
 	 */
 	
 	public boolean isCanceled() {
@@ -413,29 +437,5 @@ public class EventLogInput
 		public LongRunningOperationCanceled(String string) {
 			super(string);
 		}	
-	}
-
-	public void checkEventLogForChanges() {
-		if (eventLog.getFileReader().isChanged()) {
-			if (debug)
-				System.out.println("Notifying listeners about new content being appended to the event log");
-
-			eventLog.synchronize();
-			getEventLogTableFacade().synchronize();
-			getSequenceChartFacade().synchronize();
-
-			eventLogAppended();
-
-			if (debug)
-				System.out.println("Event log append notification done");
-		}
-	}
-
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		eventLogChangeListeners.clear();
-		eventLogWatcher.stop();
 	}
 }

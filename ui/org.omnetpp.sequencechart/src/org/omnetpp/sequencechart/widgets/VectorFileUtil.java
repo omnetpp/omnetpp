@@ -23,10 +23,14 @@ public class VectorFileUtil {
 	private VectorFileUtil() {
 	}
 
+	public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id) {
+		return getDataOfVector(resultfileManager, id, false);
+	}
+
 	/**
 	 * Returns data from an output vector given with its ID.
 	 */
-	public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id) {
+	public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id, boolean includeEventNumbers) {
 		// we'll build a data-flow network consisting of a source and a sink node, and run it. 
 		DataflowManager dataflowManager = new DataflowManager();
 
@@ -38,7 +42,10 @@ public class VectorFileUtil {
 		Port port = readerNode.addVector(resultfileManager.getVector(id));
 
 		// and an array builder as sink 
-		Node arrayBuilderNode = createNode(dataflowManager, "arraybuilder", new StringMap());
+		StringMap stringMap = new StringMap();
+		if (includeEventNumbers)
+			stringMap.set("collecteventnumbers", "true");
+		Node arrayBuilderNode = createNode(dataflowManager, "arraybuilder", stringMap);
 		dataflowManager.connect(port, arrayBuilderNode.nodeType().getPort(arrayBuilderNode, "in"));
 
 		// run the data-flow network

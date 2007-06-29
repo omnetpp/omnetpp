@@ -198,7 +198,8 @@ public class SequenceChart
 	private BigDecimal tickPrefix;
 
 	private ArrayList<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
-	private IAxisRenderer[] axisRenderers; // used to draw the axis
+	private IAxisRenderer[] axisRenderers; // used to draw the axis (parallel to axisModules)
+	private HashMap<Integer, IAxisRenderer> moduleIdToAxisRendererMap = new HashMap<Integer, IAxisRenderer>();
 	private int[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap = new HashMap<Integer, Integer>();
@@ -1003,7 +1004,7 @@ public class SequenceChart
 									EnumType enumType = resultItem.getEnum();
 	
 									if (enumType != null) {
-										XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id);
+										XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
 										String[] names = enumType.names().toArray();
 			
 										setAxisRenderer(getAxisModule(axisState.vectorModuleFullPath), 
@@ -1102,8 +1103,6 @@ public class SequenceChart
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, false);
 			
-			setAxisModules(eventLogInput.getSelectedModules());
-			
 			if (closestEvent != null)
 				sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
 			else {
@@ -1112,6 +1111,8 @@ public class SequenceChart
 				if (closestEvent != null)
 					sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
 			}
+
+			setAxisModules(eventLogInput.getSelectedModules());
 		}
 
 		clearCanvasCacheAndRedraw();
@@ -1166,8 +1167,15 @@ public class SequenceChart
 		this.axisModules = axisModules;
 		this.axisRenderers = new IAxisRenderer[axisModules.size()];
 
-		for (int i = 0; i < axisRenderers.length; i++)
-			axisRenderers[i] = new AxisLineRenderer(this);
+		for (int i = 0; i < axisRenderers.length; i++) {
+			IAxisRenderer axisRenderer = getAxisRenderer(axisModules.get(i));
+			
+			if (axisRenderer == null)
+				axisRenderer = new AxisLineRenderer(this);
+
+			moduleIdToAxisRendererMap.put(axisModules.get(i).getModuleId(), axisRenderer);
+			axisRenderers[i] = axisRenderer;
+		}
 
 		calculateAxisModuleIndices();
 		calculateAxisSpacing();
@@ -1180,18 +1188,23 @@ public class SequenceChart
 	}
 
 	public IAxisRenderer getAxisRenderer(ModuleTreeItem axisModule) {
-		return axisRenderers[axisModules.indexOf(axisModule)];
+		return moduleIdToAxisRendererMap.get(axisModule.getModuleId());
 	}
 
 	/**
 	 * Associates the axis renderer with the given axis.
 	 */
 	public void setAxisRenderer(ModuleTreeItem axisModule, IAxisRenderer axisRenderer) {
-		axisRenderers[axisModules.indexOf(axisModule)] = axisRenderer;
-		axisModuleYs = null;
-		invalidVirtualSize = true;
-		calculateAxisSpacing();
-		clearCanvasCacheAndRedraw();
+		moduleIdToAxisRendererMap.put(axisModule.getModuleId(), axisRenderer);
+
+		int index = axisModules.indexOf(axisModule);
+		if (index != -1) {
+			axisRenderers[index] = axisRenderer;
+			axisModuleYs = null;
+			invalidVirtualSize = true;
+			calculateAxisSpacing();
+			clearCanvasCacheAndRedraw();
+		}
 	}
 	
 	/*************************************************************************************
@@ -1533,8 +1546,6 @@ public class SequenceChart
 
 			graphics.getClip(Rectangle.SINGLETON);
 
-			double startSimulationTime = getSimulationTimeForViewportCoordinate(Rectangle.SINGLETON.x);
-			double endSimulationTime = getSimulationTimeForViewportCoordinate(Rectangle.SINGLETON.right());
 			int extraClipping = (showMessageNames || showEventNumbers) ? 300 : 100;
 			long[] eventPtrRange = getFirstLastEventForPixelRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
 			long startEventPtr = eventPtrRange[0];
@@ -1544,7 +1555,7 @@ public class SequenceChart
 				System.out.println("Redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
 
 			drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
-			drawAxes(graphics, startSimulationTime, endSimulationTime);
+			drawAxes(graphics, startEventPtr, endEventPtr);
 	        drawMessageDependencies(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
 	
@@ -1610,13 +1621,13 @@ public class SequenceChart
 	/**
 	 * Draws all axes in the given simulation time range.
 	 */
-	private void drawAxes(Graphics graphics, double startSimulationTime, double endSimulationTime) {
+	private void drawAxes(Graphics graphics, long startEventPtr, long endEventPtr) {
 		for (int i = 0; i < axisModules.size(); i++) {
 			int y = axisModuleYs[i] - (int)getViewportTop();
 			IAxisRenderer axisRenderer = axisRenderers[i];
 			int dy = y;
 			graphics.translate(0, dy);
-			axisRenderer.drawAxis(graphics, startSimulationTime, endSimulationTime);
+			axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
 			graphics.translate(0, -dy);
 		}
 	}
@@ -2537,7 +2548,6 @@ public class SequenceChart
 	 * Translates timeline coordinate to viewport pixel x coordinate, using pixelPerTimelineCoordinate.
 	 */
 	public int getViewportCoordinateForTimelineCoordinate(double t) {
-		Assert.isTrue(t >= 0);
 		long x = Math.round(t * pixelPerTimelineCoordinate) + fixPointViewportCoordinate;
     	return (int)x;
 	}

@@ -197,6 +197,8 @@ IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timel
     IEvent *timelineCoordinateRangeEndEvent = eventLog->getEventForEventNumber(timelineCoordinateRangeEndEventNumber);
     IEvent *currentEvent;
 
+    Assert(timelineCoordinateRangeStartEvent && timelineCoordinateRangeEndEvent);
+
     if (timelineCoordinate <= getTimelineCoordinate(timelineCoordinateRangeStartEvent)) {
         forward = false;
         currentEvent = timelineCoordinateRangeStartEvent;

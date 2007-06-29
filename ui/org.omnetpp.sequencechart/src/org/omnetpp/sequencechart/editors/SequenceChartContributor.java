@@ -1009,7 +1009,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					if (enumType == null)
 						MessageDialog.openError(null, "Error", "The selected vector is not of type enum");
 					else {							
-						XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id);
+						XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
 						String[] names = enumType.names().toArray();
 						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem.getModuleName(), resultItem.getName(), names, data));
 					}

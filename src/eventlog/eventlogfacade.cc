@@ -15,6 +15,9 @@
 #include "ievent.h"
 #include "ieventlog.h"
 #include "event.h"
+#include "eventlog.h"
+#include "filteredevent.h"
+#include "filteredeventlog.h"
 #include "eventlogfacade.h"
 
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
@@ -32,6 +35,33 @@ IEvent* EventLogFacade::Event_getEvent(int64 ptr)
 {
     EVENT_PTR(ptr);
     return (IEvent*)ptr;
+}
+
+int64 EventLogFacade::Event_getNonFilteredEvent(int64 ptr)
+{
+    EVENT_PTR(ptr);
+    IEvent *ievent = (IEvent*)ptr;
+
+    Event *event = dynamic_cast<Event *>(ievent);
+    if (event)
+        return ptr;
+    else
+        return Event_getNonFilteredEvent((int64)((FilteredEvent *)ievent)->getEvent());
+}
+
+int64 EventLogFacade::Event_getEventForEventNumber(long eventNumber)
+{
+    return (int64)eventLog->getEventForEventNumber(eventNumber);
+}
+
+int64 EventLogFacade::Event_getNonFilteredEventForEventNumber(long eventNumber)
+{
+    EventLog *nonFilteredEventLog = dynamic_cast<EventLog *>(eventLog);
+
+    if (nonFilteredEventLog)
+        return (int64)nonFilteredEventLog->getEventForEventNumber(eventNumber);
+    else
+        return (int64)((FilteredEventLog *)eventLog)->getEventLog()->getEventForEventNumber(eventNumber);
 }
 
 int64 EventLogFacade::Event_getPreviousEvent(int64 ptr)
@@ -56,6 +86,12 @@ simtime_t EventLogFacade::Event_getSimulationTime(int64 ptr)
 {
     EVENT_PTR(ptr);
     return ((IEvent*)ptr)->getSimulationTime();
+}
+
+double EventLogFacade::Event_getSimulationTimeAsDouble(int64 ptr)
+{
+    EVENT_PTR(ptr);
+    return ((IEvent*)ptr)->getSimulationTime().dbl();
 }
 
 int EventLogFacade::Event_getModuleId(int64 ptr)

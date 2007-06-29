@@ -23,7 +23,7 @@ public class AxisLineRenderer implements IAxisRenderer {
 		return 1;
 	}
 	
-	public void drawAxis(Graphics graphics, double startSimulationTime, double endSimulationTime)
+	public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr)
 	{
 		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
 		graphics.setLineStyle(SWT.LINE_SOLID);

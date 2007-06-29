@@ -42,10 +42,14 @@ class EVENTLOG_API EventLogFacade
         virtual void synchronize();
 
         IEvent* Event_getEvent(int64 ptr);
+        int64 Event_getNonFilteredEvent(int64 ptr);
+        int64 Event_getEventForEventNumber(long eventNumber);
+        int64 Event_getNonFilteredEventForEventNumber(long eventNumber);
         int64 Event_getPreviousEvent(int64 ptr);
         int64 Event_getNextEvent(int64 ptr);
         long Event_getEventNumber(int64 ptr);
         simtime_t Event_getSimulationTime(int64 ptr);
+        double Event_getSimulationTimeAsDouble(int64 ptr);
         int Event_getModuleId(int64 ptr);
         int Event_getNumCauses(int64 ptr);
         int Event_getNumConsequences(int64 ptr);

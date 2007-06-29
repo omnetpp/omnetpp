@@ -22,43 +22,55 @@
 
 ArrayBuilderNode::ArrayBuilderNode()
 {
-    vecsize = 1024;
+    veccapacity = 0;
     veclen = 0;
-    xvec = new double[vecsize];
-    yvec = new double[vecsize];
-    xpvecsize = 0;
+    xvec = NULL;
+    yvec = NULL;
     xpvec = NULL;
+    evec = NULL;
+    collectEvec = false;
 }
 
 ArrayBuilderNode::~ArrayBuilderNode()
 {
     delete [] xvec;
     delete [] yvec;
-    if (xpvec) delete[] xpvec;
+    delete [] xpvec;
+    delete [] evec;
 }
 
 void ArrayBuilderNode::resize()
 {
-    size_t newsize = 3*vecsize/2;
-    double *newxvec = new double[newsize];
-    double *newyvec = new double[newsize];
-    memcpy(newxvec, xvec, veclen*sizeof(double));
-    memcpy(newyvec, yvec, veclen*sizeof(double));
-    delete [] xvec;
-    delete [] yvec;
-    xvec = newxvec;
-    yvec = newyvec;
-    vecsize = newsize;
-}
+    size_t newsize = 3*veccapacity/2;
 
-void ArrayBuilderNode::resizePrec()
-{
-    size_t newsize = vecsize;
-    BigDecimal *newxpvec = new BigDecimal[newsize];
-    memcpy(newxpvec, xpvec, xpvecsize*sizeof(BigDecimal));
-    delete[] xpvec;
-    xpvec = newxpvec;
-    xpvecsize = newsize;
+    if (!newsize)
+        newsize = 1024;
+
+    double *newxvec = new double[newsize];
+    memcpy(newxvec, xvec, veclen*sizeof(double));
+    delete [] xvec;
+    xvec = newxvec;
+
+    double *newyvec = new double[newsize];
+    memcpy(newyvec, yvec, veclen*sizeof(double));
+    delete [] yvec;
+    yvec = newyvec;
+
+    if (xpvec) {
+        BigDecimal *newxpvec = new BigDecimal[newsize];
+        memcpy(newxpvec, xpvec, veccapacity*sizeof(BigDecimal));
+        delete[] xpvec;
+        xpvec = newxpvec;
+    }
+
+    if (collectEvec) {
+        long *newevec = new long[newsize];
+        memcpy(newevec, evec, veccapacity*sizeof(long));
+        delete[] evec;
+        evec = newevec;
+    }
+
+    veccapacity = newsize;
 }
 
 bool ArrayBuilderNode::isReady() const
@@ -68,22 +80,25 @@ bool ArrayBuilderNode::isReady() const
 
 void ArrayBuilderNode::process()
 {
-    Assert(xvec && yvec);
     int n = in()->length();
     for (int i=0; i<n; i++)
     {
         Datum a;
         in()->read(&a,1);
-        if (veclen==vecsize)
+        if (veclen==veccapacity)
             resize();
+        Assert(xvec && yvec);
         xvec[veclen] = a.x;
         yvec[veclen] = a.y;
-        if (!a.xp.isNil())
-        {
-            if (veclen>=xpvecsize)
-                resizePrec();
+        if (!a.xp.isNil()) {
+            if (!xpvec)
+                xpvec = new BigDecimal[veccapacity];
+
             xpvec[veclen] = a.xp;
         }
+        if (collectEvec)
+            evec[veclen] = a.eventNumber;
+
         veclen++;
     }
 }
@@ -104,26 +119,13 @@ void ArrayBuilderNode::sort()
 #define min(a,b)    (((a) < (b)) ? (a) : (b))
 #endif
 
-void ArrayBuilderNode::extractVector(double *&x, double *&y, size_t &len, BigDecimal *&xp, size_t &xplen)
-{
-    // transfer ownership to caller
-    x = xvec;
-    y = yvec;
-    len = veclen;
-    xp = xpvec;
-    xplen = min(veclen, xpvecsize);
-    xvec = NULL;
-    yvec = NULL;
-    veclen = 0;
-    xpvec = NULL;
-}
-
 XYArray *ArrayBuilderNode::getArray()
 {
     // transfer ownership to XYArray
-    XYArray *array = new XYArray(xvec, yvec, veclen, xpvec, min(veclen, xpvecsize));
+    XYArray *array = new XYArray(veclen, xvec, yvec, xpvec, evec);
     xvec = yvec = NULL;
     xpvec = NULL;
+    evec = NULL;
     veclen = 0;
     return array;
 }
@@ -136,15 +138,23 @@ const char *ArrayBuilderNodeType::description() const
            "as two double* arrays in the C++ API.";
 }
 
+void ArrayBuilderNodeType::getAttrDefaults(StringMap& attrs) const
+{
+    attrs["collecteventnumbers"] = "false";
+}
+
 void ArrayBuilderNodeType::getAttributes(StringMap& attrs) const
 {
+    attrs["collecteventnumbers"] = "If true event numbers will be present in the output vector";
 }
 
 Node *ArrayBuilderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    Node *node = new ArrayBuilderNode();
+    ArrayBuilderNode *node = new ArrayBuilderNode();
+    if (!strcmp("true", attrs["collecteventnumbers"].c_str()))
+        node->collectEvec = true;
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
