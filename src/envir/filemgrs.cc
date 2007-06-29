@@ -129,7 +129,7 @@ void cFileOutputVectorManager::initRun()
         }
 
         std::string seedset = opp_stringf("%ld", cfg->getAsInt(CFGID_SEED_SET));
-        run.attributes["experiment"] = cfg->getAsCustom(CFGID_EXPERIMENT); //FIXME if not already in there, etc
+        run.attributes["experiment"] = cfg->getAsCustom(CFGID_EXPERIMENT); //TODO if not already in there
         run.attributes["measurement"] = cfg->getAsCustom(CFGID_MEASUREMENT);
         run.attributes["replication"] = opp_replacesubstring(cfg->getAsCustom(CFGID_REPLICATION), "@", seedset.c_str(), true);
         run.attributes["seed-set"] = seedset;
@@ -368,6 +368,13 @@ void cFileOutputScalarManager::endRun()
     closeFile();
 }
 
+inline bool isNumeric(const char *s)
+{
+    char *e;
+    strtod(s, &e);
+    return *e=='\0';
+}
+
 void cFileOutputScalarManager::init()
 {
     if (!f)
@@ -385,12 +392,14 @@ void cFileOutputScalarManager::init()
         //FIXME write out run data here as well (not only in outvectormanager)
 
         // save iteration variables
+
         std::vector<const char *> v = ev.config()->getIterationVariableNames();
         for (int i=0; i<v.size(); i++)
         {
             const char *name = v[i];
             const char *value = ev.config()->getVariable(v[i]);
-            //FIXME TODO: if (isnumeric(value))
+            //XXX write with using an "itervar" keyword not "scalar"
+            if (isNumeric(value))
                 CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
         }
     }
