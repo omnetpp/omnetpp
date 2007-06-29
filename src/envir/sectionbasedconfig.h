@@ -163,6 +163,7 @@ class SectionBasedConfiguration : public cConfiguration
     std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId);
+    bool isPredefinedVariable(const char *varname) const;
     KeyValue1 convert(int sectionId, int entryId);
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
 

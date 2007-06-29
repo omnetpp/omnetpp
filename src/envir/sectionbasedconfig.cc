@@ -340,9 +340,8 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
                     for (int j=0; j<v.size(); j++)
                         if (v[j].varname==loc.varname)
                             throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
-                    for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
-                        if (loc.varname == *pvar)
-                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
+                    if (isPredefinedVariable(loc.varname.c_str()))
+                        throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
                     // use name for id
                     loc.varid = loc.varname;
                 }
@@ -451,7 +450,7 @@ std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames()
 {
     std::vector<const char *> result;
     for (StringMap::const_iterator it = variables.begin(); it!=variables.end(); ++it)
-        if (isalpha(it->first[0]))  // skip unnamed ones
+        if (isalpha(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
             result.push_back(it->first.c_str());
     return result;
 }
@@ -462,6 +461,14 @@ std::vector<const char *> SectionBasedConfiguration::getPredefinedVariableNames(
     for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
         result.push_back(*pvar);
     return result;
+}
+
+bool SectionBasedConfiguration::isPredefinedVariable(const char *varname) const
+{
+    for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
+        if (strcmp(varname, *pvar)==0)
+            return true;
+    return false;
 }
 
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const
