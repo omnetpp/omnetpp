@@ -229,15 +229,18 @@ int TCmdenvApp::run()
         bool startrun_done = false;
         try
         {
-            ::fprintf(fout, "\nPreparing for Run #%d...\n", runnumber);
+            ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runnumber);
             ::fflush(fout);
 
-            //FIXME by default, this will want to run [General] only -- NOT GOOD!!!
+            //FIXME by default, this will want to run [General] only -- NOT GOOD!!! should run all configs, all runs? or ask?
             cfg->activateConfig(opt_configname.c_str(), runnumber);
-            if (opt_printconfigdetails || opt_printconfigdetails2)
-            {
-                cfg->dump(); //XXX refine!
-            }
+
+            const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
+            if (itervars && strlen(itervars)>0)
+                ::fprintf(fout, "Scenario: %s\n", itervars);
+            ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
+
+            cfg->dump(); //XXX for debugging
 
             readPerRunOptions();
 

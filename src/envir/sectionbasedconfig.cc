@@ -41,8 +41,8 @@ Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios.
 
 static const char *PREDEFINED_CONFIGVARS[] = {
   CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK, CFGVAR_PROCESSID,
-  CFGVAR_DATETIME, CFGVAR_RUNID, CFGVAR_ITERATIONVARS, CFGVAR_REPETITION,
-  NULL
+  CFGVAR_DATETIME, CFGVAR_RUNID, CFGVAR_REPETITION, CFGVAR_ITERATIONVARS,
+  CFGVAR_ITERATIONVARS2, NULL
 };
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
@@ -200,7 +200,8 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
     const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
 
     // determine the values to substitute into the iteration vars (${...})
-    try {
+    try
+    {
         Scenario scenario(itervars, constraint);
         scenario.gotoRun(runNumber);
 
@@ -209,11 +210,16 @@ void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName,
             variables[itervars[i].varid] = scenario.getVariable(itervars[i].varid.c_str());
 
         // assemble ${iterationvars} as well
-        std::string iterationvars;
+        std::string iterationvars, iterationvars2;
         for (int i=0; i<itervars.size(); i++)
+        {
+            std::string txt = "$" + itervars[i].varname + "=" + scenario.getVariable(itervars[i].varid.c_str());
             if (itervars[i].varname != CFGVAR_REPETITION)
-                iterationvars += std::string(i>0?", ":"") + "$" + itervars[i].varname + "=" + scenario.getVariable(itervars[i].varid.c_str());
+                iterationvars += std::string(i>0?", ":"") + txt;
+            iterationvars2 += std::string(i>0?", ":"") + txt;
+        }
         variables[CFGVAR_ITERATIONVARS] = iterationvars;
+        variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
     }
     catch (std::exception& e) {
         throw cRuntimeError("Scenario generator: %s", e.what());
