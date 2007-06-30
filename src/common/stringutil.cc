@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include "commonutil.h"
 #include "stringutil.h"
+#include "stringtokenizer.h"
 
 
 std::string opp_parsequotedstr(const char *txt)
@@ -169,14 +170,56 @@ std::string opp_replacesubstring(const char *s, const char *substring, const cha
     std::string text = s;
     std::string::size_type pos = 0;
     do {
-        pos = text.find(substring);
+        pos = text.find(substring, pos);
         if (pos == std::string::npos)
             break;
         text.replace(pos, strlen(substring), replacement);
-        pos += strlen(replacement);
+        pos += strlen(replacement) - strlen(substring);
     }
     while (replaceAll);
     return text;
+}
+
+std::string opp_breaklines(const char *text, int lineLength)
+{
+    char *buf = new char[strlen(text)+1];
+    strcpy(buf, text);
+
+    int leftMargin = 0;
+    int length = strlen(buf);
+    while (true)
+    {
+        int rightMargin = leftMargin + lineLength;
+        if (rightMargin>=length)
+            break; // done
+        bool here = false;
+        int i;
+        if (!here)
+            for (i=leftMargin; i<rightMargin; i++)
+                if (buf[i]=='\n')
+                    {here = true; break;}
+        if (!here)
+            for (; i>=leftMargin; i--)
+                if (buf[i]==' ' || buf[i]=='\n')
+                    {here = true; break;}
+        if (!here)
+            for (i=leftMargin; i<length; i++)
+                if (buf[i]==' ' || buf[i]=='\n')
+                    {here = true; break;}
+        if (!here)
+            break; // done
+        buf[i] = '\n';
+        leftMargin = i+1;
+    }
+
+    std::string tmp = buf;
+    delete[] buf;
+    return tmp;
+}
+
+std::string opp_indentlines(const char *text, const char *indent)
+{
+    return std::string(indent) + opp_replacesubstring(text, "\n", (std::string("\n")+indent).c_str(), true);
 }
 
 int strdictcmp(const char *s1, const char *s2)

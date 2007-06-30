@@ -344,7 +344,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
         ev << "Supported configuration keys (omnetpp.ini):\n";
-        bool printDescriptions = !strcmp(category, "configdetails");
+        bool printDescriptions = strcmp(category, "configdetails")==0;
 
         cSymTable *table = configKeys.instance();
         table->sort();
@@ -363,7 +363,7 @@ void TOmnetApp::dumpComponentList(const char *category)
             ev << "; " << (obj->isGlobal() ? "global" : "per-run") << " setting";
             ev << "\n";
             if (printDescriptions && obj->description() && obj->description()[0])
-                ev << obj->description() << "\n";
+                ev << opp_indentlines(opp_breaklines(obj->description(),75).c_str(), "    ") << "\n";
             if (printDescriptions) ev << "\n";
         }
         ev << "\n";

@@ -66,12 +66,12 @@ inline std::string opp_quotestr_ifneeded(const char *txt)
 #define QUOTE(txt)   (opp_needsquotes(txt) ? opp_quotestr(txt).c_str() : (txt))
 
 /**
- * Create a string using printf-like formatting.
+ * Create a string using printf-like formatting. Limit: 1023 chars.
  */
 COMMON_API std::string opp_stringf(const char *fmt, ...);
 
 /**
- * Create a string using printf-like formatting.
+ * Create a string using printf-like formatting. Limit: 1023 chars.
  */
 COMMON_API std::string opp_vstringf(const char *fmt, va_list& args);
 
@@ -85,6 +85,16 @@ COMMON_API char *opp_clonestr(const char *s);
  * Performs find/replace within a string.
  */
 COMMON_API std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll);
+
+/**
+ * Inserts newlines into the string, performing rudimentary line breaking.
+ */
+COMMON_API std::string opp_breaklines(const char *text, int maxLineLength);
+
+/**
+ * Indent each line of the input text.
+ */
+COMMON_API std::string opp_indentlines(const char *text, const char *indent);
 
 /**
  * Dictionary-compare two strings, the main difference from stricmp()
