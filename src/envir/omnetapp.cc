@@ -367,6 +367,12 @@ void TOmnetApp::dumpComponentList(const char *category)
             if (printDescriptions) ev << "\n";
         }
         ev << "\n";
+
+        ev << "Predefined variables that can be used in config values:\n";
+        std::vector<const char *> v = getConfig()->getPredefinedVariableNames();
+        for (int i=0; i<v.size(); i++)
+            ev << "    ${" << v[i] << "}\n";
+        ev << "\n";
     }
     if (wantAll || !strcmp(category, "classes"))
     {
