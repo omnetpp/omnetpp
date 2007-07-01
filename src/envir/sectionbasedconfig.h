@@ -162,8 +162,9 @@ class SectionBasedConfiguration : public cConfiguration
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
     std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos);
-    std::string substituteVariables(const char *text, int sectionId, int entryId);
+    std::string substituteVariables(const char *text, int sectionId, int entryId) const;
     bool isPredefinedVariable(const char *varname) const;
+    void setupVariables(const char *scenarioOrConfigName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
     KeyValue1 convert(int sectionId, int entryId);
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
 

@@ -74,6 +74,11 @@ class Scenario
     ~Scenario();
 
     /**
+     * Returns the constructor parameter, unchanged.
+     */
+    const std::vector<IterationVariable>& getIterationVariables() const {return vars;}
+
+    /**
      * Counts the number of runs this scenario generates.
      *
      * The current iteration state is NOT preserved.
