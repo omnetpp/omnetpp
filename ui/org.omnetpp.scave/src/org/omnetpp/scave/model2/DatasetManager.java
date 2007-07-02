@@ -224,6 +224,9 @@ public class DatasetManager {
 	}
 	
 	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+		Assert.isLegal(chart.getModuleName() != null, "Module name is not set");
+		Assert.isLegal(chart.getDataName() != null, "Data name is not set");
+		
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
