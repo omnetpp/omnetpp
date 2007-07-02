@@ -42,6 +42,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		
 		// actionsets
 		layout.addActionSet(IPageLayout.ID_NAVIGATE_ACTION_SET);
+		layout.addActionSet("org.eclipse.debug.ui.launchActionSet"); // IDebugUIConstants.LAUNCH_ACTION_SET
 		
 		// views - standard workbench
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
