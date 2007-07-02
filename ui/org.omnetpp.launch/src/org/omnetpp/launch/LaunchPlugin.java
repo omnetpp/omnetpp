@@ -212,7 +212,8 @@ public class LaunchPlugin extends AbstractUIPlugin {
      */
     public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
         try {
-             Process proc = LaunchPlugin.startSimulationProcess(configuration, " -n -g");
+         	 //FIXME always start with Cmdenv  --Andras
+        	 Process proc = LaunchPlugin.startSimulationProcess(configuration, " -n -g");
              final int BUFFERSIZE = 8192;
              byte bytes[] = new byte[BUFFERSIZE];
              StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
@@ -222,6 +223,10 @@ public class LaunchPlugin extends AbstractUIPlugin {
                  stringBuffer.append(new String(bytes, 0, lastRead));
              }
 
+             //FIXME check exit code: must be 0
+             //FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
+             // --Andras
+             
              return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(stringBuffer.toString(), "Number of runs:", "End run of OMNeT++"));
 
         } catch (CoreException e) {
