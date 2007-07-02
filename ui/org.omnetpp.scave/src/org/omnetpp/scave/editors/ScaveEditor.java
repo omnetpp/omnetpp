@@ -176,7 +176,8 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 
 		tempResource = createTempResource();
 
-		tracker = new ResultFilesTracker(manager, analysis.getInputs()); //XXX must ensure that Inputs never gets deleted or replaced!!!
+		IFile inputFile = ((IFileEditorInput)getEditorInput()).getFile();
+		tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath()); //XXX must ensure that Inputs never gets deleted or replaced!!!
 
 		// listen to model changes
 		if (adapterFactory instanceof IChangeNotifier) {

@@ -16,7 +16,9 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
@@ -46,12 +48,14 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 
 	private ResultFileManagerEx manager; //backreference to the manager it operates on, the manager is owned by the editor
 	private Inputs inputs; // backreference to the Inputs element we watch
+	private IPath baseDir; // path of the directory which used to resolve relative paths as a base
 
 	private Object lock = new Object();
 	
-	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs) {
+	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs, IPath baseDir) {
 		this.manager = manager;
 		this.inputs = inputs;
+		this.baseDir = baseDir;
 	}
 	
 	public void deactivate()
@@ -351,8 +355,14 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * <code>inputFile</code>.
 	 */
 	private boolean matchFile(IFile workspaceFile, InputFile fileSpec) {
-		String filePattern = fileSpec.getName();
+		if (fileSpec.getName() == null)
+			return false;
+		IPath filePatternPath = new Path(fileSpec.getName());
+		if (!filePatternPath.isAbsolute()) {
+			filePatternPath = baseDir.append(filePatternPath);
+		}
 		String filePath = workspaceFile.getFullPath().toString();
+		String filePattern = filePatternPath.toString(); 
 		return matchPattern(filePath, filePattern);
 	}
 
@@ -374,6 +384,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 
 			switch (patternChar) {
 			case '?':
+				if (strChar == '/')
+					return false;
 				++strStart;
 				++patternStart;
 				break;
@@ -386,6 +398,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						return true;
 				}
 				// match '*' with strChar
+				if (strChar == '/')
+					return false;
 				++strStart;
 				break;
 			default:
