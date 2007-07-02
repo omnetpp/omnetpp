@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.edit.ui.action.DeleteAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
@@ -21,12 +22,14 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
 import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
@@ -46,6 +49,8 @@ import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
+import org.omnetpp.scave.model.provider.ScaveEditPlugin;
+import org.omnetpp.scave.views.DatasetView;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -96,6 +101,22 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction createTempChartAction;
 	private IAction showVectorBrowserViewAction;
 	private Map<String,IAction> exportActions;
+	
+	/**
+	 * This action opens the Dataset view.
+	 */
+	private IAction showDatasetViewAction =
+		new Action("Show Dataset view") {
+			@Override
+			public void run() {
+				try {
+					getPage().showView(DatasetView.ID);
+				}
+				catch (PartInitException exception) {
+					ScavePlugin.logError(exception);
+				}
+			}
+		};
 	
 	/**
 	 * Creates a multi-page contributor.
@@ -270,6 +291,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 			actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
 	}
 	
+	@Override
+	protected void addGlobalActions(IMenuManager menuManager) {
+		menuManager.insertAfter("additions-end", new Separator("ui-actions"));
+		menuManager.insertAfter("ui-actions", showPropertiesViewAction);
+		menuManager.insertAfter("ui-actions", showDatasetViewAction);
+		refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());		
+		menuManager.insertAfter("ui-actions", refreshViewerAction);
+	}
+
 	public void update()
 	{
 		super.update();
