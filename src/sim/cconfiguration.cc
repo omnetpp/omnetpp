@@ -42,6 +42,7 @@ bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fal
 
 long cConfiguration::parseLong(const char *s, const char *defaultValue, long fallbackValue)
 {
+    //FIXME parse and evaluate!!! using common lib's Expression class.
     if (!s)
         s = defaultValue;
     if (!s)
@@ -57,6 +58,7 @@ long cConfiguration::parseLong(const char *s, const char *defaultValue, long fal
 
 double cConfiguration::parseDouble(const char *s, const char *unit, const char *defaultValue, double fallbackValue)
 {
+    //FIXME parse and evaluate!!! using common lib's Expression class.
     if (!s)
         s = defaultValue;
     if (!s)

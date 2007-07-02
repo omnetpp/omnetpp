@@ -338,46 +338,53 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
 
 std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfiguration::collectIterationVariables(const std::vector<int>& sectionChain) const
 {
-    int sectionId = sectionChain[0]; // currently we only accept iterations in the first, Scenario section
     std::vector<IterationVariable> v;
     int unnamedCount = 0;
-    for (int i=0; i<ini->getNumEntries(sectionId); i++)
+    for (int i=0; i<sectionChain.size(); i++)
     {
-        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, i);
-        const char *pos = entry.getValue();
-        int k = 0;
-        while ((pos = strstr(pos, "${")) != NULL)
+        int sectionId = sectionChain[i];
+        bool isScenarioSection = ini->getSectionName(scenarioId)[0]=='S';
+        for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
         {
-            IterationVariable loc;
-            try {
-                parseVariable(pos, loc.varname, loc.value, pos);
-            } catch (std::exception& e) {
-                throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
-            }
-
-            if (!loc.value.empty())
+            const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+            const char *pos = entry.getValue();
+            int k = 0;
+            while ((pos = strstr(pos, "${")) != NULL)
             {
-                // store variable
-                if (!loc.varname.empty())
-                {
-                    // check it does not conflict with other iteration variables or predefined variables
-                    for (int j=0; j<v.size(); j++)
-                        if (v[j].varname==loc.varname)
-                            throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
-                    if (isPredefinedVariable(loc.varname.c_str()))
-                        throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
-                    // use name for id
-                    loc.varid = loc.varname;
+                IterationVariable loc;
+                try {
+                    parseVariable(pos, loc.varname, loc.value, pos);
+                } catch (std::exception& e) {
+                    throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
                 }
-                else
+
+                if (!loc.value.empty())
                 {
-                    // unnamed variable: generate id (identifies location) and name ($0,$1,$2,etc)
-                    loc.varid = opp_stringf("%d-%d-%d", sectionId, i, k);
-                    loc.varname = opp_stringf("%d", unnamedCount++);
+                    if (!isScenarioSection)
+                        throw cRuntimeError("Scenario generator: iterations may only occur in Scenario sections but not in Config sections");
+
+                    // store variable
+                    if (!loc.varname.empty())
+                    {
+                        // check it does not conflict with other iteration variables or predefined variables
+                        for (int j=0; j<v.size(); j++)
+                            if (v[j].varname==loc.varname)
+                                throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
+                        if (isPredefinedVariable(loc.varname.c_str()))
+                            throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", loc.varname.c_str());
+                        // use name for id
+                        loc.varid = loc.varname;
+                    }
+                    else
+                    {
+                        // unnamed variable: generate id (identifies location) and name ($0,$1,$2,etc)
+                        loc.varid = opp_stringf("%d-%d-%d", sectionId, entryId, k);
+                        loc.varname = opp_stringf("%d", unnamedCount++);
+                    }
+                    v.push_back(loc);
                 }
-                v.push_back(loc);
+                k++;
             }
-            k++;
         }
     }
 
