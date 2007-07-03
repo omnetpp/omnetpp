@@ -9,7 +9,7 @@
 
 
 //
-// Single-server queue, same service rate for each packet
+// Single-server queue, service rate independent of message length
 //
 simple FFPacketFifo
 {

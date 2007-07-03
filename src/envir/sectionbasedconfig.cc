@@ -343,7 +343,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     for (int i=0; i<sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
-        bool isScenarioSection = ini->getSectionName(scenarioId)[0]=='S';
+        bool isScenarioSection = ini->getSectionName(sectionId)[0]=='S';
         for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
         {
             const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);

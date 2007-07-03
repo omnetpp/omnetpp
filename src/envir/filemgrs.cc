@@ -52,10 +52,11 @@ Register_PerRunConfigEntry(CFGID_EXPERIMENT, "experiment", CFG_CUSTOM, "${config
 Register_PerRunConfigEntry(CFGID_MEASUREMENT, "measurement", CFG_CUSTOM, "${iterationvars}", "Measurement label. This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_CUSTOM, "#${repetition}, seedset=@", "Replication label. This string gets recorded into result files, and may be referred to during result analysis.");
 
-Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
+Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
-Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${configname}-${runnumber}.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
+Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${configname}-${runnumber}.sca", "Name for the output scalar file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
+Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
 Register_PerRunConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "${configname}-${runnumber}.sna", "Name of the snapshot file.");
 
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
@@ -341,7 +342,7 @@ void cFileOutputScalarManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw cRuntimeError("Cannot open output scalar file `%s'",fname.c_str());
+        throw cRuntimeError("Cannot open output scalar file `%s'", fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()
@@ -359,7 +360,8 @@ void cFileOutputScalarManager::startRun()
     closeFile();
     fname = ev.config()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
     ev.app->processFileName(fname);
-    removeFile(fname.c_str(), "old output scalar file");
+    if (ev.config()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
+        removeFile(fname.c_str(), "old output scalar file");
     initialized = false;
 }
 

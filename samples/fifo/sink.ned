@@ -9,7 +9,7 @@
 
 
 //
-// Destroys the packets and creates statistics
+// Destroys the packets and collects statistics
 //
 simple FFSink
 {
