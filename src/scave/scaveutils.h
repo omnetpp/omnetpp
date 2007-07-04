@@ -18,6 +18,10 @@
 #include <string>
 #include "scavedefs.h"
 
+extern double dblNaN;
+extern double dblPositiveInfinity;
+extern double dblNegativeInfinity;
+
 bool parseInt(const char *str, int &dest);
 bool parseLong(const char *str, long &dest);
 bool parseDouble(const char *str, double &dest);

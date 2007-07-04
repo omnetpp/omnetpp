@@ -27,8 +27,14 @@
 #include "datasorter.h"
 #include "stringutil.h"
 
+using namespace std;
+
 
 ResultFileManager *ScalarDataSorter::tmpScalarMgr;
+
+/*----------------------------------------
+ *              ScalarFields
+ *----------------------------------------*/
 
 StringVector ScalarFields::getFieldNames()
 {
@@ -37,6 +43,9 @@ StringVector ScalarFields::getFieldNames()
     names.push_back("run");
     names.push_back("module");
     names.push_back("name");
+    names.push_back("experiment");
+    names.push_back("measurement");
+    names.push_back("replication");
     return names;
 }
 
@@ -49,6 +58,172 @@ ScalarFields::ScalarFields(const StringVector &fieldNames)
         else if (*it == "run") fields |= RUN;
         else if (*it == "module") fields |= MODULE;
         else if (*it == "name") fields |= NAME;
+        else if (*it == "experiment") fields |= EXPERIMENT;
+        else if (*it == "measurement") fields |= MEASUREMENT;
+        else if (*it == "replication") fields |= REPLICATION;
+    }
+}
+
+static int strcmp_safe(const char *s1, const char *s2)
+{
+    if (s1 == NULL || s2 == NULL)
+        return (s1 == NULL && s2 == NULL) ? 0 : (s1 == NULL ? 1 : -1);
+    return strcmp(s1, s2);
+}
+
+inline const char *getAttribute(const ScalarResult &d, const char *attrName)
+{
+    return d.fileRunRef->runRef->getAttribute(attrName);
+}
+
+bool ScalarFields::equal(ID id1, ID id2, ResultFileManager *manager)
+{
+    if (id1==-1 || id2==-1) return id1==id2;
+    const ScalarResult& d1 = manager->getScalar(id1);
+    const ScalarResult& d2 = manager->getScalar(id2);
+    return equal(d1, d2);
+}
+
+bool ScalarFields::equal(const ScalarResult& d1, const ScalarResult& d2)
+{
+    if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
+    if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
+    if (hasField(MODULE) && d1.moduleNameRef != d2.moduleNameRef) return false;
+    if (hasField(NAME) && d1.nameRef != d2.nameRef) return false;
+    if (hasField(EXPERIMENT) && strcmp_safe(getAttribute(d1, "experiment"), getAttribute(d2, "experiment")) != 0) return false;
+    if (hasField(MEASUREMENT) && strcmp_safe(getAttribute(d1, "measurement"), getAttribute(d2, "measurement")) != 0) return false;
+    if (hasField(REPLICATION) && strcmp_safe(getAttribute(d1, "replication"), getAttribute(d2, "replication")) != 0) return false;
+    return true;
+}
+
+bool ScalarFields::less(ID id1, ID id2, ResultFileManager *manager)
+{
+    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    const ScalarResult& d1 = manager->getScalar(id1);
+    const ScalarResult& d2 = manager->getScalar(id2);
+    return less(d1, d2);
+}
+
+bool ScalarFields::less(const ScalarResult &d1, const ScalarResult &d2) const
+{
+    if (hasField(FILE) && strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str()) < 0)
+        return true;
+    if (hasField(RUN) && strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str()) < 0) 
+        return true;
+    if (hasField(MODULE) && strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0)
+        return true;
+    if (hasField(NAME) && strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0)
+        return true;
+    if (hasField(EXPERIMENT) && strcmp_safe(getAttribute(d1, "experiment"), getAttribute(d2, "experiment")) < 0)
+        return true;
+    if (hasField(MEASUREMENT) && strcmp_safe(getAttribute(d1, "measurement"), getAttribute(d2, "measurement")) < 0)
+        return true;
+    if (hasField(REPLICATION) && strcmp_safe(getAttribute(d1, "replication"), getAttribute(d2, "replication")) < 0)
+        return true;
+    return false;
+}
+
+string ScalarFields::getField(const ScalarResult& d)
+{
+    if (fields == FILE)
+        return d.fileRunRef->fileRef->filePath;
+    else if (fields == RUN)
+        return d.fileRunRef->runRef->runName;
+    else if (fields == MODULE)
+        return *d.moduleNameRef;
+    else if (fields == NAME)
+        return *d.nameRef;
+    else if (fields == EXPERIMENT) {
+        const char *value = getAttribute(d, "experiment");
+        return value != NULL ? value : "";
+    }
+    else if (fields == MEASUREMENT) {
+        const char *value = getAttribute(d, "measurement");
+        return value != NULL ? value : "";
+    }
+    else if (fields == REPLICATION) {
+        const char *value = getAttribute(d, "replication");
+        return value != NULL ? value : "";
+    }
+    else
+        return "";
+}
+
+/*----------------------------------------
+ *              XYDataset
+ *----------------------------------------*/
+void XYDataset::add(const ScalarResult &d)
+{
+    int row, column;
+
+    KeyToIndexMap::iterator rowRef = rowKeyToIndexMap.find(d);
+    if (rowRef != rowKeyToIndexMap.end())
+    {
+        row = rowRef->second;
+    }
+    else // add new row
+    {
+        row = rowKeys.size();
+        values.push_back(vector<Mean>(columnKeys.size(), Mean()));
+        rowKeyToIndexMap[d] = row;
+        rowKeys.push_back(d);
+    }
+
+    KeyToIndexMap::iterator columnRef = columnKeyToIndexMap.find(d);
+    if (columnRef != columnKeyToIndexMap.end())
+    {
+        column = columnRef->second;
+    }
+    else // add new column
+    {
+        column = columnKeys.size();
+        for (vector<Row>::iterator rowRef = values.begin(); rowRef != values.end(); ++rowRef)
+            rowRef->push_back(Mean());
+        columnKeyToIndexMap[d] = column;
+        columnKeys.push_back(d);
+    }
+
+    values.at(row).at(column).accumulate(d.value);
+}
+
+void XYDataset::swapRows(int row1, int row2)
+{
+    const ScalarResult &rowKey1 = rowKeys[row1];
+    const ScalarResult &rowKey2 = rowKeys[row2];
+    rowKeyToIndexMap[rowKey1] = row2;
+    rowKeyToIndexMap[rowKey2] = row1;
+    swap(rowKeys[row1], rowKeys[row2]);
+    swap(values[row1], values[row2]);
+}
+
+struct ValueAndIndex
+{
+    double value;
+    int index;
+    ValueAndIndex(double value, int index) : value(value), index(index) {}
+};
+
+bool operator<(ValueAndIndex &val1, ValueAndIndex &val2)
+{
+    return val1.value < val2.value;
+}
+
+void XYDataset::sortColumns()
+{
+    if (values.size() > 0)
+    {
+        vector<ValueAndIndex> vals;
+        for (int i = 0; i < values[0].size(); ++i)
+        {
+            if (!values[0][i].isNaN())
+                vals.push_back(ValueAndIndex(values[0][i].value(), i));
+        }
+
+        sort(vals.begin(), vals.end());
+
+        columnOrder = vector<int>(vals.size());
+        for (int i = 0; i < vals.size(); ++i)
+            columnOrder[i] = vals[i].index;
     }
 }
 
@@ -66,15 +241,6 @@ class MemberGroupingFunc
         MemberGroupingFunc(T &object, GroupingFunc func) : object(object), func(func) {}
         bool operator()(const ScalarResult& d1, const ScalarResult& d2) { return (object.*func)(d1, d2); }
 };
-
-bool ScalarFields::sameGroup(const ScalarResult& d1, const ScalarResult& d2)
-{
-    if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
-    if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
-    if (hasField(MODULE) && d1.moduleNameRef != d2.moduleNameRef) return false;
-    if (hasField(NAME) && d1.nameRef != d2.nameRef) return false;
-    return true;
-}
 
 bool ScalarDataSorter::sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2)
 {
@@ -107,34 +273,6 @@ class MemberCompareFunc
             : object(object), func(func), manager(manager) {}
         bool operator()(ID id1, ID id2) { return (object.*func)(id1, id2, manager); }
 };
-
-bool ScalarFields::less(ID id1, ID id2, ResultFileManager *manager)
-{
-    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ScalarResult& d1 = manager->getScalar(id1);
-    const ScalarResult& d2 = manager->getScalar(id2);
-    if (hasField(FILE) && strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str()) < 0)
-        return true;
-    if (hasField(RUN) && strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str()) < 0) 
-        return true;
-    if (hasField(MODULE) && strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0)
-        return true;
-    if (hasField(NAME) && strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0)
-        return true;
-    return false;
-}
-
-bool ScalarFields::equal(ID id1, ID id2, ResultFileManager *manager)
-{
-    if (id1==-1 || id2==-1) return id1==id2;
-    const ScalarResult& d1 = manager->getScalar(id1);
-    const ScalarResult& d2 = manager->getScalar(id2);
-    if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
-    if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
-    if (hasField(MODULE) && d1.moduleNameRef != d2.moduleNameRef) return false;
-    if (hasField(NAME) && d1.nameRef != d2.nameRef) return false;
-    return true;
-}
 
 bool ScalarDataSorter::lessByModuleRef(ID id1, ID id2)
 {
@@ -198,6 +336,10 @@ bool ScalarDataSorter::lessByValue(ID id1, ID id2)
     return d1.value < d2.value;
 }
 
+/*----------------------------------------
+ *             ScalarDataSorter
+ *----------------------------------------*/
+
 template<class GroupingFn>
 IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFn sameGroup)
 {
@@ -239,7 +381,7 @@ void ScalarDataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equ
 {
     tmpScalarMgr = resultFileMgr;
 
-    // order each group by module name
+    // order each group
     for (IDVectorVector::iterator i=vv.begin(); i!=vv.end(); ++i)
         std::sort(i->begin(), i->end(), less);
 
@@ -291,7 +433,7 @@ IDVectorVector ScalarDataSorter::groupByModuleAndName(const IDList& idlist)
 
 IDVectorVector ScalarDataSorter::groupByFields(const IDList& idlist, ScalarFields fields)
 {
-    IDVectorVector vv = doGrouping(idlist, MemberGroupingFunc<ScalarFields>(fields, &ScalarFields::sameGroup));
+    IDVectorVector vv = doGrouping(idlist, MemberGroupingFunc<ScalarFields>(fields, &ScalarFields::equal));
 
     sortAndAlign(vv,
         MemberCompareFunc<ScalarFields>(fields.complement(), &ScalarFields::less, resultFileMgr),
@@ -316,6 +458,21 @@ static bool isMissing(const IDVectorVector &vv, int j)
         }
     return !foundY;
 }
+
+XYDataset ScalarDataSorter::groupAndAggregate(const IDList& idlist, ScalarFields rowFields, ScalarFields columnFields)
+{
+    XYDataset dataset(rowFields, columnFields);
+
+    int sz = idlist.size();
+    for (int i = 0; i < sz; i++)
+    {
+        ID id = idlist.get(i);
+        const ScalarResult& d = resultFileMgr->getScalar(id);
+        dataset.add(d);
+    }
+    return dataset;
+}
+
 
 IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const char *moduleName, const char *scalarName)
 {
@@ -391,6 +548,36 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
 
     return vv2;
 }
+
+XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
+                                                ScalarFields rowFields, ScalarFields columnFields)
+{
+    XYDataset dataset = groupAndAggregate(idlist, rowFields, columnFields);
+    
+    // find row of x values and move it to row 0
+    int row;
+    for (row = 0; row < dataset.getRowCount(); ++row)
+    {
+        std::string moduleName = dataset.getRowField(row, ScalarFields::MODULE);
+        std::string dataName = dataset.getRowField(row, ScalarFields::NAME);
+        if (dataset.getRowField(row, ScalarFields::MODULE) == moduleName &&
+            dataset.getRowField(row, ScalarFields::NAME) == scalarName)
+            break;
+    }
+    if (row < dataset.getRowCount())
+    {
+        if (row > 0)
+            dataset.swapRows(0, row);
+    }
+    else
+        throw opp_runtime_error("Data for X axis not found.");
+    
+    // sort columns so that X values are in ascending order
+    dataset.sortColumns();
+
+    return dataset;
+}
+
 
 IDList ScalarDataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)
 {

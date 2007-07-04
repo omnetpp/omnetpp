@@ -8,8 +8,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScatterPlotDataset;
+import org.omnetpp.scave.charting.dataset.ScatterPlotDataset2;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
@@ -223,7 +225,7 @@ public class DatasetManager {
 		return new VectorDataset(idlist, dataNames, dataValues);
 	}
 	
-	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		Assert.isLegal(chart.getModuleName() != null, "Module name is not set");
 		Assert.isLegal(chart.getDataName() != null, "Data name is not set");
 		
@@ -231,9 +233,7 @@ public class DatasetManager {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-			ScalarDataSorter sorter = new ScalarDataSorter(manager);
-			IDVectorVector data = sorter.prepareScatterPlot(idlist, chart.getModuleName(), chart.getDataName());
-			return new ScatterPlotDataset(data, manager);
+			return new ScatterPlotDataset2(idlist, chart.getModuleName(), chart.getDataName(), manager);
 		}
 		return null;
 	}
@@ -254,14 +254,20 @@ public class DatasetManager {
 		}
 		else if (chart instanceof ScatterChart) {
 			ScatterChart sc = (ScatterChart)chart;
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-			ScalarDataSorter sorter = new ScalarDataSorter(manager);
-			String moduleName = sc.getModuleName();
-			String dataName = sc.getDataName();
-			if (moduleName == null || dataName == null)
-				return new String[0];
-			IDVectorVector data = sorter.prepareScatterPlot(idlist, sc.getModuleName(), sc.getDataName());
-			return ScatterPlotDataset.computeNames(data, manager);
+			if (sc.getModuleName() != null || sc.getDataName() != null) {
+				try {
+					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+					ScatterPlotDataset2 scatterPlotDataset = new ScatterPlotDataset2(idlist, sc.getModuleName(), sc.getDataName(), manager);
+					String[] names = new String[scatterPlotDataset.getSeriesCount()];
+					for (int i = 0; i < names.length; ++i)
+						names[i] = scatterPlotDataset.getSeriesKey(i);
+					return names;
+				}
+				catch (Exception e) {
+					ScavePlugin.logError(e);
+				}
+			}
+			return new String[0];
 		}
 		else
 			Assert.isLegal(false, "Unknown chart type: " + chart.getClass().getName());

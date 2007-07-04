@@ -30,6 +30,7 @@
 #include "resultfilemanager.h"
 #include "commonutil.h"
 #include "patternmatcher.h"
+#include "scaveutils.h"
 
 
 typedef std::vector<ID> IDVector;
@@ -43,7 +44,10 @@ class ScalarFields
         static const int RUN       = 0x02;
         static const int MODULE    = 0x04;
         static const int NAME      = 0x08;
-        static const int ALL       = FILE | RUN | MODULE | NAME;
+        static const int EXPERIMENT  = 0x10;
+        static const int MEASUREMENT = 0x20;
+        static const int REPLICATION = 0x40;
+        static const int ALL       = FILE | RUN | MODULE | NAME | EXPERIMENT | MEASUREMENT | REPLICATION;
     private:
         int fields;
     public:
@@ -56,10 +60,108 @@ class ScalarFields
         ScalarFields complement() { return ScalarFields(ALL, fields); }
         bool hasField(int field) const { return (fields & field) == field; }
         
-        bool sameGroup(const ScalarResult& d1, const ScalarResult& d2);
         bool less(ID id1, ID id2, ResultFileManager *manager);
+        bool less(const ScalarResult &d1, const ScalarResult &d2) const;
         bool equal(ID id1, ID id2, ResultFileManager *manager);
+        bool equal(const ScalarResult& d1, const ScalarResult& d2);
+
+        std::string getField(const ScalarResult &d);
 };
+
+
+struct ScalarFieldsLess : public std::binary_function<ScalarResult, ScalarResult, bool>
+{
+    ScalarFields fields;
+    ScalarFieldsLess(const ScalarFields fields) : fields(fields) {}
+    bool operator()(const ScalarResult &d1, const ScalarResult &d2) const { return fields.less(d1, d2); }
+};
+
+/*
+class AggregateFunc<T>
+{
+    public:
+        virtual void accumulate(T value) = 0;
+        virtual T getValue() = 0;
+}
+
+class Mean : public AggregateFunc<double>
+{
+    int count;
+    double sum;
+
+    public:
+        Mean() : count(0), sum(0.0) {}
+        virtual void accumulate(double value) { count++; sum += value; }
+        virtual double getValue() { return count > 0 ? sum / count : dblNaN; }
+};
+*/
+
+/**
+ * Values arranged in a two dimensional array.
+ */
+class XYDataset
+{
+    private:
+        struct Mean
+        {
+            int count;
+            double sum;
+            Mean() : count(0), sum(0.0) {}
+            void accumulate(double value) { count++; sum += value; }
+            double value() { return count > 0 ? sum / count : dblNaN; }
+            bool isNaN() { return count == 0; }
+        };
+
+        typedef const ScalarResult Key;
+        typedef std::map<Key, int, ScalarFieldsLess> KeyToIndexMap;
+        typedef std::vector<Mean> Row;
+
+        ScalarFields rowFields;            // data in each row has the same value of these fields
+        ScalarFields columnFields;         // data in each column has the same value of these fields
+        KeyToIndexMap rowKeyToIndexMap;    // row field values -> row index
+        KeyToIndexMap columnKeyToIndexMap; // column field values -> column index
+        std::vector<Key> rowKeys;
+        std::vector<Key> columnKeys;
+        std::vector<Row> values; // index by row/column
+        std::vector<int> columnOrder;      // a permutation of a subset of columns
+    public:
+        XYDataset(ScalarFields rowFields, ScalarFields columnFields)
+            : rowFields(rowFields), columnFields(columnFields),
+            rowKeyToIndexMap(ScalarFieldsLess(rowFields)),
+            columnKeyToIndexMap(ScalarFieldsLess(columnFields)) {};
+        void add(const ScalarResult &d);
+        void swapRows(int row1, int row2);
+        void sortColumns();
+
+        int getRowCount() { return rowKeys.size(); }
+        int getColumnCount() { return columnOrder.size(); }
+        ScalarFields getRowFields() { return rowFields; }
+        ScalarFields getColumnFields() { return columnFields; }
+        std::string getRowField(int row, int fieldID);
+        std::string getColumnField(int column, int fieldID);
+        double getValue(int row, int column);
+};
+
+inline std::string XYDataset::getRowField(int row, int fieldID)
+{
+    if (row < 0 || row >= getRowCount() || !rowFields.hasField(fieldID))
+        return "";
+    return ScalarFields(fieldID).getField(rowKeys[row]);
+}
+
+inline std::string XYDataset::getColumnField(int column, int fieldID)
+{
+    if (column < 0 || column >= getColumnCount() || !rowFields.hasField(fieldID))
+        return "";
+    return ScalarFields(fieldID).getField(columnKeys[columnOrder[column]]);
+}
+
+inline double XYDataset::getValue(int row, int column)
+{
+    if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
+        return dblNaN;
+    return values.at(row).at(columnOrder[column]).value(); 
+}
 
 /**
  * Helps to organize scalars in a ResultFileManager into bar charts,
@@ -135,11 +237,27 @@ class SCAVE_API ScalarDataSorter
     IDVectorVector groupByFields(const IDList& idlist, ScalarFields fields);
 
     /**
+     * Form rows from data of given idlist by grouping according to rowFields.
+     * Then for each row form columns by grouping the values according to columnFields.
+     * Compute the mean of the values in each cell and align the cells into a table.
+     * If no data for a row/column combination, NaN will be inserted into the cell.
+     */
+    XYDataset groupAndAggregate(const IDList& idlist, ScalarFields rowFields, ScalarFields columnFields);
+
+    /**
      * Group and align data for a scatter plot. The first vector will contain the
      * x coordinates, further vectors the y1, y2, etc series. Points are sorted
      * by x coordinate. For missing points in y1, y2, etc, the vector contains -1.
      */
     IDVectorVector prepareScatterPlot(const IDList& idlist, const char *moduleName, const char *scalarName);
+
+    /**
+     * Group and align data for a scatter plot. The first row will contain the
+     * x coordinates, further rows the y1, y2, etc series. Points are sorted
+     * by x coordinate. For missing points in y1, y2, etc, the row contains NaN.
+     */
+    XYDataset prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
+                                    ScalarFields rowFields, ScalarFields columnFields);
 
     /**
      * Looks at the data given by their Id, and returns a subset of them

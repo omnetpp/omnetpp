@@ -9,7 +9,10 @@
 #include <string.h>
 #include "scaveutils.h"
 
-static double zero =0;
+static double dblZero = 0.0;
+double dblNaN = dblZero / dblZero;
+double dblPositiveInfinity = 1 / dblZero;
+double dblNegativeInfinity = -1 / dblZero;
 
 bool parseInt(const char *s, int &dest)
 {
@@ -35,7 +38,7 @@ bool parseDouble(const char *s, double& dest)
     }
     if (strstr(s,"INF") || strstr(s, "inf"))
     {
-        dest = 1/zero;  // +INF or -INF
+        dest = dblPositiveInfinity;  // +INF or -INF
         if (*s=='-') dest = -dest;
         return true;
     }

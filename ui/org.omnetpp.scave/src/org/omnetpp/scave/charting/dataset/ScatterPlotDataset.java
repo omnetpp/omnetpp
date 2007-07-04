@@ -1,10 +1,12 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IDVector;
 import org.omnetpp.scave.engine.IDVectorVector;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarResult;
 
 /**
@@ -20,10 +22,11 @@ public class ScatterPlotDataset implements IXYDataset {
 	private String[] dataNames;  // names of Y values (module+data)
 	private ResultFileManager manager;
 	
-	public ScatterPlotDataset(IDVectorVector data, ResultFileManager manager) {
-		this.data = data;
+	public ScatterPlotDataset(IDList idlist, String moduleName, String dataName, ResultFileManager manager) {
+		ScalarDataSorter sorter = new ScalarDataSorter(manager);
+		this.data = sorter.prepareScatterPlot(idlist, moduleName, dataName);
 		this.manager = manager;
-		this.dataNames = computeNames(data, manager);
+		computeNames();
 	}
 	
 	public int getSeriesCount() {
@@ -65,20 +68,19 @@ public class ScatterPlotDataset implements IXYDataset {
 		return new BigDecimal(getY(series, item));
 	}
 	
-	public static String[] computeNames(IDVectorVector data, ResultFileManager manager) {
-		String[] names = new String[(int)data.size()-1];
-		for (int i=0; i<names.length; ++i) {
+	private void computeNames() {
+		dataNames = new String[(int)data.size()-1];
+		for (int i=0; i<dataNames.length; ++i) {
 			IDVector v = data.get(i+1);
-			names[i] = String.valueOf(i);
+			dataNames[i] = String.valueOf(i);
 			for (int j=0; j<v.size(); ++j) {
 				long id = v.get(j);
 				if (id != -1) {
 					ResultItem item = manager.getItem(id);
-					names[i] = item.getModuleName() + " " + item.getName();
+					dataNames[i] = item.getModuleName() + " " + item.getName();
 					break;
 				}
 			}
 		}
-		return names;
 	}
 }
