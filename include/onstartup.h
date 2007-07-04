@@ -82,13 +82,26 @@ class SIM_API cSymTable : public cNoncopyableOwnedObject
   public:
     cSymTable(const char *name) : cNoncopyableOwnedObject(name) {}
     virtual ~cSymTable();
+
+    /** @name cObject methods */
+    //@{
     virtual std::string info() const;
     virtual void forEachChild(cVisitor *v);
+    //@}
 
+    /**
+     * Adds an object to the container.
+     */
     virtual void add(cOwnedObject *obj);
 
+    /**
+     * Returns the number of elements.
+     */
     virtual int size();
 
+    /**
+     * Returns the ith element.
+     */
     virtual cOwnedObject *get(int i);
 
     /**

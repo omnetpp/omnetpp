@@ -31,7 +31,7 @@
 //XXX check behavior of keys which don't contain a dot! or: forbid them?
 //XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
-
+//XXX validation of registered config keys like "seed-*-mt" !
 
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 
@@ -836,7 +836,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 // warn for unrecognized (or misplaced) config keys
                 // NOTE: values don't need to be validated here, that will be
                 // done when the config gets actually used
-                cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(key);
+                cConfigKey *e = lookupConfigKey(key);
                 if (!e && isIgnorableConfigKey(ignorableConfigKeys, key))
                     continue;
                 if (!e)
@@ -873,7 +873,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 {
                     // this is a per-object config
                     //XXX groupName (probably) should not contain wildcard
-                    cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(groupName.c_str());
+                    cConfigKey *e = lookupConfigKey(groupName.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, groupName.c_str()))
                         continue;
                     if (!e || !e->isPerObject())
@@ -888,6 +888,30 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 throw cRuntimeError("Wrong value for %s=%s : ${} variables are only allowed within Scenario sections", key, value);
         }
     }
+}
+
+cConfigKey *SectionBasedConfiguration::lookupConfigKey(const char *key)
+{
+    cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(key);
+    if (e)
+        return e;  // found it, great
+
+    // Maybe it matches on a cConfigKey which has '*' or '%' in its name,
+    // such as "seed-1-mt" matches on the "seed-%-mt" cConfigKey.
+    // We have to iterate over all cConfigKeys to verify this.
+    // "%" means "any number" in config keys.
+    int n = configKeys.instance()->size();
+    for (int i=0; i<n; i++)
+    {
+        cConfigKey *e = (cConfigKey *) configKeys.instance()->get(i);
+        if (PatternMatcher::containsWildcards(e->name()) || strchr(e->name(),'%')!=NULL)
+        {
+            std::string pattern = opp_replacesubstring(e->name(), "%", "{..}", true);
+            if (PatternMatcher(pattern.c_str(), false, true, true).matches(key))
+                return e;
+        }
+    }
+    return NULL;
 }
 
 bool SectionBasedConfiguration::isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key)

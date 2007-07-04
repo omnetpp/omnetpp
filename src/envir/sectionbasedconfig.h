@@ -174,6 +174,7 @@ class SectionBasedConfiguration : public cConfiguration
     void setupVariables(const char *scenarioOrConfigName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
     KeyValue1 convert(int sectionId, int entryId);
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
+    static cConfigKey *lookupConfigKey(const char *key);
 
   protected:
     // cConfiguration method

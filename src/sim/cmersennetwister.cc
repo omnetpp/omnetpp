@@ -25,7 +25,6 @@
 
 Register_Class(cMersenneTwister);
 
-//XXX '%' and '*' in cConfigKeys is not yet understood by Config::validate()
 Register_PerRunConfigEntry(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, NULL, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
 Register_PerRunConfigEntry(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, NULL, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
 
