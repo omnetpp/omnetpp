@@ -32,34 +32,23 @@
 //XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
 
-//XXX implement parallel iteration: "when $seed is at its kth value, take the kth value from this iteration as well"
-//   seed1 = ${seed = 78565, 32342, 7684, 2452}
-// then:
-//   seed2 = ${seed -> 3432, 43634, 32424, 7234}
-//   seed2 = ${seed:: 3432, 43634, 32424, 7234}
-//   seed2 = ${seed // 3432, 43634, 32424, 7234}
-//   seed2 = ${3432, 43634, 32424, 7234 [seed]}
-//   seed2 = ${3432, 43634, 32424, 7234 // seed}    !!!
-//   seed2 = ${3432, 43634, 32424, 7234 // &seed}   !!!
-//
-//   seed2 = ${@seed --> 3432, 43634, 32424, 7234}
-//   seed2 = ${&seed --> 3432, 43634, 32424, 7234}
-//   seed2 = ${@seed of 3432, 43634, 32424, 7234}
-//   seed2 = ${&seed of 3432, 43634, 32424, 7234}
-//XXX note: position of variable "var" can be obtained as "&var" from variables[]
 
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
+
 
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: i < j+1.");
 Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
 
+
 static const char *PREDEFINED_CONFIGVARS[] = {
   CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK, CFGVAR_PROCESSID,
   CFGVAR_DATETIME, CFGVAR_RUNID, CFGVAR_REPETITION, CFGVAR_ITERATIONVARS,
   CFGVAR_ITERATIONVARS2, NULL
 };
+
+#define VARPOS_PREFIX  std::string("&")
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
 
@@ -249,7 +238,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     {
         const char *varid = itervars[i].varid.c_str();
         variables[varid] = scenario->getVariable(varid);
-        variables[std::string("&")+varid] = opp_stringf("%d", scenario->getIteratorPosition(varid));
+        variables[VARPOS_PREFIX+varid] = opp_stringf("%d", scenario->getIteratorPosition(varid));
     }
 
     // assemble ${iterationvars}
@@ -373,12 +362,12 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
             {
                 IterationVariable loc;
                 try {
-                    parseVariable(pos, loc.varname, loc.value, pos);
+                    parseVariable(pos, loc.varname, loc.value, loc.parvar, pos);
                 } catch (std::exception& e) {
                     throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
                 }
 
-                if (!loc.value.empty())
+                if (!loc.value.empty() && loc.parvar.empty())
                 {
                     if (!isScenarioSection)
                         throw cRuntimeError("Scenario generator: iterations may only occur in Scenario sections but not in Config sections");
@@ -419,7 +408,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     return v;
 }
 
-void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos)
+void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParvar, const char *&outEndPos)
 {
     Assert(pos[0]=='$' && pos[1]=='{'); // this is the way we've got to be invoked
     outEndPos = strchr(pos, '}');
@@ -430,6 +419,9 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
     const char *varbegin = NULL;
     const char *varend = NULL;
     const char *valuebegin = NULL;
+    const char *valueend = NULL;
+    const char *parvarbegin = NULL;
+    const char *parvarend = NULL;
 
     const char *s = pos+2;
     while (isspace(*s)) s++;
@@ -453,12 +445,44 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
     } else {
         valuebegin = s;
     }
+    valueend = outEndPos;
 
-    outVarname = outValue = "";
+    if (valuebegin)
+    {
+        // try to parse parvar, present when value ends in "! variable"
+        const char *exclamationMark = strrchr(valuebegin, '!');
+        if (exclamationMark)
+        {
+            const char *s = exclamationMark+1;
+            while (isspace(*s)) s++;
+            if (isalpha(*s))
+            {
+                parvarbegin = s;
+                while (isalnum(*s)) s++;
+                parvarend = s;
+                while (isspace(*s)) s++;
+                if (s!=valueend)
+                {
+                    parvarbegin = parvarend = NULL; // no parvar after all
+                }
+            }
+            if (parvarbegin)  {
+                valueend = exclamationMark;  // chop off "!parvarname"
+            }
+        }
+    }
+
+    if (varbegin && parvarbegin)
+        throw cRuntimeError("the ${var=...} and ${...!var} syntaxes cannot be used together");
+
+    outVarname = outValue = outParvar = "";
     if (varbegin)
         outVarname.assign(varbegin, varend-varbegin);
     if (valuebegin)
-        outValue.assign(valuebegin, outEndPos-valuebegin);
+        outValue.assign(valuebegin, valueend-valuebegin);
+    if (parvarbegin)
+        outParvar.assign(parvarbegin, parvarend-parvarbegin);
+    //printf("DBG: var=`%s', value=`%s', parvar=`%s'\n", outVarname.c_str(), outValue.c_str(), outParvar.c_str());
 }
 
 std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId) const
@@ -468,13 +492,28 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
     const char *pos, *endPos;
     while ((pos = strstr(result.c_str(), "${")) != NULL)
     {
-        std::string varname, dummy;
-        parseVariable(pos, varname, dummy, endPos);
-        std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
-        StringMap::const_iterator it = variables.find(varid.c_str());
-        if (it==variables.end())
-            throw cRuntimeError("no such variable: ${%s}", varid.c_str());
-        std::string value = it->second;
+        std::string varname, iterationstring, parvar;
+        parseVariable(pos, varname, iterationstring, parvar, endPos);
+        std::string value;
+        if (parvar.empty())
+        {
+            // handle named and unnamed iteration variable references
+            std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
+            StringMap::const_iterator it = variables.find(varid.c_str());
+            if (it==variables.end())
+                throw cRuntimeError("no such variable: ${%s}", varid.c_str());
+            value = it->second;
+        }
+        else
+        {
+            // handle parallel iterations: if parvar is at its kth value,
+            // we should take the kth value from iterationstring as well
+            StringMap::const_iterator it = variables.find(VARPOS_PREFIX+parvar);
+            if (it==variables.end())
+                throw cRuntimeError("no such variable: ${%s}", parvar.c_str());
+            int parvarPos = atoi(it->second.c_str());
+            value = ValueIterator(iterationstring.c_str()).get(parvarPos);
+        }
         result.replace(pos-result.c_str(), endPos-pos+1, value);
         k++;
     }

@@ -123,6 +123,7 @@ class SectionBasedConfiguration : public cConfiguration
     NullKeyValue nullEntry;
 
     // predefined variables (${configname} etc) and iteration variables. id-to-value map.
+    // Also stores iterator positions (i.e. the iteration counter), with key "&varname"
     typedef std::map<std::string,std::string> StringMap;
     StringMap variables;
 
@@ -140,11 +141,17 @@ class SectionBasedConfiguration : public cConfiguration
      * varname. For unnamed ones, it is a string like "2-5-0", composed of
      * (sectionId, entryId, index), so that it identifies the place
      * where the value has to be substituted back.
+     *
+     * It is also possible to do "parallel iterations": the ${1..9 ! varname}
+     * notation means that "if variable varname is at its kth iteration,
+     * take the kth value from 0..9 as well". That is, this iteration and
+     * varname's iterator are advanced in lockstep.
      */
     struct IterationVariable {
         std::string varid;   // identifies the variable, see above
         std::string varname; // printable variable name ("x"); may be a generate one like "0"; never empty
         std::string value;   // "1,2,5..10"; never empty
+        std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
     };
 
   private:
@@ -161,7 +168,7 @@ class SectionBasedConfiguration : public cConfiguration
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
     std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
-    static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, const char *&outEndPos);
+    static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId) const;
     bool isPredefinedVariable(const char *varname) const;
     void setupVariables(const char *scenarioOrConfigName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
