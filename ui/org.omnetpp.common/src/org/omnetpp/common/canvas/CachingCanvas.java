@@ -39,6 +39,19 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			}
 		});
 	}
+	
+	/**
+	 * Override base method to limit the size of the virtual canvas.
+	 * This is necessary because of arithmetic overflows could
+	 * happen while generating the tiles.
+	 */
+	public void setVirtualSize(long width, long height) {
+		width = Math.min(width, Long.MAX_VALUE - 10000);
+		height = Math.min(height, Long.MAX_VALUE - 10000);
+		super.setVirtualSize(width, height);
+	}
+
+	
 
 	/**
 	 * Returns whether caching is on.

@@ -58,6 +58,9 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	public void setVirtualSize(long width, long height) {
+		width = Math.max(width, 1);
+		height = Math.max(height, 1);
+		
 		this.virtualWidth = width;
 		this.virtualHeight = height;
 		configureScrollBars();
@@ -68,8 +71,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	public void setVirtualHeight(long height) {
-		this.virtualHeight = height;
-		configureScrollBars();
+		setVirtualSize(this.virtualWidth, height);
 	}
 
 	public long getVirtualWidth() {
@@ -77,8 +79,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	public void setVirtualWidth(long width) {
-		this.virtualWidth = width;
-		configureScrollBars();
+		setVirtualSize(width, this.virtualHeight);
 	}
 
 	/**

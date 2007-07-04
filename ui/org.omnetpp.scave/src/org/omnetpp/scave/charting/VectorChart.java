@@ -501,30 +501,45 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	private void calculateArea() {
-		if (dataset==null || dataset.getSeriesCount()==0)
-			return;
-	
-		// calculate bounding box
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+
 		long startTime = System.currentTimeMillis();
-		double minX = Double.MAX_VALUE;
-		double minY = Double.MAX_VALUE;
-		double maxX = Double.MIN_VALUE;
-		double maxY = Double.MIN_VALUE;
-		for (int series = 0; series < dataset.getSeriesCount(); series++) {
-			int n = dataset.getItemCount(series);
-			if (n > 0) {
-				// X must be increasing
-				minX = Math.min(minX, dataset.getX(series, 0));
-				maxX = Math.max(maxX, dataset.getX(series, n-1));
-				for (int i = 0; i < n; i++) {
-					double y = dataset.getY(series, i);
-					if (!Double.isNaN(y)) {
-						minY = Math.min(minY, y);
-						maxY = Math.max(maxY, y);
+
+		if (dataset!=null && dataset.getSeriesCount() > 0)
+		{
+			// calculate bounding box
+			for (int series = 0; series < dataset.getSeriesCount(); series++) {
+				int n = dataset.getItemCount(series);
+				if (n > 0) {
+					// X must be increasing
+					minX = Math.min(minX, dataset.getX(series, 0));
+					maxX = Math.max(maxX, dataset.getX(series, n-1));
+					for (int i = 0; i < n; i++) {
+						double y = dataset.getY(series, i);
+						if (!Double.isNaN(y)) {
+							minY = Math.min(minY, y);
+							maxY = Math.max(maxY, y);
+						}
 					}
 				}
 			}
 		}
+		
+		if (minX > maxX)
+		{
+			minX = 0.0;
+			maxX = 1.0;
+		}
+		if (minY > maxY)
+		{
+			minY = 0.0;
+			maxY = 1.0;
+		}
+			
+		
         double width = maxX - minX;
         double height = maxY - minY;
 		long duration = System.currentTimeMillis() - startTime;
