@@ -122,7 +122,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	 * Creates a multi-page contributor.
 	 */
 	public ScaveEditorContributor() {
-		super(false);
 		if (instance==null) instance = this;
 	}
 

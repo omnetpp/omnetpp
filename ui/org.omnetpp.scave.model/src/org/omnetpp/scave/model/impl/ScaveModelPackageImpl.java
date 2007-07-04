@@ -427,6 +427,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getExcept_FilterPattern() {
+		return (EAttribute)exceptEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getProperty() {
 		return propertyEClass;
 	}
@@ -922,6 +931,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		createEReference(processingOpEClass, PROCESSING_OP__PARAMS);
 
 		exceptEClass = createEClass(EXCEPT);
+		createEAttribute(exceptEClass, EXCEPT__FILTER_PATTERN);
 
 		setOperationEClass = createEClass(SET_OPERATION);
 		createEReference(setOperationEClass, SET_OPERATION__SOURCE_DATASET);
@@ -1024,7 +1034,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		addEClass.getESuperTypes().add(this.getAddDiscardOp());
 		discardEClass.getESuperTypes().add(this.getAddDiscardOp());
 		processingOpEClass.getESuperTypes().add(this.getDatasetItem());
-		exceptEClass.getESuperTypes().add(this.getSetOperation());
 		groupEClass.getESuperTypes().add(this.getDatasetItem());
 		selectEClass.getESuperTypes().add(this.getSelectDeselectOp());
 		deselectEClass.getESuperTypes().add(this.getSelectDeselectOp());
@@ -1061,6 +1070,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEReference(getProcessingOp_Params(), this.getParam(), null, "params", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(exceptEClass, Except.class, "Except", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getExcept_FilterPattern(), ecorePackage.getEString(), "filterPattern", null, 0, 1, Except.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(setOperationEClass, SetOperation.class, "SetOperation", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSetOperation_SourceDataset(), this.getDataset(), null, "sourceDataset", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

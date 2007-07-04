@@ -128,7 +128,6 @@ public class ScaveModelSwitch<T> {
 			case ScaveModelPackage.EXCEPT: {
 				Except except = (Except)theEObject;
 				T result = caseExcept(except);
-				if (result == null) result = caseSetOperation(except);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}

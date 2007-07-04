@@ -9,6 +9,7 @@ import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.LineChart;
@@ -67,6 +68,8 @@ public class ScaveObjectEditFormFactory {
 			return new ProcessingOperationEditForm((ProcessingOp)object, parent);
 		else if (object instanceof SetOperation)
 			return new SetOperationEditForm((SetOperation)object, parent, manager);
+		else if (object instanceof Except)
+			return new ExceptEditForm((Except)object, parent, manager);
 		else if (object instanceof Group)
 			return new GroupEditForm((Group)object, parent);
 		else if (object instanceof Property)

@@ -342,7 +342,9 @@ public class DatasetManager {
 	}
 
 	public static IDList select(IDList source, SetOperation op, ResultFileManager manager) {
-		IDList idlist = selectInternal(source, op, manager);
+		Dataset sourceDataset = op.getSourceDataset();
+		ResultType type = op.getType();
+		IDList idlist = selectInternal(source, sourceDataset, type, op.getFilterPattern(), manager);
 
 		List<Except> excepts = null;
 		if (op instanceof Select)
@@ -356,18 +358,16 @@ public class DatasetManager {
 
 		if (excepts != null)
 			for (Except except : excepts)
-				idlist.substract(selectInternal(idlist, except, manager));
+				idlist.substract(selectInternal(idlist, sourceDataset, type, except.getFilterPattern(), manager));
 
 		return idlist;
 	}
 
-	private static IDList selectInternal(IDList source, SetOperation op, ResultFileManager manager) {
-		Dataset sourceDataset = op.getSourceDataset();
-		ResultType type = op.getType();
+	private static IDList selectInternal(IDList source, Dataset sourceDataset, ResultType type, String filterPattern, ResultFileManager manager) {
 		IDList sourceIDList = source != null ? source :
 							  sourceDataset == null ? ScaveModelUtil.getAllIDs(manager, type) :
 							  DatasetManager.getIDListFromDataset(manager, sourceDataset, null, type);
 
-		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(op.getFilterPattern()), manager);
+		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(filterPattern), manager);
 	}
 }

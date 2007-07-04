@@ -84,7 +84,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 			return res;
 		} 
 		else if (element instanceof SetOperation) {
-			// Add, Discard, Select, Deselect, Except
+			// Add, Discard, Select, Deselect
 			SetOperation o = (SetOperation) element;
 			
 			// "select..."
@@ -109,7 +109,11 @@ public class ScaveModelLabelProvider extends LabelProvider {
 				res += " from dataset "+fallback(o.getSourceDataset().getName(),"<unnamed>");
 
 			return res;
-		} 
+		}
+		else if (element instanceof Except) {
+			Except o = (Except) element;
+			return "except " + (isEmpty(o.getFilterPattern()) ? "all" : o.getFilterPattern());
+		}
 		else if (element instanceof Apply) {
 			Apply o = (Apply) element;
 			return "apply "+fallback(o.getOperation(),"<undefined>");

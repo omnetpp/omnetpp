@@ -460,31 +460,13 @@ public interface ScaveModelPackage extends EPackage {
 	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
 
 	/**
-	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__SOURCE_DATASET = SET_OPERATION__SOURCE_DATASET;
-
-	/**
 	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EXCEPT__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Type</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__TYPE = SET_OPERATION__TYPE;
+	int EXCEPT__FILTER_PATTERN = 0;
 
 	/**
 	 * The number of structural features of the '<em>Except</em>' class.
@@ -493,7 +475,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EXCEPT_FEATURE_COUNT = SET_OPERATION_FEATURE_COUNT + 0;
+	int EXCEPT_FEATURE_COUNT = 1;
 
 	/**
 	 * The feature id for the '<em><b>Items</b></em>' containment reference list.
@@ -1370,6 +1352,17 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getExcept();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Except#getFilterPattern <em>Filter Pattern</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Filter Pattern</em>'.
+	 * @see org.omnetpp.scave.model.Except#getFilterPattern()
+	 * @see #getExcept()
+	 * @generated
+	 */
+	EAttribute getExcept_FilterPattern();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Property <em>Property</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2023,6 +2016,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass EXCEPT = eINSTANCE.getExcept();
+
+		/**
+		 * The meta object literal for the '<em><b>Filter Pattern</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EXCEPT__FILTER_PATTERN = eINSTANCE.getExcept_FilterPattern();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
