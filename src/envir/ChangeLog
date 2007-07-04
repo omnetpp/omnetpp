@@ -1,8 +1,8 @@
 configuration handling rewritten...
+iterators, etc
 
 output vectors: several recording intervals can now be given, separated by comma
-default output file names changes: omnetpp.sca/vec/sna to %c-%r.sca/vec/sna, where %c=config name, %r=run number
-scalar file gets OVERWRITTEN in each run (not appended to it)
+scalar file gets OVERWRITTEN in each run (not appended to it); there is an config key to restore old behaviour
 
 
 2007-02-01 Tamas Borbely
