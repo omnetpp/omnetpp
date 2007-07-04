@@ -76,26 +76,6 @@ struct ScalarFieldsLess : public std::binary_function<ScalarResult, ScalarResult
     bool operator()(const ScalarResult &d1, const ScalarResult &d2) const { return fields.less(d1, d2); }
 };
 
-/*
-class AggregateFunc<T>
-{
-    public:
-        virtual void accumulate(T value) = 0;
-        virtual T getValue() = 0;
-}
-
-class Mean : public AggregateFunc<double>
-{
-    int count;
-    double sum;
-
-    public:
-        Mean() : count(0), sum(0.0) {}
-        virtual void accumulate(double value) { count++; sum += value; }
-        virtual double getValue() { return count > 0 ? sum / count : dblNaN; }
-};
-*/
-
 /**
  * Values arranged in a two dimensional array.
  */

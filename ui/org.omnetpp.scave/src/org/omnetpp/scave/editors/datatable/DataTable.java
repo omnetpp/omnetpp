@@ -383,7 +383,7 @@ public class DataTable extends Table {
 			else if (type == ResultType.VECTOR_LITERAL) {
 				VectorResult vector = (VectorResult)result;
 				if (COL_COUNT.equals(column)) {
-					int count = vector.getCount();
+					int count = vector.count();
 					item.setText(i, count >= 0 ? String.valueOf(count) : "n.a.");
 				}
 				else if (COL_MEAN.equals(column)) {
@@ -395,11 +395,11 @@ public class DataTable extends Table {
 					item.setText(i, Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
 				}
 				else if (COL_MIN.equals(column)) {
-					double min = vector.getMin();
+					double min = vector.min();
 					item.setText(i, Double.isNaN(min) ? "n.a." : String.valueOf(min));
 				}
 				else if (COL_MAX.equals(column)) {
-					double max = vector.getMax();
+					double max = vector.max();
 					item.setText(i, Double.isNaN(max) ? "n.a." : String.valueOf(max));
 				}
 			}
@@ -450,15 +450,15 @@ public class DataTable extends Table {
 			else if (type == ResultType.VECTOR_LITERAL) {
 				VectorResult vector = manager.getVector(idlist.get(lineNumber));
 				if (COL_COUNT.equals(column))
-					writer.addField(String.valueOf(vector.getCount()));
+					writer.addField(String.valueOf(vector.count()));
 				else if (COL_MEAN.equals(column))
 					writer.addField(String.valueOf(vector.mean()));
 				else if (COL_STDDEV.equals(column))
 					writer.addField(String.valueOf(vector.stddev()));
 				else if (COL_MIN.equals(column))
-					writer.addField(String.valueOf(vector.getMin()));
+					writer.addField(String.valueOf(vector.min()));
 				else if (COL_MAX.equals(column))
-					writer.addField(String.valueOf(vector.getMax()));
+					writer.addField(String.valueOf(vector.max()));
 			}
 			else if (type == ResultType.HISTOGRAM_LITERAL) {
 				// TODO

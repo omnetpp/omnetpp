@@ -76,30 +76,6 @@ EnumType* ResultItem::getEnum() const
     }
 }
 
-double VectorResult::mean() const
-{
-    return count>0 ? sum/count : NaN;
-}
-
-double VectorResult::variance() const
-{
-    if (count<=1)
-        return NaN;
-    else
-    {
-        double var = (sumSqr - sum*sum/count)/(count-1);
-        if (var<=0)
-            return 0.0;
-        else
-            return var;
-    }
-}
-
-double VectorResult::stddev() const
-{
-    return sqrt( variance() );
-}
-
 VectorResult::InterpolationMode VectorResult::getInterpolationMode() const
 {
     StringMap::const_iterator it = attributes.find("interpolationmode");
@@ -946,12 +922,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
         vecdata.columns = columns;
-        vecdata.count = -1;
-        vecdata.min = NaN;
-        vecdata.max = NaN;
-        vecdata.sum = NaN;
-        vecdata.sumSqr = NaN;
-
+        vecdata.stat = Statistics(-1, NaN, NaN, NaN, NaN);
         fileRef->vectorResults.push_back(vecdata);
         resultItemRef = &fileRef->vectorResults.back();
     }
@@ -1056,11 +1027,7 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
         vectorResult.moduleNameRef = stringSetFindOrInsert(moduleNames, vectorRef->moduleName);
         vectorResult.nameRef = stringSetFindOrInsert(names, vectorRef->name);
         vectorResult.columns = vectorRef->columns;
-        vectorResult.count = vectorRef->count();
-        vectorResult.min = vectorRef->min();
-        vectorResult.max = vectorRef->max();
-        vectorResult.sum = vectorRef->sum();
-        vectorResult.sumSqr = vectorRef->sumSqr();
+        vectorResult.stat = vectorRef->stat;
         fileRef->vectorResults.push_back(vectorResult);
     }
     delete index;

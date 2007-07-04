@@ -181,6 +181,7 @@ void XYDataset::add(const ScalarResult &d)
             rowRef->push_back(Mean());
         columnKeyToIndexMap[d] = column;
         columnKeys.push_back(d);
+        columnOrder.push_back(column);
     }
 
     values.at(row).at(column).accumulate(d.value);

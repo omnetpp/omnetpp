@@ -27,6 +27,7 @@
 #include "enumtype.h"
 #include "exception.h"
 #include "commonutil.h"
+#include "statistics.h"
 
 class Run;
 class ResultFile;
@@ -78,15 +79,14 @@ struct SCAVE_API VectorResult : public ResultItem
 
     int vectorId;
     std::string columns;
-    long count;
-    double min;
-    double max;
-    double sum;
-    double sumSqr;
+    Statistics stat;
 
-    double mean() const;
-    double variance() const;
-    double stddev() const;
+    long count()      const { return stat.count(); }
+    double min()      const { return stat.min(); }
+    double max()      const { return stat.max(); }
+    double mean()     const { return stat.mean(); }
+    double variance() const { return stat.variance(); } 
+    double stddev()   const { return stat.stddev(); }
 
     /**
      * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,

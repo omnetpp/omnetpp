@@ -15,7 +15,9 @@
 #ifndef _STATISTICS_H_
 #define _STATISTICS_H_
 
+#include <float.h>
 #include "scavedefs.h"
+#include "scaveutils.h"
 
 /**
  * Class for collecting statistical data of the result
@@ -35,39 +37,58 @@ class SCAVE_API Statistics
         Statistics(long count, double min, double max, double sum, double sumSqr)
             :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
 
-        Statistics &operator=(const Statistics &other)
-        {
-            _count = other._count;
-            _min = other._min;
-            _max = other._max;
-            _sum = other._sum;
-            _sumSqr = other._sumSqr;
-            return *this;
-        }
+        Statistics &operator=(const Statistics &other);
 
         long count() const { return _count; }
         double min() const { return _min; }
         double max() const { return _max; }
         double sum() const { return _sum; }
         double sumSqr() const { return _sumSqr; }
+        double mean() const { return _count == 0 ? dblNaN : _sum / _count; }
+        double stddev() const { return sqrt(variance()); } 
+        double variance() const;
 
-        void collect(double value)
-        {
+        void collect(double value);
+        void adjoin(const Statistics &other);
+};
+
+inline Statistics& Statistics::operator=(const Statistics &other)
+{
+    _count = other._count;
+    _min = other._min;
+    _max = other._max;
+    _sum = other._sum;
+    _sumSqr = other._sumSqr;
+    return *this;
+}
+
+inline double Statistics::variance() const
+{
+            if (_count >= 1)
+            {
+                double var = (_sumSqr - _sum*_sum/_count)/(_count-1);
+                return var < 0 ? 0 : var;
+            }
+            else
+                return dblNaN;
+}
+
+inline void Statistics::collect(double value)
+{
             _count++;
             _min = (_min < value ? _min : value);
             _max = (_max > value ? _max : value);
             _sum += value;
             _sumSqr += value * value;
-        }
+}
 
-        void adjoin(const Statistics &other)
-        {
+inline void Statistics::adjoin(const Statistics &other)
+{
             _count += other._count;
             _min = (_min < other._min ? _min : other._min);
             _max = (_max > other._max ? _max : other._max);
             _sum += other._sum;
             _sumSqr += other._sumSqr;
-        }
-};
+}
 
 #endif
