@@ -32,6 +32,22 @@
 //XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
 
+//XXX implement parallel iteration: "when $seed is at its kth value, take the kth value from this iteration as well"
+//   seed1 = ${seed = 78565, 32342, 7684, 2452}
+// then:
+//   seed2 = ${seed -> 3432, 43634, 32424, 7234}
+//   seed2 = ${seed:: 3432, 43634, 32424, 7234}
+//   seed2 = ${seed // 3432, 43634, 32424, 7234}
+//   seed2 = ${3432, 43634, 32424, 7234 [seed]}
+//   seed2 = ${3432, 43634, 32424, 7234 // seed}    !!!
+//   seed2 = ${3432, 43634, 32424, 7234 // &seed}   !!!
+//
+//   seed2 = ${@seed --> 3432, 43634, 32424, 7234}
+//   seed2 = ${&seed --> 3432, 43634, 32424, 7234}
+//   seed2 = ${@seed of 3432, 43634, 32424, 7234}
+//   seed2 = ${&seed of 3432, 43634, 32424, 7234}
+//XXX note: position of variable "var" can be obtained as "&var" from variables[]
+
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
@@ -227,10 +243,14 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_DATETIME] = opp_makedatetimestring();
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
-    // store iteration variables
+    // store iteration variables, and their positions (as "&varid")
     const std::vector<IterationVariable>& itervars = scenario->getIterationVariables();
     for (int i=0; i<itervars.size(); i++)
-        variables[itervars[i].varid] = scenario->getVariable(itervars[i].varid.c_str());
+    {
+        const char *varid = itervars[i].varid.c_str();
+        variables[varid] = scenario->getVariable(varid);
+        variables[std::string("&")+varid] = opp_stringf("%d", scenario->getIteratorPosition(varid));
+    }
 
     // assemble ${iterationvars}
     std::string iterationvars, iterationvars2;

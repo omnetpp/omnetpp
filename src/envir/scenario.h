@@ -108,6 +108,11 @@ class Scenario
     std::string getVariable(const char *varid) const;
 
     /**
+     * XXX
+     */
+    int getIteratorPosition(const char *varid) const;
+
+    /**
      * Returns the current iteration state as a string ("$x=100, $y=3, $2=.4").
      * Used for the value of ${iterationvars} as well.
      */

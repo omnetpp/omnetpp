@@ -192,6 +192,14 @@ std::string Scenario::getVariable(const char *varid) const
     return it->second->get();
 }
 
+int Scenario::getIteratorPosition(const char *varid) const
+{
+    std::map<std::string,ValueIterator*>::const_iterator it = varmap.find(varid);
+    if (it==varmap.end())
+        throw cRuntimeError("Unknown iteration variable: %s", varid);
+    return it->second->getPosition();
+}
+
 std::string Scenario::str() const
 {
     std::stringstream out;
