@@ -52,6 +52,9 @@ class ValueIterator
     int itemIndex;  // index into items[]
     int k;          // index within the item
 
+    // counts how many times op++() was invoked on the iterator
+    int pos;
+
   private:
     void parseAsNumericRegion(Item& item);
 
@@ -105,6 +108,12 @@ class ValueIterator
      * Same as get().
      */
     std::string operator()() const  {return get();}
+
+    /**
+     * Returns how many times operator++ was invoked on the iterator
+     * since construction or the last restart() call.
+     */
+    int getPosition() const  {return pos;}
 
     /**
      * Returns true when the iteration is over, that is, after invoking

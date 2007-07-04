@@ -23,7 +23,7 @@
 
 ValueIterator::ValueIterator(const char *s)
 {
-    itemIndex = k = 0;
+    pos = itemIndex = k = 0;
     if (s)
         parse(s);
 }
@@ -136,7 +136,7 @@ std::string ValueIterator::get(int index) const
 
 void ValueIterator::restart()
 {
-    itemIndex = k = 0;
+    pos = itemIndex = k = 0;
     while (itemIndex < items.size() && items[itemIndex].n == 0) itemIndex++;
 }
 
@@ -144,6 +144,7 @@ void ValueIterator::operator++(int)
 {
     if (itemIndex >= items.size())
         return;
+    pos++;
     const Item& item = items[itemIndex];
     if (k < item.n-1) {
         k++;
