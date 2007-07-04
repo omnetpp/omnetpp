@@ -25,6 +25,9 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
     StringMap allowedAttrs;
     getAttributes(allowedAttrs);
 
+    StringMap defaultAttrs;
+    getAttrDefaults(defaultAttrs);
+
     // are there illegal attributes?
     for (StringMap::const_iterator it=attrs.begin(); it!=attrs.end(); ++it)
     {
@@ -40,7 +43,10 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
         const char *attr = i->first.c_str();
         StringMap::const_iterator it = attrs.find(attr);
         if (it==attrs.end())
-            throw opp_runtime_error("missing attribute `%s'", attr);
+        {
+            if (defaultAttrs.find(attr) == defaultAttrs.end())
+                throw opp_runtime_error("missing attribute `%s'", attr);
+        }
     }
 }
 
