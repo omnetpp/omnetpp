@@ -31,7 +31,7 @@
 //XXX check behavior of keys which don't contain a dot! or: forbid them?
 //XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
-//XXX validation of registered config keys like "seed-*-mt" !
+//XXX make sure quoting "$\{" works!
 
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 

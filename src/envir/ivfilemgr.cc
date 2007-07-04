@@ -41,7 +41,7 @@ using std::ofstream;
 using std::ios;
 
 Register_PerRunConfigEntryU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES, "max-buffered-samples", CFG_INT, NULL, "Maximum number of values to cache (FIXME TODO finish docu)");
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES, "max-buffered-samples", CFG_INT, NULL, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector size.");
 
 
 #ifdef CHECK

@@ -360,7 +360,7 @@ void TOmnetApp::dumpComponentList(const char *category)
                 ev << ", unit=\"" << obj->unit() << "\"";
             if (obj->defaultValue())
                 ev << ", default:" << obj->defaultValue() << "";
-            ev << "; " << (obj->isGlobal() ? "global" : "per-run") << " setting";
+            ev << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting";
             ev << "\n";
             if (printDescriptions && obj->description() && obj->description()[0])
                 ev << opp_indentlines(opp_breaklines(obj->description(),75).c_str(), "    ") << "\n";

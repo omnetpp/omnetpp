@@ -40,14 +40,14 @@ Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb",
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
 Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush can be useful with printf-style debugging for tracking down program crashes.")
-Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When express-mode=false: turns printing module ev<< output on/off.")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When express-mode=false: turns printing event banners on/off.")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When express-mode=false: print extra information after event banners.")
-Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOOL, "false", "When express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", CFG_INT, "100000", "When express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.")
-Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
+Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing module ev<< output on/off.")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing event banners on/off.")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When cmdenv-express-mode=false: print extra information after event banners.")
+Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOOL, "false", "When cmdenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", CFG_INT, "100000", "When cmdenv-express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.")
+Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When cmdenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 
-Register_PerObjectConfigEntry(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", CFG_BOOL, "true", "FIXME XXX write docu")
+Register_PerObjectConfigEntry(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print debug messages (ev<<) from the selected modules.")
 
 
 //
