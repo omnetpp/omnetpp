@@ -3,7 +3,6 @@ package org.omnetpp.scave.editors;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.emf.edit.ui.action.DeleteAction;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -50,7 +49,6 @@ import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
-import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.views.DatasetView;
 
 /**
