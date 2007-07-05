@@ -1,9 +1,12 @@
 package org.omnetpp.scave.charting.dataset;
 
 import static org.omnetpp.scave.engine.ScalarFields.ALL;
+import static org.omnetpp.scave.engine.ScalarFields.EXPERIMENT;
 import static org.omnetpp.scave.engine.ScalarFields.FILE;
+import static org.omnetpp.scave.engine.ScalarFields.MEASUREMENT;
 import static org.omnetpp.scave.engine.ScalarFields.MODULE;
 import static org.omnetpp.scave.engine.ScalarFields.NAME;
+import static org.omnetpp.scave.engine.ScalarFields.REPLICATION;
 import static org.omnetpp.scave.engine.ScalarFields.RUN;
 
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.model2.RunAttribute;
 
 /**
  * Class storing the dataset of a scalar chart.
@@ -178,6 +182,9 @@ public class ScalarDataset implements IScalarDataset {
     	if (fields.hasField(RUN)) sb.append(scalar.getFileRun().getRun().getRunName()).append(sep);
     	if (fields.hasField(MODULE)) sb.append(scalar.getModuleName()).append(sep);
     	if (fields.hasField(NAME)) sb.append(scalar.getName()).append(sep);
+    	if (fields.hasField(EXPERIMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.EXPERIMENT));
+    	if (fields.hasField(MEASUREMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.MEASUREMENT));
+    	if (fields.hasField(REPLICATION)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.REPLICATION));
     	if (sb.length() > 0) sb.deleteCharAt(sb.length()-1); // delete last ','
     	return sb.toString();
     }
