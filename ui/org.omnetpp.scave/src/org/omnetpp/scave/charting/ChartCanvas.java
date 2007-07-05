@@ -279,40 +279,29 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 	
 	/**
-	 * 
+	 * Sets the area of the zoomable canvas.
+	 * This method is called when the area changes because
+	 * <ul>
+	 * <li> the dataset changed and a new chart area calculated
+	 * <li> the user changed the bounds of the are by setting a chart property
+	 * </ul>
 	 */
 	protected void updateArea() {
 		if (chartArea == null)
 			return;
+
 		double minX = userMinX != null ? userMinX : chartArea.minX;
 		double maxX = userMaxX != null ? userMaxX : chartArea.maxX;
 		double minY = userMinY != null ? userMinY : chartArea.minY;
 		double maxY = userMaxY != null ? userMaxY : chartArea.maxY;
 		
-		boolean keepZoomX = minX == getMinX() && maxX == getMaxX();
-		boolean keepZoomY = minY == getMinY() && maxY == getMaxY();
+		if (minX != getMinX() || maxX != getMaxX() || minY != getMinY() || maxY != getMaxY()) {
 		
-		if (keepZoomX && keepZoomY)
-			return;
-		
-//		System.out.format("area %f, %f, %f, %f --> %f, %f, %f, %f%n",
-//				getMinX(), getMaxX(), getMinY(), getMaxY(),
-//				left, right, top, bottom);
-
-		double zoomX = getZoomX();
-		double zoomY = getZoomY();
-		double centerX = getViewportCenterCoordX();
-		double centerY = getViewportCenterCoordY();
-		
-		setArea(minX, minY, maxX, maxY);
-		
-		if (keepZoomX) {
-			setZoomX(zoomX);
-			centerXOn(centerX);
-		}
-		if (keepZoomY) {
-			setZoomY(zoomY);
-			centerYOn(centerY);
+			System.out.format("area %f, %f, %f, %f --> %f, %f, %f, %f%n",
+					getMinX(), getMaxX(), getMinY(), getMaxY(),
+					minX, maxX, minY, maxY);
+			
+			setArea(minX, minY, maxX, maxY);
 		}
 	}
 	

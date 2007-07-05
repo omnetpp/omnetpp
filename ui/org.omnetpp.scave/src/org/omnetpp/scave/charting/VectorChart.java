@@ -351,7 +351,8 @@ public class VectorChart extends ChartCanvas {
 		this.selection = null;
 		updateLineProperties();
 		updateLegend();
-		calculateArea();
+		chartArea = calculatePlotArea();
+		updateArea();
 		chartChanged();
 	}
 	
@@ -500,17 +501,15 @@ public class VectorChart extends ChartCanvas {
 		chartChanged();
 	}
 	
-	private void calculateArea() {
+	private PlotArea calculatePlotArea() {
 		double minX = Double.POSITIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY;
 		double maxX = Double.NEGATIVE_INFINITY;
 		double maxY = Double.NEGATIVE_INFINITY;
 
-		long startTime = System.currentTimeMillis();
-
-		if (dataset!=null && dataset.getSeriesCount() > 0)
-		{
+		if (dataset!=null && dataset.getSeriesCount() > 0) {
 			// calculate bounding box
+			long startTime = System.currentTimeMillis();
 			for (int series = 0; series < dataset.getSeriesCount(); series++) {
 				int n = dataset.getItemCount(series);
 				if (n > 0) {
@@ -526,31 +525,28 @@ public class VectorChart extends ChartCanvas {
 					}
 				}
 			}
+			long duration = System.currentTimeMillis() - startTime;
+			System.out.println("calculateArea(): "+duration+" ms");
 		}
 		
-		if (minX > maxX)
-		{
+		if (minX > maxX) {
 			minX = 0.0;
 			maxX = 1.0;
 		}
-		if (minY > maxY)
-		{
+		if (minY > maxY) {
 			minY = 0.0;
 			maxY = 1.0;
 		}
-			
 		
         double width = maxX - minX;
         double height = maxY - minY;
-		long duration = System.currentTimeMillis() - startTime;
-		System.out.println("calculateArea(): "+duration+" ms");
         
         minX = (minX>=0 ? 0 : minX-width/80);
 		maxX = (maxX<=0 ? 0 : maxX+width/80);
 		minY = (minY>=0 ? 0 : minY-height/3);
 		maxY = (maxY<=0 ? 0 : maxY+height/3);
-		chartArea = new PlotArea(minX, maxX, minY, maxY);
-		updateArea();
+		
+		return new PlotArea(minX, maxX, minY, maxY);
 	}
 	
 	@Override

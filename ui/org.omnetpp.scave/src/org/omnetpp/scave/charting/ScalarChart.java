@@ -95,7 +95,7 @@ public class ScalarChart extends ChartCanvas {
 		
 		this.dataset = (ScalarDataset)dataset;
 		updateLegend();
-		chartArea = plot.getPlotArea();
+		chartArea = plot.calculatePlotArea();
 		updateArea();
 		chartChanged();
 	}
@@ -397,7 +397,8 @@ public class ScalarChart extends ChartCanvas {
 		private int widthBar = 10;
 		private int hgapMinor = 5;
 		private int hgapMajor = 20;
-		private int inset = 10;
+		private double horizontalInset = 1.0;   // left/right inset relative to the bars' width 
+		private double verticalInset = 0.1; // top inset relative to the height of the highest bar
 		
 		private double barBaseline = DEFAULT_BAR_BASELINE;
 		private BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
@@ -460,7 +461,7 @@ public class ScalarChart extends ChartCanvas {
 		public int findRowColumn(double x, double y) {
 			int cRows = dataset.getRowCount();
 			int cColumns = dataset.getColumnCount();
-			x -= inset;
+			x -= horizontalInset * widthBar;
 			if (x < 0)
 				return -1;
 			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
@@ -496,7 +497,7 @@ public class ScalarChart extends ChartCanvas {
 			return new Rectangle(x, y, width, height);
 		}
 		
-		public PlotArea getPlotArea() {
+		public PlotArea calculatePlotArea() {
 			if (dataset == null)
 				return new PlotArea(0, 1, 0, 1);
 			
@@ -504,20 +505,26 @@ public class ScalarChart extends ChartCanvas {
 			int cColumns = dataset.getColumnCount();
 			double minX = getLeftX(0, 0);
 			double maxX = getRightX(cRows - 1, cColumns - 1);
-			double minY = Double.MAX_VALUE;
-			double maxY = Double.MIN_VALUE;
+			double minY = Double.POSITIVE_INFINITY;
+			double maxY = Double.NEGATIVE_INFINITY;
 			for (int row = 0; row < cRows; ++row)
 				for (int column = 0; column < cColumns; ++column) {
 					minY = Math.min(minY, plot.getBottomY(row, column));
 					maxY = Math.max(maxY, plot.getTopY(row, column));
 				}
-			return new PlotArea(minX - inset, maxX + inset, minY, maxY + inset);
+			if (minY > maxY) { // no data points
+				minY = 0.0;
+				maxY = 1.0;
+			}
+			double height = maxY - minY;
+			return new PlotArea(minX - horizontalInset * widthBar, maxX + horizontalInset * widthBar,
+					            minY, maxY + verticalInset * height);
 		}
 		
 		protected double getLeftX(int row, int column) {
 			int cColumns = dataset.getColumnCount();
 			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
-			return inset + row * (rowWidth + hgapMajor) + column * (widthBar + hgapMinor); 
+			return horizontalInset * widthBar + row * (rowWidth + hgapMajor) + column * (widthBar + hgapMinor); 
 		}
 		
 		protected double getRightX(int row, int column) {
@@ -568,7 +575,7 @@ public class ScalarChart extends ChartCanvas {
 					String label = dataset.getRowKey(row).toString();
 					Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
 					labelsHeight = Math.max(labelsHeight, size.height);
-					System.out.println("labelsheight: "+labelsHeight);
+					//System.out.println("labelsheight: "+labelsHeight);
 				}
 			}
 			
