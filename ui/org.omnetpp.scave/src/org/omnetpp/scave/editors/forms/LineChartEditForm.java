@@ -134,11 +134,12 @@ public class LineChartEditForm extends ChartEditForm {
 	}
 	
 	protected String getSelectedLineKey() {
-		Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
-		if (selection != null && selection instanceof LineID)
-			return ((LineID)selection).getKey();
-		else
-			return null;
+		if (formParameters != null) {
+			Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
+			if (selection instanceof LineID)
+				return ((LineID)selection).getKey();
+		}
+		return null;
 	}
 	
 	protected void selectLine(String lineName) {
