@@ -435,6 +435,7 @@ public class ScalarChart extends ChartCanvas {
 		
 		protected void drawBar(Graphics graphics, int row, int column) {
 			Rectangle rect = getBarRectangle(row, column);
+			rect.width = Math.max(rect.width, 1);
 			graphics.setBackgroundColor(getBarColor(column));
 			graphics.fillRectangle(rect);
 			if (rect.width >= 4 && rect.height >= 3) {
