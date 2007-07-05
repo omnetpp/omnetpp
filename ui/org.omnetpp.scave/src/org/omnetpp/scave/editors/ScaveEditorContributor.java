@@ -45,6 +45,7 @@ import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.OpenAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
+import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -78,6 +79,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction groupAction;
 	private IAction ungroupAction;
 	private IScaveAction deleteAction; // action handler of deleteRetargetAction
+	private IAction selectAllAction;
 	
 	// ChartPage actions
 //XXX
@@ -130,6 +132,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         editAction = registerAction(page, new EditAction());
         groupAction = registerAction(page, new GroupAction());
         ungroupAction = registerAction(page, new UngroupAction());
+        selectAllAction = registerAction(page, new SelectAllAction());
 
         // replacement of the inherited deleteAction 
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
@@ -174,6 +177,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         super.init(bars, page);
         
         bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
+        bars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
 	}
 
 	private IScaveAction registerAction(IWorkbenchPage page, final IScaveAction action) {

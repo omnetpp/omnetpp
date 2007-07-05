@@ -15,11 +15,14 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -59,6 +62,7 @@ public class DatasetView extends ViewWithMessagePart {
 	private IAction showScalarsAction;
 	private IAction showVectorsAction;
 	private IAction showHistogramsAction;
+	private IAction selectAllAction;
 	
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
@@ -70,6 +74,7 @@ public class DatasetView extends ViewWithMessagePart {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+		initActions();
 		hookPageListeners();
 		createToolbarButtons();
 		createContextMenu(vectorsPanel);
@@ -92,15 +97,21 @@ public class DatasetView extends ViewWithMessagePart {
 		scalarsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL);
 		histogramsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL);
 		
-		setVisibleTable(vectorsPanel);
+		setVisibleDataPanel(vectorsPanel);
 		
 		return panel;
 	}
 	
-	private void createToolbarButtons() {
+	private void initActions() {
 		showScalarsAction = new ShowTableAction(ResultType.SCALAR_LITERAL);
 		showVectorsAction = new ShowTableAction(ResultType.VECTOR_LITERAL);
 		showHistogramsAction = new ShowTableAction(ResultType.HISTOGRAM_LITERAL);
+		selectAllAction = new SelectAllAction();
+		IActionBars actionBars = getViewSite().getActionBars();
+		actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
+	}
+	
+	private void createToolbarButtons() {
 		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
 		manager.add(showScalarsAction);
 		manager.add(showVectorsAction);
@@ -199,7 +210,11 @@ public class DatasetView extends ViewWithMessagePart {
 		}
 	}
 	
-	private void setVisibleTable(FilteredDataPanel table) {
+	private FilteredDataPanel getVisibleDataPanel() {
+		return layout == null ? null : (FilteredDataPanel)layout.topControl;
+	}
+	
+	private void setVisibleDataPanel(FilteredDataPanel table) {
 		layout.topControl = table;
 		panel.layout();
 	}
@@ -261,15 +276,15 @@ public class DatasetView extends ViewWithMessagePart {
 	 * Make the first table containing items visible.
 	 */
 	private void switchToNonEmptyTable() {
-		FilteredDataPanel control = (FilteredDataPanel)layout.topControl;
+		FilteredDataPanel control = getVisibleDataPanel();
 		IAction action = null;
-		if (control.getIDList().isEmpty()) {
+		if (control == null || control.getIDList().isEmpty()) {
 			control = null;
 			if (!scalarsPanel.getIDList().isEmpty()) { control = scalarsPanel; action = showScalarsAction; }
 			if (!vectorsPanel.getIDList().isEmpty()) { control = vectorsPanel; action = showVectorsAction; }
 			if (!histogramsPanel.getIDList().isEmpty()) { control = histogramsPanel; action = showHistogramsAction; }
 			if (control != null)
-				setVisibleTable(control);
+				setVisibleDataPanel(control);
 			if (action != null)
 				setSelectedAction(action);
 		}
@@ -335,6 +350,18 @@ public class DatasetView extends ViewWithMessagePart {
 			if (layout.topControl != table) {
 				layout.topControl = table;
 				panel.layout();
+			}
+		}
+	}
+	
+	class SelectAllAction extends Action
+	{
+		@Override
+		public void run() {
+			FilteredDataPanel panel = getVisibleDataPanel();
+			if (panel != null && panel.getTable() != null) {
+				panel.getTable().setFocus();
+				panel.getTable().selectAll();
 			}
 		}
 	}
