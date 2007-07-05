@@ -15,6 +15,7 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.IEditorPart;
@@ -172,14 +173,22 @@ public class DatasetView extends ViewWithMessagePart {
 			scaveEditor.getResultFileManager().addListener(resultFilesChangeListener =
 				new IResultFilesChangeListener() {
 				public void resultFileManagerChanged(ResultFileManager manager) {
-					updateDataTable();
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							updateDataTable();
+						}
+					});
 				}
 			});
 			
 			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
 				public void notifyChanged(Notification notification) {
-					updateDataTable();
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							updateDataTable();
+						}
+					});
 				}
 			});
 		}
