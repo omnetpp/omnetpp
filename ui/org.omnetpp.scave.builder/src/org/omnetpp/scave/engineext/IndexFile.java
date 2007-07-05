@@ -3,6 +3,7 @@ package org.omnetpp.scave.engineext;
 import java.io.File;
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -88,8 +89,9 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 */
 	public static IFile getIndexFileFor(IFile vectorFile) {
 		Assert.isLegal(isVectorFile(vectorFile));
+		IContainer container = vectorFile.getParent();
 		String path = getIndexFileName(vectorFile.getLocation().toOSString());
-		return getWorkspaceFileForOsPath(path); 
+		return getWorkspaceFileForOsPath(container, path); 
 	}
 	
 	/**
@@ -111,8 +113,9 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 */
 	public static IFile getVectorFileFor(IFile indexFile) {
 		Assert.isLegal(isIndexFile(indexFile));
+		IContainer container = indexFile.getParent();
 		String path = getVectorFileName(indexFile.getLocation().toOSString());
-		return getWorkspaceFileForOsPath(path);
+		return getWorkspaceFileForOsPath(container, path);
 	}
 
 	/**
@@ -127,37 +130,23 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	}
 	
 	/**
-	 * Returns the workspace relative full path of the file,
-	 * specified by an OS absolute path. The file need not exists,
-	 * but if the path is not under the workspace root, then <code>null</code>
-	 * is returned.
-	 * 
-	 * @param path the OS path
-	 * @return the full path in the workspace or null
-	 */
-	private static IPath getWorkspacePathForOsPath(String path) {
-		IPath location = new Path(path);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IPath workspacePath = root.getLocation();
-		if (workspacePath.isPrefixOf(location)) {
-			return location.removeFirstSegments(workspacePath.segmentCount());
-		}
-		else
-			return null;
-	}
-	
-	/**
 	 * Returns the workspace file for the specified absolute path.
 	 * The file need not exists, but the path must be under the
-	 * workspace, otherwise null is returned.
+	 * given parent container, otherwise null is returned.
 	 * 
-	 * @param path the absolute OS path
+	 * @param container the the target container of the resource specified by the path 
+	 * @param osPath    the absolute OS path
 	 * @return the workspace file or null
 	 */
-	private static IFile getWorkspaceFileForOsPath(String path) {
-		IPath fullPath = getWorkspacePathForOsPath(path);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		return fullPath != null ? root.getFile(fullPath) : null; 
+	private static IFile getWorkspaceFileForOsPath(IContainer parent, String osPath) {
+		IPath location = new Path(osPath);
+		IPath parentLocation = parent.getLocation();
+		if (parentLocation.isPrefixOf(location)) {
+			IPath relativePath = location.removeFirstSegments(parentLocation.segmentCount());
+			return parent.getFile(relativePath); 
+		}
+		else
+			return null; // XXX assert?
 	}
 
 	/**

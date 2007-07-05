@@ -120,8 +120,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						if (inputsMatches(file))
 							loadFile(file);
 					}
-					else if (IndexFile.isIndexFile(file))
-						reloadFile(IndexFile.getVectorFileFor(file));
+					else if (IndexFile.isIndexFile(file)) {
+						IFile vectorFile = IndexFile.getVectorFileFor(file); 
+						if (vectorFile != null)
+							reloadFile(vectorFile);
+					}
 					break;
 			case IResourceDelta.REMOVED:
 					if (debug) System.out.format("File removed: %s%n", file);
@@ -133,8 +136,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
 						if (isResultFile(file))
 							reloadFile(file);
-						else if (IndexFile.isIndexFile(file))
-							reloadFile(IndexFile.getVectorFileFor(file));
+						else if (IndexFile.isIndexFile(file)) {
+							IFile vectorFile = IndexFile.getVectorFileFor(file);
+							if (vectorFile != null)
+								reloadFile(vectorFile);
+						}
 					}
 					break;
 			}

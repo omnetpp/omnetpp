@@ -74,8 +74,11 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 							filesToBeIndexed.offer(file);
 						break;
 					case IResourceDelta.REMOVED:
-						if (isIndexFile(file))
-							filesToBeIndexed.offer(getVectorFileFor(file));
+						if (isIndexFile(file)) {
+							IFile vectorFile = getVectorFileFor(file);
+							if (vectorFile != null)
+								filesToBeIndexed.offer(vectorFile);
+						}
 					}
 				}
 				return true;
