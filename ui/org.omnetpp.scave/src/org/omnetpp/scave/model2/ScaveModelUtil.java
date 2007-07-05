@@ -1,10 +1,13 @@
 package org.omnetpp.scave.model2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
@@ -19,11 +22,13 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
@@ -395,6 +400,27 @@ public class ScaveModelUtil {
 	public static IDList filterIDList(IDList idlist, Filter filter, ResultFileManager manager) {
 		Assert.isTrue(filter.getFilterPattern()!=null);
 		return manager.filterIDList(idlist, filter.getFilterPattern());
+	}
+	
+	/**
+	 * Returns an ordered array of distinct values of the {@code field} attribute
+	 * of the scalars found in {@code idlist}. 
+	 */
+	public static String[] getScalarFields(IDList idlist, int field, ResultFileManager manager) {
+		ScalarFields scalarField = new ScalarFields(field);
+		Set<String> values = new HashSet<String>();
+		for (int i = 0; i < idlist.size(); ++i) {
+			long id = idlist.get(i);
+			ResultItem item = manager.getItem(id);
+			if (item instanceof ScalarResult) {
+				String value = scalarField.getField((ScalarResult)item);
+				if (!StringUtils.isEmpty(value))
+					values.add(value);
+			}
+		}
+		String[] result = values.toArray(new String[values.size()]);
+		Arrays.sort(result);
+		return result;
 	}
 
 	/**

@@ -294,7 +294,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected Combo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
-		int style = SWT.BORDER; //type == null ? SWT.BORDER : SWT.BORDER | SWT.READ_ONLY;
+		int style = SWT.BORDER | SWT.READ_ONLY;
 		Combo combo = new Combo(parent, style);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
