@@ -1,3 +1,39 @@
+2007-07-06
+----------
+
+Additions:
+
+  + Data points can be averaged over replications on scatter plots (checkbox in ScatterChart
+    Property dialog).
+
+Fixes:
+
+  + Mouse cursor changes to "Zoom out" when SHIFT key is pressed in zoom mode
+  
+  + Wrong index files are marked with an error and the corresponding vector file (which could 
+    not be loaded because of the error) with a warning in the Navigator view.
+ 
+  + Ctrl+A select all items on BrowseDataPage and DatasetView.
+
+  + Fixed exceptions that occured when the project was not stored under the workspace root
+    but linked.
+
+  + Fixed "invalid thread access" exception that occured in DatasetView.
+
+  + Fixed bar chart layout and area calculation.
+
+  + Fixed NullPointerException when opening "New LineChart" dialog.
+
+  + Use combo boxes in Property dialog of ScatterCharts to select the X data.
+
+  + Fix: plotting an empty vector hanged the program.
+
+  + Removed unused "type" and "sourceDataset" fields from Except nodes.
+
+  + Patterns in InputFile wildcards are interpreted relative to the scave file.
+
+  + Add a "Show Dataset View" item to context menus
+
 2007-06-22
 ----------
 
