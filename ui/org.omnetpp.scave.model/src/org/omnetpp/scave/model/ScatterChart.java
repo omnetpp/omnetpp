@@ -15,8 +15,9 @@ package org.omnetpp.scave.model;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.ScatterChart#getModuleName <em>Module Name</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.ScatterChart#getDataName <em>Data Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ScatterChart#getXDataModule <em>XData Module</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ScatterChart#getXDataName <em>XData Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ScatterChart#isAverageReplications <em>Average Replications</em>}</li>
  * </ul>
  * </p>
  *
@@ -26,55 +27,82 @@ package org.omnetpp.scave.model;
  */
 public interface ScatterChart extends Chart {
 	/**
-	 * Returns the value of the '<em><b>Module Name</b></em>' attribute.
+	 * Returns the value of the '<em><b>XData Module</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Module Name</em>' attribute isn't clear,
+	 * If the meaning of the '<em>XData Module</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Module Name</em>' attribute.
-	 * @see #setModuleName(String)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_ModuleName()
+	 * @return the value of the '<em>XData Module</em>' attribute.
+	 * @see #setXDataModule(String)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_XDataModule()
 	 * @model
 	 * @generated
 	 */
-	String getModuleName();
+	String getXDataModule();
 
 	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getModuleName <em>Module Name</em>}' attribute.
+	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getXDataModule <em>XData Module</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Module Name</em>' attribute.
-	 * @see #getModuleName()
+	 * @param value the new value of the '<em>XData Module</em>' attribute.
+	 * @see #getXDataModule()
 	 * @generated
 	 */
-	void setModuleName(String value);
+	void setXDataModule(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Data Name</b></em>' attribute.
+	 * Returns the value of the '<em><b>XData Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Data Name</em>' attribute isn't clear,
+	 * If the meaning of the '<em>XData Name</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Data Name</em>' attribute.
-	 * @see #setDataName(String)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_DataName()
+	 * @return the value of the '<em>XData Name</em>' attribute.
+	 * @see #setXDataName(String)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_XDataName()
 	 * @model
 	 * @generated
 	 */
-	String getDataName();
+	String getXDataName();
 
 	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getDataName <em>Data Name</em>}' attribute.
+	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getXDataName <em>XData Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Data Name</em>' attribute.
-	 * @see #getDataName()
+	 * @param value the new value of the '<em>XData Name</em>' attribute.
+	 * @see #getXDataName()
 	 * @generated
 	 */
-	void setDataName(String value);
+	void setXDataName(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Average Replications</b></em>' attribute.
+	 * The default value is <code>"true"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Average Replications</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Average Replications</em>' attribute.
+	 * @see #setAverageReplications(boolean)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_AverageReplications()
+	 * @model default="true"
+	 * @generated
+	 */
+	boolean isAverageReplications();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#isAverageReplications <em>Average Replications</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Average Replications</em>' attribute.
+	 * @see #isAverageReplications()
+	 * @generated
+	 */
+	void setAverageReplications(boolean value);
 
 } // ScatterChart

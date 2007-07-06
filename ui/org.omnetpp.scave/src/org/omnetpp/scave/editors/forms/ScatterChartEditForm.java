@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -28,13 +29,15 @@ public class ScatterChartEditForm extends LineChartEditForm {
 	
 	private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
 		pkg.getChart_Name(),
-		pkg.getScatterChart_ModuleName(),
-		pkg.getScatterChart_DataName(),
+		pkg.getScatterChart_XDataModule(),
+		pkg.getScatterChart_XDataName(),
+		pkg.getScatterChart_AverageReplications(),
 		pkg.getChart_Properties(),
 	};
 	
 	private Combo moduleNameCombo;
 	private Combo dataNameCombo;
+	private Button avgReplicationsCheckbox;
 	
 	private String[] moduleNames = ArrayUtils.EMPTY_STRING_ARRAY;
 	private String[] dataNames = ArrayUtils.EMPTY_STRING_ARRAY;
@@ -71,16 +74,22 @@ public class ScatterChartEditForm extends LineChartEditForm {
 			dataNameCombo = createComboField("Data name", group, dataNames);
 			if (dataNames.length > 0)
 				dataNameCombo.setText(dataNames[0]);
+			
+			avgReplicationsCheckbox = createCheckboxField("average replications", group);
+			avgReplicationsCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+			avgReplicationsCheckbox.setSelection(true);
 		}
 	}
 
 	@Override
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
+		case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
 			return moduleNameCombo != null ? moduleNameCombo.getText() : null;
-		case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+		case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
 			return dataNameCombo != null ? dataNameCombo.getText() : null;
+		case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+			return avgReplicationsCheckbox.getSelection();
 		}
 		return super.getValue(feature);
 	}
@@ -88,18 +97,22 @@ public class ScatterChartEditForm extends LineChartEditForm {
 	@Override
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
+		case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
 			if (moduleNameCombo != null) {
 				String moduleName = Arrays.asList(moduleNames).contains(value) ? (String)value : StringUtils.EMPTY;
 				moduleNameCombo.setText(moduleName);
 			}
 			break;
-		case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+		case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
 			if (dataNameCombo != null) {
 				String dataName = Arrays.asList(dataNames).contains(value) ? (String)value : StringUtils.EMPTY;
 				dataNameCombo.setText(dataName);
 			}
 			break;
+		case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+			if (avgReplicationsCheckbox != null) {
+				avgReplicationsCheckbox.setSelection(value != null ? ((Boolean)value) : true);
+			}
 		default:
 			super.setValue(feature, value);
 			break;

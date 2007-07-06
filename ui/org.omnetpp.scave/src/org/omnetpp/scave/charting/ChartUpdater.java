@@ -94,8 +94,9 @@ public class ChartUpdater {
 			}
 			else if (notifier instanceof ScatterChart) {
 				switch (notification.getFeatureID(ScatterChart.class)) {
-				case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
-				case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+				case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
+				case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+				case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 					scheduleDatasetUpdate();
 					break;
 				}

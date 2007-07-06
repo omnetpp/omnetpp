@@ -859,7 +859,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getScatterChart_ModuleName() {
+	public EAttribute getScatterChart_XDataModule() {
 		return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -868,8 +868,17 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getScatterChart_DataName() {
+	public EAttribute getScatterChart_XDataName() {
 		return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getScatterChart_AverageReplications() {
+		return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -995,8 +1004,9 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		histogramChartEClass = createEClass(HISTOGRAM_CHART);
 
 		scatterChartEClass = createEClass(SCATTER_CHART);
-		createEAttribute(scatterChartEClass, SCATTER_CHART__MODULE_NAME);
-		createEAttribute(scatterChartEClass, SCATTER_CHART__DATA_NAME);
+		createEAttribute(scatterChartEClass, SCATTER_CHART__XDATA_MODULE);
+		createEAttribute(scatterChartEClass, SCATTER_CHART__XDATA_NAME);
+		createEAttribute(scatterChartEClass, SCATTER_CHART__AVERAGE_REPLICATIONS);
 
 		// Create enums
 		resultTypeEEnum = createEEnum(RESULT_TYPE);
@@ -1134,8 +1144,9 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(histogramChartEClass, HistogramChart.class, "HistogramChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(scatterChartEClass, ScatterChart.class, "ScatterChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getScatterChart_ModuleName(), ecorePackage.getEString(), "moduleName", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getScatterChart_DataName(), ecorePackage.getEString(), "dataName", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScatterChart_XDataModule(), ecorePackage.getEString(), "xDataModule", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScatterChart_XDataName(), ecorePackage.getEString(), "xDataName", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScatterChart_AverageReplications(), ecorePackage.getEBoolean(), "averageReplications", "true", 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(resultTypeEEnum, ResultType.class, "ResultType");

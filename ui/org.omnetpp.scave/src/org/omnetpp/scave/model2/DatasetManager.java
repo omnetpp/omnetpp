@@ -223,14 +223,15 @@ public class DatasetManager {
 	}
 	
 	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
-		Assert.isLegal(chart.getModuleName() != null, "Module name is not set");
-		Assert.isLegal(chart.getDataName() != null, "Data name is not set");
+		Assert.isLegal(chart.getXDataModule() != null, "Module name is not set");
+		Assert.isLegal(chart.getXDataName() != null, "Data name is not set");
 		
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-			return new ScatterPlotDataset2(idlist, chart.getModuleName(), chart.getDataName(), manager);
+			return new ScatterPlotDataset2(idlist, chart.getXDataModule(), chart.getXDataName(),
+												chart.isAverageReplications(), manager);
 		}
 		return null;
 	}
@@ -251,10 +252,12 @@ public class DatasetManager {
 		}
 		else if (chart instanceof ScatterChart) {
 			ScatterChart sc = (ScatterChart)chart;
-			if (sc.getModuleName() != null || sc.getDataName() != null) {
+			if (sc.getXDataModule() != null || sc.getXDataName() != null) {
 				try {
 					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-					ScatterPlotDataset2 scatterPlotDataset = new ScatterPlotDataset2(idlist, sc.getModuleName(), sc.getDataName(), manager);
+					ScatterPlotDataset2 scatterPlotDataset =
+						new ScatterPlotDataset2(idlist, sc.getXDataModule(), sc.getXDataName(),
+													sc.isAverageReplications(), manager);
 					String[] names = new String[scatterPlotDataset.getSeriesCount()];
 					for (int i = 0; i < names.length; ++i)
 						names[i] = scatterPlotDataset.getSeriesKey(i);

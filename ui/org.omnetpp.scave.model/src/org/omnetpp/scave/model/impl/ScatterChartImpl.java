@@ -22,8 +22,9 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getModuleName <em>Module Name</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getDataName <em>Data Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getXDataModule <em>XData Module</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getXDataName <em>XData Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#isAverageReplications <em>Average Replications</em>}</li>
  * </ul>
  * </p>
  *
@@ -31,44 +32,64 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	/**
-	 * The default value of the '{@link #getModuleName() <em>Module Name</em>}' attribute.
+	 * The default value of the '{@link #getXDataModule() <em>XData Module</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getModuleName()
+	 * @see #getXDataModule()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String MODULE_NAME_EDEFAULT = null;
+	protected static final String XDATA_MODULE_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getModuleName() <em>Module Name</em>}' attribute.
+	 * The cached value of the '{@link #getXDataModule() <em>XData Module</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getModuleName()
+	 * @see #getXDataModule()
 	 * @generated
 	 * @ordered
 	 */
-	protected String moduleName = MODULE_NAME_EDEFAULT;
+	protected String xDataModule = XDATA_MODULE_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getDataName() <em>Data Name</em>}' attribute.
+	 * The default value of the '{@link #getXDataName() <em>XData Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDataName()
+	 * @see #getXDataName()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String DATA_NAME_EDEFAULT = null;
+	protected static final String XDATA_NAME_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getDataName() <em>Data Name</em>}' attribute.
+	 * The cached value of the '{@link #getXDataName() <em>XData Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDataName()
+	 * @see #getXDataName()
 	 * @generated
 	 * @ordered
 	 */
-	protected String dataName = DATA_NAME_EDEFAULT;
+	protected String xDataName = XDATA_NAME_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isAverageReplications() <em>Average Replications</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAverageReplications()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean AVERAGE_REPLICATIONS_EDEFAULT = true;
+
+	/**
+	 * The cached value of the '{@link #isAverageReplications() <em>Average Replications</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAverageReplications()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean averageReplications = AVERAGE_REPLICATIONS_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -94,8 +115,8 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getModuleName() {
-		return moduleName;
+	public String getXDataModule() {
+		return xDataModule;
 	}
 
 	/**
@@ -103,11 +124,11 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setModuleName(String newModuleName) {
-		String oldModuleName = moduleName;
-		moduleName = newModuleName;
+	public void setXDataModule(String newXDataModule) {
+		String oldXDataModule = xDataModule;
+		xDataModule = newXDataModule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__MODULE_NAME, oldModuleName, moduleName));
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__XDATA_MODULE, oldXDataModule, xDataModule));
 	}
 
 	/**
@@ -115,8 +136,8 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getDataName() {
-		return dataName;
+	public String getXDataName() {
+		return xDataName;
 	}
 
 	/**
@@ -124,11 +145,32 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDataName(String newDataName) {
-		String oldDataName = dataName;
-		dataName = newDataName;
+	public void setXDataName(String newXDataName) {
+		String oldXDataName = xDataName;
+		xDataName = newXDataName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__DATA_NAME, oldDataName, dataName));
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__XDATA_NAME, oldXDataName, xDataName));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean isAverageReplications() {
+		return averageReplications;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAverageReplications(boolean newAverageReplications) {
+		boolean oldAverageReplications = averageReplications;
+		averageReplications = newAverageReplications;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS, oldAverageReplications, averageReplications));
 	}
 
 	/**
@@ -139,10 +181,12 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
-				return getModuleName();
-			case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
-				return getDataName();
+			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
+				return getXDataModule();
+			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+				return getXDataName();
+			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+				return isAverageReplications() ? Boolean.TRUE : Boolean.FALSE;
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -155,11 +199,14 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
-				setModuleName((String)newValue);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
+				setXDataModule((String)newValue);
 				return;
-			case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
-				setDataName((String)newValue);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+				setXDataName((String)newValue);
+				return;
+			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+				setAverageReplications(((Boolean)newValue).booleanValue());
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -173,11 +220,14 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
-				setModuleName(MODULE_NAME_EDEFAULT);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
+				setXDataModule(XDATA_MODULE_EDEFAULT);
 				return;
-			case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
-				setDataName(DATA_NAME_EDEFAULT);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+				setXDataName(XDATA_NAME_EDEFAULT);
+				return;
+			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+				setAverageReplications(AVERAGE_REPLICATIONS_EDEFAULT);
 				return;
 		}
 		super.eUnset(featureID);
@@ -191,10 +241,12 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
-				return MODULE_NAME_EDEFAULT == null ? moduleName != null : !MODULE_NAME_EDEFAULT.equals(moduleName);
-			case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
-				return DATA_NAME_EDEFAULT == null ? dataName != null : !DATA_NAME_EDEFAULT.equals(dataName);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
+				return XDATA_MODULE_EDEFAULT == null ? xDataModule != null : !XDATA_MODULE_EDEFAULT.equals(xDataModule);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+				return XDATA_NAME_EDEFAULT == null ? xDataName != null : !XDATA_NAME_EDEFAULT.equals(xDataName);
+			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+				return averageReplications != AVERAGE_REPLICATIONS_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -209,10 +261,12 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (moduleName: ");
-		result.append(moduleName);
-		result.append(", dataName: ");
-		result.append(dataName);
+		result.append(" (xDataModule: ");
+		result.append(xDataModule);
+		result.append(", xDataName: ");
+		result.append(xDataName);
+		result.append(", averageReplications: ");
+		result.append(averageReplications);
 		result.append(')');
 		return result.toString();
 	}

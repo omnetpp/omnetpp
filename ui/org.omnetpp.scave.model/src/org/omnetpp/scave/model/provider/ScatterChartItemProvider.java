@@ -65,26 +65,27 @@ public class ScatterChartItemProvider
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addModuleNamePropertyDescriptor(object);
-			addDataNamePropertyDescriptor(object);
+			addXDataModulePropertyDescriptor(object);
+			addXDataNamePropertyDescriptor(object);
+			addAverageReplicationsPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
 
 	/**
-	 * This adds a property descriptor for the Module Name feature.
+	 * This adds a property descriptor for the XData Module feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addModuleNamePropertyDescriptor(Object object) {
+	protected void addXDataModulePropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_ScatterChart_moduleName_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_moduleName_feature", "_UI_ScatterChart_type"),
-				 ScaveModelPackage.Literals.SCATTER_CHART__MODULE_NAME,
+				 getString("_UI_ScatterChart_xDataModule_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_xDataModule_feature", "_UI_ScatterChart_type"),
+				 ScaveModelPackage.Literals.SCATTER_CHART__XDATA_MODULE,
 				 true,
 				 false,
 				 false,
@@ -94,23 +95,45 @@ public class ScatterChartItemProvider
 	}
 
 	/**
-	 * This adds a property descriptor for the Data Name feature.
+	 * This adds a property descriptor for the XData Name feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addDataNamePropertyDescriptor(Object object) {
+	protected void addXDataNamePropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_ScatterChart_dataName_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_dataName_feature", "_UI_ScatterChart_type"),
-				 ScaveModelPackage.Literals.SCATTER_CHART__DATA_NAME,
+				 getString("_UI_ScatterChart_xDataName_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_xDataName_feature", "_UI_ScatterChart_type"),
+				 ScaveModelPackage.Literals.SCATTER_CHART__XDATA_NAME,
 				 true,
 				 false,
 				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Average Replications feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addAverageReplicationsPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ScatterChart_averageReplications_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_averageReplications_feature", "_UI_ScatterChart_type"),
+				 ScaveModelPackage.Literals.SCATTER_CHART__AVERAGE_REPLICATIONS,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE,
 				 null,
 				 null));
 	}
@@ -152,8 +175,9 @@ public class ScatterChartItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(ScatterChart.class)) {
-			case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
-			case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
+			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}

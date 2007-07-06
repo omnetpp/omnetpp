@@ -1187,22 +1187,31 @@ public interface ScaveModelPackage extends EPackage {
 	int SCATTER_CHART__PROPERTIES = CHART__PROPERTIES;
 
 	/**
-	 * The feature id for the '<em><b>Module Name</b></em>' attribute.
+	 * The feature id for the '<em><b>XData Module</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SCATTER_CHART__MODULE_NAME = CHART_FEATURE_COUNT + 0;
+	int SCATTER_CHART__XDATA_MODULE = CHART_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Data Name</b></em>' attribute.
+	 * The feature id for the '<em><b>XData Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SCATTER_CHART__DATA_NAME = CHART_FEATURE_COUNT + 1;
+	int SCATTER_CHART__XDATA_NAME = CHART_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Average Replications</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART__AVERAGE_REPLICATIONS = CHART_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>Scatter Chart</em>' class.
@@ -1211,7 +1220,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCATTER_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 2;
+	int SCATTER_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
@@ -1858,26 +1867,37 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getScatterChart();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#getModuleName <em>Module Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#getXDataModule <em>XData Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Module Name</em>'.
-	 * @see org.omnetpp.scave.model.ScatterChart#getModuleName()
+	 * @return the meta object for the attribute '<em>XData Module</em>'.
+	 * @see org.omnetpp.scave.model.ScatterChart#getXDataModule()
 	 * @see #getScatterChart()
 	 * @generated
 	 */
-	EAttribute getScatterChart_ModuleName();
+	EAttribute getScatterChart_XDataModule();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#getDataName <em>Data Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#getXDataName <em>XData Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Data Name</em>'.
-	 * @see org.omnetpp.scave.model.ScatterChart#getDataName()
+	 * @return the meta object for the attribute '<em>XData Name</em>'.
+	 * @see org.omnetpp.scave.model.ScatterChart#getXDataName()
 	 * @see #getScatterChart()
 	 * @generated
 	 */
-	EAttribute getScatterChart_DataName();
+	EAttribute getScatterChart_XDataName();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#isAverageReplications <em>Average Replications</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Average Replications</em>'.
+	 * @see org.omnetpp.scave.model.ScatterChart#isAverageReplications()
+	 * @see #getScatterChart()
+	 * @generated
+	 */
+	EAttribute getScatterChart_AverageReplications();
 
 	/**
 	 * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
@@ -2446,20 +2466,28 @@ public interface ScaveModelPackage extends EPackage {
 		EClass SCATTER_CHART = eINSTANCE.getScatterChart();
 
 		/**
-		 * The meta object literal for the '<em><b>Module Name</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>XData Module</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute SCATTER_CHART__MODULE_NAME = eINSTANCE.getScatterChart_ModuleName();
+		EAttribute SCATTER_CHART__XDATA_MODULE = eINSTANCE.getScatterChart_XDataModule();
 
 		/**
-		 * The meta object literal for the '<em><b>Data Name</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>XData Name</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute SCATTER_CHART__DATA_NAME = eINSTANCE.getScatterChart_DataName();
+		EAttribute SCATTER_CHART__XDATA_NAME = eINSTANCE.getScatterChart_XDataName();
+
+		/**
+		 * The meta object literal for the '<em><b>Average Replications</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SCATTER_CHART__AVERAGE_REPLICATIONS = eINSTANCE.getScatterChart_AverageReplications();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.

@@ -7,17 +7,19 @@ import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.XYDataset;
 
+import static org.omnetpp.scave.engine.ScalarFields.*;
+
 public class ScatterPlotDataset2 implements IXYDataset {
 	
-	private static final ScalarFields rowFields = new ScalarFields(ScalarFields.MODULE | ScalarFields.NAME);
-	private static final ScalarFields columnFields = new ScalarFields(ScalarFields.EXPERIMENT | ScalarFields.MEASUREMENT);
-
 	private XYDataset data; // first row contains X values,
 	                        // other rows contain Y values (NaN if missing)
 	private String[] dataNames;
 	
-	public ScatterPlotDataset2(IDList idlist, String moduleName, String scalarName, ResultFileManager manager) {
+	public ScatterPlotDataset2(IDList idlist, String moduleName, String scalarName, boolean averageReplications, ResultFileManager manager) {
 		ScalarDataSorter sorter = new ScalarDataSorter(manager);
+		ScalarFields rowFields = new ScalarFields(ScalarFields.MODULE | ScalarFields.NAME);
+		ScalarFields columnFields = averageReplications ? new ScalarFields(EXPERIMENT | MEASUREMENT) :
+			                                              new ScalarFields(EXPERIMENT | MEASUREMENT | REPLICATION);
 		this.data = sorter.prepareScatterPlot2(idlist, moduleName, scalarName, rowFields, columnFields);
 		computeNames();
 	}
