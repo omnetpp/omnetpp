@@ -1,6 +1,7 @@
 package org.omnetpp.common.ui;
 
 import static org.omnetpp.common.image.ImageFactory.CURSOR_IMAGE_ZOOMIN;
+import static org.omnetpp.common.image.ImageFactory.CURSOR_IMAGE_ZOOMOUT;
 
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
@@ -16,8 +17,12 @@ public class CustomCursors {
 	/** Zoom in cursor */
 	public static final Cursor ZOOMIN;
 	
+	/** Zoom out cursor */
+	public static final Cursor ZOOMOUT;
+	
 	static {
 		ZOOMIN = createCursor(CURSOR_IMAGE_ZOOMIN, 0, 0);
+		ZOOMOUT = createCursor(CURSOR_IMAGE_ZOOMOUT, 0, 0);
 	}
 	
 	private static Cursor createCursor(String imageName, int hotspotX, int hotspotY) {

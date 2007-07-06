@@ -102,6 +102,7 @@ public class ImageFactory {
     public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";
 
     public final static String CURSOR_IMAGE_ZOOMIN = CURSOR_IMAGE_DIR + "ZoomIn";
+    public final static String CURSOR_IMAGE_ZOOMOUT = CURSOR_IMAGE_DIR + "ZoomOut";
     
     public final static String UNKNOWN = INTERNAL_DIR + "unknown";
     public final static String DEFAULT = INTERNAL_DIR + "default";

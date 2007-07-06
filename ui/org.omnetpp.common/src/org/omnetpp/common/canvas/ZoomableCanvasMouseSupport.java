@@ -47,7 +47,8 @@ public class ZoomableCanvasMouseSupport {
 
 	// mouse pointers
 	protected static final Cursor PAN_CURSOR = Cursors.SIZEALL;
-	protected static final Cursor ZOOM_CURSOR = CustomCursors.ZOOMIN;
+	protected static final Cursor ZOOMIN_CURSOR = CustomCursors.ZOOMIN;
+	protected static final Cursor ZOOMOUT_CURSOR = CustomCursors.ZOOMOUT;
 
 	protected RubberbandSupport rubberBand;
 	
@@ -86,24 +87,53 @@ public class ZoomableCanvasMouseSupport {
 
 	public void setMouseMode(int mouseMode) {
 		this.mouseMode = mouseMode;
-		canvas.setCursor(mouseMode == ZOOM_MODE ? ZOOM_CURSOR : null);
+		updateCursor(mouseMode, activeMouseButton, 0); // XXX should store pressed modifiers
+		canvas.setCursor(mouseMode == ZOOM_MODE ? ZOOMIN_CURSOR : null);
 		rubberBand.setModifierKeys(mouseMode==ZOOM_MODE ? SWT.NONE : SWT.CTRL);
+	}
+	
+	/**
+	 * Calculates and sets the new mouse cursor.
+	 * To be called when the mouseMode changed, a mouse button pressed/released or
+	 * a modifier key pressed/released. 
+	 */
+	private void updateCursor(int mouseMode, int mouseButton, int modifierKeys) {
+		boolean ctrl = (modifierKeys & SWT.CTRL) != 0;
+		boolean shift = (modifierKeys & SWT.SHIFT) != 0;
+//		System.out.format("updateCursor(%s,%s,%s)%n",
+//				(mouseMode == PAN_MODE ? "pan" : "zoom"),
+//				(mouseButton == 0 ? "no button pressed" : "button pressed"),
+//				(shift && ctrl ? "ctrl+shift" :	ctrl ? "ctrl" :	shift ? "shift" : "none"));
+		
+		Cursor cursor;
+		boolean zoomCursor = (mouseMode == PAN_MODE) && ctrl || (mouseMode == ZOOM_MODE) && !ctrl;
+		if (zoomCursor) {
+			cursor = shift ? ZOOMOUT_CURSOR : ZOOMIN_CURSOR;
+		}
+		else {
+			// show the pan cursor if a mouse button pressed (dragging)
+			// or clear the cursor, so other component can check and set it (e.g. crosshair)
+			cursor = mouseButton != 0 ? PAN_CURSOR : null;
+		}
+		canvas.setCursor(cursor);
 	}
 
 	protected void setupMouseHandling() {
-		// ctrl key
+		// ctrl/shift key
 		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.CTRL) {
-					System.out.println("Ctrl pressed.");
-					canvas.setCursor(mouseMode == PAN_MODE ? ZOOM_CURSOR : PAN_CURSOR);
+				if ((e.keyCode & (SWT.CTRL | SWT.SHIFT)) != 0) {
+					// e.stateMask contains the state of the modifier keys before shift/ctrl pressed
+					int stateMask = e.stateMask | e.keyCode;
+					updateCursor(mouseMode, activeMouseButton, stateMask);
 				}
 			}
 
 			public void keyReleased(KeyEvent e) {
-				if (e.keyCode == SWT.CTRL) {
-					System.out.println("Ctrl released.");
-					setMouseMode(mouseMode == PAN_MODE ? PAN_MODE : ZOOM_MODE);
+				if ((e.keyCode & (SWT.CTRL | SWT.SHIFT)) != 0) {
+					// e.stateMask contains the state of the modifier keys before shift/ctrl released
+					int stateMask = e.stateMask & (~e.keyCode);
+					updateCursor(mouseMode, activeMouseButton, stateMask);
 				}
 			}
 		});
@@ -133,19 +163,18 @@ public class ZoomableCanvasMouseSupport {
 				activeMouseButton = event.button;
 				if (event.button == 1) {
 					int modifier = event.stateMask & SWT.MODIFIER_MASK;
-					canvas.setCursor((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL)
-										? ZOOM_CURSOR : PAN_CURSOR);
+					updateCursor(mouseMode, activeMouseButton, modifier);
 					dragPrevX = event.x;
 					dragPrevY = event.y;
 					mousedMoved = false;
 				}
 			}
 			public void mouseUp(MouseEvent event) {
-				canvas.setCursor(mouseMode==ZOOM_MODE ? ZOOM_CURSOR : null); // restore cursor at end of drag
 				dragPrevX = dragPrevY = -1;
 				activeMouseButton = 0;
+				int modifier = event.stateMask & SWT.MODIFIER_MASK;
+				updateCursor(mouseMode, activeMouseButton, modifier);
 				if (!mousedMoved) {  // just a click
-					int modifier = event.stateMask & SWT.MODIFIER_MASK;
 					if (event.button==1) {
 						if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL))
 							canvas.zoomBy(2.0, event.x, event.y); // zoom in around mouse
@@ -170,9 +199,7 @@ public class ZoomableCanvasMouseSupport {
 					// restore cursor at end of drag. (It is not enough to do it in the 
 					// "mouse released" event, because we don't receive it if user 
 					// releases mouse outside the canvas!)
-					canvas.setCursor(mouseMode == ZOOM_MODE && (modifier & SWT.CTRL) == 0 ?
-							ZOOM_CURSOR :
-								null);  
+					updateCursor(mouseMode, activeMouseButton, modifier);
 				}
 			}
 
@@ -194,5 +221,4 @@ public class ZoomableCanvasMouseSupport {
 	public void drawRubberband(GC gc) {
 		rubberBand.drawRubberband(gc);
 	}
-
 }

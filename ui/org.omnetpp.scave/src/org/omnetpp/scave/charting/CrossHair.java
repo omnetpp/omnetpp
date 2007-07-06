@@ -99,6 +99,10 @@ class CrossHair {
 		// add key listener to restore the cross cursor, after other cursor is turned off
 		// (by ZoomableCanvasMouseSupport for example)
 		chart.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (finalChart.getCursor() == null)
+					finalChart.setCursor(CROSS_CURSOR);
+			}
 			public void keyReleased(KeyEvent e) {
 				if (finalChart.getCursor() == null)
 					finalChart.setCursor(CROSS_CURSOR);
