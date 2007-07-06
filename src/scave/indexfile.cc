@@ -286,7 +286,8 @@ FingerPrint::FingerPrint(const char *vectorFileName)
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(cond,msg,line) if (!(cond)) throw opp_runtime_error("Invalid index file syntax: %s, file %s, line %d", msg, filename.c_str(), line);
+#define CHECK(cond,msg,line) if (!(cond)) throw ResultFileFormatException(msg, filename.c_str(), line);
+//#define CHECK(cond,msg,line) if (!(cond)) throw opp_runtime_error("Invalid index file syntax: %s, file %s, line %d", msg, filename.c_str(), line);
 
 // see ifilemgr.h
 #define MIN_BUFFER_SIZE 512

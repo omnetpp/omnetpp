@@ -2,11 +2,13 @@ package org.omnetpp.scave.editors;
 
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+import static org.omnetpp.scave.common.ScaveMarkers.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -29,6 +31,7 @@ import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.IndexFile;
+import org.omnetpp.scave.engineext.ResultFileFormatException;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.jobs.VectorFileIndexerJob;
 import org.omnetpp.scave.model.InputFile;
@@ -294,6 +297,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		try {
 			final String resourcePath = file.getFullPath().toString();
 			final String osPath = file.getLocation().toOSString();
+			file.deleteMarkers(MARKERTYPE_SCAVEPROBLEM, true, IResource.DEPTH_ZERO);
+			
 			synchronized (lock) {
 				// Do not try to load from the vector file whose index is not up-to-date,
 				// because the ResultFileManager loads it from the vector file and it takes too much time
@@ -322,7 +327,16 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					manager.loadFile(resourcePath, osPath);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (ResultFileFormatException e) {
+			IFile indexFile = IndexFile.getIndexFileFor(file);
+			addMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+e.getMessage(), e.getLineNo());
+			addMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+e.getMessage(), -1);
+			ScavePlugin.logError("Wrong file: " + file.getLocation().toOSString(), e);
+			if (debug) System.out.format("exception: %s ", e);
+		}
+		catch (Exception e) {
+			addMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+e.getMessage(), -1);
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
 			if (debug) System.out.format("exception: %s ", e);
 		}

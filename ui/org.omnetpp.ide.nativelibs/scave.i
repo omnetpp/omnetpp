@@ -281,6 +281,25 @@ FIX_STRING_MEMBER(Run, runName, RunName);
 FIX_STRING_MEMBER(VectorResult, columns, Columns);
 %ignore VectorResult::stat;
 
+/*--------------------------------------------------------------------------
+ *                     check ResultFileFormatException
+ *--------------------------------------------------------------------------*/
+%define CHECK_RESULTFILE_FORMAT_EXCEPTION(METHOD)
+%exception METHOD {
+    try {
+        $action
+    } catch (ResultFileFormatException& e) {
+	jclass clazz = jenv->FindClass("org/omnetpp/scave/engineext/ResultFileFormatException");
+	jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;Ljava/lang/String;I)V");
+	jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what()), jenv->NewStringUTF(e.getFileName()), e.getLine()));
+        jenv->Throw(exception);
+        return $null;
+    } catch (std::exception& e) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
+        return $null;
+    }
+}
+%enddef
 
 
 %rename FileRun::fileRef file;
@@ -338,9 +357,14 @@ FIX_STRING_MEMBER(VectorResult, columns, Columns);
 // Java doesn't appear to have dictionary sort, export it
 int strdictcmp(const char *s1, const char *s2);
 
-/* Let's just grab the original header file here */
+/* ------------- idlist.h  ----------------- */
 %include "idlist.h"
+
+/* ------------- resultfilemanager.h  ----------------- */
+CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 %include "resultfilemanager.h"
+
+/* ------------- datasorter.h  ----------------- */
 %include "datasorter.h"
 
 // wrap the data-flow engine as well
@@ -359,24 +383,8 @@ class IndexFile
 };
 
 /* ------------- vectorfileindexer.h  ----------------- */
-
-%exception VectorFileIndexer::generateIndex {
-    try {
-        $action
-    } catch (ResultFileFormatException& e) {
-	jclass clazz = jenv->FindClass("org/omnetpp/scave/engineext/ResultFileFormatException");
-	jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;Ljava/lang/String;I)V");
-	jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what()), jenv->NewStringUTF(e.getFileName()), e.getLine()));
-        jenv->Throw(exception);
-        return $null;
-    } catch (std::exception& e) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
-        return $null;
-    }
-}
-
+CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 %include "vectorfileindexer.h"
-
 
 /* ------------- indexedvectorfile.h  ----------------- */
 
@@ -406,5 +414,4 @@ namespace std {
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
 %rename(EOL)	CsvExport::eol;
-
 %include "export.h"

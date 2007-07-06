@@ -971,29 +971,43 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
     fileRef->fileSystemFilePath = fileSystemFileName;
 
-    // if vector file and has index, load vectors from the index file
-    if (IndexFile::isVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName))
+    try
     {
-        std::string indexFileName = IndexFile::getIndexFileName(fileSystemFileName);
-        loadVectorsFromIndex(indexFileName.c_str(), fileRef);
-        return fileRef;
-    }
+        // if vector file and has index, load vectors from the index file
+        if (IndexFile::isVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName))
+        {
+            std::string indexFileName = IndexFile::getIndexFileName(fileSystemFileName);
+            loadVectorsFromIndex(indexFileName.c_str(), fileRef);
+        }
+        else
+        {
+            // process lines in file
+            FileReader freader(fileSystemFileName);
+            char *line;
+            LineTokenizer tokenizer;
+            FileRun *fileRunRef = NULL;
+            ResultItem *resultItemRef = NULL;
+            while ((line=freader.getNextLineBufferPointer())!=NULL)
+            {
+                int len = freader.getLastLineLength();
+                int numTokens = tokenizer.tokenize(line, len);
+                char **tokens = tokenizer.tokens();
+                processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, freader.getNumReadLines());
+            }
 
-    // process lines in file
-    FileReader freader(fileSystemFileName);
-    char *line;
-    LineTokenizer tokenizer;
-    FileRun *fileRunRef = NULL;
-    ResultItem *resultItemRef = NULL;
-    while ((line=freader.getNextLineBufferPointer())!=NULL)
+            fileRef->numLines = freader.getNumReadLines();
+        }
+    }
+    catch (std::exception&)
     {
-        int len = freader.getLastLineLength();
-        int numTokens = tokenizer.tokenize(line, len);
-        char **tokens = tokenizer.tokens();
-        processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, freader.getNumReadLines());
+        try
+        {
+            unloadFile(fileRef);
+        }
+        catch (...) {}
+        
+        throw;
     }
-
-    fileRef->numLines = freader.getNumReadLines();
 
     return fileRef;
 }
