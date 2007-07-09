@@ -38,7 +38,7 @@
 
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
-Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: i < j+1.");
+Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: $i < $j+1.");
 Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
 
 
