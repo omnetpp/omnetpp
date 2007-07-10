@@ -79,6 +79,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -100,6 +101,19 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * 
  * @author Andras
  */
+//XXX todo add:
+// - forgotten key: output-scalar-file-append
+// - forgotten key: replication
+// - forgotten key: repeat
+// - forgotten key: measurement
+// - forgotten key: experiment
+// - forgotten key: seed-set
+// - forgotten key: seed-%-mt-p%
+// - forgotten key: seed-%-lcg32
+// - forgotten key: constraint
+// - forgotten key: eventlog-message-detail-pattern
+// - forgotten key: tkenv-default-config
+// - forgotten key: seed-%-mt
 public class GenericConfigPage extends ScrolledFormPage {
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
 	private String category;
@@ -363,4 +377,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 		for (FieldEditor e : fieldEditors)
 			e.reread();
 	}
+	
+	@Override
+	public List<ConfigKey> getSupportedKeys() {
+		List<ConfigKey> result = new ArrayList<ConfigKey>();
+		for (FieldEditor e : fieldEditors)
+			result.add(e.getConfigKey());
+		return result;
+	}
+	
 }

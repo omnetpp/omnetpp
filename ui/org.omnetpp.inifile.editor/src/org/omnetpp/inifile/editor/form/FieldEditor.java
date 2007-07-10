@@ -169,5 +169,11 @@ public abstract class FieldEditor extends Composite {
 			text += marker.getAttribute(IMarker.MESSAGE, "") + "\n";
 		return text.trim();
 	}
-	
+
+	/**
+	 * Returns the configuration key this editor edits.
+	 */
+	public ConfigKey getConfigKey() {
+		return entry;
+	}
 }

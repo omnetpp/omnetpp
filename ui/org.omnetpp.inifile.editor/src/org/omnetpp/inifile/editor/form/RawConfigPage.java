@@ -1,5 +1,8 @@
 package org.omnetpp.inifile.editor.form;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -51,5 +54,9 @@ public class RawConfigPage extends FormPage {
 		for (Control c : getChildren())
 			if (c instanceof FieldEditor)
 				((FieldEditor) c).reread();
+	}
+	
+	public List<ConfigKey> getSupportedKeys() {
+		return new ArrayList<ConfigKey>(); // dummy impl.
 	}
 }

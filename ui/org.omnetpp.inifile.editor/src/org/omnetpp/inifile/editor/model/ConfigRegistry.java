@@ -15,10 +15,14 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
 /**
  * Contains the list of supported configuration keys.
  * 
- * This must be kept in sync with the C++ code. To do it, run any
- * simulation executable with the "-q jconfig" option, and paste 
- * into this file the Java code it generates. Then run svn diff
- * to see the damage.
+ * This must be kept in sync with the C++ code. Procedure to do it:
+ *   1. run any simulation executable with the "-q jconfig" option,
+ *       and copy/paste the Java code it generates into this file 
+ *   2. run svn diff to see the damage.
+ *   3. check that the form editor covers all config keys:
+ *      open InifileFormEditor.java, and temporarily set 
+ *      DUMP_FORGOTTEN_CONFIG_KEYS = true. Then run the IDE and watch 
+ *      the output.
  *
  * @author Andras
  */

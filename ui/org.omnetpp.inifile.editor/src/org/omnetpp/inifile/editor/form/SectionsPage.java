@@ -8,6 +8,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
@@ -51,6 +52,8 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -495,4 +498,13 @@ public class SectionsPage extends FormPage {
 		gotoSection(section);
 	}
 
+	@Override
+	public List<ConfigKey> getSupportedKeys() {
+		List<ConfigKey> result = new ArrayList<ConfigKey>();
+		result.add(ConfigRegistry.CFGID_EXTENDS);
+		result.add(ConfigRegistry.CFGID_DESCRIPTION);
+		result.add(ConfigRegistry.CFGID_NETWORK);
+		return result;
+	}
+	
 }

@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IMarker;
@@ -47,6 +48,7 @@ import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
@@ -534,4 +536,7 @@ public class ParametersPage extends FormPage {
 		return InifileFormEditor.PARAMETERS_PAGE;
 	}
 
+	public List<ConfigKey> getSupportedKeys() {
+		return new ArrayList<ConfigKey>();
+	}
 }

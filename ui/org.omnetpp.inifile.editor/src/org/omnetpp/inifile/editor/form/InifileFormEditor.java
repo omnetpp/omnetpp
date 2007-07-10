@@ -1,5 +1,11 @@
 package org.omnetpp.inifile.editor.form;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -21,6 +27,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
@@ -28,9 +36,16 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 
 /**
  * Represents the form page of the inifile multi-page editor.
+ * 
+ * IMPORTANT: to check whether all config keys are covered by
+ * the form editor, set DUMP_FORGOTTEN_CONFIG_KEYS to true, 
+ * launch the IDE, and open an ini file in the editor. 
+ * 
  * @author andras
  */
 public class InifileFormEditor extends Composite {
+	private static final boolean DUMP_FORGOTTEN_CONFIG_KEYS = true; //XXX should be false
+
 	public static final String SECTIONS_PAGE = "Sections";
 	public static final String PARAMETERS_PAGE = "Parameters";
 	public static final String CONFIGURATION_PAGE = "Configuration";
@@ -96,6 +111,8 @@ public class InifileFormEditor extends Composite {
 		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
+				if (DUMP_FORGOTTEN_CONFIG_KEYS)
+					dumpForgottenConfigKeys(); // maintenance code
 				IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
 				String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE; 
 				showCategoryPage(initialPage);
@@ -196,4 +213,34 @@ public class InifileFormEditor extends Composite {
 			showCategoryPage(CONFIGURATION_PAGE); //XXX could make more effort to position the right field editor...
 		formPage.gotoEntry(section, key);
 	}
+
+	/**
+	 * Utility method, for source code maintenance. Prints the names
+	 * of config keys that do not appear on any form page.
+	 */
+	public void dumpForgottenConfigKeys() {
+		System.out.println("Checking if all config keys are covered by the forms...");
+
+		// collect keys supported by the editor forms
+		Set<ConfigKey> supportedKeys = new HashSet<ConfigKey>();
+		
+		List<String> categories = new ArrayList<String>();
+		categories.add(PARAMETERS_PAGE);
+		categories.add(SECTIONS_PAGE);
+		categories.addAll(Arrays.asList(GenericConfigPage.getCategoryNames()));
+
+		for (String category : categories) {
+			FormPage page = showCategoryPage(category);
+			for (ConfigKey key : page.getSupportedKeys())
+				supportedKeys.add(key);
+		}
+		
+		// see which keys are not supported anywhere
+		for (ConfigKey key : ConfigRegistry.getEntries())
+			if (!supportedKeys.contains(key))
+				System.out.println(" - forgotten key: "+key.getKey());
+
+		System.out.println("Checking done.");
+	}
+
 }

@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -9,12 +11,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -109,7 +112,16 @@ public abstract class FormPage extends Composite {
 	 * Set the focus to an appropriate control in the form page. 
 	 */
 	public abstract boolean setFocus();
-	
+
+	/**
+	 * Returns the list of keys that this page can edit.
+	 *  
+	 * This method is currently only used for code maintenance,
+	 * to check that every registered config key appears on 
+	 * some form page.
+	 */
+	public abstract List<ConfigKey> getSupportedKeys();
+
 	/**
 	 * Utility method for subclasses: add a title to the form
 	 */
