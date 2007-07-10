@@ -48,9 +48,9 @@ Register_Class(cFileOutputVectorManager);
 
 #define DEFAULT_PRECISION  "14"
 
-Register_PerRunConfigEntry(CFGID_EXPERIMENT, "experiment", CFG_CUSTOM, "${configname}", "Experiment label. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_MEASUREMENT, "measurement", CFG_CUSTOM, "${iterationvars}", "Measurement label. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_CUSTOM, "#${repetition}, seedset=@", "Replication label. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_EXPERIMENT, "experiment", CFG_STRING, "${configname}", "Experiment label. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_MEASUREMENT, "measurement", CFG_STRING, "${iterationvars}", "Measurement label. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_STRING, "#${repetition}, seedset=@", "Replication label. This string gets recorded into result files, and may be referred to during result analysis.");
 
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
