@@ -183,7 +183,7 @@ public class ConfigRegistry {
             "pattern and/or/not/* and various field matcher expressions can be used. The " +
             "field pattern contains a wildcard expressions matched against field names.");
         public static final ConfigKey CFGID_EXPERIMENT = addPerRunEntry(
-            "experiment", CFG_CUSTOM, "${configname}",
+            "experiment", CFG_STRING, "${configname}",
             "Experiment label. This string gets recorded into result files, and may be " +
             "referred to during result analysis.");
         public static final ConfigKey CFGID_EXTENDS = addPerRunEntry(
@@ -214,7 +214,7 @@ public class ConfigRegistry {
             "For output vectors: the maximum number of values to buffer per vector, " +
             "before writing out a block into the output vector file.");
         public static final ConfigKey CFGID_MEASUREMENT = addPerRunEntry(
-            "measurement", CFG_CUSTOM, "${iterationvars}",
+            "measurement", CFG_STRING, "${iterationvars}",
             "Measurement label. This string gets recorded into result files, and may be " +
             "referred to during result analysis.");
         public static final ConfigKey CFGID_NETWORK = addPerRunEntry(
@@ -344,7 +344,7 @@ public class ConfigRegistry {
             "multiple runs with different random number seeds. The loop variable is " +
             "available as ${repetition}. See also: seed-set= key.");
         public static final ConfigKey CFGID_REPLICATION = addPerRunEntry(
-            "replication", CFG_CUSTOM, "#${repetition}, seedset=@",
+            "replication", CFG_STRING, "#${repetition}, seedset=@",
             "Replication label. This string gets recorded into result files, and may be " +
             "referred to during result analysis.");
         public static final ConfigKey CFGID_RNG_CLASS = addPerRunEntry(

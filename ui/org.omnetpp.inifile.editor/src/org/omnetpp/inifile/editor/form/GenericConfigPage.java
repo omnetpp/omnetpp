@@ -12,18 +12,23 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_PERFO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_RUNS_TO_EXECUTE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_STATUS_FREQUENCY;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATION_CLASS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTSCALARMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTVECTORMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_FILE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_FILE_APPEND;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_PRECISION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTORS_MEMORY_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_FILE;
@@ -44,8 +49,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRELOAD_NED_FILES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIM_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOTMANAGER_CLASS;
@@ -56,6 +64,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMAT
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_MSGNAMES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_SPEED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIM_METHODCALLS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_RUN;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXPRESSMODE_AUTOUPDATE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXTRA_STACK_KB;
@@ -101,25 +110,13 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * 
  * @author Andras
  */
-//XXX todo add:
-// - forgotten key: output-scalar-file-append
-// - forgotten key: replication
-// - forgotten key: repeat
-// - forgotten key: measurement
-// - forgotten key: experiment
-// - forgotten key: seed-set
-// - forgotten key: seed-%-mt-p%
-// - forgotten key: seed-%-lcg32
-// - forgotten key: constraint
-// - forgotten key: eventlog-message-detail-pattern
-// - forgotten key: tkenv-default-config
-// - forgotten key: seed-%-mt
 public class GenericConfigPage extends ScrolledFormPage {
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
 	private String category;
 	
     public static final String CAT_GENERAL = "General";
     public static final String CAT_ADVANCED = "Advanced";
+    public static final String CAT_SCENARIO = "Scenarios";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
     public static final String CAT_OUTPUTFILES = "Output Files";
     public static final String CAT_CMDENV = "Cmdenv";
@@ -132,6 +129,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     	return new String[] {
     			CAT_GENERAL, 
     			CAT_ADVANCED,
+    			CAT_SCENARIO,
     			CAT_RANDOMNUMBERS,
     			CAT_OUTPUTFILES,
     			CAT_CMDENV,
@@ -193,6 +191,21 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group1 = createGroup(form, "Random Number Generators");
 			addTextFieldEditor(group1, CFGID_NUM_RNGS, "Number of RNGs");
 			addTextFieldEditor(group1, CFGID_RNG_CLASS, "RNG class");
+			addSpacer(form);
+			Group group2 = createGroup(form, "Automatic Seeds");
+			addTextFieldEditor(group2, CFGID_SEED_SET, "Seed set");
+			//Group group3 = createGroup(form, "Manual Seeds");
+			//XXX todo: seed-%-mt, seed-%-mt-p%, seed-%-lcg32
+		}
+		else if (category.equals(CAT_SCENARIO)) {
+			Group group1 = createGroup(form, "Run labeling");
+			addTextFieldEditor(group1, CFGID_EXPERIMENT, "Experiment label");
+			addTextFieldEditor(group1, CFGID_MEASUREMENT, "Measurement label");
+			addTextFieldEditor(group1, CFGID_REPLICATION, "Replication label");
+			addSpacer(form);
+			Group group2 = createGroup(form, "Scenario generation");
+			addTextFieldEditor(group2, CFGID_REPEAT, "Repeat count");
+			addTextFieldEditor(group2, CFGID_CONSTRAINT, "Constraint");
 		}
 		else if (category.equals(CAT_OUTPUTFILES)) {
 			Group group1 = createGroup(form, "Result collection");
@@ -201,9 +214,12 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Output vectors memory limit");
 			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_PRECISION, "Output scalar precision");
+			addCheckboxFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
 			addTextFieldEditor(form, CFGID_EVENTLOG_FILE, "Eventlog file");
+			addTextFieldEditor(form, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record"); //XXX bigger text box!
+			addSpacer(form);
 			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
 		}
 		else if (category.equals(CAT_EXTENSIONS)) {
@@ -236,6 +252,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
 		}
 		else if (category.equals(CAT_TKENV)) {
+			addTextFieldEditor(form, CFGID_TKENV_DEFAULT_CONFIG, "Default config");
 			addTextFieldEditor(form, CFGID_TKENV_DEFAULT_RUN, "Default run");
 			addSpacer(form);
 			Group group4 = createGroup(form, "Paths");

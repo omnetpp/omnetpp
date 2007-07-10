@@ -31,7 +31,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
  * @author Andras
  */
 public abstract class FormPage extends Composite {
-	public static final int RIGHT_MARGIN = 15; // >= scrollbar width  
+	public static final int RIGHT_MARGIN = 20; // >= scrollbar width  
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private InifileEditor inifileEditor;
 	private HoverSupport hoverSupport = new HoverSupport();

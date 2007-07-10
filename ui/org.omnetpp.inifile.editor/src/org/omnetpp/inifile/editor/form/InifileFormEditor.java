@@ -44,7 +44,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
  * @author andras
  */
 public class InifileFormEditor extends Composite {
-	private static final boolean DUMP_FORGOTTEN_CONFIG_KEYS = true; //XXX should be false
+	private static final boolean DUMP_FORGOTTEN_CONFIG_KEYS = false;
 
 	public static final String SECTIONS_PAGE = "Sections";
 	public static final String PARAMETERS_PAGE = "Parameters";
