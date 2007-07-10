@@ -1,8 +1,8 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigKey;
-import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -50,7 +50,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		// idea considered and discarded: don't propose those already there (would confuse user)
 		if (section != null) {
-			for (ConfigKey e : ConfigurationRegistry.getEntries()) {
+			for (ConfigKey e : ConfigRegistry.getEntries()) {
 				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
 					String content = e.getKey()+(addEqualSign ? " = " : "");
 					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));

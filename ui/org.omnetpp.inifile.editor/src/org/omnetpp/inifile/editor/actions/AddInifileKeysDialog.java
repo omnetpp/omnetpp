@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.actions;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
 import java.util.ArrayList;
 import java.util.Arrays;

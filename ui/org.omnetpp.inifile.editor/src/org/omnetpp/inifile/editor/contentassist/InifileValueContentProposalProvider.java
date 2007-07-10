@@ -1,10 +1,10 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_PRELOAD_NED_FILES;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_USER_INTERFACE;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRELOAD_NED_FILES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigKey;
-import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -63,7 +63,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		if (keyType == KeyType.CONFIG) {
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
-			ConfigKey entry = ConfigurationRegistry.getEntry(key);
+			ConfigKey entry = ConfigRegistry.getEntry(key);
 			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_PRELOAD_NED_FILES || entry==CFGID_USER_INTERFACE)
 				return true;
 			if (entry == null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
@@ -95,7 +95,7 @@ s	 * before getting presented to the user.
 	 * Generate proposals for a config entry
 	 */
 	protected IContentProposal[] getCandidatesForConfig() {
-		ConfigKey entry = ConfigurationRegistry.getEntry(key);
+		ConfigKey entry = ConfigRegistry.getEntry(key);
 		if (entry == null)
 			return null;
 
@@ -195,7 +195,7 @@ s	 * before getting presented to the user.
 	 */
 	protected IContentProposal[] getCandidatesForPerObjectConfig() {
 		List<String> proposals = new ArrayList<String>();
-		//FIXME use the ConfigurationRegistry!!!
+		//FIXME use the ConfigRegistry!!!
 		if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
 			proposals.add("true");
 			proposals.add("false");

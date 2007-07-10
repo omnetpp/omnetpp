@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.jface.text.rules.*;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.inifile.editor.model.ConfigKey;
-import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**
@@ -36,7 +36,7 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
 		for (String text : NedCompletionHelper.highlightConstants)
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
-		for (ConfigKey entry : ConfigurationRegistry.getEntries())
+		for (ConfigKey entry : ConfigRegistry.getEntries())
 			wordRule.addWord(entry.getKey(), InifileTextEditorHelper.codeConfigKeyToken);
 
 		rules.add(wordRule);

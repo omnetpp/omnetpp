@@ -1,8 +1,8 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -97,7 +97,7 @@ public class InifileHoverUtils {
 	 */
 	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
 		String text = getProblemsHoverText(section, key, doc);
-		ConfigKey entry = ConfigurationRegistry.getEntry(key);
+		ConfigKey entry = ConfigRegistry.getEntry(key);
 		if (entry == null)
 			return text;
 

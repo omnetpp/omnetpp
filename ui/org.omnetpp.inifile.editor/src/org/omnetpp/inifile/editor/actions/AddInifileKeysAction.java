@@ -1,7 +1,7 @@
 package org.omnetpp.inifile.editor.actions;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;

@@ -1,7 +1,7 @@
 package org.omnetpp.inifile.editor.model;
 
 /**
- * One entry in the ConfigurationRegistry. Describes a configuration key. 
+ * One entry in the ConfigRegistry. Describes a configuration key. 
  * 
  * @author Andras
  */

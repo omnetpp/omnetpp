@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;

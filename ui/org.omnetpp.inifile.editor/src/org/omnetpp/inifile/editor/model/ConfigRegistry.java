@@ -22,7 +22,7 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
  *
  * @author Andras
  */
-public class ConfigurationRegistry {
+public class ConfigRegistry {
 	/**
 	 * Name of the [General] section
 	 */

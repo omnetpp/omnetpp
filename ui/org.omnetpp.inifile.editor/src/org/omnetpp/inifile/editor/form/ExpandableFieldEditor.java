@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;

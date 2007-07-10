@@ -1,9 +1,9 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.*;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_INT;
@@ -248,11 +248,11 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Validate a configuration entry (key+value) using ConfigurationRegistry.
+	 * Validate a configuration entry (key+value) using ConfigRegistry.
 	 */
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		// check key and if it occurs in the right section
-		ConfigKey e = ConfigurationRegistry.getEntry(key);
+		ConfigKey e = ConfigRegistry.getEntry(key);
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 			return;
@@ -394,7 +394,7 @@ public class InifileAnalyzer {
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
-		ConfigKey e = ConfigurationRegistry.getPerObjectEntry(configName);
+		ConfigKey e = ConfigRegistry.getPerObjectEntry(configName);
 		if (e == null) {
 			addError(section, key, "Unknown per-object configuration: "+configName);
 			return;

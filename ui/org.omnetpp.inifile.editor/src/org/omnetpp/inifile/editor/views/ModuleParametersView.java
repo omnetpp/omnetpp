@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.views;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.Arrays;
 import java.util.Comparator;

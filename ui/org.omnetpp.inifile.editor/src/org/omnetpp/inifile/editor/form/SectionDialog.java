@@ -1,7 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -74,12 +74,12 @@ public class SectionDialog extends TitleAreaDialog {
 		// if we are editing an existing section, initialize dialog fields from the inifile
 		if (sectionName != null && doc.containsSection(sectionName)) {
 			newSectionName = originalSectionName;
-			description = doc.getValue(sectionName, ConfigurationRegistry.CFGID_DESCRIPTION.getKey());
+			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getKey());
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
-			extendsSection = doc.getValue(sectionName, ConfigurationRegistry.CFGID_EXTENDS.getKey());
+			extendsSection = doc.getValue(sectionName, ConfigRegistry.CFGID_EXTENDS.getKey());
 			extendsSection = extendsSection==null ? GENERAL : CONFIG_ + extendsSection;
-			networkName = doc.getValue(sectionName, ConfigurationRegistry.CFGID_NETWORK.getKey());;
+			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getKey());;
 		}
 	}
 
@@ -219,8 +219,8 @@ public class SectionDialog extends TitleAreaDialog {
 		
 		// if as section with "network=" is selected, make it impossible to override here
         extendsSection = extendsCombo.getText();
-        String ownNetworkName = doc.getValue(originalSectionName, ConfigurationRegistry.CFGID_NETWORK.getKey());
-        String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigurationRegistry.CFGID_NETWORK.getKey(), doc);
+        String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getKey());
+        String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigRegistry.CFGID_NETWORK.getKey(), doc);
         if (ownNetworkName == null && inheritedNetworkName != null) {
         	networkCombo.setText(inheritedNetworkName);
         	networkCombo.setEnabled(false);

@@ -1,10 +1,10 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;

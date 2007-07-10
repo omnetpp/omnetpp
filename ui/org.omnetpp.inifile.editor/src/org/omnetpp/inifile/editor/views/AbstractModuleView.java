@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.views;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
