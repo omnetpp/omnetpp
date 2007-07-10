@@ -341,8 +341,10 @@ void TOmnetApp::printHelp()
 void TOmnetApp::dumpComponentList(const char *category)
 {
     bool wantAll = !strcmp(category, "all");
+    bool processed = false;
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
+        processed = true;
         ev << "Supported configuration keys (omnetpp.ini):\n";
         bool printDescriptions = strcmp(category, "configdetails")==0;
 
@@ -374,8 +376,62 @@ void TOmnetApp::dumpComponentList(const char *category)
             ev << "    ${" << v[i] << "}\n";
         ev << "\n";
     }
+    if (!strcmp(category, "jconfig")) // internal undocumented option, for maintenance purposes
+    {
+        // generate Java code for ConfigurationRegistry.java in the IDE
+        processed = true;
+        ev << "Supported configuration keys (as Java code):\n";
+        cSymTable *table = configKeys.instance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cConfigKey *key = dynamic_cast<cConfigKey *>(table->get(i));
+            ASSERT(key);
+
+            std::string id = "CFGID_";
+            for (const char *s = key->name(); *s; s++)
+                id.append(1, isalpha(*s) ? toupper(*s) : *s=='-' ? '_' : *s=='%' ? 'n' : *s);
+            const char *method = key->isGlobal() ? "addGlobalEntry" :
+                                 !key->isPerObject() ? "addPerRunEntry" :
+                                 "addPerObjectEntry";
+            #define CASE(X)  case cConfigKey::X: typestring = #X; break;
+            const char *typestring;
+            switch (key->type()) {
+                CASE(CFG_BOOL)
+                CASE(CFG_INT)
+                CASE(CFG_DOUBLE)
+                CASE(CFG_STRING)
+                CASE(CFG_FILENAME)
+                CASE(CFG_FILENAMES)
+                CASE(CFG_CUSTOM)
+            }
+            #undef CASE
+
+            ev << "    public static final ConfigKey " << id << " = ";
+            ev << method << (key->unit() ? "U" : "") << "(\n";
+            ev << "        \"" << key->name() << "\", ";
+            if (!key->unit())
+                ev << typestring << ", ";
+            else
+                ev << "\"" << key->unit() << "\", ";
+            if (!key->defaultValue())
+                ev << "null";
+            else
+                ev << "\"" << opp_replacesubstring(key->defaultValue(), "\"", "\\\"", true) << "\"";
+            ev << ",\n";
+
+            std::string desc = opp_breaklines(key->description(),75);
+            desc = opp_replacesubstring(desc.c_str(), "\"", "\\\"", true);
+            desc = opp_replacesubstring(desc.c_str(), "\n", " \" +\n\"", true);
+            desc = "\"" + desc + "\"";
+
+            ev << opp_indentlines(desc.c_str(), "        ") << ");\n";
+        }
+        ev << "\n";
+    }
     if (wantAll || !strcmp(category, "classes"))
     {
+        processed = true;
         ev << "Registered C++ classes, including modules, channels and messages:\n";
         cSymTable *table = classes.instance();
         table->sort();
@@ -390,6 +446,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     }
     if (wantAll || !strcmp(category, "classdesc"))
     {
+        processed = true;
         ev << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
         cSymTable *table = classDescriptors.instance();
         table->sort();
@@ -402,6 +459,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     }
     if (wantAll || !strcmp(category, "nedfunctions"))
     {
+        processed = true;
         ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
         cSymTable *table = nedFunctions.instance();
         table->sort();
@@ -414,6 +472,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     }
     if (wantAll || !strcmp(category, "enums"))
     {
+        processed = true;
         ev << "Enums defined in .msg files\n";
         cSymTable *table = enums.instance();
         table->sort();
@@ -426,6 +485,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     }
     if (wantAll || !strcmp(category, "userinterfaces"))
     {
+        processed = true;
         ev << "User interfaces loaded:\n";
         cSymTable *table = omnetapps.instance();
         table->sort();
@@ -435,6 +495,9 @@ void TOmnetApp::dumpComponentList(const char *category)
             ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
         }
     }
+
+    if (!processed)
+        throw cRuntimeError("Unrecognized category for '-q' option: %s", category);
 }
 
 int TOmnetApp::getParsimProcId()

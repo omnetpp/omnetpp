@@ -253,8 +253,12 @@ void cEnvir::setup(int argc, char *argv[])
            delete app;
            app = NULL;
         }
-        delete args;
-        delete bootconfig;
+        else 
+        {
+            // normally, these two get deleted by app
+            delete args;  
+            delete bootconfig;
+        }
     }
 }
 
