@@ -1,12 +1,14 @@
 package org.omnetpp.inifile.editor.model;
 
 /**
- * One entry in the ConfigurationRegistry. Describes a configuration entry. 
+ * One entry in the ConfigurationRegistry. Describes a configuration key. 
  * 
  * @author Andras
  */
-public class ConfigurationEntry {
-    /** Configuration entry types */
+public class ConfigKey {
+    /** 
+     * Configuration key data types 
+     */
     public enum DataType {
       CFG_BOOL,
       CFG_INT,
@@ -22,14 +24,14 @@ public class ConfigurationEntry {
     private boolean isGlobal;    // if true, it cannot occur in [Config X] sections
     private DataType dataType;   // entry's data type
     private String unit;         // if numeric, its unit ("s") or empty string
-    private Object defaultValue; // the default value
+    private String defaultValue; // the default value
     private String description;  // help text
 
     /**
      * Constructor.
      */
-    ConfigurationEntry(String name, boolean isPerObject, boolean isGlobal,
-                 DataType dataType, String unit, Object defaultValue, String description) {
+    ConfigKey(String name, boolean isPerObject, boolean isGlobal,
+                 DataType dataType, String unit, String defaultValue, String description) {
         this.name = name;
         this.isGlobal = isGlobal;
         this.dataType = dataType;
@@ -54,7 +56,7 @@ public class ConfigurationEntry {
     	return dataType;
     }
         
-	public Object getDefaultValue() {
+	public String getDefaultValue() {
 		return defaultValue;
 	}
 

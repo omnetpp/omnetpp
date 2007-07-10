@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
@@ -39,7 +39,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected Button removeButton;
 
 
-	public TableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public TableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		GridLayout gridLayout = new GridLayout(1, false);

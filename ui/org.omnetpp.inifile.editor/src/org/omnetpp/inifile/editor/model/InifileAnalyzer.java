@@ -252,7 +252,7 @@ public class InifileAnalyzer {
 	 */
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		// check key and if it occurs in the right section
-		ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
+		ConfigKey e = ConfigurationRegistry.getEntry(key);
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 			return;
@@ -279,7 +279,7 @@ public class InifileAnalyzer {
 			return;
 		}
 
-		if (e.getDataType()==ConfigurationEntry.DataType.CFG_STRING && value.startsWith("\""))
+		if (e.getDataType()==ConfigKey.DataType.CFG_STRING && value.startsWith("\""))
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like network=, preload-ned-files=, etc
@@ -304,7 +304,7 @@ public class InifileAnalyzer {
 	/**
 	 * Validate a configuration entry's value.
 	 */
-	protected static String validateConfigValueByType(String value, ConfigurationEntry e) {
+	protected static String validateConfigValueByType(String value, ConfigKey e) {
 		switch (e.getDataType()) {
 		case CFG_BOOL:
 			if (!value.equals("true") && !value.equals("false"))
@@ -394,7 +394,7 @@ public class InifileAnalyzer {
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
-		ConfigurationEntry e = ConfigurationRegistry.getPerObjectEntry(configName);
+		ConfigKey e = ConfigurationRegistry.getPerObjectEntry(configName);
 		if (e == null) {
 			addError(section, key, "Unknown per-object configuration: "+configName);
 			return;
@@ -411,7 +411,7 @@ public class InifileAnalyzer {
 			return;
 		}
 
-		if (e.getDataType()==ConfigurationEntry.DataType.CFG_STRING && value.startsWith("\""))
+		if (e.getDataType()==ConfigKey.DataType.CFG_STRING && value.startsWith("\""))
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like record-interval=, etc

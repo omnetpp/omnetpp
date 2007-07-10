@@ -27,7 +27,7 @@ import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
@@ -41,7 +41,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX fix up content assist!!!
 public class TextTableFieldEditor extends TableFieldEditor {
 
-	public TextTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public TextTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 

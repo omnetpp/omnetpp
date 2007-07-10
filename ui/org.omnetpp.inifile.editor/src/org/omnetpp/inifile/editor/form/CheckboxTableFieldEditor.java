@@ -13,7 +13,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.omnetpp.common.ui.TableLabelProvider;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
@@ -26,7 +26,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
-	public CheckboxTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public CheckboxTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 

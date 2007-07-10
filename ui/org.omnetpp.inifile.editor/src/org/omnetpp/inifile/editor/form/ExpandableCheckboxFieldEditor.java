@@ -1,7 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
@@ -12,7 +12,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 public class ExpandableCheckboxFieldEditor extends ExpandableFieldEditor {
 
-	public ExpandableCheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public ExpandableCheckboxFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 

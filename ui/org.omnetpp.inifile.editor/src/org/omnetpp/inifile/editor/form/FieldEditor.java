@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -39,7 +39,7 @@ public abstract class FieldEditor extends Composite {
 	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png");
 	public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
 	
-	protected ConfigurationEntry entry;
+	protected ConfigKey entry;
 	protected IInifileDocument inifile;
 	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
 	
@@ -49,7 +49,7 @@ public abstract class FieldEditor extends Composite {
 		}
 	};
 
-	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage) {
+	public FieldEditor(Composite parent, int style, ConfigKey entry, IInifileDocument inifile, FormPage formPage) {
 		super(parent, style);
 		this.entry = entry;
 		this.inifile = inifile;
@@ -91,7 +91,7 @@ public abstract class FieldEditor extends Composite {
 		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
 	}
 
-	protected Label createLabel(ConfigurationEntry entry, String labelText) {
+	protected Label createLabel(ConfigKey entry, String labelText) {
 		Label label = new Label(this, SWT.NONE);
 		label.setBackground(BGCOLOR);
 		label.setText(labelText);

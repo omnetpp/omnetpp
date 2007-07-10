@@ -13,7 +13,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
@@ -36,10 +36,10 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private Button resetButton;
 	private String section = GENERAL;
 
-	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public CheckboxFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
-		Assert.isTrue(entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL);
+		Assert.isTrue(entry.getDataType()==ConfigKey.DataType.CFG_BOOL);
 
 		GridLayout gridLayout = new GridLayout(4, false); 
 		gridLayout.marginHeight = 0;
@@ -76,7 +76,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 	public void reread() {
 		String value = getValueFromFile(section);
 		if (value==null) {
-			boolean defaultValue = entry.getDefaultValue()==null ? false : (Boolean)entry.getDefaultValue(); 
+			boolean defaultValue = entry.getDefaultValue()==null ? false : entry.getDefaultValue().equals("true"); 
 			checkbox.setSelection(defaultValue);
 			resetButton.setEnabled(false);
 		}

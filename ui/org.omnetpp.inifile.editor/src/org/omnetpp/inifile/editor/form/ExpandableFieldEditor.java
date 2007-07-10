@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -44,7 +44,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 		}
 	};
 
-	public ExpandableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public ExpandableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 		this.labelText = labelText;
 		GridLayout gridLayout = new GridLayout(2, false);

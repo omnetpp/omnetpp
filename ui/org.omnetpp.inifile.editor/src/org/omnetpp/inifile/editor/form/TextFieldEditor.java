@@ -23,10 +23,10 @@ import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType;
+import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
 
 /**
  * Text-based editor for inifile entries.
@@ -48,7 +48,7 @@ public class TextFieldEditor extends FieldEditor {
 	private String section = GENERAL;
 	private ControlDecoration problemDecoration;
 
-	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public TextFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		// layout

@@ -97,7 +97,7 @@ public class InifileHoverUtils {
 	 */
 	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
 		String text = getProblemsHoverText(section, key, doc);
-		ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
+		ConfigKey entry = ConfigurationRegistry.getEntry(key);
 		if (entry == null)
 			return text;
 

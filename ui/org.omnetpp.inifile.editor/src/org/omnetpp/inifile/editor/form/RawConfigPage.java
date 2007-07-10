@@ -6,7 +6,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -23,9 +23,9 @@ public class RawConfigPage extends FormPage {
 		
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
-		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
+		for (ConfigKey e : ConfigurationRegistry.getEntries()) {
 			String label = "The \""+e.getKey()+"\" setting";
-			if (e.getDataType()==ConfigurationEntry.DataType.CFG_BOOL) {
+			if (e.getDataType()==ConfigKey.DataType.CFG_BOOL) {
 				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label);
 				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 			}

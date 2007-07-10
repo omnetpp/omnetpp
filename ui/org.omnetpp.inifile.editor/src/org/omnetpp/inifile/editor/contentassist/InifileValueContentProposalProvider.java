@@ -17,7 +17,7 @@ import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -63,10 +63,10 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		if (keyType == KeyType.CONFIG) {
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
-			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
+			ConfigKey entry = ConfigurationRegistry.getEntry(key);
 			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_PRELOAD_NED_FILES || entry==CFGID_USER_INTERFACE)
 				return true;
-			if (entry == null && entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL)
+			if (entry == null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
 				return true;
 			return false;
 		}
@@ -95,7 +95,7 @@ s	 * before getting presented to the user.
 	 * Generate proposals for a config entry
 	 */
 	protected IContentProposal[] getCandidatesForConfig() {
-		ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
+		ConfigKey entry = ConfigurationRegistry.getEntry(key);
 		if (entry == null)
 			return null;
 
@@ -119,7 +119,7 @@ s	 * before getting presented to the user.
 		if (entry==CFGID_USER_INTERFACE) {
 			return toProposals(new String[] {"Cmdenv", "Tkenv"});
 		}
-		if (entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL) {
+		if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
 			return toProposals(new String[] {"true", "false"});
 		}
 		return null;

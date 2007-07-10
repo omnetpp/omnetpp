@@ -92,7 +92,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
@@ -320,14 +320,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return group;
 	}
 
-	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
+	protected void addTextFieldEditor(Composite parent, ConfigKey e, String label) {
 		FieldEditor editor = e.isGlobal() ? 
 				new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
 		addFieldEditor(editor);		
 	}
 
-	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
+	protected void addCheckboxFieldEditor(Composite parent, ConfigKey e, String label) {
 		FieldEditor editor = e.isGlobal() ? 
 				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
