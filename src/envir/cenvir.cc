@@ -54,7 +54,7 @@ cRegistrationList omnetapps("omnetapps");
 #define ENVIR_TEXTBUF_LEN 1024
 static char buffer[ENVIR_TEXTBUF_LEN];
 
-Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "Specifies dyamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
+Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "Specifies dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
 Register_GlobalConfigEntry(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class has to implement the cConfiguration interface.");
 Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv, provided the simulation executable contains the respective libraries or loads them dynamically.");
 
@@ -253,10 +253,10 @@ void cEnvir::setup(int argc, char *argv[])
            delete app;
            app = NULL;
         }
-        else 
+        else
         {
             // normally, these two get deleted by app
-            delete args;  
+            delete args;
             delete bootconfig;
         }
     }
