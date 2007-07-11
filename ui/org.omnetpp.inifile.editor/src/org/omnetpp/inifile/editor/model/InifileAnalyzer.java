@@ -59,7 +59,7 @@ public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
 	private boolean changed = true;
-	private boolean containsSectionCircles;
+	private boolean containsSectionCycles;
 	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
 
 	/**
@@ -209,19 +209,39 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Check section names, and detect circles in the fallback sequences ("extends=")
+	 * Check section names, and detect cycles in the fallback sequences ("extends=")
 	 */
 	protected void validateSections() {
-		containsSectionCircles = false;
+		containsSectionCycles = false;
 		Set<String> bogusSections = new HashSet<String>();
+
+		// check section names and extends= everywhere
+		if (doc.getValue(GENERAL, EXTENDS) != null)
+			addError(GENERAL, EXTENDS, "The extends= key cannot occur in the [General] section");
+
+		for (String section : doc.getSectionNames()) {
+			if (!section.equals(GENERAL)) {
+				if (!section.startsWith(CONFIG_) && !section.startsWith(SCENARIO_))
+					addError(section, "Invalid section name: must be [General], [Config <name>] or [Scenario <name>]");
+				else if (section.contains("  "))
+					addError(section, "Invalid section name: contains too many spaces");
+				else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
+					addError(section, "Invalid section name: contains illegal character(s)");
+				else if (section.startsWith(SCENARIO_) && doc.containsSection(section.replaceFirst(SCENARIO_, CONFIG_)))
+					addError(section, "Invalid section name: a Config and a Scenario section cannot have the same name, and ["+section.replaceFirst(SCENARIO_, CONFIG_)+"] already exists");
+				String extendsName = doc.getValue(section, EXTENDS);
+				if (extendsName != null) {
+					if (!doc.containsSection(CONFIG_+extendsName) && !doc.containsSection(SCENARIO_+extendsName))
+						addError(section, EXTENDS, "No such section: [Config "+extendsName+"] or [Scenario "+extendsName+"]");
+					else if (section.startsWith(CONFIG_) && doc.containsSection(SCENARIO_+extendsName))
+						addError(section, EXTENDS, "A Config section cannot extend a Scenario section");
+				}
+			}
+		}			
 
 		// check fallback chain for every section, except [General]
 		for (String section : doc.getSectionNames()) {
-			// check section name
-			if (!section.equals(GENERAL) && !section.startsWith(CONFIG_))
-				addError(section, "Wrong section name: must be [General] or [Config <name>]");
-
-			// follow section fallback sequence, and detect circle in it
+			// follow section fallback sequence, and detect cycles in it
 			if (!section.equals(GENERAL)) {
 				Set<String> sectionChain = new HashSet<String>();
 				String currentSection = section;
@@ -230,21 +250,24 @@ public class InifileAnalyzer {
 						break; // error: nonexistent section
 					if (sectionChain.contains(currentSection)) {
 						bogusSections.add(currentSection);
-						break; // error: circle in the fallback chain
+						break; // error: cycle in the fallback chain
 					}
 					sectionChain.add(currentSection);
-					String extendsName = doc.getValue(currentSection, CFGID_EXTENDS.getKey());
+					String extendsName = doc.getValue(currentSection, EXTENDS);
 					if (extendsName==null)
 						break; // done
-					currentSection = CONFIG_+extendsName;
+			        if (currentSection.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
+				        currentSection = SCENARIO_+extendsName;
+			        else
+			        	currentSection = CONFIG_+extendsName;
 				}
 			}
 		}
 
 		// add error markers
-		containsSectionCircles = !bogusSections.isEmpty();
+		containsSectionCycles = !bogusSections.isEmpty();
 		for (String section : bogusSections)
-			addError(section, "circle in the fallback chain at section ["+section+"]");
+			addError(section, "Cycle in the fallback chain at section ["+section+"]");
 	}
 
 	/**
@@ -256,9 +279,6 @@ public class InifileAnalyzer {
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 			return;
-		}
-		else if (key.equals(CFGID_EXTENDS.getKey()) && section.equals(GENERAL)) {
-			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
@@ -284,8 +304,7 @@ public class InifileAnalyzer {
 
 		// check validity of some settings, like network=, preload-ned-files=, etc
 		if (e==CFGID_EXTENDS) {
-			if (!doc.containsSection(CONFIG_+value))
-				addError(section, key, "No such section: [Config "+value+"]");
+			// note: we do not validate "extends=" here -- that's all done in validateSections()!
 		}
 		else if (e==CFGID_NETWORK) {
 			INEDTypeInfo network = ned.getComponent(value);
@@ -630,7 +649,7 @@ public class InifileAnalyzer {
 	}
 	
 	public boolean containsSectionCircles() {
-		return containsSectionCircles;
+		return containsSectionCycles;
 	}
 
 	/**

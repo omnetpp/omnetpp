@@ -4,7 +4,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 
 import java.util.ArrayList;
 
@@ -127,7 +129,7 @@ public class InifileUtils {
 	 * returns the list of section names (including the given section and
 	 * [General] as well).
 	 *
-	 * Errors (such as nonexistent section, circle in the fallback chain, etc)
+	 * Errors (such as nonexistent section, cycle in the fallback chain, etc)
 	 * are handled in a forgiving way, and a reasonably complete section chain
 	 * is returned without throwing an exception -- so this method may be safely
 	 * called during any calculation.
@@ -142,10 +144,13 @@ public class InifileUtils {
 		        if (sectionChain.contains(currentSection))
 		            break; // error: circle in the fallback chain
 		        sectionChain.add(currentSection);
-		        String extendsName = doc.getValue(currentSection, CFGID_EXTENDS.getKey());
+		        String extendsName = doc.getValue(currentSection, EXTENDS);
 		        if (extendsName==null)
 		        	break; // done
-		        currentSection = CONFIG_+extendsName;
+		        if (currentSection.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
+			        currentSection = SCENARIO_+extendsName;
+		        else
+		        	currentSection = CONFIG_+extendsName;
 		    }
 		}
 	    if (doc.containsSection(GENERAL))

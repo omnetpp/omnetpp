@@ -35,7 +35,8 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * underlying text document (IDocument). Parsing is lazy: changes on the 
  * text document cause a "changed" flag to be set here, and getters 
  * automatically re-parse the text document if it's out of date.
- * 
+ *
+ * @see InifileAnalyzer
  * @author Andras
  */
 //XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  

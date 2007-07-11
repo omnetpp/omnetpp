@@ -32,6 +32,7 @@ public class ConfigRegistry {
 	 */
 	public static final String GENERAL = "General";
 	public static final String CONFIG_ = "Config ";
+	public static final String SCENARIO_ = "Scenario ";
 	public static final String EXTENDS; // see bottom of file
 	
 	private static HashMap<String, ConfigKey> entries = new HashMap<String, ConfigKey>(); 

@@ -218,7 +218,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
 			addTextFieldEditor(form, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addTextFieldEditor(form, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record"); //XXX bigger text box!
+			addTextFieldEditor(form, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record");
 			addSpacer(form);
 			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
 		}
