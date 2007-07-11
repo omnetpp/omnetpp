@@ -36,6 +36,7 @@
 
    <plugins>
       <plugin id="com.ibm.icu"/>
+      <plugin id="com.ibm.icu36.data.update" fragment="true"/>
       <plugin id="de.unikassel.imageexport"/>
       <plugin id="de.unikassel.imageexport.pdf"/>
       <plugin id="de.unikassel.imageexport.svg"/>
