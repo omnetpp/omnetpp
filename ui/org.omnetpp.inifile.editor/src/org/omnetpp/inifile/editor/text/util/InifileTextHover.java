@@ -18,14 +18,8 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
 /**
  * Presents hover information for ini files.
- */
-/**
+ * 
  * @author Andras
- *
- */
-/**
- * @author Andras
- *
  */
 public class InifileTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
 	private InifileEditorData editorData;

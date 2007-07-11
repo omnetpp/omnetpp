@@ -99,7 +99,7 @@ public class InifileHoverUtils {
 		String text = getProblemsHoverText(section, key, doc);
 		ConfigKey entry = ConfigRegistry.getEntry(key);
 		if (entry == null)
-			return text;
+			return HoverSupport.addHTMLStyleSheet(text);
 
 		text += "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
 		text += " = &lt;" + entry.getDataType().name().replaceFirst("CFG_", "");
