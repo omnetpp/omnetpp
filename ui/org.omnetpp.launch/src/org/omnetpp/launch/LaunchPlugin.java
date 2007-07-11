@@ -185,24 +185,29 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
+     * Starts the simulation program
      * @param configuration
-     * @param additionalArgs extra command line arguments to be appended
-     * @return Starts the simulation program
-     * @throws CoreException
+     * @param additionalArgs extra command line arguments to be prepended to the command line
+     * @return The created process object,
+     * @throws CoreException if process is not started correctly
      */
     public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
         String wdAttr = LaunchPlugin.getWorkingDirectoryPath(configuration).toString();
+        String projAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
         String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
         String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
         IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
         String expandedWd = varman.performStringSubstitution(wdAttr);
+        String expandedProj = varman.performStringSubstitution(projAttr);
         String expandedProg = varman.performStringSubstitution(progAttr);
         String expandedArg = varman.performStringSubstitution(argAttr);
-        expandedArg += additionalArgs;
-        IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(expandedProg));
+        // put the additional arguments at the beginning so they override the other arguments
+        expandedArg = additionalArgs +" "+expandedArg;
+        IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(expandedProj).append(expandedProg));
+        if (executableFile == null)
+            throw new CoreException(Status.CANCEL_STATUS);
         String cmdLine[] =DebugPlugin.parseArguments(executableFile.getRawLocation().makeAbsolute().toString() + " " + expandedArg);
         String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
-
         return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
     }
 
@@ -212,8 +217,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
      */
     public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
         try {
-         	 //FIXME always start with Cmdenv  --Andras
-        	 Process proc = LaunchPlugin.startSimulationProcess(configuration, " -n -g");
+        	 Process proc = LaunchPlugin.startSimulationProcess(configuration, "-u Cmdenv -n -g");
              final int BUFFERSIZE = 8192;
              byte bytes[] = new byte[BUFFERSIZE];
              StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
@@ -223,11 +227,10 @@ public class LaunchPlugin extends AbstractUIPlugin {
                  stringBuffer.append(new String(bytes, 0, lastRead));
              }
 
-             //FIXME check exit code: must be 0
              //FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
              // --Andras
-             
-             return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(stringBuffer.toString(), "Number of runs:", "End run of OMNeT++"));
+             if (proc.exitValue() == 0)
+                 return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(stringBuffer.toString(), "Number of runs:", "End run of OMNeT++"));
 
         } catch (CoreException e) {
             LaunchPlugin.logError("Error starting the executable", e);
@@ -244,7 +247,29 @@ public class LaunchPlugin extends AbstractUIPlugin {
     public static int getMaxNumberOfRuns(ILaunchConfiguration configuration) {
         return NumberUtils.toInt(StringUtils.trimToEmpty(
                         StringUtils.substringBetween(
-                                LaunchPlugin.getSimulationRunInfo(configuration), "Number of runs:", "\n")), 1);
+                                getSimulationRunInfo(configuration), "Number of runs:", "\n")), 1);
     }
 
+    /**
+     *
+     * @param text The text to be parsed for progress information
+     * @return The process progress reported in the text or -1 if no progress info found
+     */
+    public static int getProgressInPercent(String text) {
+        String tag = "% completed";
+        if (!StringUtils.contains(text, tag))
+            return -1;
+        String pctStr = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(text, tag)," ");
+        return NumberUtils.toInt(pctStr, -1);
+    }
+
+    /**
+     * @param text The process output
+     * @return Whether the end of the text indicates that the process is waiting fore user input
+     */
+    public static boolean isWaitingForUserInput(String text) {
+        // FIXME this is not correct because the user can specify any prompt text.
+        // we should have a consistent marker char/tag during user input
+        return text.contains("Enter parameter");
+    }
 }

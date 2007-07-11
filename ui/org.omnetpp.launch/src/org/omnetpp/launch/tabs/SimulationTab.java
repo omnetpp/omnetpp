@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -52,6 +53,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	protected Text fInifileText;
 	protected Combo fConfigCombo;
     protected Text fRunText;
+    protected Spinner fParalelismSpinner;
     protected Button fDefaultEnvButton;
     protected Button fCmdEnvButton;
     protected Button fTkEnvButton;
@@ -170,8 +172,6 @@ public class SimulationTab extends OmnetppLaunchTab  {
         }
     };
 
-
-
     public SimulationTab() {
         super();
     }
@@ -224,18 +224,19 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	}
 
     protected void createConfigGroup(Composite parent, int colSpan) {
-		Composite comp = SWTFactory.createGroup(parent, "Configuration", 2, colSpan, GridData.FILL_HORIZONTAL);
+		Composite comp = SWTFactory.createGroup(parent, "Configuration", 4, colSpan, GridData.FILL_HORIZONTAL);
 
         SWTFactory.createLabel(comp, "Configuration name:",1);
 
-        fConfigCombo = SWTFactory.createCombo(comp, SWT.BORDER | SWT.READ_ONLY, 1, new String[] {});
+        fConfigCombo = SWTFactory.createCombo(comp, SWT.BORDER | SWT.READ_ONLY, 3, new String[] {});
 		fConfigCombo.setToolTipText("The configuration from the INI file that should be executed");
 		fConfigCombo.setVisibleItemCount(10);
 		fConfigCombo.addModifyListener(this);
 
 		SWTFactory.createLabel(comp, "Run number:",1);
 
-        fRunText = SWTFactory.createSingleText(comp, 1);
+		int runSPan = cdtContributed ? 3 : 1;
+        fRunText = SWTFactory.createSingleText(comp, runSPan);
         fRunText.addModifyListener(this);
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverTextProvider() {
@@ -247,7 +248,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 return HoverSupport.addHTMLStyleSheet(DEFAULT_RUNTOOLTIP+"<pre>"+infoText+"</pre>");
             }
         });
-	}
+
+        // parallel execution is not possible under CDT
+        if (!cdtContributed) {
+            SWTFactory.createLabel(comp, "Processes to run in parallel:", 1);
+            fParalelismSpinner = new Spinner(comp, SWT.BORDER);
+            fParalelismSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+            fParalelismSpinner.setMinimum(1);
+            fParalelismSpinner.addModifyListener(this);
+        }
+    }
 
     protected void createUIGroup(Composite parent, int colSpan) {
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
@@ -300,7 +310,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
         SWTFactory.createLabel(comp, "Additional arguments:", 1);
         fAdditionalText = SWTFactory.createSingleText(comp, 1);
-        fAdditionalText.setToolTipText("Specify additonal command line arguments");
+        fAdditionalText.setToolTipText("Specify additional command line arguments");
         fAdditionalText.addModifyListener(this);
     }
 	/*
@@ -376,16 +386,21 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 }
             }
             fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
+            updateUIGroup();
 
             updateConfigCombo();
             setConfigName(configArg.trim());
 
             if (cdtContributed)
-                // if we are contributed to the cdt we get the value from the command line
+                // if we are contributed to the CDT we get the value from the command line
                 fRunText.setText(runArg.trim());
             else
                 // otherwise we get it from a separate attribute
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, EMPTY_STRING));
+
+            if (fParalelismSpinner != null)
+                fParalelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_PARALELISM, 1));
+
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
@@ -414,7 +429,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             arg += "-l "+ StringUtils.join(StringUtils.split(fLibraryText.getText())," -l ")+" ";
         if (!"".equals(getConfigName()))
             arg += "-c "+getConfigName()+" ";
-        // if we are contributed to the cdt launch dialog, we should store the run parameter into the commandline
+        // if we are contributed to the CDT launch dialog, we should store the run parameter into the command line
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
         if (cdtContributed) {
             if (!"".equals(fRunText.getText()))
@@ -423,6 +438,9 @@ public class SimulationTab extends OmnetppLaunchTab  {
             // otherwise (stand-alone starter) we store it into a separate attribute
             config.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
         }
+
+        if (fParalelismSpinner != null)
+            config.setAttribute(IOmnetppLaunchConstants.ATTR_PARALELISM, fParalelismSpinner.getSelection());
 
         if (fCmdEnvButton.getSelection())
             arg += "-u Cmdenv ";
@@ -490,7 +508,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	    setMessage(null);
 
 		IFile ifiles[] = getIniFiles();
-        if ( ifiles == null) {
+        if (ifiles == null) {
             setErrorMessage("Initialization file does not exist, or not accessible in workspace");
             return false;
         }
@@ -516,11 +534,21 @@ public class SimulationTab extends OmnetppLaunchTab  {
             return false;
         }
 
-        if(LaunchPlugin.parseRuns(StringUtils.deleteWhitespace(fRunText.getText()), 0) == null) {
+        Integer runs[] = LaunchPlugin.parseRuns(StringUtils.deleteWhitespace(fRunText.getText()), 2);
+        if (runs == null) {
             setErrorMessage("The run number(s) should be in a format like: 0,2,7,9-11 or use * for ALL runs");
             return false;
         }
 
+        if (fOtherEnvButton.getSelection() && StringUtils.isEmpty(fOtherEnvText.getText())) {
+            setErrorMessage("Environment type must be specified");
+            return false;
+        }
+        if (!fCmdEnvButton.getSelection() && !fOtherEnvButton.getSelection()
+                && runs!=null && runs.length>1) {
+            setErrorMessage("Multiple runs are only supported for the Command line environment");
+            return false;
+        }
 		return true;
 	}
 
@@ -546,11 +574,23 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     public void widgetSelected(SelectionEvent e) {
+        updateUIGroup();
+        super.widgetSelected(e);
+    }
+
+    /**
+     * updates the control states in the UI group
+     */
+    private void updateUIGroup() {
         if (!fOtherEnvButton.getSelection())
             fOtherEnvText.setText("");
         fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
-        super.widgetSelected(e);
+        if (fParalelismSpinner != null) {
+            fParalelismSpinner.setEnabled(fCmdEnvButton.getSelection());
+            if(!fCmdEnvButton.getSelection())
+                fParalelismSpinner.setSelection(1);
+        }
     }
 
     /**

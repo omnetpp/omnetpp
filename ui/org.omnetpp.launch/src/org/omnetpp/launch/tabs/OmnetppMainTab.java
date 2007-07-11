@@ -25,6 +25,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
@@ -34,7 +35,8 @@ import org.omnetpp.launch.LaunchPlugin;
 public class OmnetppMainTab extends OmnetppLaunchTab {
 
 	// UI widgets
-	protected Text progText;
+	protected Text fProgText;
+	protected Button fShowDebugViewButton;
 
     private final WorkingDirectoryBlock workingDirBlock = new WorkingDirectoryBlock(this);
     private final SimulationTab simulationBlock = new SimulationTab(this, false);
@@ -60,13 +62,16 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
      * @author rhornig
      */
     protected class ExecutableWorkbenchContentProvider extends WorkbenchContentProvider {
+        private boolean isExecutable(IFile file) {
+            return file.getResourceAttributes().isExecutable() ||
+                    StringUtils.contains("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
+        }
+
         @Override
         public Object[] getChildren(Object element) {
             List<Object> filteredChildren = new ArrayList<Object>();
             for(Object child : super.getChildren(element)) {
-                if (child instanceof IFile &&
-                        (((IFile)child).getResourceAttributes().isExecutable() ||
-                                "exe".equals(((IFile)child).getFileExtension()) && SWT.getPlatform().equals("win32"))
+                if (child instanceof IFile && isExecutable((IFile)child)
                         || getChildren(child).length > 0)
                         filteredChildren.add(child);
             }
@@ -91,6 +96,8 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         ld.marginWidth = ld.marginHeight = 0;
 
         workingDirBlock.createControl(comp);
+        // additional options
+        createOptionsGroup(comp, 1);
         setControl(comp);
     }
 
@@ -101,8 +108,8 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 
 		SWTFactory.createLabel(mainComp, "Simulation Program:",1);
 
-		progText = SWTFactory.createSingleText(mainComp, 1);
-		progText.addModifyListener(this);
+		fProgText = SWTFactory.createSingleText(mainComp, 1);
+		fProgText.addModifyListener(this);
 
 		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null); //$NON-NLS-1$
 		fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
@@ -114,11 +121,26 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 		});
 	}
 
-	@Override
+    protected void createOptionsGroup(Composite parent, int colSpan) {
+        Composite mainComp =  SWTFactory.createComposite(parent, 3,colSpan,GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)mainComp.getLayout();
+        ld.marginHeight = 1;
+
+        fShowDebugViewButton = SWTFactory.createCheckButton(mainComp, "Show Debug View on Launch", null, false, 3); //$NON-NLS-1$
+        fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent evt) {
+                updateLaunchConfigurationDialog();
+            }
+        });
+    }
+
+    @Override
     public void initializeFrom(ILaunchConfiguration config) {
 	    super.initializeFrom(config);
         try {
-            progText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING));
+            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING));
+            fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false));
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
@@ -127,7 +149,8 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 	}
 
     public void performApply(ILaunchConfigurationWorkingCopy config) {
-        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, progText.getText());
+        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, fProgText.getText());
+        config.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());
         simulationBlock.performApply(config);
         workingDirBlock.performApply(config);
 	}
@@ -135,6 +158,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, (String)null);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, (String)null);
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false);
         simulationBlock.setDefaults(configuration);
         workingDirBlock.setDefaults(configuration);
     }
@@ -149,7 +173,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 	    if (!workingDirBlock.isValid(config))
 	        return false;
 
-	    String name = progText.getText().trim();
+	    String name = fProgText.getText().trim();
 	    if (name.length() == 0) {
 	        setErrorMessage("Simulation program not specified");
 	        return false;
@@ -191,7 +215,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IFile) {
             String exefile = ((IFile)dialog.getFirstResult()).getFullPath().toString();
-            progText.setText(exefile);
+            fProgText.setText(exefile);
         }
     }
 }

@@ -28,6 +28,7 @@ public interface IOmnetppLaunchConstants {
      * a standalone launcher was used.
      */
     public static final String ATTR_RUN = OMNETPP_LAUNCH_ID + ".RUN"; //$NON-NLS-1$
+
     /**
      * Launch configuration attribute key. The value is a string specifying a
      * path to the working directory to use when launching a the application.
@@ -37,4 +38,14 @@ public interface IOmnetppLaunchConstants {
      * represents a workspace relative path.
      */
     public static final String ATTR_WORKING_DIRECTORY = CDT_LAUNCH_ID + ".WORKING_DIRECTORY"; //$NON-NLS-1$
+
+    /**
+     * whether to show the the debug view on launch
+     */
+    public static final String ATTR_SHOWDEBUGVIEW = OMNETPP_LAUNCH_ID + ".SHOW_DEBUG_VIEW";
+
+    /**
+     * how many simulations may run in paralel during batch execution
+     */
+    public static final String ATTR_PARALELISM = OMNETPP_LAUNCH_ID + ".PARALELISM";
 }
