@@ -130,7 +130,7 @@ public class SectionDialog extends TitleAreaDialog {
 		else {
 			String[] sectionNames = getNonCycleSectionNames(originalSectionName);
 			if (sectionNames.length==0) 
-				sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
+				sectionNames = new String[] {GENERAL};  // we lie that [General] exists
 			extendsCombo.setItems(sectionNames);
 			extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
 			extendsCombo.select(0);
