@@ -32,6 +32,8 @@
 //XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
 //XXX make sure quoting "$\{" works!
+//XXX validation: make sure that a Config and a Scenario cannot have the same name!
+//XXX validation: make sure a Config cannot extend a Scenario!
 
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 
@@ -811,6 +813,8 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             throw cRuntimeError("Invalid section name [%s], should be [General], [Config <name>] or [Scenario <name>]", section);
         if (configName)
         {
+            if (*configname == ' ')
+                throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
             for (const char *s=configName; *s; s++)
                 if (!isalnum(*s) && strchr("-_@", *s)==NULL)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
