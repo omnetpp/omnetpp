@@ -95,8 +95,9 @@ public class InifileUtils {
 		return sectionName.replaceFirst(".+ +", "");
 	}
 
+	
 	/**
-	 * Resolves the run-time type of a "like" submodule, using the parameter
+	 * Resolves the run-time NED type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
 	public static String resolveLikeParam(String moduleFullPath, SubmoduleNode submodule, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {

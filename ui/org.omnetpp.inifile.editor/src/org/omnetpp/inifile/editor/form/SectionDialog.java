@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,8 +78,10 @@ public class SectionDialog extends TitleAreaDialog {
 			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getKey());
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
-			extendsSection = doc.getValue(sectionName, ConfigRegistry.CFGID_EXTENDS.getKey());
-			extendsSection = extendsSection==null ? GENERAL : CONFIG_ + extendsSection; //FIXME Scenario too
+			String extendsName = doc.getValue(sectionName, ConfigRegistry.CFGID_EXTENDS.getKey());
+			extendsSection = extendsName==null ? GENERAL : 
+				(sectionName.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName)) ? 
+						SCENARIO_+extendsName : CONFIG_ + extendsName;
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getKey());;
 		}
 	}
@@ -172,7 +175,8 @@ public class SectionDialog extends TitleAreaDialog {
 
 	/**
 	 * Return list of sections that would not create a cycle if the given 
-	 * section extended them.
+	 * section extended them. Moreover, does not offer Scenario sections
+	 * as base for a Config.
 	 */
 	protected String[] getNonCycleSectionNames(String section) {
 		String[] sectionNames = doc.getSectionNames();
@@ -180,9 +184,10 @@ public class SectionDialog extends TitleAreaDialog {
 			return sectionNames;  // a new section can extend anything
 
 		// choose sections whose fallback chain doesn't contain the given section
+		boolean skipScenarios = section.startsWith(CONFIG_); 
 		List<String> result = new ArrayList<String>();
 		for (String candidate : sectionNames)
-			if (!InifileUtils.sectionChainContains(doc, candidate, section))
+			if ((!skipScenarios || candidate.startsWith(CONFIG_)) && !InifileUtils.sectionChainContains(doc, candidate, section))
 				result.add(candidate);
 		return result.toArray(new String[]{});
 	}
