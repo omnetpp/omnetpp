@@ -144,25 +144,13 @@ public class InifileUtils {
 	 */
 	public static String[] resolveSectionChain(IInifileDocument doc, String section) {
 		ArrayList<String> sectionChain = new ArrayList<String>();
-		if (!section.equals(GENERAL)) {
-			String currentSection = section;
-		    while (true) {
-		    	if (!doc.containsSection(currentSection))
-		            break; // error: nonexistent section
-		        if (sectionChain.contains(currentSection))
-		            break; // error: circle in the fallback chain
-		        sectionChain.add(currentSection);
-		        String extendsName = doc.getValue(currentSection, EXTENDS);
-		        if (extendsName==null)
-		        	break; // done
-		        if (currentSection.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
-			        currentSection = SCENARIO_+extendsName;
-		        else
-		        	currentSection = CONFIG_+extendsName;
-		    }
+		String currentSection = section;
+		while (true) {
+			sectionChain.add(currentSection);
+			currentSection = resolveBaseSection(doc, currentSection);
+			if (currentSection==null || sectionChain.contains(currentSection))
+				break; // [General] reached, or cycle in the fallback chain
 		}
-	    if (doc.containsSection(GENERAL))
-	        sectionChain.add(GENERAL);
 	    return sectionChain.toArray(new String[] {});
 	}
 
@@ -173,6 +161,25 @@ public class InifileUtils {
 	public static boolean sectionChainContains(IInifileDocument doc, String chainStartSection, String section) {
 		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
 		return ArrayUtils.indexOf(sectionChain, section) >= 0;
+	}
+
+	/**
+	 * Returns the name of the section the given section extends.
+	 * Returns null for the [General] section (it doesn't extend anything),
+	 * and on error (base section doesn't exist)
+	 */
+	public static String resolveBaseSection(IInifileDocument doc, String section) {
+		if (section.equals(GENERAL))
+			return null;
+        String extendsName = doc.getValue(section, EXTENDS);
+        if (extendsName==null)
+        	return GENERAL;
+        if (section.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
+	        return SCENARIO_+extendsName;
+        else if (doc.containsSection(CONFIG_+extendsName)) 
+        	return CONFIG_+extendsName;
+        else
+        	return null;
 	}
 
 	/**
@@ -285,19 +292,24 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Returns the problem markers for a given inifile entry.
+	 * Returns the problem markers for a given inifile entry, or 
+	 * if key==null, for the whole section including its contents.
 	 */
 	public static IMarker[] getProblemMarkersFor(String section, String key, IInifileDocument doc) {
 		try {
-			LineInfo line = doc.getEntryLineDetails(section, key);
+			LineInfo line = key==null ? 
+					doc.getSectionLineDetails(section) : doc.getEntryLineDetails(section, key);
 			if (line==null)
 				return new IMarker[0];
 			IFile file = line.getFile();
+			int startLine = line.getLineNumber();
+			int endLine = line.getLineNumber() + line.getNumLines();
+
 			IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true, 0);
 			ArrayList<IMarker> result = new ArrayList<IMarker>();
 			for (IMarker marker : markers) {
 				int lineNumber = marker.getAttribute(IMarker.LINE_NUMBER, -1);
-				if (lineNumber == line.getLineNumber())
+				if (lineNumber >= startLine && lineNumber < endLine)
 					result.add(marker);
 			}
 			return result.toArray(new IMarker[]{});

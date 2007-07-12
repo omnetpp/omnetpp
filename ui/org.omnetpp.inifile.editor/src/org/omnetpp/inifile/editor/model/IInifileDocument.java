@@ -28,11 +28,13 @@ public interface IInifileDocument {
 	public class LineInfo {
 		private IFile file;
 		private int lineNumber;
+		private int numLines;
 		private boolean readOnly;
 
-		public LineInfo(IFile file, int lineNumber, boolean readOnly) {
+		public LineInfo(IFile file, int lineNumber, int numLines, boolean readOnly) {
 			this.file = file;
 			this.lineNumber = lineNumber;
+			this.numLines = numLines;
 			this.readOnly = readOnly;
 		}
 
@@ -41,6 +43,9 @@ public interface IInifileDocument {
 		}
 		public int getLineNumber() {
 			return lineNumber;
+		}
+		public int getNumLines() {
+			return numLines;
 		}
 		public boolean isReadOnly() {
 			return readOnly;
@@ -83,7 +88,7 @@ public interface IInifileDocument {
 	void addEntries(String section, String[] keys, String[] values, String[] comments, String beforeKey);
 
 	/**
-	 * Returns immutable value object with file/line/isreadonly info.
+	 * Returns immutable value object with file/line/isReadonly info.
 	 * Returns null if section, or key in it does not exist.  
 	 */
 	LineInfo getEntryLineDetails(String section, String key); 
@@ -167,7 +172,8 @@ public interface IInifileDocument {
 	void renameSection(String sectionName, String newName);
 
 	/** 
-	 * Returns immutable value object with file/line/isreadonly info.
+	 * Returns immutable value object with file/line/numLines/isReadonly info,
+	 * where the number of lines includes section content (not only the header).
 	 * Returns null if section does not exist.  
 	 */
 	LineInfo getSectionLineDetails(String section); 

@@ -475,7 +475,7 @@ public class InifileAnalyzer {
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
-			networkName = CFGID_NETWORK.getDefaultValue().toString();
+			networkName = CFGID_NETWORK.getDefaultValue();
 		if (networkName == null)
 			return new ArrayList<ParamResolution>();
 

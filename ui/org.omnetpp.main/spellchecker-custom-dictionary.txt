@@ -166,3 +166,4 @@ standalone
 svn
 diff
 rng
+regex

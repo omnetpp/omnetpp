@@ -488,7 +488,7 @@ public class InifileDocument implements IInifileDocument {
 	
 	public LineInfo getEntryLineDetails(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
-		return line==null ? null : new LineInfo(line.file, line.lineNumber, !isEditable(line));
+		return line==null ? null : new LineInfo(line.file, line.lineNumber, line.numLines, !isEditable(line));
 	} 
 
 	public String getComment(String section, String key) {
@@ -654,7 +654,7 @@ public class InifileDocument implements IInifileDocument {
 
 	public LineInfo getSectionLineDetails(String sectionName) {
 		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
-		return new LineInfo(line.file, line.lineNumber, !isEditable(line));
+		return new LineInfo(line.file, line.lineNumber, line.lastLine-line.lineNumber+1, !isEditable(line));
 	} 
 
 	public String getSectionComment(String sectionName) {

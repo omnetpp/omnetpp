@@ -44,6 +44,7 @@ public class SectionDialog extends TitleAreaDialog {
 	private String originalSectionName;
 
 	// widgets
+	private Combo sectionTypeCombo;
 	private Text sectionNameText;
 	private Text descriptionText;
 	private Combo extendsCombo;
@@ -78,10 +79,7 @@ public class SectionDialog extends TitleAreaDialog {
 			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getKey());
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
-			String extendsName = doc.getValue(sectionName, ConfigRegistry.CFGID_EXTENDS.getKey());
-			extendsSection = extendsName==null ? GENERAL : 
-				(sectionName.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName)) ? 
-						SCENARIO_+extendsName : CONFIG_ + extendsName;
+			extendsSection = InifileUtils.resolveBaseSection(doc, sectionName);
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getKey());;
 		}
 	}
@@ -107,7 +105,14 @@ public class SectionDialog extends TitleAreaDialog {
         
 		// section name field
 		createLabel(group1, "Section Name:", parent.getFont());
-		sectionNameText = new Text(group1, SWT.SINGLE | SWT.BORDER);
+		
+		Composite c = new Composite(group1, SWT.NONE);
+		c.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        GridLayout gridLayout = new GridLayout(2,false);
+        gridLayout.marginHeight = gridLayout.marginWidth = 0;
+		c.setLayout(gridLayout);
+		sectionTypeCombo = new Combo(c, SWT.READ_ONLY | SWT.BORDER);
+		sectionNameText = new Text(c, SWT.SINGLE | SWT.BORDER);
 		sectionNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// description field
@@ -127,7 +132,12 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo = new Combo(group2, SWT.BORDER);
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		// fill "sections" combo
+		// fill "section type" combo
+		sectionTypeCombo.add(CONFIG_);
+		sectionTypeCombo.add(SCENARIO_);
+		//FIXME handle sectionTypeCombo everywhere!!!!
+		
+		// fill "extends" combo
 		if (GENERAL.equals(originalSectionName))
 			extendsCombo.setEnabled(false);
 		else {
@@ -147,6 +157,7 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
 		
 		// fill dialog fields with initial contents
+		if (newSectionName!=null) sectionTypeCombo.setText(newSectionName.startsWith(SCENARIO_) ? SCENARIO_ : CONFIG_);
 		if (newSectionName!=null) sectionNameText.setText(newSectionName);
         if (description!=null) descriptionText.setText(description);
         if (extendsSection!=null) extendsCombo.setText(extendsSection); 

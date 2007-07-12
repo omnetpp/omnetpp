@@ -2,15 +2,14 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.action.Action;
@@ -43,7 +42,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ActionContributionItem2;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
@@ -64,9 +62,11 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
-//XXX error handling: show error mark on section if any entry in it contains an error!!!
 public class SectionsPage extends FormPage {
-	private static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
+	private static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
+	private static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
+	private static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
+	
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
 	private static final String HINT_TEXT = "\nDrag and drop sections to edit the fallback chains of parameter and configuration lookups.";
 
@@ -97,17 +97,17 @@ public class SectionsPage extends FormPage {
 
 	static class SectionData {
 		String sectionName;
-		boolean hasError;
+		int maxProblemSeverity;
 
-		public SectionData(String sectionName, boolean isUndefined) {
+		public SectionData(String sectionName, int maxProblemSeverity) {
 			this.sectionName = sectionName;
-			this.hasError = isUndefined;
+			this.maxProblemSeverity = maxProblemSeverity;
 		}
 
 		/* label provider maps to this */
 		@Override
 		public String toString() {
-			return sectionName + (hasError ? " (the section it extends does not exist)" : "");
+			return sectionName;
 		}
 
 		/* needed for treeViewer.setSelection() to work */
@@ -167,7 +167,11 @@ public class SectionsPage extends FormPage {
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SectionData) {
 					SectionData payload = (SectionData) element;
-					return payload.hasError ? ICON_ERROR : ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER); //XXX cache icon!
+					switch (payload.maxProblemSeverity) {
+						case IMarker.SEVERITY_WARNING: return ICON_SECTION_WARNING;
+						case IMarker.SEVERITY_ERROR: return ICON_SECTION_ERROR;
+						default: return ICON_SECTION; 
+					}
 				}
 				return null;
 			}
@@ -435,43 +439,33 @@ public class SectionsPage extends FormPage {
 		super.reread();
 		IInifileDocument doc = getInifileDocument();
 
-		// create root node
-		GenericTreeNode rootNode = new GenericTreeNode("root");
-		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData(GENERAL, false));
-		rootNode.addChild(generalSectionNode);
-
 		// handling cycles: they won't appear in the tree (property of the tree
 		// building algorithm), and we warn the user (in the label text, see below)
+		//XXX not needed if cycle sections also appear in the gui
 		label.setText(!getInifileAnalyzer().containsSectionCircles() ? HINT_TEXT : HINT_TEXT + "\n" + CIRCLE_WARNING_TEXT);
 		layout(true);  // number of lines in label may have changed
 
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
+		GenericTreeNode rootNode = new GenericTreeNode("root");
+		GenericTreeNode generalSectionNode = getOrCreate(nodes, GENERAL);
+		rootNode.addChild(generalSectionNode);
 		for (String sectionName : doc.getSectionNames()) {
 			if (!sectionName.equals(GENERAL)) {
-				GenericTreeNode node = getOrCreate(nodes, sectionName, false);
-				String extendsName = doc.getValue(sectionName, EXTENDS);
-				if (extendsName == null) {
-					// no "extends=...": falls back to [General]
+				GenericTreeNode node = getOrCreate(nodes, sectionName);
+				String extendsSectionName = InifileUtils.resolveBaseSection(doc, sectionName);
+				if (extendsSectionName == null) {
+					// "extends=...": is bogus, fall back to [General]
 					generalSectionNode.addChild(node);
 				}
 				else {
-					// add as child to the section it extends
-					String extendsSectionName = SCENARIO_+extendsName;
-					if (!doc.containsSection(extendsSectionName))
-						extendsSectionName = CONFIG_+extendsName;
-					if (doc.containsSection(extendsSectionName)) {
-						GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName, false);
-						extendsSectionNode.addChild(node);
-					}
-					else {
-						// "extends=...": is bogus, fall back to [General]
-						((SectionData)(node.getPayload())).hasError = true;
-						generalSectionNode.addChild(node);
-					}
+					GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName);
+					extendsSectionNode.addChild(node);
 				}
 			}
 		}
+
+		//FIXME TODO handle cycles: if there is a node from which General is not accessible (cycle!), make it General's child
 
 		// reduce flicker: only overwrite existing tree input if it's not the same as this one
 		if (treeViewer.getInput()==null || !GenericTreeUtils.treeEquals(rootNode, (GenericTreeNode)treeViewer.getInput())) {
@@ -483,10 +477,12 @@ public class SectionsPage extends FormPage {
 		updateActions();
 	}
 
-	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {
+	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName) {
 		GenericTreeNode node = nodes.get(sectionName);
 		if (node==null) {
-			node = new GenericTreeNode(new SectionData(sectionName, isUndefined));
+			IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionName, null, getInifileDocument());
+			int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
+			node = new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity));
 			nodes.put(sectionName, node);
 		}
 		return node;
@@ -494,7 +490,7 @@ public class SectionsPage extends FormPage {
 
 	@Override
 	public void gotoSection(String section) {
-		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionData(section, false))), true);
+		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionData(section, -1))), true);
 	}
 
 	@Override
