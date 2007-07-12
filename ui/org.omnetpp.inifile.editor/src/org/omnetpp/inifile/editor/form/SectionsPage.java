@@ -315,7 +315,7 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
 
 				String extendsSection = dialog.getExtendsSection();
-				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
+				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, ""); //FIXME Scenario too
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
 				String networkName = dialog.getNetworkName();
@@ -352,7 +352,7 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
 
 				String extendsSection = dialog.getExtendsSection();
-				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
+				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, ""); //FIXME Scenario too
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
 				String networkName = dialog.getNetworkName();
@@ -438,7 +438,7 @@ public class SectionsPage extends FormPage {
 		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData(GENERAL, false));
 		rootNode.addChild(generalSectionNode);
 
-		// handling circles: they won't appear in the tree (property of the tree
+		// handling cycles: they won't appear in the tree (property of the tree
 		// building algorithm), and we warn the user (in the label text, see below)
 		label.setText(!getInifileAnalyzer().containsSectionCircles() ? HINT_TEXT : HINT_TEXT + "\n" + CIRCLE_WARNING_TEXT);
 		layout(true);  // number of lines in label may have changed
@@ -446,7 +446,7 @@ public class SectionsPage extends FormPage {
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
 		for (String sectionName : doc.getSectionNames()) {
-			if (sectionName.startsWith(CONFIG_)) {
+			if (sectionName.startsWith(CONFIG_)) { //FIXME Scenario too!!!
 				GenericTreeNode node = getOrCreate(nodes, sectionName, false);
 				String extendsName = doc.getValue(sectionName, EXTENDS);
 				if (extendsName == null) {

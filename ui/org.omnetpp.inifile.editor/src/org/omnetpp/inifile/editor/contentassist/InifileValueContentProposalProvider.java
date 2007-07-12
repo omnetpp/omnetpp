@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRELOAD_NED_FILES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
@@ -103,8 +103,12 @@ s	 * before getting presented to the user.
 		if (entry==CFGID_EXTENDS) {
 			ArrayList<String> names = new ArrayList<String>();
 			for (String section : doc.getSectionNames())
-				if (!section.equals(GENERAL) && !InifileUtils.sectionChainContains(doc, section, this.section)) // prevent circles
-					names.add(section.replaceFirst("^Config +", ""));
+				if (!section.equals(GENERAL) && // [General] cannot be extended
+					!InifileUtils.sectionChainContains(doc, section, this.section) && // prevent cycles
+					(this.section.startsWith(SCENARIO_) || section.startsWith(CONFIG_))) // a Config cannot extend a Scenario
+				{
+					names.add(section.replaceFirst(".* ", "")); // remove "Config " or "Scenario " prefix
+				}
 			return sort(toProposals(names.toArray(new String[]{})));
 		}
 		if (entry==CFGID_NETWORK) {
@@ -194,16 +198,18 @@ s	 * before getting presented to the user.
 	 * Generate proposals for per-object configuration keys
 	 */
 	protected IContentProposal[] getCandidatesForPerObjectConfig() {
+		String keySuffix = key.replaceFirst(".*\\.", ""); // only keep substring after last dot
+		ConfigKey entry = ConfigRegistry.getPerObjectEntry(keySuffix);
+		if (entry == null)
+			return null;
+
 		List<String> proposals = new ArrayList<String>();
-		//FIXME use the ConfigRegistry!!!
-		if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
-			proposals.add("true");
-			proposals.add("false");
-		}
-		if (key.endsWith(".record-interval")) { 
+		if (entry==CFGID_RECORDING_INTERVAL) { 
 			proposals.add("$1..");
-			proposals.add("$1..$2");
-			proposals.add("..$2"); //XXX use templated proposals here!
+			proposals.add("$1..$2, $3.."); //XXX use templated proposals here!
+		}
+		if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
+			return toProposals(new String[] {"true", "false"});
 		}
 		return toProposals(proposals.toArray(new String[]{}));
 	}

@@ -1,5 +1,9 @@
 package org.omnetpp.inifile.editor.text.assist;
 
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -130,10 +134,12 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					InifileEditorPlugin.logError(e);
 				}
 			}
-			if (linePrefix.length()==0 || linePrefix.startsWith("[")) {
+			if (linePrefix.length()==0 || linePrefix.matches("\\[[a-zA-Z]*")) {
 				// section heading
-				proposals.add("[General]");
-				proposals.add("[Config ");
+				if (!doc.containsSection(GENERAL))
+					proposals.add("["+GENERAL+"]");
+				proposals.add("["+CONFIG_);
+				proposals.add("["+SCENARIO_);
 			}
 
 			if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*")) {

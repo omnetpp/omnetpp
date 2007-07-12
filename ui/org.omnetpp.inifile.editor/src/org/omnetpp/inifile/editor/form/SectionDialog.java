@@ -78,7 +78,7 @@ public class SectionDialog extends TitleAreaDialog {
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
 			extendsSection = doc.getValue(sectionName, ConfigRegistry.CFGID_EXTENDS.getKey());
-			extendsSection = extendsSection==null ? GENERAL : CONFIG_ + extendsSection;
+			extendsSection = extendsSection==null ? GENERAL : CONFIG_ + extendsSection; //FIXME Scenario too
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getKey());;
 		}
 	}
@@ -244,7 +244,7 @@ public class SectionDialog extends TitleAreaDialog {
 		sectionName = sectionName.trim();
 		if (sectionName.equals(""))
 			return "Section name cannot be empty";
-		if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
+		if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_)) //FIXME Scenario too
 			sectionName = CONFIG_+sectionName;
 		if (doc.containsSection(sectionName) && (originalSectionName==null || !originalSectionName.equals(sectionName)))
 			return "Section ["+sectionName+"] already exists";
@@ -258,7 +258,7 @@ public class SectionDialog extends TitleAreaDialog {
 	protected void okPressed() {
     	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
         newSectionName = sectionNameText.getText().trim();
-		if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith(CONFIG_))
+		if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith(CONFIG_)) //FIXME Scenario too
 			newSectionName = CONFIG_+newSectionName;
         description = descriptionText.getText().trim();
         extendsSection = extendsCombo.getText().trim();
