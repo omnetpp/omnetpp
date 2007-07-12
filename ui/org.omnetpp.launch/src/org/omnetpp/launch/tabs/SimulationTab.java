@@ -44,6 +44,7 @@ import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
+// TODO check what userinterface is present in the exe (-q userinterfaces) and disable which is not
 /**
  * A launch configuration tab that displays and edits omnetpp project
  */
@@ -265,16 +266,20 @@ public class SimulationTab extends OmnetppLaunchTab  {
         SWTFactory.createLabel(comp, "User interface:", 1);
 
         fDefaultEnvButton = SWTFactory.createRadioButton(comp, "Default");
+        fDefaultEnvButton.setLayoutData(new GridData());
         fDefaultEnvButton.setSelection(true);
         fDefaultEnvButton.addSelectionListener(this);
 
         fCmdEnvButton = SWTFactory.createRadioButton(comp, "Command line");
+        fCmdEnvButton.setLayoutData(new GridData());
         fCmdEnvButton.addSelectionListener(this);
 
         fTkEnvButton = SWTFactory.createRadioButton(comp, "Tcl/Tk");
+        fTkEnvButton.setLayoutData(new GridData());
         fTkEnvButton.addSelectionListener(this);
 
         fOtherEnvButton = SWTFactory.createRadioButton(comp, "Other:");
+        fOtherEnvButton.setLayoutData(new GridData());
         fOtherEnvButton.addSelectionListener(this);
 
         fOtherEnvText = SWTFactory.createSingleText(comp, 1);

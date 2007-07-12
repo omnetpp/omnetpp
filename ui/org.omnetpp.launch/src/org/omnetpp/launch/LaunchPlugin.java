@@ -192,12 +192,26 @@ public class LaunchPlugin extends AbstractUIPlugin {
      * @throws CoreException if process is not started correctly
      */
     public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
+        String[] cmdLine = createCommandLine(configuration, additionalArgs);
+
+        IStringVariableManager varman2 = VariablesPlugin.getDefault().getStringVariableManager();
         String wdAttr = LaunchPlugin.getWorkingDirectoryPath(configuration).toString();
+        String expandedWd = varman2.performStringSubstitution(wdAttr);
+        String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+        return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
+    }
+
+    /**
+     * @param configuration
+     * @param additionalArgs
+     * @return
+     * @throws CoreException
+     */
+    public static String[] createCommandLine(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
+        IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
         String projAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
         String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
         String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
-        IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
-        String expandedWd = varman.performStringSubstitution(wdAttr);
         String expandedProj = varman.performStringSubstitution(projAttr);
         String expandedProg = varman.performStringSubstitution(progAttr);
         String expandedArg = varman.performStringSubstitution(argAttr);
@@ -207,8 +221,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
         if (executableFile == null)
             throw new CoreException(Status.CANCEL_STATUS);
         String cmdLine[] =DebugPlugin.parseArguments(executableFile.getRawLocation().makeAbsolute().toString() + " " + expandedArg);
-        String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
-        return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
+        return cmdLine;
     }
 
     /**

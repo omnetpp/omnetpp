@@ -24,6 +24,8 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
+import org.omnetpp.common.util.StringUtils;
+
 /**
  * A job to launch a single simulation process in the background
  * @author rhornig
@@ -80,6 +82,7 @@ public class SimulationLauncherJob extends Job {
 
         Process process = LaunchPlugin.startSimulationProcess(configuration, " -r "+runNo);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
+        iprocess.setAttribute(IProcess.ATTR_CMDLINE, StringUtils.join(LaunchPlugin.createCommandLine(configuration, " -r "+runNo)," "));
         // if we don't want to wait for finishing the process, just exit
         if (!waitForFinish)
             return;

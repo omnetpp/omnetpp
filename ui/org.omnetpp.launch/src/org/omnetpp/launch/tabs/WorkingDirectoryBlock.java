@@ -27,6 +27,7 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
+//FIXME default working directory should be the directory of the chosen executable file (not the project root)
 /**
  * A little modified version of the JDT-s working block code
  * @author rhornig
