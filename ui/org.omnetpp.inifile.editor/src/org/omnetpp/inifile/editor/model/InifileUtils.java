@@ -89,6 +89,13 @@ public class InifileUtils {
 	}
 
 	/**
+	 * Chops off potential "Config " or "Scenario " prefix from a sectionName.
+	 */
+	public static String removeSectionNamePrefix(String sectionName) {
+		return sectionName.replaceFirst(".+ +", "");
+	}
+
+	/**
 	 * Resolves the run-time type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
@@ -268,11 +275,12 @@ public class InifileUtils {
 	public static void renameSection(IInifileDocument doc, String oldSectionName, String newSectionName) {
 		doc.renameSection(oldSectionName, newSectionName);
 
-		String oldName = oldSectionName.replaceFirst("^Config +", "");
-		String newName = newSectionName.replaceFirst("^Config +", "");
+		// change referring extends= keys in other sections 
+		String oldName = removeSectionNamePrefix(oldSectionName);
+		String newName = removeSectionNamePrefix(newSectionName);
 		for (String section : doc.getSectionNames())
-			if (oldName.equals(doc.getValue(section, CFGID_EXTENDS.getKey())))
-				doc.setValue(section, CFGID_EXTENDS.getKey(), newName);
+			if (oldName.equals(doc.getValue(section, EXTENDS)))
+				doc.setValue(section, EXTENDS, newName);
 	}
 
 	/**

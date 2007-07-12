@@ -107,7 +107,7 @@ s	 * before getting presented to the user.
 					!InifileUtils.sectionChainContains(doc, section, this.section) && // prevent cycles
 					(this.section.startsWith(SCENARIO_) || section.startsWith(CONFIG_))) // a Config cannot extend a Scenario
 				{
-					names.add(section.replaceFirst(".* ", "")); // remove "Config " or "Scenario " prefix
+					names.add(InifileUtils.removeSectionNamePrefix(section));
 				}
 			return sort(toProposals(names.toArray(new String[]{})));
 		}

@@ -5,6 +5,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
+//XXX error handling: show error mark on section if any entry in it contains an error!!!
 public class SectionsPage extends FormPage {
 	private static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
@@ -271,7 +273,7 @@ public class SectionsPage extends FormPage {
 				doc.removeKey(sectionName, EXTENDS);
 		}
 		else {
-			String value = extendsSectionName.replaceAll("^Config +", "");
+			String value = InifileUtils.removeSectionNamePrefix(extendsSectionName);
 			if (doc.containsKey(sectionName, EXTENDS))
 				doc.setValue(sectionName, EXTENDS, value);
 			else
@@ -315,7 +317,7 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
 
 				String extendsSection = dialog.getExtendsSection();
-				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, ""); //FIXME Scenario too
+				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
 				String networkName = dialog.getNetworkName();
@@ -352,7 +354,7 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
 
 				String extendsSection = dialog.getExtendsSection();
-				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, ""); //FIXME Scenario too
+				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
 				String networkName = dialog.getNetworkName();
@@ -446,7 +448,7 @@ public class SectionsPage extends FormPage {
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
 		for (String sectionName : doc.getSectionNames()) {
-			if (sectionName.startsWith(CONFIG_)) { //FIXME Scenario too!!!
+			if (!sectionName.equals(GENERAL)) {
 				GenericTreeNode node = getOrCreate(nodes, sectionName, false);
 				String extendsName = doc.getValue(sectionName, EXTENDS);
 				if (extendsName == null) {
@@ -455,7 +457,9 @@ public class SectionsPage extends FormPage {
 				}
 				else {
 					// add as child to the section it extends
-					String extendsSectionName = CONFIG_+extendsName;
+					String extendsSectionName = SCENARIO_+extendsName;
+					if (!doc.containsSection(extendsSectionName))
+						extendsSectionName = CONFIG_+extendsName;
 					if (doc.containsSection(extendsSectionName)) {
 						GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName, false);
 						extendsSectionNode.addChild(node);
