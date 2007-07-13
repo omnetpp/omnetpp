@@ -59,7 +59,7 @@ public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
 	private boolean changed = true;
-	private boolean containsSectionCycles;
+	private Set<String> sectionsCausingCycles;
 	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
 
 	/**
@@ -212,8 +212,7 @@ public class InifileAnalyzer {
 	 * Check section names, and detect cycles in the fallback sequences ("extends=")
 	 */
 	protected void validateSections() {
-		containsSectionCycles = false;
-		Set<String> bogusSections = new HashSet<String>();
+		sectionsCausingCycles = new HashSet<String>();
 
 		// check section names and extends= everywhere
 		if (doc.getValue(GENERAL, EXTENDS) != null)
@@ -228,7 +227,7 @@ public class InifileAnalyzer {
 				else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
 					addError(section, "Invalid section name: contains illegal character(s)");
 				else if (section.startsWith(SCENARIO_) && doc.containsSection(section.replaceFirst(SCENARIO_, CONFIG_)))
-					addError(section, "Invalid section name: a Config and a Scenario section cannot have the same name, and ["+section.replaceFirst(SCENARIO_, CONFIG_)+"] already exists");
+					addError(section, "Invalid section name: a ["+section.replaceFirst(SCENARIO_, CONFIG_)+"] section already exists");
 				String extendsName = doc.getValue(section, EXTENDS);
 				if (extendsName != null) {
 					if (!doc.containsSection(CONFIG_+extendsName) && !doc.containsSection(SCENARIO_+extendsName))
@@ -239,34 +238,25 @@ public class InifileAnalyzer {
 			}
 		}			
 
-		// check fallback chain for every section, except [General]
+		// check fallback chain for every section
 		for (String section : doc.getSectionNames()) {
 			// follow section fallback sequence, and detect cycles in it
-			if (!section.equals(GENERAL)) {
-				Set<String> sectionChain = new HashSet<String>();
-				String currentSection = section;
-				while (true) {
-					if (!doc.containsSection(currentSection))
-						break; // error: nonexistent section
-					if (sectionChain.contains(currentSection)) {
-						bogusSections.add(currentSection);
-						break; // error: cycle in the fallback chain
-					}
-					sectionChain.add(currentSection);
-					String extendsName = doc.getValue(currentSection, EXTENDS);
-					if (extendsName==null)
-						break; // done
-			        if (currentSection.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
-				        currentSection = SCENARIO_+extendsName;
-			        else
-			        	currentSection = CONFIG_+extendsName;
+			Set<String> sectionChain = new HashSet<String>();
+			String currentSection = section;
+			while (true) {
+				sectionChain.add(currentSection);
+				currentSection = InifileUtils.resolveBaseSection(doc, currentSection);
+				if (currentSection==null)
+					break; // [General] reached
+				if (sectionChain.contains(currentSection)) {
+					sectionsCausingCycles.add(currentSection);
+					break; // error: cycle in the fallback chain
 				}
 			}
 		}
 
 		// add error markers
-		containsSectionCycles = !bogusSections.isEmpty();
-		for (String section : bogusSections)
+		for (String section : sectionsCausingCycles)
 			addError(section, "Cycle in the fallback chain at section ["+section+"]");
 	}
 
@@ -648,10 +638,16 @@ public class InifileAnalyzer {
 		return resultList.toArray(new ParamResolution[]{});
 	}
 	
-	public boolean containsSectionCircles() {
-		return containsSectionCycles;
+	public boolean containsSectionCycles() {
+		analyzeIfChanged();
+		return !sectionsCausingCycles.isEmpty();
 	}
 
+	public boolean isCausingCycle(String section) {
+		analyzeIfChanged();
+		return sectionsCausingCycles.contains(section);
+	}
+	
 	/**
 	 * Classify an inifile key, based on its syntax.
 	 * XXX syntax rules used here must be enforced throughout the system

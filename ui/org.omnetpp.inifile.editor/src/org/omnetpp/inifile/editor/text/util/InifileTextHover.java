@@ -51,7 +51,7 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension, IInfor
 		// generate tooltip
 		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		if (key == null)
-			return InifileHoverUtils.getSectionHoverText(section, doc, analyzer);
+			return InifileHoverUtils.getSectionHoverText(section, doc, analyzer, false);
 		else 
 			return InifileHoverUtils.getEntryHoverText(section, key, doc, analyzer);
 	}    

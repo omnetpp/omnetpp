@@ -29,6 +29,7 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
  */
 //XXX use workbench selection service instead of manually calling setInput()
 //XXX also: treeView to follow editor's selection
+//XXX show error markers like in SectionsPage
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
 	protected IInifileDocument inifileDocument;
 	protected InifileEditor inifileEditor;
@@ -90,7 +91,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
-				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null);
+				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true);
 			}
  		});
 		

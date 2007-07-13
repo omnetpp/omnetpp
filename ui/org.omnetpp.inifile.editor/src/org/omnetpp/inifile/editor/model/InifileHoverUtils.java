@@ -3,8 +3,10 @@ package org.omnetpp.inifile.editor.model;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,12 +29,47 @@ public class InifileHoverUtils {
 	 * Generates tooltip for an inifile section.
 	 * @param section  null is accepted
 	 */
-	public static String getSectionHoverText(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public static String getSectionHoverText(String section, IInifileDocument doc, InifileAnalyzer analyzer, boolean allProblems) {
 		if (section == null || !doc.containsSection(section))
 			return null;
 
+		// problem markers: display the section header's and extends's errors as text,
+		// then display how many more there are within the section  
+		IMarker[] markers1 = InifileUtils.getProblemMarkersFor(section, null, doc);
+		IMarker[] markers2 = InifileUtils.getProblemMarkersFor(section, EXTENDS, doc);
+		IMarker[] allMarkers = InifileUtils.getProblemMarkersForWholeSection(section, doc);
+		List<IMarker> markersDisplayed = new ArrayList<IMarker>();
+		markersDisplayed.addAll(Arrays.asList(markers1));
+		markersDisplayed.addAll(Arrays.asList(markers2));
+
+		int numErrors = 0, numWarnings = 0;
+		for (IMarker m : allMarkers) {
+			if (!markersDisplayed.contains(m)) {
+				switch (m.getAttribute(IMarker.SEVERITY, -1)) {
+				case IMarker.SEVERITY_ERROR: numErrors++; break;
+				case IMarker.SEVERITY_WARNING: numWarnings++; break;
+				}
+			}
+		}
+
+		String numErrorsText = "";
+		if (numErrors+numWarnings > 0) {
+			if (numErrors>0 && numWarnings>0)
+				numErrorsText += numErrors + " errors and " + numWarnings + " warnings"; 
+			else if (numErrors>0)
+				numErrorsText += numErrors + " errors"; 
+			else if (numWarnings>0)
+				numErrorsText += numWarnings + " warnings";
+			if (markersDisplayed.size() > 0)
+				numErrorsText += " more";
+			numErrorsText += " in the section body";
+
+			numErrorsText = "<i>" + numErrorsText + "</i><br><br>";
+		}
+
+		String text = getProblemsHoverText(markersDisplayed.toArray(new IMarker[]{}), false) + numErrorsText;
+		
 		// name and description
-		String text = getProblemsHoverText(section, null, doc);
 		text += "<b>"+section+"</b>";
 		String description = doc.getValue(section, "description");
 		if (description != null)
@@ -53,7 +90,7 @@ public class InifileHoverUtils {
 			ParamResolution[] resList = analyzer.getUnassignedParams(section);
 			if (resList.length==0) {
 				if (networkName != null)
-					text += "<br>\nThis section seems to contain no unassigned NED parameters.";
+					text += "<br>\nNo unassigned NED parameters in this section.";
 			}
 			else {
 				text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
@@ -96,7 +133,8 @@ public class InifileHoverUtils {
 	 * Generates tooltip for a config entry.
 	 */
 	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
-		String text = getProblemsHoverText(section, key, doc);
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
+		String text = getProblemsHoverText(markers, false);
 		ConfigKey entry = ConfigRegistry.getEntry(key);
 		if (entry == null)
 			return HoverSupport.addHTMLStyleSheet(text);
@@ -129,7 +167,8 @@ public class InifileHoverUtils {
 	 */
 	public static String getParamKeyHoverText(String section, String key, InifileAnalyzer analyzer) {
 		//XXX somehow merge similar entries? (i.e. where pathModules[] and paramValueNode/paramDeclNode are the same)
-		String text = getProblemsHoverText(section, key, analyzer.getDocument());
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, analyzer.getDocument());
+		String text = getProblemsHoverText(markers, false);
 		text += "<b>[" + section + "] / " + key + "</b><br>\n";
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		if (resList.length==0) {
@@ -160,8 +199,7 @@ public class InifileHoverUtils {
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
-	public static String getProblemsHoverText(String section, String key, IInifileDocument doc) {
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
+	public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
 		if (markers.length==0) 
 			return "";
 		
@@ -173,7 +211,8 @@ public class InifileHoverUtils {
 				case IMarker.SEVERITY_WARNING: severity = "Warning"; break;
 				case IMarker.SEVERITY_INFO: severity = "Info"; break;
 			}
-			text += "<i>"+severity+": " + marker.getAttribute(IMarker.MESSAGE, "") + "</i><br/>\n";
+			String lineNumber = lineNumbers ? "Line "+marker.getAttribute(IMarker.LINE_NUMBER, -1)+": " : "";  
+			text += "<i>"+lineNumber+severity+": " + marker.getAttribute(IMarker.MESSAGE, "") + "</i><br/>\n";
 		}
 		return text+"<br/>";
 	}

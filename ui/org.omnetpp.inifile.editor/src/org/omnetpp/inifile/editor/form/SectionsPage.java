@@ -54,6 +54,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
@@ -67,7 +68,6 @@ public class SectionsPage extends FormPage {
 	private static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
 	private static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
 	
-	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
 	private static final String HINT_TEXT = "\nDrag and drop sections to edit the fallback chains of parameter and configuration lookups.";
 
 	private Label label;
@@ -205,7 +205,7 @@ public class SectionsPage extends FormPage {
 			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
-				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer());
+				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer(), true);
 			}
 		});
 
@@ -438,12 +438,9 @@ public class SectionsPage extends FormPage {
 	public void reread() {
 		super.reread();
 		IInifileDocument doc = getInifileDocument();
+		InifileAnalyzer analyzer = getInifileAnalyzer();
 
-		// handling cycles: they won't appear in the tree (property of the tree
-		// building algorithm), and we warn the user (in the label text, see below)
-		//XXX not needed if cycle sections also appear in the gui
-		label.setText(!getInifileAnalyzer().containsSectionCircles() ? HINT_TEXT : HINT_TEXT + "\n" + CIRCLE_WARNING_TEXT);
-		layout(true);  // number of lines in label may have changed
+		analyzer.analyzeIfChanged(); // refresh error markers
 
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
@@ -454,8 +451,8 @@ public class SectionsPage extends FormPage {
 			if (!sectionName.equals(GENERAL)) {
 				GenericTreeNode node = getOrCreate(nodes, sectionName);
 				String extendsSectionName = InifileUtils.resolveBaseSection(doc, sectionName);
-				if (extendsSectionName == null) {
-					// "extends=...": is bogus, fall back to [General]
+				if (analyzer.isCausingCycle(sectionName) || extendsSectionName == null) {
+					// bogus section, put it under [General]
 					generalSectionNode.addChild(node);
 				}
 				else {
@@ -464,8 +461,6 @@ public class SectionsPage extends FormPage {
 				}
 			}
 		}
-
-		//FIXME TODO handle cycles: if there is a node from which General is not accessible (cycle!), make it General's child
 
 		// reduce flicker: only overwrite existing tree input if it's not the same as this one
 		if (treeViewer.getInput()==null || !GenericTreeUtils.treeEquals(rootNode, (GenericTreeNode)treeViewer.getInput())) {
@@ -480,7 +475,7 @@ public class SectionsPage extends FormPage {
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName) {
 		GenericTreeNode node = nodes.get(sectionName);
 		if (node==null) {
-			IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionName, null, getInifileDocument());
+			IMarker[] markers = InifileUtils.getProblemMarkersForWholeSection(sectionName, getInifileDocument());
 			int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
 			node = new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity));
 			nodes.put(sectionName, node);

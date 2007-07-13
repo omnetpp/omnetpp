@@ -156,7 +156,7 @@ public class InifileUtils {
 
 	/**
 	 * Whether the section chain contains the given section. Useful for detecting
-	 * circles in the "extends" hierarchy.
+	 * cycles in the "extends" hierarchy.
 	 */
 	public static boolean sectionChainContains(IInifileDocument doc, String chainStartSection, String section) {
 		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
@@ -166,14 +166,15 @@ public class InifileUtils {
 	/**
 	 * Returns the name of the section the given section extends.
 	 * Returns null for the [General] section (it doesn't extend anything),
-	 * and on error (base section doesn't exist)
+	 * on error (base section doesn't exist); also, it only returns [General]
+	 * if such section really exists.
 	 */
 	public static String resolveBaseSection(IInifileDocument doc, String section) {
 		if (section.equals(GENERAL))
 			return null;
         String extendsName = doc.getValue(section, EXTENDS);
         if (extendsName==null)
-        	return GENERAL;
+        	return doc.containsSection(GENERAL) ? GENERAL : null;
         if (section.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
 	        return SCENARIO_+extendsName;
         else if (doc.containsSection(CONFIG_+extendsName)) 
@@ -292,19 +293,26 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Returns the problem markers for a given inifile entry, or 
-	 * if key==null, for the whole section including its contents.
+	 * Returns problem markers for an inifile entry or section heading
 	 */
 	public static IMarker[] getProblemMarkersFor(String section, String key, IInifileDocument doc) {
-		try {
-			LineInfo line = key==null ? 
-					doc.getSectionLineDetails(section) : doc.getEntryLineDetails(section, key);
-			if (line==null)
-				return new IMarker[0];
-			IFile file = line.getFile();
-			int startLine = line.getLineNumber();
-			int endLine = line.getLineNumber() + line.getNumLines();
+		LineInfo line = key==null ? doc.getSectionLineDetails(section) : doc.getEntryLineDetails(section, key);
+		return line==null ? new IMarker[0] : getProblemMarkersFor(line.getFile(), line.getLineNumber(), line.getLineNumber()+1);
+	}
 
+	/**
+	 * Returns problem markers for a whole inifile section
+	 */
+	public static IMarker[] getProblemMarkersForWholeSection(String section, IInifileDocument doc) {
+		LineInfo line = doc.getSectionLineDetails(section);
+		return line==null ? new IMarker[0] : getProblemMarkersFor(line.getFile(), line.getLineNumber(), line.getLineNumber() + line.getNumLines());
+	}
+
+	/**
+	 * Returns the problem markers for the given line range in the given file.
+	 */
+	public static IMarker[] getProblemMarkersFor(IFile file, int startLine, int endLine) {
+		try {
 			IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true, 0);
 			ArrayList<IMarker> result = new ArrayList<IMarker>();
 			for (IMarker marker : markers) {
