@@ -64,9 +64,9 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * @author Andras
  */
 public class SectionsPage extends FormPage {
-	private static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
-	private static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
-	private static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
+	public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
+	public static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
+	public static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
 	
 	private static final String HINT_TEXT = "\nDrag and drop sections to edit the fallback chains of parameter and configuration lookups.";
 

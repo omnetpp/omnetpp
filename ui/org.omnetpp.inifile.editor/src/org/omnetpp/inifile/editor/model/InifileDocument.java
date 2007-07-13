@@ -127,7 +127,7 @@ public class InifileDocument implements IInifileDocument {
 							public boolean visit(IResourceDelta delta) throws CoreException {
 								IResource resource = delta.getResource();
 								if (delta.getKind()==IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT)!=0 && 
-									resource instanceof IFile && resource.getFileExtension().equals("ini") && resource!=documentFile)
+									resource instanceof IFile && "ini".equals(resource.getFileExtension()) && resource!=documentFile)
 									result[0] = true;
 								return result[0]==false;
 							}

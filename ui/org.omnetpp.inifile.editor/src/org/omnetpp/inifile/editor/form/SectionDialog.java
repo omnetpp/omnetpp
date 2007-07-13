@@ -35,6 +35,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
  * Edit section name and some of its attributes 
  * @author Andras
  */
+//FIXME sectionTypeCombo is not finished! to be used everywhere!!!!
 public class SectionDialog extends TitleAreaDialog {
 	private IInifileDocument doc;
 	
@@ -135,7 +136,6 @@ public class SectionDialog extends TitleAreaDialog {
 		// fill "section type" combo
 		sectionTypeCombo.add(CONFIG_);
 		sectionTypeCombo.add(SCENARIO_);
-		//FIXME handle sectionTypeCombo everywhere!!!!
 		
 		// fill "extends" combo
 		if (GENERAL.equals(originalSectionName))

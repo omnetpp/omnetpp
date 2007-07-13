@@ -165,7 +165,7 @@ public class InifileFormEditor extends Composite {
 
 		// create new page
 		if (category.equals(PARAMETERS_PAGE))
-			formPage = new ParametersPage(form, inifileEditor);
+			formPage = new ParametersPage2(form, inifileEditor);
 		else if (category.equals(SECTIONS_PAGE))
 			formPage = new SectionsPage(form, inifileEditor);
 		else
