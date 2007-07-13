@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.Assert;
 
 /**
  * Node for a generic tree where every node contains a payload object.
- * We use this with GenericTreeContentProvider to display an abitrary 
+ * We use this with GenericTreeContentProvider to display an arbitrary 
  * object tree in a TreeViewer.
  * 
  * @author andras
@@ -70,7 +70,7 @@ public class GenericTreeNode {
 	}
 
 	/**
-	 * Returns the index of this node within irs parent. 
+	 * Returns the index of this node within its parent. 
 	 * Returns -1 if this is the root node. 
 	 */
 	public int indexInParent() {

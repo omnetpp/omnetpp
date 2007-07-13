@@ -452,8 +452,8 @@ public class SectionsPage extends FormPage {
 				GenericTreeNode node = getOrCreate(nodes, sectionName);
 				String extendsSectionName = InifileUtils.resolveBaseSection(doc, sectionName);
 				if (analyzer.isCausingCycle(sectionName) || extendsSectionName == null) {
-					// bogus section, put it under [General]
-					generalSectionNode.addChild(node);
+					// bogus section, put it under the root
+					rootNode.addChild(node);
 				}
 				else {
 					GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName);

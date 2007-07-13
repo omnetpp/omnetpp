@@ -232,7 +232,7 @@ public class InifileAnalyzer {
 				if (extendsName != null) {
 					if (!doc.containsSection(CONFIG_+extendsName) && !doc.containsSection(SCENARIO_+extendsName))
 						addError(section, EXTENDS, "No such section: [Config "+extendsName+"] or [Scenario "+extendsName+"]");
-					else if (section.startsWith(CONFIG_) && doc.containsSection(SCENARIO_+extendsName))
+					else if (section.startsWith(CONFIG_) && doc.containsSection(SCENARIO_+extendsName) && !doc.containsSection(CONFIG_+extendsName))
 						addError(section, EXTENDS, "A Config section cannot extend a Scenario section");
 				}
 			}
