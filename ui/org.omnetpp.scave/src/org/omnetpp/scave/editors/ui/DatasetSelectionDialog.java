@@ -8,7 +8,10 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Dataset;
@@ -19,9 +22,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 
 	public DatasetSelectionDialog(final ScaveEditor editor) {
-		super(editor.getSite().getShell(), new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
-		//XXX problem with this label provider: string begins with "dataset" (kills filter-by-typing)
-		//XXX make own labelprovider, but it should provide images too
+		super(editor.getSite().getShell(), new DatasetLabelProvider(editor));
 
 		// setup dialog defaults
 		setTitle("Select Target Dataset");
@@ -56,7 +57,26 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 		});
 	}
 
-	protected static String fallback(String string, String defaultString) {
-		return (string!=null && !string.equals("")) ? string : defaultString;
+	static class DatasetLabelProvider extends LabelProvider {
+		private ILabelProvider imageProvider;
+		
+		public DatasetLabelProvider(ScaveEditor editor) {
+			imageProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
+		}
+		
+		public Image getImage(Object element) {
+			if (element instanceof Dataset) {
+				return imageProvider.getImage(element);
+			}
+			return null;
+		}
+
+		public String getText(Object element) {
+			if (element instanceof Dataset) {
+				Dataset dataset = (Dataset)element;
+				return dataset.getName();
+			}
+			return super.getText(element);
+		}
 	}
 }
