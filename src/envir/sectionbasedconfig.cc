@@ -813,7 +813,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             throw cRuntimeError("Invalid section name [%s], should be [General], [Config <name>] or [Scenario <name>]", section);
         if (configName)
         {
-            if (*configname == ' ')
+            if (*configName == ' ')
                 throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
             for (const char *s=configName; *s; s++)
                 if (!isalnum(*s) && strchr("-_@", *s)==NULL)

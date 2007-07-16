@@ -132,7 +132,7 @@ void cFileOutputVectorManager::initRun()
         std::string seedset = opp_stringf("%ld", cfg->getAsInt(CFGID_SEED_SET));
         run.attributes["experiment"] = cfg->getAsString(CFGID_EXPERIMENT); //TODO if not already in there
         run.attributes["measurement"] = cfg->getAsString(CFGID_MEASUREMENT);
-        run.attributes["replication"] = opp_replacesubstring(cfg->getAsString(CFGID_REPLICATION), "@", seedset.c_str(), true);
+        run.attributes["replication"] = opp_replacesubstring(cfg->getAsString(CFGID_REPLICATION).c_str(), "@", seedset.c_str(), true);
         run.attributes["seed-set"] = seedset;
 
         //FIXME todo: fill in run.moduleParams[]
