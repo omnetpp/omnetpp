@@ -1,9 +1,5 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,9 +36,8 @@ public class FilterHints {
 		setHints(FilterUtil.FIELD_RUNNAME, getRunNameFilterHints(runList));
 		setHints(FilterUtil.FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
 		setHints(FilterUtil.FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
-		setHints(FilterUtil.FIELD_EXPERIMENT, getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
-		setHints(FilterUtil.FIELD_MEASUREMENT, getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
-		setHints(FilterUtil.FIELD_REPLICATION, getFilterHintsForRunAttribute(manager, runList, REPLICATION));
+		for (String attrName : RunAttribute.getNames())
+			setHints(attrName, getFilterHintsForRunAttribute(manager, runList, attrName));
 	}
 
 	public String[] getHints(String fieldName) {

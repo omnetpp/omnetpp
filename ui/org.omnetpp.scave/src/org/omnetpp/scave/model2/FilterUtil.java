@@ -1,9 +1,11 @@
 package org.omnetpp.scave.model2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,33 +28,19 @@ import org.omnetpp.scave.model2.FilterSyntax.TokenType;
  */
 public class FilterUtil {
 
-	// Note: these field names must be kept consistent with resultfilemanager.cc
-	// XXX and with RunAttribute
-	// XXX or: obtain them from resultfilemanager.cc via swig.. 
 	public static final String FIELD_FILENAME = "file";
 	public static final String FIELD_RUNNAME = "run";
-	public static final String FIELD_EXPERIMENT = "experiment";
-	public static final String FIELD_MEASUREMENT = "measurement";
-	public static final String FIELD_REPLICATION = "replication";
 	public static final String FIELD_MODULENAME = "module";
 	public static final String FIELD_DATANAME = "name";
-	public static final String FIELD_RUNNUMBER = "runNumber";
-	public static final String FIELD_NETWORKNAME = "networkName";
-	public static final String FIELD_DATETIME = "dateTime";
 
-	private static final String[] fieldNames = new String[] {
-		FIELD_FILENAME,
-		FIELD_RUNNAME,
-		FIELD_RUNNUMBER,
-		FIELD_EXPERIMENT,
-		FIELD_MEASUREMENT,
-		FIELD_REPLICATION,
-		FIELD_MODULENAME,
-		FIELD_DATANAME,
-		FIELD_RUNNUMBER,
-		FIELD_NETWORKNAME,
-		FIELD_DATETIME,
-	};
+	private static String[] fieldNames;
+	
+	static {
+		List<String> fields = new ArrayList<String>();
+		fields.addAll(Arrays.asList(new String[] {FIELD_FILENAME, FIELD_RUNNAME, FIELD_MODULENAME, FIELD_DATANAME}));
+		fields.addAll(Arrays.asList(RunAttribute.getNames()));
+		fieldNames = fields.toArray(new String[fields.size()]);
+	}
 
 	// separate fields connected with AND operator. The full string is NOT STORED.
 	private Map<String, String> fields = new LinkedHashMap<String, String>();
@@ -83,18 +71,6 @@ public class FilterUtil {
 		setField(FIELD_DATANAME, dataName);
 	}
 
-	public FilterUtil(String fileName, String runName,
-			String experimentName, String measurementName, String replicationName,
-			String moduleName, String dataName) {
-		setField(FIELD_FILENAME, fileName);
-		setField(FIELD_RUNNAME, runName);
-		setField(FIELD_EXPERIMENT, experimentName);
-		setField(FIELD_MEASUREMENT, measurementName);
-		setField(FIELD_REPLICATION, replicationName);
-		setField(FIELD_MODULENAME, moduleName);
-		setField(FIELD_DATANAME, dataName);
-	}
-
 	public FilterUtil(ResultItem item, String[] runidFields) {
 		ResultFile file = item.getFileRun().getFile();
 		Run run = item.getFileRun().getRun();
@@ -108,7 +84,7 @@ public class FilterUtil {
 				setField(FIELD_FILENAME, file.getFilePath());
 				String runNumber = run.getAttribute(RunAttribute.RUNNUMBER);
 				if (runNumber != null)
-					setField(FIELD_RUNNUMBER, runNumber);
+					setField(RunAttribute.RUNNUMBER, runNumber);
 			}
 		}
 		else {
@@ -118,12 +94,8 @@ public class FilterUtil {
 					setField(field, file.getFilePath());
 				else if (field == FIELD_RUNNAME)
 					setField(field, run.getRunName());
-				else if (field == FIELD_EXPERIMENT)
-					setField(field, run.getAttribute(RunAttribute.EXPERIMENT));
-				else if (field == FIELD_MEASUREMENT)
-					setField(field, run.getAttribute(RunAttribute.MEASUREMENT));
-				else if (field == FIELD_REPLICATION)
-					setField(field, run.getAttribute(RunAttribute.REPLICATION));
+				else // run attribute
+					setField(field, run.getAttribute(field));
 			}
 		}
 		setField(FIELD_MODULENAME, item.getModuleName());

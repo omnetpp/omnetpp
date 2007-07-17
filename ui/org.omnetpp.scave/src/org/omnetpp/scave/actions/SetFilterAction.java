@@ -81,12 +81,7 @@ public class SetFilterAction extends AbstractScaveAction {
 				RunAttribute attr = (RunAttribute)payload;
 				String name = attr.getName();
 				String value = attr.getValue();
-				if (EXPERIMENT.equals(name))
-					filterUtil.setField(FilterUtil.FIELD_EXPERIMENT, value);
-				else if (MEASUREMENT.equals(name))
-					filterUtil.setField(FilterUtil.FIELD_MEASUREMENT, value);
-				else if (REPLICATION.equals(name))
-					filterUtil.setField(FilterUtil.FIELD_REPLICATION, value);
+				filterUtil.setField(name, value);
 			}
 			return filterUtil;
 		}

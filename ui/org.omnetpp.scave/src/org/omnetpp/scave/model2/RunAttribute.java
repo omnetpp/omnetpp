@@ -10,9 +10,13 @@ public class RunAttribute {
 	public static final String EXPERIMENT = "experiment";
 	public static final String MEASUREMENT = "measurement";
 	public static final String REPLICATION = "replication";
-	public static final String RUNNUMBER = "runNumber";
-	public static final String NETWORKNAME = "networkName";
+	public static final String RUNNUMBER = "run-number";
+	public static final String NETWORKNAME = "network";
 	public static final String DATETIME = "dateTime";
+	
+	private static final String[] ALL = new String[] {
+		EXPERIMENT, MEASUREMENT, REPLICATION, RUNNUMBER, NETWORKNAME, DATETIME,
+	};
 
 	private String name;
 	private String value;
@@ -20,6 +24,10 @@ public class RunAttribute {
 	public RunAttribute(String name, String value) {
 		this.name = name;
 		this.value = value;
+	}
+	
+	public static String[] getNames() {
+		return ALL;
 	}
 	
 	public String getName() {

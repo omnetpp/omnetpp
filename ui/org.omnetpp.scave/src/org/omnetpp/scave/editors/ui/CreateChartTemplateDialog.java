@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.RunAttribute;
 
 /**
  * This dialog is called from CreateChartTemplateAction.
@@ -94,9 +95,9 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", FilterUtil.FIELD_RUNNAME);
 		runidButtons[i++] = createCheckbox(group, "file name", FilterUtil.FIELD_FILENAME);
 		label = new Label(group, SWT.NONE); // placeholder
-		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", FilterUtil.FIELD_EXPERIMENT);
-		Button measurementCb = runidButtons[i++] = createCheckbox(group, "measurement", FilterUtil.FIELD_MEASUREMENT);
-		Button replicationCb = runidButtons[i++] = createCheckbox(group, "replication", FilterUtil.FIELD_REPLICATION);
+		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", RunAttribute.EXPERIMENT);
+		Button measurementCb = runidButtons[i++] = createCheckbox(group, "measurement", RunAttribute.MEASUREMENT);
+		Button replicationCb = runidButtons[i++] = createCheckbox(group, "replication", RunAttribute.REPLICATION);
 
 		addDependency(runnameCb, true, new Button[] {experimentCb, measurementCb, replicationCb} , false);
 		addDependency(measurementCb, true, new Button[] {experimentCb}, true);
