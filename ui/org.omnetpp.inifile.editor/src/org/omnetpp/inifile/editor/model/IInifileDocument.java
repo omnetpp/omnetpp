@@ -117,6 +117,12 @@ public interface IInifileDocument {
 	void removeKey(String section, String key);
 
 	/**
+	 * Batch operation: removes the given entries in one go. The sections[] and keys[]
+	 * arrays must be the same size, and must not contain nulls.
+	 */
+	void removeKeys(String[] sections, String keys[]);
+
+	/**
 	 * Moves the given key before the given one. Throws error if the entry does 
 	 * not exist, or beforeKey does not exist. 
 	 * @param comment may be null

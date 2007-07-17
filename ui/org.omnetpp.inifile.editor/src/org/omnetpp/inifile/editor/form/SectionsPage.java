@@ -68,7 +68,7 @@ public class SectionsPage extends FormPage {
 	public static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
 	public static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
 	
-	private static final String HINT_TEXT = "\nDrag and drop sections to edit the fallback chains of parameter and configuration lookups.";
+	private static final String HINT_TEXT = "\nHINT: Drag sections to edit the hierarchy. Hierarchy defines the fallback order for lookups.";
 
 	private Label label;
 	private TreeViewer treeViewer;
@@ -415,7 +415,7 @@ public class SectionsPage extends FormPage {
 			IInifileDocument doc = getInifileDocument();
 			for (String draggedSectionName : draggedSections)
 				if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
-					if (!InifileUtils.sectionChainContains(doc, targetSectionName, draggedSectionName)) // avoid circles
+					if (!InifileUtils.sectionChainContains(doc, targetSectionName, draggedSectionName)) // avoid cycles
 						setSectionExtendsKey(draggedSectionName, targetSectionName);
 			reread();
 		}

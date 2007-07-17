@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
@@ -484,6 +485,19 @@ public class InifileDocument implements IInifileDocument {
 		// perform insertion (also checks that section exists)
 		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lastLine+1 : getEditableEntry(section, beforeKey).lineNumber;
 		addLineAt(atLine, text.trim());  // trim(): because addLine() already inserts a trailing "\n" 
+	}
+
+	public void removeKeys(String[] sections, String keys[]) {
+		Assert.isTrue(sections.length==keys.length);
+
+		// validate keys
+		int n = keys.length;
+		for (int i=0; i<n; i++)
+			getEditableEntry(sections[i], keys[i]);  // this throws exception if entry does not exist, or comes from an included file
+
+		// remove entries
+		for (int i=0; i<n; i++)
+			removeKey(sections[i], keys[i]);  // not very efficient
 	}
 	
 	public LineInfo getEntryLineDetails(String section, String key) {
