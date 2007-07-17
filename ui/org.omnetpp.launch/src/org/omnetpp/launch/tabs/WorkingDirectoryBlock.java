@@ -45,6 +45,8 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     private Text fOtherWorkingText = null;
     private Text fWorkingDirText;
 
+    private String executableLoc;
+
     public WorkingDirectoryBlock() {
         super();
     }
@@ -186,7 +188,20 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * Sets the default working directory
      */
     protected void setDefaultWorkingDir() {
-        setDefaultWorkingDirectoryText("${project_loc}");
+        if (executableLoc == null)
+            setDefaultWorkingDirectoryText("${project_loc}");
+        else
+            setDefaultWorkingDirectoryText("${container_loc:"+executableLoc+"}");
+
+    }
+
+    /**
+     * Sets the executable files workspace relative path so the default working directory can be set correctly
+     * @param exeLoc
+     */
+    public void setExecutableLocation(String exeLoc) {
+        executableLoc = exeLoc;
+        setDefaultWorkingDir();
     }
 
     /* (non-Javadoc)
@@ -247,7 +262,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
             }
         }
         catch (CoreException e) {
-            setErrorMessage("Problem occured during reading the configuration: " + e.getStatus().getMessage());
+            setErrorMessage("Problem occurred during reading the configuration: " + e.getStatus().getMessage());
             LaunchPlugin.logError(e);
         }
     }

@@ -124,7 +124,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
             if (StringUtils.isNotBlank(projname) && StringUtils.isNotBlank(progname))
                 location = "${project_loc:/"+projname+"/"+progname+"}";
             if (StringUtils.isBlank(projname) && StringUtils.isNotBlank(progname))
-                location = "${project_loc:/"+progname+"}";
+                location = "${container_loc:/"+progname+"}";
             location = config.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, location);
 
             if (location != null) {

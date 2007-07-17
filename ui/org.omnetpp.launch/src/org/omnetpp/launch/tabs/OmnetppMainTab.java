@@ -13,6 +13,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -145,6 +146,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
             LaunchPlugin.logError(ce);
         }
         simulationBlock.initializeFrom(config);
+        workingDirBlock.setExecutableLocation(fProgText.getText().trim());
         workingDirBlock.initializeFrom(config);
 	}
 
@@ -195,8 +197,10 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
     }
 
     @Override
-    public String getId() {
-        return IOmnetppLaunchConstants.OMNETPP_LAUNCH_ID+".mainTab";
+    public void modifyText(ModifyEvent e) {
+        if (e.getSource() == fProgText)
+            workingDirBlock.setExecutableLocation(fProgText.getText().trim());
+        super.modifyText(e);
     }
 
     /**
