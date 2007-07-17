@@ -42,7 +42,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		String[] filterFields = FilterUtil.getFieldNames();
 		fieldProposals = new ContentProposal[filterFields.length];
 		for (int i = 0; i < filterFields.length; ++i) {
-			fieldProposals[i] = new ContentProposal(filterFields[i]);
+			fieldProposals[i] = new ContentProposal(filterFields[i], filterFields[i]+"()");
 		}
 		binaryOperatorProposals = new ContentProposal[] {
 				new ContentProposal("OR"),
