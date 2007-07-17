@@ -20,10 +20,14 @@ public class FilterField {
 	FilterContentProposalProvider proposalProvider;
 
 	public FilterField(Composite parent, int style) {
-		this.text = new Text(parent, style);
+		this(new Text(parent, style));
+	}
+	
+	public FilterField(Text text) {
+		this.text = text;
 		this.proposalProvider = new FilterContentProposalProvider();
 		FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
-		ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT, parent);
+		ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT, text.getParent());
 		decorator.setImage(contentAssistDecoration.getImage());
 		decorator.setDescriptionText(contentAssistDecoration.getDescription());
 		ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
