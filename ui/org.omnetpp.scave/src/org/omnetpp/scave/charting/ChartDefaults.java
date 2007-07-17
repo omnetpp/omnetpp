@@ -32,6 +32,7 @@ import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
+import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 
 /**
  * Defines defaults for the chart. Used by both the chart widgets 
@@ -73,7 +74,7 @@ public class ChartDefaults {
 	public static final boolean DEFAULT_Y_AXIS_LOGARITHMIC = false;
 
 	// grid
-	public static final boolean DEFAULT_SHOW_GRID = true;
+	public static final ShowGrid DEFAULT_SHOW_GRID = ShowGrid.Major;
 	public static final Color DEFAULT_GRID_COLOR = ColorFactory.GREY80;
 	
 	// bar chart

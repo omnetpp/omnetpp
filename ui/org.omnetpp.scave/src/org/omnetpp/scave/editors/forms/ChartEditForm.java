@@ -41,6 +41,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -99,7 +100,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button xAxisLogCheckbox;
 	private Button yAxisLogCheckbox;
 	private Button invertAxesCheckbox;
-	private Button showGridCheckbox;
+	private Combo showGridCombo;
 
 	private Button displayLegendCheckbox;
 	private Button displayBorderCheckbox;
@@ -222,7 +223,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", group);
 			invertAxesCheckbox = createCheckboxField("Invert X,Y", group);
 			group = createGroup("Grid", panel, 1);
-			showGridCheckbox = createCheckboxField("Show grid", group);
+			showGridCombo = createComboField("Show grid", group, ShowGrid.class, false);
 		}
 		else if (TAB_LEGEND.equals(name)) {
 			displayLegendCheckbox = createCheckboxField("Display legend", panel);
@@ -457,7 +458,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		newProps.setProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection()); // XXX
 		newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
 		newProps.setXYInvert(invertAxesCheckbox.getSelection());
-		newProps.setXYGrid(showGridCheckbox.getSelection());
+		newProps.setXYGrid(resolveEnum(showGridCombo.getText(), ShowGrid.class));
 		// Legend
 		newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
 		newProps.setLegendBorder(displayBorderCheckbox.getSelection());
@@ -506,7 +507,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		xAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_X_AXIS_LOGARITHMIC)); // XXX for vector charts only
 		yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
 		invertAxesCheckbox.setSelection(props.getXYInvert());
-		showGridCheckbox.setSelection(props.getXYGrid());
+		showGridCombo.setText(props.getXYGrid().name());
 		// Legend
 		displayLegendCheckbox.setSelection(props.getDisplayLegend());
 		displayBorderCheckbox.setSelection(props.getLegendBorder());

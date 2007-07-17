@@ -157,6 +157,12 @@ public class ChartProperties extends PropertySource {
 		West,
 		NorthWest,
 	}
+	
+	public enum ShowGrid {
+		None,
+		Major,
+		All,
+	}
 
 	
 	@SuppressWarnings("unchecked")
@@ -255,9 +261,9 @@ public class ChartProperties extends PropertySource {
 	public boolean defaultXYInvert() { return ChartDefaults.DEFAULT_INVERT_XY; }
 
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid")
-	public boolean getXYGrid() { return getBooleanProperty(PROP_XY_GRID); }
-	public void setXYGrid(boolean showgrid) { setProperty(PROP_XY_GRID, showgrid); }
-	public boolean defaultXYGrid() { return ChartDefaults.DEFAULT_SHOW_GRID; }
+	public ShowGrid getXYGrid() { return getEnumProperty(PROP_XY_GRID, ShowGrid.class); }
+	public void setXYGrid(ShowGrid showgrid) { setProperty(PROP_XY_GRID, showgrid); }
+	public ShowGrid defaultXYGrid() { return ChartDefaults.DEFAULT_SHOW_GRID; }
 
 	/*======================================================================
 	 *                             Legend

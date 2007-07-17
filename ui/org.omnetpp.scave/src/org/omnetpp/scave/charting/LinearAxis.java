@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis 
@@ -31,7 +32,7 @@ public class LinearAxis {
 	private int gap = 2;  // space between axis line and plot area (usually 0)
 	private int majorTickLength = 4;
 	private int minorTickLength = 2;
-	private boolean drawGrid = DEFAULT_SHOW_GRID;
+	private ShowGrid showGrid = DEFAULT_SHOW_GRID;
 	private boolean drawTickLabels = true;
 	private boolean drawTitle = true;
 
@@ -114,7 +115,7 @@ public class LinearAxis {
 	}
 	
 	public void drawGrid(GC gc) {
-		if (!drawGrid)
+		if (showGrid == ShowGrid.None)
 			return;
 
 		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn 
@@ -125,16 +126,18 @@ public class LinearAxis {
 			gc.setLineStyle(Graphics.LINE_DOT);
 			gc.setForeground(DEFAULT_GRID_COLOR);
 			for (BigDecimal tick : ticks) {
-				if (vertical) {
-					int y = mapping.toCanvasY(tick.doubleValue()); 
-					if (y >= rect.y && y <= rect.bottom()) {
-						gc.drawLine(rect.x, y, rect.right(), y);
+				if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
+					if (vertical) {
+						int y = mapping.toCanvasY(tick.doubleValue()); 
+						if (y >= rect.y && y <= rect.bottom()) {
+							gc.drawLine(rect.x, y, rect.right(), y);
+						}
 					}
-				}
-				else {
-					int x = mapping.toCanvasX(tick.doubleValue()); 
-					if (x >= rect.x && x <= rect.right()) {
-						gc.drawLine(x, rect.y, x, rect.bottom());
+					else {
+						int x = mapping.toCanvasX(tick.doubleValue()); 
+						if (x >= rect.x && x <= rect.right()) {
+							gc.drawLine(x, rect.y, x, rect.bottom());
+						}
 					}
 				}
 			}
@@ -259,12 +262,12 @@ public class LinearAxis {
 		this.titleFont = titleFont;
 	}
 
-	public boolean isGridVisible() {
-		return drawGrid;
+	public ShowGrid getShowGrid() {
+		return showGrid;
 	}
 
-	public void setGridVisible(boolean gridEnabled) {
-		this.drawGrid = gridEnabled;
+	public void setShowGrid(ShowGrid showGrid) {
+		this.showGrid = showGrid;
 	}
 
 	public boolean isDrawTickLabels() {

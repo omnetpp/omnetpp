@@ -49,6 +49,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
@@ -149,7 +150,7 @@ public class ScalarChart extends ChartCanvas {
 		else if (PROP_XY_INVERT.equals(name))
 			setInvertXY(Converter.stringToBoolean(value));
 		else if (PROP_XY_GRID.equals(name))
-			setGridVisible(Converter.stringToBoolean(value));
+			setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			throw new IllegalArgumentException("Logarithmic axis not yet supported"); //TODO
 		else
@@ -244,11 +245,11 @@ public class ScalarChart extends ChartCanvas {
 		chartChanged();
 	}
 
-	public void setGridVisible(Boolean value) {
+	public void setShowGrid(ShowGrid value) {
 		if (value == null)
 			value = DEFAULT_SHOW_GRID;
 
-		valueAxis.setGridVisible(value);
+		valueAxis.setShowGrid(value);
 		chartChanged();
 	}
 	

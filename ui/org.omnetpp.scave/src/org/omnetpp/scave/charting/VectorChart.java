@@ -46,6 +46,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
+import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -402,7 +403,7 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_XY_INVERT.equals(name))
 			; //TODO
 		else if (PROP_XY_GRID.equals(name))
-			setGridVisibility(Converter.stringToBoolean(value));
+			setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
 		// Lines
 		else if (name.startsWith(PROP_DISPLAY_LINE))
 			setDisplayLine(getLineId(name), Converter.stringToBoolean(value));
@@ -486,10 +487,10 @@ public class VectorChart extends ChartCanvas {
 		chartChanged();
 	}
 	
-	public void setGridVisibility(Boolean value) {
-		boolean b = value != null ? value : DEFAULT_SHOW_GRID;
-		xAxis.setGridVisible(b);
-		yAxis.setGridVisible(b);
+	public void setShowGrid(ShowGrid value) {
+		ShowGrid showGrid = value != null ? value : DEFAULT_SHOW_GRID;
+		xAxis.setShowGrid(showGrid);
+		yAxis.setShowGrid(showGrid);
 		chartChanged();
 	}
 	
