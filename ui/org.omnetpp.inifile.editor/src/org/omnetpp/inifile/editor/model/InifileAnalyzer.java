@@ -1,9 +1,13 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_INT;
@@ -11,11 +15,15 @@ import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_STRING;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_XML;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -71,7 +79,16 @@ public class InifileAnalyzer {
 		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.apply-default, rng mapping, vector configuration, etc)
 	};
 
-	/**
+    /** 
+     * Used internally: an iteration variable "${...}", stored as part of SectionData
+     */
+	static class IterationVariable {
+        String varname; // printable variable name ("x"); "" for an unnamed variable
+        String value;   // "1,2,5..10"; never empty
+        String parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
+    };
+
+    /**
 	 * Used internally: class of objects attached to IInifileDocument entries
 	 * (see getKeyData()/setKeyData())
 	 */
@@ -86,8 +103,10 @@ public class InifileAnalyzer {
 	static class SectionData {
 		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>();
 		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>(); // incl. unassigned
+		Map<String,IterationVariable> iterationVariables = new HashMap<String, IterationVariable>(); 
 	}
 
+   
 	/**
 	 * Constructor.
 	 */
@@ -149,10 +168,13 @@ public class InifileAnalyzer {
 			// calculate parameter resolutions for each section
 			calculateParamResolutions(ned);
 
+			// collect iteration variables
+			collectIterationVariables();
+
 			// data structure is done
 			changed = false;
 
-			// check section names, detect circles in the fallback chains
+			// check section names, detect cycles in the fallback chains
 			validateSections();
 
 			// validate config entries and parameter keys; this must be done AFTER changed=false
@@ -426,6 +448,45 @@ public class InifileAnalyzer {
 		// check validity of some settings, like record-interval=, etc
 		if (e==CFGID_RECORDING_INTERVAL) {
 			//XXX validate syntax
+		}
+	}
+
+	protected void collectIterationVariables() {
+		for (String section : doc.getSectionNames()) {
+			SectionData sectionData = (SectionData) doc.getSectionData(section);
+			sectionData.iterationVariables.clear();
+			for (String key : doc.getKeys(section))
+				if (doc.getValue(section, key).indexOf('$') != -1)
+					parseIterationVariables(section, key);
+		}
+	}
+	
+	protected void parseIterationVariables(String section, String key) {
+		Pattern p = Pattern.compile(
+				"\\$\\{" +   // opening dollar+brace
+				"\\s*([a-zA-Z0-9@_-]+)" + // variable name
+				"\\s*=\\s*" +  // equals
+				"\\s*(.*?)" +  // value string
+				"\\s*(!\\s*([a-zA-Z0-9@_-]+))?" + // optional trailing "! variable"
+				"\\s*\\}");  // closing brace
+
+		String value = doc.getValue(section, key);
+		Matcher m = p.matcher(value);
+		SectionData sectionData = (SectionData) doc.getSectionData(section);
+
+		// find all occurrences of the pattern in the input string
+		while (m.find()) {
+			IterationVariable v = new IterationVariable();
+			v.varname = m.group(1);
+			v.value = m.group(2);
+			v.parvar = m.group(4);
+			//System.out.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
+			if (Arrays.asList(PREDEFINED_CONFIGVARS).contains(v.varname))
+				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
+			else if (sectionData.iterationVariables.containsKey(v.varname))
+				addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}"); // FIXME check the whole section chain for such clashes!
+			else
+				sectionData.iterationVariables.put(v.varname, v);
 		}
 	}
 
@@ -793,4 +854,35 @@ public class InifileAnalyzer {
 		return remark;
 	}
 
+	/**
+	 * Returns names of declared iteration variables ("${variable=...}") from 
+	 * the given section and all its fallback sections; also returns predefined 
+	 * variables.
+	 */
+	public String[] getVariableNames(String activeSection) {
+		List<String> result = new ArrayList<String>();
+		result.addAll(Arrays.asList(PREDEFINED_CONFIGVARS));
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+		for (String section : sectionChain) {
+			SectionData sectionData = (SectionData) doc.getSectionData(section);
+			result.addAll(sectionData.iterationVariables.keySet());
+		}
+		return result.toArray(new String[]{});
+	}
+
+	/** 
+	 * Returns the value string (e.g. "1,2,6..10") for an iteration variable 
+	 * from the given section and its fallback sections.
+	 */
+	public String getVariableValueString(String activeSection, String variable) {
+		//XXX what to return for predefined variables?
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+		for (String section : sectionChain) {
+			SectionData sectionData = (SectionData) doc.getSectionData(section);
+			if (sectionData.iterationVariables.containsKey(variable))
+				return sectionData.iterationVariables.get(variable).value;
+		}
+		return null;
+	}
 }
+

@@ -66,6 +66,7 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
+//XXX check clicking on a section line is compatible with editing
 //XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
 public class ParametersPage2 extends FormPage {
 	private TreeViewer treeViewer;

@@ -38,6 +38,19 @@ public class ConfigRegistry {
 
 	/** Name of the "extends=" config key */
 	public static final String EXTENDS; // initialized at the bottom of this file
+
+	/** Predefined inifile iteration variables */
+	public static final String[] PREDEFINED_CONFIGVARS = {
+	    "configname", 
+	    "runnumber",
+	    "network",
+	    "processid",
+	    "datetime",
+	    "runid",
+	    "repetition",
+	    "iterationvars",
+	    "iterationvars2"
+	};
 	
 	private static HashMap<String, ConfigKey> entries = new HashMap<String, ConfigKey>(); 
 	private static HashMap<String, ConfigKey> perObjectEntries = new HashMap<String, ConfigKey>(); 
