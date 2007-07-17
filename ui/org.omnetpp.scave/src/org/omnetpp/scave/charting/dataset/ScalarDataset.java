@@ -177,14 +177,14 @@ public class ScalarDataset implements IScalarDataset {
     
     private String keyFor(ScalarResult scalar, ScalarFields fields) {
     	StringBuffer sb = new StringBuffer();
-    	char sep = ',';
+    	char sep = ';';
     	if (fields.hasField(FILE)) sb.append(scalar.getFileRun().getFile().getFileName()).append(sep);
     	if (fields.hasField(RUN)) sb.append(scalar.getFileRun().getRun().getRunName()).append(sep);
     	if (fields.hasField(MODULE)) sb.append(scalar.getModuleName()).append(sep);
     	if (fields.hasField(NAME)) sb.append(scalar.getName()).append(sep);
-    	if (fields.hasField(EXPERIMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.EXPERIMENT));
-    	if (fields.hasField(MEASUREMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.MEASUREMENT));
-    	if (fields.hasField(REPLICATION)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.REPLICATION));
+    	if (fields.hasField(EXPERIMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.EXPERIMENT)).append(sep);
+    	if (fields.hasField(MEASUREMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.MEASUREMENT)).append(sep);
+    	if (fields.hasField(REPLICATION)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.REPLICATION)).append(sep);
     	if (sb.length() > 0) sb.deleteCharAt(sb.length()-1); // delete last ','
     	return sb.toString();
     }

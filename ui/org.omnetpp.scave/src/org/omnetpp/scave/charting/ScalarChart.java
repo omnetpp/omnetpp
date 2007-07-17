@@ -41,6 +41,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
@@ -86,6 +87,12 @@ public class ScalarChart extends ChartCanvas {
 				setSelection(new BarSelection());
 			}
 		});
+	}
+	
+	@Override
+	public void dispose() {
+		domainAxis.dispose();
+		super.dispose();
 	}
 
 	@Override
@@ -352,7 +359,7 @@ public class ScalarChart extends ChartCanvas {
 				zoomToFitY();
 			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
 		} 
-		catch (Throwable e) {
+		catch (Exception e) {
 			ScavePlugin.logError(e);
 		}
 		finally {
@@ -388,6 +395,22 @@ public class ScalarChart extends ChartCanvas {
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
 	}
+	
+	
+
+	@Override
+	public void setZoomX(double zoomX) {
+		super.setZoomX(zoomX);
+		chartChanged();
+	}
+
+	@Override
+	public void setZoomY(double zoomY) {
+		super.setZoomY(zoomY);
+		chartChanged();
+	}
+
+
 
 	/**
 	 * Draws the bars of the bar chart. 
@@ -437,6 +460,7 @@ public class ScalarChart extends ChartCanvas {
 		protected void drawBar(Graphics graphics, int row, int column) {
 			Rectangle rect = getBarRectangle(row, column);
 			rect.width = Math.max(rect.width, 1);
+			rect.height = Math.max(rect.height, 1);
 			graphics.setBackgroundColor(getBarColor(column));
 			graphics.fillRectangle(rect);
 			if (rect.width >= 4 && rect.height >= 3) {
@@ -543,17 +567,30 @@ public class ScalarChart extends ChartCanvas {
 	}
 
 
+	static class GroupLabelLayoutData {
+		TextLayout textLayout;
+		Dimension size;
+		Dimension rotatedSize;
+	}
+
 	/**
 	 * Domain axis for bar chart.
 	 */
 	class DomainAxis {
 		private Rectangle rect; // strip below the plotArea where the axis text etc goes
+		private GroupLabelLayoutData[] layoutData;
 		private int labelsHeight;
 		private String title = DEFAULT_X_AXIS_TITLE;
 		private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 		private Font labelsFont = DEFAULT_LABELS_FONT;
 		private double rotation = DEFAULT_X_LABELS_ROTATED_BY;
 		private int gap = 4;  // between chart and axis 
+		
+		public void dispose() {
+			for (GroupLabelLayoutData data : layoutData)
+				if (data != null && data.textLayout != null)
+					data.textLayout.dispose();
+		}
 		
 		public Ticks getTicks() {
 			return new Ticks(1.0, 0.0, 1.0); // TODO
@@ -571,10 +608,19 @@ public class ScalarChart extends ChartCanvas {
 			gc.setFont(labelsFont);
 			labelsHeight = 0;
 			if (dataset != null) {
-				for (int row = 0; row < dataset.getRowCount(); ++row) {
-					String label = dataset.getRowKey(row).toString();
-					Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
-					labelsHeight = Math.max(labelsHeight, size.height);
+				int cColumns = dataset.getColumnCount();
+				int cRows = dataset.getRowCount();
+				if (layoutData != null) {
+					for (GroupLabelLayoutData data : layoutData)
+						data.textLayout.dispose();
+				}
+				layoutData = new GroupLabelLayoutData[cRows];
+				for (int row = 0; row < cRows; ++row) {
+					int left = plot.getBarRectangle(row, 0).x;
+					int right = plot.getBarRectangle(row, cColumns - 1).right();
+					int width = right - left;
+					layoutData[row] = layoutGroupLabel(dataset.getRowKey(row), labelsFont, rotation, gc, width, 0);
+					labelsHeight = Math.max(labelsHeight, layoutData[row].rotatedSize.height);
 					//System.out.println("labelsheight: "+labelsHeight);
 				}
 			}
@@ -584,6 +630,29 @@ public class ScalarChart extends ChartCanvas {
 			insets.bottom = Math.max(insets.bottom, gap + labelsHeight + titleHeight + 8);
 			
 			return insets;
+		}
+		
+		private GroupLabelLayoutData layoutGroupLabel(String label, Font font, double rotation , GC gc, int maxWidth, int maxHeight) {
+			GroupLabelLayoutData data = new GroupLabelLayoutData();
+			data.textLayout = new TextLayout(gc.getDevice());
+			data.textLayout.setText(label);
+			data.textLayout.setFont(font);
+			data.textLayout.setAlignment(SWT.CENTER);
+			data.textLayout.setWidth(maxWidth);
+			System.out.format("width=%s%n", maxWidth);
+			if (data.textLayout.getLineCount() > 1) {
+				// TODO soft hyphens are visible even when no break at them 
+				data.textLayout.setText(label.replace(';', '\u00ad'));
+			}
+			org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds(); 
+			data.size = new Dimension(bounds.width, bounds.height); //new Dimension(gc.textExtent(data.label));
+			data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
+//			if (data.rotatedSize.width > maxWidth && (rotation == 0.0 || rotation == 180.0)) {
+//				data.label = data.label.replace(';', '\n');
+//				data.size = new Dimension(gc.textExtent(data.label));
+//				data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
+//			}
+			return data;
 		}
 
 		/**
@@ -618,18 +687,21 @@ public class ScalarChart extends ChartCanvas {
 				graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
 				graphics.pushState();
 				for (int row = 0; row < dataset.getRowCount(); ++row) {
-					String label = dataset.getRowKey(row).toString();
 					int left = plot.getBarRectangle(row, 0).x;
 					int right = plot.getBarRectangle(row, cColumns - 1).right();
 
 					graphics.restoreState();
 					graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
-
-					Dimension size = new Dimension(gc.textExtent(label));
-					Dimension rotatedSize = GeomUtils.rotatedSize(size, rotation);
+					
+					GroupLabelLayoutData data = layoutData[row];
+					//String label = data.label;
+					Dimension size = data.size;
+					Dimension rotatedSize = data.rotatedSize;
+					
 					graphics.translate((left + right) / 2 - rotatedSize.width / 2, rect.y + gap + 1 + size.height/2);
 					graphics.rotate((float)rotation);
-					graphics.drawText(label, 0, -size.height/2);
+					graphics.drawTextLayout(data.textLayout, 0, -size.height/2);
+					//graphics.drawText(label, 0, -size.height/2);
 				}
 				graphics.popState();
 			}
