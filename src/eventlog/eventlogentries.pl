@@ -25,10 +25,11 @@ while (<FILE>)
    {
       # comment
    }
-   elsif ($_ =~ /^([\w]+) +([\w]+) *$/)
+   elsif ($_ =~ /^([\w]+) +([\w]+) *(\/\/ *([\w ]+))?$/)
    {
       $classCode = $1;
       $className = $2;
+      $classComment = $4;
       $classHasOptField = 0;
       print "$classCode $className\n";
       foreach $class (@classes)
@@ -43,7 +44,7 @@ while (<FILE>)
    {
       print "{\n";
    }
-   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *$/)
+   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *(\/\/ *([\w-+ ]+))?$/)
    {
       $fieldCode = $1;
       $fieldType = $2;
@@ -79,6 +80,8 @@ while (<FILE>)
          $mandatory = 1;
       }
 
+      $comment = $7;
+
       $fieldCType = $fieldType;
       $fieldCType =~ s/string/const char */;
       $field = {
@@ -89,6 +92,7 @@ while (<FILE>)
          NAME => $fieldName,
          MANDATORY => $mandatory,
          DEFAULTVALUE => $fieldDefault,
+         COMMENT => $comment,
       };
 
       push(@fields, $field);
@@ -101,6 +105,7 @@ while (<FILE>)
          NAME => $className,
          HASOPT => $classHasOptField,
          FIELDS => [ @fields ],
+         COMMENT => $classComment,
       };
       push(@classes, $class);
       @fields = ();
@@ -391,3 +396,37 @@ print FACTORY_CC_FILE "}\n";
 close(FACTORY_CC_FILE);
 
 
+#
+# Write eventlogentries csv file
+#
+
+open(ENTRIES_CSV_FILE, ">eventlogentries.csv");
+
+print ENTRIES_CSV_FILE "Name\tType\tDescription\n";
+
+foreach $class (@classes)
+{
+   print ENTRIES_CSV_FILE "$class->{CODE}\t\t$class->{COMMENT}\n";
+
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      if ($field->{TYPE} eq "bool")
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\tboolean\t$field->{COMMENT}\n";
+      }
+      elsif (($field->{TYPE} eq "int") || $field->{TYPE} eq "long")
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\tinteger\t$field->{COMMENT}\n";
+      }
+      elsif ($field->{TYPE} eq "simtime_t")
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\tsimulation time\t$field->{COMMENT}\n";
+      }
+      else
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\t$field->{TYPE}\t$field->{COMMENT}\n";
+      }
+   }
+}
+
+close(ENTRIES_CSV_FILE);
