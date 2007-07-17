@@ -3,7 +3,7 @@ package org.omnetpp.common.contentassist;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.ui.TableTextCellEditor;
@@ -20,7 +20,7 @@ public class ContentAssistUtil {
 	 * @param valueProposalProvider
 	 * @param replace  whether proposal replaces editor content or gets inserted
 	 */
-	public static ContentAssistCommandAdapter configureTableColumnContentAssist(final TableViewer tableViewer, 
+	public static ContentAssistCommandAdapter configureTableColumnContentAssist(final ColumnViewer tableViewer, 
 			int columnIndex, IContentProposalProvider valueProposalProvider, boolean replace) {
 
 		// officially, it should be just this:

@@ -13,10 +13,22 @@ package org.omnetpp.common.ui;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,9 +37,11 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * <i>Note: This class is a copy of <code>org.eclipse.jdt.internal.ui.dialogs.TableTextCellEditor</code>,
- * with two changes:<br/>
- *     (1) it does not apply the value on every keystroke, and <br/>
- *     (2) does NOTHING on focus lost event.<br/>
+ * with the following changes:<br/>
+ *     (1) it does not apply the value on every keystroke<br/>
+ *     (2) does NOTHING on focus lost event<br/>
+ *     (3) works also for TreeViewer <br/>
+ *     
  * The original TextCellEditor commits on focus lost, which means a content proposal
  * selected with mouse double click just gets IGNORED. Moreover, such commit causes
  * disaster in InifileEditor ParametersPage "Key" column editing. JDT code used
@@ -63,7 +77,7 @@ public class TableTextCellEditor extends CellEditor {
 		public void activate();
 	}
 
-	private final TableViewer fTableViewer;
+	private final ColumnViewer fTableViewer; // a TableViewer or a TreeViewer
 	private final int fColumn;
     private boolean commitOnFocusLost = false;
 	private final String fProperty;
@@ -84,14 +98,14 @@ public class TableTextCellEditor extends CellEditor {
     private static final int defaultStyle = SWT.SINGLE;
 	private ModifyListener fModifyListener;
 
-	public TableTextCellEditor(TableViewer tableViewer, int column) {
-		super(tableViewer.getTable(), defaultStyle);
+	public TableTextCellEditor(ColumnViewer tableViewer, int column) {
+		super((Composite)tableViewer.getControl(), defaultStyle);
 		fTableViewer= tableViewer;
 		fColumn= column;
 		fProperty= (String) tableViewer.getColumnProperties()[column];
 	}
 
-	public TableTextCellEditor(TableViewer tableViewer, int column, boolean commitOnFocusLost) {
+	public TableTextCellEditor(ColumnViewer tableViewer, int column, boolean commitOnFocusLost) {
 	    this(tableViewer, column);
 	    this.commitOnFocusLost = commitOnFocusLost;
 	}
@@ -213,21 +227,26 @@ public class TableTextCellEditor extends CellEditor {
 					return;
 
 				switch (e.keyCode) {
+
 				case SWT.ARROW_DOWN :
-					e.doit= false;
-					int nextRow= fTableViewer.getTable().getSelectionIndex() + 1;
-					if (nextRow >= fTableViewer.getTable().getItemCount())
+					if (fTableViewer instanceof TableViewer) {
+						e.doit= false;
+						int nextRow= ((TableViewer)fTableViewer).getTable().getSelectionIndex() + 1;
+						if (nextRow >= ((TableViewer)fTableViewer).getTable().getItemCount())
+							break;
+						editRow(nextRow);
 						break;
-					editRow(nextRow);
-					break;
+					}
 
 				case SWT.ARROW_UP :
-					e.doit= false;
-					int prevRow= fTableViewer.getTable().getSelectionIndex() - 1;
-					if (prevRow < 0)
+					if (fTableViewer instanceof TableViewer) {
+						e.doit= false;
+						int prevRow= ((TableViewer)fTableViewer).getTable().getSelectionIndex() - 1;
+						if (prevRow < 0)
+							break;
+						editRow(prevRow);
 						break;
-					editRow(prevRow);
-					break;
+					}
 
 				case SWT.F2 :
 					e.doit= false;
@@ -237,11 +256,12 @@ public class TableTextCellEditor extends CellEditor {
 			}
 
 			private void editRow(int row) {
-				fTableViewer.getTable().setSelection(row);
-				IStructuredSelection newSelection= (IStructuredSelection) fTableViewer.getSelection();
+				((TableViewer)fTableViewer).getTable().setSelection(row);
+				IStructuredSelection newSelection= (IStructuredSelection) ((TableViewer)fTableViewer).getSelection();
 				if (newSelection.size() == 1)
-					fTableViewer.editElement(newSelection.getFirstElement(), fColumn);
+					((TableViewer)fTableViewer).editElement(newSelection.getFirstElement(), fColumn);
 			}
+
 		});
         text.addKeyListener(new KeyAdapter() {
             // hook key pressed - see PR 14201
@@ -253,7 +273,7 @@ public class TableTextCellEditor extends CellEditor {
                 // disposed this cell editor
                 if (getControl() == null || getControl().isDisposed())
                     return;
-                checkSelection(); // see explaination below
+                checkSelection(); // see explanation below
                 checkDeleteable();
                 checkSelectable();
             }
@@ -268,7 +288,7 @@ public class TableTextCellEditor extends CellEditor {
         });
         // We really want a selection listener but it is not supported so we
         // use a key listener and a mouse listener to know when selection changes
-        // may have occured
+        // may have occurred
         text.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
