@@ -856,18 +856,21 @@ public class InifileAnalyzer {
 
 	/**
 	 * Returns names of declared iteration variables ("${variable=...}") from 
-	 * the given section and all its fallback sections; also returns predefined 
-	 * variables.
+	 * the given section and all its fallback sections.
 	 */
 	public String[] getVariableNames(String activeSection) {
-		List<String> result = new ArrayList<String>();
-		result.addAll(Arrays.asList(PREDEFINED_CONFIGVARS));
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-		for (String section : sectionChain) {
-			SectionData sectionData = (SectionData) doc.getSectionData(section);
-			result.addAll(sectionData.iterationVariables.keySet());
+		synchronized (doc) {
+			analyzeIfChanged();
+			List<String> result = new ArrayList<String>();
+			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+			for (String section : sectionChain) {
+				SectionData sectionData = (SectionData) doc.getSectionData(section);
+				result.addAll(sectionData.iterationVariables.keySet());
+			}
+			String[] array = result.toArray(new String[]{});
+			Arrays.sort(array);
+			return array;
 		}
-		return result.toArray(new String[]{});
 	}
 
 	/** 
@@ -876,13 +879,16 @@ public class InifileAnalyzer {
 	 */
 	public String getVariableValueString(String activeSection, String variable) {
 		//XXX what to return for predefined variables?
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-		for (String section : sectionChain) {
-			SectionData sectionData = (SectionData) doc.getSectionData(section);
-			if (sectionData.iterationVariables.containsKey(variable))
-				return sectionData.iterationVariables.get(variable).value;
+		synchronized (doc) {
+			analyzeIfChanged();
+			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+			for (String section : sectionChain) {
+				SectionData sectionData = (SectionData) doc.getSectionData(section);
+				if (sectionData.iterationVariables.containsKey(variable))
+					return sectionData.iterationVariables.get(variable).value;
+			}
+			return null;
 		}
-		return null;
 	}
 }
 

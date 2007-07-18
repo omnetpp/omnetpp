@@ -1,5 +1,7 @@
 package org.omnetpp.common.properties;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -20,11 +22,11 @@ public class ImageCellEditor extends TextCellEditorEx {
         }
 
         @Override
-        protected IContentProposal[] getProposalCandidates(String prefix) {
+        protected List<IContentProposal> getProposalCandidates(String prefix) {
             if (prefix.contains("/")) 
-                return sort(toProposals(ImageFactory.getImageNameList().toArray(new String[] {})));
+                return sort(toProposals(ImageFactory.getImageNameList().toArray(new String[]{})));
             else 
-                return sort(toProposals(ImageFactory.getCategories().toArray(new String[] {})));
+                return sort(toProposals(ImageFactory.getCategories().toArray(new String[]{})));
         }
         
     }

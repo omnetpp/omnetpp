@@ -7,6 +7,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFA
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,8 +73,8 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		}
 		else {
 			// for parameters etc, we have time to just check if there are actually any proposals   
-			IContentProposal[] proposals = getProposalCandidates("");
-			return proposals != null || proposals.length > 0;
+			List<IContentProposal> proposals = getProposalCandidates("");
+			return proposals.size()>0;
 		}
 	}
 
@@ -81,12 +82,12 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 s	 * before getting presented to the user.
 	 */
-	protected IContentProposal[] getProposalCandidates(String prefix) {
+	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		switch (keyType) {
-			case CONFIG: return getCandidatesForConfig();
-			case PARAM:  return getCandidatesForParam();
-			case PER_OBJECT_CONFIG: return getCandidatesForPerObjectConfig();
+			case CONFIG: return getCandidatesForConfig(prefix);
+			case PARAM:  return getCandidatesForParam(prefix);
+			case PER_OBJECT_CONFIG: return getCandidatesForPerObjectConfig(prefix);
 			default: return null; // should not happen (invalid key type)
 		}
 	}
@@ -94,10 +95,10 @@ s	 * before getting presented to the user.
 	/**
 	 * Generate proposals for a config entry
 	 */
-	protected IContentProposal[] getCandidatesForConfig() {
+	protected List<IContentProposal> getCandidatesForConfig(String prefix) {
 		ConfigKey entry = ConfigRegistry.getEntry(key);
 		if (entry == null)
-			return null;
+			return new ArrayList<IContentProposal>();  // nothing
 
 		// IMPORTANT: Remember to update isContentAssistAvailable() when this method gets extended!
 		if (entry==CFGID_EXTENDS) {
@@ -111,30 +112,45 @@ s	 * before getting presented to the user.
 				}
 			return sort(toProposals(names.toArray(new String[]{})));
 		}
+
+		List<IContentProposal> p = new ArrayList<IContentProposal>();
+
+		// after "${", offer variable names
+		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
+			p.addAll(toProposals(analyzer.getVariableNames(section)));
+			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
+		}
+
 		if (entry==CFGID_NETWORK) {
-			ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 			for (INEDTypeInfo ned : NEDResourcesPlugin.getNEDResources().getNetworks())
-				result.add(new ContentProposal(ned.getName(), ned.getName(), StringUtils.makeTextDocu(ned.getNEDElement().getComment())));
-			return sort(result.toArray(new IContentProposal[]{}));
+				p.add(new ContentProposal(ned.getName(), ned.getName(), StringUtils.makeTextDocu(ned.getNEDElement().getComment())));
+			sort(p);
 		}
-		if (entry==CFGID_PRELOAD_NED_FILES) {
-			return toProposals(new String[] {"*.ned"});
+		else if (entry==CFGID_PRELOAD_NED_FILES) {
+			p.addAll(toProposals(new String[] {"*.ned"}));
 		}
-		if (entry==CFGID_USER_INTERFACE) {
-			return toProposals(new String[] {"Cmdenv", "Tkenv"});
+		else if (entry==CFGID_USER_INTERFACE) {
+			p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv"}));
 		}
-		if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
-			return toProposals(new String[] {"true", "false"});
+		else if (entry==CFGID_CONSTRAINT) {
+			// offer variable names after "$"
+			if (prefix.matches(".*\\$[A-Za-z0-9_]*")) {
+				p.addAll(toProposals(analyzer.getVariableNames(section)));
+				p.addAll(toProposals(PREDEFINED_CONFIGVARS));
+			}
 		}
-		return null;
+		else if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
+			p.addAll(toProposals(new String[] {"true", "false"}));
+		}
+		return p;
 	}
 
 	/** 
 	 * Generate proposals for a module parameter key
 	 */
-	protected IContentProposal[] getCandidatesForParam() {
+	protected List<IContentProposal> getCandidatesForParam(String prefix) {
 		if (analyzer==null)
-			return null; // sorry
+			return new ArrayList<IContentProposal>();  // nothing
 
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 
@@ -156,32 +172,39 @@ s	 * before getting presented to the user.
 		//TODO make use of parameter properties (like @choice)
 		//TODO detect parameters which are used as "like" params, and offer suitable module types for them
 		List<IContentProposal> p = new ArrayList<IContentProposal>();
+
+		// after "${", offer variable names
+		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
+			p.addAll(toProposals(analyzer.getVariableNames(section)));
+			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
+		}
+		
 		switch (dataType) {
 		case NEDElementUtil.NED_PARTYPE_BOOL: 
-			addProposals(p, new String[] {"true", "false"}, null, true); 
+			p.addAll(toProposals(new String[] {"true", "false"})); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_INT: 
-			addProposals(p, new String[] {"0"}, "or any integer value", true);
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG", true); 
+			p.addAll(toProposals(new String[] {"0"}, "or any integer value"));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_DOUBLE:
-			addProposals(p, new String[] {"0.0"}, "or any double value", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.", true); 
-			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG", true); 
+			p.addAll(toProposals(new String[] {"0.0"}, "or any double value")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_STRING: 
-			addProposals(p, new String[] {"\"\""}, "or any string value", true); 
+			p.addAll(toProposals(new String[] {"\"\""}, "or any string value")); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_XML: 
-			addProposals(p, new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}, null, true); 
+			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"})); 
 			break;
 		}
-		return p.toArray(new IContentProposal[]{});
+		return p;
 	}
 
 	protected static String[] templatesToProposals(Template[] templates) {
@@ -191,27 +214,34 @@ s	 * before getting presented to the user.
 			Template template = templates[i];
 			s[i] = template.getName(); //XXX not very clean, or good even...
 		}
+		Arrays.sort(s);
 		return s;
 	}
 
 	/**
 	 * Generate proposals for per-object configuration keys
 	 */
-	protected IContentProposal[] getCandidatesForPerObjectConfig() {
+	protected List<IContentProposal> getCandidatesForPerObjectConfig(String prefix) {
 		String keySuffix = key.replaceFirst(".*\\.", ""); // only keep substring after last dot
 		ConfigKey entry = ConfigRegistry.getPerObjectEntry(keySuffix);
 		if (entry == null)
-			return null;
+			return new ArrayList<IContentProposal>();  // nothing
 
-		List<String> proposals = new ArrayList<String>();
+		List<IContentProposal> p = new ArrayList<IContentProposal>();
+
+		// after "${", offer variable names
+		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
+			p.addAll(toProposals(analyzer.getVariableNames(section)));
+			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
+		}
+
 		if (entry==CFGID_RECORDING_INTERVAL) { 
-			proposals.add("$1..");
-			proposals.add("$1..$2, $3.."); //XXX use templated proposals here!
+			p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
 		}
 		if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
-			return toProposals(new String[] {"true", "false"});
+			p.addAll(toProposals(new String[] {"true", "false"}));
 		}
-		return toProposals(proposals.toArray(new String[]{}));
+		return p;
 	}
 
 }

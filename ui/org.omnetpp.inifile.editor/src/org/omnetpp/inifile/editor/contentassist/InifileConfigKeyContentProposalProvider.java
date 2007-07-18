@@ -5,6 +5,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposal;
@@ -46,7 +47,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before presenting them to the user.
 	 */
-	protected IContentProposal[] getProposalCandidates(String prefix) {
+	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		// idea considered and discarded: don't propose those already there (would confuse user)
 		if (section != null) {
@@ -57,7 +58,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 				}
 			}
 		}
-		return sort(result.toArray(new IContentProposal[]{}));
+		return sort(result);
 	}
 	
 	/**

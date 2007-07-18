@@ -2,6 +2,7 @@ package org.omnetpp.common.contentassist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -53,27 +54,25 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		// proposal filtering: they have to start with this prefix.
 		String prefixToMatch = useWholePrefix ? prefix : getCompletionPrefix(prefix);
 
-		IContentProposal[] candidates = getProposalCandidates(prefix);
+		List<IContentProposal> candidates = getProposalCandidates(prefix);
 
-		if (candidates != null) {
-			// check if any of the proposals has description. If they do, we set "(no description)" 
-			// on the others as well. Reason: if left at null, previous tooltip will be shown, 
-			// which is very confusing.
-			boolean descriptionSeen = false;
-			for (IContentProposal p : candidates)
-				if (!StringUtils.isEmpty(p.getDescription()))
-					descriptionSeen = true;
+		// check if any of the proposals has description. If they do, we set "(no description)" 
+		// on the others as well. Reason: if left at null, previous tooltip will be shown, 
+		// which is very confusing.
+		boolean descriptionSeen = false;
+		for (IContentProposal p : candidates)
+			if (!StringUtils.isEmpty(p.getDescription()))
+				descriptionSeen = true;
 
-			// collect those candidates that match the last incomplete word in the editor
-			for (IContentProposal candidate : candidates) {
-				String content = candidate.getContent();
-				if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
-					// from the content, drop the prefix that has already been typed by the user
-					String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content; 
-					int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
-					String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
-					result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
-				}
+		// collect those candidates that match the last incomplete word in the editor
+		for (IContentProposal candidate : candidates) {
+			String content = candidate.getContent();
+			if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
+				// from the content, drop the prefix that has already been typed by the user
+				String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content; 
+				int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
+				String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
+				result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
 			}
 		}
 
@@ -102,7 +101,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before presenting them to the user.
 	 */
-	abstract protected IContentProposal[] getProposalCandidates(String prefix);
+	abstract protected List<IContentProposal> getProposalCandidates(String prefix);
 
 	/**
 	 * Utility function.
@@ -111,18 +110,24 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		Arrays.sort(proposals);
 		return proposals;
 	}
+
+	@SuppressWarnings("unchecked")
+	protected static List<IContentProposal> sort(List<IContentProposal> proposals) {
+		Collections.sort((List)proposals);
+		return proposals;
+	}
 	
 	/**
 	 * Utility function: Turn strings into proposals.
 	 */
-	protected static IContentProposal[] toProposals(String[] strings) {
+	protected static List<IContentProposal> toProposals(String[] strings) {
 		return toProposals(strings, null);
 	}
 	
 	/**
 	 * Utility function: Turn strings into proposals.
 	 */
-	protected static IContentProposal[] toProposals(String[] strings, String labelSuffix) {
+	protected static List<IContentProposal> toProposals(String[] strings, String labelSuffix) {
 		IContentProposal[] p = new IContentProposal[strings.length];
 		if (labelSuffix==null)
 			for (int i=0; i<p.length; i++)
@@ -130,17 +135,6 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		else
 			for (int i=0; i<p.length; i++)
 				p[i] = new ContentProposal(strings[i], strings[i].trim()+" -- "+labelSuffix, null);
-		return p;
+		return Arrays.asList(p);
 	}
-
-	/**
-	 * Utility function: Turn strings into proposals.
-	 */
-	protected static void addProposals(List<IContentProposal> list, String[] strings, String labelSuffix, boolean sort) {
-		IContentProposal[] proposals = toProposals(strings, labelSuffix);
-		if (sort)
-			sort(proposals);
-		list.addAll(Arrays.asList(proposals));
-	}
-
 }

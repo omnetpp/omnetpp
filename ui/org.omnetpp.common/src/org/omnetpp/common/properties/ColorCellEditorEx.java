@@ -1,5 +1,7 @@
 package org.omnetpp.common.properties;
 
+import java.util.List;
+
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
@@ -34,14 +36,14 @@ public class ColorCellEditorEx extends TextCellEditorEx {
         }
 
         @Override
-        protected IContentProposal[] getProposalCandidates(String prefix) {
+        protected List<IContentProposal> getProposalCandidates(String prefix) {
             return sort(toProposals(ColorFactory.getColorNames()));
         }
         
     }
 
     /**
-     * Creates a new color cell editor parented under the given control.
+     * Creates a new color cell editor with the given control as parent.
      * The cell editor value is black (<code>RGB(0,0,0)</code>) initially, and has no 
      * validator.
      *
@@ -52,7 +54,7 @@ public class ColorCellEditorEx extends TextCellEditorEx {
     }
 
     /**
-     * Creates a new color cell editor parented under the given control.
+     * Creates a new color cell editor with the given control as parent.
      * The cell editor value is black (<code>RGB(0,0,0)</code>) initially, and has no 
      * validator.
      *

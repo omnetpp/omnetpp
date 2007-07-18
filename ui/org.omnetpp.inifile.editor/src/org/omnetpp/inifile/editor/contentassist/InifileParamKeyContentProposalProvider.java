@@ -46,7 +46,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before presenting them to the user.
 	 */
-	protected IContentProposal[] getProposalCandidates(String prefix) {
+	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		if (section != null) {
 			//ParamResolution[] resList = analyzer.getUnassignedParams(section);
 			ParamResolution[] resList = analyzer.getParamResolutions(section);
@@ -124,7 +124,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			addProposals(proposals, paramProposals, ""); 
 			addProposals(proposals, applyDefaultProposals, ""); 
 
-			return proposals.toArray(new IContentProposal[]{});
+			return proposals;
 		}
 
 		return null;
