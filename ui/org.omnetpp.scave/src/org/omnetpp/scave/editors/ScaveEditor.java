@@ -22,19 +22,27 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.scave.editors.AbstractEMFModelEditor.MyContentOutlinePage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
@@ -306,6 +314,19 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 	
 	/**
+	 * Opens a new editor page for the {@code object} (Dataset, Chart or ChartSheet),
+	 * or switches to it if already opened.
+	 */
+	public void open(Object object) {
+		if (object instanceof Dataset)
+			openDataset((Dataset)object);
+		else if (object instanceof Chart)
+			openChart((Chart)object);
+		else if (object instanceof ChartSheet)
+			openChartSheet((ChartSheet)object);
+	}
+	
+	/**
 	 * Opens the given chart on a new editor page, or switches to it
 	 * if already opened.
 	 */
@@ -475,18 +496,40 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		}
 		
 	}
+	
+	class ScaveEditorContentOutlinePage extends MyContentOutlinePage
+	{
+		@Override
+		public void createControl(Composite parent) {
+			super.createControl(parent);
+			TreeViewer viewer = getTreeViewer();
+			Tree tree = viewer.getTree();
+			if (tree != null) {
+				tree.addSelectionListener(new SelectionAdapter () {
+					public void widgetDefaultSelected(SelectionEvent e) {
+						if (e.item instanceof TreeItem) {
+							TreeItem item = (TreeItem)e.item;
+							open(item.getData());
+						}
+					}
+				});
+			}
+		}
+	}
 
 	
 	@Override
 	public IContentOutlinePage getContentOutlinePage() {
 		if (contentOutlinePage == null) {
-			super.getContentOutlinePage();
+			contentOutlinePage = new ScaveEditorContentOutlinePage();
+			contentOutlinePage.addSelectionChangedListener(selectionChangedListener);
 			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
 					contentOutlineSelectionChanged(event.getSelection());
 				}
 			});
 		}
+
 		return contentOutlinePage;
 	}
 
@@ -498,7 +541,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 				gotoObject(object);
 		}
 	}
-
+	
 	/**
 	 * Adds the given workspace file to Inputs.
 	 */

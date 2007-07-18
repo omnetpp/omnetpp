@@ -751,55 +751,54 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 			return super.getAdapter(key);
 		}
 	}
+	
+	// The content outline is just a tree.
+	//
+	class MyContentOutlinePage extends ContentOutlinePage {
+		public void createControl(Composite parent) {
+			super.createControl(parent);
+			contentOutlineViewer = getTreeViewer();
+			contentOutlineViewer.addSelectionChangedListener(this);
+
+			// Set up the tree viewer.
+			//
+			contentOutlineViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
+			//contentOutlineViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+			contentOutlineViewer.setLabelProvider(
+					new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
+			initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
+			contentOutlineViewer.expandToLevel(3);
+			
+			// Make sure our popups work.
+			//
+			createContextMenuFor(contentOutlineViewer);
+
+			if (!editingDomain.getResourceSet().getResources().isEmpty()) {
+			  // Select the root object in the view.
+			  //
+			  ArrayList<Object> selection = new ArrayList<Object>();
+			  selection.add(editingDomain.getResourceSet().getResources().get(0));
+			  contentOutlineViewer.setSelection(new StructuredSelection(selection), true);
+			}
+		}
+
+		public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager, IStatusLineManager statusLineManager) {
+			super.makeContributions(menuManager, toolBarManager, statusLineManager);
+			contentOutlineStatusLineManager = statusLineManager;
+		}
+
+		public void setActionBars(IActionBars actionBars) {
+			super.setActionBars(actionBars);
+			getActionBarContributor().shareGlobalActions(this, actionBars);
+		}
+	}
 
 	/**
 	 * This accesses a cached version of the content outliner.
 	 */
 	public IContentOutlinePage getContentOutlinePage() {
 		if (contentOutlinePage == null) {
-			// The content outline is just a tree.
-			//
-			class MyContentOutlinePage extends ContentOutlinePage {
-				public void createControl(Composite parent) {
-					super.createControl(parent);
-					contentOutlineViewer = getTreeViewer();
-					contentOutlineViewer.addSelectionChangedListener(this);
-
-					// Set up the tree viewer.
-					//
-					contentOutlineViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-					//contentOutlineViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
-					contentOutlineViewer.setLabelProvider(
-							new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
-					initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
-					contentOutlineViewer.expandToLevel(3);
-					
-					// Make sure our popups work.
-					//
-					createContextMenuFor(contentOutlineViewer);
-
-					if (!editingDomain.getResourceSet().getResources().isEmpty()) {
-					  // Select the root object in the view.
-					  //
-					  ArrayList<Object> selection = new ArrayList<Object>();
-					  selection.add(editingDomain.getResourceSet().getResources().get(0));
-					  contentOutlineViewer.setSelection(new StructuredSelection(selection), true);
-					}
-				}
-
-				public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager, IStatusLineManager statusLineManager) {
-					super.makeContributions(menuManager, toolBarManager, statusLineManager);
-					contentOutlineStatusLineManager = statusLineManager;
-				}
-
-				public void setActionBars(IActionBars actionBars) {
-					super.setActionBars(actionBars);
-					getActionBarContributor().shareGlobalActions(this, actionBars);
-				}
-			}
-
 			contentOutlinePage = new MyContentOutlinePage();
-
 			// Listen to selection so that we can handle it is a special way.
 			//
 			contentOutlinePage.addSelectionChangedListener(selectionChangedListener);
