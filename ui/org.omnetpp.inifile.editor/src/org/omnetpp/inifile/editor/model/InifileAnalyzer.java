@@ -57,6 +57,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author Andras
  */
+//XXX validate that ${} can only occur in Scenario sections
 //XXX consider this:
 //Net.host[0].p = ...
 //Net.host[*].p = ...
