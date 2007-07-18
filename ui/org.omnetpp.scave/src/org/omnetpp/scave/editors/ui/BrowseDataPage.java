@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
@@ -33,7 +34,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	// UI elements
 	private Label label;
 	private TabFolder tabfolder;
-
+	
 	private TabItem vectorsTab;
 	private TabItem scalarsTab;
 	private TabItem histogramsTab;
@@ -43,7 +44,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 	private IResultFilesChangeListener fileChangeListener;
 	private SelectionListener selectionChangeListener;
-
+	
+	private SetFilterAction2 setFilterAction = new SetFilterAction2();
 
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -70,20 +72,23 @@ public class BrowseDataPage extends ScaveEditorPage {
 	}
 
 	public FilteredDataPanel getActivePanel() {
-		int index = tabfolder.getSelectionIndex();
-		if (index >= 0)
-			return (FilteredDataPanel)tabfolder.getItem(index).getControl();
-		else
-			return null;
+		if (tabfolder != null) {
+			int index = tabfolder.getSelectionIndex();
+			if (index >= 0)
+				return (FilteredDataPanel)tabfolder.getItem(index).getControl();
+		}
+		return null;
 	}
 
 	public void setActivePanel(FilteredDataPanel panel) {
-		TabItem[] items = tabfolder.getItems();
-		for (int i = 0; i < items.length; ++i)
-			if (items[i].getControl() == panel) {
-				tabfolder.setSelection(i);
-				return;
-			}
+		if (tabfolder != null) {
+			TabItem[] items = tabfolder.getItems();
+			for (int i = 0; i < items.length; ++i)
+				if (items[i].getControl() == panel) {
+					tabfolder.setSelection(i);
+					return;
+				}
+		}
 	}
 
 	public ResultType getActivePanelType() {
@@ -120,7 +125,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		scalarsPanel.setResultFileManager(manager);
 		vectorsPanel.setResultFileManager(manager);
 		histogramsPanel.setResultFileManager(manager);
-
+		
 		refreshPage(manager);
 	}
 
@@ -167,6 +172,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(editorContributor.createExportMenu());
 			contextMenuManager.add(editorContributor.getCopyToClipboardAction());
 			contextMenuManager.add(new Separator());
+			contextMenuManager.add(setFilterAction);
 			contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
@@ -197,6 +203,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 					if (e.getSource() instanceof DataTable) {
 						DataTable table = (DataTable)e.getSource();
 						scaveEditor.setSelection(new IDListSelection(table.getSelectedIDs(), table.getResultFileManager()));
+						setFilterAction.update(getActivePanel());
 					}
 					
 				}

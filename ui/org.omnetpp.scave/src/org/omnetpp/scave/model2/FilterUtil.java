@@ -235,5 +235,20 @@ public class FilterUtil {
 	public String toString() {
 		return getFilterPattern();
 	}
-
+	
+	public static String getFieldValue(ResultItem item, String field) {
+		if (item != null && field != null) {
+			if (FIELD_FILENAME.equals(field))
+				return item.getFileRun().getFile().getFilePath();
+			else if (FIELD_RUNNAME.equals(field))
+				return item.getFileRun().getRun().getRunName();
+			else if (FIELD_MODULENAME.equals(field))
+				return item.getModuleName();
+			else if (FIELD_DATANAME.equals(field))
+				return item.getName();
+			else if (RunAttribute.isRunAttribute(field))
+				return item.getFileRun().getRun().getAttribute(field);
+		}
+		return null;
+	}
 }

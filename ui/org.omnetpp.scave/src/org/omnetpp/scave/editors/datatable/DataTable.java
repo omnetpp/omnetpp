@@ -13,8 +13,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -29,6 +33,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.RunAttribute;
 
 /**
@@ -56,17 +61,19 @@ public class DataTable extends Table {
 	static class Column {
 
 		private String text;
+		private String fieldName;
 		private int weight;
 		private boolean defaultVisible;
 
-		public Column(String text, int weight, boolean visible) {
+		public Column(String text, String fieldName, int weight, boolean visible) {
 			this.text = text;
+			this.fieldName = fieldName;
 			this.weight = weight;
 			this.defaultVisible = visible;
 		}
 
 		public Column clone() {
-			return new Column(this.text, this.weight, this.defaultVisible);
+			return new Column(this.text, this.fieldName, this.weight, this.defaultVisible);
 		}
 
 		public boolean equals(Object other) {
@@ -78,35 +85,37 @@ public class DataTable extends Table {
 		}
 	}
 
-	private static final Column COL_DIRECTORY = new Column("Directory", 60, true);
-	private static final Column COL_FILE_RUN = new Column("File name and run number", 100, true);
-	private static final Column COL_RUN_ID = new Column("Run id", 100, true);
-	private static final Column COL_MODULE = new Column("Module", 160, true);
-	private static final Column COL_DATA = new Column("Statistic", 100, true);
-	private static final Column COL_VALUE = new Column("Value", 80, true);
-	private static final Column COL_COUNT = new Column("Count", 50, true);
-	private static final Column COL_MEAN = new Column("Mean", 60, true);
-	private static final Column COL_STDDEV = new Column("StdDev", 60, true);
-	private static final Column COL_MIN = new Column("Min", 60, false);
-	private static final Column COL_MAX = new Column("Max", 60, false);
-	private static final Column COL_EXPERIMENT = new Column("Experiment", 60, false);
-	private static final Column COL_MEASUREMENT = new Column("Measurement", 60, false);
-	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
+	private static final Column COL_DIRECTORY = new Column("Directory", null, 60, true);
+	private static final Column COL_FILE = new Column("File name", FilterUtil.FIELD_FILENAME,100, true);
+	private static final Column COL_CONFIG = new Column("Config name", RunAttribute.CONFIG, 100, true);
+	private static final Column COL_RUNNUMBER = new Column("Run number", RunAttribute.RUNNUMBER, 20, true);
+	private static final Column COL_RUN_ID = new Column("Run id", FilterUtil.FIELD_RUNNAME, 100, true);
+	private static final Column COL_MODULE = new Column("Module", FilterUtil.FIELD_MODULENAME, 160, true);
+	private static final Column COL_DATA = new Column("Name", FilterUtil.FIELD_DATANAME, 100, true);
+	private static final Column COL_VALUE = new Column("Value", null, 80, true);
+	private static final Column COL_COUNT = new Column("Count", null, 50, true);
+	private static final Column COL_MEAN = new Column("Mean", null, 60, true);
+	private static final Column COL_STDDEV = new Column("StdDev", null, 60, true);
+	private static final Column COL_MIN = new Column("Min", null, 60, false);
+	private static final Column COL_MAX = new Column("Max", null, 60, false);
+	private static final Column COL_EXPERIMENT = new Column("Experiment", RunAttribute.EXPERIMENT, 60, false);
+	private static final Column COL_MEASUREMENT = new Column("Measurement", RunAttribute.MEASUREMENT, 60, false);
+	private static final Column COL_REPLICATION = new Column("Replication", RunAttribute.REPLICATION, 60, false);
 	
 	private static final Column[] allScalarColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE_RUN, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
 		COL_VALUE
 	};
 
 	private static final Column[] allVectorColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE_RUN, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
 		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
 	};
 
 	private static final Column[] allHistogramColumns = new Column[] {
-		COL_DIRECTORY, COL_FILE_RUN, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
 		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
 	};
@@ -122,7 +131,9 @@ public class DataTable extends Table {
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 	
 	private static final ResultItem[] NULL_SELECTION = new ResultItem[0];
-
+	
+	private TableItem selectedItem;
+	private TableColumn selectedColumn;
 
 	public DataTable(Composite parent, int style, ResultType type) {
 		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
@@ -143,6 +154,12 @@ public class DataTable extends Table {
 
 		setMenu(contextMenuManager.createContextMenu(this));
 		//XXX getSite.registerContextMenu(contextMenuManager, this);
+
+		addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				handleMouseDown(event);
+			}
+		});
 	}
 
 	/**
@@ -292,8 +309,12 @@ public class DataTable extends Table {
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
 			idlist.sortByDirectory(manager, ascending);
-		else if (COL_FILE_RUN.equals(column))
-			idlist.sortByFileAndRun(manager, ascending);
+		else if (COL_FILE.equals(column))
+			idlist.sortByFileName(manager, ascending);
+		else if (COL_CONFIG.equals(column))
+			idlist.sortByRunAttribute(manager, RunAttribute.CONFIG, ascending);
+		else if (COL_RUNNUMBER.equals(column))
+			idlist.sortByRunAttribute(manager, RunAttribute.RUNNUMBER, ascending);
 		else if (COL_RUN_ID.equals(column))
 			idlist.sortByRun(manager, ascending);
 		else if (COL_MODULE.equals(column))
@@ -352,10 +373,17 @@ public class DataTable extends Table {
 			Column column = visibleColumns.get(i);
 			if (COL_DIRECTORY.equals(column))
 				item.setText(i, result.getFileRun().getFile().getDirectory());
-			else if (COL_FILE_RUN.equals(column)) {
+			else if (COL_FILE.equals(column)) {
 				String fileName = result.getFileRun().getFile().getFileName();
-				int runNumber = result.getFileRun().getRun().getRunNumber();
-				item.setText(i, runNumber == 0 ? fileName : fileName + "#" + runNumber);
+				item.setText(i, fileName);
+			}
+			else if (COL_CONFIG.equals(column)) {
+				String config = result.getFileRun().getRun().getAttribute(RunAttribute.CONFIG);
+				item.setText(i, config != null ? config : "n.a.");
+			}
+			else if (COL_RUNNUMBER.equals(column)) {
+				String runNumber = result.getFileRun().getRun().getAttribute(RunAttribute.RUNNUMBER);
+				item.setText(i, runNumber != null ? runNumber : "n.a.");
 			}
 			else if (COL_RUN_ID.equals(column))
 				item.setText(i, result.getFileRun().getRun().getRunName());
@@ -419,10 +447,17 @@ public class DataTable extends Table {
 			Column column = visibleColumns.get(i);
 			if (COL_DIRECTORY.equals(column))
 				writer.addField(result.getFileRun().getFile().getDirectory());
-			else if (COL_FILE_RUN.equals(column)) {
+			else if (COL_FILE.equals(column)) {
 				String fileName = result.getFileRun().getFile().getFileName();
-				int runNumber = result.getFileRun().getRun().getRunNumber();
-				writer.addField(runNumber == 0 ? fileName : fileName + "#" + runNumber);
+				writer.addField(fileName);
+			}
+			else if (COL_CONFIG.equals(column)) {
+				String config = result.getFileRun().getRun().getAttribute(RunAttribute.CONFIG);
+				writer.addField(config != null ? config : "n.a.");
+			}
+			else if (COL_RUNNUMBER.equals(column)) {
+				String config = result.getFileRun().getRun().getAttribute(RunAttribute.RUNNUMBER);
+				writer.addField(config != null ? config : "n.a.");
 			}
 			else if (COL_RUN_ID.equals(column))
 				writer.addField(result.getFileRun().getRun().getRunName());
@@ -536,5 +571,70 @@ public class DataTable extends Table {
 				preferences.setValue(getPreferenceStoreKey(column, "visible"), visible);
 			}
 		}
+	}
+	
+	/*
+	 * Select cells. 
+	 */
+	void handleMouseDown(MouseEvent event) {
+		if (isDisposed() || !isVisible()) return;
+		Point pt = new Point(event.x, event.y);
+		int lineWidth = getLinesVisible() ? getGridLineWidth() : 0;
+		TableItem item = getItem(pt);
+		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
+			if (item == null) return;
+		} else {
+			int start = item != null ? indexOf(item) : getTopIndex();
+			int end = getItemCount();
+			Rectangle clientRect = getClientArea();
+			for (int i = start; i < end; i++) {
+				TableItem nextItem = getItem(i);
+				Rectangle rect = nextItem.getBounds(0);
+				if (pt.y >= rect.y && pt.y < rect.y + rect.height + lineWidth) {
+					item = nextItem;
+					break;
+				}
+				if (rect.y > clientRect.y + clientRect.height) 	return;
+			}
+			if (item == null) return;
+		}
+		TableColumn newColumn = null;
+		int columnCount = getColumnCount();
+		if (columnCount > 0) {
+			for (int i = 0; i < columnCount; i++) {
+				Rectangle rect = item.getBounds(i);
+				rect.width += lineWidth;
+				rect.height += lineWidth;
+				if (rect.contains(pt)) {
+					newColumn = getColumn(i);
+					break;
+				}
+			}
+			if (newColumn == null) {
+				newColumn = getColumn(0);
+			}
+		}
+		setSelectedCell(item, newColumn);
+	}
+	
+	private void setSelectedCell(TableItem item, TableColumn column) {
+		selectedItem = item;
+		selectedColumn = column;
+	}
+	
+	public String getSelectedField() {
+		if (selectedColumn != null) {
+			Column column = (Column)selectedColumn.getData(COLUMN_KEY);
+			if (column != null)
+				return column.fieldName;
+		}
+		return null;
+	}
+	
+	public ResultItem getSelectedItem() {
+		if (selectedItem != null) {
+			return (ResultItem)selectedItem.getData(ITEM_KEY);
+		}
+		return null;
 	}
 }

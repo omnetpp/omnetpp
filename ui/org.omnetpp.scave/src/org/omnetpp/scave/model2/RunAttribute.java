@@ -1,5 +1,7 @@
 package org.omnetpp.scave.model2;
 
+import java.util.Arrays;
+
 import org.omnetpp.scave.engine.Run;
 
 public class RunAttribute {
@@ -10,12 +12,13 @@ public class RunAttribute {
 	public static final String EXPERIMENT = "experiment";
 	public static final String MEASUREMENT = "measurement";
 	public static final String REPLICATION = "replication";
+	public static final String CONFIG = "config";
 	public static final String RUNNUMBER = "run-number";
 	public static final String NETWORKNAME = "network";
 	public static final String DATETIME = "dateTime";
 	
 	private static final String[] ALL = new String[] {
-		EXPERIMENT, MEASUREMENT, REPLICATION, RUNNUMBER, NETWORKNAME, DATETIME,
+		EXPERIMENT, MEASUREMENT, REPLICATION, CONFIG, RUNNUMBER, NETWORKNAME, DATETIME,
 	};
 
 	private String name;
@@ -28,6 +31,10 @@ public class RunAttribute {
 	
 	public static String[] getNames() {
 		return ALL;
+	}
+	
+	public static boolean isRunAttribute(String name) {
+		return Arrays.asList(ALL).contains(name);
 	}
 	
 	public String getName() {

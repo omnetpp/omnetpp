@@ -7,11 +7,14 @@ import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,6 +28,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
@@ -63,6 +67,7 @@ public class DatasetView extends ViewWithMessagePart {
 	private IAction showVectorsAction;
 	private IAction showHistogramsAction;
 	private IAction selectAllAction;
+	private SetFilterAction2 setFilterAction;
 	
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
@@ -106,6 +111,7 @@ public class DatasetView extends ViewWithMessagePart {
 		showScalarsAction = new ShowTableAction(ResultType.SCALAR_LITERAL);
 		showVectorsAction = new ShowTableAction(ResultType.VECTOR_LITERAL);
 		showHistogramsAction = new ShowTableAction(ResultType.HISTOGRAM_LITERAL);
+		setFilterAction = new SetFilterAction2();
 		selectAllAction = new SelectAllAction();
 		IActionBars actionBars = getViewSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
@@ -120,9 +126,16 @@ public class DatasetView extends ViewWithMessagePart {
 		showVectorsAction.setChecked(true);
 	}
 	
-	private void createContextMenu(FilteredDataPanel panel) {
+	private void createContextMenu(final FilteredDataPanel panel) {
 		DataTable table = panel.getTable();
-		table.getContextMenuManager().add(new ChooseTableColumnsAction(table));
+		IMenuManager menuManager = table.getContextMenuManager();
+		menuManager.add(new ChooseTableColumnsAction(table));
+		menuManager.add(setFilterAction);
+		table.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setFilterAction.update(panel);
+			}
+		});
 	}
 	
 	@Override
@@ -223,8 +236,12 @@ public class DatasetView extends ViewWithMessagePart {
 	}
 	
 	private void setVisibleDataPanel(FilteredDataPanel table) {
-		layout.topControl = table;
-		panel.layout();
+		if (layout.topControl != table) {
+			if (setFilterAction != null)
+				setFilterAction.update(table);
+			layout.topControl = table;
+			panel.layout();
+		}
 	}
 	
 	private void setSelectedAction(IAction action) {
@@ -327,7 +344,7 @@ public class DatasetView extends ViewWithMessagePart {
 	
 	class ShowTableAction extends Action
 	{
-		Control table;
+		FilteredDataPanel table;
 		
 		public ShowTableAction(ResultType type) {
 			super(null, IAction.AS_RADIO_BUTTON);
@@ -355,10 +372,7 @@ public class DatasetView extends ViewWithMessagePart {
 		}
 		
 		public void run() {
-			if (layout.topControl != table) {
-				layout.topControl = table;
-				panel.layout();
-			}
+			setVisibleDataPanel(table);
 		}
 	}
 	
