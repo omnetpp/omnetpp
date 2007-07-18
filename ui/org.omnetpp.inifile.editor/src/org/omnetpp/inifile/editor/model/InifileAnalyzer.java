@@ -304,8 +304,17 @@ public class InifileAnalyzer {
 					addWarning(section, key, "Network is already specified in section ["+sec+"], as \""+doc.getValue(sec, key)+"\"");
 		}
 
-		// check value: if it is the right type
+		// check value
 		String value = doc.getValue(section, key);
+		
+		// if it contains "${...}" variables, check that those variables exist. Any more
+		// validation would be significantly more complex, and not done at the moment 
+		if (value.indexOf('$') != -1) {
+			if (validateValueWithIterationVars(section, key))
+				return;
+		}
+
+		// check if value has the right type
 		String errorMessage = validateConfigValueByType(value, e);
 		if (errorMessage != null) {
 			addError(section, key, errorMessage);
@@ -331,6 +340,28 @@ public class InifileAnalyzer {
 				return;
 			}
 		}
+	}
+
+	protected boolean validateValueWithIterationVars(String section, String key) {
+		Pattern p = Pattern.compile(
+				"\\$\\{" +   // opening dollar+brace
+				"\\s*([a-zA-Z0-9@_-]+)" + // variable name
+				"(\\s*=.*?)?" +  // equal sign (part after this is optional)
+				"\\s*\\}");  // closing brace
+
+		String value = doc.getValue(section, key);
+		Matcher m = p.matcher(value);
+		SectionData sectionData = (SectionData) doc.getSectionData(section);
+
+		// find all occurrences of the pattern in the input string
+		boolean foundAny = false;
+		while (m.find()) {
+			foundAny = true;
+			String varname = m.group(1);
+			if (!sectionData.iterationVariables.containsKey(varname) && !Arrays.asList(PREDEFINED_CONFIGVARS).contains(varname))
+				addError(section, key, "${"+varname+"} is undefined");
+		}
+		return foundAny;
 	}
 
 	/**
@@ -401,6 +432,13 @@ public class InifileAnalyzer {
 			}
 		}
 
+		// if value contains "${...}" variables, check that those variables exist. Any more
+		// validation would be significantly more complex, and not done at the moment 
+		if (value.indexOf('$') != -1) {
+			if (validateValueWithIterationVars(section, key))
+				return;
+		}
+
 		// check value is consistent with the data type
 		if (dataType != -1) {
 			int valueType = -1;
@@ -435,8 +473,17 @@ public class InifileAnalyzer {
 			addError(section, key, "Per-object configuration \""+configName+"\" can only be specified globally, in the [General] section");
 		}
 		
-		// check value: if it is the right type
+		// check value
 		String value = doc.getValue(section, key);
+
+		// if it contains "${...}" variables, check that those variables exist. Any more
+		// validation would be significantly more complex, and not done at the moment 
+		if (value.indexOf('$') != -1) {
+			if (validateValueWithIterationVars(section, key))
+				return;
+		}
+
+		// check if value has the right type
 		String errorMessage = validateConfigValueByType(value, e);
 		if (errorMessage != null) {
 			addError(section, key, errorMessage);
