@@ -639,7 +639,7 @@ public class ScalarChart extends ChartCanvas {
 			data.textLayout.setText(label);
 			data.textLayout.setFont(font);
 			data.textLayout.setAlignment(SWT.CENTER);
-			data.textLayout.setWidth(maxWidth);
+			data.textLayout.setWidth(Math.max(maxWidth, 10));
 			System.out.format("width=%s%n", maxWidth);
 			if (data.textLayout.getLineCount() > 1) {
 				// TODO soft hyphens are visible even when no break at them 
