@@ -86,8 +86,12 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
-					sequenceChart.setSelection(selection);
-					markLocation();
+					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+					
+					if (eventLogSelection.getEventLogInput() == sequenceChart.getInput()) {
+						sequenceChart.setSelection(selection);
+						markLocation();
+					}
 				}
 			}
 		};

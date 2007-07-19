@@ -402,18 +402,21 @@ public class VirtualTable<T>
 			System.out.println("VirtualTable got selection: " + selection);
 
 		IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
+		Object selectionInput = virtualTableSelection.getInput();
 
-		if (followSelection) {
-			Object input = virtualTableSelection.getInput();
-
-			if (getInput() != input)
-				setInput(input);
+		if (input != selectionInput) {
+			if (followSelection)
+				setInput(selectionInput);
+			else
+				throw new RuntimeException("Invalid selection");
 		}
 
-		setSelectionElements(virtualTableSelection.getElements());
-		scrollToSelectionElement();
-
-		fireSelectionChanged();
+		if (!elementListEquals(selectionElements, virtualTableSelection.getElements())) {
+			setSelectionElements(virtualTableSelection.getElements());
+			scrollToSelectionElement();
+	
+			fireSelectionChanged();
+		}
 	}
 
 	/**
@@ -879,6 +882,24 @@ public class VirtualTable<T>
 		}
 
 		return lineHeight;
+	}
+
+	private boolean elementListEquals(List<T> a, List<T> b) {
+		if (a == null || b == null)
+			return a == b;
+		
+		if (a.size() != b.size())
+			return false;
+
+		for (int i = 0; i < a.size(); i++) {
+			T ae = a.get(i);
+			T be = b.get(i);
+
+			if ((ae == null && be != null) || !ae.equals(be))
+				return false;
+		}
+		
+		return true;
 	}
 }
 

@@ -2298,6 +2298,10 @@ public class SequenceChart
 	
 	public int getEventYViewportCoordinate(long eventPtr) {
 		int index = getEventAxisModuleIndex(eventPtr);
+		
+		if (axisModuleYs == null)
+			calculateAxisYs();
+
 		return axisModuleYs[index] + axisRenderers[index].getHeight() / 2 - (int)getViewportTop();
 	}
 	
@@ -3111,38 +3115,35 @@ public class SequenceChart
 
 	/**
 	 * Sets the currently "selected" events. The selection must be an
-	 * instance of IEventLogSelection and refer to the current eventLog, 
-	 * otherwise the call will be ignored. Selection is displayed as red
-	 * circles in the chart.
+	 * instance of IEventLogSelection and refer to the current eventLog.
+	 * Selection is displayed as red circles in the chart.
 	 */
 	public void setSelection(ISelection selection) {
 		if (debug)
 			System.out.println("SequencreChart got selection: " + selection);
 
 		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+		EventLogInput selectionEventLogInput = eventLogSelection.getEventLogInput();
 
-		if (followSelection) {
-			EventLogInput eventLogInput = eventLogSelection.getEventLogInput();
-
-			if (getInput() != eventLogInput)
-				setInput(eventLogInput);
+		if (eventLogInput != selectionEventLogInput) {
+			if (followSelection)
+				setInput(selectionEventLogInput);
+			else
+				throw new RuntimeException("Invalid selection");
 		}
 
 		// if new selection differs from existing one, take over its contents
 		if (!eventListEquals(eventLogSelection.getEvents(), selectionEvents)) {
 			selectionEvents.clear();
-
-			for (IEvent e : eventLogSelection.getEvents()) 
-				selectionEvents.add(e);
+			selectionEvents.addAll(eventLogSelection.getEvents());
 
 			// go to the time of the first event selected
 			if (selectionEvents.size() > 0)
 				gotoElement(selectionEvents.get(0));
 
 			redraw();
+			fireSelectionChanged();
 		}
-
-		fireSelectionChanged();
 	}
 	
 	/**

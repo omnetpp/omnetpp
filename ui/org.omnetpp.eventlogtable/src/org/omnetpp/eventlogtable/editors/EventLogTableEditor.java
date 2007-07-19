@@ -87,8 +87,12 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != EventLogTableEditor.this && selection instanceof IEventLogSelection) {
-					eventLogTable.setSelection(selection);
-					markLocation();
+					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+					
+					if (eventLogSelection.getEventLogInput() == eventLogTable.getInput()) {
+						eventLogTable.setSelection(selection);
+						markLocation();
+					}
 				}
 			}
 		};
