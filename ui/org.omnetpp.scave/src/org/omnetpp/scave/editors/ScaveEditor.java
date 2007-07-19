@@ -2,14 +2,15 @@ package org.omnetpp.scave.editors;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
@@ -18,11 +19,10 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.eclipse.gef.ui.parts.ContentOutlinePage;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -39,10 +39,13 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.omnetpp.scave.editors.AbstractEMFModelEditor.MyContentOutlinePage;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
@@ -74,7 +77,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
-	private Map<EObject,ScaveEditorPage> closablePages = new HashMap<EObject,ScaveEditorPage>();
+	private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
 
 	/**
 	 *  ResultFileManager containing all files of the analysis.
@@ -145,6 +148,21 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		File javaFile = fileInput.getLocation().toFile();
 		if (!javaFile.exists())
 			throw new PartInitException("Missing Input: Scave file '" + javaFile.toString() + "' does not exists");
+		
+		// add part listener to save the editor state *before* it is disposed
+		final IWorkbenchPage page = site.getPage();
+		page.addPartListener(new IPartListener() {
+			public void partActivated(IWorkbenchPart part) {}
+			public void partBroughtToTop(IWorkbenchPart part) {}
+			public void partDeactivated(IWorkbenchPart part) {}
+			public void partOpened(IWorkbenchPart part) {}
+			public void partClosed(IWorkbenchPart part) {
+				if (part == ScaveEditor.this) {
+					page.removePartListener(this);
+					saveState();
+				}
+			}
+		});
 		
 		// init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
 		super.init(site, editorInput);
@@ -232,7 +250,8 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
-
+        
+        restoreState();
 	}
 
 	@Override
@@ -288,12 +307,19 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		else
 			return null;
 	}
+	
+	/**
+	 * Returns the edited resource.
+	 */
+	public Resource getResource() {
+    	return (Resource)editingDomain.getResourceSet().getResources().get(0);
+	}
 
 	/**
      * Utility method: Returns the Analysis object from the resource.
      */
 	public Analysis getAnalysis() {
-    	XMIResource resource = (XMIResource)editingDomain.getResourceSet().getResources().get(0);
+    	Resource resource = getResource();
     	Analysis analysis = (Analysis)resource.getContents().get(0);
     	return analysis;
     }
@@ -670,6 +696,53 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 */
 	public void fakeSelectionChange() {
 		setSelection(getSelection());
+	}
+	
+	/*
+	 * Per input persistent state.
+	 */
+	private IFile getInputFile() {
+		IEditorInput input = getEditorInput();
+		if (input instanceof IFileEditorInput)
+			return ((IFileEditorInput)input).getFile();
+		else
+			return null;
+	}
+	
+	private void saveState() {
+		try {
+			IFile file = getInputFile();
+			if (file != null) {
+				ScaveEditorMemento memento = new ScaveEditorMemento(this);
+				memento.openedObjects = closablePages.keySet().toArray(new EObject[closablePages.size()]);
+				memento.activePageIndex = getActivePage();
+				memento.saveState(file);
+			}
+		} catch (CoreException e) {
+//			MessageDialog.openError(getSite().getShell(),
+//									"Saving editor state",
+//									"Error occured while saving editor state: "+e.getMessage());
+			ScavePlugin.logError(e);
+		}
+	}
+	
+	private void restoreState() {
+		try {
+			IFile file = getInputFile();
+			if (file != null) {
+				ScaveEditorMemento memento = new ScaveEditorMemento(this);
+				memento.restoreState(file);
+				for (EObject object : memento.openedObjects)
+					open(object);
+				if (memento.activePageIndex >= 0 && memento.activePageIndex < getPageCount())
+					setActivePage(memento.activePageIndex);
+			}
+		} catch (CoreException e) {
+//			MessageDialog.openError(getSite().getShell(),
+//					"Restoring editor state",
+//					"Error occured while restoring editor state: "+e.getMessage());
+			ScavePlugin.logError(e);
+		}
 	}
 }
 
