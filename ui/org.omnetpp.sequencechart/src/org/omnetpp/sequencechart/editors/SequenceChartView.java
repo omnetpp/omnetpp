@@ -4,17 +4,23 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
-//FIXME if view gets displayed while no file is open --> NPE
+/**
+ * View for displaying causes and consequences of events.
+ */
 public class SequenceChartView extends ViewWithMessagePart {
-	protected SequenceChart sequenceChart;
+	private SequenceChart sequenceChart;
 
-	protected ISelectionListener listener;
+	private ISelectionListener selectionListener;
+
+	private IPartListener partListener;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -30,27 +36,51 @@ public class SequenceChartView extends ViewWithMessagePart {
 		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
-		listener = new ISelectionListener() {
+		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != SequenceChartView.this)
+				if (part != SequenceChartView.this && selection instanceof IEventLogSelection)
 					sequenceChart.setSelection(selection);
-
-				if (sequenceChart.getInput() == null)
-					showMessage("No event log available");
-				else
-					hideMessage();
 			}
 		};
-		viewSite.getPage().addSelectionListener(listener);
+		viewSite.getPage().addSelectionListener(selectionListener);
+
+		// follow active editor changes
+		partListener = new IPartListener() {
+			public void partActivated(IWorkbenchPart part) {
+			}
+
+			public void partBroughtToTop(IWorkbenchPart part) {
+				updateSelectionFromActiveEditor();
+			}
+
+			public void partClosed(IWorkbenchPart part) {
+				updateSelectionFromActiveEditor();
+			}
+
+			public void partDeactivated(IWorkbenchPart part) {
+			}
+
+			public void partOpened(IWorkbenchPart part) {
+				updateSelectionFromActiveEditor();
+			}
+		};
+		viewSite.getPage().addPartListener(partListener);
 
 		// bootstrap with current selection
-		listener.selectionChanged(null, getActiveEditorSelection());
+		selectionListener.selectionChanged(null, getActiveEditorSelection());
 	}
 	
 	@Override
 	public void dispose() {
+		IViewSite viewSite = (IViewSite)getSite();
+		
+		if (selectionListener != null)
+			viewSite.getPage().removeSelectionListener(selectionListener);
+		
+		if (partListener != null)
+			viewSite.getPage().removePartListener(partListener);
+
 		super.dispose();
-		getViewSite().getPage().removeSelectionListener(listener);
 	}
 
 	@Override
@@ -63,5 +93,18 @@ public class SequenceChartView extends ViewWithMessagePart {
 		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
 
 		return sequenceChart;
+	}
+
+	private void updateSelectionFromActiveEditor() {
+		ISelection selection = getActiveEditorSelection();
+		
+		if (selection instanceof IEventLogSelection) {
+			hideMessage();
+			sequenceChart.setSelection(selection);
+		}
+		else {
+			sequenceChart.setInput(null);
+			showMessage("No event log available");
+		}
 	}
 }

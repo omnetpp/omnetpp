@@ -90,7 +90,7 @@ public class EventLogInput
 	public EventLogInput(IFile file, IEventLog eventLog) {
 		this.file = file;
 		this.eventLogProgressManager = new EventLogProgressManager();
-		this.eventLogWatcher = new RecurringJob(1000) {
+		this.eventLogWatcher = new RecurringJob(3000) {
 			public void run() {
 				checkEventLogForChanges();
 			}
@@ -116,14 +116,21 @@ public class EventLogInput
 		}
 	}
 
+	public void dispose() {
+		if (eventLogWatcher != null)
+			eventLogWatcher.stop();
+	}
 
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		eventLogChangeListeners.clear();
-		eventLogWatcher.stop();
-	}
 
+		eventLogChangeListeners.clear();
+
+		if (eventLogWatcher != null)
+			eventLogWatcher.stop();
+	}
+	
 	/*************************************************************************************
 	 * GETTERS
 	 */
@@ -134,9 +141,6 @@ public class EventLogInput
 	
 	private void setEventLog(IEventLog eventLog) {
 		this.eventLog = eventLog;
-
-		if (eventLog != null)
-			eventLog.setJavaProgressMonitor(null, this);
 	}
 
 	public IEventLog getEventLog() {
@@ -383,6 +387,8 @@ public class EventLogInput
 
 	public void runWithProgressMonitor(Runnable runnable) {
 		try {
+			eventLog.setJavaProgressMonitor(null, this);
+
 			if (!eventLogProgressManager.isInRunWithProgressMonitor()) {
 				canceled = false;
 				eventLog.setProgressCallInterval(3);
@@ -402,6 +408,8 @@ public class EventLogInput
 			throw new RuntimeException(e);
 		}
 		finally {
+			eventLog.setJavaProgressMonitor(null, null);
+
 			longRunningOperationInProgress = false;
 			eventLogLongOperationEnded();
 		}

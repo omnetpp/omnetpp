@@ -4,20 +4,23 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 /**
- * View for displaying and navigating simulation events and associated log messages.
+ * View for displaying and navigating event log entries.
  */
-//FIXME after project close, it keeps throwing ResourceException: Resource '/xxx/omnetpp.log' does not exist.
 public class EventLogTableView extends ViewWithMessagePart {
-	protected EventLogTable eventLogTable;
+	private EventLogTable eventLogTable;
 
-	protected ISelectionListener listener;
+	private ISelectionListener selectionListener;
+
+	private IPartListener partListener;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -33,27 +36,51 @@ public class EventLogTableView extends ViewWithMessagePart {
 		eventLogTableContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
-		listener = new ISelectionListener() {
+		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != EventLogTableView.this)
+				if (part != EventLogTableView.this && selection instanceof IEventLogSelection)
 					eventLogTable.setSelection(selection);
-
-				if (eventLogTable.getInput() == null)
-					showMessage("No event log available");
-				else
-					hideMessage();
 			}
 		};
-		viewSite.getPage().addSelectionListener(listener);
+		viewSite.getPage().addSelectionListener(selectionListener);
+
+		// follow active editor changes
+		partListener = new IPartListener() {
+			public void partActivated(IWorkbenchPart part) {
+			}
+
+			public void partBroughtToTop(IWorkbenchPart part) {
+				updateSelectionFromActiveEditor();
+			}
+
+			public void partClosed(IWorkbenchPart part) {
+				updateSelectionFromActiveEditor();
+			}
+
+			public void partDeactivated(IWorkbenchPart part) {
+			}
+
+			public void partOpened(IWorkbenchPart part) {
+				updateSelectionFromActiveEditor();
+			}
+		};
+		viewSite.getPage().addPartListener(partListener);
 
 		// bootstrap with current selection
-		listener.selectionChanged(null, getActiveEditorSelection());
+		selectionListener.selectionChanged(null, getActiveEditorSelection());
 	}
 	
 	@Override
 	public void dispose() {
+		IViewSite viewSite = (IViewSite)getSite();
+		
+		if (selectionListener != null)
+			viewSite.getPage().removeSelectionListener(selectionListener);
+		
+		if (partListener != null)
+			viewSite.getPage().removePartListener(partListener);
+
 		super.dispose();
-		getViewSite().getPage().removeSelectionListener(listener);
 	}
 
 	@Override
@@ -66,5 +93,18 @@ public class EventLogTableView extends ViewWithMessagePart {
 		eventLogTable = new EventLogTable(parent, SWT.NONE);
 
 		return eventLogTable;
+	}
+	
+	private void updateSelectionFromActiveEditor() {
+		ISelection selection = getActiveEditorSelection();
+		
+		if (selection instanceof IEventLogSelection) {
+			hideMessage();
+			eventLogTable.setSelection(selection);
+		}
+		else {
+			eventLogTable.setInput(null);
+			showMessage("No event log available");
+		}
 	}
 }

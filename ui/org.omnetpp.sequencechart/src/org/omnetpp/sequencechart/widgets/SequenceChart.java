@@ -111,7 +111,7 @@ public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	private static final String STATE_PROPERTY = "SequenceChartState";
 
@@ -935,40 +935,42 @@ public class SequenceChart
 		// remember input
 		eventLogInput = input;
 		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
-		sequenceChartFacade = eventLogInput.getSequenceChartFacade();
+		sequenceChartFacade = eventLogInput == null ? null : eventLogInput.getSequenceChartFacade();
 
-		eventLogInput.runWithProgressMonitor(new Runnable() {
-			public void run() {
-
-				// clear state
-				axisModules = null;
-				axisModulePositions = null;
-				axisModuleYs = null;
-				invalidVirtualSize = true;
-				clearSelection();
-
-				// restore last known settings
-				if (eventLogInput != null) {
-					eventLogInput.addEventLogChangedListener(SequenceChart.this);
-					
-					if (!restoreState(eventLogInput.getFile())) {
-						if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1) {
-							sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
-							fixPointViewportCoordinate = 0;
+		if (eventLogInput != null) {
+			eventLogInput.runWithProgressMonitor(new Runnable() {
+				public void run() {
+	
+					// clear state
+					axisModules = null;
+					axisModulePositions = null;
+					axisModuleYs = null;
+					invalidVirtualSize = true;
+					clearSelection();
+	
+					// restore last known settings
+					if (eventLogInput != null) {
+						eventLogInput.addEventLogChangedListener(SequenceChart.this);
+						
+						if (!restoreState(eventLogInput.getFile())) {
+							if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1) {
+								sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+								fixPointViewportCoordinate = 0;
+							}
+	
+							setAxisModules(eventLogInput.getSelectedModules());
 						}
-
-						setAxisModules(eventLogInput.getSelectedModules());
+	
+						calculateAxisYs();
+						calculatePixelPerTimelineUnit();
+						configureScrollBars();
+						adjustHorizontalScrollBar();
 					}
-
-					calculateAxisYs();
-					calculatePixelPerTimelineUnit();
-					configureScrollBars();
-					adjustHorizontalScrollBar();
-				}
-
-				clearCanvasCache();
-			}			
-		});
+	
+					clearCanvasCache();
+				}			
+			});
+		}
 	}
 	
 	public boolean restoreState(IResource resource) {
@@ -3080,8 +3082,12 @@ public class SequenceChart
      * Only listeners registered at the time this method is called are notified.
      */
     protected void fireSelectionChanged() {
+    	fireSelectionChanged(getSelection());
+    }
+
+    protected void fireSelectionChanged(ISelection selection) {
         Object[] listeners = selectionChangedListeners.getListeners();
-        final SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());        
+        final SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
         for (int i = 0; i < listeners.length; ++i) {
             final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
             SafeRunnable.run(new SafeRunnable() {
@@ -3107,35 +3113,36 @@ public class SequenceChart
 	 * Sets the currently "selected" events. The selection must be an
 	 * instance of IEventLogSelection and refer to the current eventLog, 
 	 * otherwise the call will be ignored. Selection is displayed as red
-	 * circles in the graph.
+	 * circles in the chart.
 	 */
-	public void setSelection(ISelection newSelection) {
+	public void setSelection(ISelection selection) {
 		if (debug)
-			System.out.println("SequencreChart got selection: " + newSelection);
+			System.out.println("SequencreChart got selection: " + selection);
 
-		if (newSelection instanceof IEventLogSelection) {
-			IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
-	
-			if (getInput() != newEventLogSelection.getEventLogInput()) {
-				if (followSelection)
-					setInput(newEventLogSelection.getEventLogInput());
-				else
-					return;
-			}
-	
-			// if new selection differs from existing one, take over its contents
-			if (!eventListEquals(newEventLogSelection.getEvents(), selectionEvents)) {
-				selectionEvents.clear();
-				for (IEvent e : newEventLogSelection.getEvents()) 
-					selectionEvents.add(e);
-	
-				// go to the time of the first event selected
-				if (selectionEvents.size() > 0)
-					gotoElement(selectionEvents.get(0));
-	
-				redraw();
-			}
+		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+
+		if (followSelection) {
+			EventLogInput eventLogInput = eventLogSelection.getEventLogInput();
+
+			if (getInput() != eventLogInput)
+				setInput(eventLogInput);
 		}
+
+		// if new selection differs from existing one, take over its contents
+		if (!eventListEquals(eventLogSelection.getEvents(), selectionEvents)) {
+			selectionEvents.clear();
+
+			for (IEvent e : eventLogSelection.getEvents()) 
+				selectionEvents.add(e);
+
+			// go to the time of the first event selected
+			if (selectionEvents.size() > 0)
+				gotoElement(selectionEvents.get(0));
+
+			redraw();
+		}
+
+		fireSelectionChanged();
 	}
 	
 	/**

@@ -117,8 +117,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	
 	@Override
 	public void dispose() {
-		super.dispose();
+		eventLogTable = null;
 		singleton = null;
+
+		super.dispose();
 	}
 
 	private IEventLog getEventLog() {

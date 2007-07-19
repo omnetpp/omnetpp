@@ -20,6 +20,7 @@ import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
@@ -91,7 +92,9 @@ public class EventLogTable
 	@Override
 	protected void paint(final GC gc)
 	{
-		if (eventLogInput.isCanceled())
+		if (eventLogInput == null)
+			super.paint(gc);
+		else if (eventLogInput.isCanceled())
 			drawCancelMessage(gc);
 		else if (eventLogInput.isLongRunningOperationInProgress())
 			drawLongRunningOperationInProgressMessage(gc);
@@ -138,11 +141,10 @@ public class EventLogTable
 
 	@Override
 	public ISelection getSelection() {
-		List<EventLogEntryReference> selectionElements = getSelectionElements();
-		
-		if (selectionElements == null)
+		if (eventLogInput == null)
 			return null;
 		else {
+			List<EventLogEntryReference> selectionElements = getSelectionElements();
 			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
 			
 			for (EventLogEntryReference selectionElement : selectionElements)
@@ -152,17 +154,18 @@ public class EventLogTable
 		}
 	}
 
+	/**
+	 * Accepts only IEventLogSelections.
+	 */
 	@Override
 	public void setSelection(ISelection selection) {
-		if (selection instanceof EventLogSelection) {
-			EventLogSelection eventLogSelection = (EventLogSelection)selection;
-			List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
+		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
 
-			for (IEvent event : eventLogSelection.getEvents())
-				eventLogEntries.add(new EventLogEntryReference(event.getEventEntry()));
+		for (IEvent event : eventLogSelection.getEvents())
+			eventLogEntries.add(new EventLogEntryReference(event.getEventEntry()));
 
-			super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
-		}
+		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
 	}
 	
 	@Override
@@ -176,7 +179,7 @@ public class EventLogTable
 		// remember input
 		eventLogInput = (EventLogInput)input;
 		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
-		eventLogTableFacade = eventLogInput.getEventLogTableFacade();
+		eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
 		
 		// clear state
 		followEnd = false;

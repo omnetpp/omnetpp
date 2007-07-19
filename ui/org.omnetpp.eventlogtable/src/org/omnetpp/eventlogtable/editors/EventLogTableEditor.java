@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -16,19 +17,30 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
+/**
+ * Event log table display tool. (It is not actually an editor; it is only named so
+ * because it extends EditorPart).
+ * 
+ * @author levy
+ */
 public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
-	protected ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
+	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
-	protected EventLogTable eventLogTable;
+	private EventLogTable eventLogTable;
+
+	private ISelectionListener selectionListener;
 
 	public EventLogTable getEventLogTable() {
 		return eventLogTable;
@@ -54,6 +66,11 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	public void dispose() {
 		if (resourceChangeListener != null)
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		
+		if (selectionListener != null)
+			getSite().getPage().removeSelectionListener(selectionListener);
+
+		super.dispose();
 	}
 
 	@Override
@@ -65,6 +82,17 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 		getSite().setSelectionProvider(eventLogTable);
 		addLocationProviderPaintListener(eventLogTable.getCanvas());
+
+		// follow selection
+		selectionListener = new ISelectionListener() {
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				if (part != EventLogTableEditor.this && selection instanceof IEventLogSelection) {
+					eventLogTable.setSelection(selection);
+					markLocation();
+				}
+			}
+		};
+		getSite().getPage().addSelectionListener(selectionListener);
 	}
 
 	@Override

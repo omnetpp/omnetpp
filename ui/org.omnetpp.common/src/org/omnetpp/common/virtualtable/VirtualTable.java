@@ -366,7 +366,10 @@ public class VirtualTable<T>
 	}
 
 	protected void fireSelectionChanged() {
-		fireSelectionChanged(new SelectionChangedEvent(this, getSelection()));
+		ISelection selection = getSelection();
+		
+		if (selection != null)
+			fireSelectionChanged(new SelectionChangedEvent(this, selection));
 	}
 
     /**
@@ -397,33 +400,20 @@ public class VirtualTable<T>
 	public void setSelection(ISelection selection) {
 		if (debug)
 			System.out.println("VirtualTable got selection: " + selection);
-		
+
+		IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
+
 		if (followSelection) {
-			// act as a view: display the element which comes in the selection, 
-			// or display nothing if the selection is not a virtual table selection. 
-			if (!(selection instanceof IVirtualTableSelection))
-				setInput(null);
-			else {
-				IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
-				if (virtualTableSelection.getInput() != getInput())
-					setInput(virtualTableSelection.getInput());
-	
-				setSelectionElements(virtualTableSelection.getElements());
-				scrollToSelectionElement();
-			}
+			Object input = virtualTableSelection.getInput();
+
+			if (getInput() != input)
+				setInput(input);
 		}
-		else {
-			// act as an editor: stick to the input, and ignore selections 
-			// that are about something else 
-			if (selection instanceof IVirtualTableSelection) {
-				IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
-				
-				if (virtualTableSelection.getInput() == getInput()) {
-					setSelectionElements(virtualTableSelection.getElements());
-					scrollToSelectionElement();
-				}
-			}
-		}
+
+		setSelectionElements(virtualTableSelection.getElements());
+		scrollToSelectionElement();
+
+		fireSelectionChanged();
 	}
 
 	/**

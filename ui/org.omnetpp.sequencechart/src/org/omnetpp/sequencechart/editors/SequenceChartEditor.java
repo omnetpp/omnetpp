@@ -23,6 +23,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.omnetpp.common.eventlog.EventLogEditor;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
@@ -30,18 +31,14 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
  * Sequence chart display tool. (It is not actually an editor; it is only named so
  * because it extends EditorPart).
  * 
- * @author andras
+ * @author levy
  */
 public class SequenceChartEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
-	protected ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
+	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
-	protected SequenceChart sequenceChart;
+	private SequenceChart sequenceChart;
 
-	protected ISelectionListener selectionListener;
-
-	public SequenceChartEditor() {
-		super();
-	}
+	private ISelectionListener selectionListener;
 	
 	public SequenceChart getSequenceChart() {
 		return sequenceChart;
@@ -70,6 +67,8 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		
 		if (selectionListener != null)
 			getSite().getPage().removeSelectionListener(selectionListener);
+
+		super.dispose();
 	}
 
 	@Override
@@ -80,13 +79,13 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
 
-		addLocationProviderPaintListener(sequenceChart);
 		getSite().setSelectionProvider(sequenceChart);
+		addLocationProviderPaintListener(sequenceChart);
 
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != sequenceChart) {
+				if (part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
 					sequenceChart.setSelection(selection);
 					markLocation();
 				}
@@ -219,7 +218,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
             	Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						// TODO:
+						sequenceChart.clearCanvasCacheAndRedraw();
 					}
             	});
             }

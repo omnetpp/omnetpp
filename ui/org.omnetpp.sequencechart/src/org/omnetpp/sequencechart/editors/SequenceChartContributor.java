@@ -200,8 +200,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	
 	@Override
 	public void dispose() {
-		super.dispose();
+		sequenceChart = null;
 		singleton = null;
+
+		super.dispose();
+	}
+
+	private IEventLog getEventLog() {
+		return sequenceChart.getEventLog();
 	}
 
 	public static SequenceChartContributor getDefault() {
@@ -335,6 +341,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 			update();
 		}
+		else
+			sequenceChart = null;
 	}
 	
 	private void update() {
@@ -347,16 +355,19 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				{
 					SequenceChartAction fieldValue = (SequenceChartAction)field.get(this);
 
-					fieldValue.setEnabled(true);
-					fieldValue.update();
-					if (sequenceChart.getInput().isLongRunningOperationInProgress())
-						fieldValue.setEnabled(false);
+					if (sequenceChart != null) {
+						fieldValue.setEnabled(true);
+						fieldValue.update();
+						if (sequenceChart.getInput().isLongRunningOperationInProgress())
+							fieldValue.setEnabled(false);
+					}
 				}
 				
 				if (fieldType == StatusLineContributionItem.class)
 				{
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
-					fieldValue.update();
+					if (sequenceChart != null)
+						fieldValue.update();
 				}
 			}
 		}
@@ -1115,7 +1126,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				ExportToSVGDialog dialog = new ExportToSVGDialog(Display.getCurrent().getActiveShell());
 
 				if (dialog.open() == Window.OK) {
-					IEventLog eventLog = sequenceChart.getEventLog();
+					IEventLog eventLog = getEventLog();
 					
 					int exportBeginX;
 					int exportEndX;

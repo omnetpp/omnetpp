@@ -197,7 +197,7 @@ namespace std {
 %extend IEventLog {
    void setJavaProgressMonitor(JNIEnv *jenv, jobject object) {
       progressDelegateJenv = jenv;
-      ProgressMonitor newProgressMonitor(&delegateProgressToJava, jenv->NewGlobalRef(object));
+      ProgressMonitor newProgressMonitor(object ? &delegateProgressToJava : NULL, object ? jenv->NewGlobalRef(object) : NULL);
       ProgressMonitor oldProgressMonitor = self->setProgressMonitor(newProgressMonitor);
       jobject oldObject = (jobject)oldProgressMonitor.data;
       if (oldObject)

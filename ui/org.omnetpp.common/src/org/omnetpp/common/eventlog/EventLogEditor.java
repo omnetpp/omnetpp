@@ -70,6 +70,13 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 		IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 		eventLogInput = new EventLogInput(file, eventLog);
 	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		
+		eventLogInput.dispose();
+	}
 
 	protected void addLocationProviderPaintListener(Control control) {
 		control.addPaintListener(new PaintListener() {
