@@ -209,8 +209,8 @@ public class DatasetManager {
 
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		builder.build(dataset, chart);
-		IDList idlist = builder.getIDs();
 		builder.close();
+		IDList idlist = builder.getDisplayedIDs();
 
 		List<Node> arrayBuilders = builder.getOutputs();
 		DataflowManager dataflowManager = builder.getDataflowManager();

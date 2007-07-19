@@ -184,6 +184,10 @@ public class DataflowNetworkBuilder {
 		return IDList.fromArray(keys.toArray(new Long[keys.size()]));
 	}
 	
+	public IDList getDisplayedIDs() {
+		return chartDisplayedIds != null ? chartDisplayedIds : IDList.EMPTY;
+	}
+	
 	/**
 	 * Adds an arraybuilder node for each open ports.
 	 */
