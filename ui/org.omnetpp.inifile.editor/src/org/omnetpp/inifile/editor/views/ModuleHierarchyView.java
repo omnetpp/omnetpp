@@ -32,6 +32,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.actions.ActionExt;
@@ -224,7 +225,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
  		
  		// add tooltip support to the tree
  		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();
 				if (element instanceof GenericTreeNode)

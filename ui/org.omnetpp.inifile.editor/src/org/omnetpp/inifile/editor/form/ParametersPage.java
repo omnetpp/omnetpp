@@ -12,7 +12,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -35,14 +34,12 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
-import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
@@ -279,7 +276,7 @@ public class ParametersPage extends FormPage {
 
 		// add tooltip support
 		addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
 				return entry==null ? null : InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());

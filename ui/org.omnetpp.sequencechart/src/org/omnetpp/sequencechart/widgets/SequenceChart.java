@@ -62,6 +62,7 @@ import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
@@ -270,8 +271,8 @@ public class SequenceChart
     	hoverSupport = new HoverSupport();
     	hoverSupport.setHoverSizeConstaints(new Point(700, 200));
     	hoverSupport.adapt(this, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
-				return HoverSupport.addHTMLStyleSheet(getTooltipText(x, y));
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+				return HoverSupport.addHTMLStyleSheet(getTooltipText(x, y, outSizeConstraint));
 			}
     	});
 
@@ -1217,28 +1218,32 @@ public class SequenceChart
 	 * Sorts axis modules depending on timeline ordering mode.
 	 */
 	private void calculateAxisModulePositions() {
-		if (axisModulePositions == null)
-			axisModulePositions = new int[axisModules.size()];
-
-		switch (axisOrderingMode) {
-			case MANUAL:
-				new ManualAxisOrder().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
-				break;
-			case MODULE_ID:
-				new AxisOrderByModuleId().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
-				break;
-			case MODULE_NAME:
-				new AxisOrderByModuleName().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
-				break;
-			case MINIMIZE_CROSSINGS:
-				new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
-				break;
-			case MINIMIZE_CROSSINGS_HIERARCHICALLY:
-				new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
-				break;
-			default:
-				throw new RuntimeException("Unknown axis ordering mode");
-		}
+		eventLogInput.runWithProgressMonitor(new Runnable() {
+			public void run() {
+				if (axisModulePositions == null)
+					axisModulePositions = new int[axisModules.size()];
+		
+				switch (axisOrderingMode) {
+					case MANUAL:
+						new ManualAxisOrder().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						break;
+					case MODULE_ID:
+						new AxisOrderByModuleId().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						break;
+					case MODULE_NAME:
+						new AxisOrderByModuleName().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						break;
+					case MINIMIZE_CROSSINGS:
+						new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						break;
+					case MINIMIZE_CROSSINGS_HIERARCHICALLY:
+						new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						break;
+					default:
+						throw new RuntimeException("Unknown axis ordering mode");
+				}
+			}
+		});
 	}
 
 	/**
@@ -2726,7 +2731,7 @@ public class SequenceChart
 	 * Calls collectStuffUnderMouse(), and assembles a possibly multi-line
 	 * tooltip text from it. Returns null if there's no text to display.
 	 */
-	protected String getTooltipText(int x, int y) {
+	protected String getTooltipText(int x, int y, SizeConstraint outSizeConstraint) {
 		ArrayList<IEvent> events = new ArrayList<IEvent>();
 		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
 		collectStuffUnderMouse(x, y, events, messageDependencies);
@@ -2767,7 +2772,7 @@ public class SequenceChart
 				if (res.length() != 0)
 					res += "<br/>";
 
-				res += getMessageDependencyText(messageDependency, true); 
+				res += getMessageDependencyText(messageDependency, true, outSizeConstraint); 
 			}
 
 			return res;
@@ -2803,7 +2808,7 @@ public class SequenceChart
 	/**
 	 * Returns a descriptive message for the IMessageDependency to be presented to the user.
 	 */
-	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted) {
+	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted, SizeConstraint outSizeConstraint) {
 		String boldStart = formatted ? "<b>" : "";
 		String boldEnd = formatted ? "</b>" : "";
 		String newLine = formatted ? "<br/>" : "\n";
@@ -2837,8 +2842,14 @@ public class SequenceChart
 			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
 			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
 
-			if (formatted && detail != null)
-				result += newLine + detail;
+			if (formatted && detail != null) {
+				int longestLineLength = 0;
+				for (String line : detail.split("\n"))
+					longestLineLength = Math.max(longestLineLength, line.length());
+				// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
+				outSizeConstraint.minimumWidth = longestLineLength * 8;
+				result += newLine + "<pre>" + detail + "</pre>";
+			}
 
 			return result;
 		}

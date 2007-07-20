@@ -59,10 +59,10 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
@@ -276,7 +276,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
         // add tooltip support
         new HoverSupport().adapt(getEditor(), new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, org.eclipse.swt.graphics.Point outPreferredSize) {
+            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
                 if (ep instanceof IModelProvider) {
                     INEDElement element = ((IModelProvider)ep).getNEDModel();

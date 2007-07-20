@@ -58,6 +58,7 @@ import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -449,7 +450,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			HoverSupport hoverSupport = new HoverSupport();
 			hoverSupport.setHoverSizeConstaints(new Point(320,400));
 			hoverSupport.adapt(ChartCanvas.this, new IHoverTextProvider() {
-				public String getHoverTextFor(Control control, int x, int y, Point preferredSize) {
+				public String getHoverTextFor(Control control, int x, int y, SizeConstraint preferredSize) {
 					return getTooltipText(x, y, preferredSize);
 				}
 			});
@@ -477,7 +478,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			graphics.popState();
 		}
 		
-		public String getTooltipText(int x, int y, Point preferredSize) {
+		public String getTooltipText(int x, int y, SizeConstraint preferredSize) {
 			if (rect.contains(x, y) && items.size() > 0) {
 				StringBuffer sb = new StringBuffer();
 				int height = 20;
@@ -494,7 +495,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 					height += 17;
 				}
 				sb.append("</table>");
-				preferredSize.y = Math.max(height, 80);
+				preferredSize.preferredHeight = Math.max(height, 80);
 				return HoverSupport.addHTMLStyleSheet(sb.toString());
 			}
 			else

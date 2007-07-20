@@ -48,6 +48,7 @@ import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -202,7 +203,7 @@ public class SectionsPage extends FormPage {
 
 		// add tooltip support
 		addTooltipSupport(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
 				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer(), true);

@@ -245,7 +245,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				// messages submenu
 				for (final IMessageDependency msg : msgs) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false, null));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createZoomToMessageAction(msg));

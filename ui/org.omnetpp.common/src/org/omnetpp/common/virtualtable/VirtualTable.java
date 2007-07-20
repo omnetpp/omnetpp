@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
@@ -41,6 +42,9 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 
 /**
  * The virtual table is a virtually infinite table.
@@ -104,9 +108,9 @@ public class VirtualTable<T>
 	protected IVirtualTableRowRenderer<T> rowRenderer;
 
 	/**
-	 * The height in pixels of all lines.
+	 * The height in pixels of all rows.
 	 */
-	protected int lineHeight;
+	protected int rowHeight;
 	
 	/**
 	 * Indicates whether the table will draw 1 pixels thick lines around cells.
@@ -132,6 +136,11 @@ public class VirtualTable<T>
 	 * Used to draw the header of the virtual table.
 	 */
 	protected Table table;
+
+	/**
+	 * Provides tooltips.
+	 */
+	protected HoverSupport hoverSupport;
 
 	public VirtualTable(Composite parent, int style) {
 		super(parent, style | SWT.V_SCROLL);
@@ -167,6 +176,19 @@ public class VirtualTable<T>
 					scrollToElement(contentProvider.getApproximateElementAt(percentage));
 			}
 		});
+
+    	hoverSupport = new HoverSupport();
+    	hoverSupport.setHoverSizeConstaints(new Point(700, 200));
+    	hoverSupport.adapt(canvas, new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+				T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
+				
+				if (element == null)
+					return null;
+				else
+					return HoverSupport.addHTMLStyleSheet(getRowRenderer().getTooltipText(element, outSizeConstraint));
+			}
+    	});
 
  		// recompute table size after the scrollable area size is known
         Display.getCurrent().asyncExec(new Runnable() {
@@ -246,7 +268,7 @@ public class VirtualTable<T>
 		canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				if (input != null && contentProvider != null) {
-					T element = getVisibleElementAt(e.y / getLineHeight());
+					T element = getVisibleElementAt(e.y / getRowHeight());
 
 					if (element != null && 
 						(e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
@@ -672,8 +694,8 @@ public class VirtualTable<T>
 	}
 
 	/**
-	 * Relocates fix point and ensures that the first visible line always displays an element.
-	 * If there are more elements than fully visible lines then the last fully visible line will
+	 * Relocates fix point and ensures that the first visible row always displays an element.
+	 * If there are more elements than fully visible rows then the last fully visible row will
 	 * also always display an element.
 	 */
 	protected void relocateFixPoint(T element, int distance) {
@@ -727,7 +749,7 @@ public class VirtualTable<T>
 
 			for (int i = 0; i < getVisibleElementCount(); i++) {
 				int x = 0;
-				Transform lineTransform = new Transform(null);
+				Transform rowTransform = new Transform(null);
 				T element = getElementAtDistanceFromFixPoint(i - fixPointDistance);
 				List<T> selectionElements = getSelectionElements();
 				int[] columnOrder = table.getColumnOrder();
@@ -737,22 +759,22 @@ public class VirtualTable<T>
 					
 					if (isSelectedElement) {
 						gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
-						gc.fillRectangle(new Rectangle(0, i * getLineHeight(), clipping.x + clipping.width, getLineHeight()));
+						gc.fillRectangle(new Rectangle(0, i * getRowHeight(), clipping.x + clipping.width, getRowHeight()));
 					}
 					else
 						gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
 					if (drawLines) {
 						gc.setForeground(LINE_COLOR);
-						gc.drawLine(0, i *getLineHeight() - 1, clipping.x + clipping.width, i * getLineHeight() - 1);
+						gc.drawLine(0, i * getRowHeight() - 1, clipping.x + clipping.width, i * getRowHeight() - 1);
 					}
 	
 					for (int j = 0; j < table.getColumnCount(); j++) {
 						TableColumn column = table.getColumn(columnOrder[j]);
-						lineTransform.setElements(1, 0, 0, 1, 0, 0);
-						lineTransform.translate(x, i * getLineHeight());
-						gc.setTransform(lineTransform);
-						gc.setClipping(new Rectangle(0, 0, column.getWidth(), getLineHeight()));
+						rowTransform.setElements(1, 0, 0, 1, 0, 0);
+						rowTransform.translate(x, i * getRowHeight());
+						gc.setTransform(rowTransform);
+						gc.setClipping(new Rectangle(0, 0, column.getWidth(), getRowHeight()));
 
 						if (isSelectedElement && canvas.isFocusControl())
 							gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
@@ -762,7 +784,7 @@ public class VirtualTable<T>
 						
 						if (drawLines) {
 							gc.setForeground(LINE_COLOR);
-							gc.drawLine(0, 0, 0, getLineHeight());
+							gc.drawLine(0, 0, 0, getRowHeight());
 						}
 	
 						gc.setTransform(transform);
@@ -789,6 +811,10 @@ public class VirtualTable<T>
 			if (topElement != null)
 				relocateFixPoint(topElement, 0);
 		}
+	}
+
+	protected String getTooltipText(T element) {
+		return null;
 	}
 
 	public int getTopVisibleElementDistanceFromFixPoint() {
@@ -848,20 +874,20 @@ public class VirtualTable<T>
 	 * Returns the number of visible elements including the one which is not fully visible.
 	 */
 	public int getVisibleElementCount() {
-		int lineHeight = getLineHeight();
+		int rowHeight = getRowHeight();
 		int height = canvas.getSize().y;
 		
-		return (int)Math.ceil((double)height / lineHeight);
+		return (int)Math.ceil((double)height / rowHeight);
 	}
 
 	/**
 	 * Returns the number of visible elements including the one which is not fully visible.
 	 */
 	public int getFullyVisibleElementCount() {
-		int lineHeight = getLineHeight();
+		int rowHeight = getRowHeight();
 		int height = canvas.getSize().y;
 		
-		return (int)Math.floor((double)height / lineHeight);
+		return (int)Math.floor((double)height / rowHeight);
 	}
 
 	/**
@@ -872,16 +898,16 @@ public class VirtualTable<T>
 	}
 
 	/**
-	 * Returns the height of lines in pixels.
+	 * Returns the height of rows in pixels.
 	 */
-	public int getLineHeight() {
-		if (lineHeight == 0) {
+	public int getRowHeight() {
+		if (rowHeight == 0) {
 			 GC gc = new GC(this);
-			 lineHeight = rowRenderer.getRowHeight(gc);
+			 rowHeight = rowRenderer.getRowHeight(gc);
 			 gc.dispose();
 		}
 
-		return lineHeight;
+		return rowHeight;
 	}
 
 	private boolean elementListEquals(List<T> a, List<T> b) {

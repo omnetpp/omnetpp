@@ -22,6 +22,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -167,9 +168,8 @@ class CrossHair {
 		HoverSupport hoverSupport = new HoverSupport();
 		hoverSupport.setHoverSizeConstaints(new Point(500, 400));
 		hoverSupport.adapt(chart, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y,
-					Point outPreferredSize) {
-				return getHoverText(x, y, outPreferredSize);
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+				return getHoverText(x, y, outSizeConstraint);
 			}
 		});
 	}
@@ -248,7 +248,7 @@ class CrossHair {
 		}
 	}
 	
-	private String getHoverText(int x, int y, Point preferredSize) {
+	private String getHoverText(int x, int y, SizeConstraint preferredSize) {
 		ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT); 
 		
@@ -276,8 +276,8 @@ class CrossHair {
 			if (totalFound > dataPoints.size())
 				sb.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
 			sb.append("</table>");
-			preferredSize.x = 20 + maxTextLength * 7;
-			preferredSize.y = 25 + dataPoints.size() * 12;
+			preferredSize.preferredWidth = 20 + maxTextLength * 7;
+			preferredSize.preferredHeight = 25 + dataPoints.size() * 12;
 			return HoverSupport.addHTMLStyleSheet(sb.toString());
 		}
 		else

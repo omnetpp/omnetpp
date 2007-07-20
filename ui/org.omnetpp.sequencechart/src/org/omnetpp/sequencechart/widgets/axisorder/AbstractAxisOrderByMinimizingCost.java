@@ -60,6 +60,8 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 		{
 			cycleCount++;
 			
+			eventLogInput.progress();
+			
 			// randomly swap axis based on temperature
 			double t = temperature;
 			noRandomMoveCount++;

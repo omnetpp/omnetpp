@@ -79,7 +79,7 @@ public class HoverSupport {
 
 	protected IHoverTextProvider defaultHoverTextProvider = null;
 	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>(); 
-	protected Point hoverSizeConstaints = new Point(320, 200);
+	protected Point hoverSizeConstraints = new Point(320, 200);
 	
 	protected IInformationControl hoverControl;
 	protected IInformationControl informationControl;
@@ -190,7 +190,7 @@ public class HoverSupport {
 			return; // we are already showing a hover or a (sticky) information control
 
 		IHoverTextProvider hoverTextProvider = hoverTextProviders.get(control);
-		Point preferredSize = new Point(SWT.DEFAULT, SWT.DEFAULT);
+		SizeConstraint preferredSize = new SizeConstraint();
 		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y, preferredSize);
 		if (hoverText != null) {
 			hoverControl = getHoverControlCreator().createInformationControl(control.getShell());
@@ -220,7 +220,7 @@ public class HoverSupport {
 		Point p = Display.getDefault().getCursorLocation();
 
 		IHoverTextProvider hoverProvider = hoverTextProviders.get(control);
-		Point preferredSize = new Point(SWT.DEFAULT, SWT.DEFAULT);
+		SizeConstraint preferredSize = new SizeConstraint();
 		String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
 		if (hoverText != null) {
 			// create the control
@@ -244,15 +244,27 @@ public class HoverSupport {
 		}
 	}
 
-	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation, Point preferredSize) {
-		informationControl.setSizeConstraints(hoverSizeConstaints.x, hoverSizeConstaints.y);
+	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation, SizeConstraint preferredSize) {
+		informationControl.setSizeConstraints(hoverSizeConstraints.x, hoverSizeConstraints.y);
 		informationControl.setInformation(hoverText);
 		Point size = informationControl.computeSizeHint(); //XXX issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
-		if (preferredSize.x != SWT.DEFAULT) size.x = Math.min(preferredSize.x, hoverSizeConstaints.x);
-		if (preferredSize.y != SWT.DEFAULT) size.y = Math.min(preferredSize.y, hoverSizeConstaints.y);
-		informationControl.setSize(size.x, size.y);
+		informationControl.setSize(
+				calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth),
+				calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight));
 		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
 		informationControl.setVisible(true);
+	}
+	
+	private int calculateSize(int hoverSizeConstraint, int sizeHint, int minimumSize, int preferredSize) {
+		int size = sizeHint;
+
+		if (minimumSize != SWT.DEFAULT)
+			size = Math.max(minimumSize, size);
+
+		if (preferredSize != SWT.DEFAULT)
+			size = Math.min(preferredSize, hoverSizeConstraint);
+
+		return size;
 	}
 
 	protected Point calculateHoverPosition(Point mouse, Point size) {
@@ -283,14 +295,14 @@ public class HoverSupport {
 	 * Returns the maximum size for the hover widget.
 	 */
 	public Point getHoverSizeConstaints() {
-		return hoverSizeConstaints;
+		return hoverSizeConstraints;
 	}
 
 	/**
 	 * Sets the maximum size for the hover widget.
 	 */
 	public void setHoverSizeConstaints(Point hoverSizeConstaints) {
-		this.hoverSizeConstaints = hoverSizeConstaints;
+		this.hoverSizeConstraints = hoverSizeConstaints;
 	}
 
 	/**

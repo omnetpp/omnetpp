@@ -43,6 +43,7 @@ import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
@@ -312,7 +313,7 @@ public class ParametersPage2 extends FormPage {
 
 		// add tooltip support
 		addTooltipSupport(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData(); 
 				element = element!=null ? ((GenericTreeNode)element).getPayload() : null;

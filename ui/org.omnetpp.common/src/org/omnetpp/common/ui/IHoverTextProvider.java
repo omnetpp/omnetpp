@@ -1,6 +1,5 @@
 package org.omnetpp.common.ui;
 
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -17,8 +16,8 @@ public interface IHoverTextProvider {
 	 * @param control 	the control which is hovered over
 	 * @param x 		the x coordinate of the mouse cursor
 	 * @param y			the y coordinate of the mouse cursor
-	 * @param outPreferredSize	a Point object to return the requested size of the tooltip control (out parameter)
+	 * @param outSizeConstraint	a Point object to return the requested size of the tooltip control (out parameter)
 	 */
-	String getHoverTextFor(Control control, int x, int y, Point outPreferredSize);
+	String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint);
 	
 }

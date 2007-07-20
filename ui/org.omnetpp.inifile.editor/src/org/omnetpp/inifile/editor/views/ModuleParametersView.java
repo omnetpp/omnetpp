@@ -37,6 +37,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
@@ -130,7 +131,7 @@ public class ModuleParametersView extends AbstractModuleView {
 
  		// add tooltip support to the table
  		new HoverSupport().adapt(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();
 				if (element instanceof ParamResolution) {

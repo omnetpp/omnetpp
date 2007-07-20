@@ -201,7 +201,7 @@ public class HoverSupport2 {
 			return; // we are already showing a (sticky) information control
 
 		IHoverTextProvider hoverTextProvider = hoverTextProviders.get(control);
-		Point preferredSize = new Point(SWT.DEFAULT, SWT.DEFAULT);
+		SizeConstraint preferredSize = new SizeConstraint();
 		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y, preferredSize);
 		if (hoverText != null) {
 			hoverControl = getHoverControlCreator().createInformationControl(control.getShell());
@@ -231,7 +231,7 @@ public class HoverSupport2 {
 		Point p = Display.getDefault().getCursorLocation();
 
 		IHoverTextProvider hoverProvider = hoverTextProviders.get(control);
-		Point preferredSize = new Point(SWT.DEFAULT, SWT.DEFAULT);
+		SizeConstraint preferredSize = new SizeConstraint();
 		String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
 		if (hoverText != null) {
 			// create the control

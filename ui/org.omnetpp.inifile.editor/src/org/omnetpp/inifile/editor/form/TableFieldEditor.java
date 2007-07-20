@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
@@ -106,7 +107,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		
 		// add hover support
 		formPage.addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
 				return section==null ? null : InifileHoverUtils.getConfigHoverText(section, entry.getKey(), inifile);

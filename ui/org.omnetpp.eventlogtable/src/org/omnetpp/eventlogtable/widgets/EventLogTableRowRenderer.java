@@ -16,6 +16,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.BubbleEntry;
@@ -282,7 +283,6 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawMessageDescription(findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId()));
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
-								// TODO: complete message stuff, tooltip with all data?
 								BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
 								drawText("Begin sending of ", CONSTANT_TEXT_COLOR);
 								drawMessageDescription(beginSendEntry);
@@ -339,6 +339,26 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 						throw new RuntimeException("Unknown display mode");
 				}
 		}
+	}
+
+	public String getTooltipText(EventLogEntryReference eventLogEntryReference, SizeConstraint outSizeConstraint) {
+		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
+		
+		if (eventLogEntry instanceof BeginSendEntry) {
+			BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
+			String detail = beginSendEntry.getDetail();
+
+			if (detail != null) {
+				int longestLineLength = 0;
+				for (String line : detail.split("\n"))
+					longestLineLength = Math.max(longestLineLength, line.length());
+				// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
+				outSizeConstraint.minimumWidth = longestLineLength * 8;
+				return "<pre>" + detail + "</pre>";
+			}
+		}
+
+		return null;
 	}
 
 	private BeginSendEntry findBeginSendEntry(int previousEventNumber, int messageId) {
