@@ -1,5 +1,6 @@
 package org.omnetpp.common.canvas;
 
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.geometry.Insets;
@@ -420,5 +421,27 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		ZoomLevelChangeEvent event = new ZoomLevelChangeEvent(this, direction, oldLevel, newLevel);
 		for (Object listener : zoomListeners.getListeners())
 			((IZoomLevelChangeListener)listener).zoomLevelChanged(event);
+	}
+	
+	public RectangularArea getZoomedArea() {
+		return new RectangularArea(
+				fromVirtualX(getViewportLeft()),
+				fromVirtualY(getViewportBottom()),
+				fromVirtualX(getViewportRight()),
+				fromVirtualY(getViewportTop()));
+	}
+	
+	public void zoomToArea(RectangularArea area) {
+		double minX = Math.max(area.minX, this.minX);
+		double minY = Math.max(area.minY, this.minY);
+		double maxX = Math.min(area.maxX, this.maxX);
+		double maxY = Math.min(area.maxY, this.maxY);
+		
+		if (minX < maxX && minY < maxY) {
+			setZoomX(getViewportWidth() / (maxX - minX));
+			setZoomY(getViewportHeight() / (maxY - minY));
+			scrollHorizontalTo(toVirtualX(minX));
+			scrollVerticalTo(toVirtualY(maxY));
+		}
 	}
 }
