@@ -63,6 +63,8 @@ public class DatasetView extends ViewWithMessagePart {
 	private FilteredDataPanel scalarsPanel;
 	private FilteredDataPanel histogramsPanel;
 	
+	private boolean viewControlCreated;
+	
 	private ScaveEditor activeScaveEditor;
 	private Dataset selectedDataset;
 	private DatasetItem selectedItem;
@@ -111,7 +113,8 @@ public class DatasetView extends ViewWithMessagePart {
 		
 		setVisibleDataPanel(vectorsPanel);
 		showFilter(false);
-		
+
+		viewControlCreated = true;
 		return panel;
 	}
 	
@@ -283,7 +286,6 @@ public class DatasetView extends ViewWithMessagePart {
 			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
 			DatasetItem item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
 			setInput(dataset, item);
-			hideMessage();
 		}
 		else {
 			setInput(null, null);
@@ -363,12 +365,21 @@ public class DatasetView extends ViewWithMessagePart {
 			else
 				desc += "content of";
 			desc += labelProvider.getText(selectedDataset);
+			hideMessage();
 			setContentDescription(desc);
 		}
 		else
-			setContentDescription("");
+			showMessage("No dataset item selected.");
 	}
 	
+	/**
+	 * Prevent calling showMessage until the view fully created.
+	 */
+	@Override
+	protected void showMessage(String text) {
+		if (viewControlCreated)
+			super.showMessage(text);
+	}
 	
 	private void updateDataTable() {
 		if (activeScaveEditor != null && selectedDataset != null) {
