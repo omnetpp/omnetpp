@@ -287,6 +287,7 @@ proc draw_submod {c submodptr x y name dispstr} {
            if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
            set rwidth [lindex $tags(r) 3]
            if {$rwidth == ""} {set rwidth 1}
+           set radius [expr $radius-$rwidth/2]
 
            set x1 [expr $x - $radius]
            set y1 [expr $y - $radius]
@@ -321,8 +322,8 @@ proc draw_enclosingmod {c ptr name dispstr} {
        if {![info exists tags(bgp)]} {set tags(bgp) {}}
        set bx [lindex $tags(bgp) 0]
        set by [lindex $tags(bgp) 1]
-       if {$bx==""} {set bx 10}
-       if {$by==""} {set by 10}
+       if {$bx==""} {set bx 0}
+       if {$by==""} {set by 0}
 
        if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}
 
@@ -331,8 +332,6 @@ proc draw_enclosingmod {c ptr name dispstr} {
        if {$sx=="" || $sy==""} {
            set bb [$c bbox submod]
            if {$bb==""} {set bb "$bx $by 300 200"}
-           if {[lindex $bb 0]<$bx} {set bx [expr [lindex $bb 0]-10]}
-           if {[lindex $bb 1]<$by} {set by [expr [lindex $bb 1]-10]}
            if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
            if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
        }
@@ -348,7 +347,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
        set width [lindex $tags(bgb) 4]
        if {$width == ""} {set width 2}
 
-       $c create rect $bx $by [expr $bx+$sx] [expr $by+$sy] \
+       $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
        $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr"
@@ -411,8 +410,16 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        set width [lindex $tags(ls) 1]
        if {$width == ""} {set width 1}
        if {$width == "0"} {set fill ""}
+       set style [lindex $tags(ls) 2]
+       if {[string match "da*" $style]} {
+           set pattern "-"
+       } elseif {[string match "d*" $style]} {
+           set pattern "."
+       } else {
+       	   set pattern ""
+       }
 
-       $c create line $arrow_coords -arrow last -fill $fill -width $width -tags "dx tooltip conn $gateptr"
+       $c create line $arrow_coords -arrow last -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
