@@ -302,7 +302,7 @@ public class ScalarChart extends ChartCanvas {
 	 *=============================================*/
 
 	@Override
-	protected void layoutChart() {
+	protected void doLayoutChart() {
 		// prevent nasty infinite layout recursions
 		if (layoutDepth>0)
 			return; 

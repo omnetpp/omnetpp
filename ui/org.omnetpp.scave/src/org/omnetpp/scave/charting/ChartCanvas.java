@@ -124,9 +124,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	void setDataset(IDataset dataset) {
 		doSetDataset(dataset);
+
 		if (zoomedArea != null) {
-			zoomToArea(zoomedArea);
+			RectangularArea area = zoomedArea;
 			zoomedArea = null;
+			zoomToArea(area);
 		}
 	}
 	
@@ -139,10 +141,14 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 */
 	abstract void doSetDataset(IDataset dataset);
 	
+	protected void layoutChart() {
+		doLayoutChart();
+	}
+	
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
-	abstract protected void layoutChart();
+	abstract protected void doLayoutChart();
 	
 	public IChartSelection getSelection() {
 		return selection;

@@ -552,7 +552,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	@Override
-	protected void layoutChart() {
+	protected void doLayoutChart() {
 		// prevent nasty infinite layout recursions
 		if (layoutDepth>0)
 			return; 
@@ -568,6 +568,9 @@ public class VectorChart extends ChartCanvas {
 
 			// Calculate space occupied by title and legend and set insets accordingly
 			Rectangle area = new Rectangle(getClientArea());
+			if (area.isEmpty())
+				return;
+			
 			Rectangle remaining = legendTooltip.layout(gc, area);
 			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining);
@@ -624,6 +627,9 @@ public class VectorChart extends ChartCanvas {
 //		System.out.println(String.format("view port=%s, vxy=%d, %d",
 //				getViewportRectangle(), getViewportLeft(), getViewportTop()));
 		
+		if (getClientArea().isEmpty())
+			return;
+		
 		
 		resetDrawingStylesAndColors(gc);
 		xAxis.drawGrid(gc);
@@ -676,6 +682,9 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		System.out.println("paintNoncachableLayer()");
+		if (getClientArea().isEmpty())
+			return;
+		
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 
