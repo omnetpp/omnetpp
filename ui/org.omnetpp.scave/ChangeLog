@@ -1,3 +1,33 @@
+2007-07-20
+----------
+
+Additions:
+
+   + Editor state (opened pages) is saved as a persistent property of
+     the input file. Zoom state also saved, but currently not properly restored.
+
+   + Toolbar button for Dataset view to show/hide the filter panel.
+
+   + Content description displayed by "Browse Vector" and "Dataset" views.
+
+   + Dataset/Chart/ChartSheet pages can be opened by double-click in the Outline view.
+
+   + Filter can be set by right click on a data table cell and choose "Set filter: ...".
+
+   + New grid option: only at major ticks.
+
+Fixes:
+
+   + Renamed data table columns to be more consistent with filter field names.
+
+   + Add content assist to filter pattern property cell editors.
+
+   + DatasetSelectionDialog: removed "Dataset" from dataset names (to enable incremental
+     search).
+
+   + Long group labels are wrapped on bar charts. (Group label layout is still not perfect.)
+
+
 2007-07-06
 ----------
 
