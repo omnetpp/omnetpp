@@ -24,15 +24,18 @@ IMPLIBS=../sim/sim_std.lib ../envir/envir.lib ../layout/layout.lib ../common/com
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj layouterenv.obj \
-       arrow.obj visitor.obj tkutil.obj
+       arrow.obj visitor.obj tkutil.obj tkImgPNG.obj tkImgPNGInit.obj
 
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
+.SUFFIXES : .cc .c
 
 .cc.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+.c.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c $<
 
 #
 # Targets

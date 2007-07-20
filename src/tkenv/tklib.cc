@@ -29,6 +29,7 @@
 
 
 int exit_omnetpp;
+extern "C" int Tkpng_Init(Tcl_Interp *interp);
 
 // Procedure to handle X errors
 static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
@@ -70,6 +71,13 @@ Tcl_Interp *initTk(int argc, char **argv)
     }
 
     Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
+
+    if (Tkpng_Init(interp) != TCL_OK)
+    {
+        fprintf(stderr, "Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
+        return 0;
+    }
+
 
     Tk_Window mainWindow = Tk_MainWindow(interp);
 

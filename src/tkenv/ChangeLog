@@ -1,3 +1,6 @@
+Added support for reading PNG images from TkPNG package 0.7
+(https://sourceforge.net/projects/tkpng/)
+
 OMNETPP_BITMAP_PATH now called OMNETPP_IMAGE_PATH
 Tkenv/bitmap-path renamed to image-path
 

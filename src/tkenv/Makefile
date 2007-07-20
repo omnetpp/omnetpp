@@ -11,12 +11,15 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
        inspfactory.o objinsp.o modinsp.o statinsp.o layouterenv.o \
-       arrow.o visitor.o tkutil.o
+       arrow.o visitor.o tkutil.o tkImgPNG.o tkImgPNGInit.o
 
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
+.SUFFIXES : .cc .c
+
+.c.o:
+	$(CC) -c $(COPTS) -o $@ $<
 
 .cc.o:
 	$(CXX) -c $(COPTS) -o $@ $<
