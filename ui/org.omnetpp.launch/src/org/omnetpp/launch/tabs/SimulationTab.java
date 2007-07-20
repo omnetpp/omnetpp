@@ -22,7 +22,6 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -35,9 +34,9 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
@@ -242,10 +241,10 @@ public class SimulationTab extends OmnetppLaunchTab  {
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverTextProvider() {
 
-            public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
+            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 if (infoText == null)
                     infoText = LaunchPlugin.getSimulationRunInfo(getCurrentLaunchConfiguration());
-                outPreferredSize.x = 350;
+                outPreferredSize.preferredWidth = 350;
                 return HoverSupport.addHTMLStyleSheet(DEFAULT_RUNTOOLTIP+"<pre>"+infoText+"</pre>");
             }
         });
