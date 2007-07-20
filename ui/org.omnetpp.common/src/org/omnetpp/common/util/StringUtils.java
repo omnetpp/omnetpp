@@ -320,4 +320,29 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	}
     	return sb.toString();
     }
+    
+	/**
+	 * Splits {@code string} to consecutive substrings each having at
+	 * most {@code maxLength} length.
+	 * 
+	 * @param string the string to be split
+	 * @param maxLength the maximum length of the returned strings
+	 * @return the array of substrings or {@code null} if {@code string} is {@code null}
+	 */
+    public static String[] split(String string, int maxLength) {
+    	if (string == null)
+    		return null;
+    	
+		int len = string.length();
+		if (len <= maxLength)
+			return new String[] {string};
+		
+		int count = ((len + maxLength - 1) / maxLength);
+		String[] result = new String[count];
+		for (int i = 0, start = 0; i < count; ++i, start += maxLength) {
+			int end = Math.min(start+maxLength, len);
+			result[i] = string.substring(start, end);
+		}
+		return result;
+	}
 }
