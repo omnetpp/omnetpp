@@ -33,21 +33,20 @@ void Sink::initialize()
     keepJobs = par("keepJobs");
 }
 
-void Sink::handleMessage(cMessage *msg)
-{
-    Job *job = check_and_cast<Job *>(msg);
+void Sink::handleMessage(cMessage *msg) {
+	Job *job = check_and_cast<Job *>(msg);
 
-    // gather statistics
-    lifeTimeStats.record(simTime() - job->creationTime());
-    queueingTimeStats.record(job->getTotalQueueingTime());
-    queueStats.record(job->getQueueCount());
-    serviceTimeStats.record(job->getTotalServiceTime());
-    delayTimeStats.record(job->getTotalDelayTime());
-    delayStats.record(job->getDelayCount());
-    generationStats.record(job->getGeneration());
+	// gather statistics
+	lifeTimeStats.record(simTime()- job->creationTime());
+	queueingTimeStats.record(job->getTotalQueueingTime());
+	queueStats.record(job->getQueueCount());
+	serviceTimeStats.record(job->getTotalServiceTime());
+	delayTimeStats.record(job->getTotalDelayTime());
+	delayStats.record(job->getDelayCount());
+	generationStats.record(job->getGeneration());
 
-    if (!keepJobs)
-        delete msg;
+	if (!keepJobs)
+		delete msg;
 }
 
 void Sink::finish()
