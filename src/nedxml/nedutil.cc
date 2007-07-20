@@ -68,6 +68,8 @@ std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
     DisplayString ds;
     parseDisplayString(s, ds);
     renameTag(ds, "o", "ls");
+    // FIXME TT tag: the color parameter (old format 2nd) should go to the 3rd position in the new format
+    // the 2nd par is position (was not supported previously)    
     return ds.toString();
 }
 
