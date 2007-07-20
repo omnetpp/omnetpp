@@ -20,6 +20,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IMemento;
+import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.NewChartProcessingOpAction;
@@ -251,5 +253,18 @@ public class ChartPage extends ScaveEditorPage {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		memento.putString("Zoom", chartView.getZoomedArea().toString());
+	}
+	
+	@Override
+	public void restoreState(IMemento memento) {
+		String areaStr = memento.getString("Zoom");
+		RectangularArea area = areaStr != null ? RectangularArea.fromString(areaStr) : null;
+		if (area != null)
+			chartView.setZoomedArea(area);
 	}
 }

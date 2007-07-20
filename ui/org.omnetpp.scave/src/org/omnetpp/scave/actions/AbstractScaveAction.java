@@ -83,11 +83,13 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	 */
 	public void updateEnabled() {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
-		boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
-		if (isEnabled()!=isApplicable)
-			setEnabled(isApplicable);
+		if (page != null) {
+			IEditorPart editor = page.getActiveEditor();
+			ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
+			boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
+			if (isEnabled()!=isApplicable)
+				setEnabled(isApplicable);
+		}
 	}
 	
 	/**

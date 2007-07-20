@@ -10,7 +10,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
@@ -22,7 +21,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -39,6 +37,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -496,6 +495,14 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 	
 	/**
+	 * Returns the page displaying {@code object}.
+	 * The {@code object} expected to be a Dataset, Chart or ChartSheet.
+	 */
+	private ScaveEditorPage getClosableEditorPage(EObject object) {
+		return closablePages.get(object);
+	}
+	
+	/**
 	 * Returns the page displaying <code>object</code>. If the object already has a page
 	 * it is returned, otherwise a new page created.
 	 */
@@ -709,16 +716,50 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			return null;
 	}
 	
+	private static final String
+		ACTIVE_PAGE = "ActivePage",
+		PAGE = "Page",
+		PAGE_OBJECT = "PageObject";
+	
+	private void saveState(IMemento memento) {
+		memento.putInteger(ACTIVE_PAGE, getActivePage());
+		Resource resource = getResource();
+		for (EObject openedObject : closablePages.keySet()) {
+			ScaveEditorPage page = closablePages.get(openedObject);
+			IMemento pageMemento = memento.createChild(PAGE);
+			pageMemento.putString(PAGE_OBJECT, resource.getURIFragment(openedObject));
+			page.saveState(pageMemento);
+		}
+	}
+	
+	private void restoreState(IMemento memento) {
+		Resource resource = getResource();
+		for (IMemento pageMemento : memento.getChildren(PAGE)) {
+			String objectURI = pageMemento.getString(PAGE_OBJECT);
+			if (objectURI != null) {
+				EObject object = resource.getEObject(objectURI);
+				if (object != null) {
+					open(object);
+					ScaveEditorPage page = getClosableEditorPage(object); // TODO should be returned by open()
+					if (page != null)
+						page.restoreState(pageMemento);
+				}
+			}
+		}
+		int activePage = memento.getInteger(ACTIVE_PAGE);
+		if (activePage >= 0 && activePage < getPageCount())
+			setActivePage(activePage);
+	}
+	
 	private void saveState() {
 		try {
 			IFile file = getInputFile();
 			if (file != null) {
-				ScaveEditorMemento memento = new ScaveEditorMemento(this);
-				memento.openedObjects = closablePages.keySet().toArray(new EObject[closablePages.size()]);
-				memento.activePageIndex = getActivePage();
-				memento.saveState(file);
+				ScaveEditorMemento memento = new ScaveEditorMemento();
+				saveState(memento);
+				memento.save(file);
 			}
-		} catch (CoreException e) {
+		} catch (Exception e) {
 //			MessageDialog.openError(getSite().getShell(),
 //									"Saving editor state",
 //									"Error occured while saving editor state: "+e.getMessage());
@@ -730,14 +771,10 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		try {
 			IFile file = getInputFile();
 			if (file != null) {
-				ScaveEditorMemento memento = new ScaveEditorMemento(this);
-				memento.restoreState(file);
-				for (EObject object : memento.openedObjects)
-					open(object);
-				if (memento.activePageIndex >= 0 && memento.activePageIndex < getPageCount())
-					setActivePage(memento.activePageIndex);
+				ScaveEditorMemento memento = new ScaveEditorMemento(file);
+				restoreState(memento);
 			}
-		} catch (CoreException e) {
+		} catch (Exception e) {
 //			MessageDialog.openError(getSite().getShell(),
 //					"Restoring editor state",
 //					"Error occured while restoring editor state: "+e.getMessage());

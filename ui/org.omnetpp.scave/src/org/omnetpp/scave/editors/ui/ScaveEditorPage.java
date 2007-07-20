@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -309,5 +310,19 @@ public class ScaveEditorPage extends ScrolledForm {
 	
 	public boolean gotoObject(Object object) {
 		return false;
+	}
+
+	/**
+	 * Saves the state of the page before the editor closed.
+	 * Override this method when the page has some persistable state.
+	 */
+	public void saveState(IMemento memento) {
+	}
+
+	/**
+	 * Restores the state of the page from the saved state.
+	 * Override this method when the page has some persistable state.
+	 */
+	public void restoreState(IMemento memento) {
 	}
 }

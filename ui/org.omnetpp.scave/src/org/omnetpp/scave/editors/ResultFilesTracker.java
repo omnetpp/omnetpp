@@ -242,7 +242,6 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		if (isResultFile(file)) {
 			if (file.getLocation().toFile().exists()) {
 				loadFileInternal(file);
-				if (debug) System.out.println("done");
 			}
 		}
 		else
@@ -276,7 +275,6 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				try {
 					manager.unloadFile(resultFile);
 					loadFileInternal(file);
-					if (debug) System.out.println("done");
 				} catch (Exception e) {
 					ScavePlugin.logError("Could not reload file: " + file.getLocation().toOSString(), e);
 					if (debug) System.out.format("exception %s%n", e);
@@ -315,6 +313,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 							if (event.getResult().getSeverity() != IStatus.ERROR) {
 								synchronized (lock) {
 									manager.loadFile(resourcePath, osPath);
+									if (debug) System.out.println("done");
 								}
 							}
 							else {
@@ -325,6 +324,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					indexer.schedule();
 				} else {
 					manager.loadFile(resourcePath, osPath);
+					if (debug) System.out.println("done");
 				}
 			}
 		}

@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
@@ -344,7 +345,7 @@ public class VectorChart extends ChartCanvas {
 	}
 
 	@Override
-	public void setDataset(IDataset dataset) {
+	public void doSetDataset(IDataset dataset) {
 		if (dataset != null && !(dataset instanceof IXYDataset))
 			throw new IllegalArgumentException("must be an IXYDataset");
 		System.out.println("setDataset()");
@@ -502,7 +503,7 @@ public class VectorChart extends ChartCanvas {
 		chartChanged();
 	}
 	
-	private PlotArea calculatePlotArea() {
+	private RectangularArea calculatePlotArea() {
 		double minX = Double.POSITIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY;
 		double maxX = Double.NEGATIVE_INFINITY;
@@ -547,7 +548,7 @@ public class VectorChart extends ChartCanvas {
 		minY = (minY>=0 ? 0 : minY-height/3);
 		maxY = (maxY<=0 ? 0 : maxY+height/3);
 		
-		return new PlotArea(minX, maxX, minY, maxY);
+		return new RectangularArea(minX, minY, maxX, maxY);
 	}
 	
 	@Override

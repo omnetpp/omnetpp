@@ -44,6 +44,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
@@ -97,7 +98,7 @@ public class ScalarChart extends ChartCanvas {
 	}
 
 	@Override
-	public void setDataset(IDataset dataset) {
+	public void doSetDataset(IDataset dataset) {
 		if (dataset != null && !(dataset instanceof ScalarDataset))
 			throw new IllegalArgumentException("must be an ScalarDataset");
 		
@@ -484,6 +485,8 @@ public class ScalarChart extends ChartCanvas {
 		}
 
 		public int findRowColumn(double x, double y) {
+			if (dataset == null)
+				return -1;
 			int cRows = dataset.getRowCount();
 			int cColumns = dataset.getColumnCount();
 			x -= horizontalInset * widthBar;
@@ -522,9 +525,9 @@ public class ScalarChart extends ChartCanvas {
 			return new Rectangle(x, y, width, height);
 		}
 		
-		public PlotArea calculatePlotArea() {
+		public RectangularArea calculatePlotArea() {
 			if (dataset == null)
-				return new PlotArea(0, 1, 0, 1);
+				return new RectangularArea(0, 0, 1, 1);
 			
 			int cRows = dataset.getRowCount();
 			int cColumns = dataset.getColumnCount();
@@ -542,8 +545,8 @@ public class ScalarChart extends ChartCanvas {
 				maxY = 1.0;
 			}
 			double height = maxY - minY;
-			return new PlotArea(minX - horizontalInset * widthBar, maxX + horizontalInset * widthBar,
-					            minY, maxY + verticalInset * height);
+			return new RectangularArea(minX - horizontalInset * widthBar, minY,
+									   maxX + horizontalInset * widthBar, maxY + verticalInset * height);
 		}
 		
 		protected double getLeftX(int row, int column) {
@@ -648,11 +651,6 @@ public class ScalarChart extends ChartCanvas {
 			org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds(); 
 			data.size = new Dimension(bounds.width, bounds.height); //new Dimension(gc.textExtent(data.label));
 			data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
-//			if (data.rotatedSize.width > maxWidth && (rotation == 0.0 || rotation == 180.0)) {
-//				data.label = data.label.replace(';', '\n');
-//				data.size = new Dimension(gc.textExtent(data.label));
-//				data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
-//			}
 			return data;
 		}
 

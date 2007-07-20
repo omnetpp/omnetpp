@@ -50,6 +50,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.IZoomLevelChangeListener;
 import org.omnetpp.common.canvas.ZoomLevelChangeEvent;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
@@ -83,7 +84,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private String statusText = "No data available."; // displayed when there's no dataset 
 
 	protected Double userMinX, userMaxX, userMinY, userMaxY; // bounds given by the user (minX,... property)
-	protected PlotArea chartArea;							   // bounds calculated from the dataset
+	protected RectangularArea chartArea;	   // bounds calculated from the dataset
 	
 	private ZoomableCanvasMouseSupport mouseSupport;
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
@@ -91,6 +92,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	protected IChartSelection selection;
 	private ListenerList listeners = new ListenerList();
+	
+	private RectangularArea zoomedArea;
 	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
@@ -118,11 +121,23 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			}
 		}
 	}
+	
+	void setDataset(IDataset dataset) {
+		doSetDataset(dataset);
+		if (zoomedArea != null) {
+			zoomToArea(zoomedArea);
+			zoomedArea = null;
+		}
+	}
+	
+	public void setZoomedArea(RectangularArea area) {
+		this.zoomedArea = area;
+	}
 
 	/**
 	 * Sets the data to be visualized by the chart.
 	 */
-	abstract void setDataset(IDataset dataset);
+	abstract void doSetDataset(IDataset dataset);
 	
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
@@ -407,22 +422,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected void drawRubberband(GC gc) {
 		mouseSupport.drawRubberband(gc);
 	}
-
-	protected static class PlotArea {
-		public double minX;
-		public double maxX;
-		public double minY;
-		public double maxY;
-
-		public PlotArea(double minX, double maxX, double minY, double maxY) {
-			this.minX = minX;
-			this.maxX = maxX;
-			this.minY = minY;
-			this.maxY = maxY;
-		}
-		
-	}
-	
 	
 	/**
 	 * Legend tooltip.
