@@ -225,4 +225,24 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.showAdvancedFilter();
 		runFilter();
 	}
+	
+	/**
+	 * Shows/hides the filter panel.
+	 */
+	public void showFilterPanel(boolean show) {
+		if (show != isFilterPanelVisible()) {
+			filterPanel.setVisible(show);
+			GridData data = (GridData)filterPanel.getLayoutData();
+			data.exclude = !show;
+			layout(true, true);
+		}
+	}
+	
+	/**
+	 * Returns {@code true} iff the filter panel is visible.
+	 */
+	public boolean isFilterPanelVisible() {
+		GridData data = (GridData)filterPanel.getLayoutData();
+		return !data.exclude;
+	}
 }

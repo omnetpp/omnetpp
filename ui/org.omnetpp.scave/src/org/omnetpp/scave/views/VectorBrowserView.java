@@ -153,7 +153,13 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				boolean hasEventNumbers = selectedVector.getColumns().indexOf('E') >= 0;
 				gotoEventAction.setEnabled(hasEventNumbers);
 				setEventNumberColumnVisible(hasEventNumbers);
+				setContentDescription(String.format("'%s.%s' in run %s from file %s",
+						selectedVector.getModuleName(), selectedVector.getName(),
+						selectedVector.getFileRun().getRun().getRunName(),
+						selectedVector.getFileRun().getFile().getFilePath()));
 			}
+			else
+				setContentDescription("");
 			viewer.redraw();
 		}
 	}
