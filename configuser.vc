@@ -57,6 +57,7 @@ EXPAT_DIR=$(TOOLS_DIR:\=/)/expat-1.95.8
 #
 ICONV_DIR=$(TOOLS_DIR:\=/)/iconv-1.9.1.win32
 LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
+ZLIB_DIR=$(TOOLS_DIR:\=/)/zlib-1.2.3.win32
 
 #
 # Directory of various tools
@@ -97,7 +98,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to
@@ -176,8 +177,8 @@ LIBXML_LIBS=libxml2.lib iconv.lib wsock32.lib /libpath:"$(LIBXML_DIR)/lib" /libp
 
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
 # (NO_CONST is for testing code compatibility with systems where tcl.h comes without 'const')
-TK_CFLAGS=/I "$(TK_INCL_DIR)" /DNO_CONST
-TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) /libpath:"$(TK_LIB_DIR)"
+TK_CFLAGS=/I "$(TK_INCL_DIR)" /I "$(ZLIB_DIR)/include" /DNO_CONST
+TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) zdll.lib /libpath:"$(TK_LIB_DIR)" /libpath:"$(ZLIB_DIR)/lib" 
 MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
 MPI_LIBS=
 
