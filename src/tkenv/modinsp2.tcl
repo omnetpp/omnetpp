@@ -194,16 +194,15 @@ proc draw_submod {c submodptr x y name dispstr} {
            set sh [lindex $tags(b) 2]
            if {$sh == ""} {set sh rect}
 
-           if {![info exists tags(o)]} {set tags(o) {}}
-           set fill [lindex $tags(o) 0]
+           set fill [lindex $tags(b) 3]
            if {$fill == ""} {set fill #8080ff}
            if {$fill == "-"} {set fill ""}
            if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
-           set outline [lindex $tags(o) 1]
+           set outline [lindex $tags(b) 4]
            if {$outline == ""} {set outline black}
            if {$outline == "-"} {set outline ""}
            if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
-           set width [lindex $tags(o) 2]
+           set width [lindex $tags(b) 5]
            if {$width == ""} {set width 2}
 
            $c create $sh $x1 $y1 $x2 $y2 \
@@ -405,11 +404,11 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        # puts "DEBUG: arrow=($arrow_coords)"
 
-       if {![info exists tags(o)]} {set tags(o) {}}
-       set fill [lindex $tags(o) 0]
+       if {![info exists tags(ls)]} {set tags(ls) {}}
+       set fill [lindex $tags(ls) 0]
        if {$fill == ""} {set fill black}
        if {$fill == "-"} {set fill ""}
-       set width [lindex $tags(o) 1]
+       set width [lindex $tags(ls) 1]
        if {$width == ""} {set width 1}
        if {$width == "0"} {set fill ""}
 
@@ -417,7 +416,8 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
-           set color [lindex $tags(t) 1]
+           # TODO implement: second par is text position
+           set color [lindex $tags(t) 2]
            if {$color == ""} {set color "#005030"}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
            set x1 [lindex $arrow_coords 0]
