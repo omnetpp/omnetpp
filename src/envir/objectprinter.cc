@@ -12,6 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "stringutil.h"
 #include "cconfiguration.h"
 #include "cmodule.h"
 #include "cclassdescriptor.h"
@@ -126,7 +127,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                         }
                         else {
                             descriptor->getFieldAsString(object, fieldIndex, elementIndex, buffer, sizeof(buffer));
-                            ostream << buffer << "\n";
+                            ostream << QUOTE(buffer) << "\n";
                         }
                     }
                     else
@@ -134,7 +135,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                 }
                 else {
                     descriptor->getFieldAsString(object, fieldIndex, elementIndex, buffer, sizeof(buffer));
-                    ostream << buffer << "\n";
+                    ostream << QUOTE(buffer) << "\n";
                 }
             }
         }
