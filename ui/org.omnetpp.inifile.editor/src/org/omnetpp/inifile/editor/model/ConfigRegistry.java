@@ -253,8 +253,8 @@ public class ConfigRegistry {
         "Currently ignored. Accepted for backward compatibility.");
     public static final ConfigKey CFGID_LOAD_LIBS = addGlobalEntry(
         "load-libs", CFG_FILENAMES, null,
-        "Specifies dyamic libraries to be loaded on startup. The libraries should be " +
-        "given without the `.dll' or `.so' suffix -- that will be automatically " +
+        "Specifies dynamic libraries to be loaded on startup. The libraries should " +
+        "be given without the `.dll' or `.so' suffix -- that will be automatically " +
         "appended.");
     public static final ConfigKey CFGID_MAX_BUFFERED_SAMPLES = addPerObjectEntry(
         "max-buffered-samples", CFG_INT, null,
