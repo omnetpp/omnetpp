@@ -31,7 +31,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	
 	private void checkDeleted() {
 		if (getCPtr(this) == 0)
-			throw new IllegalStateException("ResultFileManager already deleted.");
+			throw new IllegalStateException("Tried to access a deleted ResultFileManagerEx.");
 	}
 
 	public void addListener(IResultFilesChangeListener listener) {
