@@ -17,6 +17,7 @@ import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -103,7 +104,7 @@ public class ImageFactory {
 
     public final static String CURSOR_IMAGE_ZOOMIN = CURSOR_IMAGE_DIR + "ZoomIn";
     public final static String CURSOR_IMAGE_ZOOMOUT = CURSOR_IMAGE_DIR + "ZoomOut";
-    
+
     public final static String UNKNOWN = INTERNAL_DIR + "unknown";
     public final static String DEFAULT = INTERNAL_DIR + "default";
 
@@ -125,7 +126,11 @@ public class ImageFactory {
     public static final int SIZE_VL = -250;
 
     static {
-        imageDirs = new String[0];
+        // default is the "images" directory in the main omnetpp directory
+        String defaultImageDir = new Path(Platform.getInstallLocation().getURL().getFile()).append("../images").toString();
+        imageDirs = new String[] { defaultImageDir };
+
+        // if image path is specified we should use that one instead of ../images
         String omnetppBitmapPath = System.getenv("OMNETPP_IMAGE_PATH");
         if (omnetppBitmapPath != null)
             imageDirs = omnetppBitmapPath.split(";");

@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import org.eclipse.core.runtime.Assert;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
-	
+
 	/**
 	 * Converts a java id string (camel case and '_' used as word separators)
 	 * to a display string (' ' used as word separator).
@@ -16,7 +16,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	public static String toDisplayString(String javaIdString) {
 		return join(splitCamelCaseString(capitalize(javaIdString), '_').iterator(), ' ');
 	}
-	
+
 	public static List<String> splitCamelCaseString(String str, char separator)
 	{
 		List<String> result = new ArrayList<String>();
@@ -28,7 +28,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		for (int index = 0; index < length; index++)
 		{
 			char curChar = str.charAt(index);
-			if (Character.isUpperCase(curChar) || (!lastIsLower && Character.isDigit(curChar)) || curChar == separator)
+			if (Character.isUpperCase(curChar) || !lastIsLower && Character.isDigit(curChar) || curChar == separator)
 			{
 				if (lastIsLower || curChar == separator)
 				{
@@ -62,7 +62,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		result.add(currentWord.toString());
 		return result;
 	}
-	
+
 	/**
 	 * Inserts newlines into the string, performing rudimentary
 	 * line breaking. Good enough for long tooltip texts etc.
@@ -89,7 +89,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	}
 
 	/**
-     * 
+     *
 	 * @param text
 	 * @return The number of new line chars in the text
 	 */
@@ -102,7 +102,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 		return newlineCount;
 	}
-	
+
 	/**
 	 * Returns true if string is null or "".
 	 */
@@ -112,7 +112,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
     /**
      * Formats a NED comment as a one-line doc string. If it is longer than the
-     * given max length, it gets truncated. Only the first sentence or the first paragraph 
+     * given max length, it gets truncated. Only the first sentence or the first paragraph
      * is returned.
      */
     public static String makeBriefDocu(String comment, int maxlen) {
@@ -142,7 +142,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String makeTextDocu(String comment) {
         if (comment==null)
             return null;
-        
+
         // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
 
         comment = comment.replaceAll("(?m)^[ \t]*//#.*$", "");  // remove '//#' lines
@@ -152,9 +152,9 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         comment = comment.replaceAll("(?s)\n\n\n+","\n\n");   // remove multiple blank lines
         return comment.trim();
     }
-    
+
     /**
-     * Converts documentation string to HTML format, and returns it. 
+     * Converts documentation string to HTML format, and returns it.
      */
     // TODO <pre> and <nohtml> is not supported
     public static String makeHtmlDocu(String comment) {
@@ -162,7 +162,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             return null;
 
         // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
-        
+
         // add sentries to facilitate processing
         comment = "\n\n"+comment+"\n\n";
 
@@ -171,6 +171,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
         // remove '// ', '/// ' and '//////...' from beginning of lines
         comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");
+
+        comment = comment.trim();
 
         // TODO extract existing <pre> sections to prevent tampering inside them
         // comment = comment.replaceAll("(?s)&lt;pre&gt;(.*?)&lt;/pre&gt;", "$pre{++$ctr}=$1;"<pre$ctr>"");e;
@@ -241,7 +243,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         // decode certain HTML tags: <i>,<b>,<br>,...
         String tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
         comment = comment.replaceAll("(?s)(?i)<(("+tags+")( [^\n]*?)?)>","<$1>");
-        comment = comment.replaceAll("(?s)(?i)<(/("+tags+"))>", "<$1>"); 
+        comment = comment.replaceAll("(?s)(?i)<(/("+tags+"))>", "<$1>");
 
         // TODO put back <nohtml> sections and backslashed words
         // comment = comment.replaceAll("(?s)\<nohtml(\d+)\>", "$nohtml{$1}");e;
@@ -251,7 +253,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
     return comment;
     }
-    
+
     /**
      * Returns the <numeral> <noun> clause.
      * Examples:
@@ -266,11 +268,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	else if (count == 1)
     		return "1 " + noun;
     	else
-    		return String.valueOf(count) + " " + plural(noun); 
+    		return String.valueOf(count) + " " + plural(noun);
     }
 
     /**
-     * Returns the plural of an English <code>noun</code> (approximately). 
+     * Returns the plural of an English <code>noun</code> (approximately).
      */
     public static String plural(String noun) {
     	if (isEmpty(noun))
@@ -284,13 +286,13 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	else
     		return noun + "s";
     }
-    
+
 	/**
 	 * Useful for choosing indefinite article ("a" or "an") for a noun.
 	 */
     public static boolean startsWithVowel(String word) {
 		final String vowels = "aeiou";
-		return vowels.contains(word.substring(0,1).toLowerCase()); 
+		return vowels.contains(word.substring(0,1).toLowerCase());
 	}
 
 	/**
@@ -304,7 +306,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      * Joins the elements of a {@code collection} separated by {@code separator} and
      * {@code lastSeparator}.
      * Example:
-     *   join(["foo","bar","baz"], ", ", " and ") = "foo, bar and baz" 
+     *   join(["foo","bar","baz"], ", ", " and ") = "foo, bar and baz"
      */
     public static String join(Collection<String> collection, String separator, String lastSeparator) {
     	int size = collection.size();
