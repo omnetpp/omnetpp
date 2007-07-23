@@ -13,7 +13,7 @@ public class ConnectionFigure extends PolylineConnection {
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
 	private IDisplayString lastDisplayString;
-    
+
     public Color getLocalLineColor() {
 		return localLineColor;
 	}
@@ -39,22 +39,22 @@ public class ConnectionFigure extends PolylineConnection {
 			getTargetDecoration().setVisible(arrowEnabled);
 
     }
-    
-    protected void setStyle(Color color, int width, String style, String segments) {
-    	style = (style == null) ? "" : style;
+
+    protected void setStyle(Color color, int width, String style) {
+    	style = style == null ? "" : style;
     	if (style.toLowerCase().startsWith("da"))
     		setLineStyle(localLineStyle = Graphics.LINE_DASH);
     	else if (style.toLowerCase().startsWith("d"))
     		setLineStyle(localLineStyle = Graphics.LINE_DOT);
     	else
     		setLineStyle(localLineStyle = Graphics.LINE_SOLID);
-    	
+
     	// special handling: connection is visible only if width is greater than 0
     	setVisible(width > 0);
     	setLineWidth(localLineWidth = width);
     	setForegroundColor(localLineColor = color);
     	// arrow scaling proportional with the line width
-		if (getTargetDecoration() != null) 
+		if (getTargetDecoration() != null)
 			((PolygonDecoration)getTargetDecoration()).setScale(5+lineWidth, 2+lineWidth);
     }
 
@@ -64,18 +64,17 @@ public class ConnectionFigure extends PolylineConnection {
 	 */
 	public void setDisplayString(IDisplayString dps) {
 		lastDisplayString = dps;
-		
-        setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)), 
-				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1), 
-				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE), 
-				dps.getAsStringDef(DisplayString.Prop.CONNECTION_SEGMENTS));
+
+        setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)),
+				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1),
+				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE));
 	}
     /**
-     * Returns the lastly set displaysting
+     * Returns the lastly set display string
      * @return
      */
 	public IDisplayString getLastDisplayString() {
     	return lastDisplayString;
     }
-    
+
 }
