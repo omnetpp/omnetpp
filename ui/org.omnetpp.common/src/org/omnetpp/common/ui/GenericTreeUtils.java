@@ -1,12 +1,14 @@
 package org.omnetpp.common.ui;
 
+import org.apache.commons.collections.Predicate;
+
 
 /**
  * GenericTreeNode utility functions.
  * @author andras
  */
 public class GenericTreeUtils {
-	
+
 	/**
 	 * Tree comparison. Payload objects are compared with equals().
 	 * 
@@ -34,4 +36,20 @@ public class GenericTreeUtils {
 				return false;
 		return true;		
 	}
+	
+	public static Object findFirstMatchingNode(GenericTreeNode root, Predicate payloadMatcher) {
+		return root==null ? null : internalFindFirstMatchingNode(root, payloadMatcher);
+	}
+
+	private static Object internalFindFirstMatchingNode(GenericTreeNode node, Predicate payloadMatcher) {
+		if (payloadMatcher.evaluate(node.getPayload())) 
+			return node.getPayload();
+		for (GenericTreeNode child : node.getChildren()) {
+			Object foundObject = internalFindFirstMatchingNode(child, payloadMatcher);
+			if (foundObject!=null)
+				return foundObject;
+		}
+		return null;		
+	}
+
 }

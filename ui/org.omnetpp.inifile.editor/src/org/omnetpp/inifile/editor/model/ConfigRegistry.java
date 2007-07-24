@@ -136,6 +136,10 @@ public class ConfigRegistry {
 		return (ConfigKey[]) perObjectEntries.values().toArray(new ConfigKey[perObjectEntries.size()]);
 	}
 
+    public static final ConfigKey CFGID_APPLY_DEFAULT = addPerObjectEntry(
+        "apply-default", CFG_BOOL, "false",
+        "Applies to module parameters: whether NED default values should be assigned " +
+        "if present.");
     public static final ConfigKey CFGID_CMDENV_AUTOFLUSH = addPerRunEntry(
         "cmdenv-autoflush", CFG_BOOL, "false",
         "Call fflush(stdout) after each event banner or status update; affects both " +

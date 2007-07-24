@@ -273,6 +273,7 @@ public class SectionDialog extends TitleAreaDialog {
 		String sectionType = sectionTypeCombo.getText();
 		if (sectionType.equals(SCENARIO_) && configName.equals(GENERAL))
 			return "["+SCENARIO_+GENERAL+"] is not a legal name";
+		//XXX a Config cannot extend a Scenario
 
 		//XXX check that selected network exists
 

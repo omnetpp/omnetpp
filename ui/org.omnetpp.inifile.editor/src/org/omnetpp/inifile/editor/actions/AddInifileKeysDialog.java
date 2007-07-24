@@ -64,7 +64,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     private boolean addApplyDefault;
 
 	// sizing constants
-    private final static int SIZING_SELECTION_WIDGET_HEIGHT = 80;
+    private final static int SIZING_SELECTION_WIDGET_HEIGHT = 120;
     private final static int SIZING_SELECTION_WIDGET_WIDTH = 300;
 
     /**

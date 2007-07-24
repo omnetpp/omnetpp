@@ -293,8 +293,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group3, CFGID_TKENV_USE_MAINWINDOW, "Use main window");
 		}
 		else if (category.equals(CAT_PARSIM)) {
+			addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
 			Group group1 = createGroup(form, "General");
-			addCheckboxFieldEditor(group1, CFGID_PARALLEL_SIMULATION, "Parallel simulation");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
 			addTextFieldEditor(group1, CFGID_PARSIM_SYNCHRONIZATION_CLASS, "Synchronization class");
 			addCheckboxFieldEditor(group1, CFGID_PARSIM_DEBUG, "Debug parallel simulation");
