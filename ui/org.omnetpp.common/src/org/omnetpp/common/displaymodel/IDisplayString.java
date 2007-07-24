@@ -14,10 +14,10 @@ public interface IDisplayString {
     /**
      * Tag names used in the display string
      */
-    public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags 
+    public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags
                       bgp, bgb, bgi, bgtt, bgg, bgl, bgs, // compound module background tags
                       m, a, ls, bp }                 // connection tags
-    
+
     /**
      * Defines all tag groups
      *
@@ -27,14 +27,14 @@ public interface IDisplayString {
     }
 
     /**
-     * describes ALL possible tag values and arguments and adds additional info, 
-     * including type, tagname, position inside the tag and
+     * describes ALL possible tag values and arguments and adds additional info,
+     * including type, tag-name, position inside the tag and
      * user readable name and description
      */
     public enum Prop {
     	// PROPERTY representing the whole display string in a single line
     	DISPLAY(null, 0, PropType.STRING, PropGroup.Base, "display", "Display properties of the object"),
-        // SUBMODULE / SIMPLEMODULE propeties
+        // SUBMODULE / SIMPLEMODULE properties
         // do not change the first and last element of the property group
         X(Tag.p, 0, PropType.UNIT , PropGroup.Position , "x", "X position of the module"),
         Y(Tag.p, 1, PropType.UNIT, PropGroup.Position, "y", "Y position of the module"),
@@ -45,7 +45,10 @@ public interface IDisplayString {
         // B tag
         WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width (-1)"),
         HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height (-1)"),
-        SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
+        // SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
+        // TODO enumerated types should have their own constructor taking a string array of possible values (or other enum)
+        SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / oval). Default: rect"),
+
         // former O tag
         FILLCOL(Tag.b, 3, PropType.COLOR, PropGroup.Polygon, "fill color", "Fill color of the object (colorname or #RRGGBB or @HHSSBB). Default: light blue"),
         BORDERCOL(Tag.b, 4, PropType.COLOR, PropGroup.Polygon, "border color", "Border color of the object (colorname or #RRGGBB or @HHSSBB). Default: black"),
@@ -102,26 +105,26 @@ public interface IDisplayString {
         MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Background, "pixels per unit", "Number of pixels per distance unit. Coordinates are measured in units. Default: 1"),
         MODULE_UNIT(Tag.bgs, 1, PropType.STRING, PropGroup.Background, "unit name", "Name of distance unit"),
         // END of COMPOUNDMODULE properties
-        
+
         // START of CONNECTION properties
         // do not change the first and last element of the property group
-        ROUTING_MODE(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath) Default: manual"),
-        ROUTING_CONSTRAINT(Tag.m, 1, PropType.STRING, PropGroup.Connection, "routing constraint", "possible constraints: ([s]outh, [n]orth, [e]ast, [w]est)"),
+        // ROUTING_MODE(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath) Default: manual"),
+        // ROUTING_CONSTRAINT(Tag.m, 1, PropType.STRING, PropGroup.Connection, "routing constraint", "possible constraints: ([s]outh, [n]orth, [e]ast, [w]est)"),
         // a tag (anchoring)
-        ANCHOR_SRCX(Tag.a, 0, PropType.INTEGER, PropGroup.Position, "source anchor x", "Relative horizontal position of the anchor on the source module side"),
-        ANCHOR_SRCY(Tag.a, 1, PropType.INTEGER, PropGroup.Position, "source anchor y", "Relative vertical position of the anchor on the source module side"),
-        ANCHOR_DSTX(Tag.a, 2, PropType.INTEGER, PropGroup.Position, "destination anchor x", "Relative horizontal position of the anchor on the destination module side"),
-        ANCHOR_DSTY(Tag.a, 3, PropType.INTEGER, PropGroup.Position, "destination anchor y", "Relative vertical position of the anchor on the destination module side"),
+        // ANCHOR_SRCX(Tag.a, 0, PropType.INTEGER, PropGroup.Position, "source anchor x", "Relative horizontal position of the anchor on the source module side"),
+        // ANCHOR_SRCY(Tag.a, 1, PropType.INTEGER, PropGroup.Position, "source anchor y", "Relative vertical position of the anchor on the source module side"),
+        // ANCHOR_DSTX(Tag.a, 2, PropType.INTEGER, PropGroup.Position, "destination anchor x", "Relative horizontal position of the anchor on the destination module side"),
+        // ANCHOR_DSTY(Tag.a, 3, PropType.INTEGER, PropGroup.Position, "destination anchor y", "Relative vertical position of the anchor on the destination module side"),
         // ls tag (line styling)
         CONNECTION_COL(Tag.ls, 0, PropType.COLOR, PropGroup.Line, "line color", "Connection color (colorname or #RRGGBB or @HHSSBB). Default: black"),
         CONNECTION_WIDTH(Tag.ls, 1, PropType.INTEGER, PropGroup.Line, "line width", "Connection line width. Default: 1"),
-        CONNECTION_STYLE(Tag.ls, 2, PropType.STRING, PropGroup.Line, "line style", "Connection line style ([s]olid, [d]otted, [da]shed). Default: solid"),
-        CONNECTION_SEGMENTS(Tag.ls, 3, PropType.STRING, PropGroup.Line, "segments", "Connection segments ([l]ine, [s]pline). Default: line"),
+        CONNECTION_STYLE(Tag.ls, 2, PropType.STRING, PropGroup.Line, "line style", "Connection line style ([s]olid, [d]otted, [da]shed). Default: solid");
+        // CONNECTION_SEGMENTS(Tag.ls, 3, PropType.STRING, PropGroup.Line, "segments", "Connection segments ([l]ine, [s]pline). Default: line"),
         // bp tag (bendpoints)
-        BENDPOINTS(Tag.bp, 0, PropType.UNIT, PropGroup.Connection, "bendpoints", "bendpoint locations");
+        // BENDPOINTS(Tag.bp, 0, PropType.UNIT, PropGroup.Connection, "bendpoints", "bendpoint locations");
         // END of CONNECTION properties
         // end of tag definition
-        
+
         // define additional metadata for the tags
         private final Tag tag;
         private final int pos;
@@ -129,8 +132,8 @@ public interface IDisplayString {
         private final PropGroup group;
         private final String visibleName;
         private final String visibleDesc;
-        
-        Prop(Tag tag, int tagPos, PropType argType, PropGroup tagGroup, 
+
+        Prop(Tag tag, int tagPos, PropType argType, PropGroup tagGroup,
                 String visibleName, String visibleDesc ) {
             this.tag = tag;
             this.pos = tagPos;
@@ -165,31 +168,31 @@ public interface IDisplayString {
         }
     }
 
-    
+
 	/**
 	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback 
+	 * @return The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types.
 	 */
 	public String getAsStringDef(Prop property);
 
 	/**
 	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback 
+	 * @return The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types.
 	 */
 	public Integer getAsIntegerDef(Prop property);
 
 	/**
 	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback 
+	 * @return The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types. If nothing found, returns <code>defValue</code>.
 	 */
 	public int getAsIntDef(Prop propName, int defValue);
 
 	/**
 	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback 
+	 * @return The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types. If nothing found, returns <code>defValue</code>.
 	 */
 	public float getAsFloatDef(Prop propName, float defValue);
@@ -226,12 +229,12 @@ public interface IDisplayString {
 
     /**
 	 * Converts the provided value (in pixel) to unit
-	 * @param pixel 
+	 * @param pixel
      * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
 	 * @return Value in units
 	 */
 	public float pixel2unit(int pixel, Float overrideScale);
-	
+
 	/**
 	 * Converts the provided value (in unit) to pixel
 	 * @param unit

@@ -2,6 +2,7 @@ package org.omnetpp.figures;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
@@ -58,7 +59,7 @@ public class CompoundModuleFigure extends ModuleFigure
 	        graphics.setBackgroundColor(moduleBackgroundColor);
 	        // WARNING only the default SWT graphics implements this method
 	        // if we are using ScaledGrahics we should not use it.
-	        // TODO look for other effect to show nonplay area which is more scale friendly
+	        // TODO look for other effect to show non-play area which is more scale friendly
 	        if (graphics instanceof SWTGraphics)
 	        	graphics.setBackgroundPattern(nonplayPattern);
 
@@ -296,26 +297,6 @@ public class CompoundModuleFigure extends ModuleFigure
 		lastDisplayString = dps;
 
 		// setup the figure's properties
-        // set the location and size using the models helper methods
-        // if the size is specified in the display string we should set it as preferred size
-        // otherwise getPreferredSize should return the size calculated from the children
-    	Dimension newSize = dps.getCompoundSize(null);
-
-    	long seed = dps.getAsIntDef(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
-    	// if the seed changed we explicitly have to force a re-layout
-    	if (seed != layouter.getSeed()) {
-    		layouter.setSeed(seed);
-    		// layouter.executeAutoLayout();
-    		layouter.requestAutoLayout();
-    	}
-
-        if (newSize.height > 0 || newSize.width > 0) {
-        	setPreferredSize(newSize);
-        	pane.setPreferredSize(newSize.getCopy());
-        } else {
-        	setPreferredSize(null);
-        	pane.setPreferredSize(null);
-        }
         // set the icon showing the default representation in the titlebar
         Image img = ImageFactory.getImage(
         		dps.getAsStringDef(IDisplayString.Prop.IMAGE),
@@ -356,6 +337,30 @@ public class CompoundModuleFigure extends ModuleFigure
         		dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKNUMBER, -1),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_GRIDCOL)));
 
+        // finally set the location and size using the models helper methods
+        // if the size is specified in the display string we should set it as preferred size
+        // otherwise getPreferredSize should return the size calculated from the children
+        // we call the resizing last time because other parameters like the icon size or the broder width
+        // can affect the size of bounding box
+        Dimension newSize = dps.getCompoundSize(null);
+
+        long seed = dps.getAsIntDef(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
+        // if the seed changed we explicitly have to force a re-layout
+        if (seed != layouter.getSeed()) {
+            layouter.setSeed(seed);
+            // layouter.executeAutoLayout();
+            layouter.requestAutoLayout();
+        }
+
+        if (newSize.height > 0 || newSize.width > 0) {
+            Insets borderInset = getBorder().getInsets(this);
+            Dimension newPrefSize = newSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
+            setPreferredSize(newPrefSize);
+            pane.setPreferredSize(newPrefSize.getCopy());
+        } else {
+            setPreferredSize(null);
+            pane.setPreferredSize(null);
+        }
         invalidate();
 	}
 
@@ -424,5 +429,6 @@ public class CompoundModuleFigure extends ModuleFigure
     public void setDirectEditTextVisible(boolean visible) {
         getCompoundModuleBorder().getTitleBorder().setDirectEditTextVisible(visible);
     }
+
 
 }

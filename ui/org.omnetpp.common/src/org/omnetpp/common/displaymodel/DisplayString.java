@@ -36,7 +36,7 @@ public class DisplayString implements IDisplayString {
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
 
-    // the owner of the displaystring
+    // the owner of the display string
     protected IHasDisplayString owner = null;
 
     // map that stores the currently available tag instances
@@ -605,4 +605,19 @@ public class DisplayString implements IDisplayString {
     private String floatToString(float value) {
         return StringUtils.chomp(String.valueOf(value), ".0");
     }
+
+    /**
+     * Dump all supported tags
+     */
+    public static void dumpSupportedTags() {
+        for (Prop p : Prop.values()) {
+            System.out.println(p.getTag()+" "+p.getPos()+" "+p.getGroup()+" - "+p.getVisibleName()
+                    +": "+p.getVisibleDesc());
+        }
+    }
+
+//    static {
+//        dumpSupportedTags();
+//    }
 }
+
