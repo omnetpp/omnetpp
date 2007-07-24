@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 import java.util.List;
 
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
@@ -16,6 +17,8 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+
+import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
@@ -137,10 +140,14 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         // create the constraint change command
         if (child.getModel() instanceof CompoundModuleNodeEx) {
             CompoundModuleNodeEx module = (CompoundModuleNodeEx) child.getModel();
+            CompoundModuleFigure cfigure = (CompoundModuleFigure)((GraphicalEditPart)child).getFigure();
             SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
-            cmd.setSize(modelConstraint.getSize());
+            // shrink the size with the border insets (we want to store ONLY the inside dimensions, not the
+            // bounding box
+            Insets borderInset = cfigure.getBorder().getInsets(cfigure);
+            cmd.setSize(modelConstraint.getSize().shrink(borderInset.getWidth(), borderInset.getHeight()));
 
-            // if size constrant is not specified, then remove it from the model too
+            // if size constraint is not specified, then remove it from the model too
             // TODO is this needed?
             if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize(null) == null)
                 cmd.setSize(null);

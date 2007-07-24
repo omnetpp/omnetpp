@@ -46,7 +46,7 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
 
     /* (non-Javadoc)
      * @see org.eclipse.gef.editpolicies.SelectionHandlesEditPolicy#removeSelectionHandles()
-     * Return the connection to the original state (before slection)
+     * Return the connection to the original state (before selection)
      */
     @Override
     protected void removeSelectionHandles() {

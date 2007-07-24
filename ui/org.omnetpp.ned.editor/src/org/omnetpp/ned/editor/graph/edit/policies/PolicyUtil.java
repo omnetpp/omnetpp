@@ -11,7 +11,7 @@ public class PolicyUtil {
 
     /**
      * @param part
-     * @return whtether the given edit part is editable or not
+     * @return whether the given edit part is editable or not
      */
     public static boolean isEditable(EditPart part) {
         if (part instanceof IReadOnlySupport)

@@ -155,7 +155,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     @Override
     protected EditPolicy createChildEditPolicy(EditPart child) {
         ResizableEditPolicy policy = new NedResizeEditPolicy();
-        // check if the editpart is editable and do not allow resize or drag operations
+        // check if the edit part is editable and do not allow resize or drag operations
         if (!PolicyUtil.isEditable(child)) {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);

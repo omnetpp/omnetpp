@@ -7,11 +7,15 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.AbstractEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 
+/**
+ * Edit policy for tree editing of GEF parts. Used in the graphical editor's outline view.
+ * @author rhornig
+ */
 public class NedTreeEditPolicy extends AbstractEditPolicy {
 
     @Override
     public Command getCommand(Request req) {
-        if (REQ_MOVE.equals(req.getType())) 
+        if (REQ_MOVE.equals(req.getType()))
         	return getMoveCommand((ChangeBoundsRequest) req);
         return null;
     }

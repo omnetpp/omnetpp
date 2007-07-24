@@ -29,10 +29,10 @@ public class ConnectionPropertySource extends MergedPropertySource {
             this.model = model;
             setDisplayString(model.getDisplayString());
             // define which properties should be displayed in the property sheet
-            // we do not support all properties currently, just colow, width ans style
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL, 
+            // we do not support all properties currently, just color, width and style
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL,
                     								 DisplayString.Prop.CONNECTION_STYLE));
-            
+
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);
         }
@@ -47,7 +47,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
 
         public BasePropertySource(ConnectionNodeEx connectionNodeModel) {
             model = connectionNodeModel;
-            
+
             // set up property descriptors
             PropertyDescriptor srcGateProp = new PropertyDescriptor(Prop.SrcGate, "source-gate");
             srcGateProp.setCategory("Base");
@@ -69,12 +69,12 @@ public class ConnectionPropertySource extends MergedPropertySource {
         }
 
         public Object getPropertyValue(Object propName) {
-            if (Prop.SrcGate.equals(propName))  
-                return model.getSrcGateFullyQualified(); 
+            if (Prop.SrcGate.equals(propName))
+                return model.getSrcGateFullyQualified();
 
-            if (Prop.DestGate.equals(propName))  
-                return model.getDestGateFullyQualified(); 
-            
+            if (Prop.DestGate.equals(propName))
+                return model.getDestGateFullyQualified();
+
             return null;
         }
 
@@ -93,7 +93,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
         }
     }
 
-    // constructor 
+    // constructor
     public ConnectionPropertySource(ConnectionNodeEx connectionNodeModel) {
         super(connectionNodeModel);
         // create a nested displayPropertySources
@@ -112,7 +112,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
                 new ParameterListPropertySource(connectionNodeModel),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
-        
+
     }
 }
 

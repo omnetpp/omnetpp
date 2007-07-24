@@ -83,7 +83,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
 
     /* (non-Javadoc)
      * @see org.eclipse.gef.editpolicies.ResizableEditPolicy#createSelectionHandles()
-     * change the color of all selection handles
+     * change the color of all selection handles (read only parts will be different color)
      */
     @Override
     protected List<?> createSelectionHandles() {
@@ -102,7 +102,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
         // XXX this is a MEGA HACK.  During the initiation of cloning (CTRL+drag) the DragEditPartsTracker does not check
         // the state of CTRL key, so it creates a MOVE request (instead of clone), however a non-movable submodule
         // (for example an inherited submodule which should not be moved) will report that he does not understand
-        // a move request, so the currently selected editpart will be filtered out from targetEditParts (it check it by calling the
+        // a move request, so the currently selected edit part will be filtered out from targetEditParts (it check it by calling the
         // understandsRequest method on the policy) of the request. The cloning of the submodule will not work because of this,
         // because the understandsRequest for the MOVE request will return false ( it would return isDragAllowed (which is false in case of an
         // inherited submodule)
