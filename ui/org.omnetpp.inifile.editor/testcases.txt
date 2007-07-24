@@ -1,0 +1,24 @@
+Corner cases to include in testing:
+===================================
+
+Missing [General] section
+- check Sections & Parameters pages
+
+Section chain problems
+- missing base section
+- a Config extends a Scenario
+- cycle in fallback chain
+- General contains extends= line
+ ** check Sections & Parameters page with each of the conditions above **
+
+Bogus Scenarios
+- ${} iteration in Config sections
+- invalid ${} iteration syntax
+- redeclaration of ${} variable
+- reference to nonexistent ${} variable
+- validation of constraint= line
+- constraint= line occurs in a Config section
+
+ 
+
+ 
