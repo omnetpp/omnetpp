@@ -136,7 +136,7 @@ public class ConfigRegistry {
 		return (ConfigKey[]) perObjectEntries.values().toArray(new ConfigKey[perObjectEntries.size()]);
 	}
 
-    public static final ConfigKey CFGID_APPLY_DEFAULT = addPerObjectEntry(
+	public static final ConfigKey CFGID_APPLY_DEFAULT = addPerObjectEntry(
         "apply-default", CFG_BOOL, "false",
         "Applies to module parameters: whether NED default values should be assigned " +
         "if present.");
@@ -145,6 +145,12 @@ public class ConfigRegistry {
         "Call fflush(stdout) after each event banner or status update; affects both " +
         "express and normal mode. Turning on autoflush can be useful with " +
         "printf-style debugging for tracking down program crashes.");
+    public static final ConfigKey CFGID_CMDENV_CONFIG_NAME = addGlobalEntry(
+        "cmdenv-config-name", CFG_STRING, null,
+        "Specifies the name of the configuration to be run (for a value `Foo', " +
+        "section [Config Foo] or [Scenario Foo] will be used from the ini file). See " +
+        "also cmdenv-runs-to-execute=. The -c command line option overrides this " +
+        "setting.");
     public static final ConfigKey CFGID_CMDENV_EV_OUTPUT = addPerObjectEntry(
         "cmdenv-ev-output", CFG_BOOL, "true",
         "When cmdenv-express-mode=false: whether Cmdenv should print debug messages " +
@@ -183,11 +189,11 @@ public class ConfigRegistry {
         "present/currently scheduled in FES.");
     public static final ConfigKey CFGID_CMDENV_RUNS_TO_EXECUTE = addGlobalEntry(
         "cmdenv-runs-to-execute", CFG_STRING, null,
-        "Specifies which simulation runs should be executed. It accepts a " +
-        "comma-separated list of run numbers or run number ranges, e.g. 1,3-4,7-9. " +
-        "If the value is missing, Cmdenv executes all runs that have ini file " +
-        "sections; if no runs are specified in the ini file, Cmdenv does one run. " +
-        "The -r command line option overrides this setting.");
+        "Specifies which runs to execute from the selected configuration (see " +
+        "cmdenv-config-name=). It accepts a comma-separated list of run numbers or " +
+        "run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv " +
+        "executes all runs in the selected configuration. The -r command line option " +
+        "overrides this setting.");
     public static final ConfigKey CFGID_CMDENV_STATUS_FREQUENCY = addPerRunEntry(
         "cmdenv-status-frequency", CFG_INT, "100000",
         "When cmdenv-express-mode=true: print status update every n events. Typical " +
@@ -316,8 +322,8 @@ public class ConfigRegistry {
         "communication between partitions. The class must implement the " +
         "cParsimCommunications interface.");
     public static final ConfigKey CFGID_PARSIM_DEBUG = addGlobalEntry(
-    	"parsim-debug", CFG_BOOL, "true",
-    	"With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
+       	"parsim-debug", CFG_BOOL, "true",
+       	"With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
     public static final ConfigKey CFGID_PARSIM_FILECOMM_PREFIX = addGlobalEntry(
     	"parsim-filecommunications-prefix", CFG_STRING, "comm/",
     	"When cFileCommunications is selected as parsim communications class: specifies the prefix " +
