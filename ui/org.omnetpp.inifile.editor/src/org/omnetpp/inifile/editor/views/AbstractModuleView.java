@@ -76,7 +76,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		// Listen on selection changes
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				workbenchSelectionChanged();
+				if (part != AbstractModuleView.this) // ignore our own selection changes
+					workbenchSelectionChanged();
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
