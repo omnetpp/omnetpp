@@ -55,11 +55,11 @@ public class InifileHoverUtils {
 		String numErrorsText = "";
 		if (numErrors+numWarnings > 0) {
 			if (numErrors>0 && numWarnings>0)
-				numErrorsText += numErrors + " errors and " + numWarnings + " warnings"; 
+				numErrorsText += numErrors + " error(s) and " + numWarnings + " warning(s)"; 
 			else if (numErrors>0)
-				numErrorsText += numErrors + " errors"; 
+				numErrorsText += numErrors + " error(s)"; 
 			else if (numWarnings>0)
-				numErrorsText += numWarnings + " warnings";
+				numErrorsText += numWarnings + " warning(s)";
 			if (markersDisplayed.size() > 0)
 				numErrorsText += " more";
 			numErrorsText += " in the section body";
