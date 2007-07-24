@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.collections.Predicate;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
@@ -68,6 +69,7 @@ public class SectionsPage extends FormPage {
 	public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
 	public static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
 	public static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
+	public static final Image ICON_SECTION_NONEXISTENT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_nonexistent.gif");
 	
 	private static final String HINT_TEXT = "\nHINT: Drag sections to edit the hierarchy. Hierarchy defines the fallback order for lookups.";
 
@@ -96,27 +98,21 @@ public class SectionsPage extends FormPage {
 	};
 	private IAction addKeysAction = new AddInifileKeysAction();
 
-	static class SectionData {
+	private static class SectionData {
 		String sectionName;
 		int maxProblemSeverity;
+		boolean isNonexistent;
 
-		public SectionData(String sectionName, int maxProblemSeverity) {
+		public SectionData(String sectionName, int maxProblemSeverity, boolean isNonexistent) {
 			this.sectionName = sectionName;
 			this.maxProblemSeverity = maxProblemSeverity;
+			this.isNonexistent = isNonexistent;
 		}
 
 		/* label provider maps to this */
 		@Override
 		public String toString() {
 			return sectionName;
-		}
-
-		/* needed for treeViewer.setSelection() to work */
-		@Override
-		public boolean equals(Object obj) {
-			if (obj==null || getClass()!=obj.getClass())
-				return false;
-			return sectionName.equals(((SectionData)obj).sectionName);
 		}
 	}
 
@@ -168,6 +164,8 @@ public class SectionsPage extends FormPage {
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SectionData) {
 					SectionData payload = (SectionData) element;
+					if (payload.isNonexistent)
+						return ICON_SECTION_NONEXISTENT;
 					switch (payload.maxProblemSeverity) {
 						case IMarker.SEVERITY_WARNING: return ICON_SECTION_WARNING;
 						case IMarker.SEVERITY_ERROR: return ICON_SECTION_ERROR;
@@ -451,7 +449,7 @@ public class SectionsPage extends FormPage {
 		for (String sectionName : doc.getSectionNames()) {
 			if (!sectionName.equals(GENERAL)) {
 				GenericTreeNode node = getOrCreate(nodes, sectionName);
-				String extendsSectionName = InifileUtils.resolveBaseSection(doc, sectionName);
+				String extendsSectionName = InifileUtils.resolveBaseSectionPretendingGeneralExists(doc, sectionName);
 				if (analyzer.isCausingCycle(sectionName) || extendsSectionName == null) {
 					// bogus section, put it under the root
 					rootNode.addChild(node);
@@ -476,17 +474,36 @@ public class SectionsPage extends FormPage {
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName) {
 		GenericTreeNode node = nodes.get(sectionName);
 		if (node==null) {
-			IMarker[] markers = InifileUtils.getProblemMarkersForWholeSection(sectionName, getInifileDocument());
-			int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
-			node = new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity));
+			IInifileDocument doc = getInifileDocument();
+			if (doc.containsSection(sectionName)) {
+				IMarker[] markers = InifileUtils.getProblemMarkersForWholeSection(sectionName, doc);
+				int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
+				node = new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity, false));
+			} 
+			else {
+				node = new GenericTreeNode(new SectionData(sectionName, -1, true));
+			}
 			nodes.put(sectionName, node);
 		}
 		return node;
 	}
 
 	@Override
-	public void gotoSection(String section) {
-		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionData(section, -1))), true);
+	public void gotoSection(final String section) {
+		// we must find the node in the tree manually. equals() cannot be used, because it
+		// compares the maxNumErrors and isNonexistent fields as well (this is required for
+		// treeEquals() in refresh())
+		GenericTreeNode root = (GenericTreeNode)treeViewer.getInput();
+		Object sectionData = GenericTreeUtils.findFirstMatchingNode(root, new Predicate() {
+			public boolean evaluate(Object object) {
+				return object instanceof SectionData && ((SectionData)object).sectionName.equals(section);
+			}
+		}); 
+		
+		if (sectionData!=null)
+			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(sectionData)), true);
+		else
+			treeViewer.setSelection(new StructuredSelection(), true);
 	}
 
 	@Override

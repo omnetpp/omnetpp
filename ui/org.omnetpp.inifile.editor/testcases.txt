@@ -16,9 +16,18 @@ Bogus Scenarios
 - invalid ${} iteration syntax
 - redeclaration of ${} variable
 - reference to nonexistent ${} variable
-- validation of constraint= line
+- reference to nonexistent variable in the constraint= line
 - constraint= line occurs in a Config section
 
- 
+Handling of included files
+- content should appear, but should be non-editable
+
+Sections page
+- should work when General doesn't exist
+- renaming the General section
+- renaming a nonexistent General section
+- test flipping a Config into a Scenario, and vica versa (also for General!!!)
+
+
 
  

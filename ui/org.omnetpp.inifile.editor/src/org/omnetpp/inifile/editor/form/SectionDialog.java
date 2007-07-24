@@ -46,7 +46,7 @@ public class SectionDialog extends TitleAreaDialog {
 
 	// widgets
 	private Combo sectionTypeCombo;
-	private Text sectionNameText;
+	private Text configNameText;
 	private Text descriptionText;
 	private Combo extendsCombo;
 	private Combo networkCombo;
@@ -54,8 +54,8 @@ public class SectionDialog extends TitleAreaDialog {
 
     private boolean insideValidation = false;
 
-	// dialog result
-    private String newSectionName;
+	// initial parameters, which also double as dialog result
+    private String sectionName;
     private String description;
     private String extendsSection;
     private String networkName;
@@ -72,15 +72,14 @@ public class SectionDialog extends TitleAreaDialog {
 		this.doc = doc;
 		this.dialogTitle = dialogTitle;
 		this.dialogMessage = dialogMessage;
-		this.originalSectionName = sectionName;
+		this.sectionName = this.originalSectionName = sectionName;
 		
 		// if we are editing an existing section, initialize dialog fields from the inifile
 		if (sectionName != null && doc.containsSection(sectionName)) {
-			newSectionName = originalSectionName;
 			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getKey());
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
-			extendsSection = InifileUtils.resolveBaseSection(doc, sectionName);
+			extendsSection = InifileUtils.resolveBaseSectionPretendingGeneralExists(doc, sectionName);
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getKey());;
 		}
 	}
@@ -113,8 +112,8 @@ public class SectionDialog extends TitleAreaDialog {
         gridLayout.marginHeight = gridLayout.marginWidth = 0;
 		c.setLayout(gridLayout);
 		sectionTypeCombo = new Combo(c, SWT.READ_ONLY | SWT.BORDER);
-		sectionNameText = new Text(c, SWT.SINGLE | SWT.BORDER);
-		sectionNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		configNameText = new Text(c, SWT.SINGLE | SWT.BORDER);
+		configNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// description field
 		createLabel(group1, "Description (optional):", parent.getFont());
@@ -157,12 +156,17 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
 		
 		// fill dialog fields with initial contents
-		if (newSectionName!=null) sectionTypeCombo.setText(newSectionName.startsWith(SCENARIO_) ? SCENARIO_ : CONFIG_);
-		if (newSectionName!=null) sectionNameText.setText(newSectionName);
-        if (description!=null) descriptionText.setText(description);
-        if (extendsSection!=null) extendsCombo.setText(extendsSection); 
-        if (networkName!=null) networkCombo.setText(networkName);
-		sectionNameText.selectAll();
+		boolean isConfig = sectionName==null || sectionName.equals(GENERAL) || !sectionName.startsWith(SCENARIO_);
+		sectionTypeCombo.setText(isConfig ? CONFIG_ : SCENARIO_);
+		if (sectionName!=null) 
+			configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", "").replaceFirst(SCENARIO_+" *", ""));
+		if (description!=null) 
+			descriptionText.setText(description);
+        if (extendsSection!=null) 
+        	extendsCombo.setText(extendsSection); 
+        if (networkName!=null) 
+        	networkCombo.setText(networkName);
+		configNameText.selectAll();
 		descriptionText.selectAll();
         
         // set up validation on content changes
@@ -171,7 +175,8 @@ public class SectionDialog extends TitleAreaDialog {
                 validateDialogContents();
             }
         };
-        sectionNameText.addModifyListener(listener);
+        sectionTypeCombo.addModifyListener(listener);
+        configNameText.addModifyListener(listener);
         descriptionText.addModifyListener(listener);
         extendsCombo.addModifyListener(listener);
         networkCombo.addModifyListener(listener);
@@ -179,7 +184,7 @@ public class SectionDialog extends TitleAreaDialog {
         // note: do initial validation when OK button is already created, from createButtonsForButtonBar()
 
         // focus on first field
-		sectionNameText.setFocus();
+		configNameText.setFocus();
 
 		return composite;
 	}
@@ -233,7 +238,7 @@ public class SectionDialog extends TitleAreaDialog {
 		if (insideValidation) return;
 		insideValidation = true;
 		
-		// if as section with "network=" is selected, make it impossible to override here
+		// when a base section with "network=" is selected, make it impossible to override it here
         extendsSection = extendsCombo.getText();
         String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getKey());
         String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigRegistry.CFGID_NETWORK.getKey(), doc);
@@ -256,26 +261,34 @@ public class SectionDialog extends TitleAreaDialog {
 
 	protected String validate() {
 		// validate section name
-		String sectionName = sectionNameText.getText();
-		sectionName = sectionName.trim();
-		if (sectionName.equals(""))
-			return "Section name cannot be empty";
-		if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_)) //FIXME Scenario too
-			sectionName = CONFIG_+sectionName;
-		if (doc.containsSection(sectionName) && (originalSectionName==null || !originalSectionName.equals(sectionName)))
-			return "Section ["+sectionName+"] already exists";
+		String configName = configNameText.getText().trim();
+		if (configName.equals(""))
+			return "Name cannot be empty";
+		if (!(CONFIG_+configName).equals(originalSectionName))
+			if (doc.containsSection(CONFIG_+configName)) 
+				return "A section named ["+CONFIG_+configName+"] already exists";
+		if (!(SCENARIO_+configName).equals(originalSectionName))
+			if (doc.containsSection(SCENARIO_+configName)) 
+				return "A section named ["+SCENARIO_+configName+"] already exists";
+		String sectionType = sectionTypeCombo.getText();
+		if (sectionType.equals(SCENARIO_) && configName.equals(GENERAL))
+			return "["+SCENARIO_+GENERAL+"] is not a legal name";
 
 		//XXX check that selected network exists
 
 		return null;
 	}
 	
+	private String assembleSectionName() {
+		String sectionType = sectionTypeCombo.getText();
+		String configName = configNameText.getText().trim();
+		return configName.equals(GENERAL) ? configName : sectionType+configName;
+	}
+	
     @SuppressWarnings("unchecked")
 	protected void okPressed() {
     	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
-        newSectionName = sectionNameText.getText().trim();
-		if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith(CONFIG_)) //FIXME Scenario too
-			newSectionName = CONFIG_+newSectionName;
+        sectionName = assembleSectionName();
         description = descriptionText.getText().trim();
         extendsSection = extendsCombo.getText().trim();
         if (extendsSection.equals(""))
@@ -285,11 +298,11 @@ public class SectionDialog extends TitleAreaDialog {
     }
 
 	public String getSectionName() {
-		return newSectionName;
+		return sectionName;
 	}
 
 	public void setSectionName(String sectionName) {
-		this.newSectionName = sectionName;
+		this.sectionName = sectionName;
 	}
 
 	public String getDescription() {

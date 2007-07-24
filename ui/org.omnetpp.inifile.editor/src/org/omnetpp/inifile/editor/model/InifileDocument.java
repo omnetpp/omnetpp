@@ -607,7 +607,7 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
 		if (section != null) {
-			// section might be disconnected (ie more then one heading), so we have to
+			// section might be disconnected (i.e. more then one heading), so we have to
 			// go deleting in reverse order, otherwise we mess up line numbers as we go
 			SectionHeadingLine[] lines = section.headingLines.toArray(new SectionHeadingLine[]{});
 			ArrayUtils.reverse(lines);

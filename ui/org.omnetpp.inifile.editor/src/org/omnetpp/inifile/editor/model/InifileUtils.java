@@ -184,6 +184,14 @@ public class InifileUtils {
 	}
 
 	/**
+	 * Same as resolveBaseSection(), but it returns [General] even if it doesn't exist 
+	 */
+	public static String resolveBaseSectionPretendingGeneralExists(IInifileDocument doc, String section) {
+		String baseSection = resolveBaseSection(doc, section);
+		return (baseSection==null && !section.equals(GENERAL) && !doc.containsKey(GENERAL, EXTENDS)) ? GENERAL : baseSection;
+	}
+
+	/**
 	 * Useful as a basis for an IInputValidator, e.g. for a cell editor or InputDialog.
 	 */
 	public static String validateParameterKey(IInifileDocument doc, String section, String key) {

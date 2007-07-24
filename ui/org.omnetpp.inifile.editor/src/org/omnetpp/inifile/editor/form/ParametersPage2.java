@@ -65,6 +65,7 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
  * 
  * @author Andras
  */
+//FIXME crashes if there's no [General] section!
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 //XXX check clicking on a section line is compatible with editing
