@@ -72,9 +72,10 @@ int EnumStringIterator::operator++(int)
          ;
      else if (*str==',')
          str++;
-     else if (*str=='-')
+     else if (*str=='-' || (*str=='.' && *(str+1)=='.'))
      {
          str++;
+         if (*str=='.') str++;
          skip_whitespace(str);
          if (!get_number(str,until)) {err=1;return -1;}
          skip_whitespace(str);

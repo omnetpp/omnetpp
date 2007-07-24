@@ -35,7 +35,8 @@
 
 #define CMDENV_EXTRASTACK_KB  "8"
 
-Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which simulation runs should be executed. It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3-4,7-9. If the value is missing, Cmdenv executes all runs that have ini file sections; if no runs are specified in the ini file, Cmdenv does one run. The -r command line option overrides this setting.")
+Register_GlobalConfigEntry(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] or [Scenario Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
+Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs that have ini file sections; if no runs are specified in the ini file, Cmdenv does one run. The -r command line option overrides this setting.")
 Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
@@ -102,7 +103,21 @@ void TCmdenvApp::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt_runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
+    if (opt_configname.empty())
+    {
+        std::string configname = cfg->getAsString(CFGID_CONFIG_NAME);
+        if (!configname.empty())
+            opt_configname = configname;
+        if (opt_configname.empty())
+            opt_configname = "General";
+    }
+    if (opt_runstoexec.empty())
+    {
+        std::string runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
+        if (!runstoexec.empty() && opt_runstoexec.empty())
+            opt_runstoexec = runstoexec;
+    }
+
     opt_extrastack_kb = cfg->getAsInt(CFGID_CMDENV_EXTRA_STACK_KB);
     opt_outputfile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
@@ -142,12 +157,9 @@ void TCmdenvApp::setup()
     // '-n' option: print number of runs in the given scenario, and exit
     opt_printnumruns = args->optionGiven('n');
 
-    // '-c' option: specifies configuration or scenario to activate
+    // '-c' and '-r' option: configuration or scenario to activate, and run numbers to run.
+    // both command-line options take precedence over inifile settings
     opt_configname = args->optionValue('c');
-    if (opt_configname.empty())
-        opt_configname = "General";
-
-    // '-r' option: specifies runs to execute; overrides ini file setting
     opt_runstoexec = args->optionValue('r');
 
     // '-g'/'-G' options: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
@@ -208,7 +220,7 @@ int TCmdenvApp::run()
     {
         int n = cfg->getNumRunsInScenario(opt_configname.c_str());  //XXX may throw exception
         char buf[32];
-        sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0-%d"), n-1);
+        sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
         opt_runstoexec = buf;
     }
 

@@ -1,6 +1,12 @@
 progress prints "xx% completed" -- it computes % both from sim-time-limit and cpu-time-limit, and prints the larger one
 
+added -c option
+
+inifile changes (e.g. added cmdenv-config-name)
+
 heap.cc thrown out
+
+for run iterations, accept both ".." and "-" as range separator
 
 2006-10-21  ------ omnetpp-3.3 released ------
 

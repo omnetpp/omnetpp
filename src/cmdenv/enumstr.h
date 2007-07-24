@@ -20,11 +20,12 @@
 #define __ENUMSTR_H
 
 /**
- * Loops through numbers in a string like "1,2,5-10", expanding ranges.
+ * Loops through numbers in a string like "1,2,5..10", expanding ranges.
+ * Both ".." and "-" are accepted for ranges.
+ *
  * This is used for implementing the -r command-line option and
- * the cmdenv-runs-to-execute= configuration option
+ * the cmdenv-runs-to-execute= configuration option.
  */
-//XXX change "-" to "..", or at least accept ".." too? to make it consistent with ${} syntax
 class EnumStringIterator
 {
      const char *str;  // pointer to the original string (not a copy)
