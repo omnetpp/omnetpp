@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_AUTOFLUSH;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNERS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE;
@@ -100,7 +101,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -125,6 +126,8 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_PARSIM = "Parallel Simulation";
     //XXX public static final String CAT_OUTPUTVECTORS = "Output Vectors";
 
+	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png"); //XXX
+    
     public static String[] getCategoryNames() {
     	return new String[] {
     			CAT_GENERAL, 
@@ -234,7 +237,10 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group1, CFGID_SNAPSHOTMANAGER_CLASS, "Snapshot manager class");
 		}
 		else if (category.equals(CAT_CMDENV)) {
-			addTextFieldEditor(form, CFGID_CMDENV_RUNS_TO_EXECUTE, "Runs to execute");
+			Group group0 = createGroup(form, "When no command-line options are present, run the following:");
+			addTextFieldEditor(group0, CFGID_CMDENV_CONFIG_NAME, "Config name");
+			addTextFieldEditor(group0, CFGID_CMDENV_RUNS_TO_EXECUTE, "Run numbers");
+			addSpacer(form);
 			addCheckboxFieldEditor(form, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
 			addSpacer(form);
 			Group group1 = createGroup(form, "Express mode");
@@ -252,8 +258,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
 		}
 		else if (category.equals(CAT_TKENV)) {
-			addTextFieldEditor(form, CFGID_TKENV_DEFAULT_CONFIG, "Default config");
-			addTextFieldEditor(form, CFGID_TKENV_DEFAULT_RUN, "Default run");
+			Group group0 = createGroup(form, "On startup, set up the following simulation:");
+			addTextFieldEditor(group0, CFGID_TKENV_DEFAULT_CONFIG, "Config name");
+			addTextFieldEditor(group0, CFGID_TKENV_DEFAULT_RUN, "Run number");
 			addSpacer(form);
 			Group group4 = createGroup(form, "Paths");
 			addTextFieldEditor(group4, CFGID_TKENV_IMAGE_PATH, "Image path");
@@ -261,7 +268,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (Kb)");
 			addSpacer(form);
-			addMessage(form, ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING),
+			addMessage(form, ICON_WARNING,
 					"NOTE: The following settings are only first-time defaults, and settings in .tkenvrc (created by Tkenv\n" +
 					"automatically) will override them. Delete .tkenvrc for these settings to take effect.");
 			addSpacer(form);
