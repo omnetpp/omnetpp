@@ -10,6 +10,7 @@ results as naive, linear lookups.
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
 #include "lcgrandom.h"
+#include "patternmatcher.h"
 
 enum State {ALPHA, WILDCARD, DOT};
 
@@ -35,8 +36,19 @@ static std::string generateKey(LCGRandom& rng)
     return key;
 }
 
-const char *lookupFromInifile(Inifile& inifile, const char *module, const char *parname)
+const char *lookupFromInifile(InifileReader& ini, const char *module, const char *parname)
 {
+    std::string fullpath = std::string(module)+"."+parname;
+    int sectionId = 0;  // there's only one section
+    int n = ini.getNumEntries(sectionId);
+    for (int i=0; i<n; i++)
+    {
+        const InifileReader::KeyValue& entry = ini.getEntry(sectionId, i);
+        PatternMatcher pattern(entry.getKey(), true, true, true);
+        if (pattern.matches(fullpath.c_str()))
+            return entry.getValue();
+    }
+    return NULL;
 }
 
 %activity:
