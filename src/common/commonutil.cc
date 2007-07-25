@@ -37,3 +37,20 @@ DebugCall::~DebugCall()
 }
 
 
+#ifdef _MSC_VER
+// source: http://en.wikipedia.org/wiki/RDTSC
+__declspec(naked)
+uint64 __cdecl readCPUTimeStampCounter()
+{
+   __asm
+   {
+      rdtsc
+      ret       ; return value at EDX:EAX
+   }
+}
+#else
+uint64 readCPUTimeStampCounter()
+{
+    return 0;
+}
+#endif
