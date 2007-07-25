@@ -103,20 +103,10 @@ void TCmdenvApp::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    if (opt_configname.empty())
-    {
-        std::string configname = cfg->getAsString(CFGID_CONFIG_NAME);
-        if (!configname.empty())
-            opt_configname = configname;
-        if (opt_configname.empty())
-            opt_configname = "General";
-    }
-    if (opt_runstoexec.empty())
-    {
-        std::string runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
-        if (!runstoexec.empty() && opt_runstoexec.empty())
-            opt_runstoexec = runstoexec;
-    }
+    // note: configname and runstoexec will possibly be overwritten
+    // with the -c, -r command-line options in our setup() method
+    opt_configname = cfg->getAsString(CFGID_CONFIG_NAME);
+    opt_runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
     opt_extrastack_kb = cfg->getAsInt(CFGID_CMDENV_EXTRA_STACK_KB);
     opt_outputfile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
@@ -157,10 +147,20 @@ void TCmdenvApp::setup()
     // '-n' option: print number of runs in the given scenario, and exit
     opt_printnumruns = args->optionGiven('n');
 
-    // '-c' and '-r' option: configuration or scenario to activate, and run numbers to run.
-    // both command-line options take precedence over inifile settings
-    opt_configname = args->optionValue('c');
-    opt_runstoexec = args->optionValue('r');
+    // '-c' and '-r' option: configuration or scenario to activate,
+    // and run numbers to run. Both command-line options take precedence
+    // over inifile settings. (NOTE: inifile settings *already* got read
+    // at this point! as TOmnetApp::setup() invokes readOptions()).
+
+    const char *configname = args->optionValue('c');
+    if (configname)
+        opt_configname = configname;
+    if (opt_configname.empty())
+        opt_configname = "General";
+
+    const char *runstoexec = args->optionValue('r');
+    if (runstoexec)
+        opt_runstoexec = runstoexec;
 
     // '-g'/'-G' options: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
     opt_printconfigdetails = args->optionGiven('g');
