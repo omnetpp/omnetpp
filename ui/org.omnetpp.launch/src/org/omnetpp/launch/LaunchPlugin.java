@@ -162,7 +162,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
         } else {
             // parse hand specified numbers
             for (String current : StringUtils.split(runPar, ',')) {
-                String lowerUpper[] = StringUtils.split(current, '-');
+                String lowerUpper[] = StringUtils.splitByWholeSeparator(current, "..");
                 int low = 0;
                 int high = 0;
                 try {

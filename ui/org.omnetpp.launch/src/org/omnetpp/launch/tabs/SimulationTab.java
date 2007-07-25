@@ -43,12 +43,12 @@ import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
-// TODO check what userinterface is present in the exe (-q userinterfaces) and disable which is not
+// TODO check what user interface is present in the exe (-q userinterfaces) and disable which is not
 /**
  * A launch configuration tab that displays and edits omnetpp project
  */
 public class SimulationTab extends OmnetppLaunchTab  {
-    protected final String DEFAULT_RUNTOOLTIP= "The run number(s) that should be executed (eg.: 0,2,7,9-11 or * for ALL runs) (default: 0)";
+    protected final String DEFAULT_RUNTOOLTIP= "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for ALL runs) (default: 0)";
 	// UI widgets
 	protected Text fInifileText;
 	protected Combo fConfigCombo;
@@ -540,7 +540,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
         Integer runs[] = LaunchPlugin.parseRuns(StringUtils.deleteWhitespace(fRunText.getText()), 2);
         if (runs == null) {
-            setErrorMessage("The run number(s) should be in a format like: 0,2,7,9-11 or use * for ALL runs");
+            setErrorMessage("The run number(s) should be in a format like: 0,2,7,9..11 or use * for ALL runs");
             return false;
         }
 
