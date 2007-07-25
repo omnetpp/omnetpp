@@ -20,7 +20,7 @@ static std::string generateKey(LCGRandom& rng)
     State state = rng.next01()<0.5 ? ALPHA : WILDCARD;
     while (true)
     {
-        if (!key.empty() && state==DOT && rng.next01()<0.2)
+        if (strchr(key.c_str(),'.') && state==DOT && rng.next01()<0.2)
             break;
         if (state==DOT) {
             key += ".";
@@ -36,14 +36,30 @@ static std::string generateKey(LCGRandom& rng)
     return key;
 }
 
-const char *lookupFromInifile(InifileReader& ini, const char *module, const char *parname)
+static std::string generateName(LCGRandom& rng)
 {
-    std::string fullpath = std::string(module)+"."+parname;
+    std::string result;
+    while (result.empty() || rng.next01() >= 0.3)
+        result += (rng.draw(2) ? "a" : "foo");
+    return result;
+}
+
+static std::string generatePath(LCGRandom& rng)
+{
+    std::string result;
+    while (result.empty() || rng.next01() >= 0.2)
+        result += (result.empty()?"":".") + generateName(rng);
+    return result;
+}
+
+static const char *lookupFromInifile(InifileReader *ini, const char *module, const char *param)
+{
+    std::string fullpath = std::string(module)+"."+param;
     int sectionId = 0;  // there's only one section
-    int n = ini.getNumEntries(sectionId);
+    int n = ini->getNumEntries(sectionId);
     for (int i=0; i<n; i++)
     {
-        const InifileReader::KeyValue& entry = ini.getEntry(sectionId, i);
+        const InifileReader::KeyValue& entry = ini->getEntry(sectionId, i);
         PatternMatcher pattern(entry.getKey(), true, true, true);
         if (pattern.matches(fullpath.c_str()))
             return entry.getValue();
@@ -63,28 +79,35 @@ for (int i=0; i<1000; i++)
 f.close();
 
 // load the file
-InifileReader inifile;
-inifile.readFile(filename);
+InifileReader *ini = new InifileReader();
+ini->readFile(filename);
+
 SectionBasedConfiguration cfg;
-cfg.setConfigurationReader(&inifile);
+cfg.setConfigurationReader(ini);
 cfg.activateConfig("General");
 
 // test lookup with random keys
 for (int i=0; i<1000; i++)
 {
-    std::string module = "a.afoo.a"; // XXX for now; generate random!
-    std::string parname = "afoo"; // XXX for now; generate random!
+    std::string module = generatePath(rng);
+    std::string param = generateName(rng);
 
     // look up the parameter both ways
-    const char *value1 = cfg.getParameterValue(module.c_str(), parname.c_str(), false);
-    const char *value2 = lookupFromInifile(inifile, module.c_str(), parname.c_str());
+    const char *value1 = cfg.getParameterValue(module.c_str(), param.c_str(), false);
+    const char *value2 = lookupFromInifile(ini, module.c_str(), param.c_str());
+    if (!value1) value1="";
+    if (!value2) value2="";
 
     // and compare them
-    if (value1==NULL) value1="";
-    if (value2==NULL) value2="";
     if (strcmp(value1, value2)!=0)
-        ev << "ERROR\n";
+    {
+        ev << "ERROR: module=" << module << "  param=" << param
+           << "; value="<< value1 <<", correct=" << value2 << "\n";
+    }
 }
+
+
+fflush(stdout); //remove
 
 ev << ".\n";
 
