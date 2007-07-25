@@ -12,6 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <math.h>
 #include "lcgrandom.h"
 
 
@@ -37,4 +38,10 @@ double LCGRandom::next01()
     if (seed <= 0) seed += GLRAND_MAX + 1;
 
     return seed / (double)(GLRAND_MAX + 1);
+}
+
+int LCGRandom::next(int range) 
+{
+    double d = next01();
+    return (int) floor(range*d);
 }

@@ -36,6 +36,8 @@ class COMMON_API LCGRandom
         void setSeed(int32 seed);
 
         double next01();
+
+        int next(int range);
 };
 
 #endif
