@@ -19,7 +19,7 @@ import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 /**
- * Implements a Connection Editpart to represnt a Wire like connection.
+ * Implements a Connection Edi-tpart to represents a Wire like connection.
  *
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart
@@ -161,7 +161,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
     public boolean isEditable() {
         boolean isEditable
-            = editable && (getParent().getModel() == ((ConnectionNodeEx)getModel()).getCompoundModule());
+            = editable && getParent().getModel() == ((ConnectionNodeEx)getModel()).getCompoundModule();
         if (!isEditable)
             return false;
         // otherwise check what about the parent. if parent is read only we should return its state
@@ -173,7 +173,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     @Override
     public void performRequest(Request req) {
         super.performRequest(req);
-        // let's open or activate a new editor if somone has double clicked the component
+        // let's open or activate a new editor if someone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
             NEDResourcesPlugin.openNEDElementInEditor(getConnectionModel().getEffectiveTypeRef());
         }
@@ -193,6 +193,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
      * The connection part creation is looking also in this registry
      * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object)
      */
+    @Override
     protected void registerModel() {
         getCompoundModulePart().getModelToConnectionPartsRegistry().put(getModel(), this);
     }
@@ -204,6 +205,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
      * The connection part creation is looking also in this registry
      * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object)
      */
+    @Override
     protected void unregisterModel() {
         Map registry = getCompoundModulePart().getModelToConnectionPartsRegistry();
         if (registry.get(getModel()) == this)

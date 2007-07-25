@@ -33,7 +33,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL,
                     								 DisplayString.Prop.CONNECTION_STYLE));
 
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTCOLOR));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);
         }
 
