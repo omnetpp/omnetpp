@@ -35,6 +35,10 @@ static std::string generateKey(LCGRandom& rng)
     return key;
 }
 
+const char *lookupFromInifile(Inifile& inifile, const char *module, const char *parname)
+{
+}
+
 %activity:
 
 // write the file
@@ -53,13 +57,30 @@ SectionBasedConfiguration cfg;
 cfg.setConfigurationReader(&inifile);
 cfg.activateConfig("General");
 
-// check lookup with random keys
+// test lookup with random keys
+for (int i=0; i<1000; i++)
+{
+    std::string module = "a.afoo.a"; // XXX for now; generate random!
+    std::string parname = "afoo"; // XXX for now; generate random!
 
+    // look up the parameter both ways
+    const char *value1 = cfg.getParameterValue(module.c_str(), parname.c_str(), false);
+    const char *value2 = lookupFromInifile(inifile, module.c_str(), parname.c_str());
+
+    // and compare them
+    if (value1==NULL) value1="";
+    if (value2==NULL) value2="";
+    if (strcmp(value1, value2)!=0)
+        ev << "ERROR\n";
+}
 
 ev << ".\n";
 
 %exitcode: 0
 
+%not-contains: stdout
+ERROR
+
 %contains: stdout
-BLA
 .
+
