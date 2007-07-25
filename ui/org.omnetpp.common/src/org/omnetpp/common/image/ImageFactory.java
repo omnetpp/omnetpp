@@ -2,8 +2,6 @@ package org.omnetpp.common.image;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +13,6 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -336,12 +333,12 @@ public class ImageFactory {
     }
 
     /**
-     * @param refClass Reference class, if <code>null</code> file is loaded from the filesystem
+     * @param refClass Reference class, if <code>null</code> file is loaded from the file-system
      *                 otherwise from the same resource where this class is located
      * @param dir Base path for file
      * @param fileName The name of the file
      * @param ext extension to be used
-     * @param preferredSize The preferred size for the image (will add the nedded suffix to the filename if necessar
+     * @param preferredSize The preferred size for the image (will add the needed suffix to the filename if necessar
      *        (_l,_vl,_s,_vs)
      * @return The ImageDescriptor or <code>null</code> if does exist.
      */
@@ -378,7 +375,7 @@ public class ImageFactory {
     /**
      * @return All image ID-s in the bitmap path (files with .gif .png .svg extension)
      */
-    public static List<String> getImageNameList() {
+    public static synchronized List<String> getImageNameList() {
         if (imageNameList != null)
             return imageNameList;
 
@@ -393,17 +390,18 @@ public class ImageFactory {
     	// TODO add also the current and dependent project's own bitmap folder
 
     	// scan the resource directory for images
-    	URL imagesResourceUrl= ImageFactory.class.getResource(IMAGE_DIR);
-		try {
-			// TODO beware that the toFileURL creates a copy of ALL icons if they are stored in a JAR file
-			// this is sub optimal. It would be better if we could create a filesystem supporting
-			// the bundleresource: protocol directly (ie we could read directy from the bundle)
-			IFileStore resourceStore = EFS.getStore(FileLocator.toFileURL(imagesResourceUrl).toURI());
-			result.addAll(getNameList(resourceStore, resourceStore.toURI().toString().length()));
-		} catch (IOException e) {
-		} catch (CoreException e) {
-		} catch (URISyntaxException e) {
-		}
+    	// This is no longer used as we do not store the images inside a JAR file anymore
+//    	URL imagesResourceUrl= ImageFactory.class.getResource(IMAGE_DIR);
+//		try {
+//			// beware that the toFileURL creates a copy of ALL icons if they are stored in a JAR file
+//			// this is sub optimal. It would be better if we could create a file-system supporting
+//			// the bundle resource: protocol directly (ie we could read directory from the bundle)
+//			IFileStore resourceStore = EFS.getStore(FileLocator.toFileURL(imagesResourceUrl).toURI());
+//			result.addAll(getNameList(resourceStore, resourceStore.toURI().toString().length()));
+//		} catch (IOException e) {
+//		} catch (CoreException e) {
+//		} catch (URISyntaxException e) {
+//		}
 
     	List<String> orderedNames = new ArrayList<String>(result);
     	Collections.sort(orderedNames);
@@ -470,8 +468,9 @@ public class ImageFactory {
      * @return The folder categories found in image name list
      */
     public static List<String> getCategories() {
+
         Set<String> uniqueFolders = new HashSet<String>();
-        for (String name : imageNameList)
+        for (String name : getImageNameList())
             if (name.contains("/"))
                 uniqueFolders.add(name.replaceFirst("/.*", "/"));
         String[] folders = uniqueFolders.toArray(new String[]{});
