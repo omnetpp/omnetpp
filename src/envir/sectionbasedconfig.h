@@ -69,11 +69,21 @@ class SectionBasedConfiguration : public cConfiguration
       public:
         PatternMatcher *ownerPattern; // key without the group name (and without ".apply-default")
         PatternMatcher *groupPattern; // only filled in when this is a wildcard group
+        PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & groupPattern
         bool isApplyDefault;  // whether key has the ".apply-default" suffix)
         bool applyDefaultValue;  // the value of the ".apply-default" key which can be true or false
 
-        KeyValue2(const KeyValue1& e) : KeyValue1(e) {ownerPattern = groupPattern = NULL; isApplyDefault = false; applyDefaultValue = true;}
-        KeyValue2(const KeyValue2& e) : KeyValue1(e) {ownerPattern = e.ownerPattern; groupPattern = e.groupPattern; isApplyDefault = e.isApplyDefault; applyDefaultValue = e.applyDefaultValue; }
+        KeyValue2(const KeyValue1& e) : KeyValue1(e) {
+            ownerPattern = groupPattern = fullPathPattern = NULL;
+            isApplyDefault = false; applyDefaultValue = true;
+        }
+        KeyValue2(const KeyValue2& e) : KeyValue1(e) {
+            ownerPattern = e.ownerPattern;
+            groupPattern = e.groupPattern;
+            fullPathPattern = e.fullPathPattern;
+            isApplyDefault = e.isApplyDefault;
+            applyDefaultValue = e.applyDefaultValue;
+        }
     };
 
     // Some explanation. Basically we could just store all entries in order,
@@ -149,7 +159,7 @@ class SectionBasedConfiguration : public cConfiguration
      */
     struct IterationVariable {
         std::string varid;   // identifies the variable, see above
-        std::string varname; // printable variable name ("x"); may be a generate one like "0"; never empty
+        std::string varname; // printable variable name ("x"); may be a generated one like "0"; never empty
         std::string value;   // "1,2,5..10"; never empty
         std::string parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
     };
@@ -167,6 +177,7 @@ class SectionBasedConfiguration : public cConfiguration
     std::vector<int> resolveSectionChain(const char *section) const;
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
+    static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
     std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId) const;

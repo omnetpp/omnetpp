@@ -28,8 +28,7 @@
 #include "platmisc.h"   //getpid()
 
 
-//XXX check behavior of keys which don't contain a dot! or: forbid them?
-//XXX   the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
+//XXX test the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
 //XXX make sure quoting "$\{" works!
 //XXX validation: make sure that a Config and a Scenario cannot have the same name!
@@ -42,6 +41,7 @@ Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: $i < $j+1.");
 Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
+Register_PerObjectConfigEntry(CFGID_APPLY_DEFAULT, "apply-default", CFG_BOOL, "false", "Applies to module parameters: whether NED default values should be assigned if present.");
 
 
 static const char *PREDEFINED_CONFIGVARS[] = {
@@ -234,7 +234,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_DATETIME] = opp_makedatetimestring();
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
-    // store iteration variables, and their positions (as "&varid")
+    // store iteration variables, and also their "positions" (iteration count) as "&varid"
     const std::vector<IterationVariable>& itervars = scenario->getIterationVariables();
     for (int i=0; i<itervars.size(); i++)
     {
@@ -619,7 +619,10 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
         bool groupContainsWildcards = PatternMatcher::containsWildcards(groupName.c_str());
 
         KeyValue2 entry2(entry);
-        entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
+        if (!ownerName.empty())
+            entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
+         else
+            entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
         entry2.groupPattern = groupContainsWildcards ? new PatternMatcher(groupName.c_str(), true, true, true) : NULL;
         entry2.isApplyDefault = isApplyDefault;
         if (isApplyDefault)
@@ -666,13 +669,33 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
     }
 
     const char *lastDotPos = strrchr(key, '.');
-    if (!lastDotPos) {
-        // like "**.apply-default": group is "**", and owner is empty
-        //FIXME DOES NOT WORK
-        outOwnerName = "";
-        outGroupName = key;
+    const char *doubleAsterisk = !lastDotPos ? NULL : strstr(lastDotPos, "**");
+    if (strcmp(key, "**")==0)
+    {
+        // frequent special case ("**.apply-default=true")
+        outOwnerName = "**";
+        outGroupName = "*";
     }
-    else {
+    else if (!lastDotPos || doubleAsterisk)
+    {
+        // complicated special case: there's a "**" after the last dot
+        // (or there's no dot at all). Examples: "**baz", "net.**.foo**",
+        // "net.**.foo**bar**baz"
+        // Problem with this: are "foo" and "bar" part of the paramname (=group)
+        // or the module name (=owner)? Can be either way. Only feasible solution
+        // is to force matching of the full path (modulepath.paramname) against
+        // the full pattern. Group name can be "*" plus segment of the pattern
+        // after the last "**". (For example, for "net.**foo**bar", the group name
+        // will be "*bar".)
+
+        // find last "**"
+        while (doubleAsterisk && strstr(doubleAsterisk+1, "**"))
+            doubleAsterisk = strstr(doubleAsterisk+1, "**");
+        outOwnerName = ""; // empty owner means "do fullPath match"
+        outGroupName = !doubleAsterisk ? "*" : doubleAsterisk+1;
+    }
+    else
+    {
         // normal case: group is the part after the last dot
         outOwnerName.assign(key, lastDotPos - key);
         outGroupName.assign(lastDotPos+1);
@@ -861,7 +884,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     if (configNames.find(value)==configNames.end())
                         throw cRuntimeError("No such config or scenario: %s", value);
 
-                    // check for section circularity
+                    // check for section cycles
                     resolveSectionChain(section);  //XXX move that check here?
                 }
             }
@@ -877,6 +900,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 {
                     // this is a per-object config
                     //XXX groupName (probably) should not contain wildcard
+                    // FIXME but surely not "**" !!!!
                     cConfigKey *e = lookupConfigKey(groupName.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, groupName.c_str()))
                         continue;
@@ -970,7 +994,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
     for (int i=0; i<group->entries.size(); i++)
     {
         const KeyValue2& entry = group->entries[i];
-        if (entry.ownerPattern->matches(moduleFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(paramName)))
+        if (entryMatches(entry, moduleFullPath, paramName))
         {
             if (entry.isApplyDefault)
             {
@@ -986,6 +1010,21 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
         }
     }
     return nullEntry; // not found
+}
+
+bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName)
+{
+    if (!entry.fullPathPattern)
+    {
+        // typical
+        return entry.ownerPattern->matches(moduleFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(paramName));
+    }
+    else
+    {
+        // less efficient, but very rare
+        std::string paramFullPath = std::string(moduleFullPath) + "." + paramName;
+        return entry.fullPathPattern->matches(paramFullPath.c_str());
+    }
 }
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const
