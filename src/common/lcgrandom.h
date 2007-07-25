@@ -37,7 +37,7 @@ class COMMON_API LCGRandom
 
         double next01();
 
-        int next(int range);
+        int draw(int range);
 };
 
 #endif

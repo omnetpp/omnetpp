@@ -40,7 +40,7 @@ double LCGRandom::next01()
     return seed / (double)(GLRAND_MAX + 1);
 }
 
-int LCGRandom::next(int range) 
+int LCGRandom::draw(int range) 
 {
     double d = next01();
     return (int) floor(range*d);
