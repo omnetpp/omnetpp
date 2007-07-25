@@ -13,6 +13,28 @@ results as naive, linear lookups.
 
 enum State {ALPHA, WILDCARD, DOT};
 
+static std::string generateKey(LCGRandom& rng)
+{
+    std::string key;
+    State state = rng.next01()<0.5 ? ALPHA : WILDCARD;
+    while (true)
+    {
+        if (!key.empty() && state==DOT && rng.next01()<0.2)
+            break;
+        if (state==DOT) {
+            key += ".";
+            state = rng.next01()<0.5 ? ALPHA : WILDCARD;
+        } else if (state==ALPHA) {
+            key += (rng.draw(2) ? "a" : "foo");
+            state = rng.next01()<0.5 ? DOT : WILDCARD;
+        } else if (state==WILDCARD) {
+            key += (rng.draw(2) ? "*" : "**");
+            state = rng.next01()<0.5 ? DOT : ALPHA;
+        }
+    }
+    return key;
+}
+
 %activity:
 
 // write the file
@@ -21,29 +43,15 @@ const char *filename = "{}_test.ini";
 std::fstream f(filename, std::ios::out);
 f << "[General]\n";
 for (int i=0; i<1000; i++)
-{
-    // generate key
-    State state = rng.next01()<0.5 ? ALPHA : WILDCARD;
-    while (true)
-    {
-        if (state==DOT) {
-            f << ".";
-            state = rng.next01()<0.5 ? ALPHA : WILDCARD;
-        } else if (state==ALPHA) {
-            f << (rng.draw(2) ? "a" : "foo");
-            state = rng.next01()<0.5 ? DOT : WILDCARD;
-        } else if (state==WILDCARD) {
-            f << (rng.draw(2) ? "*" : "**");
-            state = rng.next01()<0.5 ? DOT : ALPHA;
-        }
-        if (state!=DOT && rng.next01()<0.05)
-            break;
-    }
-    f << " = " << i << "\n";
-}
+    f << generateKey(rng) << " = " << i << "\n";
 f.close();
 
 // load the file
+InifileReader inifile;
+inifile.readFile(filename);
+SectionBasedConfiguration cfg;
+cfg.setConfigurationReader(&inifile);
+cfg.activateConfig("General");
 
 // check lookup with random keys
 
