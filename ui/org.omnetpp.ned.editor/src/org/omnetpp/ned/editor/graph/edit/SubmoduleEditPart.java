@@ -122,7 +122,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // along with the scaling factor coming from the compound module
         SubmoduleConstraint constr = new SubmoduleConstraint(dps, scale);
         constr.setVectorName(nameToDisplay);
-        // FIXME put the correct values here from the model
+        // TODO put the correct values here from the model
         constr.setVectorSize(5);
         constr.setVectorIndex(3);
         getSubmoduleFigure().setConstraint(constr);

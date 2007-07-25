@@ -59,6 +59,7 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -82,6 +83,7 @@ import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 
@@ -280,7 +282,31 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
                 if (ep instanceof IModelProvider) {
                     INEDElement element = ((IModelProvider)ep).getNEDModel();
-                    return HoverSupport.addHTMLStyleSheet(StringUtils.makeHtmlDocu(element.getComment()));
+                    String comment = StringUtils.trimToEmpty(element.getComment());
+
+                    // add a comment from the type (if any)
+                    String typeComment = "";
+                    if (element instanceof IHasType) {
+                        INEDElement typeElement = ((IHasType)element).getEffectiveTypeRef();
+                        if (typeElement != null) {
+                            typeComment = typeElement.getComment();
+                            if (!StringUtils.isEmpty(typeComment))
+                                typeComment = "<b>"+"Type documentation:</b><br/>\n"+typeComment;
+                            typeComment = StringUtils.trimToEmpty(typeComment);
+                        }
+                    }
+                    if (StringUtils.isEmpty(typeComment) && StringUtils.isEmpty(comment))
+                        return null;
+
+                    String fullComment = "";
+                    if (!StringUtils.isEmpty(comment))
+                        fullComment += comment;
+                    if (!StringUtils.isEmpty(comment) && !StringUtils.isEmpty(typeComment))
+                        fullComment += "<br/><br/>";
+                    if (!StringUtils.isEmpty(typeComment))
+                        fullComment += typeComment;
+
+                    return HoverSupport.addHTMLStyleSheet(StringUtils.makeHtmlDocu(fullComment));
                 }
                 return null;
             }
