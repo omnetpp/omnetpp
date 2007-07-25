@@ -1,0 +1,57 @@
+%description:
+Tests SectionBasedConfiguration's accelerated lookup implementation.
+
+Strategy: generate a long inifile with random contents, and perform
+random lookups against it. Accelerated lookups should yield the same
+results as naive, linear lookups.
+
+%global:
+#include <fstream>
+#include "inifilereader.h"
+#include "sectionbasedconfig.h"
+#include "lcgrandom.h"
+
+enum State {ALPHA, WILDCARD, DOT};
+
+%activity:
+
+// write the file
+LCGRandom rng;
+const char *filename = "{}_test.ini";
+std::fstream f(filename, std::ios::out);
+f << "[General]\n";
+for (int i=0; i<1000; i++)
+{
+    // generate key
+    State state = rng.next01()<0.5 ? ALPHA : WILDCARD;
+    while (true)
+    {
+        if (state==DOT) {
+            f << ".";
+            state = rng.next01()<0.5 ? ALPHA : WILDCARD;
+        } else if (state==ALPHA) {
+            f << (rng.draw(2) ? "a" : "foo");
+            state = rng.next01()<0.5 ? DOT : WILDCARD;
+        } else if (state==WILDCARD) {
+            f << (rng.draw(2) ? "*" : "**");
+            state = rng.next01()<0.5 ? DOT : ALPHA;
+        }
+        if (state!=DOT && rng.next01()<0.05)
+            break;
+    }
+    f << " = " << i << "\n";
+}
+f.close();
+
+// load the file
+
+// check lookup with random keys
+
+
+ev << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+BLA
+.
