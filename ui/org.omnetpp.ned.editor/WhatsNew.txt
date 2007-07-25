@@ -1,3 +1,8 @@
+- 0707.. ====== A3 version
+  + added the rest of the outstanding plugins (ini file editor, launcher plugin
+    scave, CDT)
+  + unsupported graphical properties has been removed from the NED editor
+
 - 070529 ====== A2 version =====
   + added two major compnents to the build (event log viewer and sequence chart
     viewer. It is possible to see and analyse the simulation log files)
