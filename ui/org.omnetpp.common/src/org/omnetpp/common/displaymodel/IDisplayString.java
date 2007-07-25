@@ -98,10 +98,10 @@ public interface IDisplayString {
         MODULE_TICKDISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Background, "grid tick distance", "Distance between two major ticks measured in units"),
         MODULE_TICKNUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid minor ticks", "Minor ticks per major ticks. Default: 1"),
         MODULE_GRIDCOL(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (colorname or #RRGGBB or @HHSSBB). Default: grey50"),
-        // module layouting (how to layout the freemoving submodules)
+        // module layouting (how to layout the free moving submodules)
         MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.BackgroundLayout, "layout seed","Seed value for layout algorithm"),
         MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.BackgroundLayout, "layout algorithm","Algorithm for child layouting. Default: spring"),
-        // module scaling mixel per unit
+        // module scaling pixel per unit
         MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Background, "pixels per unit", "Number of pixels per distance unit. Coordinates are measured in units. Default: 1"),
         MODULE_UNIT(Tag.bgs, 1, PropType.STRING, PropGroup.Background, "unit name", "Name of distance unit"),
         // END of COMPOUNDMODULE properties

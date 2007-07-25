@@ -419,7 +419,7 @@ public class SubmoduleFigure extends ModuleFigure
         // if the name label contains this point we consider it as our part and report true
         if (nameFigure.containsPoint(x, y))
             return true;
-        // otherwise use the defult implementation
+        // otherwise use the default implementation
         return super.containsPoint(x, y);
     }
 

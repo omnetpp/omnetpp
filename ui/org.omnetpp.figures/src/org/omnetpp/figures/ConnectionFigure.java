@@ -1,19 +1,31 @@
 package org.omnetpp.figures;
 
+import org.eclipse.draw2d.ConnectionLocator;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.swt.graphics.Color;
+
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.figures.misc.ConnectionLabelLocator;
 
 public class ConnectionFigure extends PolylineConnection {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
+    protected Label textFigure = new Label();
+    protected ConnectionLabelLocator labelLocator = new ConnectionLabelLocator(this);
+    protected TooltipFigure tooltipFigure;
 	private IDisplayString lastDisplayString;
 
+	@Override
+    public void addNotify() {
+        super.addNotify();
+        add(textFigure, labelLocator);
+    }
     public Color getLocalLineColor() {
 		return localLineColor;
 	}
@@ -58,7 +70,38 @@ public class ConnectionFigure extends PolylineConnection {
 			((PolygonDecoration)getTargetDecoration()).setScale(5+lineWidth, 2+lineWidth);
     }
 
-	/**
+    public void setTooltipText(String tttext) {
+        if(tttext == null || "".equals(tttext)) {
+            setToolTip(null);
+            tooltipFigure = null;
+        } else {
+            tooltipFigure = new TooltipFigure();
+            setToolTip(tooltipFigure);
+            tooltipFigure.setText(tttext);
+            invalidate();
+        }
+    }
+
+    protected void setInfoText(String text, String alignment, Color color) {
+
+        if (textFigure == null)
+            return;
+        textFigure.setVisible(text != null && !"".equals(text));
+        textFigure.setText(text);
+        textFigure.setForegroundColor(color);
+        // set position
+        if (alignment != null) {
+            if (alignment.startsWith("l")) {
+                labelLocator.setAlignment(ConnectionLocator.SOURCE);
+            } else if (alignment.startsWith("r")) {
+                labelLocator.setAlignment(ConnectionLocator.TARGET);
+            } else
+                labelLocator.setAlignment(ConnectionLocator.MIDDLE);
+        }
+        revalidate();
+    }
+
+    /**
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
 	 */
@@ -68,6 +111,14 @@ public class ConnectionFigure extends PolylineConnection {
         setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)),
 				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1),
 				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE));
+        // tooltip support
+        setTooltipText(dps.getAsStringDef(IDisplayString.Prop.TOOLTIP));
+        // additional text support
+        setInfoText(dps.getAsStringDef(IDisplayString.Prop.TEXT),
+                dps.getAsStringDef(IDisplayString.Prop.TEXTPOS),
+                ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.TEXTCOLOR)));
+
+        invalidate();
 	}
     /**
      * Returns the lastly set display string
