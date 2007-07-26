@@ -231,8 +231,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /** @name Properties. */
     //@{
     /**
-     * Return the properties for this component. Properties are locked
-     * against modifications, because properties() returns a shared copy.
+     * Return the properties for this component. The returned object is
+     * read-only (locked against modification); this is needed because
+     * it is shared between several components.
      */
     virtual cProperties *properties();
     //@}
