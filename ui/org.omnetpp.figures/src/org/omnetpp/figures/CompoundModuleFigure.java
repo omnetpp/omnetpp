@@ -245,7 +245,8 @@ public class CompoundModuleFigure extends ModuleFigure
 		// the global background is the same as the border color
 		setBackgroundColor(moduleBorderColor);
 		getCompoundModuleBorder().setBorderColor(moduleBorderColor);
-		getCompoundModuleBorder().setTitleBackgroundColor(moduleBackgroundColor);
+		// there is no separate title color
+        getCompoundModuleBorder().setTitleBackgroundColor(null);
 		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? DEFAULT_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;

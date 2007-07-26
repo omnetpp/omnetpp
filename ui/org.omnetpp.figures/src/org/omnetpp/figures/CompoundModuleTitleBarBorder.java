@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.color.ColorFactory;
+
 import org.omnetpp.figures.misc.IDirectEditSupport;
 
 public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
@@ -37,8 +37,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
     private Point labelLoc;
     private Font labelFont;
 
-    
-	public CompoundModuleTitleBarBorder() { 
+	public CompoundModuleTitleBarBorder() {
     }
 
 	public CompoundModuleTitleBarBorder(String s) {
@@ -46,50 +45,50 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 	}
 
 	/**
-	 * Calculates and returns the Insets for this border. 
-	 * 
+	 * Calculates and returns the Insets for this border.
+	 *
 	 * @param figure the figure on which Insets calculations are based
 	 * @return the calculated Insets
 	 */
-	protected Insets calculateInsets(IFigure figure) {
+	@Override
+    protected Insets calculateInsets(IFigure figure) {
 		int titleBarHeight = 0;
 		// check the image height
 		if (image != null)
 			titleBarHeight = Math.max(titleBarHeight, image.getImageData().height + padding.getHeight());
-			
+
 		// check the text height
 		titleBarHeight = Math.max(titleBarHeight, getTextExtents(figure).height + padding.getHeight());
-		
+
 		return new Insets(titleBarHeight, 0, 0, 0);
 	}
 
 	/**
 	 * Returns the background Color of this TitleBarBorder.
 	 * @return the background color
-	 * @since 2.0
 	 */
 	protected Color getBackgroundColor() {
 		return fillColor;
 	}
 
 	/**
-	 * Returns this TitleBarBorder's padding. Padding provides spacing along the sides of the 
+	 * Returns this TitleBarBorder's padding. Padding provides spacing along the sides of the
 	 * TitleBarBorder. The default value is no padding along all sides.
-	 * 
+	 *
 	 * @return the Insets representing the space along the sides of the TitleBarBorder
-	 * @since 2.0 
 	 */
 	protected Insets getPadding() {
 		return padding;
 	}
 
 	/**
-	 * Returns <code>true</code> thereby filling up all the contents within its boundaries, 
-	 * eleminating the need by the figure to clip the boundaries and do the same.
-	 * 
+	 * Returns <code>true</code> thereby filling up all the contents within its boundaries,
+	 * eliminating the need by the figure to clip the boundaries and do the same.
+	 *
 	 * @see Border#isOpaque()
 	 */
-	public boolean isOpaque() {
+	@Override
+    public boolean isOpaque() {
 		return true;
 	}
 
@@ -99,7 +98,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 	public void paint(IFigure figure, Graphics g, Insets insets) {
 		int lx, ly, imgx, imgy;
 		int titleBarHeight = 0;
-        
+
 		Rectangle tRect = new Rectangle(getPaintRectangle(figure, insets));
 		lx = imgx = tRect.x;
 		ly = imgy = tRect.y;
@@ -127,10 +126,10 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 		}
         if (titleVisible)
             g.drawString(getLabel(), lx, ly);
-		if (getImage() != null) 
+		if (getImage() != null)
 			g.drawImage(getImage(), imgx, imgy);
-        
-        // store the label bounds (in absolute coordinates )so cell editors 
+
+        // store the label bounds (in absolute coordinates )so cell editors
         // will be able to place the editor over it
         hostFigure = figure;
         labelLoc = new Point(lx, ly);
@@ -138,25 +137,21 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 	}
 
 	/**
-	 * Sets the background color of the area within the boundaries of this border. This is 
-	 * required as this border takes responsibility for filling up the region, as 
+	 * Sets the background color of the area within the boundaries of this border. This is
+	 * required as this border takes responsibility for filling up the region, as
 	 * TitleBarBorders are always opaque.
 	 *
 	 * @param color the background color
-	 * @since 2.0
 	 */
 	public void setBackgroundColor(Color color) {
-		if (color == null)
-			color = ColorFactory.defaultBorder;
 		fillColor = color;
 	}
 
 	/**
-	 * Sets the padding space to be applied on all sides of the border. The default value is 
+	 * Sets the padding space to be applied on all sides of the border. The default value is
 	 * no padding on all sides.
 	 *
 	 * @param all the value of the padding on all sides
-	 * @since 2.0
 	 */
 	public void setPadding(int all) {
 		padding = new Insets(all);
@@ -164,14 +159,13 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 	}
 
 	/**
-	 * Sets the padding space of this TitleBarBorder to the passed value. The default value is 
+	 * Sets the padding space of this TitleBarBorder to the passed value. The default value is
 	 * no padding on all sides.
 	 *
 	 * @param pad the padding
-	 * @since 2.0
 	 */
 	public void setPadding(Insets pad) {
-		padding = pad; 
+		padding = pad;
 		invalidate();
 	}
 
@@ -183,7 +177,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 		image = img;
 		if (img == null)
 			return;
-		
+
 		imageSize = new Dimension(image);
 		imgInsets = new Insets();
 		imgInsets.left = imageSize.width;
