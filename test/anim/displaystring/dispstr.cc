@@ -44,16 +44,16 @@ void Gen::activity()
 void Gen::icons()
 {
     ev << "ICONS -- valid values only:\n";
-    displayString().setTagArg("i", 0, "ball");  show();
-    displayString().setTagArg("i", 0, "ball_s");  show();
-    displayString().setTagArg("i", 0, "ball_vs");  show();
-    displayString().setTagArg("i", 0, "cloud_s");  show();
-    displayString().setTagArg("i", 0, "cloud");  show();
-    displayString().setTagArg("i", 0, "cloud_l");  show();
-    displayString().setTagArg("i", 0, "switch1"); show();
-    displayString().setTagArg("i", 0, "switch2"); show();
-    displayString().setTagArg("i", 0, "printer"); show();
-    displayString().setTagArg("i", 0, "penguin"); show();
+    displayString().setTagArg("i", 0, "block/app");  show();
+    displayString().setTagArg("i", 0, "block/app_s");  show();
+    displayString().setTagArg("i", 0, "block/app_vs");  show();
+    displayString().setTagArg("i", 0, "device/satellite_s");  show();
+    displayString().setTagArg("i", 0, "device/satellite");  show();
+    displayString().setTagArg("i", 0, "device/satellite_l");  show();
+    displayString().setTagArg("i", 0, "device/switch"); show();
+    displayString().setTagArg("i", 0, "device/terminal"); show();
+    displayString().setTagArg("i", 0, "device/printer"); show();
+    displayString().setTagArg("i", 0, "abstract/penguin"); show();
     displayString().setTagArg("i", 0, ""); show();
     displayString().removeTag("i"); show();
 }
@@ -86,7 +86,7 @@ void Gen::options()
     displayString().setTagArg("b",0,"50");
     displayString().setTagArg("b",1,"50");
     displayString().setTagArg("b",2,"oval");
-    displayString().setTagArg("i",0,"laptop2");
+    displayString().setTagArg("i",0,"device/laptop");
 
     const char *fill[] = {"", "-", "yellow", "#00ff00", "@2080ff", NULL};
     const char *outline[] = {"", "-", "blue", "#ff0000", "@ff80a0", NULL};
@@ -97,9 +97,9 @@ void Gen::options()
         {
             for (const char **bd = borderwidth; *bd; bd++)
             {
-                displayString().setTagArg("o", 0, *f);
-                displayString().setTagArg("o", 1, *o);
-                displayString().setTagArg("o", 2, *bd);
+                displayString().setTagArg("b", 3, *f);
+                displayString().setTagArg("b", 4, *o);
+                displayString().setTagArg("b", 5, *bd);
                 show();
             }
         }
@@ -113,7 +113,7 @@ void Gen::hue()
     {
         char buf[10];
         sprintf(buf, "@%2.2xffff", i);
-        displayString().setTagArg("o", 0, buf);
+        displayString().setTagArg("b", 3, buf);
         show();
     }
 }
@@ -125,7 +125,7 @@ void Gen::saturation()
     {
         char buf[10];
         sprintf(buf, "@40%2.2xff", i);
-        displayString().setTagArg("o", 0, buf);
+        displayString().setTagArg("b", 3, buf);
         show();
     }
 }
@@ -137,7 +137,7 @@ void Gen::brightness()
     {
         char buf[10];
         sprintf(buf, "@4080%2.2x", i);
-        displayString().setTagArg("o", 0, buf);
+        displayString().setTagArg("b", 3, buf);
         show();
     }
 }
