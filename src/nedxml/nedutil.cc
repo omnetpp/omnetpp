@@ -41,9 +41,9 @@ std::string DisplayStringUtil::upgradeBackgroundDisplayString(const char *s)
     renameTag(ds, "tt", "bgtt");
     if (ds.existsTag("o"))
     {
-        ds.setTagArg("bgb", 3, ds.getTagArg("o",0));
-        ds.setTagArg("bgb", 4, ds.getTagArg("o",1));
-        ds.setTagArg("bgb", 5, ds.getTagArg("o",2));
+        ds.setTagArg("bgb", 2, ds.getTagArg("o",0));
+        ds.setTagArg("bgb", 3, ds.getTagArg("o",1));
+        ds.setTagArg("bgb", 4, ds.getTagArg("o",2));
         ds.removeTag("o");
     }
     return ds.toString();
