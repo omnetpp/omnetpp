@@ -97,6 +97,11 @@ COMMON_API std::string opp_breaklines(const char *text, int maxLineLength);
 COMMON_API std::string opp_indentlines(const char *text, const char *indent);
 
 /**
+ * Returns true if the first string ends in the second string.
+ */
+COMMON_API bool opp_stringendswith(const char *s, const char *ending);
+
+/**
  * Dictionary-compare two strings, the main difference from stricmp()
  * being that integers embedded in the strings are compared in
  * numerical order.

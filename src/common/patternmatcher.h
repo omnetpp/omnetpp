@@ -1,9 +1,7 @@
 //==========================================================================
-//  PATMATCH.H - part of
+//  PATTERNMATCHER.H - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
-//
-//         pattern matching stuff
 //
 //==========================================================================
 

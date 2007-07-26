@@ -1,10 +1,7 @@
 //==========================================================================
-//  PATMATCH.CC - part of
+//  PATTERNMATCHER.CC - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
-//
-//  Implementation of
-//         pattern matching stuff
 //
 //==========================================================================
 
@@ -266,21 +263,33 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
                     return false;
                 break;
             case ANYSEQ:
-                // TBD shortcut if pattern ends in ANYSEQ or ANYSEQ LITERALSTRING
-                do {
+                // potential shortcuts: if pattern ends in ANYSEQ, rest of the input
+                // can be anything; if pattern ends in ANYSEQ LITERAL, it's enough if
+                // input ends in the literal string
+                if (k==pattern.size()-2)
+                    return true;
+                if (k==pattern.size()-3 && pattern[k+1].type==LITERALSTRING)
+                    return opp_stringendswith(s, pattern[k+1].literalstring.c_str());
+
+                // general case
+                while (true)
+                {
                     if (doMatch(s,k+1,suffixlen))
                         return true;
+                    if (!*s)
+                        return false;
                     s++;
-                } while (*s);
+                }
                 break; // at EOS
             case COMMONSEQ:
-                do {
+                while (true)
+                {
                     if (doMatch(s,k+1,suffixlen))
                         return true;
                     if (!*s || *s=='.')
-                        break;
+                        return false;
                     s++;
-                } while (*s);
+                }
                 break;
             case END:
                 return !*s;
@@ -311,7 +320,7 @@ bool PatternMatcher::matches(const char *line)
             int pattlen = e.literalstring.size();
             int linelen = strlen(line);
             if (pattlen>=2 && linelen>=2 && (line[linelen-1]!=e.literalstring.at(pattlen-1) ||
-                line[linelen-2]!=e.literalstring.at(pattlen-2)))
+                line[linelen-2]!=e.literalstring.at(pattlen-2))) //FIXME why doesn't work for pattlen==1 ?
                 return false;
         }
     }

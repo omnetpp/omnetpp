@@ -222,6 +222,13 @@ std::string opp_indentlines(const char *text, const char *indent)
     return std::string(indent) + opp_replacesubstring(text, "\n", (std::string("\n")+indent).c_str(), true);
 }
 
+bool opp_stringendswith(const char *s, const char *ending)
+{
+    int endinglen = strlen(ending);
+    int slen = strlen(s);
+    return endinglen>slen ? false : strcmp(s+slen-endinglen, ending)==0;
+}
+
 int strdictcmp(const char *s1, const char *s2)
 {
     int casediff = 0;
