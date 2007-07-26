@@ -152,7 +152,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     protected void refreshVisuals() {
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
         cfig.setDisplayString(getConnectionModel().getEffectiveDisplayString());
-        cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
+        cfig.setArrowHeadEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
     }
 
     public void setEditable(boolean editable) {

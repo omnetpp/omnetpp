@@ -24,7 +24,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     protected EnumSet<DisplayString.Prop> supportedProperties
                   = EnumSet.noneOf(DisplayString.Prop.class);
     // the model that we are attached to
-    private IHasDisplayString model;
+    private final IHasDisplayString model;
 
     public DisplayPropertySource(IHasDisplayString model) {
         super((INEDElement)model);
@@ -60,7 +60,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());
-        pdesc.setDescription(prop.getVisibleDesc());
+        pdesc.setDescription(prop.getTag()+"["+prop.getPos()+"]: "+prop.getVisibleDesc());
         // the one line display string descriptor should be always incompatible, so selecting
         // two or more items will automatically hide this composite property
         if (prop == DisplayString.Prop.DISPLAY)

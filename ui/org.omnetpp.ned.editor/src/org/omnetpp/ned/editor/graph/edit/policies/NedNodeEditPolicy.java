@@ -27,7 +27,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Connection createDummyConnection(Request req) {
 		ConnectionFigure cf = new ConnectionFigure();
-		cf.setArrowEnabled(true);
+		cf.setArrowHeadEnabled(true);
 		return cf;
 	}
 
