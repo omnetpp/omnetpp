@@ -5,6 +5,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
 import org.omnetpp.common.color.ColorFactory;
@@ -20,6 +21,7 @@ public class ConnectionFigure extends PolylineConnection {
     protected ConnectionLabelLocator labelLocator = new ConnectionLabelLocator(this);
     protected TooltipFigure tooltipFigure;
 	private IDisplayString lastDisplayString;
+	protected boolean isArrowHeadEnabled;
 
 	@Override
     public void addNotify() {
@@ -38,9 +40,9 @@ public class ConnectionFigure extends PolylineConnection {
 		return localLineWidth;
 	}
 
-	public void setArrowEnabled(boolean arrowEnabled) {
-
-        if (arrowEnabled) {
+	public void setArrowHeadEnabled(boolean arrowHeadEnabled) {
+	    this.isArrowHeadEnabled = arrowHeadEnabled;
+        if (arrowHeadEnabled) {
         	if (getTargetDecoration() == null) {
         		PolygonDecoration arrow = new PolygonDecoration();
         		arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
@@ -48,7 +50,7 @@ public class ConnectionFigure extends PolylineConnection {
         	}
         }
 		if (getTargetDecoration() != null)
-			getTargetDecoration().setVisible(arrowEnabled);
+			getTargetDecoration().setVisible(arrowHeadEnabled);
 
     }
 
@@ -61,13 +63,13 @@ public class ConnectionFigure extends PolylineConnection {
     	else
     		setLineStyle(localLineStyle = Graphics.LINE_SOLID);
 
-    	// special handling: connection is visible only if width is greater than 0
-    	setVisible(width > 0);
     	setLineWidth(localLineWidth = width);
     	setForegroundColor(localLineColor = color);
     	// arrow scaling proportional with the line width
-		if (getTargetDecoration() != null)
-			((PolygonDecoration)getTargetDecoration()).setScale(5+lineWidth, 2+lineWidth);
+		if (getTargetDecoration() != null) {
+            ((PolygonDecoration)getTargetDecoration()).setScale(5+lineWidth, 2+lineWidth);
+		    ((PolygonDecoration)getTargetDecoration()).setLineWidth(lineWidth);
+		}
     }
 
     public void setTooltipText(String tttext) {
@@ -120,6 +122,19 @@ public class ConnectionFigure extends PolylineConnection {
 
         invalidate();
 	}
+
+	@Override
+	public void paint(Graphics graphics) {
+	    graphics.pushState();
+	    // zero width connections do not appear (but we display them almost invisible for convenience
+        if (getLineWidth() < 1)
+            graphics.setAlpha(16);
+
+        graphics.setLineCap(SWT.CAP_FLAT);
+	    super.paint(graphics);
+	    graphics.popState();
+	}
+
     /**
      * Returns the lastly set display string
      * @return
