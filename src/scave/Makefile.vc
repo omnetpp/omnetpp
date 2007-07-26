@@ -145,9 +145,11 @@ datasorter.obj: datasorter.cc \
   idlist.h \
   enumtype.h \
   ../common/exception.h \
+  statistics.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
+  scaveutils.h \
   ../common/patternmatcher.h
 diffquot.obj: diffquot.cc \
   channel.h \
@@ -181,6 +183,8 @@ export.obj: export.cc \
   idlist.h \
   enumtype.h \
   ../common/commonutil.h \
+  statistics.h \
+  scaveutils.h \
   ../common/patternmatcher.h
 filewriter.obj: filewriter.cc \
   channel.h \
@@ -215,7 +219,9 @@ idlist.obj: idlist.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   enumtype.h \
-  ../common/commonutil.h
+  ../common/commonutil.h \
+  statistics.h \
+  scaveutils.h
 indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/exception.h \
   ../common/linetokenizer.h \
@@ -232,6 +238,7 @@ indexedvectorfile.obj: indexedvectorfile.cc \
   indexfile.h \
   nodetype.h \
   resultfilemanager.h \
+  statistics.h \
   dataflowmanager.h \
   idlist.h \
   enumtype.h
@@ -246,7 +253,8 @@ indexfile.obj: indexfile.cc \
   ../common/commondefs.h \
   ../common/commonutil.h \
   scavedefs.h \
-  ../common/bigdecimal.h
+  ../common/bigdecimal.h \
+  statistics.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
@@ -301,6 +309,8 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   resultfilemanager.h \
   idlist.h \
   enumtype.h \
+  statistics.h \
+  scaveutils.h \
   indexfile.h \
   ../common/expression.h \
   ../common/stringutil.h
@@ -324,6 +334,7 @@ resultfilemanager.obj: resultfilemanager.cc \
   ../common/exception.h \
   scavedefs.h \
   ../common/commonutil.h \
+  statistics.h \
   ../common/bigdecimal.h \
   idlist.h \
   enumtype.h
@@ -352,6 +363,7 @@ scavetool.obj: scavetool.cc \
   enumtype.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  statistics.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
@@ -407,6 +419,7 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h \
+  statistics.h \
   resultfilemanager.h \
   idlist.h \
   enumtype.h
@@ -426,7 +439,8 @@ vectorfilereader.obj: vectorfilereader.cc \
   resultfilemanager.h \
   dataflowmanager.h \
   idlist.h \
-  enumtype.h
+  enumtype.h \
+  statistics.h
 vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
@@ -441,7 +455,9 @@ vectorfilewriter.obj: vectorfilewriter.cc \
   resultfilemanager.h \
   dataflowmanager.h \
   idlist.h \
-  enumtype.h
+  enumtype.h \
+  statistics.h \
+  scaveutils.h
 windowavg.obj: windowavg.cc \
   channel.h \
   windowavg.h \

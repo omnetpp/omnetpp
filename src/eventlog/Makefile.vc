@@ -108,11 +108,15 @@ eventlogfacade.obj: eventlogfacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \
+  eventlog.h \
+  filteredevent.h \
+  filteredeventlog.h \
   eventlogfacade.h \
   eventlogentry.h \
   messagedependency.h \
   eventlogdefs.h \
-  eventlogentries.h
+  eventlogentries.h \
+  eventlogindex.h
 eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
   eventlogdefs.h

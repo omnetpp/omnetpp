@@ -146,6 +146,7 @@ linetokenizer.obj: linetokenizer.cc \
 matchexpression.obj: matchexpression.cc \
   matchexpression.h \
   patternmatcher.h \
+  commonutil.h \
   commondefs.h \
   exception.h
 matchexpression.tab.obj: matchexpression.tab.cc \
@@ -168,6 +169,7 @@ stringtokenizer.obj: stringtokenizer.cc \
 stringutil.obj: stringutil.cc \
   commonutil.h \
   stringutil.h \
+  stringtokenizer.h \
   commondefs.h \
   exception.h
 unitconversion.obj: unitconversion.cc \

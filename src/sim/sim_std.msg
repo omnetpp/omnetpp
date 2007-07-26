@@ -32,25 +32,6 @@ typedef cGate::Type  cGate_Type;
 Register_Enum(cPar_Type,  (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
 Register_Enum(cGate_Type, (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
 
-/*FIXME remove
-EXECUTE_ON_STARTUP(
-    cEnum *e = new cEnum("cGate_Type");
-    enums.instance()->add(e);
-    e->insert(cGate::INPUT,  "INPUT");
-    e->insert(cGate::OUTPUT, "OUTPUT");
-    e->insert(cGate::INOUT,  "INOUT");
-);
-
-EXECUTE_ON_STARTUP(  //FIXME use the Register_Enum macro now
-    cEnum *e = new cEnum("cPar_Type");
-    enums.instance()->add(e);
-    e->insert(cPar::BOOL,   "BOOL");
-    e->insert(cPar::DOUBLE, "DOUBLE");
-    e->insert(cPar::LONG,   "LONG");
-    e->insert(cPar::STRING, "STRING");
-    e->insert(cPar::XML,    "XML");
-);
-*/
 
 //
 // Define operator<< for some classes
@@ -118,6 +99,22 @@ class cPar;
 class cComponentType;
 class noncobject cDisplayString;
 
+class cProperty extends cObject
+{
+    fields:
+        @omitGetVerb(true);
+        bool isImplicit @group(general);
+        string index @group(general);
+        string value @getter(info) @hint(name and value);
+}
+
+class cProperties
+{
+    fields:
+        @omitGetVerb(true);
+        cProperty *contents[] @getter(get) @sizeGetter(numProperties) @hint(the property list);
+}
+
 class cComponent extends cDefaultList
 {
     fields:
@@ -125,6 +122,7 @@ class cComponent extends cDefaultList
         bool isModule @group(general) @hint(whether this component is a module or a channel);
         cComponentType *componentType @group(general) @hint(the object that represents the type declaration for this component);
         cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(parameters);
+        cProperties *properties @group(parameters, gates) @hint(properties);
 }
 
 class cChannel extends cComponent
@@ -428,19 +426,6 @@ class cMsgPar extends cOwnedObject
         char type @enum(cPar_Type) @hint(parameter type);
         bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
         bool isConstant @group(flags) @hint(whether the parameter has a constant value);
-}
-
-class cProperties extends cObject
-{
-}
-
-class cProperty extends cObject
-{
-    fields:
-        @omitGetVerb(true);
-        bool isImplicit @group(general);
-        string index @group(general);
-        //XXX const std::vector<const char *>& keys @group(general);
 }
 
 class cLinkedList extends cOwnedObject
