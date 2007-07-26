@@ -89,7 +89,8 @@ public class ConnectionFigure extends PolylineConnection {
         if (textFigure == null)
             return;
         textFigure.setVisible(text != null && !"".equals(text));
-        textFigure.setText(text);
+        // we add an extra space, because label ends might be clipped because of antialiasing
+        textFigure.setText(text+" ");
         textFigure.setForegroundColor(color);
         // set position
         if (alignment != null) {
