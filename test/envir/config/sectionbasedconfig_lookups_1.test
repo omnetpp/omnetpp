@@ -39,7 +39,7 @@ static std::string generateKey(LCGRandom& rng)
 static std::string generateName(LCGRandom& rng)
 {
     std::string result;
-    while (result.empty() || rng.next01() >= 0.3)
+    while (result.empty() || rng.next01() >= 0.2)
         result += (rng.draw(2) ? "a" : "foo");
     return result;
 }
@@ -74,7 +74,7 @@ LCGRandom rng;
 const char *filename = "{}_test.ini";
 std::fstream f(filename, std::ios::out);
 f << "[General]\n";
-for (int i=0; i<1000; i++)
+for (int i=0; i<200; i++)
     f << generateKey(rng) << " = " << i << "\n";
 f.close();
 
@@ -87,7 +87,9 @@ cfg.setConfigurationReader(ini);
 cfg.activateConfig("General");
 
 // test lookup with random keys
-for (int i=0; i<1000; i++)
+int maxvalue = 0;
+int numerrors = 0;
+for (int i=0; i<2000; i++)
 {
     std::string module = generatePath(rng);
     std::string param = generateName(rng);
@@ -103,12 +105,16 @@ for (int i=0; i<1000; i++)
     {
         ev << "ERROR: module=" << module << "  param=" << param
            << "; value="<< value1 <<", correct=" << value2 << "\n";
+        numerrors++;
     }
+
+    int value2asnum = atoi(value2);
+    if (maxvalue<value2asnum)
+        maxvalue = value2asnum;
 }
 
-
-fflush(stdout); //remove
-
+ev << "lines actually used in the inifile: " << maxvalue << "\n";
+ev << "errors found: " << numerrors << "\n";
 ev << ".\n";
 
 %exitcode: 0
@@ -117,5 +123,7 @@ ev << ".\n";
 ERROR
 
 %contains: stdout
+lines actually used in the inifile: 85
+errors found: 0
 .
 
