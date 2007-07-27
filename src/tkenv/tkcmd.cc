@@ -235,7 +235,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
    // experimental
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
-   { "opp_resizeimage",         resizeImage_cmd        },   // args: <image> ... ret: -
+   { "opp_resizeimage",         resizeImage_cmd        },   // args: <destimage> <srcimage>
    // end of list
    { NULL, },
 };
@@ -1735,8 +1735,8 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, "2 args expected", TCL_STATIC); return TCL_ERROR;}
-   const char *srcimgname = argv[1];
-   const char *destimgname = argv[2];
+   const char *destimgname = argv[1];
+   const char *srcimgname = argv[2];
 
    Tk_PhotoImageBlock srcimg;
    Tk_PhotoImageBlock destimg;
@@ -1753,20 +1753,20 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    int destblueoffset = destimg.offset[2];
    int destalphaoffset = destimg.offset[3];
 
-   for (int y=0; y<destimg.height; y++)
+   for (int desty=0; desty<destimg.height; desty++)
    {
-       unsigned char *destpixel = destimg.pixelPtr + y*destimg.pitch;
-       for (int x=0; x<destimg.width; x++, destpixel+=destimg.pixelSize)
+       for (int destx=0; destx<destimg.width; destx++)
        {
-           int srcx = (x * destimg.width) / srcimg.width;
-           int srcy = (y * destimg.height) / srcimg.height;
+           int srcx = (destx * srcimg.width) / destimg.width;
+           int srcy = (desty * srcimg.height) / destimg.height;
 
            unsigned char *srcpixel = srcimg.pixelPtr + srcy*srcimg.pitch + srcx*srcimg.pixelSize;
+           unsigned char *destpixel = destimg.pixelPtr + desty*destimg.pitch + destx*destimg.pixelSize;
 
            int r = srcpixel[srcredoffset];
            int g = srcpixel[srcgreenoffset];
            int b = srcpixel[srcblueoffset];
-           int a = srcpixel[srcblueoffset];
+           int a = srcpixel[srcalphaoffset];
 
            destpixel[destredoffset] = r;
            destpixel[destgreenoffset] = g;
