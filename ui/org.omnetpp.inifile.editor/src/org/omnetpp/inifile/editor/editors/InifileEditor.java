@@ -51,7 +51,9 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 /**
  * Editor for omnetpp.ini files.
  */
-//FIXME File|Revert is always diabled; same for Redo/Undo
+//FIXME File|Revert is always disabled
+//FIXME line number doesn't appear on status bar
+//FIXME crashes if file gets renamed or moved
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
 	/* editor pages */
 	private InifileTextEditor textEditor;
