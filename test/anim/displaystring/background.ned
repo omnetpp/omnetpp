@@ -3,7 +3,7 @@ import "dummy";
 module Background
 {
     parameters:
-        @display("bgb=500,500,,yellow,blue,10");
+        @display("bgb=500,500,yellow,blue,10");
     submodules:
         icon1: Dummy {
             parameters:
