@@ -139,6 +139,7 @@ int objectConfigEntries_cmd(ClientData, Tcl_Interp *, int, const char **);
 int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
+int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 // command table
 OmnetTclCommand tcl_commands[] = {
@@ -234,6 +235,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
    // experimental
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
+   { "opp_resizeimage",         resizeImage_cmd        },   // args: <image> ... ret: -
    // end of list
    { NULL, },
 };
@@ -1651,6 +1653,24 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
+static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_PhotoImageBlock *destImgblockptr)
+{
+   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
+   if (!imghandle)
+   {
+       Tcl_SetResult(interp, "image doesn't exist or is not a photo image", TCL_STATIC);
+       return TCL_ERROR;
+   }
+   Tk_PhotoGetImage(imghandle, destImgblockptr);
+
+   if (destImgblockptr->pixelSize!=4)
+   {
+       Tcl_SetResult(interp, "unsupported pixelsize in photo image", TCL_STATIC);
+       return TCL_ERROR;
+   }
+   return TCL_OK;
+}
+
 int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=4) {Tcl_SetResult(interp, "3 args expected", TCL_STATIC); return TCL_ERROR;}
@@ -1658,20 +1678,8 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    const char *targetcolorname = argv[2];
    const char *weightstr = argv[3]; // 0-100
 
-   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
-   if (!imghandle)
-   {
-       Tcl_SetResult(interp, "image doesn't exist or is not a photo image", TCL_STATIC);
-       return TCL_ERROR;
-   }
    Tk_PhotoImageBlock imgblock;
-   Tk_PhotoGetImage(imghandle, &imgblock);
-
-   if (imgblock.pixelSize!=4)
-   {
-       Tcl_SetResult(interp, "unsupported pixelsize in photo image", TCL_STATIC);
-       return TCL_ERROR;
-   }
+   if (getTkPhotoImageBlock(interp, imgname, &imgblock)!=TCL_OK) return TCL_ERROR;
 
    XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), TCLCONST(targetcolorname));
    if (!targetcolor)
@@ -1719,6 +1727,51 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
            pixel[redoffset] = r;
            pixel[greenoffset] = g;
            pixel[blueoffset] = b;
+       }
+   }
+   return TCL_OK;
+}
+
+int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, "2 args expected", TCL_STATIC); return TCL_ERROR;}
+   const char *srcimgname = argv[1];
+   const char *destimgname = argv[2];
+
+   Tk_PhotoImageBlock srcimg;
+   Tk_PhotoImageBlock destimg;
+   if (getTkPhotoImageBlock(interp, srcimgname, &srcimg)!=TCL_OK) return TCL_ERROR;
+   if (getTkPhotoImageBlock(interp, destimgname, &destimg)!=TCL_OK) return TCL_ERROR;
+
+   int srcredoffset = srcimg.offset[0];
+   int srcgreenoffset = srcimg.offset[1];
+   int srcblueoffset = srcimg.offset[2];
+   int srcalphaoffset = srcimg.offset[3];
+
+   int destredoffset = destimg.offset[0];
+   int destgreenoffset = destimg.offset[1];
+   int destblueoffset = destimg.offset[2];
+   int destalphaoffset = destimg.offset[3];
+
+   for (int y=0; y<destimg.height; y++)
+   {
+       unsigned char *destpixel = destimg.pixelPtr + y*destimg.pitch;
+       for (int x=0; x<destimg.width; x++, destpixel+=destimg.pixelSize)
+       {
+           int srcx = (x * destimg.width) / srcimg.width;
+           int srcy = (y * destimg.height) / srcimg.height;
+
+           unsigned char *srcpixel = srcimg.pixelPtr + srcy*srcimg.pitch + srcx*srcimg.pixelSize;
+
+           int r = srcpixel[srcredoffset];
+           int g = srcpixel[srcgreenoffset];
+           int b = srcpixel[srcblueoffset];
+           int a = srcpixel[srcblueoffset];
+
+           destpixel[destredoffset] = r;
+           destpixel[destgreenoffset] = g;
+           destpixel[destblueoffset] = b;
+           destpixel[destalphaoffset] = a;
        }
    }
    return TCL_OK;
