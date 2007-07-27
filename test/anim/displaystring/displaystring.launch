@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.omnetpp.launch.standaloneLaunchConfigurationType">
+<stringAttribute key="bad_container_name" value="displaystrin"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-u Tkenv "/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/displaystring/displaystring.exe"/>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<intAttribute key="org.omnetpp.launch.PARALELISM" value="1"/>
+<stringAttribute key="org.omnetpp.launch.RUN" value=""/>
+<booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="false"/>
+</launchConfiguration>

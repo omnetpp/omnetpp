@@ -13,13 +13,13 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 abstract public class NotifiedPropertySource
                             implements IPropertySource2, INEDChangeListener {
     /**
-     * Default construtor doesn't register itself as a model listener
+     * Default constructor doesn't register itself as a model listener
      */
     public NotifiedPropertySource() {
     }
 
     public NotifiedPropertySource(INEDElement model) {
-        // register the propertysource as a listener for the model, 
+        // register the property source as a listener for the model,
     	// so it will be notified when someone changes the underlying model
         model.getListeners().add(this);
     }

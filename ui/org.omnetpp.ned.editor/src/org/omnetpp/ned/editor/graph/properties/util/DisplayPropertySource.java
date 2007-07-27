@@ -18,7 +18,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
     // string parser for handling the parsing of the display string tags
     protected DisplayString displayString = null;
-    // property descriptor for the sheet (could be static if pushed uper)
+    // property descriptor for the sheet (could be static if pushed upper)
     protected IPropertyDescriptor[] propertyDescArray = null;
     // by default supports all possible properties defined in DisplayString
     protected EnumSet<DisplayString.Prop> supportedProperties

@@ -90,7 +90,7 @@ public class CompoundModuleFigure extends ModuleFigure
 
 	        // =============================================================================
 	        // draw the grid
-	        if(gridTickDistance > 1) {
+	        if(gridTickDistance > 0) {
 
 	        	graphics.setForegroundColor(gridColor);
 	        	double minorTickDistance = 0;

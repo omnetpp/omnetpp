@@ -1,3 +1,5 @@
+Add to documentation: icon names MUST BE lowercase
+
 Added support for reading PNG images from TkPNG package 0.7
 (https://sourceforge.net/projects/tkpng/)
 

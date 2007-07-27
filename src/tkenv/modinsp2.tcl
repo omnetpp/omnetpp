@@ -311,7 +311,7 @@ proc draw_submod {c submodptr x y name dispstr} {
 # This function is invoked from the module inspector C++ code.
 #
 proc draw_enclosingmod {c ptr name dispstr} {
-
+   global icons bitmaps
    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr"
 
    if [catch {
@@ -337,7 +337,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
        }
 
        set fill [lindex $tags(bgb) 2]
-       if {$fill == ""} {set fill #d0d0d0}
+       if {$fill == ""} {set fill grey82}
        if {$fill == "-"} {set fill ""}
        if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
        set outline [lindex $tags(bgb) 3]
@@ -351,8 +351,93 @@ proc draw_enclosingmod {c ptr name dispstr} {
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
        $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr"
+
+       # background image
+       if {![info exists tags(bgi)]} {set tags(bgi) {}}
+       set imgname [lindex $tags(bgi) 0]
+       set imgmode [lindex $tags(bgi) 1]
+       if {$imgname!=""} {
+          if {[catch {set img $bitmaps($imgname)}] && \
+                    [catch {set img $bitmaps(old/$imgname)}]} {
+              set img $icons(unknown)
+          }
+          set isx [image width $img]
+          set isy [image height $img]
+          set imgx $bx
+          set imgy $by
+          set anchor nw
+          if {[string index $imgmode 0]== "c"} {
+              # image center algined to block
+              set imgx [expr $bx+$sx/2]
+              set imgy [expr $by+$sy/2]
+              set anchor center
+              if {$sx < $isx || $sy < $isy} {
+                 # image must be clipped. a new image created with new dimensions
+                 if {$sx < $isx} {set minx $sx} else {set minx $isx}
+                 if {$sy < $isy} {set miny $sy} else {set miny $isy}
+                 set newimg [image create photo -width $minx -height $miny]
+                 $newimg copy $img -to 0 0 $minx $miny -from [expr $isx/2-$minx/2] [expr $isy/2-$miny/2] [expr $isx/2+$minx/2] [expr $isy/2+$miny/2]
+                 set img $newimg
+              }
+          } elseif {[string index $imgmode 0]== "s"} {
+              # stretch mode TODO should be implemnted in C++
+              set newimg [image create photo -width $sx -height $sy]
+              $newimg copy $img -from 0 0 $isx $isy
+              opp_resizeimage $newimg $img
+              set img $newimg
+          } elseif {[string index $imgmode 0]== "t"} {
+              # tile mode
+              set newimg [image create photo -width $sx -height $sy]
+              $newimg copy $img -to 0 0 $sx $sy
+              set img $newimg
+          } else {
+              # fix image mode (image upper left aligned to the block upper left)
+              if {$sx < $isx || $sy < $isy} {
+                 # image must be clipped. a new image created with new dimensions
+                 if {$sx < $isx} {set minx $sx} else {set minx $isx}
+                 if {$sy < $isy} {set miny $sy} else {set miny $isy}
+                 set newimg [image create photo -width $minx -height $miny]
+                 $newimg copy $img -to 0 0 $minx $miny
+                 set img $newimg
+              }
+          }
+          # TODO add image caching
+          $c create image $imgx $imgy -image $img -anchor $anchor -tags "dx mod $ptr"
+
+       }
+       # grid display
+       if {![info exists tags(bgg)]} {set tags(bgg) {}}
+       set gdist [lindex $tags(bgg) 0]
+       set gminor [lindex $tags(bgg) 1]
+       set gcolor [lindex $tags(bgg) 2]
+       if {$gcolor == ""} {set gcolor grey}
+       if {$gcolor == "-"} {set gcolor ""}
+       if {[string index $gcolor 0]== "@"} {set gcolor [opp_hsb_to_rgb $gcolor]}
+       if {$gdist!=""} {
+           set minordist [expr $gdist/$gminor]
+           for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
+               set coords [list $x $by $x [expr $by+$sy]]
+               $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
+               # create minor ticks
+               for {set minorx [expr $x+$minordist]} {$minorx < $x+$gdist} {set minorx [expr $minorx+$minordist]} {
+                   set coords [list $minorx $by $minorx [expr $by+$sy]]
+                   $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+               }
+           }
+           for {set y $by} {$y < $by+$sy} {set y [expr $y+$gdist]} {
+               set coords [list $bx $y [expr $bx+$sx] $y]
+               $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
+               # create minor ticks
+               for {set minory [expr $y+$minordist]} {$minory < $y+$gdist} {set minory [expr $minory+$minordist]} {
+                   set coords [list $bx $minory [expr $bx+$sx] $minory]
+                   $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+               }
+           }
+       }
+
        $c lower mod
 
+       # scrolling region
        set bb [$c bbox all]
        $c config -scrollregion [list [expr [lindex $bb 0]-10] [expr [lindex $bb 1]-10] \
                                      [expr [lindex $bb 2]+10] [expr [lindex $bb 3]+10]]
