@@ -83,8 +83,6 @@ public class VectorChart extends ChartCanvas {
 	private boolean smartMode = true; // whether smartModeLimit is enabled
 	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
 	
-	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
-
 	public class LineSelection implements IChartSelection {
 		private long vectorID;
 		private int series;
@@ -348,7 +346,6 @@ public class VectorChart extends ChartCanvas {
 	public void doSetDataset(IDataset dataset) {
 		if (dataset != null && !(dataset instanceof IXYDataset))
 			throw new IllegalArgumentException("must be an IXYDataset");
-		System.out.println("setDataset()");
 		this.dataset = (IXYDataset)dataset;
 		this.selection = null;
 		updateLineProperties();
@@ -553,14 +550,7 @@ public class VectorChart extends ChartCanvas {
 	
 	@Override
 	protected void doLayoutChart() {
-		// prevent nasty infinite layout recursions
-		if (layoutDepth>0)
-			return; 
-		
-		layoutDepth++;
 		GC gc = new GC(Display.getCurrent());
-		System.out.println("layoutChart(), level "+layoutDepth);
-
 		try {
 			// preserve zoomed-out state while resizing
 			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
@@ -615,7 +605,6 @@ public class VectorChart extends ChartCanvas {
 		}
 		finally {
 			gc.dispose();
-			layoutDepth--;
 		}
 	}
 	

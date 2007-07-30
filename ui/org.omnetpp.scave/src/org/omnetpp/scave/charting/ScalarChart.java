@@ -68,7 +68,6 @@ public class ScalarChart extends ChartCanvas {
 	private DomainAxis domainAxis = new DomainAxis();
 	private BarPlot plot = new BarPlot();
 
-	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private Map<String,BarProperties> barProperties = new HashMap<String,BarProperties>();
 	private static final String KEY_ALL = null;
 	
@@ -303,17 +302,7 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	protected void doLayoutChart() {
-		// prevent nasty infinite layout recursions
-		if (layoutDepth>0)
-			return; 
-		
-		// ignore initial invalid layout request
-		if (getClientArea().width==0 && getClientArea().height==0)
-			return;
-		
-		layoutDepth++;
 		GC gc = new GC(Display.getCurrent());
-		System.out.println("layoutChart(), level "+layoutDepth);
 
 		try {
 			// preserve zoomed-out state while resizing
@@ -366,7 +355,6 @@ public class ScalarChart extends ChartCanvas {
 		}
 		finally {
 			gc.dispose();
-			layoutDepth--;
 		}
 	}
 	

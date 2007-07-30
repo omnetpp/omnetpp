@@ -50,6 +50,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.IZoomLevelChangeListener;
 import org.omnetpp.common.canvas.ZoomLevelChangeEvent;
@@ -75,6 +76,8 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
  * @author tomi, andras
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
+	
+	private static final boolean debug = false;
 
 	protected boolean antialias = DEFAULT_ANTIALIAS;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
@@ -93,7 +96,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected IChartSelection selection;
 	private ListenerList listeners = new ListenerList();
 	
+	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private RectangularArea zoomedArea;
+	private IDataset dataset;
 	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
@@ -122,27 +127,59 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 	}
 	
+	/**
+	 * Sets the data to be visualized by the chart.
+	 */
 	void setDataset(IDataset dataset) {
+		if (debug) System.out.println("setDataset()");
 		doSetDataset(dataset);
-
-		if (zoomedArea != null) {
-			RectangularArea area = zoomedArea;
-			zoomedArea = null;
-			zoomToArea(area);
-		}
+		this.dataset = dataset;
+		updateZoomedArea();
 	}
 	
+	abstract void doSetDataset(IDataset dataset);
+	
+	protected void layoutChart() {
+		// prevent nasty infinite layout recursions
+		if (layoutDepth>0)
+			return;
+		
+		// ignore initial invalid layout request
+		if (getClientArea().isEmpty())
+			return;
+		
+		layoutDepth++;
+		if (debug) System.out.println("layoutChart(), level "+layoutDepth);
+		try {
+			doLayoutChart();
+		}
+		finally {
+			layoutDepth--;
+		}
+		// may trigger another layoutChart()
+		updateZoomedArea();
+	}
+	
+	/**
+	 * Sets the zoomed area of the chart.
+	 * The change will be applied when the chart is layouted next time.
+	 */
 	public void setZoomedArea(RectangularArea area) {
 		this.zoomedArea = area;
 	}
 
 	/**
-	 * Sets the data to be visualized by the chart.
+	 * Applies the zoomed area was set by {@code setZoomedArea}.
+	 * To be called after the has an area (calculated from the dataset)
+	 * and the virtual size of the canvas is calculated.
 	 */
-	abstract void doSetDataset(IDataset dataset);
-	
-	protected void layoutChart() {
-		doLayoutChart();
+	private void updateZoomedArea() {
+		if (zoomedArea != null && !getBounds().isEmpty() && dataset != null) {
+			if (debug) System.out.format("Restoring zoomed area: %s%n", zoomedArea);
+			RectangularArea area = zoomedArea;
+			zoomedArea = null;
+			zoomToArea(area);
+		}
 	}
 	
 	/**
