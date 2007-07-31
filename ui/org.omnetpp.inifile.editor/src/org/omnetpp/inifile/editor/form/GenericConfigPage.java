@@ -254,7 +254,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
-			addTextFieldEditor(form, CFGID_CMDENV_OUTPUT_FILE, "Log file");
+			addTextFieldEditor(form, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
 			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
 		}
 		else if (category.equals(CAT_TKENV)) {

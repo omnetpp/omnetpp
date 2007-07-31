@@ -43,7 +43,7 @@ public class InifileConverter {
 	 *  - prefix [Cmdenv]/[Tkenv] config names with "cmdenv-" and "tkenv-" (unless already begins with that)
 	 *  - rename sections [Run 1], [Run 2] etc to [Config config1], etc.
 	 *  - rename output vector configuration sections "**.interval=" to "**.record-interval="
-	 *  - rename "**.apply-default" to "**.apply-default"
+	 *  - rename "**.use-default" to "**.apply-default"
 	 */
 	public static String convert(String text) {
 		// Note: this method was created from the Perl script _scripts\migrate\migrateinifile.pl 

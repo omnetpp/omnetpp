@@ -8,12 +8,9 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -147,6 +144,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 
 		String contents = 
 			"[General]\n" +
+			"preload-ned-files = *.ned\n" +
 			"network = "+networkName+"\n";
 
 		return new ByteArrayInputStream(contents.getBytes());
