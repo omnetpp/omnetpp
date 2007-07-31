@@ -240,7 +240,7 @@ public class Legend {
 	 * plotArea is known.
 	 */
 	public void layoutSecondPass(Rectangle plotArea) {
-		if (position != LegendPosition.Inside)
+		if (!visible || position != LegendPosition.Inside)
 			return;
 		
 		int dx, dy;
