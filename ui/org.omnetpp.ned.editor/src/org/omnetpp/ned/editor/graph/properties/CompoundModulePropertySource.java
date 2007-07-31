@@ -31,15 +31,17 @@ public class CompoundModulePropertySource extends MergedPropertySource {
             this.model = model;
             setDisplayString(model.getDisplayString());
             // submodule inherited properties
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.WIDTH, 
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.WIDTH,
                                                 	 DisplayString.Prop.OVIMAGECOLORPCT));
             // direct compound module properties
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.MODULE_X, 
-               	 									 DisplayString.Prop.MODULE_UNIT));
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.MODULE_X,
+               	 									 DisplayString.Prop.MODULE_LAYOUT_ALGORITHM));
+            // TODO later we could add scaling support once tkenv is no longer supported
+            // DisplayString.Prop.MODULE_SCALE
         }
 
     }
-    
+
     // compound module specific properties
     protected static class BasePropertySource implements IPropertySource2 {
         public static final String BASE_CATEGORY = "Base";
@@ -50,7 +52,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
 
         public BasePropertySource(CompoundModuleNodeEx connectionNodeModel) {
             model = connectionNodeModel;
-            
+
             // set up property descriptors
             networkProp = new CheckboxPropertyDescriptor(Prop.Network, "network");
             networkProp.setCategory(BASE_CATEGORY);
@@ -68,14 +70,14 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         }
 
         public Object getPropertyValue(Object propName) {
-            if (Prop.Network.equals(propName))  
-                return model.getIsNetwork(); 
+            if (Prop.Network.equals(propName))
+                return model.getIsNetwork();
 
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
-            if (Prop.Network.equals(propName)) 
+            if (Prop.Network.equals(propName))
                 model.setIsNetwork((Boolean)value);
         }
 
