@@ -67,7 +67,6 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
-//XXX check clicking on a section line is compatible with editing
 //XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
 public class ParametersPage extends FormPage {
 	private TreeViewer treeViewer;
@@ -202,7 +201,9 @@ public class ParametersPage extends FormPage {
 		treeViewer.setCellEditors(editors);
 		treeViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
-				return true;
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
+				return element instanceof SectionKey;
 			}
 
 			public Object getValue(Object element, String property) {
@@ -497,8 +498,12 @@ public class ParametersPage extends FormPage {
 		IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 		try {
 			for (Object o : sel.toArray()) {
-				SectionKey item = (SectionKey) o;
-				getInifileDocument().removeKey(item.section, item.key);
+				if (o instanceof GenericTreeNode)
+					o = ((GenericTreeNode)o).getPayload();
+				if (o instanceof SectionKey) {
+					SectionKey item = (SectionKey) o;
+					getInifileDocument().removeKey(item.section, item.key);
+				}
 			}
 			treeViewer.getTree().deselectAll();
 			reread();
