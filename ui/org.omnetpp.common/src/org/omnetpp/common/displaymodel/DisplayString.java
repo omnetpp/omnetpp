@@ -191,7 +191,7 @@ public class DisplayString implements IDisplayString {
      */
     protected String getTagArg(Tag tag, int pos) {
         TagInstance tagInst = getTag(tag);
-        // if tag doesn't exsist return null
+        // if tag doesn't exists return null
         if (tagInst == null) return null;
         // check for the value itself
         String val = tagInst.getArg(pos);
