@@ -40,6 +40,8 @@ import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -50,10 +52,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.RectangularArea;
-import org.omnetpp.common.canvas.IZoomLevelChangeListener;
-import org.omnetpp.common.canvas.ZoomLevelChangeEvent;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageConverter;
@@ -118,9 +117,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			IAction action = contributor.getZoomOutAction();
 			if (action instanceof ZoomChartAction) {
 				final ZoomChartAction zoomOutAction = (ZoomChartAction)action;
-				addZoomListener(new IZoomLevelChangeListener() {
-					public void zoomLevelChanged(ZoomLevelChangeEvent event) {
-						zoomOutAction.updateEnabled();
+				addPropertyChangeListener(new IPropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent event) {
+						if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
+								event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
+							zoomOutAction.updateEnabled();
 					}
 				});
 			}
@@ -165,7 +166,10 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * The change will be applied when the chart is layouted next time.
 	 */
 	public void setZoomedArea(RectangularArea area) {
-		this.zoomedArea = area;
+		if (dataset != null && !getClientArea().isEmpty())
+			zoomToArea(area);
+		else
+			this.zoomedArea = area;
 	}
 
 	/**

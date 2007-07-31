@@ -1,6 +1,9 @@
 package org.omnetpp.common.canvas;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -17,11 +20,16 @@ import org.eclipse.swt.widgets.ScrollBar;
  * @author andras
  */
 public abstract class LargeScrollableCanvas extends Canvas {
+	
+	public static final String PROP_VIEW_X = "viewX";
+	public static final String PROP_VIEW_Y = "viewY";
 
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
 	private int hShift, vShift; // used for scrollbar mapping 
 	private Rectangle viewportRect; // the scrolled area within the canvas
+	
+	private ListenerList listeners = new ListenerList();
 
 	public LargeScrollableCanvas(Composite parent, int style) {
 		super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -122,8 +130,10 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportLeft.
 	 */
 	public void scrollHorizontalTo(long x) {
+		long oldValue = this.viewX;
 		this.viewX = clipX(x);
 		adjustHorizontalScrollBar();
+		firePropertyChangeEvent(PROP_VIEW_X, oldValue, this.viewX);
 		redraw();
 	}
 
@@ -131,8 +141,10 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportTop.
 	 */
 	public void scrollVerticalTo(long y) {
+		long oldValue = this.viewY;
 		this.viewY = clipY(y);
 		adjustVerticalScrollBar();
+		firePropertyChangeEvent(PROP_VIEW_Y, oldValue, this.viewY);
 		redraw();
 	}
 	
@@ -298,5 +310,20 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	protected void adjustVerticalScrollBar() {
 		getVerticalBar().setSelection((int)(viewY >> vShift));
+	}
+	
+	public void addPropertyChangeListener(IPropertyChangeListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removePropertyChangeListener(IPropertyChangeListener listener) {
+		listeners.remove(listener);
+	}
+	
+	protected void firePropertyChangeEvent(String property, Object oldValue, Object newValue) {
+		PropertyChangeEvent event = new PropertyChangeEvent(this, property, oldValue, newValue);
+		for (Object listener : listeners.getListeners()) {
+			((IPropertyChangeListener)listener).propertyChange(event);
+		}
 	}
 }

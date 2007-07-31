@@ -27,6 +27,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -38,6 +40,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.INavigationLocation;
+import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -71,13 +75,13 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 //TODO Chart sheet: should modify order of charts in the ChartSheet#getCharts collection
 //TODO chart page: "view numbers" feature
 //TODO label provider: print attributes in "quotes"
-public class ScaveEditor extends AbstractEMFModelEditor {
+public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLocationProvider {
 
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
 	private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
-
+	
 	/**
 	 *  ResultFileManager containing all files of the analysis.
 	 */
@@ -242,6 +246,8 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
+        getTabFolder().setMRUVisible(true);
+        
 		// we can load the result files now
         //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()
         tracker.synchronize();
@@ -251,8 +257,20 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         createDatasetsPage();
         
         restoreState();
+        
+        final CTabFolder tabfolder = getTabFolder();
+		tabfolder.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				int newPageIndex = tabfolder.indexOf((CTabItem) e.item);
+				pageChangedByUser(newPageIndex);
+			}
+		});
 	}
-
+	
+	protected CTabFolder getTabFolder() {
+		return (CTabFolder)getContainer();
+	}
+	
 	@Override
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
 		contentOutlineViewer.setInput(getAnalysis());
@@ -342,46 +360,49 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Opens a new editor page for the {@code object} (Dataset, Chart or ChartSheet),
 	 * or switches to it if already opened.
 	 */
-	public void open(Object object) {
+	public ScaveEditorPage open(Object object) {
 		if (object instanceof Dataset)
-			openDataset((Dataset)object);
+			return openDataset((Dataset)object);
 		else if (object instanceof Chart)
-			openChart((Chart)object);
+			return openChart((Chart)object);
 		else if (object instanceof ChartSheet)
-			openChartSheet((ChartSheet)object);
+			return openChartSheet((ChartSheet)object);
+		else
+			return null;
 	}
 	
 	/**
 	 * Opens the given chart on a new editor page, or switches to it
 	 * if already opened.
 	 */
-	public void openChart(Chart chart) {
-		openClosablePage(chart);
+	public ScaveEditorPage openChart(Chart chart) {
+		return openClosablePage(chart);
 	}
 	
 	/**
 	 * Opens the given dataset on a new editor page, or switches to it
 	 * if already opened.
 	 */
-	public void openDataset(Dataset dataset) {
-		openClosablePage(dataset);
+	public ScaveEditorPage openDataset(Dataset dataset) {
+		return openClosablePage(dataset);
 	}
 	
 	/**
 	 * Opens the given chart sheet on a new editor page, or switches to it
 	 * if already opened.
 	 */
-	public void openChartSheet(ChartSheet chartSheet) {
-		openClosablePage(chartSheet);
+	public ScaveEditorPage openChartSheet(ChartSheet chartSheet) {
+		return openClosablePage(chartSheet);
 	}
 
 	/**
 	 * Opens the given <code>object</code> (dataset/chart/chartsheet), or
 	 * switches to it if already opened.
 	 */
-	private void openClosablePage(EObject object) {
+	private ScaveEditorPage openClosablePage(EObject object) {
 		int pageIndex = getOrCreateClosablePage(object);
 		setActivePage(pageIndex);
+		return getEditorPage(pageIndex);
 	}
 	
 	/**
@@ -480,11 +501,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		closablePages.put(object, page);
 		return pageIndex;
 	}
-
+	
 	@Override
 	protected void pageClosed(Control control) {
 		Assert.isTrue(closablePages.containsValue(control));
-
+		
 		// remove it from the map
 		Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
 		while (entries.hasNext()) {
@@ -498,7 +519,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Returns the page displaying {@code object}.
 	 * The {@code object} expected to be a Dataset, Chart or ChartSheet.
 	 */
-	private ScaveEditorPage getClosableEditorPage(EObject object) {
+	protected ScaveEditorPage getClosableEditorPage(EObject object) {
 		return closablePages.get(object);
 	}
 	
@@ -690,9 +711,9 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
 		Control page = getControl(newPageIndex);
-		if (page instanceof ScaveEditorPage)
+		if (page instanceof ScaveEditorPage) {
 			((ScaveEditorPage)page).pageSelected();
-		
+		}
 		fakeSelectionChange();
 	}
 
@@ -703,6 +724,75 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 */
 	public void fakeSelectionChange() {
 		setSelection(getSelection());
+	}
+	
+	/*
+	 * PageId
+	 */
+	private static final String TEMPORARY = "t:";
+	private static final String PERSISTENT = "p:";
+	
+	String getPageId(ScaveEditorPage page) {
+		if (page == null)
+			return null;
+		else if (page.equals(inputsPage))
+			return "Inputs";
+		else if (page.equals(browseDataPage))
+			return "BrowseData";
+		else if (page.equals(datasetsPage))
+			return "Datasets";
+		else {
+			for (Map.Entry<EObject, ScaveEditorPage> entry : closablePages.entrySet()) {
+				EObject object = entry.getKey();
+				ScaveEditorPage editorPage = entry.getValue();
+				if (page.equals(editorPage)) {
+					Resource resource = object.eResource();
+					String prefix = resource == tempResource ? TEMPORARY : PERSISTENT;
+					String uri = resource != null ? resource.getURIFragment(object) : null;
+					return uri != null ? prefix + uri : null;
+				}
+			}
+		}
+		return null;
+	}
+	
+	ScaveEditorPage restorePage(String pageId) {
+		if (pageId == null)
+			return null;
+		if (pageId.equals("Inputs")) {
+			setActivePage(findPage(inputsPage));
+			return inputsPage;
+		}
+		else if (pageId.equals("BrowseData")) {
+			setActivePage(findPage(browseDataPage));
+			return browseDataPage;
+		}
+		else if (pageId.equals("Datasets")) {
+			setActivePage(findPage(datasetsPage));
+			return datasetsPage;
+		}
+		else {
+			EObject object = null;
+			String uri = null;
+			Resource resource = null;
+			if (pageId.startsWith(TEMPORARY)) {
+				uri = pageId.substring(TEMPORARY.length());
+				resource = tempResource;
+			}
+			else if (pageId.startsWith(PERSISTENT)) {
+				uri = pageId.substring(PERSISTENT.length());
+				resource = getResource();
+			}
+			
+			try {
+				if (resource != null && uri != null)
+					object = resource.getEObject(uri);
+			} catch (Exception e) {}
+
+			if (object != null)
+				return open(object);
+		}
+		return null;
 	}
 	
 	/*
@@ -739,8 +829,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			if (objectURI != null) {
 				EObject object = resource.getEObject(objectURI);
 				if (object != null) {
-					open(object);
-					ScaveEditorPage page = getClosableEditorPage(object); // TODO should be returned by open()
+					ScaveEditorPage page = open(object);
 					if (page != null)
 						page.restoreState(pageMemento);
 				}
@@ -779,6 +868,28 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 //					"Restoring editor state",
 //					"Error occured while restoring editor state: "+e.getMessage());
 			ScavePlugin.logError(e);
+		}
+	}
+
+	/*
+	 * Navigation
+	 */
+	public INavigationLocation createEmptyNavigationLocation() {
+		return new ScaveNavigationLocation(this, true);
+	}
+
+	public INavigationLocation createNavigationLocation() {
+		return new ScaveNavigationLocation(this, false);
+	}
+	
+	public void markNavigationLocation() {
+		getSite().getPage().getNavigationHistory().markLocation(this);
+	}
+	
+	public void pageChangedByUser(int newPageIndex) {
+		Control page = getControl(newPageIndex);
+		if (page instanceof ScaveEditorPage) {
+			markNavigationLocation();
 		}
 	}
 }

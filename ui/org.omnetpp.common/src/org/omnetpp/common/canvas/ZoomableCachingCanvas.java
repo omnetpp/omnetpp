@@ -2,10 +2,8 @@ package org.omnetpp.common.canvas;
 
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -16,6 +14,10 @@ import org.eclipse.swt.widgets.Composite;
  */
 //FIXME zooming in repeatedly eventually causes BigDecimal Underflow in tick painting. Set reasonable limit for zooming!
 public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICoordsMapping {
+
+	public static final String PROP_ZOOM_X = "zoomX";
+	public static final String PROP_ZOOM_Y = "zoomY";
+	
 	private double zoomX = 0; // pixels per coordinate unit
 	private double zoomY = 0; // pixels per coordinate unit
 	
@@ -23,8 +25,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	private double minY = 0, maxY = 1;
 
 	private int numCoordinateOverflows;
-	
-	private ListenerList zoomListeners = new ListenerList();
 	
 	/**
      * Constructor.
@@ -187,7 +187,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			this.zoomX = newZoomX;
 			updateVirtualSize(); // includes clearCache + redraw
 			centerXOn(oldX);
-			fireZoomLevelChange(SWT.HORIZONTAL, oldZoomX, newZoomX);
+			firePropertyChangeEvent(PROP_ZOOM_X, oldZoomX, newZoomX);
 			System.out.println("zoomX set to "+zoomX);
 		}
 	}
@@ -206,7 +206,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			this.zoomY = newZoomY;
 			updateVirtualSize(); // includes clearCache + redraw
 			centerYOn(oldY);
-			fireZoomLevelChange(SWT.VERTICAL, oldZoomY, newZoomY);
+			firePropertyChangeEvent(PROP_ZOOM_Y, oldZoomY, newZoomY);
 			System.out.println("zoomY set to "+zoomY);
 		}
 	}
@@ -407,20 +407,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		Assert.isTrue(fromCanvasDistY(r.height)==mapping.fromCanvasDistY(r.height));
 	
 		return mapping;
-	}
-	
-	public void addZoomListener(IZoomLevelChangeListener listener) {
-		zoomListeners.add(listener);
-	}
-	
-	public void removeZoomListener(IZoomLevelChangeListener listener) {
-		zoomListeners.remove(listener);
-	}
-	
-	protected void fireZoomLevelChange(int direction, double oldLevel, double newLevel) {
-		ZoomLevelChangeEvent event = new ZoomLevelChangeEvent(this, direction, oldLevel, newLevel);
-		for (Object listener : zoomListeners.getListeners())
-			((IZoomLevelChangeListener)listener).zoomLevelChanged(event);
 	}
 	
 	public RectangularArea getZoomedArea() {

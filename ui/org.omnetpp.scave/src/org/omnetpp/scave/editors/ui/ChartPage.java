@@ -11,6 +11,8 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -21,7 +23,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IMemento;
+import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.RectangularArea;
+import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.NewChartProcessingOpAction;
@@ -55,6 +59,7 @@ public class ChartPage extends ScaveEditorPage {
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 	
 	private IChartSelectionListener chartSelectionListener;
+	private IPropertyChangeListener chartPropertyChangeListener;
 
 	public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -150,12 +155,29 @@ public class ChartPage extends ScaveEditorPage {
 			};
 			chartView.addChartSelectionListener(chartSelectionListener);
 		}
+		if (chartPropertyChangeListener == null) {
+			chartPropertyChangeListener = new IPropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent event) {
+					if (event.getProperty() == LargeScrollableCanvas.PROP_VIEW_X ||
+							event.getProperty() == LargeScrollableCanvas.PROP_VIEW_Y ||
+							event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
+							event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y) {
+						scaveEditor.markNavigationLocation();
+					}
+				}
+			};
+			chartView.addPropertyChangeListener(chartPropertyChangeListener);
+		}
 	}
 	
 	private void unhookListeners() {
 		if (chartSelectionListener != null) {
 			chartView.removeChartSelectionListener(chartSelectionListener);
 			chartSelectionListener = null;
+		}
+		if (chartPropertyChangeListener != null) {
+			chartView.removePropertyChangeListener(chartPropertyChangeListener);
+			chartPropertyChangeListener = null;
 		}
 	}
 
