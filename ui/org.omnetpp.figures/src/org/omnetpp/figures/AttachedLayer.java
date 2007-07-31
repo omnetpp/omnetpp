@@ -150,17 +150,18 @@ public class AttachedLayer extends Layer implements AncestorListener {
           Rectangle bounds = refFigure.getBounds().getCopy();
 
           bounds.setSize(attachedFigure.getPreferredSize());
-          // set the size, so the calculation of the refernce point will be correct
+          // set the size, so the calculation of the reference point will be correct
           attachedFigure.setBounds(bounds);
 
-          // translate it to the corret position
-          refFigure.translateToAbsolute(bounds);
-          attachedFigure.translateToRelative(bounds);
+          // translate it to the correct position
+          // REVIEW: these two are not needed since the coordinate systems of ref figure and attached figure are the same
+          //refFigure.translateToAbsolute(bounds);
+          //attachedFigure.translateToRelative(bounds);
           bounds.translate(getRefPoint(refFigure, refPoint));
           bounds.translate(getRefPoint(attachedFigure, attachedPoint).negate());
           bounds.translate(translation);
           attachedFigure.setBounds(bounds);
-          // set the contaniner position too (no border/inset calculation)
+          // set the container position too (no border/inset calculation)
           setBounds(bounds);
   }
 
