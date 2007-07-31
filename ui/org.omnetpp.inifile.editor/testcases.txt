@@ -28,6 +28,14 @@ Sections page
 - renaming a nonexistent General section
 - test flipping a Config into a Scenario, and vica versa (also for General!!!)
 
+Parameters page
+- should work when General doesn't exist
+- drag&drop
+- "New" button
+- "Remove" button
+- editing, content assist, error handling while editing (bogus entries like duplicate key)
+
+
 
 
  

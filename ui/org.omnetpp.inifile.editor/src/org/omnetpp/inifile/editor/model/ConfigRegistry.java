@@ -436,7 +436,7 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_SEED_SET = addPerRunEntry(
         "seed-set", CFG_INT, "${runnumber}",
         "Selects the kth set of automatic random number seeds for the simulation. " +
-        "Two meaningful values are ${repetition} which is the repeat loop counter " +
+        "Meaningful values include ${repetition} which is the repeat loop counter " +
         "(see repeat= key), and ${runnumber}.");
     public static final ConfigKey CFGID_SIM_TIME_LIMIT = addPerRunEntryU(
         "sim-time-limit", "s", null,

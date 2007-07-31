@@ -68,6 +68,8 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 //XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
+//XXX when adding params here, editor annotations become out of sync with markers
+//XXX decoration: small error icon gets stretched to 16x16
 public class ParametersPage extends FormPage {
 	private TreeViewer treeViewer;
 	private Combo sectionsCombo;
@@ -309,6 +311,7 @@ public class ParametersPage extends FormPage {
 				else if (element!=null) {
 					setEditorSelection(element.toString(), null);
 				}
+				updateButtonStates();
 			}
 		});
 
@@ -464,13 +467,36 @@ public class ParametersPage extends FormPage {
 		return button;
 	}
 
+	protected void updateButtonStates() {
+		IStructuredSelection treeSelection = (IStructuredSelection) treeViewer.getSelection();
+		String selectedSection = sectionsCombo.getText();
+		removeButton.setEnabled(getEntriesFromTreeSelection(treeSelection).length>0);
+		newButton.setEnabled(!treeSelection.isEmpty() || !"".equals(selectedSection));
+	}
+	
 	protected void addEntry() {
+		treeViewer.cancelEditing();
+		
 		// determine where to insert new element
 		IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
-		SectionKey beforeSectionKey = sel.isEmpty() ? null : (SectionKey) sel.getFirstElement();
-		String section = beforeSectionKey == null ? sectionsCombo.getText() : beforeSectionKey.section;
-		String beforeKey = beforeSectionKey == null ? null : beforeSectionKey.key;
-
+		Object o = sel.getFirstElement();
+		if (o instanceof GenericTreeNode)
+			o = ((GenericTreeNode)o).getPayload();
+		String section, beforeKey;
+		if (o instanceof SectionKey) {
+			SectionKey beforeSectionKey = (SectionKey) o;
+			section = beforeSectionKey.section;
+			beforeKey = beforeSectionKey.key;
+		}
+		else if (o instanceof String) { // a section is selected
+			section = (String) o;
+			beforeKey = null;
+		}
+		else {
+			section = sectionsCombo.getText();
+			beforeKey = null;
+		}
+		
 		// generate unique key
 		IInifileDocument doc = getInifileDocument();
 		String newKey = "**.newKey";
@@ -485,7 +511,7 @@ public class ParametersPage extends FormPage {
 			//XXX if all keys are from a readonly base section, one cannot add new keys AT ALL !!!!
 			doc.addEntry(section, newKey, "", null, beforeKey);
 			reread();
-			treeViewer.setSelection(new StructuredSelection(new SectionKey(section, newKey)), true);
+			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionKey(section, newKey))), true);
 			treeViewer.getTree().setFocus();
 			treeViewer.editElement(newKey, 1); //XXX does not seem to work
 		}
@@ -495,6 +521,8 @@ public class ParametersPage extends FormPage {
 	}
 
 	protected void removeEntries() {
+		treeViewer.cancelEditing();
+
 		IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 		try {
 			for (Object o : sel.toArray()) {
@@ -566,19 +594,17 @@ public class ParametersPage extends FormPage {
 		
 		// refresh combo with the current section names, trying to preserve existing selection
 		IInifileDocument doc = getInifileDocument();
-		String selectedSection = sectionsCombo.getText(); 
+		String selectedSection = sectionsCombo.getText();  // Note: "" if inifile is empty
 		String[] sectionNames = doc.getSectionNames();
-		if (sectionNames.length==0) 
-			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
 		sectionsCombo.setItems(sectionNames);
 		sectionsCombo.setVisibleItemCount(Math.min(20, sectionsCombo.getItemCount()));
 		int i = ArrayUtils.indexOf(sectionNames, selectedSection);
 		sectionsCombo.select(i<0 ? 0 : i);
-		selectedSection = sectionsCombo.getText(); 
+		selectedSection = sectionsCombo.getText();
 
  	    // compute fallback chain for selected section, and fill table with their contents
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
 		GenericTreeNode rootNode = new GenericTreeNode("root");
+		String[] sectionChain = "".equals(selectedSection) ? new String[0] : InifileUtils.resolveSectionChain(doc, selectedSection);
 		for (String section : sectionChain) {
 			GenericTreeNode sectionNode = new GenericTreeNode(section);
 			rootNode.addChild(sectionNode);
@@ -592,11 +618,14 @@ public class ParametersPage extends FormPage {
 
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
-		int numUnassigned = getInifileAnalyzer().getUnassignedParams(selectedSection).length;
+		int numUnassigned = "".equals(selectedSection) ? 0 : getInifileAnalyzer().getUnassignedParams(selectedSection).length;
 		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName));
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
-		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameter"+(numUnassigned>1 ? "s" : ""));
+		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameter"+(numUnassigned!=1 ? "s" : ""));
 		sectionChainLabel.getParent().layout();
+		
+		updateButtonStates();
+		addMissingButton.setEnabled(selectedSection!=null);
 	}
 
 	@Override
