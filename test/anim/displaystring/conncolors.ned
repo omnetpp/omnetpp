@@ -9,7 +9,7 @@ module ConnColors
         inout port[];
     submodules:
         referencePic: Dummy {
-            @display("p=718,345;tt=open me to see,how the module should look like;i=device/scanner;bgi=conncolors");
+            @display("p=718,345;tt=open me to see,how the module should look like;i=device/scanner;bgi=conncolors;bgb=783,411,,,0");
         }
         src1: Dummy {
             parameters:

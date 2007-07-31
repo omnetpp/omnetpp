@@ -10,6 +10,9 @@ network DisplayStringTest
 {
     @display("bgb=377,329");
     submodules:
+        rangeindicator: rangeindicator {
+            @display("p=112,200");
+        }
         colors: Colors {
             @display("p=112,130");
         }
@@ -17,13 +20,13 @@ network DisplayStringTest
             @display("p=35,130");
         }
         textAndTooltip: TextAndTooltip {
-            @display("p=192,130");
+            @display("p=272,130");
         }
         connTextAndTooltip: ConnTextAndTooltip {
-            @display("p=192,200");
+            @display("p=272,200");
         }
         connColors: ConnColors {
-            @display("p=272,130");
+            @display("p=191,130");
         }
         background: Background {
             @display("p=35,200");
@@ -31,9 +34,6 @@ network DisplayStringTest
         nedParams: NedParams {
             @display("p=112,47");
         }
-//        active: Active {
-//            @display("p=36,47");
-//        }
 }
 
 

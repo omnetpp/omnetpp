@@ -5,7 +5,7 @@ module ConnTextAndTooltip
     @display("bgb=654,387");
     submodules:
         referencePic: Dummy {
-            @display("p=602,345;i=device/scanner;bgi=conntextandtooltip");
+            @display("p=602,345;i=device/scanner;bgi=conntextandtooltip;bgb=658,414,,,0");
         }
         src1: Dummy {
             parameters:
