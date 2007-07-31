@@ -69,12 +69,12 @@
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
-# define TOTAL_STACK_KB    "2048"
+# define TOTAL_STACK_KB     2048
 # define MAIN_STACK_KB       128  // for MSVC+Tkenv, 64K is not enough
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
-# define TOTAL_STACK_KB       "0" // dummy value
+# define TOTAL_STACK_KB        0  // dummy value
 # define MAIN_STACK_KB         0  // dummy value
 
 #endif
@@ -94,7 +94,7 @@ static char buffer[1024];
 
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings", CFG_BOOL, "false", "Currently ignored. Accepted for backward compatibility.");
 Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
-Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb", CFG_INT, TOTAL_STACK_KB, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
+Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb", CFG_INT, NULL, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
 Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
@@ -944,7 +944,7 @@ void TOmnetApp::readOptions()
 
     opt_ini_warnings = cfg->getAsBool(CFGID_INI_WARNINGS); //XXX ignored
 
-    opt_total_stack_kb = cfg->getAsInt(CFGID_TOTAL_STACK_KB);
+    opt_total_stack_kb = cfg->getAsInt(CFGID_TOTAL_STACK_KB, TOTAL_STACK_KB);
     opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
     if (!opt_parsim)
     {

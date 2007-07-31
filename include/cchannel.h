@@ -31,6 +31,8 @@ class cMessage;
  *
  * @ingroup SimCore
  */
+//FIXME if channel fullpath is <modulepath>.<channelname>, params cannot be referred to from the ini file!!!
+// should be <srcgatepath>.<channelname> ??
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:

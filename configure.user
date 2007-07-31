@@ -113,6 +113,12 @@ WITH_PARSIM=no
 #BLT_LIBS=
 
 #
+# ZLib todo-todo-todo...for tkenv's png support
+#
+#ZLIB_CFLAGS=
+#ZLIB_LIBS=-lzlib
+
+#
 # Compiler and linker options for MPI (optional component).
 # On LAM/MPI, typing `mpic++ -showme' can give you a hint about MPI_LIBS.
 #

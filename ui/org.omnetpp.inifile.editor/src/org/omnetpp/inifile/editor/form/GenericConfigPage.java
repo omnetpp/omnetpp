@@ -215,6 +215,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_PRECISION, "Output vector precision");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Output vectors memory limit");
+			addSpacer(group1);
 			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_PRECISION, "Output scalar precision");
 			addCheckboxFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");

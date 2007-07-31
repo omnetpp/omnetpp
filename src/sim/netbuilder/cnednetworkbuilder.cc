@@ -390,15 +390,15 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
 void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
 {
-/*XXX
-    cProperties *props = XXXX->properties();
-    cProperty *prop = props->get("display");
-    const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
-    if (propValue)
+    // @display property comes from the channel, but set on the gate
+    if (srcgatep->channel())
     {
-        srcgatep->setDisplayString(propValue);
+        cProperties *props = srcgatep->channel()->properties();
+        cProperty *prop = props->get("display");
+        const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+        if (propValue)
+            srcgatep->setDisplayString(propValue);
     }
-*/
 }
 
 void cNEDNetworkBuilder::assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode)

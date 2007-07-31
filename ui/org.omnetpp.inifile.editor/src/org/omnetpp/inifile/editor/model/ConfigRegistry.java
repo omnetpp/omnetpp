@@ -538,7 +538,7 @@ public class ConfigRegistry {
         "tkenv-use-new-layouter", CFG_BOOL, "false",
         "Selects between the new and the old (3.x) network layouting algorithms.");
     public static final ConfigKey CFGID_TOTAL_STACK_KB = addGlobalEntry(
-        "total-stack-kb", CFG_INT, "0",
+        "total-stack-kb", CFG_INT, null,
         "Specifies the maximum memory for activity() simple module stacks in " +
         "kilobytes. You need to increase this value if you get a ``Cannot allocate " +
         "coroutine stack'' error.");
