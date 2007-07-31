@@ -7,19 +7,24 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -32,9 +37,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
+import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
@@ -51,6 +58,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.views.AbstractModuleView;
 
 /**
  * For editing module parameters.
@@ -59,16 +67,16 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
+//XXX check clicking on a section line is compatible with editing
+//XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
 public class ParametersPage extends FormPage {
-	private TableViewer tableViewer;
+	private TreeViewer treeViewer;
 	private Combo sectionsCombo;
 	private Label networkNameLabel;
 	private Label sectionChainLabel;
 	private Label numUnassignedParamsLabel;
 	private Button newButton;
 	private Button removeButton;
-	private Button upButton;
-	private Button downButton;
 	private Button addMissingButton;
 
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
@@ -98,9 +106,15 @@ public class ParametersPage extends FormPage {
 		networkNameLabel = createLabel(this, SWT.END, "Network name: n/a");
 		sectionChainLabel = createLabel(this, SWT.END, "Section fallback chain: n/a");
 
+		// create section chain label
+		Label hintLabel = new Label(this, SWT.NONE);
+		hintLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		((GridData)hintLabel.getLayoutData()).horizontalSpan = 2;
+		hintLabel.setText("HINT: Drag the icons to change the order of entries.");
+		
 		// create table and buttons
-		tableViewer = createAndConfigureTable();
-		tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		treeViewer = createAndConfigureTable();
+		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Composite buttonGroup = createButtons();
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
@@ -130,55 +144,70 @@ public class ParametersPage extends FormPage {
 		return label;
 	}
 
-	private TableViewer createAndConfigureTable() {
-		Table table = new Table(this, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		addTableColumn(table, "Section", 80);
-		addTableColumn(table, "Key", 180);
-		addTableColumn(table, "Value", 120);
-		addTableColumn(table, "Comment", 60);
+	private TreeViewer createAndConfigureTable() {
+		Tree tree = new Tree(this, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		tree.setLinesVisible(true);
+		tree.setHeaderVisible(true);
+		addTreeColumn(tree, "Section/Key", 200);
+		addTreeColumn(tree, "Value", 140);
+		addTreeColumn(tree, "Comment", 80);
 
 		// set up tableViewer, content and label providers
-		final TableViewer tableViewer = new TableViewer(table);
-		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setLabelProvider(new TableLabelProvider() {
+		final TreeViewer treeViewer = new TreeViewer(tree);
+		treeViewer.setContentProvider(new GenericTreeContentProvider());
+		treeViewer.setLabelProvider(new TableLabelProvider() {
 			@Override
 			public String getColumnText(Object element, int columnIndex) {
-				SectionKey item = (SectionKey) element;
-				switch (columnIndex) {
-				case 0: return item.section;
-				case 1: return item.key;
-				case 2: return getInifileDocument().getValue(item.section, item.key); 
-				case 3: return getInifileDocument().getComment(item.section, item.key);
-				default: throw new IllegalArgumentException();
+				element = ((GenericTreeNode)element).getPayload();
+				if (element instanceof SectionKey) {
+					SectionKey item = (SectionKey) element;
+					switch (columnIndex) {
+					case 0: return item.key;
+					case 1: return getInifileDocument().getValue(item.section, item.key); 
+					case 2: return getInifileDocument().getComment(item.section, item.key);
+					default: throw new IllegalArgumentException();
+					}
+				}
+				else {
+					return (columnIndex==0) ? element.toString() : "";
 				}
 			}
 			@Override
 			public Image getColumnImage(Object element, int columnIndex) {
-				if (columnIndex == 2) {
-					SectionKey item = (SectionKey) element;
-					IMarker[] markers = InifileUtils.getProblemMarkersFor(item.section, item.key, getInifileDocument());
-					return FieldEditor.getProblemImage(markers, true);
+				element = ((GenericTreeNode)element).getPayload();
+				if (element instanceof SectionKey) {
+					if (columnIndex == 0) {
+						return AbstractModuleView.ICON_INIPAR;
+					}
+					else if (columnIndex == 1) {
+						SectionKey item = (SectionKey) element;
+						IMarker[] markers = InifileUtils.getProblemMarkersFor(item.section, item.key, getInifileDocument());
+						return FieldEditor.getProblemImage(markers, true);
+					}
+				}
+				else {
+					if (columnIndex==0)
+						return SectionsPage.ICON_SECTION;
 				}
 				return null;
 			}
 		});
 
 		//XXX prefix comments with "#" after editing?
-		tableViewer.setColumnProperties(new String[] {"section", "key", "value", "comment"});
-		final TableTextCellEditor editors[] = new TableTextCellEditor[4];
-		editors[0] = null;
-		editors[1] = new TableTextCellEditor(tableViewer, 1);
-		editors[2] = new TableTextCellEditor(tableViewer, 2);
-		editors[3] = new TableTextCellEditor(tableViewer, 3);
-		tableViewer.setCellEditors(editors);
-		tableViewer.setCellModifier(new ICellModifier() {
+		treeViewer.setColumnProperties(new String[] {"key", "value", "comment"});
+		final TableTextCellEditor editors[] = new TableTextCellEditor[3];
+		editors[0] = new TableTextCellEditor(treeViewer, 0);
+		editors[1] = new TableTextCellEditor(treeViewer, 1);
+		editors[2] = new TableTextCellEditor(treeViewer, 2);
+		treeViewer.setCellEditors(editors);
+		treeViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
-				return !property.equals("section");
+				return true;
 			}
 
 			public Object getValue(Object element, String property) {
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
 				SectionKey item = (SectionKey) element;
 				if (property.equals("key"))
 					return item.key;
@@ -193,6 +222,8 @@ public class ParametersPage extends FormPage {
 			public void modify(Object element, String property, Object value) {
 				if (element instanceof Item)
 					element = ((Item) element).getData(); // workaround, see super's comment
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
 				SectionKey item = (SectionKey) element;
 				if (item==null)
 					return; //FIXME must be debugged how this can possibly happen
@@ -205,7 +236,7 @@ public class ParametersPage extends FormPage {
 							String errorText = InifileUtils.validateParameterKey(doc, item.section, newKey);
 							if (errorText==null) { //XXX can't we validate in doc.changeKey()? 
 								doc.changeKey(item.section, item.key, (String)value);
-								reread(); // tableViewer.refresh() not enough, because input consists of keys
+								reread(); // treeViewer.refresh() not enough, because input consists of keys
 							}
 							else {
 								MessageDialog.openError(getShell(), "Cannot Rename", "Cannot rename key: "+errorText);
@@ -215,7 +246,7 @@ public class ParametersPage extends FormPage {
 					else if (property.equals("value")) {
 						if (!value.equals(doc.getValue(item.section, item.key))) {
 							doc.setValue(item.section, item.key, (String)value);
-							tableViewer.refresh(); // if performance gets critical: refresh only if changed
+							treeViewer.refresh(); // if performance gets critical: refresh only if changed
 						}
 					}
 					else if (property.equals("comment")) {
@@ -223,7 +254,7 @@ public class ParametersPage extends FormPage {
 							value = null; // no comment == null
 						if (!nullSafeEquals((String)value, doc.getComment(item.section, item.key))) {
 							doc.setComment(item.section, item.key, (String)value);
-							tableViewer.refresh(); // if performance gets critical: refresh only if changed
+							treeViewer.refresh(); // if performance gets critical: refresh only if changed
 						}
 					}
 				}
@@ -237,23 +268,23 @@ public class ParametersPage extends FormPage {
 		IContentProposalProvider proposalProvider = new InifileParamKeyContentProposalProvider(null, false, getInifileDocument(), getInifileAnalyzer()) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
-				SectionKey e = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				SectionKey e = (SectionKey)( (IStructuredSelection)treeViewer.getSelection()).getFirstElement();
 				configure(e.section, false); // set context for proposal calculation
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, proposalProvider, false);
+		ContentAssistUtil.configureTableColumnContentAssist(treeViewer, 1, proposalProvider, false);
 
 		// content assist for the Value column
 		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer(), false) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
-				SectionKey e = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				SectionKey e = (SectionKey)( (IStructuredSelection)treeViewer.getSelection()).getFirstElement();
 				setInifileEntry(e.section, e.key); // set context for proposal calculation
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 2, valueProposalProvider, true);
+		ContentAssistUtil.configureTableColumnContentAssist(treeViewer, 2, valueProposalProvider, true);
 
 		// on double-click, show entry in the text editor (not a good idea, commented out)
 		//tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
@@ -265,25 +296,117 @@ public class ParametersPage extends FormPage {
 		//});
 
 		// export the table's selection as editor selection
-		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				SectionKey entry = (SectionKey) sel.getFirstElement();
-				if (entry!=null)
+				Object element =  sel.getFirstElement();
+				element = element!=null ? ((GenericTreeNode)element).getPayload() : null;
+				if (element instanceof SectionKey) {
+					SectionKey entry = (SectionKey) element;
 					setEditorSelection(entry.section, entry.key);
+				}
+				else if (element!=null) {
+					setEditorSelection(element.toString(), null);
+				}
 			}
 		});
 
 		// add tooltip support
-		addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
-				Item item = tableViewer.getTable().getItem(new Point(x,y));
-				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
-				return entry==null ? null : InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
+		addTooltipSupport(treeViewer.getTree(), new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+				Item item = treeViewer.getTree().getItem(new Point(x,y));
+				Object element = item==null ? null : item.getData(); 
+				element = element!=null ? ((GenericTreeNode)element).getPayload() : null;
+				if (element instanceof SectionKey) {
+					SectionKey entry = (SectionKey) element;
+					return InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
+				}
+				else if (element!=null) {
+					return InifileHoverUtils.getSectionHoverText(element.toString(), getInifileDocument(), getInifileAnalyzer(), false);
+				}
+				return null;
 			}
 		});
 
-		return tableViewer;
+		// drag and drop support
+		setupDragAndDropSupport(treeViewer);
+
+		return treeViewer;
+	}
+
+	private void setupDragAndDropSupport(TreeViewer viewer) {
+		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+		Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance() };
+		viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
+		viewer.addDropSupport(dndOperations, transfers, new DropTargetAdapter() {
+			public void drop(DropTargetEvent event) {
+				// note: in theory, the user can drag across different treeViewers
+				// (i.e. from a different inifile editor, or even from a Scave editor!), 
+				// so we have to be careful when looking at the dragged data 
+				SectionKey[] draggedEntries = getEntriesFromTreeSelection((IStructuredSelection) event.data);
+				Object target = event.item==null ? null : event.item.getData();
+				if (target instanceof GenericTreeNode)
+					target = ((GenericTreeNode)target).getPayload();
+
+				if (draggedEntries.length != 0 && target != null) {
+					entriesDragged(draggedEntries, target);
+				}
+			}
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static SectionKey[] getEntriesFromTreeSelection(ISelection selection) {
+		ArrayList list = new ArrayList();
+		if (selection instanceof IStructuredSelection) {
+			for (Object item : ((IStructuredSelection)selection).toArray()) {
+				SectionKey payload = getEntryFromTreeNode(item);
+				if (payload != null)
+					list.add(payload);
+			}
+		}
+		return (SectionKey[]) list.toArray(new SectionKey[]{});
+	}
+
+	protected static SectionKey getEntryFromTreeNode(Object data) {
+		if (data instanceof GenericTreeNode)
+			data = ((GenericTreeNode)data).getPayload();
+		if (data instanceof SectionKey)
+			return (SectionKey) data;
+		return null;
+	}
+	
+	/**
+	 * Invoked when the user selects a few sections, and drags them to another section.
+	 */
+	protected void entriesDragged(SectionKey[] draggedEntries, Object target) {
+		try {
+			System.out.println(draggedEntries.length + " items dropped to: "+target);
+			IInifileDocument doc = getInifileDocument();
+			
+			int n = draggedEntries.length;
+			String[] sections = new String[n];
+			String[] keys = new String[n];
+			String[] values = new String[n];
+			String[] comments = new String[n];
+			for (int i=0; i<n; i++) {
+				sections[i] = draggedEntries[i].section;
+				keys[i] = draggedEntries[i].key;
+				values[i] = doc.getValue(draggedEntries[i].section, draggedEntries[i].key);
+				comments[i] = doc.getComment(draggedEntries[i].section, draggedEntries[i].key);
+			}
+
+			doc.removeKeys(sections, keys);
+
+			String section = target instanceof SectionKey ? ((SectionKey)target).section : (String)target; 
+			String beforeKey = target instanceof SectionKey ? ((SectionKey)target).key : null;
+			// doc.getKeys(section).length>0 ? doc.getKeys(section)[0] : null;
+			doc.addEntries(section, keys, values, comments, beforeKey);
+			reread();
+		}
+		catch (RuntimeException e) {
+			showErrorDialog(e);
+		}
 	}
 
 	private static String nullToEmpty(String text) {
@@ -294,8 +417,8 @@ public class ParametersPage extends FormPage {
 		return first==null ? second == null : first.equals(second);
 	}
 	
-	private TableColumn addTableColumn(Table table, String label, int width) {
-		TableColumn column = new TableColumn(table, SWT.NONE);
+	private TreeColumn addTreeColumn(Tree tree, String label, int width) {
+		TreeColumn column = new TreeColumn(tree, SWT.NONE);
 		column.setText(label);
 		column.setWidth(width);
 		return column;
@@ -307,8 +430,6 @@ public class ParametersPage extends FormPage {
 
 		newButton = createButton(buttonGroup, "New");
 		removeButton = createButton(buttonGroup, "Remove");
-		upButton = createButton(buttonGroup, "Up");
-		downButton = createButton(buttonGroup, "Down");
 		new Label(buttonGroup, SWT.NONE);
 		addMissingButton = createButton(buttonGroup, "Add...");
 		addMissingButton.setImage(InifileEditorPlugin.getCachedImage("icons/full/etool16/genkeys.png"));
@@ -323,18 +444,6 @@ public class ParametersPage extends FormPage {
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				removeEntries();
-			}
-		});
-
-		upButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				moveEntriesUp();
-			}
-		});
-
-		downButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				moveEntriesDown();
 			}
 		});
 
@@ -356,7 +465,7 @@ public class ParametersPage extends FormPage {
 
 	protected void addEntry() {
 		// determine where to insert new element
-		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+		IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 		SectionKey beforeSectionKey = sel.isEmpty() ? null : (SectionKey) sel.getFirstElement();
 		String section = beforeSectionKey == null ? sectionsCombo.getText() : beforeSectionKey.section;
 		String beforeKey = beforeSectionKey == null ? null : beforeSectionKey.key;
@@ -375,9 +484,9 @@ public class ParametersPage extends FormPage {
 			//XXX if all keys are from a readonly base section, one cannot add new keys AT ALL !!!!
 			doc.addEntry(section, newKey, "", null, beforeKey);
 			reread();
-			tableViewer.setSelection(new StructuredSelection(new SectionKey(section, newKey)), true);
-			tableViewer.getTable().setFocus();
-			tableViewer.editElement(newKey, 1); //XXX does not seem to work
+			treeViewer.setSelection(new StructuredSelection(new SectionKey(section, newKey)), true);
+			treeViewer.getTree().setFocus();
+			treeViewer.editElement(newKey, 1); //XXX does not seem to work
 		}
 		catch (RuntimeException ex) {
 			showErrorDialog(ex);
@@ -385,64 +494,18 @@ public class ParametersPage extends FormPage {
 	}
 
 	protected void removeEntries() {
-		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+		IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 		try {
 			for (Object o : sel.toArray()) {
 				SectionKey item = (SectionKey) o;
 				getInifileDocument().removeKey(item.section, item.key);
 			}
-			tableViewer.getTable().deselectAll();
+			treeViewer.getTree().deselectAll();
 			reread();
 		}
 		catch (RuntimeException ex) {
 			showErrorDialog(ex);
 		}
-	}
-
-	protected void moveEntriesUp() {
-		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-		SectionKey[] items = (SectionKey[]) tableViewer.getInput();
-		try {
-			//XXX does not work properly
-			for (Object o : sel.toArray()) {
-				SectionKey item = (SectionKey) o;
-				int pos = ArrayUtils.indexOf(items, item);
-				Assert.isTrue(pos != -1);
-				if (pos == 0) 
-					break; // hit the top
-				getInifileDocument().moveKey(item.section, item.key, items[pos-1].key);
-				SectionKey tmp = items[pos-1]; items[pos-1] = items[pos]; items[pos] = tmp;
-			}
-			reread();
-		}
-		catch (RuntimeException ex) {
-			showErrorDialog(ex);
-		}
-		tableViewer.setSelection(sel);
-	}
-
-	protected void moveEntriesDown() {
-		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-		Object[] array = sel.toArray();
-		SectionKey[] items = (SectionKey[]) tableViewer.getInput();
-		try {
-			ArrayUtils.reverse(array);  // we must iterate in reverse order
-			//XXX does not work properly
-			for (Object o : array) {
-				SectionKey item = (SectionKey) o;
-				int pos = ArrayUtils.indexOf(items, item);
-				Assert.isTrue(pos != -1);
-				if (pos == items.length-1) 
-					break; // hit the bottom
-				getInifileDocument().moveKey(item.section, item.key, pos==items.length-2 ? null : items[pos+2].key);
-				SectionKey tmp = items[pos+1]; items[pos+1] = items[pos]; items[pos] = tmp;
-			}
-			reread();
-		}
-		catch (RuntimeException ex) {
-			showErrorDialog(ex);
-		}
-		tableViewer.setSelection(sel);
 	}
 
 	protected void addMissingKeys() {
@@ -454,7 +517,7 @@ public class ParametersPage extends FormPage {
 		AddInifileKeysDialog dialog = new AddInifileKeysDialog(getShell(), analyzer, selectedSection);
 		if (dialog.open()==Dialog.OK) {
 			// save selection
-			IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+			IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 
 			// add user-selected keys to the document, and also **.apply-default if chosen by the user
 			String[] keys = dialog.getKeys();
@@ -470,7 +533,7 @@ public class ParametersPage extends FormPage {
 			catch (RuntimeException ex) {
 				showErrorDialog(ex);
 			}
-			tableViewer.setSelection(sel);
+			treeViewer.setSelection(sel);
 		}
 	}
 	
@@ -508,16 +571,19 @@ public class ParametersPage extends FormPage {
 		sectionsCombo.select(i<0 ? 0 : i);
 		selectedSection = sectionsCombo.getText(); 
 
-		// compute fallback chain for selected section, and fill table with their contents
+ 	    // compute fallback chain for selected section, and fill table with their contents
 		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
-		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
-		for (String section : sectionChain)
+		GenericTreeNode rootNode = new GenericTreeNode("root");
+		for (String section : sectionChain) {
+			GenericTreeNode sectionNode = new GenericTreeNode(section);
+			rootNode.addChild(sectionNode);
 			for (String key : doc.getKeys(section))
 				if (key.contains("."))
-					list.add(new SectionKey(section, key));
-
-		tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
-		tableViewer.refresh();
+					sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
+		}
+		treeViewer.setInput(rootNode);
+		treeViewer.expandAll();
+		treeViewer.refresh();
 
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
