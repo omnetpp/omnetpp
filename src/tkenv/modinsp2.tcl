@@ -153,6 +153,7 @@ proc get_submod_coords {c tag} {
 #
 proc draw_submod {c submodptr x y name dispstr} {
    #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr"
+   global icons
 
    if [catch {
 
@@ -173,14 +174,19 @@ proc draw_submod {c submodptr x y name dispstr} {
        }
        if [info exists tags(b)] {
            set bsx [lindex $tags(b) 0]
-           if {$bsx==""} {set bsx 40}
            set bsy [lindex $tags(b) 1]
-           if {$bsy==""} {set bsy [expr 0.6*$bsx]}
+           if {$bsx=="" && $bsy==""} {
+               set bsx 40
+               set bsy 24
+           }
+           if {$bsx==""} {set bsx $bsy}
+           if {$bsy==""} {set bsy $bsx}
        } elseif ![info exists tags(i)] {
-           set tags(b) {40 24 rect}
-           set bsx 40
-           set bsy 24
+           set img $icons(defaulticon)
+           set isx [image width $img]
+           set isy [image height $img]
        }
+
        set sx [expr {$isx<$bsx ? $bsx : $isx}]
        set sy [expr {$isy<$bsy ? $bsy : $isy}]
 
@@ -215,8 +221,8 @@ proc draw_submod {c submodptr x y name dispstr} {
 
            $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx"
 
-       } elseif [info exists tags(i)] {
-
+       } else {
+           # always draw an icon if no shape present (only i tag,  neither i nor b tag)
            $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx"
 
@@ -276,13 +282,13 @@ proc draw_submod {c submodptr x y name dispstr} {
        # r=<radius>,<fillcolor>,<color>,<width>
        if {[info exists tags(r)]} {
            set radius [lindex $tags(r) 0]
-           if {$radius == ""} {set radius 100}
+           if {$radius == ""} {set radius 0}
            set rfill [lindex $tags(r) 1]
            if {$rfill == "-"} {set rfill ""}
            if {[string index $rfill 0]== "@"} {set rfill [opp_hsb_to_rgb $rfill]}
            # if rfill=="" --> not filled
            set routline [lindex $tags(r) 2]
-           if {$routline == "" && $rfill == ""} {set routline black}
+           if {$routline == ""} {set routline black}
            if {$routline == "-"} {set routline ""}
            if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
            set rwidth [lindex $tags(r) 3]
@@ -295,8 +301,9 @@ proc draw_submod {c submodptr x y name dispstr} {
            set y2 [expr $y + $radius]
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
-               -fill $rfill -width $rwidth -outline $routline -tags "dx"]
-           $c lower $circle
+               -fill $rfill -width $rwidth -outline $routline -tags "dx range"]
+           # has been moved to the beginning of draw_enclosingmod to maintin relative z order of range indicators
+           # $c lower $circle
        }
 
    } errmsg] {
@@ -315,6 +322,9 @@ proc draw_enclosingmod {c ptr name dispstr} {
    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr"
 
    if [catch {
+
+       # lower all range indicators below the icons
+       $c lower "range"
 
        get_parsed_display_string $dispstr tags [winfo toplevel $c] $ptr 0
 
