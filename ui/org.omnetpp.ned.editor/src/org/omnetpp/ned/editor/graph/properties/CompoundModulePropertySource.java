@@ -35,9 +35,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
                                                 	 DisplayString.Prop.OVIMAGECOLORPCT));
             // direct compound module properties
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.MODULE_X,
-               	 									 DisplayString.Prop.MODULE_LAYOUT_ALGORITHM));
-            // TODO later we could add scaling support once tkenv is no longer supported
-            // DisplayString.Prop.MODULE_SCALE
+               	 									 DisplayString.Prop.MODULE_SCALE));
         }
 
     }

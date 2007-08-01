@@ -131,7 +131,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
         // we have to calculate the center point in that direction manually using the size info
         // from the figure directly (which knows it's size) This is the inverse transformation of
-        // CenteredXYLayout's traf.
+        // CenteredXYLayout's transformation
         Rectangle figureBounds = ((GraphicalEditPart)child).getFigure().getBounds();
         Rectangle modelConstraint = (Rectangle)constraint;
         if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
