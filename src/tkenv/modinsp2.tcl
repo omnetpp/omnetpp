@@ -153,11 +153,11 @@ proc get_submod_coords {c tag} {
 #
 proc draw_submod {c submodptr x y name dispstr scaling} {
    #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling"
-   global icons zoomfactors
+   global icons inspectordata
 
-   if {$scaling!="" || $zoomfactors($c)!=1} {
+   if {$scaling!="" || $inspectordata($c:zoomfactor)!=1} {
        if {$scaling==""} {set scaling 1.0}
-       set scaling [expr $scaling*$zoomfactors($c)]
+       set scaling [expr $scaling*$inspectordata($c:zoomfactor)]
    }
 
    if [catch {
@@ -233,14 +233,16 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            if [info exists tags(i)] {
                $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            }
-
-           $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx"
+           if {$inspectordata($c:showlabels)} {
+               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx"
+           }
 
        } else {
-           # always draw an icon if no shape present (only i tag,  neither i nor b tag)
+           # draw an icon when no shape is present (only i tag, or neither i nor b tag)
            $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
-           $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx"
-
+           if {$inspectordata($c:showlabels)} {
+               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx"
+           }
        }
 
        # queue length
@@ -342,12 +344,12 @@ proc int_ {x} {
 # This function is invoked from the module inspector C++ code.
 #
 proc draw_enclosingmod {c ptr name dispstr scaling} {
-   global icons bitmaps zoomfactors
+   global icons bitmaps inspectordata
    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr $scaling"
 
-   if {$scaling!="" || $zoomfactors($c)!=1} {
+   if {$scaling!="" || $inspectordata($c:zoomfactor)!=1} {
        if {$scaling==""} {set scaling 1.0}
-       set scaling [expr $scaling*$zoomfactors($c)]
+       set scaling [expr $scaling*$inspectordata($c:zoomfactor)]
    }
 
    if [catch {
@@ -758,7 +760,7 @@ proc animcontrol {w} {
 }
 
 proc create_graphicalmodwindow {name geom} {
-    global icons help_tips zoomfactors
+    global icons help_tips inspectordata
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -777,6 +779,8 @@ proc create_graphicalmodwindow {name geom} {
 
     pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphmodwin_zoomby $w 1.25"
     pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "graphmodwin_zoomby $w 0.8"
+    pack_iconbutton $w.toolbar.sep2    -separator
+    pack_iconbutton $w.toolbar.showlabels -image $icons(modnames) -command "graphmodwin_togglelabels $w"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
@@ -818,8 +822,10 @@ proc create_graphicalmodwindow {name geom} {
     $c bind modname <3> "graphmodwin_rightclick $c %X %Y"
     $c bind qlen <3> "graphmodwin_qlen_rightclick $c %X %Y"
 
-    # init zoom factor
-    set zoomfactors($c) 1
+    # init some state vars
+    set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:showlabels) 1
+    $w.toolbar.showlabels config -relief sunken
 
     #update idletasks
     update
@@ -843,14 +849,24 @@ proc create_graphicalmodwindow {name geom} {
 }
 
 proc graphmodwin_zoomby {w mult} {
-    global zoomfactors
+    global inspectordata
     set c $w.c
-    if {($mult<1 && $zoomfactors($c)>0.001) || ($mult>1 && $zoomfactors($c)<1000)} {
-        set zoomfactors($c) [expr $zoomfactors($c) * $mult]
-        if {abs($zoomfactors($c)-1.0) < 0.1} {set zoomfactors($c) 1}
+    if {($mult<1 && $inspectordata($c:zoomfactor)>0.001) || ($mult>1 && $inspectordata($c:zoomfactor)<1000)} {
+        set inspectordata($c:zoomfactor) [expr $inspectordata($c:zoomfactor) * $mult]
+        if {abs($inspectordata($c:zoomfactor)-1.0) < 0.1} {set inspectordata($c:zoomfactor) 1}
         opp_inspectorcommand $w redraw
     }
-    #puts "zoom: $zoomfactors($c)"
+    #puts "zoom: $inspectordata($c:zoomfactor)"
+}
+
+proc graphmodwin_togglelabels {w} {
+    global inspectordata
+    set c $w.c
+    set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
+    opp_inspectorcommand $w redraw
+
+    if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "raised"}
+    $w.toolbar.showlabels config -relief $relief
 }
 
 proc graphmodwin_dblclick c {
