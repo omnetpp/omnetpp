@@ -144,26 +144,34 @@ public class FileUtils
 
     public static byte[] readBinaryFile(String fileName) throws IOException
     {
-        FileInputStream file = new FileInputStream(fileName);
-        DataInputStream in = new DataInputStream(file);
+    	return readBinaryFile(new FileInputStream(fileName));
+    }
+
+    public static byte[] readBinaryFile(InputStream stream) throws IOException
+    {
+        DataInputStream in = new DataInputStream(stream);
         byte[] b = new byte[in.available()];
         in.readFully(b);
+        in.close();
 
         return b;
     }
 	
     public static String readTextFile(String fileName) throws IOException
     {
-        return readFile(fileName);
+    	return readTextFile(new FileInputStream(fileName), null);
     }
-	
-    public static String readFile(String fileName) throws IOException
+
+    public static String readTextFile(InputStream stream) throws IOException
     {
-        FileInputStream file = new FileInputStream(fileName);
-        DataInputStream in = new DataInputStream(file);
-        byte[] b = new byte[in.available()];
-        in.readFully(b);
-        in.close();
-        return new String(b);
+    	return readTextFile(stream, null);
+    }
+
+    public static String readTextFile(InputStream stream, String charset) throws IOException
+    {
+    	if (charset == null)
+        	return new String(readBinaryFile(stream));
+    	else
+    		return new String(readBinaryFile(stream), charset);
     }
 }
