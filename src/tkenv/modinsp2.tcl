@@ -206,10 +206,13 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
 
        if [info exists tags(b)] {
 
-           set x1 [expr $x - $bsx/2]
-           set y1 [expr $y - $bsy/2]
-           set x2 [expr $x + $bsx/2]
-           set y2 [expr $y + $bsy/2]
+           set width [lindex $tags(b) 5]
+           if {$width == ""} {set width 2}
+
+           set x1 [expr $x - $bsx/2 + $width/2]
+           set y1 [expr $y - $bsy/2 + $width/2]
+           set x2 [expr $x + $bsx/2 - $width/2]
+           set y2 [expr $y + $bsy/2 - $width/2]
 
            set sh [lindex $tags(b) 2]
            if {$sh == ""} {set sh rect}
@@ -222,8 +225,6 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            if {$outline == ""} {set outline black}
            if {$outline == "-"} {set outline ""}
            if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
-           set width [lindex $tags(b) 5]
-           if {$width == ""} {set width 2}
 
            $c create $sh $x1 $y1 $x2 $y2 \
                -fill $fill -width $width -outline $outline \
@@ -430,37 +431,40 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                  # image must be clipped. a new image created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set newimg [image create photo -width [int_ $minx] -height [int_ $miny]]
-                 $newimg copy $img -to 0 0 [int_ $minx] [int_ $miny] -from [expr int($isx/2-$minx/2)] [expr int($isy/2-$miny/2)] [expr int($isx/2+$minx/2)] [expr int($isy/2+$miny/2)]
-                 set img $newimg
+                 #set newimg [image create photo -width [int_ $minx] -height [int_ $miny]]
+                 #$newimg copy $img -to 0 0 [int_ $minx] [int_ $miny] -from [expr int($isx/2-$minx/2)] [expr int($isy/2-$miny/2)] [expr int($isx/2+$minx/2)] [expr int($isy/2+$miny/2)]
+                 #set img $newimg
+                 set img [get_cached_image $img [expr ($isx-$minx)/2] [expr ($isy-$miny)/2] [expr ($isx+$minx)/2] [expr ($isy+$miny)/2] $minx $miny 0]
               }
           } elseif {[string index $imgmode 0]== "s"} {
               # image stretched to fill the background area
-              set newimg [image create photo -width [int_ $sx] -height [int_ $sy]]
-              $newimg copy $img -from 0 0 [int_ $isx] [int_ $isy]
-              opp_resizeimage $newimg $img
-              set img $newimg
+              #set newimg [image create photo -width [int_ $sx] -height [int_ $sy]]
+              #$newimg copy $img -from 0 0 [int_ $isx] [int_ $isy]
+              #opp_resizeimage $newimg $img
+              #set img $newimg
+              set img [get_cached_image $img 0 0 $isx $isy $sx $sy 1]
           } elseif {[string index $imgmode 0]== "t"} {
               # image "tile" mode (impl. relies on Tk "image copy" command's behavior
               # to tile the image if dest area is larger than source area)
-              set newimg [image create photo -width [int_ $sx] -height [int_ $sy]]
-              $newimg copy $img -to 0 0 [int_ $sx] [int_ $sy]
-              set img $newimg
+              #set newimg [image create photo -width [int_ $sx] -height [int_ $sy]]
+              #$newimg copy $img -to 0 0 [int_ $sx] [int_ $sy]
+              #set img $newimg
+              set img [get_cached_image $img 0 0 $isx $isy $sx $sy 0]
           } else {
               # default mode: image top-left corner gets aligned to background top-left corner
               if {$sx < $isx || $sy < $isy} {
                  # image must be clipped. a new image gets created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set newimg [image create photo -width [int_ $minx] -height [int_ $miny]]
-                 $newimg copy $img -to 0 0 [int_ $minx] [int_ $miny]
-                 set img $newimg
+                 #set newimg [image create photo -width [int_ $minx] -height [int_ $miny]]
+                 #$newimg copy $img -to 0 0 [int_ $minx] [int_ $miny]
+                 #set img $newimg
+                 set img [get_cached_image $img 0 0 $minx $miny $minx $miny 0]
               }
           }
-          # TODO add image caching
           $c create image $imgx $imgy -image $img -anchor $anchor -tags "dx mod $ptr"
-
        }
+
        # grid display
        if {![info exists tags(bgg)]} {set tags(bgg) {}}
        set gdist [lindex $tags(bgg) 0]
@@ -473,24 +477,33 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
            if {$scaling != ""} {
                set gdist [expr $scaling*$gdist]
            }
-           if {$gminor==""} {set gminor 1}
-           set minordist [expr $gdist/$gminor]
+           if {$gminor=="" || $gminor < 1} {set gminor 1}
            for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
                set coords [list $x $by $x [expr $by+$sy]]
                $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
                # create minor ticks
-               for {set minorx [expr $x+$minordist]} {$minorx < $x+$gdist && $minorx < $bx+$sx} {set minorx [expr $minorx+$minordist]} {
-                   set coords [list $minorx $by $minorx [expr $by+$sy]]
-                   $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+               set i 1
+               for {set minorx [expr int($x+$gdist/$gminor)]} {$i <= $gminor && $minorx < $bx+$sx} {
+                                             set i [expr $i+1]} {
+                   set minorx [expr int($x+$i*$gdist/$gminor)]
+                   if {$minorx < $bx+$sx} {
+                       set coords [list $minorx $by $minorx [expr $by+$sy]]
+                       $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+                   }
                }
            }
            for {set y $by} {$y < $by+$sy} {set y [expr $y+$gdist]} {
                set coords [list $bx $y [expr $bx+$sx] $y]
                $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
                # create minor ticks
-               for {set minory [expr $y+$minordist]} {$minory < $y+$gdist && $minory < $by+$sy} {set minory [expr $minory+$minordist]} {
-                   set coords [list $bx $minory [expr $bx+$sx] $minory]
-                   $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+               set i 1
+               for {set minory [expr int($y+$gdist/$gminor)]} {$i <= $gminor && $minory < $by+$sy} {
+                                             set i [expr $i+1]} {
+                   set minory [expr int($y+$i*$gdist/$gminor)]
+                   if {$minory < $by+$sy} {
+                       set coords [list $bx $minory [expr $bx+$sx] $minory]
+                       $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
+                   }
                }
            }
        }
@@ -507,6 +520,32 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of $name: $errmsg"
    }
+}
+
+# returns the requested image from the cache or creates a new one and stores it
+proc get_cached_image {img x1 y1 x2 y2 targetWidth targetHeight isStretched} {
+    global img_cache
+    set x1 [expr int($x1)]
+    set y1 [expr int($y1)]
+    set x2 [expr int($x2)]
+    set y2 [expr int($y2)]
+    set targetWidth [expr int($targetWidth)]
+    set targetHeight [expr int($targetHeight)]
+    set key "$img:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$isStretched"
+    if {![info exists img_cache($key)]} {
+        set newimg [image create photo -width $targetWidth -height $targetHeight]
+        if {!$isStretched} {
+            $newimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0 $targetWidth $targetHeight
+        } else {
+              set tempimg [image create photo -width [expr $x2-$x1] -height [expr $y2-$y1]]
+              $tempimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0
+              $newimg copy $img -to 0 0 $targetWidth $targetHeight
+              opp_resizeimage $newimg $tempimg
+        }
+
+        set img_cache($key) $newimg
+    }
+    return $img_cache($key)
 }
 
 
