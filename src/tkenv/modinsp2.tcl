@@ -324,6 +324,12 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
    }
 }
 
+#
+# helper proc (to save typing)
+#
+proc int_ {x} {
+    return [expr int($x)]
+}
 
 # draw_enclosingmod --
 #
@@ -408,21 +414,21 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                  # image must be clipped. a new image created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set newimg [image create photo -width $minx -height $miny]
-                 $newimg copy $img -to 0 0 $minx $miny -from [expr $isx/2-$minx/2] [expr $isy/2-$miny/2] [expr $isx/2+$minx/2] [expr $isy/2+$miny/2]
+                 set newimg [image create photo -width [int_ $minx] -height [int_ $miny]]
+                 $newimg copy $img -to 0 0 [int_ $minx] [int_ $miny] -from [expr int($isx/2-$minx/2)] [expr int($isy/2-$miny/2)] [expr int($isx/2+$minx/2)] [expr int($isy/2+$miny/2)]
                  set img $newimg
               }
           } elseif {[string index $imgmode 0]== "s"} {
               # image stretched to fill the background area
-              set newimg [image create photo -width $sx -height $sy]
-              $newimg copy $img -from 0 0 $isx $isy
+              set newimg [image create photo -width [int_ $sx] -height [int_ $sy]]
+              $newimg copy $img -from 0 0 [int_ $isx] [int_ $isy]
               opp_resizeimage $newimg $img
               set img $newimg
           } elseif {[string index $imgmode 0]== "t"} {
               # image "tile" mode (impl. relies on Tk "image copy" command's behavior
               # to tile the image if dest area is larger than source area)
-              set newimg [image create photo -width $sx -height $sy]
-              $newimg copy $img -to 0 0 $sx $sy
+              set newimg [image create photo -width [int_ $sx] -height [int_ $sy]]
+              $newimg copy $img -to 0 0 [int_ $sx] [int_ $sy]
               set img $newimg
           } else {
               # default mode: image top-left corner gets aligned to background top-left corner
@@ -430,8 +436,8 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                  # image must be clipped. a new image gets created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set newimg [image create photo -width $minx -height $miny]
-                 $newimg copy $img -to 0 0 $minx $miny
+                 set newimg [image create photo -width [int_ $minx] -height [int_ $miny]]
+                 $newimg copy $img -to 0 0 [int_ $minx] [int_ $miny]
                  set img $newimg
               }
           }
