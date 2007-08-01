@@ -623,7 +623,7 @@ public class DataTable extends Table {
 	}
 	
 	public String getSelectedField() {
-		if (selectedColumn != null) {
+		if (selectedColumn != null && !selectedColumn.isDisposed()) {
 			Column column = (Column)selectedColumn.getData(COLUMN_KEY);
 			if (column != null)
 				return column.fieldName;
@@ -632,7 +632,7 @@ public class DataTable extends Table {
 	}
 	
 	public ResultItem getSelectedItem() {
-		if (selectedItem != null) {
+		if (selectedItem != null && !selectedItem.isDisposed()) {
 			return (ResultItem)selectedItem.getData(ITEM_KEY);
 		}
 		return null;
