@@ -5,6 +5,8 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.draw2d.text.FlowPage;
+import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
@@ -37,7 +39,8 @@ public class SubmoduleFigure extends ModuleFigure
     protected Label nameFigure = new Label();
     protected AttachedLayer textAttachLayer;
 	private AttachedLayer rangeAttachLayer;
-    protected Label textFigure = new Label();
+    protected TextFlow textFigure = new TextFlow();
+    protected FlowPage textFlowPage = new FlowPage();
     protected Label queueFigure = new Label();
     protected String queueName = "";
     protected boolean shapeVisible;
@@ -55,6 +58,7 @@ public class SubmoduleFigure extends ModuleFigure
         polygonShapeFigure.setVisible(false);
         rangeFigure.setOpaque(false);
         shapeVisible = false;
+        textFlowPage.add(textFigure);
     }
 
     @Override
@@ -120,7 +124,7 @@ public class SubmoduleFigure extends ModuleFigure
             // text comment decoration
             foregroundLayer.add(
                     textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH,
-                                            textFigure, PositionConstants.SOUTH, 0, -1));
+                                            textFlowPage, PositionConstants.SOUTH, 0, -1));
             // queue description
             foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH_EAST,
                     queueFigure, PositionConstants.SOUTH_WEST, 2, 0));
@@ -187,15 +191,15 @@ public class SubmoduleFigure extends ModuleFigure
         // set alignment
         if(alignment == null) return;
         if("t".equals(alignment.toLowerCase())) {
-            textFigure.setTextAlignment(PositionConstants.CENTER);
+            textFlowPage.setHorizontalAligment(PositionConstants.CENTER);
             textAttachLayer.setRefPoints(PositionConstants.NORTH, PositionConstants.SOUTH);
             textAttachLayer.setDeltaXY(0, -1);
         } else if ("l".equals(alignment.toLowerCase())) {
-            textFigure.setTextAlignment(PositionConstants.RIGHT);
+            textFlowPage.setHorizontalAligment(PositionConstants.RIGHT);
             textAttachLayer.setRefPoints(PositionConstants.NORTH_WEST, PositionConstants.NORTH_EAST);
             textAttachLayer.setDeltaXY(-2, 0);
         } else if ("r".equals(alignment.toLowerCase())) {
-            textFigure.setTextAlignment(PositionConstants.LEFT);
+            textFlowPage.setHorizontalAligment(PositionConstants.LEFT);
             textAttachLayer.setRefPoints(PositionConstants.NORTH_EAST, PositionConstants.NORTH_WEST);
             textAttachLayer.setDeltaXY(2, 0);
         }

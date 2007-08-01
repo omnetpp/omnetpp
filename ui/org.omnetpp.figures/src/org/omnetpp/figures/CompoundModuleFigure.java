@@ -25,7 +25,7 @@ public class CompoundModuleFigure extends ModuleFigure
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
     private static final int DEFAULT_BORDER_SNAP_WIDTH = 3;
-    private static Dimension DEFAULT_SIZE = new Dimension(200, 100);
+    private static Dimension DEFAULT_SIZE = new Dimension(300, 200);
 	private final Layer pane;
     private final ScrollPane scrollpane;
     private final LayeredPane layeredPane;
@@ -214,7 +214,9 @@ public class CompoundModuleFigure extends ModuleFigure
     public Dimension getPreferredSize(int w, int h) {
     	// we are not sensitive to the external size hints
         Dimension prefSize = super.getPreferredSize(-1, -1);
-        prefSize.union(DEFAULT_SIZE);
+        if (pane.getChildren().size() == 0)
+            return DEFAULT_SIZE;
+
         return prefSize;
     }
 
