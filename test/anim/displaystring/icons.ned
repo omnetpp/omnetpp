@@ -57,11 +57,11 @@ module Icons
         }
         icon_plus_icon2: Dummy {
             parameters:
-                @display("p=133,208;i=block/sink;is=s;i2=status/bulb_vs");
+                @display("p=133,208;i=block/sink;is=s;i2=status/stop");
         }
         box_plus_icon2: Dummy {
             parameters:
-                @display("p=222,208;b=30,24,,wheat;i2=status/bulb_vs");
+                @display("p=222,208;b=30,24,,wheat;i2=status/stop");
         }
         widthonly: Dummy {
             @display("p=466,36;b=60;i=block/app2");
@@ -111,8 +111,8 @@ module Icons
         bwidth1: Dummy {
             @display("p=501,285;b=48,28,,,,1");
         }
-        bwidth4: Dummy {
-            @display("p=566,285;b=48,28,,,,4");
+        bwidth8: Dummy {
+            @display("p=566,285;b=48,28,,,,8");
         }
         colorized50: Dummy {
             @display("p=110,279;i=block/classifier,red,50");

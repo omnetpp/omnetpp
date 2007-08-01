@@ -34,6 +34,9 @@ network DisplayStringTest
         nedParams: NedParams {
             @display("p=112,47");
         }
+        scaling: scaling {
+            @display("p=191,200");
+        }
 }
 
 
