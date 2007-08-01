@@ -368,7 +368,13 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
 
        if {$sx=="" || $sy==""} {
            set bb [$c bbox submod]
-           if {$bb==""} {set bb [list $bx $by [expr $scaling*300] [expr $scaling*200]]}
+           if {$bb==""} {
+               if {$scaling==""} {
+                   set bb [list $bx $by 300 200]
+               } else {
+                   set bb [list $bx $by [expr $scaling*300] [expr $scaling*200]]
+               }
+           }
            if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
            if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
        }
@@ -720,11 +726,16 @@ proc create_graphicalmodwindow {name geom} {
     animcontrol $w.toolbar.animspeed
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
+    pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "opp_inspectorcommand $w zoomin"
+    pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "opp_inspectorcommand $w zoomout"
+
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.redraw)  {Re-layout}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
+    set help_tips($w.toolbar.zoomin)  {Zoom in}
+    set help_tips($w.toolbar.zoomout) {Zoom out}
 
     # create canvas
     set c $w.c
