@@ -153,7 +153,12 @@ proc get_submod_coords {c tag} {
 #
 proc draw_submod {c submodptr x y name dispstr scaling} {
    #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling"
-   global icons
+   global icons zoomfactors
+
+   if {$scaling!="" || $zoomfactors($c)!=1} {
+       if {$scaling==""} {set scaling 1.0}
+       set scaling [expr $scaling*$zoomfactors($c)]
+   }
 
    if [catch {
        get_parsed_display_string $dispstr tags [winfo toplevel $c] $submodptr 1
@@ -336,8 +341,13 @@ proc int_ {x} {
 # This function is invoked from the module inspector C++ code.
 #
 proc draw_enclosingmod {c ptr name dispstr scaling} {
-   global icons bitmaps
+   global icons bitmaps zoomfactors
    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr $scaling"
+
+   if {$scaling!="" || $zoomfactors($c)!=1} {
+       if {$scaling==""} {set scaling 1.0}
+       set scaling [expr $scaling*$zoomfactors($c)]
+   }
 
    if [catch {
 
@@ -709,7 +719,7 @@ proc animcontrol {w} {
 }
 
 proc create_graphicalmodwindow {name geom} {
-    global icons help_tips
+    global icons help_tips zoomfactors
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -726,8 +736,8 @@ proc create_graphicalmodwindow {name geom} {
     animcontrol $w.toolbar.animspeed
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
-    pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "opp_inspectorcommand $w zoomin"
-    pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "opp_inspectorcommand $w zoomout"
+    pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphmodwin_zoomby $w 1.25"
+    pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "graphmodwin_zoomby $w 0.8"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
@@ -769,6 +779,9 @@ proc create_graphicalmodwindow {name geom} {
     $c bind modname <3> "graphmodwin_rightclick $c %X %Y"
     $c bind qlen <3> "graphmodwin_qlen_rightclick $c %X %Y"
 
+    # init zoom factor
+    set zoomfactors($c) 1
+
     #update idletasks
     update
     if [catch {
@@ -788,6 +801,17 @@ proc create_graphicalmodwindow {name geom} {
         $c config -width $w
         $c config -height $h
     }
+}
+
+proc graphmodwin_zoomby {w mult} {
+    global zoomfactors
+    set c $w.c
+    if {($mult<1 && $zoomfactors($c)>0.001) || ($mult>1 && $zoomfactors($c)<1000)} {
+        set zoomfactors($c) [expr $zoomfactors($c) * $mult]
+        if {abs($zoomfactors($c)-1.0) < 0.1} {set zoomfactors($c) 1}
+        opp_inspectorcommand $w redraw
+    }
+    #puts "zoom: $zoomfactors($c)"
 }
 
 proc graphmodwin_dblclick c {

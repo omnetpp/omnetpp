@@ -703,6 +703,11 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
       TRY( relayoutAndRedrawAll() );
       return TCL_OK;
    }
+   else if (strcmp(argv[0],"redraw")==0)
+   {
+      TRY( redrawAll() );
+      return TCL_OK;
+   }
    else if (strcmp(argv[0],"dispstrpar")==0)
    {
       return getDisplayStringPar(interp,argc,argv);
