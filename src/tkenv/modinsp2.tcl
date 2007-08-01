@@ -379,7 +379,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        set width [lindex $tags(bgb) 4]
        if {$width == ""} {set width 2}
 
-       # draw
+       # draw (note: width should grow *outside* the $sx-by-$sy inner rectangle)
        $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
@@ -457,7 +457,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                set coords [list $x $by $x [expr $by+$sy]]
                $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
                # create minor ticks
-               for {set minorx [expr $x+$minordist]} {$minorx < $x+$gdist} {set minorx [expr $minorx+$minordist]} {
+               for {set minorx [expr $x+$minordist]} {$minorx < $x+$gdist && $minorx < $bx+$sx} {set minorx [expr $minorx+$minordist]} {
                    set coords [list $minorx $by $minorx [expr $by+$sy]]
                    $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
                }
@@ -466,7 +466,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                set coords [list $bx $y [expr $bx+$sx] $y]
                $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
                # create minor ticks
-               for {set minory [expr $y+$minordist]} {$minory < $y+$gdist} {set minory [expr $minory+$minordist]} {
+               for {set minory [expr $y+$minordist]} {$minory < $y+$gdist && $minory < $by+$sy} {set minory [expr $minory+$minordist]} {
                    set coords [list $bx $minory [expr $bx+$sx] $minory]
                    $c create line $coords -width 1 -dash . -fill $gcolor -tags "dx mod $ptr"
                }
