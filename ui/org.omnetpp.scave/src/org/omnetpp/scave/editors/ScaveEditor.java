@@ -809,30 +809,25 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	private static final String
 		ACTIVE_PAGE = "ActivePage",
 		PAGE = "Page",
-		PAGE_OBJECT = "PageObject";
+		PAGE_ID = "PageId";
 	
 	private void saveState(IMemento memento) {
 		memento.putInteger(ACTIVE_PAGE, getActivePage());
-		Resource resource = getResource();
 		for (EObject openedObject : closablePages.keySet()) {
 			ScaveEditorPage page = closablePages.get(openedObject);
 			IMemento pageMemento = memento.createChild(PAGE);
-			pageMemento.putString(PAGE_OBJECT, resource.getURIFragment(openedObject));
+			pageMemento.putString(PAGE_ID, getPageId(page));
 			page.saveState(pageMemento);
 		}
 	}
 	
 	private void restoreState(IMemento memento) {
-		Resource resource = getResource();
 		for (IMemento pageMemento : memento.getChildren(PAGE)) {
-			String objectURI = pageMemento.getString(PAGE_OBJECT);
-			if (objectURI != null) {
-				EObject object = resource.getEObject(objectURI);
-				if (object != null) {
-					ScaveEditorPage page = open(object);
+			String pageId = pageMemento.getString(PAGE_ID);
+			if (pageId != null) {
+				ScaveEditorPage page = restorePage(pageId);
 					if (page != null)
 						page.restoreState(pageMemento);
-				}
 			}
 		}
 		int activePage = memento.getInteger(ACTIVE_PAGE);
