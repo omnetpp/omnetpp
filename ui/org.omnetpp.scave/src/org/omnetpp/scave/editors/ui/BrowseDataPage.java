@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -200,12 +201,15 @@ public class BrowseDataPage extends ScaveEditorPage {
 			selectionChangeListener = new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					if (e.getSource() instanceof DataTable) {
-						DataTable table = (DataTable)e.getSource();
-						scaveEditor.setSelection(new IDListSelection(table.getSelectedIDs(), table.getResultFileManager()));
-						setFilterAction.update(getActivePanel());
+					Object source = e.getSource();
+					if (source instanceof DataTable) {
+						FilteredDataPanel panel = getActivePanel();
+						if (panel != null && source == panel.getTable())
+							updateSelection();
 					}
-					
+					else if (source == tabfolder) {
+						updateSelection();
+					}
 				}
 
 				@Override
@@ -218,6 +222,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
 			scalarsPanel.getTable().addSelectionListener(selectionChangeListener);
 			histogramsPanel.getTable().addSelectionListener(selectionChangeListener);
+			tabfolder.addSelectionListener(selectionChangeListener);
 		}
 	}
 
@@ -231,6 +236,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 			vectorsPanel.getTable().removeSelectionListener(selectionChangeListener);
 			scalarsPanel.getTable().removeSelectionListener(selectionChangeListener);
 			histogramsPanel.getTable().removeSelectionListener(selectionChangeListener);
+			tabfolder.removeSelectionListener(selectionChangeListener);
 			selectionChangeListener = null;
 		}
 	}
@@ -269,5 +275,17 @@ public class BrowseDataPage extends ScaveEditorPage {
 		scalarsPanel.setIDList(scalars);
 		vectorsPanel.setIDList(vectors);
 		histogramsPanel.setIDList(histograms);
+	}
+	
+	/**
+	 * Sets the editor selection to the selection of table of the active panel.
+	 */
+	protected void updateSelection() {
+		FilteredDataPanel panel = getActivePanel();
+		if (panel != null) {
+			DataTable table = panel.getTable();
+			scaveEditor.setSelection(new IDListSelection(table.getSelectedIDs(), table.getResultFileManager()));
+			setFilterAction.update(panel);
+		}
 	}
 }
