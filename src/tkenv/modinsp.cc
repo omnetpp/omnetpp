@@ -490,6 +490,7 @@ void TGraphicalModWindow::redrawModules()
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
     cSubModIterator it(*parentmodule);
+    const char *scaling = parentmodule->hasDisplayString() ? parentmodule->displayString().getTagArg("bgs",0) : "";
     for (it.init(*parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
@@ -506,6 +507,7 @@ void TGraphicalModWindow::redrawModules()
                         coords,
                         "{", submod->fullName(), "} ",
                         "{", ds.toString(), "} ",
+                        "{", scaling, "} ",
                         NULL ));
     }
 
@@ -515,7 +517,8 @@ void TGraphicalModWindow::redrawModules()
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
                        "{", parentmodule->fullPath().c_str(), "} ",
-                       "{", dispstr, "}",
+                       "{", dispstr, "} ",
+                       "{", scaling, "} ",
                        NULL ));
 
     // loop through all submodules and enclosing module & draw their connections

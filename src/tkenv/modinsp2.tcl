@@ -151,13 +151,18 @@ proc get_submod_coords {c tag} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_submod {c submodptr x y name dispstr} {
-   #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr"
+proc draw_submod {c submodptr x y name dispstr scaling} {
+   #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling"
    global icons
 
    if [catch {
-
        get_parsed_display_string $dispstr tags [winfo toplevel $c] $submodptr 1
+
+       # scale (x,y)
+       if {$scaling != ""} {
+           set x [expr $scaling*$x]
+           set y [expr $scaling*$y]
+       }
 
        # set sx and sy (and look up image)
        set isx 0
@@ -181,6 +186,10 @@ proc draw_submod {c submodptr x y name dispstr} {
            }
            if {$bsx==""} {set bsx $bsy}
            if {$bsy==""} {set bsy $bsx}
+           if {$scaling != ""} {
+               set bsx [expr $scaling*$bsx]
+               set bsy [expr $scaling*$bsy]
+           }
        } elseif ![info exists tags(i)] {
            set img $icons(defaulticon)
            set isx [image width $img]
@@ -293,6 +302,9 @@ proc draw_submod {c submodptr x y name dispstr} {
            if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
            set rwidth [lindex $tags(r) 3]
            if {$rwidth == ""} {set rwidth 1}
+           if {$scaling != ""} {
+               set radius [expr $scaling*$radius]
+           }
            set radius [expr $radius-$rwidth/2]
 
            set x1 [expr $x - $radius]
@@ -317,9 +329,9 @@ proc draw_submod {c submodptr x y name dispstr} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_enclosingmod {c ptr name dispstr} {
+proc draw_enclosingmod {c ptr name dispstr scaling} {
    global icons bitmaps
-   # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr"
+   # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr $scaling"
 
    if [catch {
 
@@ -334,18 +346,28 @@ proc draw_enclosingmod {c ptr name dispstr} {
        set by [lindex $tags(bgp) 1]
        if {$bx==""} {set bx 0}
        if {$by==""} {set by 0}
+       if {$scaling != ""} {
+           set bx [expr $scaling*$bx]
+           set by [expr $scaling*$by]
+       }
 
+       # determine size
        if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}
-
        set sx [lindex $tags(bgb) 0]
        set sy [lindex $tags(bgb) 1]
+       if {$scaling != ""} {
+           if {$sx!=""} {set sx [expr $scaling*$sx]}
+           if {$sy!=""} {set sy [expr $scaling*$sy]}
+       }
+
        if {$sx=="" || $sy==""} {
            set bb [$c bbox submod]
-           if {$bb==""} {set bb "$bx $by 300 200"}
+           if {$bb==""} {set bb [list $bx $by [expr $scaling*300] [expr $scaling*200]]}
            if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
            if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
        }
 
+       # determine colors and line width
        set fill [lindex $tags(bgb) 2]
        if {$fill == ""} {set fill grey82}
        if {$fill == "-"} {set fill ""}
@@ -357,6 +379,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
        set width [lindex $tags(bgb) 4]
        if {$width == ""} {set width 2}
 
+       # draw
        $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
@@ -377,7 +400,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
           set imgy $by
           set anchor nw
           if {[string index $imgmode 0]== "c"} {
-              # image center algined to block
+              # image centered
               set imgx [expr $bx+$sx/2]
               set imgy [expr $by+$sy/2]
               set anchor center
@@ -390,20 +413,21 @@ proc draw_enclosingmod {c ptr name dispstr} {
                  set img $newimg
               }
           } elseif {[string index $imgmode 0]== "s"} {
-              # stretch mode TODO should be implemnted in C++
+              # image stretched to fill the background area
               set newimg [image create photo -width $sx -height $sy]
               $newimg copy $img -from 0 0 $isx $isy
               opp_resizeimage $newimg $img
               set img $newimg
           } elseif {[string index $imgmode 0]== "t"} {
-              # tile mode
+              # image "tile" mode (impl. relies on Tk "image copy" command's behavior
+              # to tile the image if dest area is larger than source area)
               set newimg [image create photo -width $sx -height $sy]
               $newimg copy $img -to 0 0 $sx $sy
               set img $newimg
           } else {
-              # fix image mode (image upper left aligned to the block upper left)
+              # default mode: image top-left corner gets aligned to background top-left corner
               if {$sx < $isx || $sy < $isy} {
-                 # image must be clipped. a new image created with new dimensions
+                 # image must be clipped. a new image gets created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
                  set newimg [image create photo -width $minx -height $miny]
@@ -424,6 +448,10 @@ proc draw_enclosingmod {c ptr name dispstr} {
        if {$gcolor == "-"} {set gcolor ""}
        if {[string index $gcolor 0]== "@"} {set gcolor [opp_hsb_to_rgb $gcolor]}
        if {$gdist!=""} {
+           if {$scaling != ""} {
+               set gdist [expr $scaling*$gdist]
+           }
+           if {$gminor==""} {set gminor 1}
            set minordist [expr $gdist/$gminor]
            for {set x $bx} {$x < $bx+$sx} {set x [expr $x+$gdist]} {
                set coords [list $x $by $x [expr $by+$sy]]
