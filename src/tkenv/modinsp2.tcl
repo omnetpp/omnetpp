@@ -477,7 +477,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
                # create minor ticks
                set i 1
-               for {set minorx [expr int($x+$gdist/$gminor)]} {$i <= $gminor && $minorx < $bx+$sx} {
+               for {set minorx [expr int($x+$gdist/$gminor)]} {$i < $gminor && $minorx < $bx+$sx} {
                                              set i [expr $i+1]} {
                    set minorx [expr int($x+$i*$gdist/$gminor)]
                    if {$minorx < $bx+$sx} {
@@ -491,7 +491,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                $c create line $coords -width 1 -fill $gcolor -tags "dx mod $ptr"
                # create minor ticks
                set i 1
-               for {set minory [expr int($y+$gdist/$gminor)]} {$i <= $gminor && $minory < $by+$sy} {
+               for {set minory [expr int($y+$gdist/$gminor)]} {$i < $gminor && $minory < $by+$sy} {
                                              set i [expr $i+1]} {
                    set minory [expr int($y+$i*$gdist/$gminor)]
                    if {$minory < $by+$sy} {
