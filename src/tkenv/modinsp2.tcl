@@ -119,10 +119,7 @@ proc dispstr_getimage {tags_i tags_is zoomfactor} {
             if {$newisx>500 || $newisy>500} {
                 set img $icons(imagetoobig)
             } else {
-                set newimg [image create photo -width $newisx -height $newisy]
-                $newimg copy $img -from 0 0 $isx $isy -to 0 0  ;# needed for mysterious reasons
-                opp_resizeimage $newimg $img
-                set img $newimg
+                set img [resizeimage $img $newisx $newisy]
             }
         }
 
@@ -519,9 +516,15 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
 
 # get_cached_image --
 #
-# returns the requested image from the cache or creates a new one and stores it
+# Performs the following steps:
+#  - first zooms the image by zoomfactor
+#  - then takes the area (x1,y1,x2,y2) in the new (zoomed) coordinate system
+#  - then either stretches or tiles it to (targetWidth,targetHeight) size
+#  - result gets cached and returned
+# NOTE:  (x1,y1,x2,y2) cliprect does NOT WORK for stretch mode! always the
+# full image will be streched to the (targetWidth,targetHeight) size
 #
-proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight isStretched} {
+proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight doStretch} {
     global icons img_cache
 
     set x1 [expr int($x1)]
@@ -532,35 +535,44 @@ proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight isStr
     set targetHeight [expr int($targetHeight)]
     if {$targetWidth<1} {set targetWidth 1}
     if {$targetHeight<1} {set targetHeight 1}
-    if {$targetWidth>2000 || $targetHeight>2000} {return $icons(imagetoobig)}
+    if {$targetWidth>2500 || $targetHeight>2000} {return $icons(imagetoobig)}
 
-    set key "$img:$zoomfactor:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$isStretched"
+    set key "$img:$zoomfactor:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$doStretch"
 
     if {![info exists img_cache($key)]} {
-        set newimg [image create photo -width $targetWidth -height $targetHeight]
-        if {!$isStretched} {
+        if {!$doStretch} {
             # "tile" mode: implementation relies on Tk "image copy" command's behavior
             # to tile the image if dest area is larger than source area
-            #FIXME: "image copy" is incredibly slow! TODO: implement it ourselves in C++!
-            if {$zoomfactor != 1} {
-                set zoomedisx [expr int([$img width]*$zoomfactor)]
-                set zoomedisy [expr int([$img height]*$zoomfactor)]
-                set zoomedimg [image create photo -width $zoomedisx -height $zoomedisy]
-                $zoomedimg copy $img -to 0 0 20 20  ;# needed for mysterious reasons
-                opp_resizeimage $zoomedimg $img
-                set img $zoomedimg
+            # NOTE: "image copy" is incredibly slow! need to reimplement it ourselves in C++!
+            if {$zoomfactor!=1} {
+                set zoomedisx [expr int([image width $img]*$zoomfactor)]
+                set zoomedisy [expr int([image height $img]*$zoomfactor)]
+                set img [resizeimage $img $zoomedisx $zoomedisy]
             }
+            set newimg [image create photo -width $targetWidth -height $targetHeight]
             $newimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0 $targetWidth $targetHeight
         } else {
-            set tempimg [image create photo -width [expr $x2-$x1] -height [expr $y2-$y1]]
-            $tempimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0
-            $newimg copy $img -to 0 0 20 20  ;# needed for mysterious reasons
-            opp_resizeimage $newimg $tempimg
+            # stretch
+            # IMPORTANT: (x1,y1,x2,y2) gets ignored -- this proc may only be invoked with the full image!
+            set newimg [resizeimage $img $targetWidth $targetHeight]
         }
 
         set img_cache($key) $newimg
     }
     return $img_cache($key)
+}
+
+
+#
+# creates and returns a new image, resized to the given size
+#
+proc resizeimage {img sx sy} {
+    set destimg [image create photo -width $sx -height $sy]
+    # next line is needed for mysterious reasons; also VERY VERY slow!
+    $destimg copy $img -from 0 0 [image width $img] [image height $img] -to 0 0 $sx $sy
+    # next line is fast
+    opp_resizeimage $destimg $img
+    return $destimg
 }
 
 
