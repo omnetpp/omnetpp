@@ -8,7 +8,5 @@
 			<accessrule kind="accessible" pattern="org/eclipse/swt/internal/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="bin-groovy"/>
-	<classpathentry exported="true" kind="var" path="GROOVY_ECLIPSE_HOME/groovy-all-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
