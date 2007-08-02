@@ -116,7 +116,7 @@ proc dispstr_getimage {tags_i tags_is zoomfactor} {
             set newisy [expr int($zoomfactor * $isy)]
             if {$newisx<1} {set newisx 1}
             if {$newisy<1} {set newisy 1}
-            if {$newisx>3000 || $newisy>3000} {
+            if {$newisx>500 || $newisy>500} {
                 set img $icons(imagetoobig)
             } else {
                 set newimg [image create photo -width $newisx -height $newisy]
@@ -425,8 +425,8 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
               [catch {set img $bitmaps(old/$imgname)}]} {
               set img $icons(unknown)
           }
-          set isx [image width $img]
-          set isy [image height $img]
+          set isx [expr [image width $img]*$zoomfactor]
+          set isy [expr [image height $img]*$zoomfactor]
           set imgx $bx
           set imgy $by
           set anchor nw
@@ -439,21 +439,21 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                  # image must be clipped. a new image created with new dimensions
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set img [get_cached_image $img [expr ($isx-$minx)/2] [expr ($isy-$miny)/2] [expr ($isx+$minx)/2] [expr ($isy+$miny)/2] $minx $miny 0]
+                 set img [get_cached_image $img $zoomfactor [expr ($isx-$minx)/2] [expr ($isy-$miny)/2] [expr ($isx+$minx)/2] [expr ($isy+$miny)/2] $minx $miny 0]
               }
           } elseif {[string index $imgmode 0]== "s"} {
               # image stretched to fill the background area
-              set img [get_cached_image $img 0 0 $isx $isy $sx $sy 1]
+              set img [get_cached_image $img $zoomfactor 0 0 $isx $isy $sx $sy 1]
           } elseif {[string index $imgmode 0]== "t"} {
               # image "tile" mode
-              set img [get_cached_image $img 0 0 $isx $isy $sx $sy 0]
+              set img [get_cached_image $img $zoomfactor 0 0 $isx $isy $sx $sy 0]
           } else {
               # default mode: image top-left corner gets aligned to background top-left corner
               if {$sx < $isx || $sy < $isy} {
                  # image must be cropped
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
-                 set img [get_cached_image $img 0 0 $minx $miny $minx $miny 0]
+                 set img [get_cached_image $img $zoomfactor 0 0 $minx $miny $minx $miny 0]
               }
           }
           $c create image $imgx $imgy -image $img -anchor $anchor -tags "dx mod $ptr"
@@ -521,7 +521,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
 #
 # returns the requested image from the cache or creates a new one and stores it
 #
-proc get_cached_image {img x1 y1 x2 y2 targetWidth targetHeight isStretched} {
+proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight isStretched} {
     global icons img_cache
 
     set x1 [expr int($x1)]
@@ -532,9 +532,9 @@ proc get_cached_image {img x1 y1 x2 y2 targetWidth targetHeight isStretched} {
     set targetHeight [expr int($targetHeight)]
     if {$targetWidth<1} {set targetWidth 1}
     if {$targetHeight<1} {set targetHeight 1}
-    if {$targetWidth>3000 || $targetHeight>3000} {return $icons(imagetoobig)}
+    if {$targetWidth>2000 || $targetHeight>2000} {return $icons(imagetoobig)}
 
-    set key "$img:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$isStretched"
+    set key "$img:$zoomfactor:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$isStretched"
 
     if {![info exists img_cache($key)]} {
         set newimg [image create photo -width $targetWidth -height $targetHeight]
@@ -542,6 +542,14 @@ proc get_cached_image {img x1 y1 x2 y2 targetWidth targetHeight isStretched} {
             # "tile" mode: implementation relies on Tk "image copy" command's behavior
             # to tile the image if dest area is larger than source area
             #FIXME: "image copy" is incredibly slow! TODO: implement it ourselves in C++!
+            if {$zoomfactor != 1} {
+                set zoomedisx [expr int([$img width]*$zoomfactor)]
+                set zoomedisy [expr int([$img height]*$zoomfactor)]
+                set zoomedimg [image create photo -width $zoomedisx -height $zoomedisy]
+                $zoomedimg copy $img -to 0 0 20 20  ;# needed for mysterious reasons
+                opp_resizeimage $zoomedimg $img
+                set img $zoomedimg
+            }
             $newimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0 $targetWidth $targetHeight
         } else {
             set tempimg [image create photo -width [expr $x2-$x1] -height [expr $y2-$y1]]
