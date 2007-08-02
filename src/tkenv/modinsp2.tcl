@@ -114,10 +114,16 @@ proc dispstr_getimage {tags_i tags_is zoomfactor} {
             set isy [image height $img]
             set newisx [expr int($zoomfactor * $isx)]
             set newisy [expr int($zoomfactor * $isy)]
-            set newimg [image create photo -width $newisx -height $newisy]
-            $newimg copy $img -from 0 0 $isx $isy -to 0 0
-            opp_resizeimage $newimg $img
-            set img $newimg
+            if {$newisx<1} {set newisx 1}
+            if {$newisy<1} {set newisy 1}
+            if {$newisx>3000 || $newisy>3000} {
+                set img $icons(imagetoobig)
+            } else {
+                set newimg [image create photo -width $newisx -height $newisy]
+                $newimg copy $img -from 0 0 $isx $isy -to 0 0  ;# needed for mysterious reasons
+                opp_resizeimage $newimg $img
+                set img $newimg
+            }
         }
 
         set imagecache($key) $img
@@ -516,24 +522,31 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
 # returns the requested image from the cache or creates a new one and stores it
 #
 proc get_cached_image {img x1 y1 x2 y2 targetWidth targetHeight isStretched} {
-    global img_cache
+    global icons img_cache
+
     set x1 [expr int($x1)]
     set y1 [expr int($y1)]
     set x2 [expr int($x2)]
     set y2 [expr int($y2)]
     set targetWidth [expr int($targetWidth)]
     set targetHeight [expr int($targetHeight)]
+    if {$targetWidth<1} {set targetWidth 1}
+    if {$targetHeight<1} {set targetHeight 1}
+    if {$targetWidth>3000 || $targetHeight>3000} {return $icons(imagetoobig)}
+
     set key "$img:$x1:$y1:$x2:$y2:$targetWidth:$targetHeight:$isStretched"
+
     if {![info exists img_cache($key)]} {
         set newimg [image create photo -width $targetWidth -height $targetHeight]
         if {!$isStretched} {
             # "tile" mode: implementation relies on Tk "image copy" command's behavior
             # to tile the image if dest area is larger than source area
+            #FIXME: "image copy" is incredibly slow! TODO: implement it ourselves in C++!
             $newimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0 $targetWidth $targetHeight
         } else {
             set tempimg [image create photo -width [expr $x2-$x1] -height [expr $y2-$y1]]
             $tempimg copy $img -from $x1 $y1 $x2 $y2 -to 0 0
-            $newimg copy $img -to 0 0 $targetWidth $targetHeight
+            $newimg copy $img -to 0 0 20 20  ;# needed for mysterious reasons
             opp_resizeimage $newimg $tempimg
         }
 
