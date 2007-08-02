@@ -72,53 +72,57 @@ proc lookup_image {imgname {imgsize ""}} {
 #
 # helper function
 #
-proc dispstr_getimage {tags_i tags_is} {
+proc dispstr_getimage {tags_i tags_is zoomfactor} {
     global icons bitmaps imagecache
 
-    set imgsize [lindex $tags_is 0]
-    if {$imgsize==""} {
-        set imgsize "n"
-    }
-    set imgname [lindex $tags_i 0]
-    if {$imgname==""} {
-        set img $icons(unknown)
-    } elseif {[catch {set img $bitmaps($imgname,$imgsize)}] && \
-              [catch {set img $bitmaps($imgname)}] && \
-              [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
-              [catch {set img $bitmaps(old/$imgname)}]} {
-        set img $icons(unknown)
-    }
-
-    if {[catch {image type $img}]} {
-        error "internal error: image referred to in bitmaps() doesn't exist"
-    }
-
-    if {[llength $tags_i]>1} {
-        # check destcolor, weight for icon colorizing
-        set destc [lindex $tags_i 1]
-        set cweight [lindex $tags_i 2]
-        if {$destc==""} {
-            # without destcolor, weight is ignored
-            return $img
-        } elseif {[string index $destc 0]== "@"} {
-            set destc [opp_hsb_to_rgb $destc]
+    set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor"
+    if {![info exist imagecache($key)]} {
+        # look up base image
+        set imgsize [lindex $tags_is 0]
+        if {$imgsize==""} {set imgsize "n"}
+        set imgname [lindex $tags_i 0]
+        if {$imgname=="" || ([catch {set img $bitmaps($imgname,$imgsize)}] && \
+                             [catch {set img $bitmaps($imgname)}] && \
+                             [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
+                             [catch {set img $bitmaps(old/$imgname)}])} {
+            set img $icons(unknown)
         }
-        if {$cweight==""} {
-            set cweight 30
+        if {[catch {image type $img}]} {
+            error "internal error: image referred to in bitmaps() doesn't exist"
         }
 
-        # look up or create a new image with the given parameters
-        if [info exist imagecache($img,$destc,$cweight)] {
-            set img $imagecache($img,$destc,$cweight)
-        } else {
-            set img2 [image create photo]
-            $img2 copy $img
-            opp_colorizeimage $img2 $destc $cweight
-            set imagecache($img,$destc,$cweight) $img2
-            set img $img2
+        # colorize if needed
+        if {[llength $tags_i]>1} {
+            # check destcolor and weight for icon colorizing
+            # if destcolor=="", don't colorize at all
+            set destc [lindex $tags_i 1]
+            set cweight [lindex $tags_i 2]
+            if {$destc!=""} {
+                if {[string index $destc 0]== "@"} {set destc [opp_hsb_to_rgb $destc]}
+                if {$cweight==""} {set cweight 30}
+
+                set img2 [image create photo]
+                $img2 copy $img
+                opp_colorizeimage $img2 $destc $cweight
+                set img $img2
+            }
         }
+
+        # rescale if needed
+        if {$zoomfactor!=1} {
+            set isx [image width $img]
+            set isy [image height $img]
+            set newisx [expr int($zoomfactor * $isx)]
+            set newisy [expr int($zoomfactor * $isy)]
+            set newimg [image create photo -width $newisx -height $newisy]
+            $newimg copy $img -from 0 0 $isx $isy -to 0 0
+            opp_resizeimage $newimg $img
+            set img $newimg
+        }
+
+        set imagecache($key) $img
     }
-    return $img
+    return $imagecache($key)
 }
 
 #
@@ -155,9 +159,10 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
    #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling"
    global icons inspectordata
 
-   if {$scaling!="" || $inspectordata($c:zoomfactor)!=1} {
+   set zoomfactor $inspectordata($c:zoomfactor)
+   if {$scaling!="" || $zoomfactor!=1} {
        if {$scaling==""} {set scaling 1.0}
-       set scaling [expr $scaling*$inspectordata($c:zoomfactor)]
+       set scaling [expr $scaling*$zoomfactor]
    }
 
    if [catch {
@@ -178,7 +183,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            set tags(is) {}
        }
        if [info exists tags(i)] {
-           set img [dispstr_getimage $tags(i) $tags(is)]
+           set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor]
            set isx [image width $img]
            set isy [image height $img]
        }
@@ -261,7 +266,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            set r [get_submod_coords $c $submodptr]
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
-           set img2 [dispstr_getimage $tags(i2) $tags(is2)]
+           set img2 [dispstr_getimage $tags(i2) $tags(is2) $zoomfactor]
            $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 
@@ -322,7 +327,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
                -fill $rfill -width $rwidth -outline $routline -tags "dx range"]
-           # has been moved to the beginning of draw_enclosingmod to maintin relative z order of range indicators
+           # has been moved to the beginning of draw_enclosingmod to maintain relative z order of range indicators
            # $c lower $circle
        }
 
@@ -341,9 +346,10 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
    global icons bitmaps inspectordata
    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr $scaling"
 
-   if {$scaling!="" || $inspectordata($c:zoomfactor)!=1} {
+   set zoomfactor $inspectordata($c:zoomfactor)
+   if {$scaling!="" || $zoomfactor!=1} {
        if {$scaling==""} {set scaling 1.0}
-       set scaling [expr $scaling*$inspectordata($c:zoomfactor)]
+       set scaling [expr $scaling*$zoomfactor]
    }
 
    if [catch {
@@ -410,7 +416,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        set imgmode [lindex $tags(bgi) 1]
        if {$imgname!=""} {
           if {[catch {set img $bitmaps($imgname)}] && \
-                    [catch {set img $bitmaps(old/$imgname)}]} {
+              [catch {set img $bitmaps(old/$imgname)}]} {
               set img $icons(unknown)
           }
           set isx [image width $img]
@@ -503,6 +509,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
                      -message "Error in display string of $name: $errmsg"
    }
 }
+
 
 # get_cached_image --
 #
@@ -625,7 +632,9 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 # This function is invoked from the message animation code.
 #
 proc draw_message {c msgptr x y} {
-    global fonts
+    global fonts inspectordata
+
+    set zoomfactor $inspectordata($c:zoomfactor)
 
     set dispstr [opp_getobjectfield $msgptr displayString]
     set msgkind [opp_getobjectfield $msgptr kind]
@@ -667,7 +676,7 @@ proc draw_message {c msgptr x y} {
             set tags(is) {}
         }
         if [info exists tags(i)] {
-            set img [dispstr_getimage $tags(i) $tags(is)]
+            set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor]
             set sx [image width $img]
             set sy [image height $img]
         } elseif [info exists tags(b)] {
