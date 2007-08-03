@@ -30,19 +30,19 @@ public class WorkbenchAccess extends Access
 		return new ViewPartAccess(getWorkbench().getActiveWorkbenchWindow().getPages()[0].showView(viewId));
 	}
 	
-	public ViewPartAccess findViewPartByLabel(String title) {
-		return findViewPartByLabel(title, false);
+	public ViewPartAccess findViewPartByPartName(String title) {
+		return findViewPartByPartName(title, false);
 	}
 
-	public ViewPartAccess findViewPartByLabel(String title, boolean restore) {
+	public ViewPartAccess findViewPartByPartName(String title, boolean restore) {
 		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
 
 		for (IWorkbenchPage page : getWorkbench().getActiveWorkbenchWindow().getPages()) {
 			for (IViewReference viewReference : page.getViewReferences()) {
 				if (debug)
-					System.out.println("Looking at view part: " + viewReference.getTitle());
+					System.out.println("Looking at view part: " + viewReference.getPartName());
 
-				if (viewReference.getTitle().matches(title))
+				if (viewReference.getPartName().matches(title))
 					result.add(new ViewPartAccess((ViewPart)viewReference.getView(restore)));
 			}
 		}

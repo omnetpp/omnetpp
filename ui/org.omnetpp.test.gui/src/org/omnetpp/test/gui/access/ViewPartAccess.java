@@ -26,7 +26,7 @@ public class ViewPartAccess extends Access
 	}
 
 	public void activateWithMouseClick() {
-		clickCTabItem(findDescendantCTabItemByLabel(getRootControl().getParent(), viewPart.getTitle()));
+		clickCTabItem(findDescendantCTabItemByLabel(getRootControl().getParent(), viewPart.getSite().getRegisteredName()));
 	}
 
 	protected Composite getRootControl() {

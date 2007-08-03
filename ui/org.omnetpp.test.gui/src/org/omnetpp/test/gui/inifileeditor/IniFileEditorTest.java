@@ -32,7 +32,7 @@ public class IniFileEditorTest extends TestBase {
 
 		final MenuAccess menuAccess = (MenuAccess)runStep(new Step() {
 			public Object runAndReturn() {
-				TreeAccess treeAccess = workbenchAccess.findViewPartByLabel("Navigator", true).findTree();
+				TreeAccess treeAccess = workbenchAccess.findViewPartByPartName("Navigator", true).findTree();
 				return treeAccess.findTreeItemByContent(projectName).activateContextMenuWithMouseClick();
 			}
 		});
@@ -71,9 +71,9 @@ public class IniFileEditorTest extends TestBase {
 			public void run() throws Exception {
 				createNewIniFile();
 				
-				workbenchAccess.sleep(1);
+				//workbenchAccess.sleep(1);
 
-				runStep(new Step() {
+				runStepWithTimeout(1, new Step() {
 					public void run() {
 						workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 					}
@@ -89,20 +89,20 @@ public class IniFileEditorTest extends TestBase {
 					}
 				});
 				
-				workbenchAccess.sleep(1);
+				//workbenchAccess.sleep(1);
 
-				final ViewPartAccess viewPartAccess = (ViewPartAccess)runStep(new Step() {
+				final ViewPartAccess viewPartAccess = (ViewPartAccess)runStepWithTimeout(1, new Step() {
 					public Object runAndReturn() {
-						ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByLabel("Problems", true);
+						ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByPartName("Problems", true);
 						viewPartAccess.activateWithMouseClick();
-						
+
 						return viewPartAccess;
 					}
 				});
 
-				workbenchAccess.sleep(1);
+				//workbenchAccess.sleep(1);
 
-				runStep(new Step() {
+				runStepWithTimeout(1, new Step() {
 					public void run() {
 						viewPartAccess.findTree().findTreeItemByContent(".*No such NED network.*");
 					}
