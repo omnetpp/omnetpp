@@ -219,12 +219,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      */
     public synchronized void setNEDFileText(IFile file, String text) {
         // parse the NED text and put it into the hash table
+        System.out.println("setNEDFileText");
         NEDErrorStore errors = new NEDErrorStore();
         errors.setPrintToStderr(false);
 
         INEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
         setNEDFileModel(file, tree);
         markerJob.setParseErrorStore(file, errors);
+        markerJob.schedule();
     }
 
     public synchronized boolean containsNEDErrors(IFile file) {
@@ -729,20 +731,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             rehashIfNeeded();
         }
 
-    }
-
-    /**
-     * Updates the source location tags in the model
-     * FIXME currently re-reads the whole model and replaces the model with a new tree
-     * @param file
-     */
-    public void formatNEDFileText(IFile file) {
-        // TODO provid a much better implementation which wich DOES NOT change the identity if the
-        // NED elements in the model ONLY the source location attributes are updated inthe NED model
-
-        // for the moment we re read the whole model
-        // this changes the underlying model
-        setNEDFileText(file, getNEDFileText(file));
     }
 
 }

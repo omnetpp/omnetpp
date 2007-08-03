@@ -152,18 +152,6 @@ public class ProblemMarkerJob extends WorkspaceJob {
     public synchronized IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
         // Converts all error store info to markers and attaches them to the files
         for (IFile file : nedParseErrors.keySet()) {
-        	//FIXME the following error happened on startup several times:
-        	//(maybe someone modifies the parseErrors hashmap during this processing??
-			// !ENTRY org.eclipse.core.jobs 4 2 2007-05-18 21:22:51.747
-			// !MESSAGE An internal error occurred during: "Updating problem markers".
-			// !STACK 0
-			// java.util.ConcurrentModificationException
-			//     at java.util.HashMap$HashIterator.nextEntry(Unknown Source)
-			//     at java.util.HashMap$KeyIterator.next(Unknown Source)
-			//     at org.omnetpp.ned.core.ProblemMarkerJob.runInWorkspace(ProblemMarkerJob.java:151)
-			//     at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
-			//     at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
-        	// --Andras
 
             if (!file.exists())
                 continue;
