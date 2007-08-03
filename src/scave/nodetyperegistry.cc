@@ -32,7 +32,7 @@
 #include "diffquot.h"
 #include "customfilter.h"
 #include "stddev.h"
-
+#include "teenode.h"
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
 
@@ -85,6 +85,8 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new RemoveRepeatsNodeType());
 
     add(new CustomFilterNodeType());
+
+    add(new TeeNodeType());
 }
 
 NodeTypeRegistry::~NodeTypeRegistry()
