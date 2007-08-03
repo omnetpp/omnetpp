@@ -14,9 +14,8 @@ public abstract class TestBase extends TestCase {
 	
 	protected WorkbenchAccess workbenchAccess = new WorkbenchAccess();
 	
-	protected class Test {
-		public void run() throws Exception {
-		}
+	protected interface Test {
+		public void run() throws Exception;
 	}
 
 	protected class Step {
@@ -82,8 +81,12 @@ public abstract class TestBase extends TestCase {
 		final Throwable[] stepThrowables = new Throwable[1];
 
 		while (!hasBeenRunOnce || System.currentTimeMillis() - begin < timeToRun * 1000) {
-			if (debug && hasBeenRunOnce)
-				System.out.println("Rerunning step");
+			if (debug) {
+				if (hasBeenRunOnce)
+					System.out.println("Rerunning step");
+				else
+					System.out.println("Running step");
+			}
 
 			stepThrowables[0] = null;
 
@@ -100,6 +103,9 @@ public abstract class TestBase extends TestCase {
 				}
 			});
 
+			if (debug)
+				System.out.println("Waiting to processing events");
+
 			workbenchAccess.waitUntilEventQueueBecomesEmpty();		
 
 			if (stepThrowables[0] == null)
@@ -110,11 +116,19 @@ public abstract class TestBase extends TestCase {
 			hasBeenRunOnce = true;
 		}
 
+		if (debug)
+			System.out.println("Step failed");
+
 		// the special WorkspaceAdvisor will let the exception go up through readAndDispatch event loops and unwind the
 		// stack until the top level test code is reached, see above
 		stepThrowables[0] = firstThrowable;
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
+				if (debug)
+					System.out.println("Rethrowing exception from step");
+
+				// TODO: this does not hide popup menus since the code doesn't use try/catch/finally there and will not hide
+				// the popup menu upon receiving an exception
 				throw new TestException(stepThrowables[0]);
 			}
 		});
