@@ -10,7 +10,9 @@ import org.eclipse.ui.internal.ide.application.IDEApplication;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.omnetpp.common.util.ReflectionUtils;
 
-public class TestApplication extends IDEApplication {
+public class TestApplication extends IDEApplication
+{
+	private static final boolean debug = true;
 
     private static final String PROP_EXIT_CODE = "eclipse.exitcode"; //$NON-NLS-1$
 
@@ -44,8 +46,12 @@ public class TestApplication extends IDEApplication {
             int returnCode = PlatformUI.createAndRunWorkbench(display, new IDEWorkbenchAdvisor() {
             	@Override
             	public void eventLoopException(Throwable exception) {
-            		if (exception instanceof TestException || exception.getCause() instanceof TestException)
+            		if (exception instanceof TestException || exception.getCause() instanceof TestException) {
+            			if (debug)
+            				System.out.println("Rethrowing exception from event loop");
+ 
             			throw (RuntimeException)exception;
+            		}
 
             		super.eventLoopException(exception);
             	}
