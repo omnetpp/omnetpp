@@ -70,8 +70,6 @@ public class IniFileEditorTest extends TestBase {
 		runTest(new Test() {
 			public void run() throws Exception {
 				createNewIniFile();
-				
-				//workbenchAccess.sleep(1);
 
 				runStepWithTimeout(1, new Step() {
 					public void run() {
@@ -88,8 +86,6 @@ public class IniFileEditorTest extends TestBase {
 						workbenchAccess.saveCurrentEditorPartWithHotKey();
 					}
 				});
-				
-				//workbenchAccess.sleep(1);
 
 				final ViewPartAccess viewPartAccess = (ViewPartAccess)runStepWithTimeout(1, new Step() {
 					public Object runAndReturn() {
@@ -99,8 +95,6 @@ public class IniFileEditorTest extends TestBase {
 						return viewPartAccess;
 					}
 				});
-
-				//workbenchAccess.sleep(1);
 
 				runStepWithTimeout(1, new Step() {
 					public void run() {
