@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.INEDElement;
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates
  * to it. In addition it provides Structured selection for selection events in the text editor
- * sending NEDElements as the selectied object
+ * sending NEDElements as the selected object
  *
  * @author rhornig
  */

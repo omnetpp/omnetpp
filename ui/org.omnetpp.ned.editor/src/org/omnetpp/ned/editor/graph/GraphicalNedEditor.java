@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -64,9 +63,9 @@ import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
@@ -88,7 +87,10 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 
 /**
- * This is the main class for the graphical NED editor
+ * This is the main class for the graphical NED editor. The editor should work without external dependencies
+ * It stores its own model as an INEDModel tree, no dependencies from the embedding multi page editor
+ * or the sibling text editor allowed. On editor load the provided editorInput (IFile) is used to lookup
+ * the NEDResources plugin for the model.
  * @author rhornig
  */
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
@@ -186,17 +188,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
          * @return The private cell editor handler, so it is possible to override set action bars.
          */
         private CellEditorActionHandler getCellEditorActionHandler() {
-            CellEditorActionHandler result = null;
-            try {
-                // get it with reflection
-                Field declaredField = PropertySheetPage.class.getDeclaredField("cellEditorActionHandler");
-                declaredField.setAccessible(true);
-                result = (CellEditorActionHandler)declaredField.get(this);
-                declaredField.setAccessible(false);
-            } catch (Exception e) {
-                NedEditorPlugin.logError(e);
-            }
-            return result;
+            return (CellEditorActionHandler)ReflectionUtils.getFieldValue(this, "cellEditorActionHandler");
         }
 
     }

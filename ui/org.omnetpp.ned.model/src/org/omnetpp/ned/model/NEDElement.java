@@ -596,7 +596,7 @@ public abstract class NEDElement extends PlatformObject
      */
     public INEDTypeInfo getContainerNEDTypeInfo() {
     	// if we don't have it, fetch it from the parent
-    	return (typeInfo != null || getParent() == null) ? typeInfo : getParent().getContainerNEDTypeInfo();
+    	return typeInfo != null || getParent() == null ? typeInfo : getParent().getContainerNEDTypeInfo();
     }
 
     /**
@@ -737,6 +737,7 @@ public abstract class NEDElement extends PlatformObject
     @Override
     public String toString() {
         return getClass().getSimpleName() + " " + (getAttribute("name") != null ? getAttribute("name") : "");
+//        return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
     }
 };
 

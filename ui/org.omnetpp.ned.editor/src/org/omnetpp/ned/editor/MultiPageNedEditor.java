@@ -26,17 +26,31 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
+
 import org.omnetpp.common.IConstants;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
+import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
+
+// MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
+// editor maintains its own model independent of each other. The two model should be synchronized during
+// page change / or save operation. Additionally the model should be put back into the NEDResources, so
+// name lookup and other services will work correctly. Save is done by delegation to the Text editor's save
+// method (ie. The graphical editor itself cannot save its model, the multipage editor must first obtain
+// the model from the graphical editor, convert to text and pass it to the Text based editor and then
+// call the Text editor to save its content.
+//
+// when setting the input of the multipage editor both embedded editor should be notified (ie setInput must be
+// delegated)
 
 /**
  * Multi-page NED editor.
@@ -71,14 +85,16 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // detach the editor file from the core plugin and do not set a new file
         ((IFileEditorInput)getEditorInput()).getFile()
                 .getWorkspace().removeResourceChangeListener(resourceListener);
-        // disconnect the editor from the nedresources plugin
+        // disconnect the editor from the ned resources plugin
         setInput(null);
         super.dispose();
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
-     * Add remove listeners on input change
+     * Add remove listeners on input change. Additionally connect/disconnect to/from the provided
+     * file in NEDResources. Setting to NULL disconnects the editor from the current input file.
+     * On editor close setInput(null) should be called to disconnect the file from NEDResources
      */
     @Override
     protected void setInput(IEditorInput input) {
@@ -146,6 +162,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	    super.setActivePage(pageIndex);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
+	 * Responsible of synchronizing the two editor's model with each other and the NEDResources plugin
+	 *
+	 */
 	@Override
 	protected void pageChange(int newPageIndex) {
 	    //	prevent recursive call from setActivePage() below
@@ -177,19 +198,26 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
         // XXX FIXME this may be a way too slow as invalidates everything
         // it is needed only to display consistency errors correctly during page switching
-        // it would be ok to invalidate only the components inside this file
+        // it would be OK to invalidate only the components inside this file
 
 
 		// switch from graphics to text:
         if (newPageIndex == textPageIndex) {
             if (graphEditor.hasContentChanged()) {
                 // TODO refresh the editor annotations to show the error marks
-                res.setNEDFileModel(file, graphEditor.getModel());
-                // XXX this is a hack so the NED elements will have a correct source position/location info
-                // after the parser/generator reformats it (maybe we would need a
-                res.formatNEDFileText(file);
+                String source = NEDTreeUtil.generateNedSource(graphEditor.getModel(), true);
+                // we try to reformat and re-parse the model so the element line number attributes will be correct
+                NEDErrorStore errors = new NEDErrorStore();
+                INEDElement reformattedModel = NEDTreeUtil.parseNedSource(source, errors, file.getLocation().toOSString());
+                // if the re parse was successful use the reformatted tree
+                if (!errors.containsError())
+                    res.setNEDFileModel(file, reformattedModel);
+                else
+                    // otherwise we use the original tree
+                    res.setNEDFileModel(file, graphEditor.getModel());
+
                 // generate text representation from the model
-                textEditor.setText(res.getNEDFileText(file));
+                textEditor.setText(source);
                 textEditor.markContent();
             }
             //
@@ -225,6 +253,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
 
             // only start in graphics mode if there's no error in the file
+            // CHECKME sometimes the editor goes into graphical mode even if the file has errors
+            // could it be because the error store is synchronized in the background???
             if (res.containsNEDErrors(file)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have
