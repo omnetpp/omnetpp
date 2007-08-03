@@ -1774,6 +1774,20 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
            destpixel[destalphaoffset] = a;
        }
    }
+
+   // Put back the image "onto itself". otherwise the internal
+   // masterPtr->validRegion data item is not updated, and the
+   // image will have no "valid region" and nothing will appear
+   // on the canvas when the icon is drawn.
+   //
+   // Note that even though Tk_PhotoPutBlock() is EXTREMELY SLOW
+   // (easily 10+ seconds for large images), there's no way around it
+   // because masterPtr->validRegion is not accessible outside the
+   // tkImgPhoto.c Tk source file...
+   //
+   Tk_PhotoHandle destimghandle = Tk_FindPhoto(interp, TCLCONST(destimgname));
+   Tk_PhotoPutBlock(destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
+
    return TCL_OK;
 }
 

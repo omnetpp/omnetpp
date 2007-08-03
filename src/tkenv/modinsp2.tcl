@@ -568,9 +568,6 @@ proc get_cached_image {img zoomfactor x1 y1 x2 y2 targetWidth targetHeight doStr
 #
 proc resizeimage {img sx sy} {
     set destimg [image create photo -width $sx -height $sy]
-    # next line is needed for mysterious reasons; also VERY VERY slow!
-    $destimg copy $img -from 0 0 [image width $img] [image height $img] -to 0 0 $sx $sy
-    # next line is fast
     opp_resizeimage $destimg $img
     return $destimg
 }
