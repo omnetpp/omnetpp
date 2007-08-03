@@ -14,7 +14,7 @@ public class ControlAccess<T extends Control> extends WidgetAccess<T>
 		return widget;
 	}
 
-	public void clickWidget(int button) {
+	public void clickControl(int button) {
 		click(button, widget.toDisplay(getCenter(widget.getBounds())));
 	}
 	

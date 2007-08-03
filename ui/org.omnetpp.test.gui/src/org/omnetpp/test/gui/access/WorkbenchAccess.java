@@ -2,9 +2,10 @@ package org.omnetpp.test.gui.access;
 
 import java.util.ArrayList;
 
-import junit.framework.Assert;
-
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -12,23 +13,6 @@ import org.eclipse.ui.part.ViewPart;
 
 public class WorkbenchAccess extends Access
 {
-	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
-		return new ViewPartAccess(getWorkbench().getActiveWorkbenchWindow().getPages()[0].showView(viewId));
-	}
-	
-	public ViewPartAccess findViewPartByLabel(String label) {
-		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
-
-		for (IWorkbenchPage page : getWorkbench().getActiveWorkbenchWindow().getPages())
-			for (IViewReference viewReference : page.getViewReferences())
-				if (viewReference.getTitle().matches(label))
-					result.add(new ViewPartAccess((ViewPart)viewReference.getView(false)));
-
-		Assert.assertTrue(result.size() == 1);
-		
-		return result.get(0);
-	}
-
 	public ShellAccess findShellByTitle(final String title) {
 		return new ShellAccess((Shell)findWidget(getDisplay().getShells(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -40,5 +24,53 @@ public class WorkbenchAccess extends Access
 				return shell.getText().matches(title);
 			}
 		}));
+	}
+
+	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
+		return new ViewPartAccess(getWorkbench().getActiveWorkbenchWindow().getPages()[0].showView(viewId));
+	}
+	
+	public ViewPartAccess findViewPartByLabel(String title) {
+		return findViewPartByLabel(title, false);
+	}
+
+	public ViewPartAccess findViewPartByLabel(String title, boolean restore) {
+		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
+
+		for (IWorkbenchPage page : getWorkbench().getActiveWorkbenchWindow().getPages()) {
+			for (IViewReference viewReference : page.getViewReferences()) {
+				if (debug)
+					System.out.println("Looking at view part: " + viewReference.getTitle());
+
+				if (viewReference.getTitle().matches(title))
+					result.add(new ViewPartAccess((ViewPart)viewReference.getView(restore)));
+			}
+		}
+
+		return (ViewPartAccess)theOnlyObject(result);
+	}
+
+	public EditorPartAccess findEditorByTitle(String title) {
+		ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
+
+		for (IWorkbenchPage page : getWorkbench().getActiveWorkbenchWindow().getPages()) {
+			for (IEditorReference editorReference : page.getEditorReferences()) {
+				if (debug)
+					System.out.println("Looking at editor part: " + editorReference.getTitle());
+
+				if (editorReference.getTitle().matches(title))
+					result.add(new EditorPartAccess((IEditorPart)editorReference.getEditor(false)));
+			}
+		}
+
+		return (EditorPartAccess)theOnlyObject(result);
+	}
+
+	public void closeAllEditorPartsWithHotKey() {
+		pressKey('w', SWT.CONTROL + SWT.SHIFT);
+	}
+
+	public void saveCurrentEditorPartWithHotKey() {
+		pressKey('s', SWT.CONTROL);
 	}
 }

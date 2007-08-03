@@ -16,11 +16,11 @@ public class TreeAccess extends WidgetAccess<Tree>
 		return widget;
 	}
 
-	public TreeItemAccess findTreeItemByLabel(final String label) {
+	public TreeItemAccess findTreeItemByContent(final String content) {
 		return new TreeItemAccess((TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
-				String treeItemLabel = ((TreeItem)object).getText();
-				return treeItemLabel.matches(label);
+				String treeItemContent = ((TreeItem)object).getText();
+				return treeItemContent.matches(content);
 			}
 		})));
 	}
@@ -34,6 +34,7 @@ public class TreeAccess extends WidgetAccess<Tree>
 	protected void collectTreeItems(TreeItem[] treeItems, IPredicate predicate, List<TreeItem> resultTreeItems) {
 		for (TreeItem treeItem : treeItems) {
 			collectTreeItems(treeItem.getItems(), predicate, resultTreeItems);
+
 			if (predicate.matches(treeItem))
 				resultTreeItems.add(treeItem);
 		}

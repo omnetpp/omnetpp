@@ -11,9 +11,4 @@ public class TextAccess extends ControlAccess<Text>
 	public Text getText() {
 		return widget;
 	}
-
-	public void typeIn(String text) {
-		// TODO: post events
-		getText().setText(text);
-	}
 }

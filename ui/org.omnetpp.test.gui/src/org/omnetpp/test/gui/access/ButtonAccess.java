@@ -10,6 +10,6 @@ public class ButtonAccess extends ControlAccess<Button>
 
 	public void activateWithMouseClick() {
 		assertEnabled();
-		clickWidget(1);
+		clickControl(LEFT_MOUSE_BUTTON);
 	}
 }

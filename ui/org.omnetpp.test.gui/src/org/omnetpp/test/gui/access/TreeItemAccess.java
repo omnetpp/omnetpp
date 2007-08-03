@@ -14,7 +14,7 @@ public class TreeItemAccess extends WidgetAccess<TreeItem>
 	}
 
 	public MenuAccess activateContextMenuWithMouseClick() {
-		click(3, widget.getParent().toDisplay(getCenter(widget.getBounds())));
+		click(RIGHE_MOUSE_BUTTON, widget.getParent().toDisplay(getCenter(widget.getBounds())));
 		Menu menu = (Menu)widget.getParent().getMenu();
 		return new MenuAccess(menu);
 	}

@@ -5,6 +5,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.win32.MSG;
@@ -20,13 +23,22 @@ import org.eclipse.ui.PlatformUI;
 
 public class Access {
 	protected final static boolean debug = true;
+	
+	public final static int LEFT_MOUSE_BUTTON = 1;
+	public final static int MIDDLE_MOUSE_BUTTON = 2;
+	public final static int RIGHE_MOUSE_BUTTON = 3;
 
 	public IWorkbench getWorkbench() {
 		return PlatformUI.getWorkbench();
 	}
 	
 	public Display getDisplay() {
-		return Display.getCurrent();
+		Display display = Display.getCurrent();
+		
+		if (display != null)
+			return display;
+		else
+			return Display.getDefault();
 	}
 	
 	public Shell getActiveShell() {
@@ -37,7 +49,7 @@ public class Access {
 		if (debug)
 			System.out.println("Posting event: " + event);
 
-		Display.getCurrent().post(event);
+		getDisplay().post(event);
 	}
 
 	public void processEvents() {
@@ -67,6 +79,123 @@ public class Access {
 		}
 	}
 
+	protected Event newEvent(int type) {
+		Event event = new Event();
+		event.type = type;
+		event.display = Display.getCurrent();
+
+		return event;
+	}
+
+	public void pressKey(int keyCode) {
+		pressKey(keyCode, SWT.None);
+	}
+
+	public void pressKey(int keyCode, int modifierKeys) {
+		pressKey((char)0, keyCode, modifierKeys);
+	}
+
+	public void pressKey(char character) {
+		pressKey(character, SWT.None);
+	}
+
+	public void pressKey(char character, int modifierKeys) {
+		pressKey(character, 0, modifierKeys);
+	}
+	
+	public void pressKey(char character, int keyCode, int modifierKeys) {
+		Event event;
+
+		if (modifierKeys != 0) {
+			if ((modifierKeys & SWT.SHIFT) != 0) {
+				event = newEvent(SWT.KeyDown);
+				event.keyCode = SWT.SHIFT;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.CONTROL) != 0) {
+				event = newEvent(SWT.KeyDown);
+				event.keyCode = SWT.CONTROL;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.ALT) != 0) {
+				event = newEvent(SWT.KeyDown);
+				event.keyCode = SWT.ALT;
+				postEvent(event);
+			}
+		}
+
+		event = newEvent(SWT.KeyDown);
+		event.character = character;
+		event.keyCode = keyCode;
+		postEvent(event);
+
+		event = newEvent(SWT.KeyUp);
+		event.keyCode = keyCode;
+		event.character = (char)keyCode;
+		postEvent(event);
+
+		if (modifierKeys != 0) {
+			if ((modifierKeys & SWT.SHIFT) != 0) {
+				event = newEvent(SWT.KeyUp);
+				event.keyCode = SWT.SHIFT;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.CONTROL) != 0) {
+				event = newEvent(SWT.KeyUp);
+				event.keyCode = SWT.CONTROL;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.ALT) != 0) {
+				event = newEvent(SWT.KeyUp);
+				event.keyCode = SWT.ALT;
+				postEvent(event);
+			}
+		}
+	}
+
+	public void typeIn(String text) {
+		for (int i = 0; i < text.length(); i++)
+			pressKey(text.charAt(i));
+	}
+
+	public void click(int button, int x, int y) {
+		Event event = newEvent(SWT.MouseMove);
+		event.x = x;
+		event.y = y;
+		postEvent(event);
+
+		event = newEvent(SWT.MouseDown);
+		event.button = button;
+		event.x = x;
+		event.y = y;
+		event.count = 1;
+		postEvent(event);
+
+		event = newEvent(SWT.MouseUp);
+		event.button = button;
+		event.x = x;
+		event.y = y;
+		event.count = 1;
+		postEvent(event);
+	}
+
+	public void clickCenter(int button, Rectangle rectangle) {
+		click(button, getCenter(rectangle));
+	}
+
+	public void click(int button, Point point) {
+		click(button, point.x, point.y);
+	}
+	
+	public void clickCTabItem(CTabItem cTabItem) {
+		WidgetAccess<CTabItem> widgetAccess = new WidgetAccess<CTabItem>(cTabItem);
+		widgetAccess.click(LEFT_MOUSE_BUTTON, cTabItem.getParent().toDisplay(getCenter(cTabItem.getBounds())));
+	}
+	
 	public Object findObject(Object[] objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate));
 	}
@@ -123,6 +252,35 @@ public class Access {
 		}
 	}
 
+	protected CTabItem findDescendantCTabItemByLabel(Composite composite, final String label) {
+		CTabFolder cTabFolder = (CTabFolder)findDescendantControl(composite, new IPredicate() {
+			public boolean matches(Object object) {
+				if (object instanceof CTabFolder) {
+					CTabFolder cTabFolder = (CTabFolder)object;
+					List<Object> cTabItems = collectObjects(cTabFolder.getItems(), new IPredicate() {
+						public boolean matches(Object object) {
+							return ((CTabItem)object).getText().matches(label);
+						}
+					});
+					
+					Assert.assertTrue(cTabItems.size() < 2);
+
+					if (cTabItems.size() == 0)
+						return false;
+					else
+						return true;
+				}
+				return false;
+			}
+		});
+		
+		return (CTabItem)findObject(cTabFolder.getItems(), new IPredicate() {
+			public boolean matches(Object object) {
+				return ((CTabItem)object).getText().matches(label);
+			}
+		});
+	}
+	
 	protected Object theOnlyObject(List<? extends Object> objects) {
 		Assert.assertTrue("Found more than one objects when exactly one is expected", objects.size() < 2);		
 		Assert.assertTrue("Found zero object when exactly one is expected", objects.size() > 0);		

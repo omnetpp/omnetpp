@@ -19,7 +19,7 @@ public class MenuItemAccess extends WidgetAccess<MenuItem>
 		Rectangle rectangle = (Rectangle)ReflectionUtils.invokeMethod(widget, "getBounds");
 		rectangle.x = rectangle.x + parentRectangle.x;
 		rectangle.y = rectangle.y + parentRectangle.y;
-		clickCenter(1, rectangle);
+		clickCenter(LEFT_MOUSE_BUTTON, rectangle);
 
 		if (widget.getMenu() == null)
 			return null;

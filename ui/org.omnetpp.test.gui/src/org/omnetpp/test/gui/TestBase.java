@@ -17,7 +17,7 @@ public abstract class TestBase extends TestCase {
 	}
 
 	protected class Step {
-		public Object runAndReturn() {
+		public Object runAndReturn() throws Exception {
 			return null;
 		}
 
