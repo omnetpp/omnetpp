@@ -153,7 +153,7 @@ Node *ArrayBuilderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     checkAttrNames(attrs);
 
     ArrayBuilderNode *node = new ArrayBuilderNode();
-    if (!strcmp("true", attrs["collecteventnumbers"].c_str()))
+    if (attrs.find("collecteventnumbers") != attrs.end() && !strcmp("true", attrs["collecteventnumbers"].c_str()))
         node->collectEvec = true;
     node->setNodeType(this);
     mgr->addNode(node);
