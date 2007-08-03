@@ -177,7 +177,8 @@ struct SCAVE_API FileRun
 
 typedef std::set<std::string> StringSet;
 typedef std::vector<std::string> StringVector;
-
+typedef std::map<ID,ID> IDMap;
+typedef std::map<long,IDMap> ComputedIDCache;
 
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
@@ -211,6 +212,8 @@ class SCAVE_API ResultFileManager
     StringSet moduleNames;
     StringSet names;
     StringSet classNames; // currently not used
+
+    ComputedIDCache computedIDCache;
 
   public:
     enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::itemTypes()
@@ -294,6 +297,10 @@ class SCAVE_API ResultFileManager
      * message.
      */
     static void checkPattern(const char *pattern);
+
+    // computed data 
+    ID addComputedVector(const char *name, long nodeID, ID inputID);
+    ID getComputedVector(long nodeID, ID inputID);
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;
