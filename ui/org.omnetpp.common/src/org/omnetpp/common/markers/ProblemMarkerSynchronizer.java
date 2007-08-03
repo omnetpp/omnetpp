@@ -17,15 +17,15 @@ import org.omnetpp.common.CommonPlugin;
  * Solves the following problem: when an editor continuously analyzes
  * its contents (for example from a reconciler job) and converts
  * errors/warnings into markers, a common problem is that most markers
- * get deleted and added back each time the analyzer runs. This 
+ * get deleted and added back each time the analyzer runs. This
  * triggers excessive refreshes in the UI (in text editor margin
  * and the Problems view).\
- * 
- * This class collects would-be markers in a table, and then 
+ *
+ * This class collects would-be markers in a table, and then
  * synchronizes this table to the actual IFile markers. This way,
  * only *real* marker changes reach the workspace, and excessive
- * updates are prevented. 
- * 
+ * updates are prevented.
+ *
  * @author Andras
  */
 public class ProblemMarkerSynchronizer {
@@ -47,20 +47,28 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	public ProblemMarkerSynchronizer(String markerBaseType) {
-		this.markerBaseType = markerBaseType; 
+		this.markerBaseType = markerBaseType;
 	}
 
 	/**
 	 * Include the given file in the synchronization process. This is not needed when
 	 * you call addMarker() for the file; however if there's no addMarker() for that file,
 	 * that file will be ignored (existing markers left untouched) unless you register them
-	 * with registerFile(). 
+	 * with registerFile().
 	 */
 	public void registerFile(IFile file) {
 		if (!markerTable.containsKey(file))
 			markerTable.put(file, new ArrayList<MarkerData>());
 	}
-	
+
+    /**
+     * Unregister the file. we no longer synchronize this file with the markers
+     * @param file
+     */
+    public void unregisterFile(IFile file) {
+        markerTable.remove(file);
+    }
+
 	/**
 	 * Stores data for a marker to be added to the given file. Implies registerFile().
 	 */
@@ -104,12 +112,12 @@ public class ProblemMarkerSynchronizer {
 				if (!listContainsMarker(list, marker))
 					{marker.delete(); markersRemoved++;}
 		}
-		
+
 		// debug
-		if (markersAdded==0 && markersRemoved==0)
-			System.out.println("markerSychronizer: no marker change");
-		else
-			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
+//		if (markersAdded==0 && markersRemoved==0)
+//			System.out.println("markerSychronizer: no marker change");
+//		else
+//			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
 	}
 
 	protected boolean fileContainsMarker(IFile file, MarkerData markerData) throws CoreException {
