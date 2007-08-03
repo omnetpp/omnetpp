@@ -5,9 +5,10 @@ The originals of all maps are from the Wikipedia:
 and all are covered under the Creative Commons License with the
 appropriate clauses (see wikipedia page).
 
-
 All maps have been converted to greyscale, where water and borders
-are white, and land are (209,209,209) grey, and possibly resized.
+are transparent, and land are (184,184,184) grey. Some of the images
+have been scaled down to about 300..600 pixel dimensions.
 All errors that are the result of this conversion are ours.
 
 We do not make any claims about the accuracy of these maps.
+
