@@ -2,6 +2,7 @@ package org.omnetpp.scave.model2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
@@ -18,7 +20,9 @@ import org.omnetpp.scave.engine.Port;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorFileReaderNode;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
@@ -41,32 +45,257 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
  *
  * @author tomi
  */
-// TODO: add tee node to the C code
-// TODO: implement DataflowManager.remove(Node node) (removes node and connected nodes recursively)
 // TODO: find identifier for a computed result (computed flag in id?)
 public class DataflowNetworkBuilder {
+	
+	private static final StringMap EMPTY_ATTRS = new StringMap();
 
-	private DataflowManager dataflowManager;
+	/*
+	 * Inner representation of the dataflow graph.
+	 */
+	private List<SinkNode> sinkNodes = new ArrayList<SinkNode>();
+	private Map<ResultFile,SourceNode> fileToSourceNodeMap = new HashMap<ResultFile,SourceNode>();
+	private Map<Long,PortWrapper> idToOutputPortMap = new LinkedHashMap<Long,PortWrapper>();
+
+	class NodeWrapper
+	{
+		Node node;
+		String type;
+		StringMap attrs;
+		List<PortWrapper> inPorts = new ArrayList<PortWrapper>();
+		List<PortWrapper> outPorts = new ArrayList<PortWrapper>();
+		
+		public NodeWrapper(String type, StringMap attrs) {
+			this.type = type;
+			this.attrs = attrs;
+		}
+		
+		public void addInputPort(PortWrapper port) {
+			port.owner = this;
+			inPorts.add(port);
+		}
+		
+		public void addOutputPort(PortWrapper port) {
+			port.owner = this;
+			outPorts.add(port);
+		}
+		
+		/**
+		 * Notifies the node that one of its input port got connected.
+		 */
+		public void connected(PortWrapper in) {
+		}
+		
+		/**
+		 * Creates the port in the dataflowManager.
+		 * <p>
+		 * Override this method if the node expects extra information
+		 * for the port which is not encoded in the port name (e.g. inputfilereader nodes).
+		 * <p>
+		 * Note: do not use the returned object after a new port
+		 *       added to the node. It contains a pointer which
+		 *       becomes invalid!
+		 */
+		public Port createPort(PortWrapper port) {
+			return node.nodeType().getPort(node, port.name);
+		}
+	}
+	
+	class SourceNode extends NodeWrapper
+	{
+		ResultFile resultFile;
+		
+		public SourceNode(ResultFile resultFile) {
+			super("vectorfilereader", null);
+			this.resultFile = resultFile;
+			this.attrs = new StringMap();
+			this.attrs.set("filename", resultFile.getFileSystemFilePath());
+			fileToSourceNodeMap.put(resultFile, this);
+		}
+		
+		public PortWrapper addPort(long id) {
+			int vectorId = resultfileManager.getVector(id).getVectorId();
+			PortWrapper port = new PortWrapper(id, ""+vectorId);
+			addOutputPort(port);
+			idToOutputPortMap.put(id, port);
+			return port;
+		}
+		
+		public PortWrapper getOutputPort(long id) {
+			for (PortWrapper port : outPorts)
+				if (port.id == id)
+					return port;
+			return null;
+		}
+		
+		public void removeOutputPort(long id) {
+			for (int i = 0; i < outPorts.size(); ++i)
+				if (outPorts.get(i).id == id) {
+					outPorts.remove(i);
+					break;
+				}
+		}
+		
+		@Override
+		public Port createPort(PortWrapper port) {
+			VectorFileReaderNode reader = VectorFileReaderNode.cast(node);
+			return reader.addVector(resultfileManager.getVector(port.id));
+		}
+	}
+	
+	class FilterNode extends NodeWrapper
+	{
+		PortWrapper inPort;
+		PortWrapper outPort;
+		int computationID;
+		
+		public FilterNode(String type, List<Param> params) {
+			super(type, EMPTY_ATTRS);
+			attrs = new StringMap();
+			for (Param param : params)
+				attrs.set(param.getName(), param.getValue());
+			computationID = calculateComputationID();
+			addInputPort(inPort = new PortWrapper(-1, "in"));
+			addOutputPort(outPort = new PortWrapper(-1, "out"));
+			
+		}
+
+		@Override
+		public void connected(PortWrapper in) {
+			Assert.isTrue(in == inPort);
+			outPort.id = resultfileManager.getComputedVector(computationID, inPort.id);
+			if (outPort.id == -1) {
+				VectorResult vector = resultfileManager.getVector(inPort.id);
+				String name = String.format("%s(%s)", type, vector.getName());
+				outPort.id = resultfileManager.addComputedVector(name, computationID, inPort.id);
+			}
+			if (!(inPort.channel.out.owner instanceof TeeNode)) // XXX
+				idToOutputPortMap.remove(inPort.id);
+			idToOutputPortMap.put(outPort.id, outPort);
+		}
+		
+		private int calculateComputationID() {
+			String str = type;
+			StringVector attrNames = attrs.keys();
+			long size = attrNames.size();
+			for (int i = 0; i < size; ++i) {
+				String name = attrNames.get(i);
+				str += attrs.get(name);
+			}
+			return str.hashCode(); // XXX should use the string as id
+		}
+	}
+	
+	class TeeNode extends NodeWrapper
+	{
+		PortWrapper inPort;
+		PortWrapper outPort1;
+		PortWrapper outPort2;
+		
+		public TeeNode() {
+			super("tee", EMPTY_ATTRS);
+			addInputPort(inPort = new PortWrapper(-1, "in"));
+			addOutputPort(outPort1 = new PortWrapper(-1, "next-out"));
+			addOutputPort(outPort2 = new PortWrapper(-1, "next-out"));
+		}
+		
+		public void connected(PortWrapper in) {
+			Assert.isTrue(in == inPort);
+			outPort1.id = inPort.id;
+			outPort2.id = inPort.id;
+			idToOutputPortMap.put(outPort1.id, outPort1);
+		}
+	}
+	
+	class SinkNode extends NodeWrapper
+	{
+		PortWrapper inPort;
+		
+		public SinkNode() {
+			super("arraybuilder", EMPTY_ATTRS);
+			addInputPort(inPort = new PortWrapper(-1, "in"));
+			sinkNodes.add(this);
+		}
+		
+		@Override
+		public void connected(PortWrapper in) {
+			Assert.isTrue(in == inPort);
+			idToOutputPortMap.remove(in.id);
+		}
+	}
+	
+	class PortWrapper {
+		long id;
+		String name;
+		NodeWrapper owner;
+		ChannelWrapper channel;
+		
+		public PortWrapper(long id, String name) {
+			this.id = id;
+			this.name = name;
+		}
+	}
+	
+	class ChannelWrapper {
+		PortWrapper out;
+		PortWrapper in;
+		
+		public ChannelWrapper(PortWrapper out, PortWrapper in) {
+			this.out = out;
+			this.in = in;
+			out.channel = this;
+			in.channel = this;
+			
+			in.id = out.id;
+			in.owner.connected(in);
+		}
+	}
+
 	private ResultFileManager resultfileManager;
-	private NodeTypeRegistry factory;
-
-	private Map<ResultFile,Node> fileToSourceNodeMap = new HashMap<ResultFile,Node>();
-	private Map<Long,Port> idToPortMap = new HashMap<Long,Port>();
-	private List<Node> outputNodes = new ArrayList<Node>();
-
-	private IDList chartDisplayedIds;
 
 	public DataflowNetworkBuilder(ResultFileManager resultfileManager) {
 		this.resultfileManager = resultfileManager;
-		this.dataflowManager = new DataflowManager();
-		this.factory = NodeTypeRegistry.instance();
 	}
 
-	public DataflowManager getDataflowManager() {
-		return dataflowManager;
+	/**
+	 * Builds a dataflow network for reading the data of the given vectors.
+	 */
+	public DataflowManager build(IDList idlist) {
+		for (int i = 0; i < (int)idlist.size(); ++i) {
+			addSourceNode(idlist.get(i));
+		}
+		close();
+		return buildNetwork();
+	}
+	
+	/**
+	 * Builds a dataflow network for reading the data of {@code dataset} at 
+	 * the given dataset item.
+	 */
+	public DataflowManager build(Dataset dataset, DatasetItem target, boolean createDataflowManager) {
+		buildInternal(dataset, target);
+		close();
+		return createDataflowManager ? buildNetwork() : null;
+	}
+	
+	public IDList getDisplayedIDs() {
+		IDList idlist = new IDList();
+		for (SinkNode node : sinkNodes)
+			idlist.add(node.inPort.id);
+		return idlist;
+	}
+	
+	/**
+	 * Returns the arraybuilder nodes.
+	 */
+	public List<Node> getArrayBuilders() {
+		List<Node> result = new ArrayList<Node>();
+		for (SinkNode node : sinkNodes)
+			result.add(node.node);
+		return result;
 	}
 
-	public void build(Dataset dataset, final DatasetItem target) {
+	private void buildInternal(Dataset dataset, final DatasetItem target) {
 
 		ScaveModelSwitch<Object> modelSwitch = new ScaveModelSwitch<Object>() {
 			private boolean finished;
@@ -78,7 +307,7 @@ public class DataflowNetworkBuilder {
 				// build network for the base dataset first
 				Dataset baseDataset = dataset.getBasedOn();
 				if (baseDataset != null) {
-					build(baseDataset, null);
+					buildInternal(baseDataset, null);
 				}
 				// process items
 				for (Object item : dataset.getItems())
@@ -111,27 +340,32 @@ public class DataflowNetworkBuilder {
 			public Object caseApply(Apply apply) {
 				IDList idlist = select(getIDs(), apply.getFilters());
 				for (int i = 0; i < idlist.size(); ++i) {
-					long id = idlist.get(i);
-					addFilterNode(id, apply.getOperation(), apply.getParams());
+					addFilterNode(idlist.get(i), apply.getOperation(), apply.getParams());
 				}
 				return this;
 			}
 
 			public Object caseCompute(Compute compute) {
-				// TODO
+				IDList idlist = select(getIDs(), compute.getFilters());
+				for (int i = 0; i < idlist.size(); ++i) {
+					TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
+					
+					//addFilterNode(teeNode.outPort2.id, compute.getOperation(), compute.getParams());
+				}
 				return this;
 			}
 
 			/**
 			 * Filters the output according to the chart's filters when the chart is
 			 * the target of the dataflow network.
-			 *
-			 * Currently no method to remove nodes from the dataflow network,
-			 * so we remember the ids and filter the output nodes accordingly.
 			 */
 			public Object caseChart(Chart chart) {
-				if (chart == target)
-					chartDisplayedIds = select(getIDs(), chart.getFilters());
+				if (chart == target) {
+					// discard everything not on the chart
+					IDList idlist = getIDs();
+					idlist.substract(select(idlist, chart.getFilters()));
+					removeSources(idlist);
+				}
 				return this;
 			}
 
@@ -168,88 +402,93 @@ public class DataflowNetworkBuilder {
 		modelSwitch.doSwitch(dataset);
 	}
 	
-	/**
-	 * Builds a dataflow network for reading the data of the given vectors.
-	 */
-	public void build(IDList idlist) {
-		for (int i = 0; i < (int)idlist.size(); ++i) {
-			addSourceNode(idlist.get(i));
-		}
-		close();
-	}
-
-	
-	public IDList getIDs() {
-		Set<Long> keys = idToPortMap.keySet();
+	private IDList getIDs() {
+		Set<Long> keys = idToOutputPortMap.keySet();
 		return IDList.fromArray(keys.toArray(new Long[keys.size()]));
-	}
-	
-	public IDList getDisplayedIDs() {
-		return chartDisplayedIds != null ? chartDisplayedIds : IDList.EMPTY;
 	}
 	
 	/**
 	 * Adds an arraybuilder node for each open ports.
 	 */
-	public void close() {
+	private void close() {
 		IDList idlist = getIDs();
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
 			addSinkNode(id);
 		}
 	}
-
+	
 	/**
-	 * Returns the output nodes.
+	 * Builds the network in the DataflowManager.
 	 */
-	public List<Node> getOutputs() {
-		return outputNodes;
+	private DataflowManager buildNetwork() {
+		DataflowManager dataflowManager = new DataflowManager();
+		
+		try {
+
+			for (SinkNode sinkNode : sinkNodes) {
+				
+				// create the arraybuilder node
+				Assert.isLegal(NodeTypeRegistry.instance().exists(sinkNode.type),
+						"Unknown node type: " + sinkNode.type);
+				NodeType nodeType = NodeTypeRegistry.instance().getNodeType(sinkNode.type);
+				sinkNode.node = nodeType.create(dataflowManager, sinkNode.attrs);
+				
+				ChannelWrapper channel = sinkNode.inPort.channel;
+				// follow the channels backwards
+				// until a source node or a previously created node reached
+				while (channel != null) {
+					NodeWrapper newNode = channel.out.owner.node == null ? channel.out.owner : null;
+
+					// create new node
+					if (newNode != null) {
+						Assert.isLegal(NodeTypeRegistry.instance().exists(newNode.type),
+											"Unknown node type: " + newNode.type);
+						nodeType = NodeTypeRegistry.instance().getNodeType(newNode.type);
+						newNode.node = nodeType.create(dataflowManager, newNode.attrs);
+					}
+
+					// create ports and connect them
+					Port inPort = channel.in.owner.createPort(channel.in);
+					Port outPort = channel.out.owner.createPort(channel.out); 
+					dataflowManager.connect(outPort, inPort);
+
+					if (newNode != null && newNode.inPorts.size() > 0) {
+						Assert.isTrue(newNode.inPorts.size() == 1); // TODO multiple input nodes
+						channel = newNode.inPorts.get(0).channel;
+					}
+					else // channel already created or reached source node
+						break;
+				}
+			}
+			return dataflowManager;
+		} catch (Exception e) {
+			ScavePlugin.logError(e);
+			if (dataflowManager != null) {
+				dataflowManager.delete();
+				dataflowManager = null;
+			}
+			return null;
+		}
 	}
 
 	/*=========================
 	 *          Helpers
 	 *=========================*/
-	private static final StringMap EMPTY_ATTRS = new StringMap();
-
-	private Node createNode(String typeName, StringMap attrs) {
-		Assert.isLegal(factory.exists(typeName), "Unknown node type: " + typeName);
-		NodeType nodeType = factory.getNodeType(typeName);
-		return nodeType.create(dataflowManager, attrs);
-	}
-
-	private Node getOrCreateSourceNode(long id) {
+	private SourceNode getOrCreateSourceNode(long id) {
 		ResultFile file = resultfileManager.getVector(id).getFileRun().getFile();
-		Node sourceNode = fileToSourceNodeMap.get(file);
-		if (sourceNode == null) {
-			StringMap attrs = new StringMap();
-			attrs.set("filename", file.getFileSystemFilePath());
-			sourceNode = createNode("vectorfilereader", attrs);
-			fileToSourceNodeMap.put(file, sourceNode);
-		}
+		SourceNode sourceNode = fileToSourceNodeMap.get(file);
+		if (sourceNode == null)
+			sourceNode = new SourceNode(file);
 		return sourceNode;
 	}
 
-	private Node createFilterNode(String operation, List<Param> params) {
-		StringMap attrs = new StringMap();
-		for (Param param : params)
-			attrs.set(param.getName(), param.getValue());
-		return createNode(operation, attrs);
+	private void connect(PortWrapper outputPort, PortWrapper inPort) {
+		new ChannelWrapper(outputPort, inPort);
 	}
 
-	private Node createSinkNode() {
-		return createNode("arraybuilder", EMPTY_ATTRS);
-	}
-
-	private void connect(Port outputPort, Node node, String inputPortName) {
-		dataflowManager.connect(outputPort, node.nodeType().getPort(node, inputPortName));
-	}
-
-	private Port getPort(long id) {
-		return idToPortMap.get(id);
-	}
-
-	private Port getPort(Node node, String portName) {
-		return node.nodeType().getPort(node, portName);
+	private PortWrapper getOutputPort(long id) {
+		return idToOutputPortMap.get(id);
 	}
 
 	private void addSourceNodes(IDList idlist) {
@@ -259,56 +498,65 @@ public class DataflowNetworkBuilder {
 		}
 	}
 
-	private Node addSourceNode(long id) {
-		// close the port
-		if (getPort(id) != null) {
-			Node node = addSinkNode(id);
-			outputNodes.remove(node);
+	private SourceNode addSourceNode(long id) {
+		if (getOutputPort(id) != null) {
+			removeSource(id);
 		}
 		// create new port
-		Node node = getOrCreateSourceNode(id);
-		VectorFileReaderNode reader = VectorFileReaderNode.cast(node);
-		Port port = reader.addVector(resultfileManager.getVector(id));
-		idToPortMap.put(id, port);
+		SourceNode node = getOrCreateSourceNode(id);
+		node.addPort(id);
 		return node;
 	}
+	
+	private TeeNode addTeeNode(long id, String operation, List<Param> params) {
+		PortWrapper port = getOutputPort(id);
+		TeeNode teeNode = new TeeNode();
+		connect(port, teeNode.inPort);
+		addFilterNode(teeNode.outPort2, operation, params);
+		return teeNode;
+	}
+	
+	private FilterNode addFilterNode(long id, String operation, List<Param> params) {
+		PortWrapper port = getOutputPort(id);
+		return addFilterNode(port, operation, params);
+	}
+	
 
-	private Node addFilterNode(long id, String operation, List<Param> params) {
-		Port port = getPort(id);
-		Node filterNode = createFilterNode(operation, params);
-		if (filterNode != null) {
-			connect(port, filterNode, "in");
-			idToPortMap.put(id, getPort(filterNode, "out"));
-		}
+	private FilterNode addFilterNode(PortWrapper port, String operation, List<Param> params) {
+		FilterNode filterNode = new FilterNode(operation, params);
+		connect(port, filterNode.inPort);
 		return filterNode;
 	}
 
-	private Node addSinkNode(long id) {
-		Node sinkNode = createSinkNode();
-		Port port = getPort(id);
-		connect(port, sinkNode, "in");
-		idToPortMap.remove(id);
-		if (chartDisplayedIds == null || contains(chartDisplayedIds, id))
-			outputNodes.add(sinkNode);
+	private SinkNode addSinkNode(long id) {
+		SinkNode sinkNode = new SinkNode();
+		PortWrapper port = getOutputPort(id);
+		connect(port, sinkNode.inPort);
 		return sinkNode;
 	}
 
-	// XXX add this to IDList
-	private static boolean contains(IDList idlist, long id) {
-		for (int i = 0; i < idlist.size(); ++i)
-			if (idlist.get(i) == id)
-				return true;
-		return false;
-	}
-
-
 	private void removeSources(IDList ids) {
 		for (int i = 0; i < ids.size(); ++i)
-			removeNodes(ids.get(i));
+			removeSource(ids.get(i));
 	}
 
-	private void removeNodes(long id) {
-
+	private void removeSource(long id) {
+		VectorResult vector = resultfileManager.getVector(id);
+		ResultFile file = vector.getFileRun().getFile();
+		SourceNode sourceNode = fileToSourceNodeMap.get(file);
+		PortWrapper outPort = sourceNode.getOutputPort(id);
+		sourceNode.removeOutputPort(id);
+		while (outPort != null && outPort.channel != null) {
+			PortWrapper inPort = outPort.channel.in;
+			if (inPort.owner instanceof FilterNode)
+				outPort = ((FilterNode)inPort.owner).outPort;
+			else
+				outPort = null;
+		}
+		if (sourceNode.outPorts.isEmpty()) {
+			fileToSourceNodeMap.remove(file);
+		}
+		idToOutputPortMap.remove(id);
 	}
 
 	private IDList select(IDList source, List<SelectDeselectOp> filters) {

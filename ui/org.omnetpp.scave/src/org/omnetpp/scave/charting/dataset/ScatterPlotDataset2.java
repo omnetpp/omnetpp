@@ -53,6 +53,8 @@ public class ScatterPlotDataset2 implements IXYDataset {
 	}
 	
 	private void computeNames() {
+		// first row contains the common X coordinates
+		// name the lines after their Y data
 		dataNames = new String[data.getRowCount()-1];
 		for (int i=0; i<dataNames.length; ++i) {
 			dataNames[i] = data.getRowField(i+1, ScalarFields.MODULE) + " " +

@@ -19,6 +19,7 @@ import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
@@ -343,8 +344,8 @@ public class ChartProperties extends PropertySource {
 	public class LinesPropertySource extends BasePropertySource {
 		IPropertyDescriptor[] descriptors;
 
-		public LinesPropertySource(IPropertyDescriptor[] descriptors) {
-			this.descriptors = descriptors;
+		public LinesPropertySource() {
+			this.descriptors = createLineDescriptors();
 		}
 
 		public IPropertyDescriptor[] getPropertyDescriptors() {
@@ -353,6 +354,24 @@ public class ChartProperties extends PropertySource {
 
 		public Object getPropertyValue(Object id) {
 			return new LineProperties(id == DEFAULT_LINE_PROPERTIES_ID ? null : (String)id);
+		}
+		
+		protected IPropertyDescriptor[] createLineDescriptors() {
+			IPropertyDescriptor[] descriptors;
+			IXYDataset dataset = DatasetManager.createXYDataset(chart, null, false, manager, null);
+			
+			if (dataset != null) {
+				descriptors = new IPropertyDescriptor[dataset.getSeriesCount() + 1];
+				descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+				for (int i= 0; i < dataset.getSeriesCount(); ++i) {
+					String key = dataset.getSeriesKey(i);
+					descriptors[i+1] = new PropertyDescriptor(key, key);
+				}
+			}
+			else
+				descriptors = new IPropertyDescriptor[0];
+			
+			return descriptors;
 		}
 	}
 	
@@ -381,7 +400,7 @@ public class ChartProperties extends PropertySource {
 		 *                             Lines
 		 *======================================================================*/
 		@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
-		public LinesPropertySource getLineProperties() { return new LinesPropertySource(createLineDescriptors()); }
+		public LinesPropertySource getLineProperties() { return new LinesPropertySource(); }
 
 		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_ANTIALIAS,displayName="antialias")
 		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
@@ -394,22 +413,6 @@ public class ChartProperties extends PropertySource {
 		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
 		
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
-
-		
-		protected IPropertyDescriptor[] createLineDescriptors() {
-			IPropertyDescriptor[] descriptors;
-			String[] names = DatasetManager.getYDataNames(chart, manager);
-			if (names != null) {
-				descriptors = new IPropertyDescriptor[names.length + 1];
-				descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
-				for (int i= 0; i < names.length; ++i)
-					descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
-			}
-			else
-				descriptors = new IPropertyDescriptor[0];
-			
-			return descriptors;
-		}
 	}
 	
 	public class BarColorsPropertySource extends BasePropertySource {

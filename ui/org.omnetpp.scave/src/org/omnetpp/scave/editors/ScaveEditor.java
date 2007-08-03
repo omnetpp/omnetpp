@@ -91,7 +91,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	 * Loads/unloads result files in manager, according to changes in the model and in the workspace.
 	 */
 	private ResultFilesTracker tracker;
-
+	
 	/**
 	 * Updates pages when the model changed.
 	 */

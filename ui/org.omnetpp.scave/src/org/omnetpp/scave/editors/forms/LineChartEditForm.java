@@ -9,6 +9,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -36,6 +37,7 @@ import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -64,7 +66,13 @@ public class LineChartEditForm extends ChartEditForm {
 	public LineChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-		lineNames = DatasetManager.getYDataNames(chart, dataset, manager);
+		IXYDataset xydataset = DatasetManager.createXYDataset(chart, dataset, false, manager, null);
+		lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
+		if (xydataset != null) {
+			lineNames = new String[xydataset.getSeriesCount()];
+			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
+				lineNames[i] = xydataset.getSeriesKey(i);
+		}
 	}
 
 	@Override

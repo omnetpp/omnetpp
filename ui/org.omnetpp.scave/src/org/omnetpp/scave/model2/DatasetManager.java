@@ -1,14 +1,13 @@
 package org.omnetpp.scave.model2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScatterPlotDataset2;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
@@ -16,8 +15,6 @@ import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYArray;
@@ -156,12 +153,8 @@ public class DatasetManager {
 
 	public static XYArray[] getDataFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastItemToProcess) {
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-		builder.build(dataset, lastItemToProcess);
-		builder.close();
-
-		List<Node> arrayBuilders = builder.getOutputs();
-		DataflowManager dataflowManager = builder.getDataflowManager();
-		
+		DataflowManager dataflowManager = builder.build(dataset, lastItemToProcess, true);
+		List<Node> arrayBuilders = builder.getArrayBuilders();
 		dataflowManager.dump();
 		return executeDataflowNetwork(dataflowManager, arrayBuilders);
 	}
@@ -176,9 +169,9 @@ public class DatasetManager {
 	
 	public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist) {
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-		builder.build(idlist);
-		builder.close();
-		return executeDataflowNetwork(builder.getDataflowManager(), builder.getOutputs());
+		DataflowManager dataflowManager = builder.build(idlist);
+		List<Node> arrayBuilders = builder.getArrayBuilders();
+		return executeDataflowNetwork(dataflowManager, arrayBuilders);
 	}
 	
 	private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders) {
@@ -203,31 +196,40 @@ public class DatasetManager {
  		return new ScalarDataset(idlist, fields, manager);
 	}
 	
-	public static VectorDataset createVectorDataset(Chart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
+	public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
+		return createVectorDataset(chart, null, true, manager, progressMonitor);
+	}
+	
+	public static VectorDataset createVectorDataset(LineChart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
-		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-
+		if (dataset == null)
+			dataset = ScaveModelUtil.findEnclosingDataset(chart);
+		IDList idlist = IDList.EMPTY;
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-		builder.build(dataset, chart);
-		builder.close();
-		IDList idlist = builder.getDisplayedIDs();
+		DataflowManager dataflowManager = builder.build(dataset, chart, computeData);
+		idlist = builder.getDisplayedIDs();
 
-		List<Node> arrayBuilders = builder.getOutputs();
-		DataflowManager dataflowManager = builder.getDataflowManager();
+		XYArray[] dataValues = null;
+		if (dataflowManager != null) {
+			List<Node> arrayBuilders = builder.getArrayBuilders();
+			dataflowManager.dump();
+			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
+		}
 		
-		dataflowManager.dump();
-		XYArray[] dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
-
-		String[] dataNames = getResultItemIDs(idlist, manager);
-		return new VectorDataset(idlist, dataNames, dataValues);
+		return new VectorDataset(idlist, dataValues, manager);
 	}
 	
 	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+		return createScatterPlotDataset(chart, null, manager, monitor);
+	}
+	
+	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
 		Assert.isLegal(chart.getXDataModule() != null, "Module name is not set");
 		Assert.isLegal(chart.getXDataName() != null, "Data name is not set");
 		
 		//TODO update progressMonitor
-		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+		if (dataset == null)
+			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			return new ScatterPlotDataset2(idlist, chart.getXDataModule(), chart.getXDataName(),
@@ -235,95 +237,14 @@ public class DatasetManager {
 		}
 		return null;
 	}
-
-	public static String[] getYDataNames(Chart chart, ResultFileManager manager) {
-		if (chart == null)
-			return null;
-		return getYDataNames(chart, ScaveModelUtil.findEnclosingDataset(chart), manager);
-	}
 	
-	public static String[] getYDataNames(Chart chart, Dataset dataset, ResultFileManager manager) {
-		if (chart == null || dataset == null || manager == null)
-			return null;
-		
-		if (chart instanceof LineChart) {
-			IDList idlist = getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-			return getResultItemIDs(idlist, manager);
-		}
-		else if (chart instanceof ScatterChart) {
-			ScatterChart sc = (ScatterChart)chart;
-			if (sc.getXDataModule() != null || sc.getXDataName() != null) {
-				try {
-					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-					ScatterPlotDataset2 scatterPlotDataset =
-						new ScatterPlotDataset2(idlist, sc.getXDataModule(), sc.getXDataName(),
-													sc.isAverageReplications(), manager);
-					String[] names = new String[scatterPlotDataset.getSeriesCount()];
-					for (int i = 0; i < names.length; ++i)
-						names[i] = scatterPlotDataset.getSeriesKey(i);
-					return names;
-				}
-				catch (Exception e) {
-					ScavePlugin.logError(e);
-				}
-			}
-			return new String[0];
-		}
+	public static IXYDataset createXYDataset(Chart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor monitor) {
+		if (chart instanceof LineChart)
+			return createVectorDataset((LineChart)chart, dataset, computeData, manager, null);
+		else if (chart instanceof ScatterChart)
+			return createScatterPlotDataset((ScatterChart)chart, dataset, manager, monitor);
 		else
-			Assert.isLegal(false, "Unknown chart type: " + chart.getClass().getName());
-		
-		return null;
-	}
-	
-	
-	/**
-	 * Returns the ids of data items in the <code>idlist</code>.
-	 * The id is formed from the file name, run number, run id, module name,
-	 * data name, experiment, measurement and replication.
-	 * Constant fields will be omitted from the id.
-	 */
-	public static String[] getResultItemIDs(IDList idlist, ResultFileManager manager) {
-		String[][] nameFragments = new String[(int)idlist.size()][];
-		for (int i = 0; i < idlist.size(); ++i) {
-			ResultItem item = manager.getItem(idlist.get(i));
-			Run run = item.getFileRun().getRun();
-			nameFragments[i] = new String[8];
-			nameFragments[i][0] = item.getFileRun().getFile().getFilePath();
-			nameFragments[i][1] = String.valueOf(run.getRunNumber());
-			nameFragments[i][2] = String.valueOf(run.getRunName());
-			nameFragments[i][3] = item.getModuleName();
-			nameFragments[i][4] = item.getName();
-			nameFragments[i][5] = run.getAttribute(RunAttribute.EXPERIMENT);
-			nameFragments[i][6] = run.getAttribute(RunAttribute.REPLICATION);
-			nameFragments[i][7] = run.getAttribute(RunAttribute.MEASUREMENT);
-		}
-
-		boolean[] same = new boolean[8];
-		Arrays.fill(same, true);
-		for (int i = 1; i < nameFragments.length; ++i) {
-			for (int j = 0; j < 8; ++j)
-				if (same[j] && !equals(nameFragments[0][j], nameFragments[i][j]))
-					same[j] = false;
-		}
-
-		String[] result = new String[nameFragments.length];
-		for (int i = 0; i < result.length; ++i) {
-			StringBuffer id = new StringBuffer(30);
-			for (int j = 0; j < 8; ++j)
-				if (!same[j])
-					id.append(nameFragments[i][j]).append(" ");
-			if (id.length() == 0)
-				id.append(i);
-			else
-				id.deleteCharAt(id.length() - 1);
-			result[i] = id.toString();
-		}
-		return result;
-	}
-
-	private static boolean equals(Object first, Object second) {
-		return first == null && second == null ||
-				first != null && first.equals(second);
+			return null;
 	}
 
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, ResultType type) {
