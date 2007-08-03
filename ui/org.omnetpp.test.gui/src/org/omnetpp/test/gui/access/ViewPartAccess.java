@@ -18,11 +18,11 @@ public class ViewPartAccess extends Access
 	}
 
 	public TreeAccess findTree() {
-		return new TreeAccess((Tree)findChildControl(getRootControl(), Tree.class));
+		return new TreeAccess((Tree)findDescendantControl(getRootControl(), Tree.class));
 	}
 
 	public TableAccess findTable() {
-		return new TableAccess((Table)findChildControl(getRootControl(), Table.class));
+		return new TableAccess((Table)findDescendantControl(getRootControl(), Table.class));
 	}
 
 	public void activateWithMouseClick() {

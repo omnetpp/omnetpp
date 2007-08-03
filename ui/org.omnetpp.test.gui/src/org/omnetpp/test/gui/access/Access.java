@@ -26,13 +26,13 @@ public class Access {
 	
 	public final static int LEFT_MOUSE_BUTTON = 1;
 	public final static int MIDDLE_MOUSE_BUTTON = 2;
-	public final static int RIGHE_MOUSE_BUTTON = 3;
+	public final static int RIGHT_MOUSE_BUTTON = 3;
 
 	public IWorkbench getWorkbench() {
 		return PlatformUI.getWorkbench();
 	}
 	
-	public Display getDisplay() {
+	public static Display getDisplay() {
 		Display display = Display.getCurrent();
 		
 		if (display != null)
@@ -64,13 +64,13 @@ public class Access {
 			System.out.println("Processing events finished");
 	}
 
-	public void waitUntilEventQueueBecomesEmpty() {
+	public static void waitUntilEventQueueBecomesEmpty() {
 		MSG msg = new MSG();
 		while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE))
 			Thread.yield();
 	}
 
-	public void sleep(double seconds) {
+	public static void sleep(double seconds) {
 		try {
 			Thread.sleep((long)(seconds * 1000));
 		}
@@ -82,7 +82,7 @@ public class Access {
 	protected Event newEvent(int type) {
 		Event event = new Event();
 		event.type = type;
-		event.display = Display.getCurrent();
+		event.display = getDisplay();
 
 		return event;
 	}
@@ -162,38 +162,46 @@ public class Access {
 			pressKey(text.charAt(i));
 	}
 
+	protected void postMouseEvent(int type, int button, int x, int y) {
+		Event event = newEvent(type); // e.g. SWT.MouseMove
+		event.button = button;
+		event.x = x;
+		event.y = y;
+		event.count = 1;
+		postEvent(event);
+	}
+
 	public void click(int button, int x, int y) {
-		Event event = newEvent(SWT.MouseMove);
-		event.x = x;
-		event.y = y;
-		postEvent(event);
-
-		event = newEvent(SWT.MouseDown);
-		event.button = button;
-		event.x = x;
-		event.y = y;
-		event.count = 1;
-		postEvent(event);
-
-		event = newEvent(SWT.MouseUp);
-		event.button = button;
-		event.x = x;
-		event.y = y;
-		event.count = 1;
-		postEvent(event);
+		postMouseEvent(SWT.MouseMove, button, x, y);
+		postMouseEvent(SWT.MouseDown, button, x, y);
+		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
 
-	public void clickCenter(int button, Rectangle rectangle) {
-		click(button, getCenter(rectangle));
+	public void doubleClick(int button, int x, int y) {
+		click(button, x, y);
+		postMouseEvent(SWT.MouseDown, button, x, y);
+		postMouseEvent(SWT.MouseDoubleClick, button, x, y);
+		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
-
+	
 	public void click(int button, Point point) {
 		click(button, point.x, point.y);
 	}
 	
+	public void doubleClick(int button, Point point) {
+		doubleClick(button, point.x, point.y);
+	}
+	
+	public void clickCenter(int button, Rectangle rectangle) {
+		click(button, getCenter(rectangle));
+	}
+
+	public void doubleClickCenter(int button, Rectangle rectangle) {
+		doubleClick(button, getCenter(rectangle));
+	}
+	
 	public void clickCTabItem(CTabItem cTabItem) {
-		WidgetAccess<CTabItem> widgetAccess = new WidgetAccess<CTabItem>(cTabItem);
-		widgetAccess.click(LEFT_MOUSE_BUTTON, cTabItem.getParent().toDisplay(getCenter(cTabItem.getBounds())));
+		click(LEFT_MOUSE_BUTTON, cTabItem.getParent().toDisplay(getCenter(cTabItem.getBounds())));
 	}
 	
 	public Object findObject(Object[] objects, IPredicate predicate) {
@@ -224,7 +232,7 @@ public class Access {
 		return resultWidgets;
 	}
 
-	public Control findChildControl(Composite composite, final Class<? extends Control> clazz) {
+	public Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
 		return theOnlyControl(collectDescendantControls(composite, new IPredicate() {
 			public boolean matches(Object control) {
 				return clazz.isInstance(control);
@@ -281,21 +289,21 @@ public class Access {
 		});
 	}
 	
-	protected Object theOnlyObject(List<? extends Object> objects) {
+	protected static Object theOnlyObject(List<? extends Object> objects) {
 		Assert.assertTrue("Found more than one objects when exactly one is expected", objects.size() < 2);		
 		Assert.assertTrue("Found zero object when exactly one is expected", objects.size() > 0);		
 		return objects.get(0);
 	}
 
-	protected Widget theOnlyWidget(List<? extends Widget> widgets) {
+	protected static Widget theOnlyWidget(List<? extends Widget> widgets) {
 		return (Widget)theOnlyObject(widgets);
 	}
 
-	protected Control theOnlyControl(List<? extends Control> controls) {
+	protected static Control theOnlyControl(List<? extends Control> controls) {
 		return (Control)theOnlyWidget(controls);
 	}
 
-	protected Point getCenter(Rectangle rectangle) {
+	protected static Point getCenter(Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
 	}
 }

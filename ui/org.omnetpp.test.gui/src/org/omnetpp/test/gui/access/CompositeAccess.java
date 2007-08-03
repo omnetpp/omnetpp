@@ -16,7 +16,7 @@ public class CompositeAccess<T extends Composite> extends ControlAccess<T>
 	}
 	
 	public Control findChildControl(Class<? extends Control> clazz) {
-		return findChildControl(getComposite(), clazz);
+		return findDescendantControl(getComposite(), clazz);
 	}
 
 	public Control findChildControl(IPredicate predicate) {

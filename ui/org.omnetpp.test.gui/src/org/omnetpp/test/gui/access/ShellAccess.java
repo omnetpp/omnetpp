@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class ShellAccess extends WidgetAccess<Shell>
+public class ShellAccess extends ControlAccess<Shell>
 {
 	public ShellAccess(Shell shell) {
 		super(shell);
@@ -43,6 +43,6 @@ public class ShellAccess extends WidgetAccess<Shell>
 		});
 
 		// TODO: should consider layout
-		return new TextAccess((Text)findChildControl(labelControl.getParent(), Text.class));
+		return new TextAccess((Text)findDescendantControl(labelControl.getParent(), Text.class));
 	}
 }

@@ -73,4 +73,5 @@ public class WorkbenchAccess extends Access
 	public void saveCurrentEditorPartWithHotKey() {
 		pressKey('s', SWT.CONTROL);
 	}
+
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-public class TreeAccess extends WidgetAccess<Tree>
+public class TreeAccess extends ControlAccess<Tree>
 {
 	public TreeAccess(Tree tree) {
 		super(tree);
@@ -20,6 +20,9 @@ public class TreeAccess extends WidgetAccess<Tree>
 		return new TreeItemAccess((TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
 				String treeItemContent = ((TreeItem)object).getText();
+				
+				if (debug)
+					System.out.println("checking tree item: " + treeItemContent);
 				return treeItemContent.matches(content);
 			}
 		})));

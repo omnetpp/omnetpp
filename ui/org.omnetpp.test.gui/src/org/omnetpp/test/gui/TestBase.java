@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.WorkbenchAccess;
 
 
@@ -74,6 +75,9 @@ public abstract class TestBase extends TestCase {
 	 * @return
 	 */
 	protected Object runStepWithTimeout(double timeToRun, final Step step) {
+		//System.out.print("sleep 1s to help debugging");  
+		//Access.sleep(1);
+
 		long begin = System.currentTimeMillis();
 		boolean hasBeenRunOnce = false;
 		final Object[] result = new Object[1];
@@ -81,6 +85,9 @@ public abstract class TestBase extends TestCase {
 		final Throwable[] stepThrowables = new Throwable[1];
 
 		while (!hasBeenRunOnce || System.currentTimeMillis() - begin < timeToRun * 1000) {
+			if (hasBeenRunOnce)
+				Access.sleep(0.5);
+				
 			if (debug) {
 				if (hasBeenRunOnce)
 					System.out.println("Rerunning step");
@@ -106,7 +113,7 @@ public abstract class TestBase extends TestCase {
 			if (debug)
 				System.out.println("Waiting to processing events");
 
-			workbenchAccess.waitUntilEventQueueBecomesEmpty();		
+			WorkbenchAccess.waitUntilEventQueueBecomesEmpty();		
 
 			if (stepThrowables[0] == null)
 				return result[0];
