@@ -338,4 +338,12 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkDeleted();
 		return super.toString();
 	}
+
+	@Override
+	public long addComputedVector(String name, int computation, long input) {
+		checkDeleted();
+		long id = super.addComputedVector(name, computation, input);
+		notifyListeners();
+		return id;
+	}
 }
