@@ -1,3 +1,22 @@
+2007-08-03
+----------
+
+Additions:
+
+   + Navigation buttons work. Navigation locations are saved at page changes and
+     when a chart is zoomed/panned.
+
+   + Discard and Compute operations implemented.
+
+Fixes:
+
+   + When a page is closed the editor switches back to the page the was active before the
+     closed one.
+
+   + Update the selection to the selection of the table when a new tab is selected
+     in the BrowseData page.
+
+
 2007-07-20
 ----------
 
