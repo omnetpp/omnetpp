@@ -16,10 +16,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.StringUtils;
 
 public class Access {
 	protected final static boolean debug = true;
@@ -305,5 +309,54 @@ public class Access {
 
 	protected static Point getCenter(Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+	}
+
+	/**
+	 * A failed attempt to dump all active popup menus, using the private fields of Display. 
+	 * Unfortunately, it's all nulls in the arrays.
+	 */
+	public static void dumpCurrentMenus() {
+		Display display = Display.getDefault();
+		Menu[] bars = (Menu[]) ReflectionUtils.getFieldValue(display, "bars"); 
+		Menu[] popups = (Menu[]) ReflectionUtils.getFieldValue(display, "popups"); 
+		MenuItem[] items = (MenuItem[]) ReflectionUtils.getFieldValue(display, "items"); 
+		if (bars == null) bars = new Menu[0];
+		if (popups == null) popups = new Menu[0];
+		if (items == null) items = new MenuItem[0];
+
+		System.out.println(bars.length + " menubars, "+popups.length + " popup menus, " + items.length + " menu items");
+		for (Menu bar : bars) {
+			System.out.println("  menubar: " + bar);
+			if (bar != null)
+				for (MenuItem item : bar.getItems())
+					System.out.println("    " + item.toString());
+		}
+		for (Menu popup : popups) {
+			System.out.println("  popup: " + popup);
+			if (popup != null)
+				for (MenuItem item : popup.getItems())
+					System.out.println("    " + item.toString());
+		}
+	}
+
+	/**
+	 * Dumps all widgets of all known shells. Note: active popup menus are
+	 * sadly not listed (not returned by Display.getShells()). 
+	 */
+	public static void dumpWidgetHierarchy() {
+		System.out.println("display-root");
+		for (Shell shell : Display.getDefault().getShells())
+			dumpWidgetHierarchy(shell, 1);
+	}
+	
+	public static void dumpWidgetHierarchy(Control control) {
+		dumpWidgetHierarchy(control, 0);
+	}
+	
+	protected static void dumpWidgetHierarchy(Control control, int level) {
+		System.out.println(StringUtils.repeat("  ", level) + control.toString());
+		if (control instanceof Composite)
+			for (Control child : ((Composite)control).getChildren())
+				dumpWidgetHierarchy(child, level+1);
 	}
 }
