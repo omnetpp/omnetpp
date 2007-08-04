@@ -446,7 +446,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
               set img [get_cached_image $img $zoomfactor 0 0 $isx $isy $sx $sy 0]
           } else {
               # default mode: image top-left corner gets aligned to background top-left corner
-              if {$sx < $isx || $sy < $isy} {
+              if {$sx < $isx || $sy < $isy || $zoomfactor != 1} {
                  # image must be cropped
                  if {$sx < $isx} {set minx $sx} else {set minx $isx}
                  if {$sy < $isy} {set miny $sy} else {set miny $isy}
