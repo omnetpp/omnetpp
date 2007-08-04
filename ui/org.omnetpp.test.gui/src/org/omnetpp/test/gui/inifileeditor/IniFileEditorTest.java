@@ -47,13 +47,13 @@ public class IniFileEditorTest extends TestBase {
 
 		final MenuAccess menuAccessInner = (MenuAccess)runStep(new Step() {
 			public Object runAndReturn() {
-				return menuAccess.findMenuItemByLabel("New").activateWithMouseClick();
+				return menuAccess.activateMenuItemWithMouse("New");
 			}
 		});
 
 		runStep(new Step() {
 			public void run() {
-				menuAccessInner.findMenuItemByLabel("Other.*").activateWithMouseClick();
+				menuAccessInner.activateMenuItemWithMouse("Other.*");
 			}
 		});
 
