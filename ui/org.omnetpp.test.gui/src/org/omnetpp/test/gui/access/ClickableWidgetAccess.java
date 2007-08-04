@@ -6,8 +6,6 @@ import org.eclipse.swt.widgets.Widget;
 
 public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAccess<T>
 {
-	protected T widget;
-	
 	public ClickableWidgetAccess(T widget) {
 		super(widget);
 	}
