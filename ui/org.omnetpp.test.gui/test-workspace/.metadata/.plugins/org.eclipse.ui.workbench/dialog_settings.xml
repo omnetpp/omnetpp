@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ShowViewDialog">
+		<item value="org.eclipse.ui.navigator.ProjectExplorer" key="ShowViewDialog.STORE_SELECTED_VIEW_ID"/>
+		<list key="ShowViewDialog.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.ui"/>
+			<item value="org.omnetpp.views"/>
+		</list>
+	</section>
+</section>
