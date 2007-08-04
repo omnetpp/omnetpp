@@ -28,6 +28,12 @@ public abstract class TestBase extends TestCase {
 		}
 	}
 
+	/**
+	 * Runs the given test code (the run() method of the Test object passed)
+	 * in another thread. This is needed to be able to insert UI events
+	 * into the event queue while the GUI is running a nested readAndDispatch()
+	 * loop, e.g. inside modal dialogs.
+	 */
 	protected void runTest(final Test test) throws Throwable {
 		testThrowable = null;
 
@@ -61,7 +67,7 @@ public abstract class TestBase extends TestCase {
 			throw testThrowable;
 	}
 
-	protected Object runStep(final Step step) {
+	protected static Object runStep(final Step step) {
 		return runStepWithTimeout(-1, step);
 	}
 
@@ -74,7 +80,7 @@ public abstract class TestBase extends TestCase {
 	 * @param step the runnable to be run from the event dispatch thread
 	 * @return
 	 */
-	protected Object runStepWithTimeout(double timeToRun, final Step step) {
+	protected static Object runStepWithTimeout(double timeToRun, final Step step) {
 		//System.out.print("sleep 1s to help debugging");  
 		//Access.sleep(1);
 
