@@ -313,7 +313,8 @@ public class Access {
 
 	/**
 	 * A failed attempt to dump all active popup menus, using the private fields of Display. 
-	 * Unfortunately, it's all nulls in the arrays.
+	 * Unfortunately, it's all nulls in the arrays. (This is due to runPopups() running
+	 * before all syncExec()/asyncExec() code...)
 	 */
 	public static void dumpCurrentMenus() {
 		Display display = Display.getDefault();
