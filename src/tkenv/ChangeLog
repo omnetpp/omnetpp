@@ -1,3 +1,12 @@
+
+multiple "r" and "t" tags supported per submodule (as "r1", "r2" etc); 
+
+added "bgt" tag: bgt=<x>,<y>,<text>,<color>; multiple tags supported ("bgt1","bgt2",etc)
+
+implemented zooming
+
+implemented "hide module names"
+
 added support for new display string tags: bgi, bgg, bgs, bgg,... ; made consistent with NED editor
 
 Add to documentation: icon names MUST BE lowercase

@@ -273,12 +273,12 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 
-       # text (t tag)
-       if {[info exists tags(t)]} {
-           set txt [lindex $tags(t) 0]
-           set pos [lindex $tags(t) 1]
+       # text (t=<text>,<position>,<color>); multiple t tags supported (t1,t2,etc)
+       foreach {ttag} [array names tags -regexp {t\d*} ] {
+           set txt [lindex $tags($ttag) 0]
+           set pos [lindex $tags($ttag) 1]
            if {$pos == ""} {set pos "t"}
-           set color [lindex $tags(t) 2]
+           set color [lindex $tags($ttag) 2]
            if {$color == ""} {set color "#0000ff"}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
 
@@ -304,19 +304,19 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
        }
 
-       # r=<radius>,<fillcolor>,<color>,<width>
-       if {[info exists tags(r)]} {
-           set radius [lindex $tags(r) 0]
+       # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
+       foreach {rtag} [array names tags -regexp {r\d*} ] {
+           set radius [lindex $tags($rtag) 0]
            if {$radius == ""} {set radius 0}
-           set rfill [lindex $tags(r) 1]
+           set rfill [lindex $tags($rtag) 1]
            if {$rfill == "-"} {set rfill ""}
            if {[string index $rfill 0]== "@"} {set rfill [opp_hsb_to_rgb $rfill]}
            # if rfill=="" --> not filled
-           set routline [lindex $tags(r) 2]
+           set routline [lindex $tags($rtag) 2]
            if {$routline == ""} {set routline black}
            if {$routline == "-"} {set routline ""}
            if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
-           set rwidth [lindex $tags(r) 3]
+           set rwidth [lindex $tags($rtag) 3]
            if {$rwidth == ""} {set rwidth 1}
            if {$scaling != ""} {
                set radius [expr $scaling*$radius]
@@ -499,6 +499,23 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
            }
        }
 
+       # text: bgt=<x>,<y>,<text>,<color>; multiple bgt tags supported (bgt1,bgt2,etc)
+       foreach {bgttag} [array names tags -regexp {bgt\d*} ] {
+           set x [lindex $tags($bgttag) 0]
+           set y [lindex $tags($bgttag) 1]
+           if {$x==""} {set x 0}
+           if {$y==""} {set y 0}
+           if {$scaling != ""} {
+               set x [expr $scaling*$x]
+               set y [expr $scaling*$y]
+           }
+           set txt [lindex $tags($bgttag) 2]
+           set color [lindex $tags($bgttag) 3]
+           if {$color == ""} {set color black}
+           if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
+           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx"
+       }
+
        $c lower mod
 
        # scrolling region
@@ -624,7 +641,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        } elseif {[string match "d*" $style]} {
            set pattern "."
        } else {
-       	   set pattern ""
+           set pattern ""
        }
 
        $c create line $arrow_coords -arrow last -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
