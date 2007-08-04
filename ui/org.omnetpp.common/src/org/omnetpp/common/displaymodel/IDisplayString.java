@@ -86,7 +86,7 @@ public interface IDisplayString {
         // BGB tag
         MODULE_WIDTH(Tag.bgb, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match contents (-1)"),
         MODULE_HEIGHT(Tag.bgb, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match contents (-1)"),
-        MODULE_FILLCOL(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (colorname or #RRGGBB or @HHSSBB). Default: grey75"),
+        MODULE_FILLCOL(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (colorname or #RRGGBB or @HHSSBB). Default: grey82"),
         MODULE_BORDERCOL(Tag.bgb, 3, PropType.COLOR, PropGroup.BackgroundStyle, "bg border color", "Border color of the module background rectangle (colorname or #RRGGBB or @HHSSBB). Default: black"),
         MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.INTEGER, PropGroup.BackgroundStyle, "bg border width", "Border width of the module background rectangle. Default: 2"),
         // BGTT tag
