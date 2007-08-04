@@ -21,13 +21,13 @@ public class MergedPropertySource implements IPropertySource2 {
     private boolean readOnly = false;
 
 	public MergedPropertySource(INEDElement model) {
-        // register the propertysource as a listener for the model so it will be notified
+        // register the property source as a listener for the model so it will be notified
         // once someone changes the underlying model
 //        model.getListeners().add(this);
     }
 
     /**
-	 * Adds a propertysource to be merged into this
+	 * Adds a property source to be merged into this
 	 * @param ps
 	 */
 	public void mergePropertySource(IPropertySource ps) {
@@ -35,7 +35,7 @@ public class MergedPropertySource implements IPropertySource2 {
 	}
 
 	public boolean isPropertyResettable(Object id) {
-		// ask all regitered PS if it knows about this
+		// ask all registered PS if it knows about this
 		for(IPropertySource psrc : mergedList)
 			if (psrc instanceof IPropertySource2)
 				if (((IPropertySource2)psrc).isPropertyResettable(id))
@@ -62,7 +62,7 @@ public class MergedPropertySource implements IPropertySource2 {
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
-		// walk trhough all property source and merge its descriptors into a single list
+		// walk through all property source and merge its descriptors into a single list
 		for(IPropertySource psrc : mergedList)
 			for(IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
                 if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {
