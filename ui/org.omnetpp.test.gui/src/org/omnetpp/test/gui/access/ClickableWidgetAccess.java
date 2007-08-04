@@ -1,19 +1,15 @@
 package org.omnetpp.test.gui.access;
 
-import junit.framework.Assert;
-
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
 
-public abstract class ClickableWidgetAccess<T extends Widget> extends Access
+public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAccess<T>
 {
 	protected T widget;
 	
-	public ClickableWidgetAccess(T widget)
-	{
-		Assert.assertTrue(widget != null);
-		this.widget = widget;
+	public ClickableWidgetAccess(T widget) {
+		super(widget);
 	}
 
 	public MenuAccess activateContextMenuWithMouseClick() {
