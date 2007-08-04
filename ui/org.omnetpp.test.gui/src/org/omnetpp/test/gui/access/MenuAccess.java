@@ -15,6 +15,14 @@ public class MenuAccess extends WidgetAccess<Menu> {
 		return widget;
 	}
 
+	/**
+	 * Activates the menu item with the given label. If it opens a submenu, 
+	 * return it, otherwise return null.
+	 */
+	public MenuAccess activateMenuItemWithMouse(String label) {
+		return findMenuItemByLabel(label).activateWithMouseClick();
+	}
+	
 	public MenuItemAccess findMenuItemByLabel(final String label) {
 		return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(widget, new IPredicate() {
 			public boolean matches(Object object) {
