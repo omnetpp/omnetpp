@@ -20,7 +20,8 @@ public aspect DoInUIThread {
 	 * proceed with the call.
 	 */
 	//TODO: ignore this advice when a @NoSyncExec annotation is present
-	//TODO: not for inner classes (!within(DoInUIThread)?)
+	//TODO: not for inner classes i.e. IPredicate.matches()!!!  within? withincode? cflow? cflowbelow?
+	//TODO: make hardcoded timeout parameterizable
 	Object around(): execution(public * org.omnetpp.test.gui.access.*.*(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
@@ -29,7 +30,7 @@ public aspect DoInUIThread {
 	    }
 	    else {
 	    	System.out.println("AJ: doing in UI thread: " + method);
-	    	return TestBase.runStep(new TestBase.Step() {
+	    	return TestBase.runStepWithTimeout(5, new TestBase.Step() {
 	    		public Object runAndReturn() {
 	    			return proceed();
 	    		}
