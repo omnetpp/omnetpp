@@ -9,15 +9,15 @@ import org.aspectj.lang.reflect.CodeSignature;
 public aspect Tracing {
 	   static final void println(String s){ System.out.println(s); }
 
-	   Object around(): execution(public * org.omnetpp.test.gui.access.*.*(..)) {
-	      println("Intercepted message: " + thisJoinPointStaticPart.getSignature().getName());
-	      println("in class: " + thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
-	      printParameters(thisJoinPoint);
-	      println("Running original method: \n" );
-	      Object result = proceed();
-	      println("  result: " + result );
-	      return result;
-	   }
+//	   Object around(): execution(public * org.omnetpp.test.gui.access.*.*(..)) {
+//	      println("Intercepted message: " + thisJoinPointStaticPart.getSignature().getName());
+//	      println("in class: " + thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
+//	      printParameters(thisJoinPoint);
+//	      println("Running original method: \n" );
+//	      Object result = proceed();
+//	      println("  result: " + result );
+//	      return result;
+//	   }
 
 	   static private void printParameters(JoinPoint jp) {
 	      println("Arguments: " );

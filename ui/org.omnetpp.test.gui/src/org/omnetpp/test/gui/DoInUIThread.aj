@@ -1,17 +1,22 @@
 package org.omnetpp.test.gui;
 
+import org.eclipse.swt.widgets.Display;
+
 public aspect DoInUIThread {
-	static final void println(String s){ System.out.println(s); }
 
 	Object around(): execution(public * org.omnetpp.test.gui.access.*.*(..)) {
-	    println("Doing in UI: "+thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + 
-	    		"." + thisJoinPointStaticPart.getSignature().getName());
-		Object result = TestBase.runStep(new TestBase.Step() {
-			public Object runAndReturn() {
-				return proceed();
-			}
-		});
-		println("  result: " + result);
-		return result;
+	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getSimpleName() + "." + thisJoinPointStaticPart.getSignature().getName();
+	    if (Display.getCurrent() != null) {
+	    	System.out.println("AJ: doing " + method + " (already in UI thread)");
+	    	return proceed();
+	    }
+	    else {
+	    	System.out.println("AJ: doing in UI thread: " + method);
+	    	return TestBase.runStep(new TestBase.Step() {
+	    		public Object runAndReturn() {
+	    			return proceed();
+	    		}
+	    	});
+	    }
 	}
 }

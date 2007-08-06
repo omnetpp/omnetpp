@@ -15,6 +15,15 @@ public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAcce
 		return new MenuAccess(getContextMenu());
 	}
 
+//	//FIXME doesn't work -- looks like there right-click and activate-with-mouse must be separate steps
+//	public MenuAccess activateContextMenuItemWithMouse(String label) {
+//		// Note: we must click the menu immediately here, because by the time
+//		// the next Display.syncExec() runs the menu will be long gone!
+//		// See the runPopups() private method of Display
+//		rightClick();
+//		return new MenuAccess(getContextMenu()).activateMenuItemWithMouse(label);
+//	}
+
 	protected abstract Point getPointToClick();
 
 	protected abstract Menu getContextMenu();

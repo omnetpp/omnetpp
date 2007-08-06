@@ -10,8 +10,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.win32.MSG;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -66,12 +64,6 @@ public class Access {
 
 		if (debug)
 			System.out.println("Processing events finished");
-	}
-
-	public static void waitUntilEventQueueBecomesEmpty() {
-		MSG msg = new MSG();
-		while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE))
-			Thread.yield();
 	}
 
 	public static void sleep(double seconds) {

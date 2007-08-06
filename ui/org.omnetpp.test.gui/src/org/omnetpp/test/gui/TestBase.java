@@ -3,6 +3,8 @@ package org.omnetpp.test.gui;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.eclipse.swt.internal.win32.MSG;
+import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.WorkbenchAccess;
@@ -19,7 +21,7 @@ public abstract class TestBase extends TestCase {
 		public void run() throws Exception;
 	}
 
-	protected class Step {
+	public static class Step {
 		public Object runAndReturn() throws Exception {
 			return null;
 		}
@@ -67,7 +69,7 @@ public abstract class TestBase extends TestCase {
 			throw testThrowable;
 	}
 
-	protected static Object runStep(final Step step) {
+	public static Object runStep(final Step step) {
 		return runStepWithTimeout(-1, step);
 	}
 
@@ -80,7 +82,18 @@ public abstract class TestBase extends TestCase {
 	 * @param step the runnable to be run from the event dispatch thread
 	 * @return
 	 */
-	protected static Object runStepWithTimeout(double timeToRun, final Step step) {
+	public static Object runStepWithTimeout(double timeToRun, final Step step) {
+		if (Display.getCurrent() != null) {
+			// if we are already in the UI thread, just plain do it
+			try {
+				step.run();
+				return step.runAndReturn();
+			} 
+			catch (Exception e) {
+				throw new TestException(e);
+			}
+		}
+
 		//System.out.print("sleep 1s to help debugging");  
 		//Access.sleep(1);
 
@@ -119,7 +132,7 @@ public abstract class TestBase extends TestCase {
 			if (debug)
 				System.out.println("Waiting to processing events");
 
-			WorkbenchAccess.waitUntilEventQueueBecomesEmpty();		
+			waitUntilEventQueueBecomesEmpty();		
 
 			if (stepThrowables[0] == null)
 				return result[0];
@@ -138,7 +151,7 @@ public abstract class TestBase extends TestCase {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				if (debug)
-					System.out.println("Rethrowing exception from step");
+					System.out.println("Rethrowing exception from step: " + stepThrowables[0]);
 
 				// TODO: this does not hide popup menus since the code doesn't use try/catch/finally there and will not hide
 				// the popup menu upon receiving an exception
@@ -149,5 +162,12 @@ public abstract class TestBase extends TestCase {
 		// unreachable code
 		Assert.assertTrue("Unreachable code reached", false);
 		return null;
+	}
+
+	public static void waitUntilEventQueueBecomesEmpty() {
+		Assert.assertTrue("This method must not be called from the UI thread", Display.getCurrent()==null);
+		MSG msg = new MSG();
+		while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE))
+			Thread.yield();
 	}
 }
