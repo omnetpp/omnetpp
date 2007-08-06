@@ -10,7 +10,7 @@ import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.WorkbenchAccess;
 
 
-public abstract class TestBase extends TestCase {
+public abstract class GUITestCase extends TestCase {
 	private final static boolean debug = true;
 	
 	private Throwable testThrowable;

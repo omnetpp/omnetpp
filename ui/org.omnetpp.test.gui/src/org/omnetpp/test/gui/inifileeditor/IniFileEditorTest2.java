@@ -5,7 +5,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
-import org.omnetpp.test.gui.TestBase;
+import org.omnetpp.test.gui.GUITestCase;
 import org.omnetpp.test.gui.access.MenuAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.TreeAccess;
@@ -13,7 +13,7 @@ import org.omnetpp.test.gui.access.TreeItemAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
 
-public class IniFileEditorTest2 extends TestBase {
+public class IniFileEditorTest2 extends GUITestCase {
 	protected String projectName = "test-project";
 	protected String fileName = "omnetpp.ini";
 	

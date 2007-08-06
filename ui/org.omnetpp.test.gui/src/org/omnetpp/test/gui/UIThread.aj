@@ -33,7 +33,7 @@ public aspect UIThread {
 	    }
 	    else {
 	    	System.out.println("AJ: doing in UI thread: " + method);
-	    	return TestBase.runStepWithTimeout(5, new TestBase.Step() {
+	    	return GUITestCase.runStepWithTimeout(5, new GUITestCase.Step() {
 	    		public Object runAndReturn() {
 	    			return proceed();
 	    		}
@@ -42,11 +42,10 @@ public aspect UIThread {
 	}
 
 	/**
-	 * In test cases, the test*() methods should be run in a background thread so that
-	 * it can run independent of the UI.
+	 * JUnit test case methods should be run in a background thread so that
+	 * they can run independent of the UI.
 	 */
-	//TODO: for all classes that extend junit.framework.TestCase, not only inifile tests
-	void around(final TestBase t): target(t) && execution(public void org.omnetpp.test.gui.inifileeditor.*.test*()) {
+	void around(final GUITestCase t): target(t) && execution(public void test*()) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    System.out.println("AJ: running test case: " + method);
 	    try {
