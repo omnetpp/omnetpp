@@ -17,8 +17,8 @@ public abstract class TestBase extends TestCase {
 	
 	protected WorkbenchAccess workbenchAccess = new WorkbenchAccess();
 	
-	protected interface Test {
-		public void run() throws Exception;
+	public abstract class Test {
+		public abstract void run() throws Exception;
 	}
 
 	public static class Step {
@@ -36,7 +36,7 @@ public abstract class TestBase extends TestCase {
 	 * into the event queue while the GUI is running a nested readAndDispatch()
 	 * loop, e.g. inside modal dialogs.
 	 */
-	protected void runTest(final Test test) throws Throwable {
+	public void runTest(final Test test) throws Throwable {
 		testThrowable = null;
 
 		Throwable throwable = new Throwable();

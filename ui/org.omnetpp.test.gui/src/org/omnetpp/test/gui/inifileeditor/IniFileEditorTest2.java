@@ -11,7 +11,7 @@ import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.TreeAccess;
 import org.omnetpp.test.gui.access.TreeItemAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
-import org.omnetpp.test.gui.access.WorkbenchAccess;
+import org.omnetpp.test.gui.access.WorkspaceAccess;
 
 public class IniFileEditorTest2 extends TestBase {
 	protected String projectName = "test-project";
@@ -51,50 +51,29 @@ public class IniFileEditorTest2 extends TestBase {
 		shellAccess2.findButtonWithLabel("Finish").activateWithMouseClick();
 		
 		// make sure the file really exists
-		runStepWithTimeout(3, new Step() {
-			public void run() {
-				IFile file = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(fileName);
-				assertTrue(file.exists());
-			}
-		});
-		
+		WorkspaceAccess.assertFileExists(projectName+"/"+fileName);
 	}
 
 	public void testCreateIniFile() throws Throwable {
-		runTest(new Test() {
-			public void run() throws Exception {
-           	WorkbenchAccess.startTracingEvents();
-				createNewIniFile();
-			}
-		});
+		//WorkbenchAccess.startTracingEvents();
+		createNewIniFile();
 	}
 	
 	public void testWrongNetwork() throws Throwable {
-		runTest(new Test() {
-			public void run() throws Exception {
-				createNewIniFile();
+		//WorkbenchAccess.startTracingEvents();
+		createNewIniFile();
 
-				WorkbenchAccess.startTracingEvents();
+		workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 
-				System.out.println("===================================================");
+		workbenchAccess.pressKey(SWT.ARROW_DOWN);
+		workbenchAccess.pressKey(SWT.ARROW_DOWN);
+		workbenchAccess.pressKey(SWT.END);
+		workbenchAccess.typeIn(" Undefined");
+		workbenchAccess.saveCurrentEditorPartWithHotKey();
 
-				Thread.sleep(3000);  //FIXME remove
-				
-				workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+		ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByPartName("Problems", true);
+		viewPartAccess.activateWithMouseClick();
 
-				workbenchAccess.pressKey(SWT.ARROW_DOWN);
-				workbenchAccess.pressKey(SWT.ARROW_DOWN);
-				workbenchAccess.pressKey(SWT.END);
-				workbenchAccess.typeIn(" Undefined");
-				workbenchAccess.saveCurrentEditorPartWithHotKey();
-
-				ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByPartName("Problems", true);
-				viewPartAccess.activateWithMouseClick();
-
-				viewPartAccess.findTree().findTreeItemByContent(".*No such NED network.*");
-
-				//Thread.sleep(5000);  //FIXME remove
-			}
-		});
+		viewPartAccess.findTree().findTreeItemByContent(".*No such NED network.*");
 	}
 }

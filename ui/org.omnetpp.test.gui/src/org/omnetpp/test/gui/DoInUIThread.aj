@@ -37,4 +37,27 @@ public aspect DoInUIThread {
 	    	});
 	    }
 	}
+
+	/**
+	 * In test cases, the test*() methods should be run in a background thread so that
+	 * it can run independent of the UI.
+	 */
+	//TODO: for all classes that extend junit.framework.TestCase, not only inifile tests
+	void around(final TestBase t): target(t) && execution(public void org.omnetpp.test.gui.inifileeditor.*.test*()) {
+	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
+	    System.out.println("AJ: running test case: " + method);
+	    try {
+		    TestBase.Test testRunnable = t.new Test() {
+		    	public void run() throws Exception {
+		    		proceed(t);
+		    	}
+		    };
+	    	t.runTest(testRunnable);
+	    } 
+	    catch (Throwable e) {
+	    	throw new TestException(e);
+	    }
+	}
+	
+	
 }
