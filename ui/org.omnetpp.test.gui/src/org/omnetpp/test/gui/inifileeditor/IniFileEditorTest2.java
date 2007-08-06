@@ -52,6 +52,7 @@ public class IniFileEditorTest2 extends TestBase {
 		
 		// make sure the file really exists
 		WorkspaceAccess.assertFileExists(projectName+"/"+fileName);
+		WorkspaceAccess.assertFileNotExists(projectName+"/"+"some-nonsense-filename");
 	}
 
 	public void testCreateIniFile() throws Throwable {

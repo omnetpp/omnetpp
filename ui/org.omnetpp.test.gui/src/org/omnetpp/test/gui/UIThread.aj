@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @author Andras
  */
-public aspect DoInUIThread {
+public aspect UIThread {
 
 	/**
 	 * Surround every public method of the UI "Access" classes 
@@ -50,12 +50,11 @@ public aspect DoInUIThread {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    System.out.println("AJ: running test case: " + method);
 	    try {
-		    TestBase.Test testRunnable = t.new Test() {
-		    	public void run() throws Exception {
-		    		proceed(t);
-		    	}
-		    };
-	    	t.runTest(testRunnable);
+	    	t.runTest(t.new Test() {
+	    		public void run() throws Exception {
+	    			proceed(t);
+	    		}
+	    	});
 	    } 
 	    catch (Throwable e) {
 	    	throw new TestException(e);
