@@ -144,7 +144,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // remember the initial content so we can detect any change later
 
             // switch to graphics mode initially if there's no error in the file
-            if (!NEDResourcesPlugin.getNEDResources().containsNEDErrors(file))
+            if (!NEDResourcesPlugin.getNEDResources().hasError(file))
                 setActivePage(graphPageIndex);
 
 		} catch (PartInitException e) {
@@ -255,7 +255,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // only start in graphics mode if there's no error in the file
             // CHECKME sometimes the editor goes into graphical mode even if the file has errors
             // could it be because the error store is synchronized in the background???
-            if (res.containsNEDErrors(file)) {
+            if (res.hasError(file)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have
 				// switched away from it in the first place)

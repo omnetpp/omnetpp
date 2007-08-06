@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -339,6 +338,16 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * @return The re-generated source (text form) of this element
 	 */
 	public String getSource();
+
+	/**
+	 * Whether the current element is valid (has no syntax and consistency errors)
+	 */
+	public boolean isValid();
+
+	/**
+	 * @param isValid Sets the validity of the element (syntax checking and validation should adjust this attribute
+	 */
+	public void setValid(boolean isValid);
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

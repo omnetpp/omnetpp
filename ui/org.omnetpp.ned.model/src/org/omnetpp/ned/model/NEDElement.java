@@ -44,6 +44,7 @@ public abstract class NEDElement extends PlatformObject
 	private static long lastid;
     private HashMap<Object,Object> userData;
     private INEDTypeInfo typeInfo;
+    private transient boolean valid = true;
 
     private transient NEDChangeListenerList listeners = null;
 
@@ -120,6 +121,7 @@ public abstract class NEDElement extends PlatformObject
 		lastchild = null;
 		prevsibling = null;
 		nextsibling = null;
+		valid = true;
 
 		id = ++lastid;
 	}
@@ -730,6 +732,19 @@ public abstract class NEDElement extends PlatformObject
         return NEDTreeUtil.generateNedSource(this, true);
     }
 
+    /**
+     * Whether the current element is valid (has no syntax and consistency errors)
+     */
+    public boolean isValid() {
+        return valid;
+    }
+
+    /**
+     * @param isValid Sets the validity of the element (syntax checking and validation should adjust this attribute
+     */
+    public void setValid(boolean isValid) {
+        valid = isValid;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      * For debugging purposes

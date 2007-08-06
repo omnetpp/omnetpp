@@ -61,7 +61,7 @@ public interface INEDTypeResolver {
 	 *
 	 * @param file - must not be null
 	 */
-	public boolean containsNEDErrors(IFile file);
+	public boolean hasError(IFile file);
 
 	/**
 	 * Returns a component declated at the given file/line. The line number should

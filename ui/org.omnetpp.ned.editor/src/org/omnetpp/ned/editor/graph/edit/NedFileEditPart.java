@@ -9,6 +9,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.swt.widgets.Display;
+
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
@@ -114,7 +115,7 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
                     totalRefresh();
                 }
             });
-        else // refresh in the current UI thread 
+        else // refresh in the current UI thread
             totalRefresh();
     }
 }

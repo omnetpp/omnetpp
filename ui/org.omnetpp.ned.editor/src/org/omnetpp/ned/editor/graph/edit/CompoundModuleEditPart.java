@@ -21,6 +21,7 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
@@ -134,6 +135,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         // define the properties that determine the visual appearance
         getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
     	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getEffectiveDisplayString());
+        // mark if the model is invalid
+        getCompoundModuleFigure().setErrorMarker(!getCompoundModuleModel().isValid());
     }
 
 	/**

@@ -35,7 +35,7 @@ public class TopLevelEditPart extends BaseEditPart {
 	@Override
 	protected void refreshVisuals() {
         super.refreshVisuals();
-        // define the properties that determine the visual appearence
+        // define the properties that determine the visual appearance
     	if (getModel() instanceof IHasName) {
     		// set module name and vector size
     		String nameToDisplay = ((IHasName)getModel()).getName();
@@ -50,7 +50,7 @@ public class TopLevelEditPart extends BaseEditPart {
             ((TopLevelFigure)getFigure()).setText(nameToDisplay);
     	}
 
-    	// parse a dispaly string, so it's easier to get values from it.
+    	// parse a display string, so it's easier to get values from it.
     	// for other visual properties
     	if (getModel() instanceof IHasDisplayString) {
     		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
@@ -70,6 +70,9 @@ public class TopLevelEditPart extends BaseEditPart {
             if (image != null)
                 ((TopLevelFigure)getFigure()).setIcon(image);
     	}
+    	// indicate the error
+        ((TopLevelFigure)getFigure()).setErrorMarker(!getNEDModel().isValid());
+
 	}
 
     /* (non-Javadoc)

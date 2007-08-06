@@ -4,6 +4,7 @@ package org.omnetpp.ned.editor.text;
 
 import java.io.IOException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
@@ -19,6 +20,7 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
@@ -27,6 +29,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
@@ -34,12 +37,12 @@ import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 
 
 public class TextualNedEditor extends TextEditor {
-	
+
 	private static TemplateStore fStore;
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; //$NON-NLS-1$
     /** The context type registry. */
     private static ContributionContextTypeRegistry fRegistry;
-    
+
     /** The outline page */
 	private NedContentOutlinePage fOutlinePage;
 	/** The projection support */
@@ -54,17 +57,17 @@ public class TextualNedEditor extends TextEditor {
 	}
     /**
      * Returns this plug-in's template store.
-     * 
+     *
      * @return the template store of this plug-in instance
      */
     public static TemplateStore getTemplateStore() {
         if (fStore == null) {
-            fStore= new ContributionTemplateStore(getContextTypeRegistry(), 
+            fStore= new ContributionTemplateStore(getContextTypeRegistry(),
                                  NedEditorPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
             try {
                 fStore.load();
             } catch (IOException e) {
-                NedEditorPlugin.logError(e); 
+                NedEditorPlugin.logError(e);
             }
         }
         return fStore;
@@ -72,7 +75,7 @@ public class TextualNedEditor extends TextEditor {
 
     /**
      * Returns this plug-in's context type registry.
-     * 
+     *
      * @return the context type registry for this plug-in instance
      */
     public static ContextTypeRegistry getContextTypeRegistry() {
@@ -83,80 +86,89 @@ public class TextualNedEditor extends TextEditor {
         }
         return fRegistry;
     }
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method extend the 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method extend the
 	 * actions to add those specific to the receiver
 	 */
-	protected void createActions() {
+	@Override
+    protected void createActions() {
 		super.createActions();
-		
+
 		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", a); //$NON-NLS-1$
-		
+
 		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
 		setAction("DefineFoldingRegion", a); //$NON-NLS-1$
-        
+
         a= new ConvertToNewFormatAction(NedEditorMessages.getResourceBundle(), "ConvertToNewFormat.", this); //$NON-NLS-1$
         setAction("ConvertToNewFormat", a); //$NON-NLS-1$
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method performs any extra
 	 * disposal actions required by the ned editor.
 	 */
-	public void dispose() {
+	@Override
+    public void dispose() {
 		if (fOutlinePage != null)
 			fOutlinePage.setInput(null);
 		super.dispose();
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method performs any extra
 	 * revert behavior required by the ned editor.
 	 */
-	public void doRevertToSaved() {
+	@Override
+    public void doRevertToSaved() {
 		super.doRevertToSaved();
 		if (fOutlinePage != null)
 			fOutlinePage.update();
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method performs any extra
 	 * save behavior required by the ned editor.
-	 * 
+	 *
 	 * @param monitor the progress monitor
 	 */
-	public void doSave(IProgressMonitor monitor) {
+	@Override
+    public void doSave(IProgressMonitor monitor) {
 		super.doSave(monitor);
 		if (fOutlinePage != null)
 			fOutlinePage.update();
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method performs any extra
 	 * save as behavior required by the ned editor.
 	 */
-	public void doSaveAs() {
+	@Override
+    public void doSaveAs() {
 		super.doSaveAs();
 		if (fOutlinePage != null)
 			fOutlinePage.update();
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs sets the 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method performs sets the
 	 * input of the outline page after AbstractTextEditor has set input.
-	 * 
+	 *
 	 * @param input the editor input
 	 * @throws CoreException in case the input can not be set
-	 */ 
-	public void doSetInput(IEditorInput input) throws CoreException {
+	 */
+	@Override
+    public void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
 		if (fOutlinePage != null)
 			fOutlinePage.setInput(input);
+		// parse the text so we will get updated error information/markers
+        IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+        NEDResourcesPlugin.getNEDResources().setNEDFileText(file, getText());
 	}
-	
+
 	/**
 	 * Sets the content of the text editor with the given string
 	 * @param content
@@ -164,14 +176,14 @@ public class TextualNedEditor extends TextEditor {
 	public void setText(String content) {
 		getDocument().set(content);
 	}
-	
+
 	/**
 	 * @return The content of the text editor
 	 */
 	public String getText() {
 		return getDocument().get();
 	}
-    
+
     /**
      * @return The current document under editing
      */
@@ -182,22 +194,24 @@ public class TextualNedEditor extends TextEditor {
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */
-	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+	@Override
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
 		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); //$NON-NLS-1$
 		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal"); //$NON-NLS-1$
 		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");  //$NON-NLS-1$
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
+
+	/** The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method performs gets
-	 * the ned content outline page if request is for a an 
+	 * the ned content outline page if request is for a an
 	 * outline page.
-	 * 
+	 *
 	 * @param required the required type
 	 * @return an adapter for the required type or <code>null</code>
-	 */ 
-	public Object getAdapter(Class required) {
+	 */
+	@Override
+    public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null) {
 				fOutlinePage= new NedContentOutlinePage(getDocumentProvider(), this);
@@ -206,43 +220,46 @@ public class TextualNedEditor extends TextEditor {
 			}
 			return fOutlinePage;
 		}
-		
+
 		if (fProjectionSupport != null) {
 			Object adapter= fProjectionSupport.getAdapter(getSourceViewer(), required);
 			if (adapter != null)
 				return adapter;
 		}
-		
+
 		return super.getAdapter(required);
 	}
-		
+
 	/* (non-Javadoc)
 	 * Method declared on AbstractTextEditor
 	 */
-	protected void initializeEditor() {
+	@Override
+    protected void initializeEditor() {
 		super.initializeEditor();
 		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
 	}
-    
+
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
-	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		
+	@Override
+    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+
 		fAnnotationAccess= createAnnotationAccess();
 		fOverviewRuler= createOverviewRuler(getSharedColors());
-		
+
 		ISourceViewer viewer= new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
-		
+
 		return viewer;
 	}
-	
+
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
-	public void createPartControl(Composite parent) {
+	@Override
+    public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		ProjectionViewer viewer= (ProjectionViewer) getSourceViewer();
 		fProjectionSupport= new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
@@ -251,16 +268,17 @@ public class TextualNedEditor extends TextEditor {
 		fProjectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
         // we should set the selection provider as late as possible because the outer multipage esitor overrides it
-        // during editor initializatiopn
+        // during editor initialization
         // install a selection provider that provides StructuredSelection of NEDModel elements in getSelection
         // instead of ITestSelection
         getSite().setSelectionProvider(new NedSelectionProvider(this));
 	}
-	
+
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
 	 */
-	protected void adjustHighlightRange(int offset, int length) {
+	@Override
+    protected void adjustHighlightRange(int offset, int length) {
 		ISourceViewer viewer= getSourceViewer();
 		if (viewer instanceof ITextViewerExtension5) {
 			ITextViewerExtension5 extension= (ITextViewerExtension5) viewer;
@@ -281,7 +299,7 @@ public class TextualNedEditor extends TextEditor {
     public boolean hasContentChanged() {
         if (getText() == null)
             return lastContent != null;
-        
+
         return !(getText().equals(lastContent));
     }
 }

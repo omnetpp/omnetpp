@@ -134,6 +134,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
         if (dps.getLocation(scale) != null)
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
 
+        // mark if the model is invalid
+        getSubmoduleFigure().setErrorMarker(!getSubmoduleModel().isValid());
+
     }
 
     @Override
