@@ -15,6 +15,9 @@ public aspect DoInUIThread {
 	 * because they operate on SWT widgets, the UI event queue, etc,
 	 * which would cause Illegal Thread Access when done from 
 	 * a background thread.
+	 *
+	 * If the call fails (throws an exception), we'll keep retrying
+	 * for 5 seconds until we report failure by re-throwing the exception
 	 * 
 	 * When the code is already executing in the UI thread, just
 	 * proceed with the call.

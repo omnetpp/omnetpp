@@ -63,17 +63,19 @@ public class IniFileEditorTest2 extends TestBase {
 		//WorkbenchAccess.startTracingEvents();
 		createNewIniFile();
 
+		// Find the inifile editor and switch it to text mode
 		workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 
+		// Wizard has created the file with an empty "network=" line; type "Undefined" there as network name
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);
 		workbenchAccess.pressKey(SWT.END);
 		workbenchAccess.typeIn(" Undefined");
 		workbenchAccess.saveCurrentEditorPartWithHotKey();
 
-		ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByPartName("Problems", true);
-		viewPartAccess.activateWithMouseClick();
-
-		viewPartAccess.findTree().findTreeItemByContent(".*No such NED network.*");
+		// The "Problems" view must display a "No such NED network" error
+		ViewPartAccess problemsViewAccess = workbenchAccess.findViewPartByPartName("Problems", true);
+		problemsViewAccess.activateWithMouseClick();
+		problemsViewAccess.findTree().findTreeItemByContent(".*No such NED network.*");
 	}
 }
