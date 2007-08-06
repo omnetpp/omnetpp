@@ -24,12 +24,6 @@ public class IniFileEditorTest2 extends TestBase {
 	}
 
 	protected void createNewIniFile() throws CoreException {
-//		runStep(new Step() {
-//			public void run() {
-//				EventTracer.start();
-//			}
-//		});
-		
 		// Test setup: close all editors, delete the inifile left over from previous runs 
 		workbenchAccess.closeAllEditorPartsWithHotKey();
 		ensureProjectFileDeleted(projectName, fileName);
@@ -69,49 +63,37 @@ public class IniFileEditorTest2 extends TestBase {
 	public void testCreateIniFile() throws Throwable {
 		runTest(new Test() {
 			public void run() throws Exception {
+           	WorkbenchAccess.startTracingEvents();
 				createNewIniFile();
 			}
 		});
 	}
 	
-	public void testWrongNetwok() throws Throwable {
+	public void testWrongNetwork() throws Throwable {
 		runTest(new Test() {
 			public void run() throws Exception {
 				createNewIniFile();
 
-				WorkbenchAccess.sleep(3);
+				WorkbenchAccess.startTracingEvents();
+
+				System.out.println("===================================================");
+
+				Thread.sleep(3000);  //FIXME remove
 				
-//				runStepWithTimeout(1, new Step() {
-//					public void run() {
-//						workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
-//					}
-//				});
 				workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 
-				runStep(new Step() {
-					public void run() {
-						workbenchAccess.pressKey(SWT.ARROW_DOWN);
-						workbenchAccess.pressKey(SWT.ARROW_DOWN);
-						workbenchAccess.pressKey(SWT.END);
-						workbenchAccess.typeIn(" Undefined");
-						workbenchAccess.saveCurrentEditorPartWithHotKey();
-					}
-				});
+				workbenchAccess.pressKey(SWT.ARROW_DOWN);
+				workbenchAccess.pressKey(SWT.ARROW_DOWN);
+				workbenchAccess.pressKey(SWT.END);
+				workbenchAccess.typeIn(" Undefined");
+				workbenchAccess.saveCurrentEditorPartWithHotKey();
 
-				final ViewPartAccess viewPartAccess = (ViewPartAccess)runStepWithTimeout(1, new Step() {
-					public Object runAndReturn() {
-						ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByPartName("Problems", true);
-						viewPartAccess.activateWithMouseClick();
+				ViewPartAccess viewPartAccess = workbenchAccess.findViewPartByPartName("Problems", true);
+				viewPartAccess.activateWithMouseClick();
 
-						return viewPartAccess;
-					}
-				});
+				viewPartAccess.findTree().findTreeItemByContent(".*No such NED network.*");
 
-				runStepWithTimeout(1, new Step() {
-					public void run() {
-						viewPartAccess.findTree().findTreeItemByContent(".*No such NED network.*");
-					}
-				});
+				//Thread.sleep(5000);  //FIXME remove
 			}
 		});
 	}

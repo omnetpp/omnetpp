@@ -10,9 +10,14 @@ import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.test.gui.EventTracer;
 
 public class WorkbenchAccess extends Access
 {
+	public static void startTracingEvents() {
+		EventTracer.start();
+	}
+
 	public ShellAccess findShellByTitle(final String title) {
 		return new ShellAccess((Shell)findWidget(getDisplay().getShells(), new IPredicate() {
 			public boolean matches(Object object) {

@@ -20,8 +20,9 @@ public aspect DoInUIThread {
 	 * proceed with the call.
 	 */
 	//TODO: ignore this advice when a @NoSyncExec annotation is present
+	//TODO: not for inner classes (!within(DoInUIThread)?)
 	Object around(): execution(public * org.omnetpp.test.gui.access.*.*(..)) {
-	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getSimpleName() + "." + thisJoinPointStaticPart.getSignature().getName();
+	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
 	    	System.out.println("AJ: doing " + method + " (already in UI thread)");
 	    	return proceed();
