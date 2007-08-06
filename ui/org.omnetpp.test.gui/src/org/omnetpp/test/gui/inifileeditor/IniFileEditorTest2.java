@@ -1,13 +1,19 @@
 package org.omnetpp.test.gui.inifileeditor;
 
+import junit.framework.Assert;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.test.gui.GUITestCase;
+import org.omnetpp.test.gui.access.Access;
+import org.omnetpp.test.gui.access.EditorPartAccess;
 import org.omnetpp.test.gui.access.MenuAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
+import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.TreeAccess;
 import org.omnetpp.test.gui.access.TreeItemAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
@@ -58,6 +64,21 @@ public class IniFileEditorTest2 extends GUITestCase {
 	public void testCreateIniFile() throws Throwable {
 		//WorkbenchAccess.startTracingEvents();
 		createNewIniFile();
+	}
+
+	public void testWizardResult() throws Throwable {
+		//WorkbenchAccess.startTracingEvents();
+		createNewIniFile();
+		
+		// Find the inifile editor, and switch to its text page
+		EditorPartAccess editorAccess = workbenchAccess.findEditorByTitle(fileName);
+		editorAccess.activatePageInMultiPageEditorByLabel("Text");
+		//Access.dumpWidgetHierarchy(editorAccess.getRootControl());
+
+		// Find the text editor in it, and verify it has the right content
+		StyledTextAccess textAccess = new StyledTextAccess((StyledText) editorAccess.findDescendantControl(editorAccess.getRootControl(), StyledText.class));
+		String editorContent = textAccess.getText();
+		Assert.assertTrue(editorContent.equals("[General]\npreload-ned-files = *.ned\nnetwork = "));
 	}
 	
 	public void testWrongNetwork() throws Throwable {

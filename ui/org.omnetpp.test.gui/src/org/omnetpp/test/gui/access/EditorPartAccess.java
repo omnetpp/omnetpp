@@ -20,7 +20,7 @@ public class EditorPartAccess extends Access {
 		clickCTabItem(cTabItem);
 	}
 	
-	protected Composite getRootControl() {
+	public Composite getRootControl() {
 		return (Composite)((EditorSite)editorPart.getEditorSite()).getPane().getControl();
 	}
 }
