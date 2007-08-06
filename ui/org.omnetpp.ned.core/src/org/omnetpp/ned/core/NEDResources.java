@@ -83,7 +83,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                         };
     // stores parsed contents of NED files
     private final HashMap<IFile, INEDElement> nedFiles = new HashMap<IFile, INEDElement>();
-    // private final ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
+
     private NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer();
 
     private final HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
@@ -228,16 +228,25 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);
         markerSync.registerFile(file);
         markerSync.addMarkersToFileFromErrorStore(file, errors);
-        markerSync.run();
+        // we should defer the synchronization to a different job, so no deadlock can occur
+        markerSync.runAsWorkspaceJob();
     }
 
-    public synchronized boolean containsNEDErrors(IFile file) {
-        try {
-            return file.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_ZERO) >= IMarker.SEVERITY_ERROR;
-        } catch (CoreException e) {
-            // if resource does not exists or the project is closed (=no error)
-            return false;
-        }
+//    public synchronized boolean hasError(IFile file) {
+//        try {
+//            return file.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_ZERO) >= IMarker.SEVERITY_ERROR;
+//        } catch (CoreException e) {
+//            // if resource does not exists or the project is closed (=no error)
+//            return false;
+//        }
+//    }
+
+    /**
+     * @param file
+     * @return Whether the file has an associated error attribute
+     */
+    public synchronized boolean hasError(IFile file) {
+        return !getNEDFileModel(file).isValid();
     }
 
     public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
@@ -503,6 +512,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             //XXX should be recursive, and collect inner types as well (store them as "TopleveTtype.InnerType) or something
             INEDElement tree = nedFiles.get(file);
             for (INEDElement node : tree) {
+                node.setValid(true);
                 // find node's name and where it should be inserted
                 String name = null;
                 HashMap<String, INEDTypeInfo> map = null;
@@ -529,9 +539,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                     if (components.containsKey(name)) {
                         // it is a duplicate: issue warning
                         IFile otherFile = components.get(name).getNEDFile();
+                        INEDElement otherElement = components.get(name).getNEDElement();
                         if (otherFile == null) {
                             String message = node.getTagName() + " '" + name + "' is a built-in type and cannot be redefined";
-                            markerSync.addMarker(file, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
+                            markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
                         } else {
                             // add it to the duplicate set so we can remove them
@@ -539,12 +550,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             duplicates.add(name);
                             String message = node.getTagName() + " '" + name + "' already defined in "
                                     + otherFile.getFullPath().toString();
-                            markerSync.addMarker(file, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
+                            markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
                             // add the same error message to the other file too
                             String otherMessage = node.getTagName() + " '" + name + "' already defined in "
                                     + file.getFullPath().toString();
-                            markerSync.addMarker(otherFile, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
+                            markerSync.addMarker(otherFile, otherElement, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, otherMessage, components.get(name).getNEDElement().getSourceLocation());
                       }
                     } else {
@@ -572,7 +583,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         for (final IFile file : nedFiles.keySet()) {
             INEDErrorStore errors = new INEDErrorStore() {
                 public void add(INEDElement context, String message) {
-                    markerSync.addMarker(file, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
+                    markerSync.addMarker(file, context, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                             IMarker.SEVERITY_ERROR, message, context.getSourceLocation());
                 }
             };
@@ -581,7 +592,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             validator.validate(tree);
         }
 
-        markerSync.run();
+        // we should defer the synchronization to a different job, so no deadlock can occur
+        markerSync.runAsWorkspaceJob();
 
         // long dt = System.currentTimeMillis() - startMillis;
         // System.out.println("rehash() took " + dt + "ms");
@@ -651,7 +663,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * @param event
-     * @return Wheteher the inheritance chain has changed somewhere
+     * @return Whether the inheritance chain has changed somewhere
      * (name, extends, adding and removing top level nodes)
      */
     protected static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
@@ -682,7 +694,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * @param event
-     * @return Whether th display string has changed in the evenet
+     * @return Whether the display string has changed in the event
      */
     protected static boolean displayMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
