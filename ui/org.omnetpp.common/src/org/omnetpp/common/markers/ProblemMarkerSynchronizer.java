@@ -29,14 +29,14 @@ import org.omnetpp.common.CommonPlugin;
  * @author Andras
  */
 public class ProblemMarkerSynchronizer {
-	private static class MarkerData {
+    protected static class MarkerData {
 		String type;
 		Map<String, Object> attrs;
 	}
 
 	// data for markers to synchronize
-	private HashMap<IFile, List<MarkerData>> markerTable = new HashMap<IFile, List<MarkerData>>();
-	private String markerBaseType;
+	protected HashMap<IFile, List<MarkerData>> markerTable = new HashMap<IFile, List<MarkerData>>();
+	protected String markerBaseType;
 
 	// statistics
 	private int markersAdded = 0;
@@ -82,6 +82,12 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	/**
+	 * @return The number of markers registered in this synchronizer
+	 */
+	public int getNoOfMarkers() {
+	    return markerTable.size();
+	}
+	/**
 	 * Performs the marker synchronization.
 	 */
 	public void run() {
@@ -97,7 +103,7 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	protected void addRemoveMarkers() throws CoreException {
-		// process each file registered
+	    // process each file registered
 		for (IFile file : markerTable.keySet()) {
 			List<MarkerData> list = markerTable.get(file);
 

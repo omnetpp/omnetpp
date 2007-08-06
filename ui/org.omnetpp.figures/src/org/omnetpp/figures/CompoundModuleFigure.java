@@ -224,7 +224,7 @@ public class CompoundModuleFigure extends ModuleFigure
      * Helper function to return the current border
      * @return
      */
-    protected CompoundModuleBorder getCompoundModuleBorder() {
+    public CompoundModuleBorder getCompoundModuleBorder() {
     	return (CompoundModuleBorder)getBorder();
     }
 
@@ -433,5 +433,8 @@ public class CompoundModuleFigure extends ModuleFigure
         getCompoundModuleBorder().getTitleBorder().setDirectEditTextVisible(visible);
     }
 
+    public void setErrorMarker(boolean markError) {
+        getCompoundModuleBorder().getTitleBorder().setTextColor(markError ? ColorFactory.RED : ColorFactory.BLACK);
+    }
 
 }

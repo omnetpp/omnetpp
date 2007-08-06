@@ -107,6 +107,7 @@ public class ImageFactory {
 
     public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";
     public final static String DEFAULT_PIN = DECORATORS_IMAGE_DIR + "pin";
+    public final static String DEFAULT_ERROR = DECORATORS_IMAGE_DIR + "error";
     public final static String DEFAULT_KEY = "__default__";
 
     // for non rescaled icons

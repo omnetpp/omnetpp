@@ -60,7 +60,7 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
             setToolTip(null);
             tooltipFigure = null;
         } else {
-            tooltipFigure = new TooltipFigure(); 
+            tooltipFigure = new TooltipFigure();
             setToolTip(tooltipFigure);
             tooltipFigure.setText(tttext);
             invalidate();
@@ -90,6 +90,10 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
 	public String toString() {
 	    return getClass().getSimpleName()+" "+getText();
 	}
+
+    public void setErrorMarker(boolean markError) {
+        setForegroundColor(markError ? ColorFactory.RED : null);
+    }
 
 }
 
