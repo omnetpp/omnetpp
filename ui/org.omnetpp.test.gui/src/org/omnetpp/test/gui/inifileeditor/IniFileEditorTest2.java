@@ -30,14 +30,15 @@ public class IniFileEditorTest2 extends TestBase {
 //			}
 //		});
 		
+		// Test setup: close all editors, delete the inifile left over from previous runs 
 		workbenchAccess.closeAllEditorPartsWithHotKey();
-
 		ensureProjectFileDeleted(projectName, fileName);
 
+		// Select the project in the "Project Explorer" view
 		TreeAccess projectTreeAccess = workbenchAccess.findViewPartByPartName("Project Explorer", true).findTree();
 		TreeItemAccess treeItem = projectTreeAccess.findTreeItemByContent(projectName);
 
-		// Select New|Other... from context menu
+		// Select "New|Other..." from context menu
 		MenuAccess menuAccess = treeItem.activateContextMenuWithMouseClick();
 		MenuAccess submenuAccess = menuAccess.activateMenuItemWithMouse("New");
 		submenuAccess.activateMenuItemWithMouse("Other.*");
