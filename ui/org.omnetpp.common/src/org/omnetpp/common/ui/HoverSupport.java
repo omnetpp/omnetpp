@@ -30,18 +30,18 @@ import org.eclipse.swt.widgets.Shell;
  *   - tends to wrap long lines (SWT's Tooltip class does that too)
  *   - tooltip disappears after about 5s (Windows), which is not enough time to
  *     read long texts
- *   - lazy generation of tooltip text is not possible (there's no such thing 
+ *   - lazy generation of tooltip text is not possible (there's no such thing
  *     as TooltipAboutToShowListener)
  * This class overcomes these limitations.
- * 
- * One instance can adapt several controls (i.e. controls may share the same 
+ *
+ * One instance can adapt several controls (i.e. controls may share the same
  * hover).
- *   
+ *
  * @author Andras
  */
 public class HoverSupport {
     // Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
-    private static final String HTML_PROLOG = 
+    private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
         "/* Font definitions*/\n" +
         "html   { font-family: 'Tahoma',sans-serif; font-size: 8pt; font-style: normal; font-weight: normal; }\n" +
@@ -72,18 +72,18 @@ public class HoverSupport {
         "em        { font-style: italic; }\n" +
         "var       { font-style: italic; }\n" +
         "th        { font-weight: bold; }\n" +
-        "</style></head>\n" + 
+        "</style></head>\n" +
         "<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
-    private static final String HTML_EPILOG = 
+    private static final String HTML_EPILOG =
         "</body></html>\n";
 
 	protected IHoverTextProvider defaultHoverTextProvider = null;
-	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>(); 
+	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>();
 	protected Point hoverSizeConstraints = new Point(320, 200);
-	
+
 	protected IInformationControl hoverControl;
 	protected IInformationControl informationControl;
-	
+
 	/**
 	 * Listener added to each adapted widget: mouse hovering should show the tooltip
 	 */
@@ -99,9 +99,9 @@ public class HoverSupport {
 
 	/**
 	 * A global (workbench-wide) event filter, responsible for removing the tooltip,
-	 * or making it persistent (F2 key). This listener is hooked on Display when the first 
+	 * or making it persistent (F2 key). This listener is hooked on Display when the first
 	 * widget gets adapted, and unhooked when the last widget gets forgotten (or disposed).
-	 * 
+	 *
 	 * Global event filters are not without dangers; we chose to use it because this way
 	 * we can catch keyboard events wherever the focus is.
 	 */
@@ -114,7 +114,7 @@ public class HoverSupport {
 					removeHover();
 			}
 		}
-	}; 
+	};
 
 	/**
 	 * Create a hover support object.
@@ -130,7 +130,7 @@ public class HoverSupport {
 	}
 
 	protected void hookGlobalEventFilter() {
-		System.out.println("HoverSupport: hooking global listener");
+		// System.out.println("HoverSupport: hooking global listener");
 		Display.getDefault().addFilter(SWT.MouseExit, eventFilter);
 		Display.getDefault().addFilter(SWT.MouseMove, eventFilter);
 		Display.getDefault().addFilter(SWT.MouseDown, eventFilter);
@@ -138,7 +138,7 @@ public class HoverSupport {
 	}
 
 	protected void unhookGlobalEventFilter() {
-		System.out.println("HoverSupport: unhooking global listener");
+		// System.out.println("HoverSupport: unhooking global listener");
 		Display.getDefault().removeFilter(SWT.MouseExit, eventFilter);
 		Display.getDefault().removeFilter(SWT.MouseMove, eventFilter);
 		Display.getDefault().removeFilter(SWT.MouseDown, eventFilter);
@@ -173,14 +173,14 @@ public class HoverSupport {
 	}
 
 	/**
-	 * Removes hover support from the given control. This does NOT need to 
+	 * Removes hover support from the given control. This does NOT need to
 	 * be called when the widget gets disposed, because this class listens on
 	 * widgetDisposed() automatically.
 	 */
 	public void forget(Control c) {
 		c.removeMouseTrackListener(mouseTrackListener);
 		hoverTextProviders.remove(c);
-		
+
 		if (hoverTextProviders.isEmpty())
 			unhookGlobalEventFilter();
 	}
@@ -210,11 +210,11 @@ public class HoverSupport {
 
 	/**
 	 * Makes the currently displayed hover "sticky". This is the method to be called
-	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default). 
+	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default).
 	 */
 	public void makeHoverSticky() {
 		removeHover();
-		
+
 		Display.getDefault().getCursorLocation();
 		Control control = Display.getDefault().getCursorControl();
 		Point p = Display.getDefault().getCursorLocation();
@@ -227,8 +227,8 @@ public class HoverSupport {
 			informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
 			configureControl(informationControl, hoverText, p, preferredSize);
 			informationControl.setFocus();
-			
-			// it should close on losing the focus 
+
+			// it should close on losing the focus
 			informationControl.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent e) {
 					informationControl = null;
@@ -254,7 +254,7 @@ public class HoverSupport {
 		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
 		informationControl.setVisible(true);
 	}
-	
+
 	private int calculateSize(int hoverSizeConstraint, int sizeHint, int minimumSize, int preferredSize) {
 		int size = sizeHint;
 

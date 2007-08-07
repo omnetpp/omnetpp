@@ -62,11 +62,10 @@ public class ProblemMarkerSynchronizer {
 	}
 
     /**
-     * Unregister the file. we no longer synchronize this file with the markers
-     * @param file
+     * Returns true if no files registered.
      */
-    public void unregisterFile(IFile file) {
-        markerTable.remove(file);
+    public boolean isEmpty() {
+        return markerTable.isEmpty();
     }
 
 	/**

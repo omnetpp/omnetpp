@@ -15,6 +15,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<accessrules>
 			<accessrule kind="accessible" pattern="org/eclipse/core/internal/preferences/Base64"/>
+			<accessrule kind="accessible" pattern="org/eclipse/jface/internal/text/html/**"/>
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
