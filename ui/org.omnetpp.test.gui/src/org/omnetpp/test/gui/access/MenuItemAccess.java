@@ -5,17 +5,19 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.test.gui.InUIThread;
 
 public class MenuItemAccess extends ClickableWidgetAccess<MenuItem>
 {
 	public MenuItemAccess(MenuItem menuItem) {
 		super(menuItem);
 	}
-	
+
 	public MenuItem getMenuItem() {
 		return widget;
 	}
 
+	@InUIThread
 	public MenuAccess activateWithMouseClick() {
 		click();
 		return widget.getMenu() == null ? null : new MenuAccess(widget.getMenu());
@@ -32,6 +34,6 @@ public class MenuItemAccess extends ClickableWidgetAccess<MenuItem>
 
 	@Override
 	protected Menu getContextMenu() {
-		return null;
+		return null;  // a menu has no context menu
 	}
 }

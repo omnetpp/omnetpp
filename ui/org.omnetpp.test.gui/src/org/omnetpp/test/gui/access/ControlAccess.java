@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
+import org.omnetpp.test.gui.InUIThread;
 
 public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 {
@@ -16,8 +17,19 @@ public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 		return widget;
 	}
 
+	@InUIThread
 	public void assertEnabled() {
 		Assert.assertTrue(widget.getEnabled());
+	}
+
+	@InUIThread
+	public void assertHasFocus() {
+		Assert.assertTrue(widget.isFocusControl());
+	}
+
+	@InUIThread
+	public void assertVisible() {
+		Assert.assertTrue(widget.isVisible());
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.test.gui.GUITestCase;
-import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.EditorPartAccess;
 import org.omnetpp.test.gui.access.MenuAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
@@ -100,4 +99,5 @@ public class IniFileEditorTest2 extends GUITestCase {
 		problemsViewAccess.activateWithMouseClick();
 		problemsViewAccess.findTree().findTreeItemByContent(".*No such NED network.*");
 	}
+	
 }

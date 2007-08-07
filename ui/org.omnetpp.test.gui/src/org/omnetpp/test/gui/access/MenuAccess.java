@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.omnetpp.test.gui.InUIThread;
 
 public class MenuAccess extends WidgetAccess<Menu> {
+
 	public MenuAccess(Menu menu) {
 		super(menu);
 	}
@@ -16,13 +18,15 @@ public class MenuAccess extends WidgetAccess<Menu> {
 	}
 
 	/**
-	 * Activates the menu item with the given label. If it opens a submenu, 
+	 * Activates the menu item with the given label. If it opens a submenu,
 	 * return it, otherwise return null.
 	 */
+	@InUIThread
 	public MenuAccess activateMenuItemWithMouse(String label) {
 		return findMenuItemByLabel(label).activateWithMouseClick();
 	}
-	
+
+	@InUIThread
 	public MenuItemAccess findMenuItemByLabel(final String label) {
 		return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(widget, new IPredicate() {
 			public boolean matches(Object object) {
@@ -32,6 +36,7 @@ public class MenuAccess extends WidgetAccess<Menu> {
 		})));
 	}
 
+	@InUIThread
 	public List<MenuItem> collectMenuItems(Menu menu, IPredicate predicate) {
 		ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
 		collectMenuItems(menu, predicate, resultMenuItems);

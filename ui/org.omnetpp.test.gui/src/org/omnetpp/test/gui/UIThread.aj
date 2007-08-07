@@ -3,17 +3,18 @@ package org.omnetpp.test.gui;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Aspect for manipulating GUI stuff from a background thread.
+ * Aspect for manipulating the GUI from JUnit test methods running 
+ * in a background thread.
  * 
  * @author Andras
  */
 public aspect UIThread {
-
+	private static final double RETRY_TIMEOUT = 5;  // seconds
+	
 	/**
-	 * Surround every public method of the UI "Access" classes 
-	 * (org.omnetpp.test.gui.access.*) with Display.syncExec() calls,
-	 * because they operate on SWT widgets, the UI event queue, etc,
-	 * which would cause Illegal Thread Access when done from 
+	 * Surround methods marked with @InUIThread with Display.syncExec() 
+	 * calls. These methods usually operate on SWT widgets, the UI event 
+	 * queue, etc, which would cause Illegal Thread Access when done from 
 	 * a background thread.
 	 *
 	 * If the call fails (throws an exception), we'll keep retrying
@@ -22,10 +23,7 @@ public aspect UIThread {
 	 * When the code is already executing in the UI thread, just
 	 * proceed with the call.
 	 */
-	//TODO: ignore this advice when a @NoSyncExec annotation is present
-	//TODO: not for inner classes i.e. IPredicate.matches()!!!  within? withincode? cflow? cflowbelow?
-	//TODO: make hardcoded timeout parameterizable
-	Object around(): execution(public * org.omnetpp.test.gui.access.*.*(..)) {
+	Object around(): execution(@InUIThread public * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
 	    	System.out.println("AJ: doing " + method + " (already in UI thread)");
@@ -33,7 +31,7 @@ public aspect UIThread {
 	    }
 	    else {
 	    	System.out.println("AJ: doing in UI thread: " + method);
-	    	return GUITestCase.runStepWithTimeout(5, new GUITestCase.Step() {
+	    	return GUITestCase.runStepWithTimeout(RETRY_TIMEOUT, new GUITestCase.Step() {
 	    		public Object runAndReturn() {
 	    			return proceed();
 	    		}

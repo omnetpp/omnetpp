@@ -9,7 +9,7 @@ public class TreeItemAccess extends ClickableWidgetAccess<TreeItem>
 	public TreeItemAccess(TreeItem treeItem) {
 		super(treeItem);
 	}
-	
+
 	public TreeItem getTreeItem() {
 		return widget;
 	}

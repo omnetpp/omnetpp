@@ -5,29 +5,31 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.omnetpp.test.gui.InUIThread;
 
 public class TreeAccess extends ControlAccess<Tree>
 {
 	public TreeAccess(Tree tree) {
 		super(tree);
 	}
-	
+
 	public Tree getTree() {
 		return widget;
 	}
 
+	@InUIThread
 	public TreeItemAccess findTreeItemByContent(final String content) {
 		return new TreeItemAccess((TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
 				String treeItemContent = ((TreeItem)object).getText();
-				
 				if (debug)
 					System.out.println("checking tree item: " + treeItemContent);
 				return treeItemContent.matches(content);
 			}
 		})));
 	}
-	
+
+	@InUIThread
 	public List<TreeItem> collectTreeItems(TreeItem[] treeItems, IPredicate predicate) {
 		ArrayList<TreeItem> resultTreeItems = new ArrayList<TreeItem>();
 		collectTreeItems(treeItems, predicate, resultTreeItems);

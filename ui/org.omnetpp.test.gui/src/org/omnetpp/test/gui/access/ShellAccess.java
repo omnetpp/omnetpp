@@ -7,7 +7,7 @@ public class ShellAccess extends CompositeAccess<Shell>
 	public ShellAccess(Shell shell) {
 		super(shell);
 	}
-	
+
 	public Shell getShell() {
 		return widget;
 	}

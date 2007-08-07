@@ -11,18 +11,21 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.test.gui.EventTracer;
+import org.omnetpp.test.gui.InUIThread;
 
 public class WorkbenchAccess extends Access
 {
+	@InUIThread
 	public static void startTracingEvents() {
 		EventTracer.start();
 	}
 
+	@InUIThread
 	public ShellAccess findShellByTitle(final String title) {
 		return new ShellAccess((Shell)findWidget(getDisplay().getShells(), new IPredicate() {
 			public boolean matches(Object object) {
 				Shell shell = (Shell)object;
-				
+
 				if (debug)
 					System.out.println("Trying to collect shell: " + shell.getText());
 
@@ -31,14 +34,17 @@ public class WorkbenchAccess extends Access
 		}));
 	}
 
+	@InUIThread
 	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
 		return new ViewPartAccess(getWorkbench().getActiveWorkbenchWindow().getPages()[0].showView(viewId));
 	}
-	
+
+	@InUIThread
 	public ViewPartAccess findViewPartByPartName(String title) {
 		return findViewPartByPartName(title, false);
 	}
 
+	@InUIThread
 	public ViewPartAccess findViewPartByPartName(String title, boolean restore) {
 		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
 
@@ -55,6 +61,7 @@ public class WorkbenchAccess extends Access
 		return (ViewPartAccess)theOnlyObject(result);
 	}
 
+	@InUIThread
 	public EditorPartAccess findEditorByTitle(String title) {
 		ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
 
@@ -71,10 +78,12 @@ public class WorkbenchAccess extends Access
 		return (EditorPartAccess)theOnlyObject(result);
 	}
 
+	@InUIThread
 	public void closeAllEditorPartsWithHotKey() {
 		pressKey('w', SWT.CONTROL + SWT.SHIFT);
 	}
 
+	@InUIThread
 	public void saveCurrentEditorPartWithHotKey() {
 		pressKey('s', SWT.CONTROL);
 	}

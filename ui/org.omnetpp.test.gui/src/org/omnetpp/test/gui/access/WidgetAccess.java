@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Widget;
 public class WidgetAccess<T extends Widget> extends Access
 {
 	protected T widget;
-	
+
 	public WidgetAccess(T widget)
 	{
 		Assert.assertTrue(widget != null);
@@ -22,7 +22,6 @@ public class WidgetAccess<T extends Widget> extends Access
 	protected Event newEvent(int type) {
 		Event event = super.newEvent(type);
 		event.widget = widget;
-
 		return event;
 	}
 }
