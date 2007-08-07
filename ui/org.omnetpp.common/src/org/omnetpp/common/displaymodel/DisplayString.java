@@ -20,11 +20,9 @@ import org.omnetpp.common.util.StringUtils;
 public class DisplayString implements IDisplayString {
 
     // contains the default fallback values for the different tags if a variable is used in that position
-    public static final DisplayString VARIABLE_DEFAULTS
-        = new DisplayString("i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1;bgb=-1,-1,grey82,black,2;bgg=100,1,grey");
+    public static final DisplayString VARIABLE_DEFAULTS = new DisplayString(VARIABLE_DEFAULTS_STR);
     // contains the default fallback values for the different tags if it is empty
-    public static final DisplayString EMPTY_DEFAULTS
-        = new DisplayString("i=,,30;i2=,,30;b=-1,-1,,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=-1,-1,grey82,black,2;bgg=,1,grey");
+    public static final DisplayString EMPTY_DEFAULTS = new DisplayString(EMPTY_DEFAULTS_STR);
 
     // hold default values (if specified in derived classes)
     // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults'
@@ -191,7 +189,7 @@ public class DisplayString implements IDisplayString {
      */
     protected String getTagArg(Tag tag, int pos) {
         TagInstance tagInst = getTag(tag);
-        // if tag doesn't exists return null
+        // if tag doesn't exist return null
         if (tagInst == null) return null;
         // check for the value itself
         String val = tagInst.getArg(pos);
@@ -205,7 +203,7 @@ public class DisplayString implements IDisplayString {
      * @param defaultDspStr generic defaults
      * @param defaultVariableDspStr defaults used if a variable is present at the location
      * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined
-     * or <code>null</code> if tag does not exist at all. If a default diplay string was
+     * or <code>null</code> if tag does not exist at all. If a default display string was
      * provided with <code>setDefaults</code> it tries to look up the property from there
      *
      */
@@ -213,7 +211,7 @@ public class DisplayString implements IDisplayString {
         TagInstance tag = getTag(tagName);
         // if the tag does'nt exist do not apply any defaults
         if (tag == null) {
-        	// if there is a default diplay string delegate the request there
+        	// if there is a default display string delegate the request there
         	if (getDefaults() != null)
         		return getDefaults().getTagArgUsingDefs(tagName, pos);
         	// no default display string so return NULL to signal that the whole tag is missing
@@ -258,7 +256,7 @@ public class DisplayString implements IDisplayString {
 
     /**
      * Returns the tag with a given name
-     * @param tag equested tagname
+     * @param tag requested tagname
      * @return The requested tag or <code>NULL</code> if does not exist
      */
     protected TagInstance getTag(Tag tag) {
@@ -405,8 +403,6 @@ public class DisplayString implements IDisplayString {
 
     // helper functions for setting and getting the location and size properties
 	/**
-	 */
-	/**
      * Converts the provided value (in pixel) to unit
      * @param pixel
      * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
@@ -492,7 +488,7 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Converts the size given in pixels to unit based sorage
+     * Converts the size given in pixels to unit based size
      * Sets the size of the element (in pixels)
      * @param size
      */
@@ -533,7 +529,7 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Converts the size given in pixels to unit based sorage
+     * Converts the size given in pixels to unit based size
      * Sets the size of the element (in pixels)
      * @param size
      */
@@ -586,11 +582,6 @@ public class DisplayString implements IDisplayString {
     /**
      * Fire a property change notification
      * @param changedProperty The changed property or NULL if it cannot be identified
-     */
-    /**
-     * @param changedProperty
-     * @param newValue
-     * @param oldValue
      */
     private void fireDisplayStringChanged(Prop changedProperty, Object newValue, Object oldValue) {
     	// notify the owner node (if set)

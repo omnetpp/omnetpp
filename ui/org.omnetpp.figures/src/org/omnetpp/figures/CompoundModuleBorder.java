@@ -6,17 +6,16 @@ import org.eclipse.draw2d.TitleBarBorder;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.color.ColorFactory;
 
 public class CompoundModuleBorder extends CompoundBorder implements LabeledBorder
 {
 	/**
 	 * Constructs a FrameBorder with its label set to the name of the {@link TitleBarBorder}
 	 * class.
-	 * 
+	 *
 	 * @since 2.0
 	 */
-	public CompoundModuleBorder() { 
+	public CompoundModuleBorder() {
 		inner = new CompoundModuleLineBorder();
 		outer = new CompoundModuleTitleBarBorder();
 	}
@@ -62,7 +61,7 @@ public class CompoundModuleBorder extends CompoundBorder implements LabeledBorde
 	public void setFont(Font font) {
 		getTitleBorder().setFont(font);
 	}
-	
+
 	public void setTitleBackgroundColor(Color color) {
 		getTitleBorder().setBackgroundColor(color);
 	}
@@ -70,7 +69,7 @@ public class CompoundModuleBorder extends CompoundBorder implements LabeledBorde
 	public void setBorderColor(Color color) {
 		// null is not valid for title background use border color as default
 		if (color == null)
-			color = ColorFactory.defaultBorder;
+			color = CompoundModuleFigure.ERROR_BORDER_COLOR;
 		getLineBorder().setColor(color);
 	}
 
@@ -81,7 +80,7 @@ public class CompoundModuleBorder extends CompoundBorder implements LabeledBorde
 	public void setBorderWidth(int width) {
 		getLineBorder().setWidth(width);
 	}
-	
+
 	public void setImage(Image img) {
 		getTitleBorder().setImage(img);
 	}

@@ -23,21 +23,24 @@ import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 public class CompoundModuleFigure extends ModuleFigure
 				implements ILayerSupport, HandleBounds, IDirectEditSupport {
 
-    private static final int DEFAULT_BORDER_WIDTH = 2;
-    private static final int DEFAULT_BORDER_SNAP_WIDTH = 3;
-    private static Dimension DEFAULT_SIZE = new Dimension(300, 200);
-	private final Layer pane;
-    private final ScrollPane scrollpane;
-    private final LayeredPane layeredPane;
+    private static final int ERROR_BORDER_WIDTH = 2;
+    public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
+    public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
+    private static final int BORDER_SNAP_WIDTH = 3;
+    private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
+
+	private Layer pane;
+    private ScrollPane scrollpane;
+    private LayeredPane layeredPane;
     private Image backgroundImage;
     private String backgroundImageArr = "fix";
     private int gridTickDistance;
     private int gridNoOfMinorTics;
     private Color gridColor;
-    private Color moduleBackgroundColor = ColorFactory.defaultBackground;
-    private Color moduleBorderColor = ColorFactory.defaultBorder;
-    private final ConnectionLayer connectionLayer;
-    private final FreeformLayer messageLayer;
+    private Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
+    private Color moduleBorderColor = ERROR_BORDER_COLOR;
+    private ConnectionLayer connectionLayer;
+    private FreeformLayer messageLayer;
     private SpringEmbedderLayout layouter;
     // TODO implement ruler
     @SuppressWarnings("unused")
@@ -206,7 +209,7 @@ public class CompoundModuleFigure extends ModuleFigure
     	// take into account the NedFile figure scrolling position
     	getParent().translateToRelative(box);
     	// decrease the size a little to the same as the selection border
-    	return box.shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH);
+    	return box.shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
 
     }
 
@@ -240,16 +243,16 @@ public class CompoundModuleFigure extends ModuleFigure
 	 * @param borderColor
 	 * @param borderWidth
 	 */
-	protected void setBackgorund(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
-		moduleBackgroundColor = backgroundColor==null ? ColorFactory.defaultBackground : backgroundColor;
-		moduleBorderColor = borderColor==null ? ColorFactory.defaultBorder : borderColor;
+	protected void setBackground(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
+		moduleBackgroundColor = backgroundColor==null ? ERROR_BACKGROUND_COLOR : backgroundColor;
+		moduleBorderColor = borderColor==null ? ERROR_BORDER_COLOR : borderColor;
 
 		// the global background is the same as the border color
 		setBackgroundColor(moduleBorderColor);
 		getCompoundModuleBorder().setBorderColor(moduleBorderColor);
 		// there is no separate title color
         getCompoundModuleBorder().setTitleBackgroundColor(null);
-		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? DEFAULT_BORDER_WIDTH : borderWidth);
+		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;
 		backgroundImageArr = arrange != null ? arrange : "";
@@ -322,7 +325,7 @@ public class CompoundModuleFigure extends ModuleFigure
         String imageArrangementStr = dps.getAsStringDef(IDisplayString.Prop.MODULE_IMAGEARRANGEMENT);
 
         // set the background
-        setBackgorund(
+        setBackground(
         		imgback,
         		imageArrangementStr,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_FILLCOL)),
@@ -377,7 +380,7 @@ public class CompoundModuleFigure extends ModuleFigure
 		Point mouse = new Point(x,y);
 		translateToRelative(mouse);
 		return getBounds().contains(mouse) &&
-			!getClientArea().shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH).contains(mouse);
+			!getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH).contains(mouse);
 	}
 
 	/**

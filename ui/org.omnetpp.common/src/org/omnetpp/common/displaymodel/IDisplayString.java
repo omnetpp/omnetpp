@@ -3,6 +3,8 @@ package org.omnetpp.common.displaymodel;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 
+import org.omnetpp.common.util.StringUtils;
+
 public interface IDisplayString {
 
 	String ATT_DISPLAYSTRING = "DisplayString"; // end of TagArg enum definition
@@ -17,6 +19,11 @@ public interface IDisplayString {
     public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags
                       bgp, bgb, bgi, bgtt, bgg, bgl, bgs, // compound module background tags
                       m, a, ls, bp }                 // connection tags
+
+    // default value used if the tag exists but the property contains no value
+    public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=,,,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
+    // example values used if the property contains a $variable
+    public static final String VARIABLE_DEFAULTS_STR = "i=abstract/server,red,50;i2=status/execute,red,50;b=40,24,rect,#8080ff,black,2;t=Sample text,t,blue;r=100,white,black,3;bgb=300,200,white,black,5;bgg=100,2,black;bgi=,center;ls=green,3,dashed";
 
     /**
      * Defines all tag groups
@@ -43,37 +50,37 @@ public interface IDisplayString {
         LAYOUT_PAR2(Tag.p, 4, PropType.STRING, PropGroup.Position, "vector layout par2", "2nd layout parameter"),
         LAYOUT_PAR3(Tag.p, 5, PropType.STRING, PropGroup.Position, "vector layout par3", "3rd layout parameter"),
         // B tag
-        WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width (-1)"),
-        HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height (-1)"),
-        // SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
+        WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width"),
+        HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height"),
+        // SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2)."),
         // TODO enumerated types should have their own constructor taking a string array of possible values (or other enum)
-        SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / oval). Default: rect"),
+        SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object (rect / oval)."),
 
         // former O tag
-        FILLCOL(Tag.b, 3, PropType.COLOR, PropGroup.Polygon, "fill color", "Fill color of the object (colorname or #RRGGBB or @HHSSBB). Default: light blue"),
-        BORDERCOL(Tag.b, 4, PropType.COLOR, PropGroup.Polygon, "border color", "Border color of the object (colorname or #RRGGBB or @HHSSBB). Default: black"),
-        BORDERWIDTH(Tag.b, 5, PropType.INTEGER, PropGroup.Polygon, "border width", "Border width of the object. Default: 2"),
+        FILLCOL(Tag.b, 3, PropType.COLOR, PropGroup.Polygon, "fill color", "Fill color of the object (colorname or #RRGGBB or @HHSSBB)."),
+        BORDERCOL(Tag.b, 4, PropType.COLOR, PropGroup.Polygon, "border color", "Border color of the object (colorname or #RRGGBB or @HHSSBB)."),
+        BORDERWIDTH(Tag.b, 5, PropType.INTEGER, PropGroup.Polygon, "border width", "Border width of the object."),
         // I tag
         IMAGE(Tag.i, 0, PropType.IMAGE, PropGroup.Icon, "icon", "An icon representing the object"),
         IMAGECOLOR(Tag.i, 1, PropType.COLOR, PropGroup.Icon, "icon color", "A color to colorize the icon (colorname or #RRGGBB or @HHSSBB)."),
-        IMAGECOLORPCT(Tag.i, 2, PropType.INTEGER, PropGroup.Icon, "icon colorization %", "Amount of colorization in percent. Default: 30"),
+        IMAGECOLORPCT(Tag.i, 2, PropType.INTEGER, PropGroup.Icon, "icon colorization %", "Amount of colorization in percent."),
         // IS tag
         IMAGESIZE(Tag.is, 0, PropType.STRING, PropGroup.Icon, "icon size", "The size of the image (vs / s / l / vl)"),
         // I2 tag
         OVIMAGE(Tag.i2, 0, PropType.IMAGE, PropGroup.Icon, "overlay icon", "An icon added to the upper right corner of the original image"),
         OVIMAGECOLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon color", "A color to colorize the overlay icon (colorname or #RRGGBB or @HHSSBB)."),
-        OVIMAGECOLORPCT(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon colorization %", "Amount of colorization in percent. Default: 30"),
+        OVIMAGECOLORPCT(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon colorization %", "Amount of colorization in percent."),
         // R tag
         RANGE(Tag.r, 0, PropType.UNIT, PropGroup.Range, "range", "Radius of the range indicator"),
         RANGEFILLCOL(Tag.r, 1, PropType.COLOR, PropGroup.Range, "range fill color", "Fill color of the range indicator (colorname or #RRGGBB or @HHSSBB)."),
-        RANGEBORDERCOL(Tag.r, 2, PropType.COLOR, PropGroup.Range, "range border color", "Border color of the range indicator (colorname or #RRGGBB or @HHSSBB). Default: black"),
-        RANGEBORDERWIDTH(Tag.r, 3, PropType.INTEGER, PropGroup.Range, "range border width", "Border width of the range indicator. Default: 1"),
+        RANGEBORDERCOL(Tag.r, 2, PropType.COLOR, PropGroup.Range, "range border color", "Border color of the range indicator (colorname or #RRGGBB or @HHSSBB)."),
+        RANGEBORDERWIDTH(Tag.r, 3, PropType.INTEGER, PropGroup.Range, "range border width", "Border width of the range indicator."),
         // Q tag
         QUEUE(Tag.q, 0, PropType.STRING, PropGroup.Text, "queue object", "Displays the length of the named queue object"),
         // T tag
         TEXT(Tag.t, 0, PropType.STRING, PropGroup.Text, "text", "Additional text to display"),
-        TEXTPOS(Tag.t, 1, PropType.STRING, PropGroup.Text, "text position", "Position of the text (l / r / t). Default: t"),
-        TEXTCOLOR(Tag.t, 2, PropType.COLOR, PropGroup.Text, "text color", "Color of the displayed text (colorname or #RRGGBB or @HHSSBB). Default: blue"),
+        TEXTPOS(Tag.t, 1, PropType.STRING, PropGroup.Text, "text position", "Position of the text (l / r / t)."),
+        TEXTCOLOR(Tag.t, 2, PropType.COLOR, PropGroup.Text, "text color", "Color of the displayed text (colorname or #RRGGBB or @HHSSBB)."),
         // TT tag
         TOOLTIP(Tag.tt, 0, PropType.STRING, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object"),
         // END of SUB/SIMPLE MODULE properties
@@ -84,31 +91,31 @@ public interface IDisplayString {
         MODULE_X(Tag.bgp, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg x", "Module background horizontal offset"),
         MODULE_Y(Tag.bgp, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg y", "Module background vertical offset"),
         // BGB tag
-        MODULE_WIDTH(Tag.bgb, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match contents (-1)"),
-        MODULE_HEIGHT(Tag.bgb, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match contents (-1)"),
-        MODULE_FILLCOL(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (colorname or #RRGGBB or @HHSSBB). Default: grey82"),
-        MODULE_BORDERCOL(Tag.bgb, 3, PropType.COLOR, PropGroup.BackgroundStyle, "bg border color", "Border color of the module background rectangle (colorname or #RRGGBB or @HHSSBB). Default: black"),
-        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.INTEGER, PropGroup.BackgroundStyle, "bg border width", "Border width of the module background rectangle. Default: 2"),
+        MODULE_WIDTH(Tag.bgb, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match the contents"),
+        MODULE_HEIGHT(Tag.bgb, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match the contents"),
+        MODULE_FILLCOL(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (colorname or #RRGGBB or @HHSSBB)."),
+        MODULE_BORDERCOL(Tag.bgb, 3, PropType.COLOR, PropGroup.BackgroundStyle, "bg border color", "Border color of the module background rectangle (colorname or #RRGGBB or @HHSSBB)."),
+        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.INTEGER, PropGroup.BackgroundStyle, "bg border width", "Border width of the module background rectangle."),
         // BGTT tag
         MODULE_TOOLTIP(Tag.bgtt, 0, PropType.STRING, PropGroup.Background, "bg tooltip", "Tooltip to be displayed over the module's background"),
         // BGI tag
         MODULE_IMAGE(Tag.bgi, 0, PropType.IMAGE, PropGroup.Background, "bg image", "An image to be displayed as a module background"),
-        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.STRING, PropGroup.Background, "bg image mode", "How to arrange the module's background image (fix, tile, stretch, center). Default: fix"),
+        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.STRING, PropGroup.Background, "bg image mode", "How to arrange the module's background image (fix, tile, stretch, center)."),
         // BGG tag
         MODULE_TICKDISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Background, "grid tick distance", "Distance between two major ticks measured in units"),
-        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid minor ticks", "Minor ticks per major ticks. Default: 1"),
-        MODULE_GRIDCOL(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (colorname or #RRGGBB or @HHSSBB). Default: grey50"),
+        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid minor ticks", "Minor ticks per major ticks."),
+        MODULE_GRIDCOL(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (colorname or #RRGGBB or @HHSSBB)."),
         // module layouting (how to layout the free moving submodules)
         MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.BackgroundLayout, "layout seed","Seed value for layout algorithm"),
-        MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.BackgroundLayout, "layout algorithm","Algorithm for child layouting. Default: spring"),
+        MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.BackgroundLayout, "layout algorithm","Algorithm for child layouting."),
         // module scaling pixel per unit
-        MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Background, "pixels per unit", "Number of pixels per distance unit. Coordinates are measured in units. Default: 1"),
+        MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Background, "pixels per unit", "Number of pixels per distance unit. Coordinates are measured in units."),
         MODULE_UNIT(Tag.bgs, 1, PropType.STRING, PropGroup.Background, "unit name", "Name of distance unit"),
         // END of COMPOUNDMODULE properties
 
         // START of CONNECTION properties
         // do not change the first and last element of the property group
-        // ROUTING_MODE(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath) Default: manual"),
+        // ROUTING_MODE(Tag.m, 0, PropType.STRING, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath)"),
         // ROUTING_CONSTRAINT(Tag.m, 1, PropType.STRING, PropGroup.Connection, "routing constraint", "possible constraints: ([s]outh, [n]orth, [e]ast, [w]est)"),
         // a tag (anchoring)
         // ANCHOR_SRCX(Tag.a, 0, PropType.INTEGER, PropGroup.Position, "source anchor x", "Relative horizontal position of the anchor on the source module side"),
@@ -116,10 +123,10 @@ public interface IDisplayString {
         // ANCHOR_DSTX(Tag.a, 2, PropType.INTEGER, PropGroup.Position, "destination anchor x", "Relative horizontal position of the anchor on the destination module side"),
         // ANCHOR_DSTY(Tag.a, 3, PropType.INTEGER, PropGroup.Position, "destination anchor y", "Relative vertical position of the anchor on the destination module side"),
         // ls tag (line styling)
-        CONNECTION_COL(Tag.ls, 0, PropType.COLOR, PropGroup.Line, "line color", "Connection color (colorname or #RRGGBB or @HHSSBB). Default: black"),
-        CONNECTION_WIDTH(Tag.ls, 1, PropType.INTEGER, PropGroup.Line, "line width", "Connection line width. Default: 1"),
-        CONNECTION_STYLE(Tag.ls, 2, PropType.STRING, PropGroup.Line, "line style", "Connection line style ([s]olid, [d]otted, [da]shed). Default: solid");
-        // CONNECTION_SEGMENTS(Tag.ls, 3, PropType.STRING, PropGroup.Line, "segments", "Connection segments ([l]ine, [s]pline). Default: line"),
+        CONNECTION_COL(Tag.ls, 0, PropType.COLOR, PropGroup.Line, "line color", "Connection color (colorname or #RRGGBB or @HHSSBB)."),
+        CONNECTION_WIDTH(Tag.ls, 1, PropType.INTEGER, PropGroup.Line, "line width", "Connection line width."),
+        CONNECTION_STYLE(Tag.ls, 2, PropType.STRING, PropGroup.Line, "line style", "Connection line style ([s]olid, [d]otted, [da]shed).");
+        // CONNECTION_SEGMENTS(Tag.ls, 3, PropType.STRING, PropGroup.Line, "segments", "Connection segments ([l]ine, [s]pline)."),
         // bp tag (bendpoints)
         // BENDPOINTS(Tag.bp, 0, PropType.UNIT, PropGroup.Connection, "bendpoints", "bendpoint locations");
         // END of CONNECTION properties
@@ -164,7 +171,8 @@ public interface IDisplayString {
         }
 
         public String getVisibleDesc() {
-            return visibleDesc;
+            String defaultValue = getTag() != null ? DisplayString.EMPTY_DEFAULTS.getAsString(this) : null;
+            return visibleDesc + (StringUtils.isNotEmpty(defaultValue) ? " Default: "+defaultValue : "");
         }
     }
 
