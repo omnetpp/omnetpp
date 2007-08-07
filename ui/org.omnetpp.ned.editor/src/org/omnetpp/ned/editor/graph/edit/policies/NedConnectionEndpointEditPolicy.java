@@ -6,8 +6,9 @@ import java.util.List;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
-import org.omnetpp.common.color.ColorFactory;
+
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 
@@ -27,7 +28,7 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
 
         getConnectionFigure().setLineWidth(getConnectionFigure().getLocalLineWidth() + 1);
         Color color = PolicyUtil.isEditable(getHost()) ?
-                            ColorFactory.highlight : ColorFactory.lowlight;
+                GraphicalNedEditor.HIGHLIGHT_COLOR : GraphicalNedEditor.LOWLIGHT_COLOR;
         getConnectionFigure().setForegroundColor(color);
     }
 

@@ -12,13 +12,14 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
-import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 
 /**
  * Handles feedback figures during move and resize and enables / disables
  * drag and resize.
  */
 public class NedResizeEditPolicy extends ResizableEditPolicy {
+
 
     /**
      * Creates the figure used for feedback.
@@ -89,7 +90,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
     protected List<?> createSelectionHandles() {
         List<?> handles = super.createSelectionHandles();
         Color color = PolicyUtil.isEditable(getHost()) ?
-                            ColorFactory.highlight : ColorFactory.lowlight;
+                GraphicalNedEditor.HIGHLIGHT_COLOR : GraphicalNedEditor.LOWLIGHT_COLOR;
         // set the color for all handles
         for(Object handle : handles)
             ((IFigure)handle).setForegroundColor(color);

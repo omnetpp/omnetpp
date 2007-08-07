@@ -19,9 +19,9 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
@@ -176,7 +176,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
          figure = new RectangleFigure();
         ((RectangleFigure) figure).setFill(false);
-        figure.setForegroundColor(ColorFactory.highlight);
+        figure.setForegroundColor(GraphicalNedEditor.HIGHLIGHT_COLOR);
 
         addFeedback(figure);
         return figure;

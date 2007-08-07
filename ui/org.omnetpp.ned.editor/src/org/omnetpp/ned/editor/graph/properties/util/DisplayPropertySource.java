@@ -106,7 +106,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     	if (!(propObj instanceof DisplayString.Prop))
     		return null;
 
-        // check if we requested the "sigle line" DISPLAY property
+        // check if we requested the "single line" DISPLAY property
         if(propObj == DisplayString.Prop.DISPLAY)
         	return getEditableValue();
 
@@ -161,7 +161,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     	if (!(prop instanceof DisplayString.Prop))
     		return false;
 
-        // check if we requested the "sigle line" DISPLAY property
+        // check if we requested the "single line" DISPLAY property
         if(prop == DisplayString.Prop.DISPLAY)
             return !"".equals(displayString.toString());
 

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -19,7 +18,7 @@ import org.omnetpp.ned.model.pojo.ParametersNode;
 
 public final class ConnectionNodeEx extends ConnectionNode
     implements IHasType, IHasDisplayString, IHasParameters {
-	private ConnectionDisplayString displayString = null;
+	private DisplayString displayString = null;
 
     protected ConnectionNodeEx() {
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
@@ -154,7 +153,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 
 	public DisplayString getDisplayString() {
 		if (displayString == null)
-			displayString = new ConnectionDisplayString(this, NEDElementUtilEx.getDisplayString(this));
+			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		return displayString;
 	}
 

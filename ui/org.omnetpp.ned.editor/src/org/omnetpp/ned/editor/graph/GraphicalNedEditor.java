@@ -42,6 +42,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
@@ -95,6 +96,8 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  */
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
+    public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
+    public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
     /**
      * Outline viewer for graphical ned editor
      * @author rhornig
