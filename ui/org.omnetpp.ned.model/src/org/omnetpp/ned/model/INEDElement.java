@@ -1,6 +1,7 @@
 package org.omnetpp.ned.model;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
@@ -340,14 +341,15 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public String getSource();
 
 	/**
-	 * Whether the current element is valid (has no syntax and consistency errors)
+	 * @return The collection that contains the error marker ids attached to this ned element
+	 * if the size is > 0 the NEDElement has an error
 	 */
-	public boolean isValid();
+	public List<Integer> getErrorMarkerIds();
 
 	/**
-	 * @param isValid Sets the validity of the element (syntax checking and validation should adjust this attribute
+	 * @return true if the NEDELEMENT has attached errors/markers
 	 */
-	public void setValid(boolean isValid);
+	public boolean hasErrorMarkers();
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -136,7 +136,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
     	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getEffectiveDisplayString());
         // mark if the model is invalid
-        getCompoundModuleFigure().setErrorMarker(!getCompoundModuleModel().isValid());
+        getCompoundModuleFigure().setErrorDecoration(getCompoundModuleModel().hasErrorMarkers());
     }
 
 	/**

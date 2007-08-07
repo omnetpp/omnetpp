@@ -135,7 +135,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
 
         // mark if the model is invalid
-        getSubmoduleFigure().setErrorMarker(!getSubmoduleModel().isValid());
+        getSubmoduleFigure().setErrorDecoration(getSubmoduleModel().hasErrorMarkers());
 
     }
 

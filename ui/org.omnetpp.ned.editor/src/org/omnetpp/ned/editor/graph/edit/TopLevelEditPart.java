@@ -71,7 +71,7 @@ public class TopLevelEditPart extends BaseEditPart {
                 ((TopLevelFigure)getFigure()).setIcon(image);
     	}
     	// indicate the error
-        ((TopLevelFigure)getFigure()).setErrorMarker(!getNEDModel().isValid());
+        ((TopLevelFigure)getFigure()).setErrorDecoration(getNEDModel().hasErrorMarkers());
 
 	}
 

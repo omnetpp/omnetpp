@@ -1,10 +1,13 @@
 package org.omnetpp.ned.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
+
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
@@ -44,7 +47,7 @@ public abstract class NEDElement extends PlatformObject
 	private static long lastid;
     private HashMap<Object,Object> userData;
     private INEDTypeInfo typeInfo;
-    private transient boolean valid = true;
+    private transient List<Integer> errorMarkerIds = new ArrayList<Integer>();
 
     private transient NEDChangeListenerList listeners = null;
 
@@ -121,7 +124,7 @@ public abstract class NEDElement extends PlatformObject
 		lastchild = null;
 		prevsibling = null;
 		nextsibling = null;
-		valid = true;
+		errorMarkerIds.clear();
 
 		id = ++lastid;
 	}
@@ -643,7 +646,7 @@ public abstract class NEDElement extends PlatformObject
      */
     public void propertyChanged(IDisplayString source, Prop changedProp, Object newValue, Object oldValue) {
         Assert.isTrue(this instanceof IHasDisplayString, "propertyChanged should be called only as a result of notificaton from an attached DisplayString");
-        // syncronize it to the underlying model
+        // synchronize it to the underlying model
         NEDElementUtilEx.setDisplayString(this, source.toString());
         String propertyName =
             IDisplayString.ATT_DISPLAYSTRING + (changedProp != null ? "."+changedProp : "");
@@ -732,19 +735,14 @@ public abstract class NEDElement extends PlatformObject
         return NEDTreeUtil.generateNedSource(this, true);
     }
 
-    /**
-     * Whether the current element is valid (has no syntax and consistency errors)
-     */
-    public boolean isValid() {
-        return valid;
+    public List<Integer> getErrorMarkerIds() {
+        return errorMarkerIds;
     }
 
-    /**
-     * @param isValid Sets the validity of the element (syntax checking and validation should adjust this attribute
-     */
-    public void setValid(boolean isValid) {
-        valid = isValid;
+    public boolean hasErrorMarkers() {
+        return errorMarkerIds.size() > 0;
     }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      * For debugging purposes
