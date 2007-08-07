@@ -35,7 +35,8 @@ Parameters page
 - "Remove" button
 - editing, content assist, error handling while editing (bogus entries like duplicate key)
 
-
+Continued lines (backslash syntax)
+- check that everything works, including form editor pages
 
 
  

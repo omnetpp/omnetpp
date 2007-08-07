@@ -23,10 +23,10 @@ public class InifileParser {
 	 * content assigned to their completing (non-backslash) line.
 	 */
 	public interface ParserCallback {
-		void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment);
-		void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment);
-		void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment);
-		void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment);
+		void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment);
+		void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment);
+		void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment);
+		void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment);
 		void parseError(int lineNumber, int numLines, String message);
 	}
 
@@ -34,10 +34,10 @@ public class InifileParser {
 	 * A ParserCallback with all methods defined to be empty.
 	 */
 	public static class ParserAdapter implements ParserCallback {
-		public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment) {}
-		public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {}
-		public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {}
-		public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {}
+		public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {}
+		public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {}
+		public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {}
+		public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {}
 		public void parseError(int lineNumber, int numLines, String message) {}
 	}
 
@@ -45,17 +45,17 @@ public class InifileParser {
 	 * A ParserCallback for debug purposes.
 	 */
 	public static class DebugParserAdapter implements ParserCallback {
-		public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment) {
-			System.out.println(lineNumber+": "+rawLine+" --> comment="+comment);
+		public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
+			System.out.println(lineNumber+": "+rawLine+" --> comment="+rawComment);
 		}
-		public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
-			System.out.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  comment="+comment);
+		public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
+			System.out.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  comment="+rawComment);
 		}
-		public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
-			System.out.println(lineNumber+": "+rawLine+" --> key='"+key+"' value='"+value+"'  comment="+comment);
+		public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
+			System.out.println(lineNumber+": "+rawLine+" --> key='"+key+"' value='"+value+"'  comment="+rawComment);
 		}
-		public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {
-			System.out.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  comment="+comment);
+		public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {
+			System.out.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  comment="+rawComment);
 		}
 		public void parseError(int lineNumber, int numLines, String message) {
 			System.out.println(lineNumber+": PARSE ERROR: "+message);
@@ -108,11 +108,11 @@ public class InifileParser {
 			char lineStart = line.length()==0 ? 0 : line.charAt(0);
 			if (line.length()==0) {
 				// blank line
-				callback.blankOrCommentLine(lineNumber, numLines, rawLine, null);
+				callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
 			}
 			else if (lineStart=='#' || lineStart==';') {
 				// comment line
-				callback.blankOrCommentLine(lineNumber, numLines, rawLine, line.trim());
+				callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
 			}
 			else if (lineStart=='i' && line.matches("include\\s.*")) {
 				// include directive
@@ -124,19 +124,19 @@ public class InifileParser {
 					continue;
 				}
 				String args = rest.substring(0, endPos).trim();
-				String comment = (endPos==rest.length()) ? "" : rest.substring(endPos);
-				callback.directiveLine(lineNumber, numLines, rawLine, directive, args, comment);
+				String rawComment = rest.substring(endPos);
+				callback.directiveLine(lineNumber, numLines, rawLine, directive, args, rawComment);
 			}
 			else if (lineStart=='[') {
 				// section heading
-				Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*([#;].*)?").matcher(line);
+				Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*?(\\s*[#;].*)?").matcher(line);
 				if (!m.matches()) {
 					callback.parseError(lineNumber, numLines, "Syntax error in section heading");
 					continue;
 				}
 				String sectionName = m.group(1).trim();
-				String comment = m.groupCount()>1 ? m.group(2) : ""; 
-				callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, comment);
+				String rawComment = m.groupCount()>1 ? m.group(2) : ""; 
+				callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
 			}
 			else {
 				// key = value
@@ -145,7 +145,7 @@ public class InifileParser {
 					callback.parseError(lineNumber, numLines, "Unterminated string constant");
 					continue;
 				}
-				String comment = (endPos==line.length()) ? "" : line.substring(endPos);
+				String rawComment = line.substring(endPos);
 				String keyValue = line.substring(0, endPos);
 				int equalSignPos = keyValue.indexOf('=');
 				if (equalSignPos == -1) {
@@ -158,7 +158,7 @@ public class InifileParser {
 					continue;
 				}
 				String value = keyValue.substring(equalSignPos+1).trim();
-				callback.keyValueLine(lineNumber, numLines, rawLine, key, value, comment);
+				callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
 			}
 		}
 	}
@@ -188,6 +188,7 @@ public class InifileParser {
 				break;
 			case '#': case ';':
 				// comment
+				while (k > 0 && Character.isWhitespace(line.charAt(k-1))) k--;
 				return k;
 			default:
 				k++;

@@ -536,7 +536,7 @@ public class InifileDocument implements IInifileDocument {
 	
 	protected static String stripCommentPrefix(String comment) {
 		// strip leading whitespace, "#" or ";", and one space if possible
-		return comment.replaceFirst("^\\s*[#;] ?", "");  //FIXME what about multi-line comments?
+		return comment.replaceFirst("^\\s*[#;] ?", "");
 	}
 
 	protected static String updateComment(String oldRawComment, String newComment) {
