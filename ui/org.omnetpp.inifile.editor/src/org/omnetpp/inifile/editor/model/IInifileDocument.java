@@ -16,11 +16,11 @@ import org.eclipse.core.resources.IFile;
  * 
  * This interface assumes that within a section, keys are unique (i.e. multiple 
  * appearances of the same key should be flagged as an error during parsing.)
- * If there're non-unique keys, behaviour is undefined: this interface
+ * If there're non-unique keys, behavior is undefined: this interface
  * should not be used until this condition gets resolved. 
  * 
  * Note: it is not possible to distinguish multiple sections of the same name
- * (ie a non-contiguous section): this interface presents them as a single section.
+ * (i.e. a non-contiguous section): this interface presents them as a single section.
  * 
  * @author Andras
  */
@@ -70,22 +70,22 @@ public interface IInifileDocument {
 	void setValue(String section, String key, String value);
 
 	/**
-	 * Creates a new entry. Throws error if already exists, or section or beforeKey does not exist. 
-	 * @param comment may be null
+	 * Creates a new entry. Throws error if already exists, or section or beforeKey does not exist.
+	 * @param comment should be "", or include the leading "#" and potential preceding whitespace 
 	 * @param beforeKey may be null (meaning append) 
 	 */
-	void addEntry(String section, String key, String value, String comment, String beforeKey);
+	void addEntry(String section, String key, String value, String rawComment, String beforeKey);
 
 	/**
 	 * Creates several new entries in one operation. If any of the keys already exists, 
 	 * the method throws an exception without changing the document. Also throws exception
 	 * when section or beforeKey does not exist, or any of the arrays are wrong (see below).  
 	 * @param keys  may not be null or contain nulls
-	 * @param values may be null; when non-null, size must match keys[], and may contain nulls
-	 * @param comments may be null; when non-null, size must match keys[], and may contain nulls
+	 * @param values may be null; when non-null, size must match keys[] and may contain nulls
+	 * @param rawComments may be null; when non-null, size must match keys[] and may contain nulls
 	 * @param beforeKey may be null (meaning append) 
 	 */
-	void addEntries(String section, String[] keys, String[] values, String[] comments, String beforeKey);
+	void addEntries(String section, String[] keys, String[] values, String[] rawComments, String beforeKey);
 
 	/**
 	 * Returns immutable value object with file/line/isReadonly info.
@@ -95,15 +95,31 @@ public interface IInifileDocument {
 
 	/** 
 	 * Returns comment for the given key, or null if there's no comment.
+	 * The comment is returned without the leading "# " or "#". 
 	 * Throws error if key doesn't exist.
 	 */
 	String getComment(String section, String key);
 
 	/** 
-	 * Sets the comment for an entry. Throws error if key doesn't exist,
-	 * or the entry is readonly.
+	 * Sets the comment for an entry. 
+	 * The comment should be passed without the leading "# " or "#". 
+	 * Throws error if key doesn't exist, or the entry is readonly.
 	 */
 	void setComment(String section, String key, String comment);
+
+	/** 
+	 * Returns comment for the given key, or null if there's no comment.
+	 * The comment is returned, including the leading "#" and preceding whitespace. 
+	 * Throws error if key doesn't exist.
+	 */
+	String getRawComment(String section, String key);
+
+	/** 
+	 * Sets the comment for an entry. 
+	 * The comment should be passed with the leading "#" and preceding whitespace. 
+	 * Throws error if key doesn't exist, or the entry is readonly.
+	 */
+	void setRawComment(String section, String key, String comment);
 
 	/** 
 	 * Renames the given key. Throws error if key doesn't exist, or the entry is readonly.
@@ -156,10 +172,9 @@ public interface IInifileDocument {
 	boolean containsSection(String section);
 
 	/** 
-	 * Removes all sections with that name, except the parts in readonly files.
-	 * If there's no such section, nothing happens.  
-	 * Throws an error if this entry is not editable (readonly).
-	 * XXX what should happen if some is readonly and some is not?
+	 * Removes all sections with that name. If there's no such section, nothing happens.  
+	 * If some parts are in included files (i.e. readonly parts), those parts are
+	 * not skipped, and an exception is thrown at the end of the operation. 
 	 */
 	void removeSection(String section);
 	
@@ -186,17 +201,35 @@ public interface IInifileDocument {
 	
 	/**
 	 * Returns the comment on the section heading's line. Throws error if section 
-	 * doesn't exist; returns comment of the first heading if there're more than one. 
+	 * doesn't exist; returns comment of the first heading if there're more than one.
+	 * The comment is returned without the leading "# " or "#". 
 	 */
 	String getSectionComment(String section);
 
 	/**
 	 * Sets the comment on the section heading's line. 
 	 * Sets the comment of the first heading if there're more than one. 
+	 * The comment should be passed without the leading "# " or "#". 
 	 * Throws error if section doesn't exist, or if the section heading line 
 	 * is readonly.
 	 */
 	void setSectionComment(String section, String comment);
+
+	/**
+	 * Returns the comment on the section heading's line. Throws error if section 
+	 * doesn't exist; returns comment of the first heading if there're more than one.
+	 * The comment is returned with the leading "#" and preceding whitespace. 
+	 */
+	String getRawSectionComment(String section);
+
+	/**
+	 * Sets the comment on the section heading's line. 
+	 * Sets the comment of the first heading if there're more than one. 
+	 * The comment should be passed with the leading "#" and preceding whitespace. 
+	 * Throws error if section doesn't exist, or if the section heading line 
+	 * is readonly.
+	 */
+	void setRawSectionComment(String section, String comment);
 
 	/**
 	 * Interprets lineNumber as a position into the primary (edited) file,

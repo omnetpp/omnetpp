@@ -17,10 +17,10 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class InifileParser {
 	/** 
-	 * Implement this interface to store ini file contents as it gets parsed. The comment
-	 * arg may be null (if there is no comment on that line). Lines that end in backslash
-	 * are passed to incompleteLine(), with all content assigned to their completing
-	 * (non-backslash) line.
+	 * Implement this interface to store ini file contents as it gets parsed. Comments are 
+	 * passed back with leading "#" and preceding whitespace, or as "" if there's no comment
+	 * on that line. Lines that end in backslash are passed to incompleteLine(), with all 
+	 * content assigned to their completing (non-backslash) line.
 	 */
 	public interface ParserCallback {
 		void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment);
@@ -124,7 +124,7 @@ public class InifileParser {
 					continue;
 				}
 				String args = rest.substring(0, endPos).trim();
-				String comment = (endPos==rest.length()) ? null : rest.substring(endPos);
+				String comment = (endPos==rest.length()) ? "" : rest.substring(endPos);
 				callback.directiveLine(lineNumber, numLines, rawLine, directive, args, comment);
 			}
 			else if (lineStart=='[') {
@@ -135,7 +135,7 @@ public class InifileParser {
 					continue;
 				}
 				String sectionName = m.group(1).trim();
-				String comment = m.groupCount()>1 ? m.group(2) : null; 
+				String comment = m.groupCount()>1 ? m.group(2) : ""; 
 				callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, comment);
 			}
 			else {
@@ -145,7 +145,7 @@ public class InifileParser {
 					callback.parseError(lineNumber, numLines, "Unterminated string constant");
 					continue;
 				}
-				String comment = (endPos==line.length()) ? null : line.substring(endPos);
+				String comment = (endPos==line.length()) ? "" : line.substring(endPos);
 				String keyValue = line.substring(0, endPos);
 				int equalSignPos = keyValue.indexOf('=');
 				if (equalSignPos == -1) {

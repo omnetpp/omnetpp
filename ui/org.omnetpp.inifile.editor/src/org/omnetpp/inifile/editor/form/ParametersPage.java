@@ -249,7 +249,7 @@ public class ParametersPage extends FormPage {
 					else if (property.equals("value")) {
 						if (!value.equals(doc.getValue(item.section, item.key))) {
 							doc.setValue(item.section, item.key, (String)value);
-							treeViewer.refresh(); // if performance gets critical: refresh only if changed
+							treeViewer.refresh();
 						}
 					}
 					else if (property.equals("comment")) {
@@ -257,7 +257,7 @@ public class ParametersPage extends FormPage {
 							value = null; // no comment == null
 						if (!nullSafeEquals((String)value, doc.getComment(item.section, item.key))) {
 							doc.setComment(item.section, item.key, (String)value);
-							treeViewer.refresh(); // if performance gets critical: refresh only if changed
+							treeViewer.refresh();
 						}
 					}
 				}
@@ -392,12 +392,12 @@ public class ParametersPage extends FormPage {
 			String[] sections = new String[n];
 			String[] keys = new String[n];
 			String[] values = new String[n];
-			String[] comments = new String[n];
+			String[] rawComments = new String[n];
 			for (int i=0; i<n; i++) {
 				sections[i] = draggedEntries[i].section;
 				keys[i] = draggedEntries[i].key;
 				values[i] = doc.getValue(draggedEntries[i].section, draggedEntries[i].key);
-				comments[i] = doc.getComment(draggedEntries[i].section, draggedEntries[i].key);
+				rawComments[i] = doc.getRawComment(draggedEntries[i].section, draggedEntries[i].key);
 			}
 
 			doc.removeKeys(sections, keys);
@@ -405,7 +405,7 @@ public class ParametersPage extends FormPage {
 			String section = target instanceof SectionKey ? ((SectionKey)target).section : (String)target; 
 			String beforeKey = target instanceof SectionKey ? ((SectionKey)target).key : null;
 			// doc.getKeys(section).length>0 ? doc.getKeys(section)[0] : null;
-			doc.addEntries(section, keys, values, comments, beforeKey);
+			doc.addEntries(section, keys, values, rawComments, beforeKey);
 			reread();
 		}
 		catch (RuntimeException e) {
@@ -509,7 +509,7 @@ public class ParametersPage extends FormPage {
 		try {
 			// insert key and refresh table
 			//XXX if all keys are from a readonly base section, one cannot add new keys AT ALL !!!!
-			doc.addEntry(section, newKey, "", null, beforeKey);
+			doc.addEntry(section, newKey, "", "", beforeKey);
 			reread();
 			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionKey(section, newKey))), true);
 			treeViewer.getTree().setFocus();

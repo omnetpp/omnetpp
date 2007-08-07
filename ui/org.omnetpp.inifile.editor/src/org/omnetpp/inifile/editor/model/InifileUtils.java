@@ -244,18 +244,18 @@ public class InifileUtils {
 	 * If even the section is not present, it is added first.
 	 * The entry MUST NOT exist yet.
 	 */
-	public static void addEntry(IInifileDocument doc, String section, String newKey, String value, String comment) {
+	public static void addEntry(IInifileDocument doc, String section, String newKey, String value, String rawComment) {
 		if (!doc.containsSection(section))
 			addSection(doc, section);
 		Assert.isTrue(!doc.containsKey(section, newKey));
 		String keys[] = doc.getKeys(section);
 		for (String key : keys) {
 			if (precedesKey(newKey, key)) {
-				doc.addEntry(section, newKey, value, comment, key);
+				doc.addEntry(section, newKey, value, rawComment, key);
 				return;
 			}
 		}
-		doc.addEntry(section, newKey, value, comment, null);
+		doc.addEntry(section, newKey, value, rawComment, null);
 	}
 
 	private static boolean precedesKey(String key1, String key2) {

@@ -54,7 +54,7 @@ public class InifileDocument implements IInifileDocument {
 		IFile file;
 		int lineNumber; // 1-based
 		int numLines;  // ==1 unless line continues on other lines (trailing backslash)
-		String comment;
+		String rawComment; // includes leading "#" and preceding whitespace
 		Object data;
 	};
 	static class SectionHeadingLine extends Line {
@@ -214,11 +214,11 @@ public class InifileDocument implements IInifileDocument {
 				this.currentFile = file;
 			}
 
-			public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment) {
+			public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
 				// ignore
 			}
 
-			public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
+			public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
 				// add if such section not yet exists
 				Section section = sections.get(sectionName);
 				if (section == null) {
@@ -231,7 +231,7 @@ public class InifileDocument implements IInifileDocument {
 				line.file = currentFile;
 				line.lineNumber = lineNumber;
 				line.numLines = numLines;
-				line.comment = comment;
+				line.rawComment = rawComment;
 				line.sectionName = sectionName;
 				line.lastLine = line.lineNumber + line.numLines - 1;
 				section.headingLines.add(line);
@@ -241,7 +241,7 @@ public class InifileDocument implements IInifileDocument {
 				currentSectionHeading = line;
 			}
 
-			public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
+			public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
 				if (currentSection==null)
 					addError(currentFile, lineNumber, "Entry occurs before first section heading");
 				else if (currentSection.entries.containsKey(key)) {
@@ -254,7 +254,7 @@ public class InifileDocument implements IInifileDocument {
 					line.file = currentFile;
 					line.lineNumber = lineNumber;
 					line.numLines = numLines;
-					line.comment = comment;
+					line.rawComment = rawComment;
 					line.key = key;
 					line.value = value;
 					if (currentFile == documentFile)
@@ -264,7 +264,7 @@ public class InifileDocument implements IInifileDocument {
 				}
 			}
 
-			public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {
+			public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {
 				if (!directive.equals("include"))
 					addError(currentFile, lineNumber, "Unknown directive");
 				else { 
@@ -272,7 +272,7 @@ public class InifileDocument implements IInifileDocument {
 					line.file = currentFile;
 					line.lineNumber = lineNumber;
 					line.numLines = numLines;
-					line.comment = comment;
+					line.rawComment = rawComment;
 					line.includedFile = args;
 
 					// recursively parse the included file
@@ -449,23 +449,24 @@ public class InifileDocument implements IInifileDocument {
 		KeyValueLine line = getEditableEntry(section, key);
 		if (!nullSafeEquals(line.value, value)) {
 			line.value = value; 
-			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+			String text = line.key + " = " + line.value + line.rawComment;
 			if (!replaceLine(line, text))
 				changed = false; // suppress re-parsing
 		}
 	}
 
-	public void addEntry(String section, String key, String value, String comment, String beforeKey) {
+	public void addEntry(String section, String key, String value, String rawComment, String beforeKey) {
 		if (lookupEntry(section, key) != null)
 			throw new IllegalArgumentException("Key "+key+" already exists in section ["+section+"]");
 
 		// modify IDocument
+		validateRawComment(rawComment);
 		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lastLine+1 : getEditableEntry(section, beforeKey).lineNumber;
-		String text = key + " = " + value + (comment == null ? "" : " "+comment);
+		String text = key + " = " + value + rawComment;
 		addLineAt(atLine, text);
 	}
 
-	public void addEntries(String section, String[] keys, String[] values, String[] comments, String beforeKey) {
+	public void addEntries(String section, String[] keys, String[] values, String[] rawComments, String beforeKey) {
 		// validate keys
 		for (String key : keys)
 			if (lookupEntry(section, key) != null)
@@ -477,8 +478,8 @@ public class InifileDocument implements IInifileDocument {
 			String line = keys[i] + " = ";
 			if (values != null && values[i] != null)
 				line += values[i];
-			if (comments != null && comments[i] != null)
-				line += comments[i];
+			if (rawComments != null && rawComments[i] != null)
+				line += rawComments[i];
 			text += line + "\n";
 		}
 		
@@ -506,17 +507,45 @@ public class InifileDocument implements IInifileDocument {
 	} 
 
 	public String getComment(String section, String key) {
-		return getEntry(section, key).comment;
+		return stripCommentPrefix(getRawComment(section, key));
 	}
 
 	public void setComment(String section, String key, String comment) {
+		setRawComment(section, key, updateComment(getRawComment(section, key), comment));
+	}
+
+	public String getRawComment(String section, String key) {
+		return getEntry(section, key).rawComment;
+	}
+
+	public void setRawComment(String section, String key, String rawComment) {
+		validateRawComment(rawComment);
 		KeyValueLine line = getEditableEntry(section, key);
-		if (!nullSafeEquals(line.comment, comment)) {
-			line.comment = comment; 
-			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+		if (!nullSafeEquals(line.rawComment, rawComment)) {
+			line.rawComment = rawComment; 
+			String text = line.key + " = " + line.value + line.rawComment;
 			if (!replaceLine(line, text))
 				changed = false;  // suppress re-parsing
 		}
+	}
+
+	protected static void validateRawComment(String rawComment) {
+		Assert.isTrue(rawComment!=null);
+		Assert.isTrue(rawComment.trim().equals("") || rawComment.matches("^\\s*[#;].*"));
+	}
+	
+	protected static String stripCommentPrefix(String comment) {
+		// strip leading whitespace, "#" or ";", and one space if possible
+		return comment.replaceFirst("^\\s*[#;] ?", "");  //FIXME what about multi-line comments?
+	}
+
+	protected static String updateComment(String oldRawComment, String newComment) {
+		if (StringUtils.isEmpty(newComment))
+			return "";
+		if (oldRawComment.trim().equals(""))
+			return "  # " + newComment.trim(); // no prefix to preserve
+		String prefix = oldRawComment.replaceFirst("^(\\s*[#;] ?).*", "$1"); // cf with stripCommentPrefix()
+		return prefix + newComment.trim();
 	}
 
 	public void changeKey(String section, String oldKey, String newKey) {
@@ -525,7 +554,7 @@ public class InifileDocument implements IInifileDocument {
 			if (lookupEntry(section, newKey) != null)
 				throw new IllegalArgumentException("Cannot rename key "+oldKey+": key "+newKey+" already exists in section ["+section+"]");
 			line.key = newKey; 
-			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+			String text = line.key + " = " + line.value + line.rawComment;
 			replaceLine(line, text);
 		}
 	}
@@ -543,7 +572,7 @@ public class InifileDocument implements IInifileDocument {
 			getEditableEntry(section, beforeKey); // just probe it, to make sure it's editable
 		}
 		removeKey(section, key);
-		addEntry(section, key, line.value, line.comment, beforeKey);
+		addEntry(section, key, line.value, line.rawComment, beforeKey);
 	}
 
 	public String[] getKeys(String sectionName) {
@@ -644,7 +673,7 @@ public class InifileDocument implements IInifileDocument {
 				throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it is (or part of it is) in an included file ("+line.file.getName()+")");
 		for (SectionHeadingLine line : section.headingLines) {
 			//XXX big problem if line numbers change as the result of replacing!!!!! ie original section name was on two lines using backslash...
-			replaceLine(line, "[" + newName + "]" + (line.comment == null ? "" : " "+line.comment));
+			replaceLine(line, "[" + newName + "]" + line.rawComment);
 		}
 	}
 
@@ -657,8 +686,8 @@ public class InifileDocument implements IInifileDocument {
 		int lineNumber;
 		if (beforeSectionName==null)                                       
 			lineNumber = bottomIncludes.isEmpty() ? document.getNumberOfLines()+1 : bottomIncludes.get(0).lineNumber;
-			else
-				lineNumber = getFirstEditableSectionHeading(beforeSectionName).lineNumber;
+		else
+			lineNumber = getFirstEditableSectionHeading(beforeSectionName).lineNumber;
 
 		// modify IDocument
 		String text = "[" + sectionName + "]";
@@ -671,15 +700,24 @@ public class InifileDocument implements IInifileDocument {
 		return new LineInfo(line.file, line.lineNumber, line.lastLine-line.lineNumber+1, !isEditable(line));
 	} 
 
-	public String getSectionComment(String sectionName) {
-		return lookupPreferredSectionHeading(sectionName).comment;
+	public String getSectionComment(String section) {
+		return stripCommentPrefix(getRawSectionComment(section));
 	}
 
-	public void setSectionComment(String sectionName, String comment) {
+	public void setSectionComment(String section, String comment) {
+		setRawSectionComment(section, updateComment(getRawSectionComment(section), comment));
+	}
+	
+	public String getRawSectionComment(String sectionName) {
+		return lookupPreferredSectionHeading(sectionName).rawComment;
+	}
+
+	public void setRawSectionComment(String sectionName, String rawComment) {
+		validateRawComment(rawComment);
 		SectionHeadingLine line = getFirstEditableSectionHeading(sectionName);
-		if (!nullSafeEquals(line.comment, comment)) {
-			line.comment = comment; 
-			String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
+		if (!nullSafeEquals(line.rawComment, rawComment)) {
+			line.rawComment = rawComment; 
+			String text = "[" + line.sectionName + "]" + line.rawComment;
 			if (!replaceLine(line, text))
 				changed = false; // suppress re-parsing
 		}

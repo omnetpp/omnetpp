@@ -48,7 +48,7 @@ public class AddInifileKeysAction extends Action {
 				MessageDialog.openConfirm(workbenchWindow.getShell(), "Empty Ini File", 
 					"Ini file contains no sections or settings, please choose a NED network first.");
 				doc.addSection(GENERAL, null);
-				doc.addEntry(GENERAL, CFGID_NETWORK.getKey(), "", null, null);
+				doc.addEntry(GENERAL, CFGID_NETWORK.getKey(), "", "", null);
 				inifileEditor.gotoEntry(GENERAL, CFGID_NETWORK.getKey(), IGotoInifile.Mode.AUTO);
 				return;
 			}
