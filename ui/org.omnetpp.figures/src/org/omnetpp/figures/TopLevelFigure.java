@@ -91,8 +91,9 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
 	    return getClass().getSimpleName()+" "+getText();
 	}
 
-    public void setErrorMarker(boolean markError) {
-        setForegroundColor(markError ? ColorFactory.RED : null);
+    // TODO implement error decoration
+    public void setErrorDecoration(boolean markError) {
+        // setForegroundColor(markError ? ColorFactory.RED : null);
     }
 
 }

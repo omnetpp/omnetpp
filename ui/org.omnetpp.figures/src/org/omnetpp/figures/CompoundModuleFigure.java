@@ -433,8 +433,9 @@ public class CompoundModuleFigure extends ModuleFigure
         getCompoundModuleBorder().getTitleBorder().setDirectEditTextVisible(visible);
     }
 
-    public void setErrorMarker(boolean markError) {
-        getCompoundModuleBorder().getTitleBorder().setTextColor(markError ? ColorFactory.RED : ColorFactory.BLACK);
+    // TODO implement error decoration
+    public void setErrorDecoration(boolean markError) {
+        // getCompoundModuleBorder().getTitleBorder().setTextColor(markError ? ColorFactory.RED : ColorFactory.BLACK);
     }
 
 }

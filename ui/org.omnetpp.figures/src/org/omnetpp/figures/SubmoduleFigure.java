@@ -434,8 +434,9 @@ public class SubmoduleFigure extends ModuleFigure
         return shapeVisible;
     }
 
-    public void setErrorMarker(boolean markError) {
-        nameFigure.setForegroundColor(markError ? ColorFactory.RED : null);
+    // TODO implement error decoration
+    public void setErrorDecoration(boolean markError) {
+        // nameFigure.setForegroundColor(markError ? ColorFactory.RED : null);
     }
 
 }
