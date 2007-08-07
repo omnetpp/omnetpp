@@ -14,6 +14,8 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 
@@ -84,8 +86,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // stores parsed contents of NED files
     private final HashMap<IFile, INEDElement> nedFiles = new HashMap<IFile, INEDElement>();
 
-    private NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer();
-
     private final HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 
     // table of toplevel components (points into nedFiles trees)
@@ -96,6 +96,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false; // if tables below need to be rebuilt
+    // We use this counter to increment whenever a rehash occurred. Checks can be made
+    // to assert that the function is not called unnecessarily
+    private int debugRehashCounter = 0;
 
     private final HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
     private final HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
@@ -106,6 +109,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private INEDTypeInfo nullChannelType = null;
     private INEDTypeInfo bidirChannelType = null;
     private INEDTypeInfo unidirChannelType = null;
+    private boolean nedModelChangeNotificationDisabled = false;
 
 
     /**
@@ -227,27 +231,22 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         setNEDFileModel(file, tree);
         NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);
         markerSync.registerFile(file);
-        markerSync.addMarkersToFileFromErrorStore(file, errors);
+        markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
         // we should defer the synchronization to a different job, so no deadlock can occur
         markerSync.runAsWorkspaceJob();
     }
 
-//    public synchronized boolean hasError(IFile file) {
-//        try {
-//            return file.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_ZERO) >= IMarker.SEVERITY_ERROR;
-//        } catch (CoreException e) {
-//            // if resource does not exists or the project is closed (=no error)
-//            return false;
-//        }
-//    }
-
-    /**
-     * @param file
-     * @return Whether the file has an associated error attribute
-     */
+    // TODO we should use the NEDElements (the errorMarkerIds collection) to signal an error
+    // using the markers are problematic because the markers are added asynchronously in a background job
     public synchronized boolean hasError(IFile file) {
-        return !getNEDFileModel(file).isValid();
+        try {
+            return file.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_ZERO) >= IMarker.SEVERITY_ERROR;
+        } catch (CoreException e) {
+            // if resource does not exists or the project is closed (=no error)
+            return false;
+        }
     }
+
 
     public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
         if (needsRehash)
@@ -404,7 +403,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // there's no open editor -- remove counter and re-read last saved
             // state from disk
             connectCount.remove(file);
-            readNEDFile(file);
+            NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
+            readNEDFile(file, sync);
+            sync.runAsWorkspaceJob();
         } else {
             connectCount.put(file, count - 1);
         }
@@ -414,7 +415,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Gets called from incremental builder.
      */
-    public synchronized void readNEDFile(IFile file) {
+    public synchronized void readNEDFile(IFile file, NEDProblemMarkerSynchronizer markerSync) {
         // XXX for debugging
         // System.out.println(file.toString());
 
@@ -426,7 +427,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         String fileName = file.getLocation().toOSString();
         NEDErrorStore errors = new NEDErrorStore();
         INEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
-        markerSync.addMarkersToFileFromErrorStore(file, errors);
+        markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
 
         // only store it if there were no errors
         if (tree == null || !errors.empty())
@@ -444,7 +445,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // remove our model change from the file
             nedFiles.get(file).getListeners().remove(nedModelChangeListener);
             nedFiles.remove(file);
-            markerSync.unregisterFile(file);
             needsRehash = true;
         }
     }
@@ -487,6 +487,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             return;
         // rehash done!
         needsRehash = false;
+        debugRehashCounter++;
 
         Set<String> duplicates = new HashSet<String>();
         components.clear();
@@ -512,7 +513,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             //XXX should be recursive, and collect inner types as well (store them as "TopleveTtype.InnerType) or something
             INEDElement tree = nedFiles.get(file);
             for (INEDElement node : tree) {
-                node.setValid(true);
                 // find node's name and where it should be inserted
                 String name = null;
                 HashMap<String, INEDTypeInfo> map = null;
@@ -577,9 +577,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             components.remove(dupName);
         }
 
-        // run "semantic validator" for each file
-        // FIXME this must be run in the background (it's a long running task)
-        // top level element insertion is slow because of this validation
+        // Semantic validation of ned elements
         for (final IFile file : nedFiles.keySet()) {
             INEDErrorStore errors = new INEDErrorStore() {
                 public void add(INEDElement context, String message) {
@@ -603,6 +601,34 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (!needsRehash) {
             // System.out.println("NEDResources invalidated");
             needsRehash = true;
+        }
+    }
+
+    /**
+     * Reads all NED files in the project.
+     */
+    public synchronized void readAllNedFilesInWorkspace() {
+        // do not allow access to the plugin until the whole parsing is finished
+        try {
+            // disable all ned model notifications until all files have been processed
+            nedModelChangeNotificationDisabled = true;
+            debugRehashCounter = 0;
+            IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+            final NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
+            wsroot.accept(new IResourceVisitor() {
+                public boolean visit(IResource resource) {
+                    if (isNEDFile(resource))
+                        readNEDFile((IFile) resource, sync);
+                    return true;
+                }
+            });
+            sync.runAsWorkspaceJob();
+            rehashIfNeeded();
+        } catch (CoreException e) {
+            NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
+        } finally {
+            nedModelChangeNotificationDisabled=false;
+            Assert.isTrue(debugRehashCounter <= 1,"Too many rehash operation in readAllNedFilesInWorkspace()");
         }
     }
 
@@ -633,6 +659,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * @param event
      */
     protected void nedModelChanged(NEDModelEvent event) {
+        if (nedModelChangeNotificationDisabled)
+            return;
         // System.out.println("NEDRESOURCES NOTIFY: "+event);
         // fire a component changed event if inheritance, naming or visual representation
         // has changed
@@ -710,7 +738,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         try {
             if (event.getDelta() == null)
                 return;
+            // printResourceChangeEvent(event);
 
+            final NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();
@@ -718,6 +748,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                     if (!isNEDFile(resource))
                         return true;
 
+                    // printDelta(delta);
                     switch (delta.getKind()) {
                         case IResourceDelta.REMOVED:
                             // handle removed resource
@@ -725,7 +756,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             invalidate();
                             break;
                         case IResourceDelta.ADDED:
-                            readNEDFile((IFile) resource);
+                            readNEDFile((IFile) resource, sync);
                             invalidate();
                             break;
                         case IResourceDelta.CHANGED:
@@ -733,7 +764,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             // only in content change
                             // we don't care about marker and property changes
                             if ((delta.getFlags() & IResourceDelta.CONTENT) != 0) {
-                                readNEDFile((IFile) resource);
+                                readNEDFile((IFile) resource, sync);
                                 invalidate();
                             }
                             break;
@@ -742,13 +773,24 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                     return false;
                 }
             });
-
+            sync.runAsWorkspaceJob();
         } catch (CoreException e) {
             NEDResourcesPlugin.logError("Error during workspace change notification: ", e);
         } finally {
             rehashIfNeeded();
         }
 
+    }
+
+    // Utility functions for debugging
+    public static void printResourceChangeEvent(IResourceChangeEvent event) {
+        System.out.println("event type: "+event.getType());
+    }
+
+    public static void printDelta(IResourceDelta delta) {
+        System.out.println("  delta: "+delta.getResource().getProjectRelativePath()+" kind:"+delta.getKind()+
+                " isContent:"+((delta.getFlags() & IResourceDelta.CONTENT) != 0)+
+                " isMarkerChange:"+((delta.getFlags() & IResourceDelta.MARKERS) != 0));
     }
 
 }

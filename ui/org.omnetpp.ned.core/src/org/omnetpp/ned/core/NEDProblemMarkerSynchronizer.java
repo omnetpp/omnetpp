@@ -6,8 +6,8 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +18,11 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
+
+// TODO we should generate a unique ID for each marker and add it to the marker as an attribute and also add
+// to the problematic NED file's errorMarkerIds collection. Later we can check whether there is an error
+// on a NEDElement and also get the IDs of those markers (if the user needs them, we can lookup those
+// markers from the file)
 
 /**
  * A marker synchronizer specialized to sync NED parsing and consistency problems. Can accept error stores
@@ -47,8 +52,8 @@ public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
      * @param file
      * @param errors
      */
-    public void addMarkersToFileFromErrorStore(IFile file, NEDErrorStore errors) {
-        INEDElement context = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
+    public void addMarkersToFileFromErrorStore(IFile file, INEDElement context, NEDErrorStore errors) {
+        registerFile(file);
 
         if (errors == null)
             return;
@@ -95,11 +100,6 @@ public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
         markerAttrs.put(IMarker.SEVERITY, severity);
         markerAttrs.put(IMarker.LINE_NUMBER, parseLineNumber(loc));
         addMarker(file, type, markerAttrs);
-
-        // mark all element up to the root (including the file itself, as invalid)
-        for (INEDElement e = element; e != null; e = e.getParent()) {
-            e.setValid(false);
-        }
     }
 
     private int parseLineNumber(String loc) {
@@ -117,23 +117,35 @@ public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
      * (ie we are in a resource change notification)
      */
     public void runAsWorkspaceJob() {
-        Job job = new Job("Updating problem markers") {
-            @Override
-            public IStatus run(IProgressMonitor monitor) {
-                try {
-                    ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
-                        public void run(IProgressMonitor monitor) throws CoreException {
-                            addRemoveMarkers();
-                        }
-                    }, null);
-                } catch (CoreException e) {
-                    return Status.CANCEL_STATUS;
+        if (!isEmpty()) {
+//            Job job = new Job("Updating problem markers") {
+//                @Override
+//                public IStatus run(IProgressMonitor monitor) {
+//                    try {
+//                        ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
+//                            public void run(IProgressMonitor monitor) throws CoreException {
+//                                //System.out.println("addRemoveMarkers()");
+//                                addRemoveMarkers();
+//                            }
+//                        }, null);
+//                    } catch (CoreException e) {
+//                        return Status.CANCEL_STATUS;
+//                    }
+//                    return Status.OK_STATUS;
+//                }
+//            };
+            WorkspaceJob job = new WorkspaceJob("Updating problem markers") {
+                @Override
+                public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+                    addRemoveMarkers();
+                    return Status.OK_STATUS;
                 }
-                return Status.OK_STATUS;
-            }
-        };
-        job.setSystem(true);
-        job.schedule();
-        job.setPriority(Job.INTERACTIVE);
+            };
+            job.setSystem(true);
+            // the job should not run together with other jobs accessing the workspace resources
+            job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+            job.setPriority(Job.INTERACTIVE);
+            job.schedule();
+        }
     }
 }

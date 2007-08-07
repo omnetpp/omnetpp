@@ -1,23 +1,25 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
+
 import org.omnetpp.common.editor.EditorUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -42,33 +44,35 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	@Override
+    public void start(BundleContext context) throws Exception {
 		super.start(context);
 
         PLUGIN_ID = getBundle().getSymbolicName();
+        // System.out.println("NEDResourcesPlugin started");
 
-//        System.out.println("NEDResourcesPlugin started");
-
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
-
-
-        // XXX this is most probably NOT the way to archieve that
-		// all NED files get parsed on startup. At minimum, this should
-		// be done in the background, as a long-running operation with an
-		// IProgressMonitor...
-		// Cf. quote from org.eclipse.core.runtime.Plugin:
-		//   "Note 2: This method is intended to perform simple initialization
-		//   of the plug-in environment. The platform may terminate initializers
-		//   that do not complete in a timely fashion."
-		// So we should find a better way.
-		readAllNedFilesInWorkspace();
-
+        // do the reading/parsing of ned files in a separate job to cut down plugin startup time
+        WorkspaceJob startupJob = new WorkspaceJob("Parsing NED files...") {
+            @Override
+            public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+                // System.out.println("reading all ned files");
+                getNEDResources().readAllNedFilesInWorkspace();
+                // System.out.println("attaching resource change listener");
+                ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
+                return Status.OK_STATUS;
+            }
+        };
+        startupJob.setRule(ResourcesPlugin.getWorkspace().getRoot());
+        startupJob.setPriority(Job.INTERACTIVE);
+        startupJob.setSystem(true);
+        startupJob.schedule();
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	@Override
+    public void stop(BundleContext context) throws Exception {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 		plugin = null;
         super.stop(context);
@@ -102,26 +106,6 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	//XXX do we need this at all ???
-    // if we could activate the resouce listener before opening a project we would not need this
-    // function called in start()
-	private void readAllNedFilesInWorkspace() {
-		try {
-			IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
-			wsroot.accept(new IResourceVisitor() {
-				public boolean visit(IResource resource) {
-					if (NEDResources.isNEDFile(resource))
-						getNEDResources().readNEDFile((IFile) resource);
-					return true;
-				}
-			});
-		} catch (CoreException e) {
-			logError("Error during workspace refresh: ",e);
-		}
-		getNEDResources().rehashIfNeeded();
-
-	}
-
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
@@ -147,7 +131,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
     /**
      * Opens the given INEDElement in a NED editor, and positions the cursor on it.
-     * 
+     *
      * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
      * @param mode IGotoNedElement.Mode  whether the editor should be opened in text or graphical mode
      *             or in automatic mode
@@ -158,7 +142,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
         // check if file is null. it is a built in type in this case
         if (file == null) {
-            MessageDialog.openError(Display.getDefault().getActiveShell(), 
+            MessageDialog.openError(Display.getDefault().getActiveShell(),
                     "Warning", "Built-in types cannot be opened for editing.");
             return;
         }
