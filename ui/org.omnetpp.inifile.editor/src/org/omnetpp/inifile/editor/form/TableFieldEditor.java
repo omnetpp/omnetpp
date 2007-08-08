@@ -9,6 +9,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -86,25 +88,24 @@ public abstract class TableFieldEditor extends FieldEditor {
 
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				String section = askTargetSection();
-				if (section != null) {
-					setValueInFile(section, getDefaultValueFor(section));
-					reread();
-				}
+				addNewEntry();
 			}
 		});
 
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-				for (Object o : selection.toArray()) {
-					String section = (String) o;
-					removeFromFile(section);
-				}
-				reread();
+				removeSelected();
 			}
 		});
-		
+
+		// set up hotkey support
+		tableViewer.getTable().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.DEL)
+					removeSelected();
+			}
+		});
+
 		// add hover support
 		formPage.addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
@@ -114,6 +115,23 @@ public abstract class TableFieldEditor extends FieldEditor {
 			}
 		});
 		
+	}
+
+	protected void removeSelected() {
+		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+		for (Object o : selection.toArray()) {
+			String section = (String) o;
+			removeFromFile(section);
+		}
+		reread();
+	}
+
+	protected void addNewEntry() {
+		String section = askTargetSection();
+		if (section != null) {
+			setValueInFile(section, getDefaultValueFor(section));
+			reread();
+		}
 	}
 
 	/**
