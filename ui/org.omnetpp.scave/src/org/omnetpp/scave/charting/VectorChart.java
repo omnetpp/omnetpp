@@ -330,7 +330,7 @@ public class VectorChart extends ChartCanvas {
 		}
 		// add properties that was set but not present in the current dataset
 		// we need this, because the properties can be set earlier than the dataset
-		for(LineProperties props : map.values()) {
+		for (LineProperties props : map.values()) {
 			props.series = -1;
 			newProps.add(props);
 		}

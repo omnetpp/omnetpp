@@ -16,7 +16,7 @@ public class RangeFigure extends Ellipse {
     public void paint(Graphics graphics) {
         graphics.pushState();
         // set antialiasing on contenet and child/derived figures
-        if(NedFileFigure.antialias != SWT.DEFAULT)
+        if (NedFileFigure.antialias != SWT.DEFAULT)
             graphics.setAntialias(NedFileFigure.antialias);
         super.paint(graphics);
         graphics.popState();

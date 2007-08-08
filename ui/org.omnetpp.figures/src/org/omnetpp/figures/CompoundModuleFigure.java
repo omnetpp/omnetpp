@@ -79,8 +79,8 @@ public class CompoundModuleFigure extends ModuleFigure
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
 	            if (backgroundImageArr.toLowerCase().startsWith("t"))
-					for(int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
-						for(int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
+					for (int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
+						for (int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
 							graphics.drawImage(backgroundImage, x, y);
 	            else if (backgroundImageArr.toLowerCase().startsWith("s"))
 	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
@@ -93,7 +93,7 @@ public class CompoundModuleFigure extends ModuleFigure
 
 	        // =============================================================================
 	        // draw the grid
-	        if(gridTickDistance > 0) {
+	        if (gridTickDistance > 0) {
 
 	        	graphics.setForegroundColor(gridColor);
 	        	double minorTickDistance = 0;
@@ -101,21 +101,21 @@ public class CompoundModuleFigure extends ModuleFigure
 	        		minorTickDistance = (double)gridTickDistance / gridNoOfMinorTics;
 
 	        	// horizontal grid
-	        	for(int y = viewportRect.y; y<viewportRect.bottom(); y += gridTickDistance) {
+	        	for (int y = viewportRect.y; y<viewportRect.bottom(); y += gridTickDistance) {
 	        		graphics.setLineStyle(SWT.LINE_SOLID);
 	        		graphics.drawLine(viewportRect.x, y, viewportRect.right(), y);
 	        		// minor ticks
 	        		graphics.setLineStyle(SWT.LINE_DOT);
-	        		for(double my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
+	        		for (double my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
 		        		graphics.drawLine(viewportRect.x, (int)my, viewportRect.right(), (int)my);
 	        	}
 	        	// vertical grid
-	        	for(int x = viewportRect.x; x<viewportRect.right(); x += gridTickDistance) {
+	        	for (int x = viewportRect.x; x<viewportRect.right(); x += gridTickDistance) {
 	        		graphics.setLineStyle(SWT.LINE_SOLID);
 	        		graphics.drawLine(x, viewportRect.y, x, viewportRect.bottom());
 	        		// minor ticks
 	        		graphics.setLineStyle(SWT.LINE_DOT);
-	        		for(double mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
+	        		for (double mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
 		        		graphics.drawLine((int)mx, viewportRect.y, (int)mx,viewportRect.bottom());
 	        	}
 	        }

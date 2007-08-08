@@ -15,6 +15,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.IDecoratorManager;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
@@ -333,5 +337,15 @@ public class InifileUtils {
 			if (severity < marker.getAttribute(IMarker.SEVERITY, -1))
 				severity = marker.getAttribute(IMarker.SEVERITY, -1);
 		return severity;
+	}
+
+	//XXX new function, to be used in all trees/tables where sections are displayed
+	public static Image getSectionImage(String sectionName, IInifileDocument doc) {
+		IMarker[] markers = getProblemMarkersForWholeSection(sectionName, doc);
+		int maxProblemSeverity = getMaximumSeverity(markers);
+		
+		//IDecoratorManager decoratorManager = PlatformUI.getWorkbench().getDecoratorManager();
+		//decoratorManager.decorateImage(image, element)
+		return null;
 	}
 }

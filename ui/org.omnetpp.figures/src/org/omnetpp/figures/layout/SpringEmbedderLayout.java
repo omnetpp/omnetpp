@@ -53,7 +53,7 @@ public class SpringEmbedderLayout extends XYLayout {
 
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
-		for(IFigure node : (List<IFigure>)nodeParent.getChildren()) {
+		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			// get the associated constraint (coordinates) if any
             Rectangle constr = (Rectangle)getConstraint(node);
 
@@ -69,7 +69,7 @@ public class SpringEmbedderLayout extends XYLayout {
 
 		// iterate over the connections and add them to the algorithm
 		// all child figures of type Connection on this layer are considered as edge
-		for(IFigure edge : (List<IFigure>)edgeParent.getChildren())
+		for (IFigure edge : (List<IFigure>)edgeParent.getChildren())
 			if (edge instanceof Connection) {
 				Connection conn = (Connection)edge;
 				IFigure srcFig = conn.getSourceAnchor().getOwner();

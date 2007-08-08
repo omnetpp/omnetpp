@@ -23,7 +23,7 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
             String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
         // handle defaults. if no size is given and no icon is present use a default icon
-        if(shapeWidth <= 0 && shapeHeight <= 0 && img == null)
+        if (shapeWidth <= 0 && shapeHeight <= 0 && img == null)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
 
         setIcon(img);
@@ -56,7 +56,7 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
 	}
 
     public void setTooltipText(String tttext) {
-        if(tttext == null || "".equals(tttext)) {
+        if (tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
         } else {

@@ -150,7 +150,7 @@ public class FilterPanel {
 		Table table = thePanel.getTable();
 		int[] items = table.getSelectionIndices();
 
-		// for() loop was very slow, we use native code
+		// for () loop was very slow, we use native code
 		IDList sel = filteredSubset.getSubsetByIndices(items);
 		System.out.println("getSelection: " + (System.currentTimeMillis()-t0));
 		return sel;

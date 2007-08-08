@@ -73,7 +73,7 @@ public class ConnectionFigure extends PolylineConnection {
     }
 
     public void setTooltipText(String tttext) {
-        if(tttext == null || "".equals(tttext)) {
+        if (tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
         } else {

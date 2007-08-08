@@ -172,3 +172,4 @@ inset
 relaunch
 junit
 gui
+hotkey

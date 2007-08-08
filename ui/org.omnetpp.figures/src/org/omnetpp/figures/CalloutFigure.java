@@ -49,7 +49,7 @@ public class CalloutFigure extends Layer {
     public void paint(Graphics graphics) {
         graphics.pushState();
         // set antialiasing on contenet and child/derived figures
-        if(NedFileFigure.antialias != SWT.DEFAULT)
+        if (NedFileFigure.antialias != SWT.DEFAULT)
             graphics.setAntialias(NedFileFigure.antialias);
         super.paint(graphics);
         graphics.popState();

@@ -48,7 +48,7 @@ public class NoncentralChopboxAnchor extends GateAnchor {
     @Override
     protected Rectangle getBox() {
         // if the owner is a label use only its icon area
-        if(getOwner() instanceof HandleBounds) {
+        if (getOwner() instanceof HandleBounds) {
             Rectangle ib = ((HandleBounds)getOwner()).getHandleBounds();
             return ib;
         }

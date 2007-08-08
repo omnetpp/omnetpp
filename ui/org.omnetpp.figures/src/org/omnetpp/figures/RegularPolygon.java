@@ -93,8 +93,8 @@ public class RegularPolygon extends Polygon {
         double hScale = (double)targetBounds.height / templBounds.height;
         // if one of the requested dimensions are less than 0 
         // keep the aspect ratio and use the same scaling factor for both dimension
-        if(requestedBounds.width < 0) wScale = hScale;
-        if(requestedBounds.height < 0) hScale = wScale;
+        if (requestedBounds.width < 0) wScale = hScale;
+        if (requestedBounds.height < 0) hScale = wScale;
         // scale the bounds to the destModule size
         templBounds.scale(wScale, hScale);
         // calculate the required translation taking into account the linewidth too
@@ -103,7 +103,7 @@ public class RegularPolygon extends Polygon {
      
         // scale and translate all the points like the bounds 
         PointList scaledPl = new PointList(templList.size());
-        for(int i=0; i<templList.size(); ++i) {
+        for (int i=0; i<templList.size(); ++i) {
             Point templP = templList.getPoint(i);
             scaledPl.addPoint((int)Math.floor(templP.x * wScale + dx), 
                               (int)Math.floor(templP.y * hScale + dy));
@@ -118,7 +118,7 @@ public class RegularPolygon extends Polygon {
         
         double angleStart = toRadians(angle);
         double angleStep = 2 * PI / sides;
-        for(int i=0; i<sides; ++i) {
+        for (int i=0; i<sides; ++i) {
             double currAngle = angleStart + angleStep * i;
             pl.addPoint((int)Math.round(-radius*sin(currAngle)), 
                         (int)Math.round(-radius*cos(currAngle)));
