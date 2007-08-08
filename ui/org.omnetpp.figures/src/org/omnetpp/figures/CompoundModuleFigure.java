@@ -363,7 +363,8 @@ public class CompoundModuleFigure extends ModuleFigure
             Dimension newPrefSize = newSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
             setPreferredSize(newPrefSize);
             pane.setPreferredSize(newPrefSize.getCopy());
-        } else {
+        }
+        else {
             setPreferredSize(null);
             pane.setPreferredSize(null);
         }

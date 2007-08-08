@@ -583,7 +583,8 @@ public class DataTable extends Table {
 		TableItem item = getItem(pt);
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
 			if (item == null) return;
-		} else {
+		}
+		else {
 			int start = item != null ? indexOf(item) : getTopIndex();
 			int end = getItemCount();
 			Rectangle clientRect = getClientArea();

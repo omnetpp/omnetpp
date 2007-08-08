@@ -70,37 +70,44 @@ public class ParamResolution {
 		if (activeSection == null) {
 			if (other.activeSection != null)
 				return false;
-		} else if (!activeSection.equals(other.activeSection))
+		}
+		else if (!activeSection.equals(other.activeSection))
 			return false;
 		if (key == null) {
 			if (other.key != null)
 				return false;
-		} else if (!key.equals(other.key))
+		}
+		else if (!key.equals(other.key))
 			return false;
 		if (moduleFullPath == null) {
 			if (other.moduleFullPath != null)
 				return false;
-		} else if (!moduleFullPath.equals(other.moduleFullPath))
+		}
+		else if (!moduleFullPath.equals(other.moduleFullPath))
 			return false;
 		if (paramDeclNode == null) {
 			if (other.paramDeclNode != null)
 				return false;
-		} else if (!paramDeclNode.equals(other.paramDeclNode))
+		}
+		else if (!paramDeclNode.equals(other.paramDeclNode))
 			return false;
 		if (paramValueNode == null) {
 			if (other.paramValueNode != null)
 				return false;
-		} else if (!paramValueNode.equals(other.paramValueNode))
+		}
+		else if (!paramValueNode.equals(other.paramValueNode))
 			return false;
 		if (section == null) {
 			if (other.section != null)
 				return false;
-		} else if (!section.equals(other.section))
+		}
+		else if (!section.equals(other.section))
 			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
-		} else if (!type.equals(other.type))
+		}
+		else if (!type.equals(other.type))
 			return false;
 		return true;
 	}

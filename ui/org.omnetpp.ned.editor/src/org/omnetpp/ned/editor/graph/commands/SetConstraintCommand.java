@@ -40,15 +40,18 @@ public class SetConstraintCommand extends Command {
         if (pinOperation) {
             module.getDisplayString().setLocation(newPos, scale);
             setLabel((newPos == null ? "Unpin " :"Pin ") + module.getName());
-        } else {
+        }
+        else {
             // move or resize operation
             if (sizeChanged && posChanged) {
                 module.getDisplayString().setConstraint(newPos, newSize, scale);
                 setLabel("Resize " + module.getName());
-            } else if (sizeChanged) {
+            }
+            else if (sizeChanged) {
                 module.getDisplayString().setSize(newSize, scale);
                 setLabel("Resize " + module.getName());
-            } else if (posChanged) {
+            }
+            else if (posChanged) {
                 module.getDisplayString().setLocation(newPos, scale);
                 setLabel("Move " + module.getName());
             }

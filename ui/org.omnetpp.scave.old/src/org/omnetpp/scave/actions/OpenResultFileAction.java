@@ -51,7 +51,8 @@ public class OpenResultFileAction extends Action {
 			dlg.setText("Open Scalar File");
 			dlg.setFilterNames(SCA_FILTER_NAMES);
 			dlg.setFilterExtensions(SCA_FILTER_EXTS);
-		} else if (editor instanceof VectorDatasetEditor || editor instanceof VectorChartEditor) {
+		}
+		else if (editor instanceof VectorDatasetEditor || editor instanceof VectorChartEditor) {
 			dlg.setText("Open Vector File");
 			dlg.setFilterNames(VEC_FILTER_NAMES);
 			dlg.setFilterExtensions(VEC_FILTER_EXTS);

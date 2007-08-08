@@ -86,7 +86,8 @@ public class CloneSubmoduleCommand extends Command {
 
         if (index < 0) {
             parent.addSubmodule(newModule);
-        } else {
+        }
+        else {
             parent.insertSubmodule(index, newModule);
         }
 
@@ -114,9 +115,11 @@ public class CloneSubmoduleCommand extends Command {
         for (SubmoduleNodeEx mod : modules){
             if (bounds != null && bounds.containsKey(mod)) {
                 cloneModule(mod, bounds.get(mod), -1);
-            } else if (indices != null && indices.containsKey(mod)) {
+            }
+            else if (indices != null && indices.containsKey(mod)) {
                 cloneModule(mod, null, indices.get(mod));
-            } else {
+            }
+            else {
                 cloneModule(mod, null, -1);
             }
         }

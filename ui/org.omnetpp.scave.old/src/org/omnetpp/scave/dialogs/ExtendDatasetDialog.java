@@ -140,7 +140,8 @@ public class ExtendDatasetDialog extends Dialog {
 		if (buttonId==1) {
 			addSelection();
 			filterPanel.getPanel().getTable().setFocus();
-		} else if (buttonId==2) {
+		}
+		else if (buttonId==2) {
 			close();
 		}
 	}

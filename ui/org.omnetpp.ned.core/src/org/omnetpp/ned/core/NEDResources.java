@@ -406,7 +406,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
             readNEDFile(file, sync);
             sync.runAsWorkspaceJob();
-        } else {
+        }
+        else {
             connectCount.put(file, count - 1);
         }
     }
@@ -519,16 +520,20 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 if (node instanceof ChannelNode) {
                     name = ((ChannelNode) node).getName();
                     map = channels;
-                } else if (node instanceof ChannelInterfaceNode) {
+                }
+                else if (node instanceof ChannelInterfaceNode) {
                     name = ((ChannelInterfaceNode) node).getName();
                     map = channelInterfaces;
-                } else if (node instanceof SimpleModuleNode) {
+                }
+                else if (node instanceof SimpleModuleNode) {
                     name = ((SimpleModuleNode) node).getName();
                     map = modules;
-                } else if (node instanceof CompoundModuleNode) {
+                }
+                else if (node instanceof CompoundModuleNode) {
                     name = ((CompoundModuleNode) node).getName();
                     map = modules;
-                } else if (node instanceof ModuleInterfaceNode) {
+                }
+                else if (node instanceof ModuleInterfaceNode) {
                     name = ((ModuleInterfaceNode) node).getName();
                     map = moduleInterfaces;
                 }
@@ -544,7 +549,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             String message = node.getTagName() + " '" + name + "' is a built-in type and cannot be redefined";
                             markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
-                        } else {
+                        }
+                        else {
                             // add it to the duplicate set so we can remove them
                             // before the end
                             duplicates.add(name);
@@ -558,7 +564,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             markerSync.addMarker(otherFile, otherElement, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, otherMessage, components.get(name).getNEDElement().getSourceLocation());
                       }
-                    } else {
+                    }
+                    else {
                         INEDTypeInfo component = new NEDComponent(node, file, this);
                         map.put(name, component);
                         components.put(name, component);

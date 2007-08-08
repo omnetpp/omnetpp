@@ -59,7 +59,8 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
         if (tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
-        } else {
+        }
+        else {
             tooltipFigure = new TooltipFigure();
             setToolTip(tooltipFigure);
             tooltipFigure.setText(tttext);
@@ -80,7 +81,8 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
         if (!visible) {
             tmpName = getText();
             setText("");
-        } else {
+        }
+        else {
             if ("".equals(getText()))
                 setText(tmpName);
         }

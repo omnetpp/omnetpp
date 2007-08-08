@@ -128,7 +128,8 @@ public class TableTextCellEditor extends CellEditor {
     protected void focusLost() {
 		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
 			// skip focus lost if it went to the content assist popup
-		} else {
+		}
+		else {
 		    // [Andras]
 		    if (commitOnFocusLost)
 		        super.focusLost();

@@ -62,7 +62,8 @@ public class ImageConverter {
 				}
 			}
 			return bufferedImage;
-		} else {
+		}
+		else {
 			RGB[] rgbs = palette.getRGBs();
 			byte[] red = new byte[rgbs.length];
 			byte[] green = new byte[rgbs.length];
@@ -75,7 +76,8 @@ public class ImageConverter {
 			}
 			if (data.transparentPixel != -1) {
 				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
-			} else {
+			}
+			else {
 				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
 			}
 			BufferedImage bufferedImage = new BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(data.width, data.height), false, null);
@@ -176,7 +178,8 @@ public class ImageConverter {
 
 		if (scalex < scaley) {
 			g2d.drawImage(img, 0, (int)((height - img.getHeight(null) * scalex) / 2.0), width, (int) (img.getHeight(null) * scalex),  null);
-		} else {
+		}
+		else {
 			g2d.drawImage(img, (int)((width - img.getWidth(null) * scaley) / 2.0), 0, (int) (img.getWidth(null) * scaley), height, null);
 		}
 

@@ -83,7 +83,8 @@ public class SpringEmbedderLayout extends XYLayout {
 				} // else if this is an edge going out from a submodule
 				else if (targetFig instanceof CompoundModuleFigure) {
 					autoLayouter.addEdgeToBorder(srcFig, 0);
-				} else {  // both are submodules
+				}
+				else {  // both are submodules
 					autoLayouter.addEdge(srcFig, targetFig, 0);
 				}
 

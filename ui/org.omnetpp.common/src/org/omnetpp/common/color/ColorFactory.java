@@ -772,7 +772,8 @@ public class ColorFactory {
             for (int x = 0; x < size; x++) {
                 if (x == 0 || y == 0 || x == end || y == end) {
                     data.setPixel(x + xoffset, y + yoffset, 1);
-                } else {
+                }
+                else {
                     data.setPixel(x + xoffset, y + yoffset, 2);
                 }
             }

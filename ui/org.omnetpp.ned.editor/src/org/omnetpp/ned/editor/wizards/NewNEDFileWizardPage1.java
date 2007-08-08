@@ -68,11 +68,14 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 			public void widgetSelected(SelectionEvent e) {
 				if (e.getSource() == emptyButton) {
 					modelSelected = 0;
-				} else if (e.getSource() == simpleButton) {
+				}
+				else if (e.getSource() == simpleButton) {
 					modelSelected = 1;
-				} else if (e.getSource() == compoundButton) {
+				}
+				else if (e.getSource() == compoundButton) {
                     modelSelected = 2;
-                } else if (e.getSource() == networkButton) {
+                }
+                else if (e.getSource() == networkButton) {
                     modelSelected = 3;
                 }
 			}

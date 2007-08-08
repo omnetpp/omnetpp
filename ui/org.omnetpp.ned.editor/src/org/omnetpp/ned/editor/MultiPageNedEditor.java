@@ -347,7 +347,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                             if (!isDirty()) closeEditor(false);
                         }
                     });
-                } else { // else if it was moved or renamed
+                }
+                else { // else if it was moved or renamed
                     final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
                             delta.getMovedToPath());
                     display.asyncExec(new Runnable() {
@@ -356,7 +357,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                         }
                     });
                 }
-            } else if (delta.getKind() == IResourceDelta.CHANGED) {
+            }
+            else if (delta.getKind() == IResourceDelta.CHANGED) {
                 // guard that we should not reload while save is in progress
 //                if (!editorSaving) {
 
@@ -386,7 +388,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         if (mode == Mode.GRAPHICAL) {
             setActivePage(graphPageIndex);
             graphEditor.reveal(model);
-        } else {
+        }
+        else {
             setActivePage(textPageIndex);
             IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
             if (model.getSourceRegion() != null)

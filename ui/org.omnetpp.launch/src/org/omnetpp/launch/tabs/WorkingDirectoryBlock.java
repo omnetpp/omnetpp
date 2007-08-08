@@ -232,7 +232,8 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
                 setErrorMessage("Not a directory.");
                 return false;
             }
-        } else if (workingDirPath.length() == 0) {
+        }
+        else if (workingDirPath.length() == 0) {
             setErrorMessage("Working directory must be set.");
             return false;
         }

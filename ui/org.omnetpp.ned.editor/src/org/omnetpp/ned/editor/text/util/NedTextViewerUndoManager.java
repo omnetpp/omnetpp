@@ -153,7 +153,8 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
                     }
                 });
                 
-            } else if (((eventType & DocumentUndoEvent.UNDONE) != 0) || ((eventType & DocumentUndoEvent.REDONE) != 0))  {
+            }
+            else if (((eventType & DocumentUndoEvent.UNDONE) != 0) || ((eventType & DocumentUndoEvent.REDONE) != 0))  {
                 fTextViewer.getTextWidget().getDisplay().syncExec(new Runnable() {
                     public void run() {
 //                        if (fTextViewer instanceof TextViewer)
@@ -401,7 +402,8 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
         if (fTextViewer instanceof ITextViewerExtension5) {
             ITextViewerExtension5 extension= (ITextViewerExtension5) fTextViewer;
             extension.exposeModelRange(new Region(offset, length));
-        } else if (!fTextViewer.overlapsWithVisibleRegion(offset, length))
+        }
+        else if (!fTextViewer.overlapsWithVisibleRegion(offset, length))
             fTextViewer.resetVisibleRegion();
 
         fTextViewer.setSelectedRange(offset, length);

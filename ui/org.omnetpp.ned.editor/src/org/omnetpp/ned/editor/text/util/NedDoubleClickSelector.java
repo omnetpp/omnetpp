@@ -85,7 +85,8 @@ public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 				if (fEndPos > -1)
 					return true;
 				fStartPos= -1;
-			} else if (fEndPos > -1) {
+			}
+			else if (fEndPos > -1) {
 				fStartPos= searchForOpenBracket(fEndPos, fgBrackets[bracketIndex2 - 1], nextChar, doc);
 				if (fStartPos > -1)
 					return true;

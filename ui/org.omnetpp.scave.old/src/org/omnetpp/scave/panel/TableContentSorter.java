@@ -47,7 +47,8 @@ public abstract class TableContentSorter extends ViewerSorter {
 			// Same column as last sort; toggle the direction
 			ascending = !ascending;
 			reverse(tableViewer, column);
-		} else {
+		}
+		else {
 			// New column; do an ascending sort
 			this.column = column;
 			ascending = true;

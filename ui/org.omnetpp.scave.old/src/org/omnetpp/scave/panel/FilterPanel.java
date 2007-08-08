@@ -251,7 +251,8 @@ public class FilterPanel {
 	    if (sel != null && sel.size() > 0) {
 	    	if (strategy.isCompatible(sel)) {
 	    		dataset.merge(sel);
-	    	} else {
+	    	}
+	    	else {
 				MessageDialog.openError(new Shell(), "Error",
 						"Cannot drop or paste scalars into a vector dataset, or vica versa.");
 	    	}

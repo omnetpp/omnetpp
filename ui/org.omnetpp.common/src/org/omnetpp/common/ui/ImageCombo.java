@@ -324,7 +324,8 @@ void arrowEvent (Event event) {
 					dropDown (!isDropped ());
 				}
 				dontDrop = false;
-			} else {
+			}
+			else {
 				dropDown (!isDropped ());
 			}
             break;
@@ -1471,7 +1472,8 @@ void textEvent (Event event) {
                 int oldIndex = getSelectionIndex ();
                 if (event.keyCode == SWT.ARROW_UP) {
                     select (Math.max (oldIndex - 1, 0));
-                } else {
+                }
+                else {
                     select (Math.min (oldIndex + 1, getItemCount () - 1));
                 }
                 if (oldIndex != getSelectionIndex ()) {

@@ -155,11 +155,13 @@ public class LaunchPlugin extends AbstractUIPlugin {
         if (StringUtils.isEmpty(runPar)) {
             // empty means: just the first run (0)
             result.add(0);
-        } else if ("*".equals(runPar)) {
+        }
+        else if ("*".equals(runPar)) {
             // create ALL run numbers scenario
             for (int i=0; i<maxRunNo; i++)
                 result.add(i);
-        } else {
+        }
+        else {
             // parse hand specified numbers
             for (String current : StringUtils.split(runPar, ',')) {
                 String lowerUpper[] = StringUtils.splitByWholeSeparator(current, "..");

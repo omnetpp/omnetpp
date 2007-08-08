@@ -231,7 +231,8 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			if (currentCharacter == '\\') {
 				// ignore escaped characters
 				currentPosition++;
-			} else if (currentCharacter == character) {
+			}
+			else if (currentCharacter == character) {
 				return currentPosition;
 			}
 		}
@@ -261,7 +262,8 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 					indLine= line;
 				}
 				buf.append(getIndentOfLine(document, indLine));
-			} else {
+			}
+			else {
 				// use indent of previous line, plus one tab for each opening brace
 				int start= document.getLineOffset(line);
 				int whiteend= findEndOfWhiteSpace(document, start, command.offset);

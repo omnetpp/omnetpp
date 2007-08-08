@@ -102,7 +102,8 @@ public class SampleNewWizard extends Wizard implements INewWizard {
 			InputStream stream = openContentStream();
 			if (file.exists()) {
 				file.setContents(stream, true, true, monitor);
-			} else {
+			}
+			else {
 				file.create(stream, true, monitor);
 			}
 			stream.close();

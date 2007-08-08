@@ -31,11 +31,13 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 			throws CoreException {
 	    if (kind == IncrementalProjectBuilder.FULL_BUILD) {
 	         fullBuild(monitor);
-	      } else {
+	      }
+	      else {
 	         IResourceDelta delta = getDelta(getProject());
 	         if (delta == null) {
 	            fullBuild(monitor);
-	         } else {
+	         }
+	         else {
 	            incrementalBuild(delta, monitor);
 	         }
 	      }

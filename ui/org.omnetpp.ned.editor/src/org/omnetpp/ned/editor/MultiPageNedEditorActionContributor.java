@@ -54,7 +54,8 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
         if (part instanceof GraphicalNedEditor) {
             textContrib.setActiveEditor(activeEditorPart);
             graphContrib.setActiveEditor(activeEditorPart);
-        } else if (part instanceof TextualNedEditor) {
+        }
+        else if (part instanceof TextualNedEditor) {
             graphContrib.setActiveEditor(activeEditorPart);
             textContrib.setActiveEditor(activeEditorPart);
         } else

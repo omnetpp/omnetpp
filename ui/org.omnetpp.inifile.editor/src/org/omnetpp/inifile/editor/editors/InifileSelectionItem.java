@@ -70,17 +70,20 @@ public class InifileSelectionItem {
 		if (document == other.document) {
 			if (other.document != null)
 				return false;
-		} else if (!document.equals(other.document))
+		}
+		else if (!document.equals(other.document))
 			return false;
 		if (key == null) {
 			if (other.key != null)
 				return false;
-		} else if (!key.equals(other.key))
+		}
+		else if (!key.equals(other.key))
 			return false;
 		if (section == null) {
 			if (other.section != null)
 				return false;
-		} else if (!section.equals(other.section))
+		}
+		else if (!section.equals(other.section))
 			return false;
 		return true;
 	}

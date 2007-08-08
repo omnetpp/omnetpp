@@ -56,7 +56,8 @@ public class TableViewerSorter extends ViewerSorter {
 		if (column == this.column) {
 			// Same column as last sort; toggle the direction
 			direction = 1 - direction;
-		} else {
+		}
+		else {
 			// New column; do an ascending sort
 			this.column = column;
 			direction = ASCENDING;
@@ -87,18 +88,21 @@ public class TableViewerSorter extends ViewerSorter {
 		if (viewer == null || !(viewer instanceof ContentViewer)) {
 			name1 = e1.toString();
 			name2 = e2.toString();
-		} else {
+		}
+		else {
 			IBaseLabelProvider prov = ((ContentViewer) viewer).getLabelProvider();
 			if (prov instanceof ITableLabelProvider) {
 				// this is the addition compared to ViewerSorter
 				ITableLabelProvider lprov = (ITableLabelProvider) prov;
 				name1 = lprov.getColumnText(e1, column);
 				name2 = lprov.getColumnText(e2, column);
-			} else if (prov instanceof ILabelProvider) {
+			}
+			else if (prov instanceof ILabelProvider) {
 				ILabelProvider lprov = (ILabelProvider) prov;
 				name1 = lprov.getText(e1);
 				name2 = lprov.getText(e2);
-			} else {
+			}
+			else {
 				name1 = e1.toString();
 				name2 = e2.toString();
 			}

@@ -99,7 +99,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			if (text == null) {
 				if (other.text != null)
 					return false;
-			} else if (!text.equals(other.text))
+			}
+			else if (!text.equals(other.text))
 				return false;
 			return true;
 		}

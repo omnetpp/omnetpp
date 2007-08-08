@@ -183,7 +183,8 @@ public class ParametersDialog extends TitleAreaDialog {
                 String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type.value), VOLATILE));
                 result.setAttribute(ParamNodeEx.ATT_TYPE, baseType);
                 result.setIsVolatile(StringUtils.strip(type.value).startsWith(VOLATILE));
-            } else {
+            }
+            else {
                 result.setAttribute(ParamNodeEx.ATT_TYPE, "");
                 result.setIsVolatile(false);
             }
@@ -197,7 +198,8 @@ public class ParametersDialog extends TitleAreaDialog {
             if (cn == null) {
                 cn = (CommentNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_COMMENT, paramNode);
                 cn.setLocid("right");
-            } else {
+            }
+            else {
                 commentPadding = StringUtils.substringBefore(StringUtils.chomp(cn.getContent()), "//")+"// ";
             }
             if (StringUtils.strip(comment).equals(""))
@@ -427,11 +429,14 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 if (COL_TYPE.equals(property)) {
                     paramLine.type.value = (String)value;
-                } else if (COL_NAME.equals(property)) {
+                }
+                else if (COL_NAME.equals(property)) {
                     paramLine.name.value = (String)value;
-                } else if (COL_VALUE.equals(property)) {
+                }
+                else if (COL_VALUE.equals(property)) {
                     paramLine.value.value = (String)value;
-                } else if (COL_COMMENT.equals(property)) {
+                }
+                else if (COL_COMMENT.equals(property)) {
                     paramLine.comment.value = (String)value;
                 }
 

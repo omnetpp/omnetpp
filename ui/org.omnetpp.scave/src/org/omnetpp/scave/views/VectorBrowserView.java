@@ -184,7 +184,8 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					eventNumberColumn.setText("Event#");
 					viewer.setColumnOrder(new int[] {0,3,1,2});
 				}
-			} else {
+			}
+			else {
 				String fileInWorkspace = input.getFileRun().getFile().getFilePath();
 				showMessage("Vector content cannot be browsed, because the index file (.vci) " +
 							   "for \""+fileInWorkspace+"\" is missing or out of date.");

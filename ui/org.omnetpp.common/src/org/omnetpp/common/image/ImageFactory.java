@@ -245,15 +245,20 @@ public class ImageFactory {
         // translate the textual size to pixel
         if (imageSize == null || "".equals(imageSize) ) {
             imageScaling = SIZE_NORMAL;
-        } else if ("vs".equals(imageSize.toLowerCase())) {
+        }
+        else if ("vs".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_VS;
-        } else if ("s".equals(imageSize.toLowerCase())) {
+        }
+        else if ("s".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_S;
-        } else if ("l".equals(imageSize.toLowerCase())) {
+        }
+        else if ("l".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_L;
-        } else if ("vl".equals(imageSize.toLowerCase())) {
+        }
+        else if ("vl".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_VL;
-        } else  try {
+        }
+        else  try {
                     imageScaling = Integer.valueOf(imageSize).intValue();
                 } catch (Exception e) { }
 

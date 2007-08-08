@@ -463,7 +463,8 @@ public class CustomSashForm extends SashForm {
 				drawArrows[0] = UP_ARROW;
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
 				currentSashInfo.sashBorderRight = false;
-			} else {
+			}
+			else {
 				// Not slammed
 				addArrows[0] = DOWN_MAX_ARROW;
 				drawArrows[0] = DOWN_ARROW;			
@@ -471,7 +472,8 @@ public class CustomSashForm extends SashForm {
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
 				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;
 			}				
-		} else if (noMaxDown) {
+		}
+		else if (noMaxDown) {
 			addArrows = new int[1];
 			drawArrows = new int[1];
 			if (weights[0] == 0) {
@@ -480,7 +482,8 @@ public class CustomSashForm extends SashForm {
 				drawArrows[0] = DOWN_ARROW;
 				currentSashInfo.sashBorderLeft = false;
 				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;				
-			} else {
+			}
+			else {
 				// Not slammed
 				addArrows[0] = UP_MAX_ARROW;
 				drawArrows[0] = UP_ARROW;			
@@ -488,7 +491,8 @@ public class CustomSashForm extends SashForm {
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
 				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;				
 			}				
-		} else {
+		}
+		else {
 			addArrows = new int[2];
 			drawArrows = new int[2];	
 			// TODO: SashForm as changed the folllwing is a temporary kludge
@@ -504,7 +508,8 @@ public class CustomSashForm extends SashForm {
 				drawArrows[1] = DOWN_ARROW;	
 				currentSashInfo.sashBorderLeft = false;
 				currentSashInfo.sashBorderRight = sashBorders != null ? sashBorders[1] : false;
-			} else if (weights[1] == 0 || (currentSashInfo.weight != NO_WEIGHT &&
+			}
+			else if (weights[1] == 0 || (currentSashInfo.weight != NO_WEIGHT &&
 					(vertical && sashBounds.y+sashBounds.height >= clientArea.height-DRAG_MINIMUM ||
 					 !vertical && sashBounds.x + sashBounds.width >= clientArea.width-DRAG_MINIMUM))) {
 				// Slammed to the bottom
@@ -514,7 +519,8 @@ public class CustomSashForm extends SashForm {
 				drawArrows[1] = UP_MAX_ARROW;
 				currentSashInfo.sashBorderLeft = sashBorders != null ? sashBorders[0] : false;
 				currentSashInfo.sashBorderRight = false;
-			} else {
+			}
+			else {
 				// Not slammed
 				addArrows[0] = UP_MAX_ARROW;
 				drawArrows[0] = UP_ARROW;			
@@ -627,7 +633,8 @@ public class CustomSashForm extends SashForm {
 			y = (s.y - ARROW_HEIGHT) / 2;	// Center vertically, no margin required.
 			width = tSize;
 			height = aSize;
-		} else {
+		}
+		else {
 			start = (s.y - neededSize) / 2;
 			y = start;
 			x = (s.x - ARROW_HEIGHT) / 2;	// Center horizontally, no margin required.
@@ -661,7 +668,8 @@ public class CustomSashForm extends SashForm {
 				gc.drawLine(0, 0, s.x-1, 0);
 			else
 				gc.drawLine(0, s.y-1, s.x-1, s.y-1);
-		} else {
+		}
+		else {
 			Point s = sash.getSize();
 			if (leftBorder)
 				gc.drawLine(0, 0, 0, s.y-1);
@@ -684,7 +692,8 @@ public class CustomSashForm extends SashForm {
 				gc.setForeground(normalShadow);
 				gc.drawLine(sashLoc[X_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX]);
 				gc.drawLine(sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]+sashLoc[HEIGHT_INDEX], sashLoc[X_INDEX]+sashLoc[WIDTH_INDEX], sashLoc[Y_INDEX]);			
-			} else {
+			}
+			else {
 				// Draw pushed selection box.
 				indent = 1;
 				Color highlightShadow = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
@@ -713,7 +722,8 @@ public class CustomSashForm extends SashForm {
 					drawDownMaxArrow(gc, sashLoc[X_INDEX]+indent, sashLoc[Y_INDEX]+indent);
 					break;
 			}
-		} else {
+		}
+		else {
 			switch (sashLoc[ARROW_DRAWN_INDEX]) {
 				case UP_ARROW:
 					drawLeftArrow(gc, sashLoc[X_INDEX]+indent, sashLoc[Y_INDEX]+indent);

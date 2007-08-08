@@ -487,11 +487,13 @@ public abstract class DatasetEditor extends MultiPageEditorPart
 					String [] fileNames = (String[])event.data;
 					for (int i=0; i<fileNames.length; i++)
 						loadFileAndAddContentsToDataset(fileNames[i]);
-				} else if (event.data instanceof IDList) {
+				}
+				else if (event.data instanceof IDList) {
 					IDList data = (IDList)event.data;
 					if (strategy.isCompatible(data)) {
 						getDataset().merge(data);
-					} else {
+					}
+					else {
 						MessageDialog.openError(new Shell(), "Error",
 						"Cannot drop or paste scalars into a vector dataset, or vica versa.");
 					}

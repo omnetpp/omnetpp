@@ -188,7 +188,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         if (tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
-        } else {
+        }
+        else {
             tooltipFigure = new TooltipFigure();
             setToolTip(tooltipFigure);
             tooltipFigure.setText(tttext);
@@ -214,11 +215,13 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
             textFlowPage.setHorizontalAligment(PositionConstants.CENTER);
             textAttachLayer.setRefPoints(PositionConstants.NORTH, PositionConstants.SOUTH);
             textAttachLayer.setDeltaXY(0, -1);
-        } else if ("l".equals(alignment.toLowerCase())) {
+        }
+        else if ("l".equals(alignment.toLowerCase())) {
             textFlowPage.setHorizontalAligment(PositionConstants.RIGHT);
             textAttachLayer.setRefPoints(PositionConstants.NORTH_WEST, PositionConstants.NORTH_EAST);
             textAttachLayer.setDeltaXY(-2, 0);
-        } else if ("r".equals(alignment.toLowerCase())) {
+        }
+        else if ("r".equals(alignment.toLowerCase())) {
             textFlowPage.setHorizontalAligment(PositionConstants.LEFT);
             textAttachLayer.setRefPoints(PositionConstants.NORTH_EAST, PositionConstants.NORTH_WEST);
             textAttachLayer.setDeltaXY(2, 0);
@@ -262,24 +265,31 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
 
         if ("rrect".equals(shapeName.toLowerCase())) {
             shapeFigure = rrectShapeFigure;
-        } else if ("oval".equals(shapeName.toLowerCase())) {
+        }
+        else if ("oval".equals(shapeName.toLowerCase())) {
             shapeFigure = ovalShapeFigure;
-        } else if ("rect2".equals(shapeName.toLowerCase())) {
+        }
+        else if ("rect2".equals(shapeName.toLowerCase())) {
             shapeFigure = polygonShapeFigure;
             polygonShapeFigure.setGeometry(4, 0);
-        } else if ("tri".equals(shapeName.toLowerCase())) {
+        }
+        else if ("tri".equals(shapeName.toLowerCase())) {
             shapeFigure = polygonShapeFigure;
             polygonShapeFigure.setGeometry(3, 0);
-        } else if ("tri2".equals(shapeName.toLowerCase())) {
+        }
+        else if ("tri2".equals(shapeName.toLowerCase())) {
             shapeFigure = polygonShapeFigure;
             polygonShapeFigure.setGeometry(3, 180);
-        } else if ("hex".equals(shapeName.toLowerCase())) {
+        }
+        else if ("hex".equals(shapeName.toLowerCase())) {
             shapeFigure = polygonShapeFigure;
             polygonShapeFigure.setGeometry(6, 30);
-        } else if ("hex2".equals(shapeName.toLowerCase())) {
+        }
+        else if ("hex2".equals(shapeName.toLowerCase())) {
             shapeFigure = polygonShapeFigure;
             polygonShapeFigure.setGeometry(6, 0);
-        } else {
+        }
+        else {
             shapeFigure = rectShapeFigure;
         }
 

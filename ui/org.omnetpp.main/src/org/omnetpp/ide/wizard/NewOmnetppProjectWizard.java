@@ -48,7 +48,8 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         IProject project = createNewProject();
         if (project != null) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
 	}
@@ -91,10 +92,12 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
                 if (((CoreException) t).getStatus().getCode() == IResourceStatus.CASE_VARIANT_EXISTS) {
                     MessageDialog.openError(getShell(), "Creation problems",
                     		"The project contents directory specified is being used by another project. Please enter a new project contents directory.");
-                } else {
+                }
+                else {
                     ErrorDialog.openError(getShell(), "Creation problems", null, ((CoreException) t).getStatus());
                 }
-            } else {
+            }
+            else {
                 // Unexpected runtime exceptions and errors may still occur.
             	Activator.getDefault().logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());

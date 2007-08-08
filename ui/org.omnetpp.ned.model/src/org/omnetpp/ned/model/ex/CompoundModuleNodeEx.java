@@ -209,7 +209,8 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
                 // if all was ok, add it to the list
                 result.add(connChild);
-            } else if (currChild instanceof ConnectionGroupNode) {
+            }
+            else if (currChild instanceof ConnectionGroupNode) {
                 // FIXME remove the comment is the layouter works without infite loops
                 gatherConnections(currChild, srcName, srcGate, destName, destGate, result);
             }

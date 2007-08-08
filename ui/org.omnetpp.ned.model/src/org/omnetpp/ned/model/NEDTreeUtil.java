@@ -250,7 +250,8 @@ public class NEDTreeUtil {
 					+ swigNode.getAttribute(i) + "\"";
 		if (swigNode.getFirstChild() == null) {
 			result += "/> \n";
-		} else {
+		}
+		else {
 			result += "> \n";
 			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child
 					.getNextSibling())
@@ -274,7 +275,8 @@ public class NEDTreeUtil {
 
 		if (pojoNode.getFirstChild() == null) {
 			result += "/> " +  debugString + "\n";
-		} else {
+		}
+		else {
 			result += "> " +  debugString + "\n";
 			for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling())
 				result += generateXmlFromPojoElementTree(child, indent + "  ");

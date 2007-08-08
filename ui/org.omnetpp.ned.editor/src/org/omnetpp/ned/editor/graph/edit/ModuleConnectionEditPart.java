@@ -88,7 +88,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         		setParent(sourceEditPartEx);
         	else if (sourceEditPartEx instanceof SubmoduleEditPart)
         		setParent(sourceEditPartEx.getParent());
-    	} else if (targetEditPartEx == null)
+    	}
+    	else if (targetEditPartEx == null)
     		setParent(null);
     	if (sourceEditPartEx != null && targetEditPartEx != null)
     		refresh();
@@ -110,7 +111,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         		setParent(targetEditPartEx);
         	else if (targetEditPartEx instanceof SubmoduleEditPart)
         		setParent(targetEditPartEx.getParent());
-    	} else if (sourceEditPartEx == null)
+    	}
+    	else if (sourceEditPartEx == null)
     		setParent(null);
     	if (sourceEditPartEx != null && targetEditPartEx != null)
     		refresh();

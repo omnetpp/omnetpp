@@ -106,7 +106,8 @@ public abstract class TextCellEditorEx extends TextCellEditor {
                     if (newValidState) {
                         markDirty();
                         doSetValue(newValue);
-                    } else {
+                    }
+                    else {
                         // try to insert the current value into the error message.
                         setErrorMessage(MessageFormat.format(getErrorMessage(),
                                 new Object[] { newValue.toString() }));

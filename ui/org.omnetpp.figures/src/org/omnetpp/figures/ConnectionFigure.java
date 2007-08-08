@@ -76,7 +76,8 @@ public class ConnectionFigure extends PolylineConnection {
         if (tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
-        } else {
+        }
+        else {
             tooltipFigure = new TooltipFigure();
             setToolTip(tooltipFigure);
             tooltipFigure.setText(tttext);
@@ -96,7 +97,8 @@ public class ConnectionFigure extends PolylineConnection {
         if (alignment != null) {
             if (alignment.startsWith("l")) {
                 labelLocator.setAlignment(ConnectionLocator.SOURCE);
-            } else if (alignment.startsWith("r")) {
+            }
+            else if (alignment.startsWith("r")) {
                 labelLocator.setAlignment(ConnectionLocator.TARGET);
             } else
                 labelLocator.setAlignment(ConnectionLocator.MIDDLE);

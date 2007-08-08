@@ -230,7 +230,8 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 		if (connectionToPaths.isEmpty()) {
 			unhookAll();
 			connectionToPaths = null;
-		} else {
+		}
+		else {
 			//Make sure one of the remaining is revalidated so that we can re-route again.
 			queueSomeRouting();
 		}

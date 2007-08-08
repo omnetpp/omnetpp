@@ -538,7 +538,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
          if (editPart == null) {
              getGraphicalViewer().deselectAll();
-         } else {
+         }
+         else {
              getGraphicalViewer().reveal(editPart);
              getGraphicalViewer().select(editPart);
          }

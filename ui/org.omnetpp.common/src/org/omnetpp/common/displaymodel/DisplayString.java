@@ -463,7 +463,8 @@ public class DisplayString implements IDisplayString {
         if (location == null) {
             set(Prop.X, null);
             set(Prop.Y, null);
-        } else {
+        }
+        else {
             set(Prop.X, floatToString(pixel2unit(location.x, scale)));
             set(Prop.Y, floatToString(pixel2unit(location.y, scale)));
         }

@@ -137,21 +137,24 @@ public class NedImageDescriptor extends ImageDescriptor {
         if (location != null) {
             if (!location.equals(other.location))
                 return false;
-        } else {
+        }
+        else {
             if (other.location != null)
                 return false;
         }
         if (colorization != null) {
             if (!colorization.equals(other.colorization))
                 return false;
-        } else {
+        }
+        else {
             if (other.colorization != null)
                 return false;
         }
         if (padding != null) {
             if (!padding.equals(other.padding))
                 return false;
-        } else {
+        }
+        else {
             if (other.padding != null)
                 return false;
         }
@@ -214,7 +217,8 @@ public class NedImageDescriptor extends ImageDescriptor {
         if (location != null) {
             is = location.getResourceAsStream(name);
 
-        } else {
+        }
+        else {
             try {
                 is = new FileInputStream(name);
             } catch (FileNotFoundException e) {
@@ -279,7 +283,8 @@ public class NedImageDescriptor extends ImageDescriptor {
                 }
             }
             data.palette = new PaletteData(rgbs);
-        } else {
+        }
+        else {
             /* Convert the pixels. */
             int[] scanline = new int[width];
             int redMask = palette.redMask;
@@ -340,7 +345,8 @@ public class NedImageDescriptor extends ImageDescriptor {
         if (paddedSize != null) {
             newWidth = paddedSize.width;
             newHeight = paddedSize.height;
-        } else {
+        }
+        else {
             double scaleRatio;
             if (preferredScale > 0)
                 // treat as absolute size

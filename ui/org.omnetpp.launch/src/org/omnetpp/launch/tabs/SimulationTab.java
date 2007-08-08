@@ -104,7 +104,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 catch (Exception e) {
                     setErrorMessage("Error reading inifile: "+e.getMessage());
                 }
-            } else {
+            }
+            else {
                 setErrorMessage("Unknown directive in inifile");
             }
         }
@@ -378,7 +379,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
             fOtherEnvText.setText("");
             if ("".equals(uiArg)) {
                 fDefaultEnvButton.setSelection(true);
-            } else {
+            }
+            else {
                 fDefaultEnvButton.setSelection(false);
                 if ("Cmdenv".equals(uiArg))
                     fCmdEnvButton.setSelection(true);
@@ -438,7 +440,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
         if (cdtContributed) {
             if (!"".equals(fRunText.getText()))
                 arg += "-r "+strippedRun+" ";
-        } else {
+        }
+        else {
             // otherwise (stand-alone starter) we store it into a separate attribute
             config.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
         }

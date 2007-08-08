@@ -322,7 +322,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						}
 					});
 					indexer.schedule();
-				} else {
+				}
+				else {
 					manager.loadFile(resourcePath, osPath);
 					if (debug) System.out.println("done");
 				}

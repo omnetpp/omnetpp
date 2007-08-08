@@ -157,23 +157,29 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
             if (info.sectionType==SECT_GLOBAL) {
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTopLevelKeywords, "keyword (top level)");
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTypeDefinerKeywords, "keyword");
-            } else if (info.sectionType==SECT_PARAMETERS) {
+            }
+            else if (info.sectionType==SECT_PARAMETERS) {
                 addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"}, "section");
-            } else if (info.sectionType==SECT_GATES) {
+            }
+            else if (info.sectionType==SECT_GATES) {
                 addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:", "submodules:", "types:"}, "section");
-            } else if (info.sectionType==SECT_TYPES) {
+            }
+            else if (info.sectionType==SECT_TYPES) {
 				addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTypeDefinerKeywords, "keyword");
                 addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:", "submodules:"}, "section");
-	    	} else if (info.sectionType==SECT_SUBMODULES) {
+	    	}
+	    	else if (info.sectionType==SECT_SUBMODULES) {
                 addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:"}, "section");
-            } else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
+            }
+            else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
 	    		addProposals(viewer, documentOffset, result, new String[]{"gates:"}, "section");
 	    	}
 
 	    	// offer templates
 	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
 			    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedGlobalTempl);
-	    	} else if (info.sectionType==SECT_SUBMODULES) {
+	    	}
+	    	else if (info.sectionType==SECT_SUBMODULES) {
 	    		addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleTempl);
 	    	}
 		}
