@@ -9,7 +9,6 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-
 import org.omnetpp.figures.CompoundModuleFigure;
 
 
@@ -134,6 +133,7 @@ public class SpringEmbedderLayout extends XYLayout {
             if (bounds == null || bounds.x == Integer.MIN_VALUE || bounds.y == Integer.MIN_VALUE)
                 continue;
 
+            //FIXME is this "-1" stuff needed?
             if (bounds.width == -1 || bounds.height == -1) {
                 Dimension preferredSize = f.getPreferredSize(bounds.width, bounds.height);
                 bounds = bounds.getCopy();
