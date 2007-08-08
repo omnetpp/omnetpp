@@ -30,7 +30,7 @@ public class DisplayString implements IDisplayString {
     protected DisplayString emptyDefaults = null;
     // use only a week reference so if the referenced fallback display string is deleted
     // along with the containing model element, it will not be held in the memory
-    protected WeakReference<DisplayString> defaults = null;
+    protected WeakReference<DisplayString> fallbackDisplayStringRef = null;
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
 
@@ -65,7 +65,7 @@ public class DisplayString implements IDisplayString {
         /**
          * Returns a tag argument at the given position
          * @param pos
-         * @return The value os that position or <code>EMPTY_VALUE</code> if does not exist
+         * @return The value of that position or <code>EMPTY_VALUE</code> if does not exist
          */
         public String getArg(int pos) {
             if (pos < 0 || pos >= args.size() || args.get(pos) == null)
@@ -88,7 +88,7 @@ public class DisplayString implements IDisplayString {
          * Check if the tag's value is default
          * @return <code>true</code> if ALL tag values are missing or have the default value
          */
-        public boolean isDefault() {
+        public boolean isEmpty() {
             for(String val : args)
                 if(val != null && !EMPTY_VALUE.equals(val)) return false;
             return true;
@@ -123,7 +123,7 @@ public class DisplayString implements IDisplayString {
         @Override
         public String toString() {
             // return an empty string if all the values are default
-            if (isDefault()) return EMPTY_VALUE;
+            if (isEmpty()) return EMPTY_VALUE;
             return getName()+"="+getArgString();
         }
 
@@ -163,21 +163,21 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * @return The currently set default display string
+     * @return The currently set fallback display string
      */
-    public DisplayString getDefaults() {
-        if (defaults != null)
-            return defaults.get();
+    public DisplayString getFallbackDisplayString() {
+        if (fallbackDisplayStringRef != null)
+            return fallbackDisplayStringRef.get();
         return null;
     }
 
     /**
-     * Sets the default display string used if the current object has empty or null value for a
-     * requested property
+     * Sets the fallback display string used if the current object has empty or null value for a
+     * requested property (points to the type or ancestor display string)
      * @param defaults
      */
-    public void setDefaults(DisplayString defaults) {
-        this.defaults = new WeakReference<DisplayString>(defaults);
+    public void setFallbackDisplayString(DisplayString defaults) {
+        this.fallbackDisplayStringRef = new WeakReference<DisplayString>(defaults);
     }
 
 	/**
@@ -198,43 +198,45 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * @param tagName
-     * @param pos
-     * @param defaultDspStr generic defaults
-     * @param defaultVariableDspStr defaults used if a variable is present at the location
-     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined
+     * Returns TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined
      * or <code>null</code> if tag does not exist at all. If a default display string was
-     * provided with <code>setDefaults</code> it tries to look up the property from there
-     *
+     * provided with <code>setFallbackDisplayString</code> it tries to look up the property from there
      */
     protected String getTagArgUsingDefs(Tag tagName, int pos) {
         TagInstance tag = getTag(tagName);
-        // if the tag does'nt exist do not apply any defaults
-        if (tag == null) {
-        	// if there is a default display string delegate the request there
-        	if (getDefaults() != null)
-        		return getDefaults().getTagArgUsingDefs(tagName, pos);
-        	// no default display string so return NULL to signal that the whole tag is missing
-            return null;
-        }
-        // get the value
-        String value = tag.getArg(pos);
-        // if tag was present, but the argument was empty, look for default values
-        if (TagInstance.EMPTY_VALUE.equals(value) && getDefaults() != null)
-            value = getDefaults().getTagArgUsingDefs(tagName, pos);
-        // look for variable defaults
-        if (variableDefaults!=null && value!=null && value.startsWith("$"))
-            value = variableDefaults.getTagArg(tagName, pos);
-        // if the value is still empty or null get the local default values  if any
-        if (emptyDefaults!=null && (value==null || TagInstance.EMPTY_VALUE.equals(value)))
-            value = emptyDefaults.getTagArg(tagName, pos);
-        // if no default was defined for this tag/argument return empty value
-        if (value == null)
-            return TagInstance.EMPTY_VALUE;
+        String value = (tag == null) ? "" : tag.getArg(pos);
 
-        return value;
+        if (value.startsWith("$") && variableDefaults!=null)
+            return variableDefaults.getTagArg(tagName, pos);
+        else if (!"".equals(value))
+            return value;
+        else if (getFallbackDisplayString() != null)
+            return getFallbackDisplayString().getTagArgUsingDefs(tagName, pos);
+        else
+            return EMPTY_DEFAULTS.getTagArg(tagName, pos);
     }
 
+    public boolean containsProperty(Prop prop) {
+        TagInstance tag = getTag(prop.getTag());
+        String value = (tag == null) ? "" : tag.getArg(prop.getPos());
+
+        if (!"".equals(value))
+            return true;
+        else if (getFallbackDisplayString() != null)
+            return getFallbackDisplayString().containsProperty(prop);
+        else
+            return false;
+    }
+
+    public boolean containsTag(Tag tagName) {
+        TagInstance tag = getTag(tagName);
+        if (tag != null)
+            return true;
+        else if (getFallbackDisplayString() != null)
+            return getFallbackDisplayString().containsTag(tagName);
+        else
+            return false;
+    }
     /**
      * Sets the value of a tag at a given position. Extends the tag vector if necessary
      * @param tag Name of the tag
@@ -252,6 +254,9 @@ public class DisplayString implements IDisplayString {
             tagMap.put(tag.name(), tagInstance);
         }
         tagInstance.setArg(pos, newValue);
+        // remove the tag if every value is empty
+        if (tagInstance.isEmpty())
+            tagMap.remove(tag.name());
     }
 
     /**

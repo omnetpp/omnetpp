@@ -77,13 +77,13 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         if (defaultNode == null) {
             // if no type info present or it has no ancestors, delete the display string default
             // ie. no inheritance from other displaystring
-            result.setDefaults(null);
+            result.setFallbackDisplayString(null);
             return result;
         }
 
         Assert.isTrue(defaultNode instanceof IHasDisplayString);
         // otherwise set the default display string
-        result.setDefaults(((IHasDisplayString)defaultNode).getEffectiveDisplayString());
+        result.setFallbackDisplayString(((IHasDisplayString)defaultNode).getEffectiveDisplayString());
         return result;
     }
 
@@ -102,7 +102,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     public static DisplayString getEffectiveDisplayString(SubmoduleNodeEx submoduleNode, IModuleTypeNode submoduleType) {
         DisplayString result = submoduleNode.getDisplayString();
         Assert.isTrue(submoduleType instanceof SimpleModuleNodeEx || submoduleType instanceof CompoundModuleNodeEx);
-        result.setDefaults(submoduleType.getEffectiveDisplayString());
+        result.setFallbackDisplayString(submoduleType.getEffectiveDisplayString());
         return result;
     }
 

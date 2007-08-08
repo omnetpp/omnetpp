@@ -21,7 +21,7 @@ public interface IDisplayString {
                       m, a, ls, bp }                 // connection tags
 
     // default value used if the tag exists but the property contains no value
-    public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=,,,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
+    public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
     // example values used if the property contains a $variable
     public static final String VARIABLE_DEFAULTS_STR = "i=abstract/server,red,50;i2=status/execute,red,50;b=40,24,rect,#8080ff,black,2;t=Sample text,t,blue;r=100,white,black,3;bgb=300,200,white,black,5;bgg=100,2,black;bgi=,center;ls=green,3,dashed";
 
@@ -177,7 +177,19 @@ public interface IDisplayString {
     }
 
 
-	/**
+    /**
+     * True if the property is specified in the display string or in the fallback chain.
+     * (except the EMPTY_DEFAULTS)
+     */
+    public boolean containsProperty(Prop prop);
+
+    /**
+     * True if the tag is specified in the display string or in the fallback chain.
+     * (except the EMPTY_DEFAULTS)
+     */
+    public boolean containsTag(Tag tagName);
+
+        /**
 	 * @param property The requested property
 	 * @return The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types.
@@ -250,4 +262,10 @@ public interface IDisplayString {
 	 * @return
 	 */
 	public int unit2pixel(float unit, Float overrideScale);
+
+    /**
+     * Sets the content of the display string
+     */
+    public void set(String newValue);
+
 }

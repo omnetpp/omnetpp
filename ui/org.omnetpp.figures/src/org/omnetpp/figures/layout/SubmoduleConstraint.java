@@ -1,5 +1,6 @@
 package org.omnetpp.figures.layout;
 
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -28,9 +29,29 @@ public class SubmoduleConstraint extends Rectangle {
         	loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
         	moveable = true;
         }
-
         setLocation(loc);
-        setSize(dps.getSize(scale));
+
+        // set the size of the submodule
+        // special handling required if either width or height is not present or
+        // the whole B tag is missing. In this case the corresponding size should be set to -1
+        // to signal the request of automatic resizing
+        Dimension size = dps.getSize(scale);
+        // the tag is missing totally
+        if (!dps.containsTag(IDisplayString.Tag.b)) {
+            size.width = -1;
+            size.height = -1;
+        }
+        else {
+            // only one of them is missing
+            boolean widthExist = dps.containsProperty(IDisplayString.Prop.WIDTH);
+            boolean heightExist = dps.containsProperty(IDisplayString.Prop.HEIGHT);
+            if (!widthExist && heightExist)
+                size.width = -1;
+            if (widthExist && !heightExist)
+                size.height = -1;
+        }
+
+        setSize(size);
 	}
 
 	public void setVectorName(String name) {

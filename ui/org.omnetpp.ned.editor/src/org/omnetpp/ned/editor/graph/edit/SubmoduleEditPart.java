@@ -100,6 +100,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected void refreshVisuals() {
 
+        System.out.println("refreshVisuals()");
         // define the properties that determine the visual appearance
     	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
 

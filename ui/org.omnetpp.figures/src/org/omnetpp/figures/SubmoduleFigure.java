@@ -207,11 +207,12 @@ public class SubmoduleFigure extends ModuleFigure
       invalidate();
     }
 
-    protected void setShape(Image image,
-            String shape, int shapeWidth, int shapeHeight,
+    protected void setShape(Image image, String shape,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
 
         Image img = image;
+        int shapeWidth = getConstraint().width;
+        int shapeHeight = getConstraint().height;
         // handle defaults. if no size is given and no icon is present use a default icon
         if(StringUtils.isEmpty(shape) && img == null && shapeWidth == -1 && shapeHeight == -1)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
@@ -219,22 +220,13 @@ public class SubmoduleFigure extends ModuleFigure
         if (img != imageFigure.getImage()) {
             imageFigure.setImage(img);
             imageFigure.setVisible(img != null);
-            Dimension imgSize = img == null ?
-                    new Dimension(0,0) : new Dimension(img.getImageData().width, img.getImageData().height);
-            // we set the image minimum size, so it will never be clipped
-            imageFigure.setPreferredSize(imgSize);
         }
+        Dimension imgSize = img == null ?
+                new Dimension(0,0) : new Dimension(img.getImageData().width, img.getImageData().height);
+        // we set the image minimum size, so it will never be clipped
+        imageFigure.setPreferredSize(imgSize);
+
         setPreferredSize(imageFigure.getPreferredSize());
-
-        // if only size is specified the default shape is rectangle
-        if (StringUtils.isEmpty(shape) && (shapeHeight>0 || shapeWidth>0))
-            shape = "rect";
-        // if nor image nor size is specified, the default size is 40x24
-        if (img == null && shapeWidth == -1 && shapeHeight == -1) {
-            shapeWidth = 40;
-            shapeHeight = 24;
-        }
-
 
         // creating the shape
         currShape = null;
@@ -243,7 +235,7 @@ public class SubmoduleFigure extends ModuleFigure
         ovalShapeFigure.setVisible(false);
         polygonShapeFigure.setVisible(false);
         shapeVisible = false;
-        if (shape == null || "".equals(shape) || shapeHeight==-1 && shapeWidth==-1)
+        if (StringUtils.isEmpty(shape) || shapeHeight==-1 && shapeWidth==-1)
             return;
 
         if ("rrect".equals(shape.toLowerCase())) {
@@ -279,9 +271,11 @@ public class SubmoduleFigure extends ModuleFigure
 
         // if both coordinates < 0 then the icon should be used as a size reference
         Dimension shapeSize = new Dimension(shapeWidth, shapeHeight);
-        if (shapeSize.width < 0 && shapeSize.height < 0) {
-            shapeSize.setSize(imageFigure.getPreferredSize());
-        }
+
+//        if (shapeSize.width < 0 && shapeSize.height < 0) {
+//            shapeSize.setSize(imageFigure.getPreferredSize());
+//        }
+
         // set the requested size of the object
         currShape.setSize(shapeSize);
         // get back the real dimension (may differ from the width,height if one of them was < 0
@@ -291,7 +285,7 @@ public class SubmoduleFigure extends ModuleFigure
         if (actualSize.width < 0) actualSize.width = actualSize.height;
         if (actualSize.height < 0) actualSize.height = actualSize.width;
         // set the preferred size of the parent, so the child's
-        currShape.setPreferredSize(actualSize);
+        // currShape.setPreferredSize(actualSize);
 
         // ensure  that the size is not smaller than the visible image's preferred size
         if(imageFigure.isVisible())
@@ -299,6 +293,7 @@ public class SubmoduleFigure extends ModuleFigure
         setPreferredSize(actualSize);
         invalidate();
     }
+
 
     /**
      * Sets the external image decoration (for pins)
@@ -364,10 +359,11 @@ public class SubmoduleFigure extends ModuleFigure
         		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
 
         // set the figure properties
-        setShape(img,
-        		dps.getAsStringDef(IDisplayString.Prop.SHAPE),
-        		dps.getSize(getScale()).width,
-        		dps.getSize(getScale()).height,
+        String shape = dps.getAsStringDef(IDisplayString.Prop.SHAPE);
+        if (!dps.containsTag(IDisplayString.Tag.b)) {
+            shape = "";
+        }
+        setShape(img, shape,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));

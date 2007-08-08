@@ -98,13 +98,14 @@ public class SpringEmbedderLayout extends XYLayout {
 	/**
      * Implements the algorithm to layout the components of the given container figure.
      * Each component is laid out using its own layout constraint specifying its size
-     * and position. Copied from XYLayout BUT places the middle point if the children to the
+     * and position. Copied from XYLayout BUT places the middle point of the children to the
      * specified constraint location.
      *
      * @see LayoutManager#layout(IFigure)
      */
     @Override
     public void layout(IFigure parent) {
+        System.out.println("layout()");
         AbstractGraphLayoutAlgorithm alg = null;
         // find the place of movable nodes if auto-layout requested
         if (requestAutoLayout) {
@@ -122,12 +123,10 @@ public class SpringEmbedderLayout extends XYLayout {
             Point loc = alg != null ? alg.getNodePosition(f) : null;
             // if the algorithm does not have info about this figure or the figure is fixed
             // (use the figure's location)
-            if (loc == null) {
-                bounds = (Rectangle)getConstraint(f);
-            } else {
-                // get the position from the algorithm
+            bounds = ((Rectangle)getConstraint(f)).getCopy();
+            if (loc != null) {
+                // get the position from the algorithm (the size is still coming from the constraint)
                 bounds.setLocation(loc);
-                bounds.setSize(f.getPreferredSize());
             }
 
             // if no info is coming from the algorithm or from the layout manager just skip it
