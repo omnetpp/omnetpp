@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -106,7 +107,8 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
             // get the compound module scaling factor
             float scale = ((ModuleEditPart)child).getScale();
             // otherwise create a command that deletes the location from the display string
-            SetConstraintCommand cmd = new SetConstraintCommand(smodule, scale);
+            Rectangle oldBounds = (Rectangle)child.getFigure().getParent().getLayoutManager().getConstraint(child.getFigure());
+            SetConstraintCommand cmd = new SetConstraintCommand(smodule, scale, oldBounds);
             // pin the module at the current temporary location if it is not fixed
             cmd.setPinLocation(isChecked() ? child.getFigure().getBounds().getCenter() : null);
             return cmd;

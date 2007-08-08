@@ -2,10 +2,14 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
@@ -119,17 +123,48 @@ public class SubmoduleEditPart extends ModuleEditPart {
         float scale = getScale();
         // set it in the figure, so size and range indicator can use it
         getSubmoduleFigure().setScale(scale);
+        // set the rest of the display properties
+        getSubmoduleFigure().setDisplayString(dps);
+
         // set the layout constraint for the figure (should be set BEFORE figure.setDisplayString() )
         // along with the scaling factor coming from the compound module
-        SubmoduleConstraint constr = new SubmoduleConstraint(dps, scale);
+        SubmoduleConstraint constr = new SubmoduleConstraint();
+
+        Point loc = dps.getLocation(scale);
+        // special case:
+        // Integer.MIN_VALUE signals that the coordinate is unpinned and the
+        // layouter can move it freely (if no location is specified in the display string)
+        if (loc == null) {
+            loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        }
+        constr.setLocation(loc);
+
+        // set the size of the submodule
+        // special handling required if either width or height is not present or
+        // the whole B tag is missing. In this case the corresponding size should be
+        // requested from the figure
+        Dimension size = dps.getSize(scale);
+        // the tag is missing totally
+        if (!dps.containsTag(IDisplayString.Tag.b)) {
+            size = getFigure().getPreferredSize().getCopy();
+        }
+        else {
+            // only one of them is missing
+            boolean widthExist = dps.containsProperty(IDisplayString.Prop.WIDTH);
+            boolean heightExist = dps.containsProperty(IDisplayString.Prop.HEIGHT);
+            if (!widthExist && heightExist)
+                size.width = getFigure().getPreferredSize().width;
+            if (widthExist && !heightExist)
+                size.height = getFigure().getPreferredSize().height;
+        }
+        Assert.isTrue(size.width != -1 && size.height != -1);
+        constr.setSize(size);
+
         constr.setVectorName(nameToDisplay);
         // TODO put the correct values here from the model
         constr.setVectorSize(5);
         constr.setVectorIndex(3);
         getSubmoduleFigure().setConstraint(constr);
-
-        // set the rest of the display properties
-        getSubmoduleFigure().setDisplayString(dps);
 
         // TODO implement a separate PIN decoration decorator figure in submodule figure
         if (dps.getLocation(scale) != null)

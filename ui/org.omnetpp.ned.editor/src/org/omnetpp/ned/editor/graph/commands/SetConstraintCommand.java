@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
+
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
@@ -15,23 +16,27 @@ public class SetConstraintCommand extends Command {
 
     String oldDisplayString;
     String newDisplayString;
+    private Rectangle oldBounds;
     private Point newPos;
     private Dimension newSize;
     private boolean pinOperation = false;
     private final INamedGraphNode module;
     private float scale = 1.0f;
 
-    public SetConstraintCommand(INamedGraphNode newModule, float scale) {
+    public SetConstraintCommand(INamedGraphNode newModule, float scale, Rectangle oldBounds) {
     	super();
         this.scale = scale;
+        this.oldBounds = oldBounds;
         module = newModule;
     }
 
     @Override
     public void execute() {
         oldDisplayString = module.getDisplayString().toString();
-        boolean sizeChanged = (newSize != null) && !newSize.equals(module.getDisplayString().getSize(scale));
-        boolean posChanged = (newPos != null) && !newPos.equals(module.getDisplayString().getLocation(scale));
+        // get the current (old) value of the size. if the size is not specified change it to -1
+        boolean sizeChanged = (newSize != null) && !newSize.equals(oldBounds.getSize());
+        boolean posChanged = (newPos != null) && !newPos.equals(oldBounds.getLocation());
+
         if (pinOperation) {
             module.getDisplayString().setLocation(newPos, scale);
             setLabel((newPos == null ? "Unpin " :"Pin ") + module.getName());

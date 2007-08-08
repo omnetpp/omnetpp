@@ -82,10 +82,10 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     }
 
     @Override
-    protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
+    protected Command createChangeConstraintCommand(EditPart child, Object newConstraint) {
         IFigure childFigure = ((GraphicalEditPart)child).getFigure();
         Rectangle figureBounds = childFigure.getBounds();
-        Rectangle modelConstraint = (Rectangle)constraint;
+        Rectangle modelConstraint = (Rectangle)newConstraint;
         // do not allow change if we are read only components
         if (!PolicyUtil.isEditable(child))
             return null;
@@ -94,8 +94,8 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         // we have to calculate the center point in that direction manually using the size info
         // from the figure directly (which knows it's size) This is the inverse transformation of
         // CenteredXYLayout's transformation.
-        if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
-        if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
+//        if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
+//        if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
 
         // disable the resize if we reach the minimal size
         if (modelConstraint.width == getMinimumSizeFor((GraphicalEditPart)child).width ||
@@ -109,7 +109,8 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command
         INamedGraphNode module = (INamedGraphNode) child.getModel();
-        SetConstraintCommand constrCmd = new SetConstraintCommand(module, scale);
+        Rectangle oldBounds = (Rectangle)childFigure.getParent().getLayoutManager().getConstraint(childFigure);
+        SetConstraintCommand constrCmd = new SetConstraintCommand(module, scale, oldBounds);
         constrCmd.setConstraint(modelConstraint);
 
         // check if we have a shape in the figure. If not, the resize command should change the icon size
