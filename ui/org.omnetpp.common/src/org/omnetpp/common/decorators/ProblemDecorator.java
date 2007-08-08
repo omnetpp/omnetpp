@@ -31,7 +31,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
     private final static int checkDepth = IResource.DEPTH_INFINITE;
 
     public ProblemDecorator() {
-        // we want to listen for workspce changes
+        // we want to listen for workspace changes
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
 
@@ -55,7 +55,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
             for (IMarker marker : problems)
                 maxLevel = Math.max(maxLevel, marker.getAttribute(IMarker.SEVERITY, -1));
         } catch (CoreException e) {
-            // cannot compute (resource does not exsist or a project is closed)
+            // cannot compute (resource does not exist or a project is closed)
             return maxLevel;
         }
         return maxLevel;

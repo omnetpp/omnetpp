@@ -66,10 +66,8 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
  * @author Andras
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
-//XXX comment handling (stripping/adding of "#")
 //XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
 //XXX when adding params here, editor annotations become out of sync with markers
-//XXX decoration: small error icon gets stretched to 16x16
 public class ParametersPage extends FormPage {
 	private TreeViewer treeViewer;
 	private Combo sectionsCombo;
@@ -183,7 +181,7 @@ public class ParametersPage extends FormPage {
 					else if (columnIndex == 1) {
 						SectionKey item = (SectionKey) element;
 						IMarker[] markers = InifileUtils.getProblemMarkersFor(item.section, item.key, getInifileDocument());
-						return FieldEditor.getProblemImage(markers, true);
+						return FieldEditor.getProblemImage(markers, false);
 					}
 				}
 				else {
