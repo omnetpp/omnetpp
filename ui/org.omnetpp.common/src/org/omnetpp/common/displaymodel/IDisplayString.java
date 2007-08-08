@@ -5,10 +5,15 @@ import org.eclipse.draw2d.geometry.Point;
 
 import org.omnetpp.common.util.StringUtils;
 
+/**
+ * FIXME undocumented class
+ * 
+ * @author rhornig
+ */
 public interface IDisplayString {
-
 	String ATT_DISPLAYSTRING = "DisplayString"; // end of TagArg enum definition
-    /**
+
+	/**
      *	Property types used in the display string
      */
     public enum PropType { READONLY, STRING, INTEGER, UNIT, COLOR, IMAGE }
@@ -22,19 +27,19 @@ public interface IDisplayString {
 
     // default value used if the tag exists but the property contains no value
     public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
+    
     // example values used if the property contains a $variable
     public static final String VARIABLE_DEFAULTS_STR = "i=abstract/server,red,50;i2=status/execute,red,50;b=40,24,rect,#8080ff,black,2;t=Sample text,t,blue;r=100,white,black,3;bgb=300,200,white,black,5;bgg=100,2,black;bgi=,center;ls=green,3,dashed";
 
     /**
      * Defines all tag groups
-     *
      */
     public enum PropGroup {
         Base, Position, Polygon, Icon, Range, Text, Connection, Line, BackgroundLayout, Background, BackgroundPosition, BackgroundStyle
     }
 
     /**
-     * describes ALL possible tag values and arguments and adds additional info,
+     * Describes ALL possible tag values and arguments and adds additional info,
      * including type, tag-name, position inside the tag and
      * user readable name and description
      */

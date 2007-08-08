@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.util.StringUtils;
@@ -22,16 +21,12 @@ public class DisplayString implements IDisplayString {
 
     // contains the default fallback values for the different tags if a variable is used in that position
     public static final DisplayString VARIABLE_DEFAULTS = new DisplayString(VARIABLE_DEFAULTS_STR);
+
     // contains the default fallback values for the different tags if it is empty
     public static final DisplayString EMPTY_DEFAULTS = new DisplayString(EMPTY_DEFAULTS_STR);
 
-    // hold default values (if specified in derived classes)
-    // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults'
-    protected DisplayString variableDefaults = null; //FIXME remove this!!!
-    protected DisplayString emptyDefaults = null;  //FIXME remove this!!!
-
-    // use only a weak reference so if the referenced fallback display string is deleted
-    // along with the containing model element, it will not be held in the memory
+    // use only a weak reference, so if the referenced fallback display string is deleted
+    // along with the containing model element, it will not be held in memory
     protected WeakReference<DisplayString> fallbackDisplayStringRef = null;
 
     // whether notification is enabled or not
@@ -59,7 +54,7 @@ public class DisplayString implements IDisplayString {
         }
 
         /**
-         * @return The tagname
+         * @return The tag name
          */
         public String getName() {
             return name;
@@ -137,7 +132,7 @@ public class DisplayString implements IDisplayString {
             // TODO string literal and escaping must be correctly handled
             // StreamParser can handle comments too, maybe it would be a better choice
             scr.useDelimiter("=|,");
-            // parse for the tagname
+            // parse for the tag name
             if (scr.hasNext()) name = scr.next().trim();
             // parse for the tag values with a new tokenizer
             while (scr.hasNext())
@@ -147,8 +142,8 @@ public class DisplayString implements IDisplayString {
 
 
     /**
-     * Create a display string tokenizer class only derived classes alowed to be created
-     * @param owner owner of the displaystring object (who has this displaystring) owner
+     * Create a display string tokenizer class only derived classes allowed to be created
+     * @param owner owner of the display string object (who has this display string) owner
      * 		  will be notified about changes
      * @param value The string to be parsed
      */
@@ -160,9 +155,6 @@ public class DisplayString implements IDisplayString {
     public DisplayString(String value) {
     	if (value != null)
     		set(value);
-
-    	variableDefaults = VARIABLE_DEFAULTS;
-        emptyDefaults = EMPTY_DEFAULTS;
     }
 
     /**
@@ -209,8 +201,8 @@ public class DisplayString implements IDisplayString {
         TagInstance tag = getTag(tagName);
         String value = (tag == null) ? "" : tag.getArg(pos);
 
-        if (value.startsWith("$") && variableDefaults!=null)
-            return variableDefaults.getTagArg(tagName, pos);
+        if (value.startsWith("$"))
+            return VARIABLE_DEFAULTS.getTagArg(tagName, pos);
         else if (!"".equals(value))
             return value;
         else if (getFallbackDisplayString() != null)
@@ -264,7 +256,7 @@ public class DisplayString implements IDisplayString {
 
     /**
      * Returns the tag with a given name
-     * @param tag requested tagname
+     * @param tag requested tag name
      * @return The requested tag or <code>NULL</code> if does not exist
      */
     protected TagInstance getTag(Tag tag) {
@@ -386,7 +378,7 @@ public class DisplayString implements IDisplayString {
 	}
 
 	/**
-     * Sets the specified property to the given value in the displaystring
+     * Sets the specified property to the given value in the display string
      * @param property Property to be set
      * @param newValue
      */
