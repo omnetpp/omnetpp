@@ -223,8 +223,8 @@ public interface IDisplayString {
 	public float getAsFloatDef(Prop propName, float defValue);
 
 	/**
-	 * @return The scaling to be applied on the element. It is coming from the displaystring
-	 * for the CompoundModule and coming from the container's displaystring for submodules
+	 * @return The scaling to be applied on the element. It is coming from the display string
+	 * for the CompoundModule and coming from the container's display string for submodules
 	 */
 	public float getScale();
 

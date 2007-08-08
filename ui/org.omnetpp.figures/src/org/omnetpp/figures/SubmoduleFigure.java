@@ -350,11 +350,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
 		
 		// ATTENTION: IT IS STRICTLY *VERBOTEN* TO MANIPULATE LAYOUTER CONSTRAINTS
 		// INSIDE FIGURES. VIOLATION OF THIS RULE RESULTS IN IMMEDIATE EXECUTION.
-		// first calculate the positions and size
 
         // get the position from the display string. When a coordinate is missing
 		// in the display string, use Integer.MIN_VALUE.
-		//FIXME: what if only one of the coordinates is given???
+		//FIXME: what if only one of the coordinates is given?
 		preferredLocation = dps.getLocation(scale);
         if (preferredLocation == null)
         	preferredLocation = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
