@@ -121,7 +121,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         if (child instanceof SubmoduleEditPart && !((SubmoduleFigure)childFigure).isShapeVisible() &&
                 modelConstraint.width > 0) {
             // delete the move command (we do not change the position if icon resizing is in progress)
-            constrCmd = null;
+            constrCmd = null; //FIXME WTF ???? why did we create it then in the first place
             dpchange = new ChangeDisplayPropertyCommand(((SubmoduleEditPart)child).getSubmoduleModel(), IDisplayString.Prop.IMAGESIZE);
             dpchange.setLabel("Set icon size");
             // calculate the desired size, if we support arbitrary resizing, we can simply set

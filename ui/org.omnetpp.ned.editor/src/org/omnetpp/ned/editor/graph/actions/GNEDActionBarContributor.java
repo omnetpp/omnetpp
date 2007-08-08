@@ -29,6 +29,7 @@ import org.eclipse.ui.part.EditorActionBarContributor;
  * Adds Graphical ned editor actions to the action bar.
  * @author rhornig
  */
+//FIXME why doesn't this comment go into the normal class comment? --Andras
 // is its a copy of the original GEF ActionBarContributor because of the NPE issue if a non GEF editor
 // gets activated. once it is fixed in GEF their class can be derived from ActionBarContributor
 public class GNEDActionBarContributor extends EditorActionBarContributor {

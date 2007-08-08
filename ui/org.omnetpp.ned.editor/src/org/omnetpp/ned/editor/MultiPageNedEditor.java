@@ -41,6 +41,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
+//FIXME why doesn't this comment go into the normal class comment? --Andras
 // MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
 // editor maintains its own model independent of each other. The two model should be synchronized during
 // page change / or save operation. Additionally the model should be put back into the NEDResources, so

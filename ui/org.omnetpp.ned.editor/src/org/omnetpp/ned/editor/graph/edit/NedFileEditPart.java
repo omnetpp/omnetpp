@@ -22,6 +22,8 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * Holds all other NedEditParts under this. It is activated by
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
+ *
+ * @author rhornig
  */
 public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener {
 

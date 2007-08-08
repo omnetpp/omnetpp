@@ -18,9 +18,11 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+
+
 /**
- * Implements a Connection Edi-tpart to represents a Wire like connection.
- *
+ * Implements a Connection editpart to represent a wire-like connection.
+ * @author rhornig
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart
                     implements IReadOnlySupport,
