@@ -111,7 +111,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         Rectangle oldBounds = (Rectangle)childFigure.getParent().getLayoutManager().getConstraint(childFigure);
         SetConstraintCommand constrCmd = new SetConstraintCommand(module, scale, oldBounds);
-        constrCmd.setConstraint(modelConstraint);
+        constrCmd.setConstraint(modelConstraint); //FIXME if this gets null'ed in the "if" branch, then maybe it should be set in the ELSE branch in the first place!!! --Andras
 
         // check if we have a shape in the figure. If not, the resize command should change the icon size
         // property not the shape size
