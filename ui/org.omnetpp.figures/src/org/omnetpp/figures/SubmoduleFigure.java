@@ -3,6 +3,7 @@ package org.omnetpp.figures;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.text.FlowPage;
@@ -331,7 +332,35 @@ public class SubmoduleFigure extends ModuleFigure
 	@Override
     public void setDisplayString(IDisplayString dps) {
 		lastDisplayString = dps;
-        // range support
+		// first calculate the positions and size
+        SubmoduleConstraint constr = new SubmoduleConstraint();
+
+        Point loc = dps.getLocation(scale);
+        // special case:
+        // Integer.MIN_VALUE signals that the coordinate is unpinned and the
+        // layouter can move it freely (if no location is specified in the display string)
+        if (loc == null) {
+            loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        }
+        constr.setLocation(loc);
+
+        // set the size of the submodule
+        // special handling required if either width or height is not present or
+        // the whole B tag is missing. In this case the corresponding size should be
+        // requested from the figure
+        Dimension size = dps.getSize(scale);
+        // only one of them is missing
+        boolean widthExist = dps.containsProperty(IDisplayString.Prop.WIDTH);
+        boolean heightExist = dps.containsProperty(IDisplayString.Prop.HEIGHT);
+        if (!widthExist && heightExist)
+            size.width = -1;
+        if (widthExist && !heightExist)
+            size.height = -1;
+        constr.setSize(size);
+        setConstraint(constr);
+
+        // constraint is now calculated
+		// range support
         setRange(
         		dps.getRange(getScale()),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEFILLCOL)),
@@ -362,8 +391,8 @@ public class SubmoduleFigure extends ModuleFigure
             shape = "";
         }
         setShape(img, shape,
-                dps.getSize(scale).width,
-                dps.getSize(scale).height,
+                constr.width,
+                constr.height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
@@ -377,6 +406,9 @@ public class SubmoduleFigure extends ModuleFigure
         				dps.getAsIntDef(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
 
         invalidate();
+        // get back the preferred size and put it into the constraint. if width or height was not specified (-1)
+        // we now have the real width and height (calculated by the figure) so we can use it later to check the figure size
+        constr.setSize(getPreferredSize());
 	}
 
 
