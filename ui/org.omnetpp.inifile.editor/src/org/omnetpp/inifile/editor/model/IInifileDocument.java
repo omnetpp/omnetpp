@@ -246,6 +246,20 @@ public interface IInifileDocument {
 	String getKeyForLine(int lineNumber);
 
 	/**
+	 * Performs basic syntactic validation on the section name string 
+	 * (not empty, contains no illegal characters, etc).
+	 * @return null if no problem, otherwise the description of the problem
+	 */
+	String validateSectionName(String section);
+
+	/**
+	 * Performs basic syntactic validation on the key string (not empty, 
+	 * contains no illegal characters, etc). 
+	 * @return null if no problem, otherwise the description of the problem
+	 */
+	String validateKey(String key);
+	
+	/**
 	 * Returns the included files at the top of the primary (edited) file.
 	 * Other includes are not returned.
 	 */ 

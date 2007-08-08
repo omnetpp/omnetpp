@@ -192,23 +192,6 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Useful as a basis for an IInputValidator, e.g. for a cell editor or InputDialog.
-	 */
-	public static String validateParameterKey(IInifileDocument doc, String section, String key) {
-		if (key==null || key.equals(""))
-			return "Key cannot be empty";
-		if (key.contains(" ") || key.contains("\t"))
-			return "Key must not contain spaces";
-		if (!StringUtils.containsOnly(key.replaceAll("[a-zA-Z0-9]", "A"), "A_.*?{}[]"))
-			return "Key contains illegal character(s)";
-		if (!key.contains("."))
-			return "Parameter keys must contain at least one dot";
-		if (doc.containsKey(section, key))
-			return "Key "+key+" already exists in section ["+section+"]";
-		return null;
-	}
-
-	/**
 	 * Parse a boolean config value. Anything not recognized also counts as false.
 	 */
 	public static boolean parseAsBool(String value) {

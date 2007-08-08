@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -263,7 +264,11 @@ public class SectionDialog extends TitleAreaDialog {
 		// validate section name
 		String configName = configNameText.getText().trim();
 		if (configName.equals(""))
-			return "Name cannot be empty";
+			return "Config name cannot be empty";
+		if (configName.contains(" ") || configName.contains("\t"))
+			throw new RuntimeException("Config name must not contain spaces");
+		if (!configName.replaceAll("[a-zA-Z0-9-_]", "").isEmpty())
+			throw new RuntimeException("Config name contains illegal character(s)");
 		if (!(CONFIG_+configName).equals(originalSectionName))
 			if (doc.containsSection(CONFIG_+configName)) 
 				return "A section named ["+CONFIG_+configName+"] already exists";

@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -245,14 +244,11 @@ public class ParametersPage extends FormPage {
 					if (property.equals("key")) {
 						String newKey = (String) value;
 						if (!newKey.equals(item.key)) {
-							String errorText = InifileUtils.validateParameterKey(doc, item.section, newKey);
-							if (errorText==null) { //XXX can't we validate in doc.changeKey()? 
-								doc.changeKey(item.section, item.key, (String)value);
-								reread(); // treeViewer.refresh() not enough, because input consists of keys
-							}
-							else {
-								MessageDialog.openError(getShell(), "Cannot Rename", "Cannot rename key: "+errorText);
-							}
+							if (!newKey.contains("."))
+								throw new RuntimeException("Parameter key must contain at least one dot");
+							// Note: all other validation is done within InifileDocument.changeKey()
+							doc.changeKey(item.section, item.key, (String)value);
+							reread(); // treeViewer.refresh() not enough, because input consists of keys
 						}
 					}
 					else if (property.equals("value")) {

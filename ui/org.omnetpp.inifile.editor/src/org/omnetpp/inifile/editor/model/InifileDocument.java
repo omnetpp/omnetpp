@@ -40,9 +40,6 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * @see InifileAnalyzer
  * @author Andras
  */
-//XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
-//XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
-//XXX ^^^ see InifileUtils.validateParameterKey too
 public class InifileDocument implements IInifileDocument {
 	public static final String INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileproblem";
 
@@ -369,6 +366,24 @@ public class InifileDocument implements IInifileDocument {
 		return first==null ? second == null : first.equals(second);
 	}
 
+	public /*static*/ String validateSectionName(String section) {
+		if (section==null || section.equals(""))
+			return "Section name cannot be empty";
+		if (!section.replaceAll("[a-zA-Z0-9-_ ]", "").isEmpty())
+			return "Section name contains illegal character(s)";
+		return null;
+	}
+
+	public /*static*/ String validateKey(String key) {
+		if (key==null || key.equals(""))
+			return "Key cannot be empty";
+		if (key.contains(" ") || key.contains("\t"))
+			return "Key must not contain spaces";
+		if (!StringUtils.containsOnly(key.replaceAll("[a-zA-Z0-9]", "A"), "A_-.*?{}[]"))
+			return "Key contains illegal character(s)";
+		return null;
+	}
+	
 	/**
 	 * Adds a line to IDocument at the given lineNumber (1-based). Existing line
 	 * at lineNumber will be shifted down. Line text is to be specified without
@@ -456,8 +471,10 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void addEntry(String section, String key, String value, String rawComment, String beforeKey) {
+		if (validateKey(key) != null)
+			throw new IllegalArgumentException("Cannot add key "+key+" to section ["+section+"]: "+validateKey(key));
 		if (lookupEntry(section, key) != null)
-			throw new IllegalArgumentException("Key "+key+" already exists in section ["+section+"]");
+			throw new IllegalArgumentException("Cannot add key "+key+": section ["+section+"] already contains it");
 
 		// modify IDocument
 		validateRawComment(rawComment);
@@ -468,9 +485,12 @@ public class InifileDocument implements IInifileDocument {
 
 	public void addEntries(String section, String[] keys, String[] values, String[] rawComments, String beforeKey) {
 		// validate keys
-		for (String key : keys)
+		for (String key : keys) {
+			if (validateKey(key) != null)
+				throw new IllegalArgumentException("Cannot add key "+key+" to section ["+section+"]: "+validateKey(key));
 			if (lookupEntry(section, key) != null)
 				throw new IllegalArgumentException("Cannot add key "+key+" to section ["+section+"]: already exists");
+		}
 		
 		// assemble text to insert
 		String text = "";
@@ -549,6 +569,8 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void changeKey(String section, String oldKey, String newKey) {
+		if (validateKey(newKey) != null)
+			throw new IllegalArgumentException("Cannot rename key to "+newKey+": "+validateKey(newKey));
 		KeyValueLine line = getEditableEntry(section, oldKey);
 		if (!nullSafeEquals(line.key, newKey)) {
 			if (lookupEntry(section, newKey) != null)
@@ -667,6 +689,8 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void renameSection(String sectionName, String newName) {
+		if (validateSectionName(newName) != null)
+			throw new IllegalArgumentException("Cannot rename section to ["+newName+"]: "+validateSectionName(newName));
 		Section section = lookupSection(sectionName);
 		for (SectionHeadingLine line : section.headingLines)
 			if (!isEditable(line))
@@ -678,6 +702,8 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void addSection(String sectionName, String beforeSectionName) {
+		if (validateSectionName(sectionName) != null)
+			throw new IllegalArgumentException("Cannot add section ["+sectionName+"]: "+validateSectionName(sectionName));
 		parseIfChanged();
 		if (sections.get(sectionName) != null)
 			throw new IllegalArgumentException("Cannot add section ["+sectionName+"]: it already exists");
