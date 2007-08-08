@@ -318,7 +318,7 @@ public abstract class NEDElement extends PlatformObject
      */
     public INEDElement getChild(int index) {
         int i = 0;
-        for(INEDElement elem : this) {
+        for (INEDElement elem : this) {
             if (i >= index)
                 return elem;
         }
@@ -529,7 +529,7 @@ public abstract class NEDElement extends PlatformObject
     public void setUserData(Object key, Object value) {
         if (userData == null)
             userData = new HashMap<Object,Object>();
-        if(value != null)
+        if (value != null)
             userData.put(key, value);
         else
             userData.remove(key);
@@ -539,7 +539,7 @@ public abstract class NEDElement extends PlatformObject
      * @return User specific data, not belonging to the model directly
      */
     public Object getUserData(Object key) {
-        if(userData != null)
+        if (userData != null)
             return userData.get(key);
         return null;
     }
@@ -632,7 +632,7 @@ public abstract class NEDElement extends PlatformObject
      * @param event
      */
     public void fireModelChanged(NEDModelEvent event) {
-        if(listeners == null || !getListeners().isEnabled())
+        if (listeners == null || !getListeners().isEnabled())
             return;
         //forward to the listerList
         listeners.fireModelChanged(event);
@@ -661,7 +661,7 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireAttributeChanged(String attr, Object newValue, Object oldValue) {
-        if(listeners != null && !getListeners().isEnabled())
+        if (listeners != null && !getListeners().isEnabled())
             return;
 
         NEDModelEvent event = new NEDAttributeChangeEvent(this, attr, newValue, oldValue);
@@ -679,7 +679,7 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireChildInserted(INEDElement child, INEDElement where) {
-        if(listeners != null && !getListeners().isEnabled())
+        if (listeners != null && !getListeners().isEnabled())
             return;
 
         NEDModelEvent event =

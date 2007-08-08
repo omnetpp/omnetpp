@@ -36,7 +36,7 @@ public class MergedPropertySource implements IPropertySource2 {
 
 	public boolean isPropertyResettable(Object id) {
 		// ask all registered PS if it knows about this
-		for(IPropertySource psrc : mergedList)
+		for (IPropertySource psrc : mergedList)
 			if (psrc instanceof IPropertySource2)
 				if (((IPropertySource2)psrc).isPropertyResettable(id))
 					return true;
@@ -46,7 +46,7 @@ public class MergedPropertySource implements IPropertySource2 {
 
 	public boolean isPropertySet(Object id) {
 		// ask all regitered PS if it knows about this
-		for(IPropertySource psrc : mergedList)
+		for (IPropertySource psrc : mergedList)
 			if (psrc instanceof IPropertySource2)
 				if (((IPropertySource2)psrc).isPropertySet(id))
 					return true;
@@ -63,8 +63,8 @@ public class MergedPropertySource implements IPropertySource2 {
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
 		// walk through all property source and merge its descriptors into a single list
-		for(IPropertySource psrc : mergedList)
-			for(IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
+		for (IPropertySource psrc : mergedList)
+			for (IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
                 if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {
                     // if we are read only, replace the property descriptor with a readonly one
                     PropertyDescriptor readOnlyPDesc =
@@ -81,7 +81,7 @@ public class MergedPropertySource implements IPropertySource2 {
 
 	public Object getPropertyValue(Object id) {
 		// ask all registered property sources for the given value
-		for(IPropertySource psrc : mergedList) {
+		for (IPropertySource psrc : mergedList) {
 			Object result = psrc.getPropertyValue(id);
 			if (result != null) return result;
 		}
@@ -91,13 +91,13 @@ public class MergedPropertySource implements IPropertySource2 {
 
 	public void resetPropertyValue(Object id) {
 		// try to reset the value on all registered property source
-		for(IPropertySource psrc : mergedList)
+		for (IPropertySource psrc : mergedList)
 			psrc.resetPropertyValue(id);
 	}
 
 	public void setPropertyValue(Object id, Object value) {
 		// try to set the value on all registered property source
-		for(IPropertySource psrc : mergedList)
+		for (IPropertySource psrc : mergedList)
 			psrc.setPropertyValue(id, value);
 	}
 

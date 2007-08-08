@@ -67,21 +67,21 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
     public void widgetDefaultSelected(SelectionEvent e) {
         updateLaunchConfigurationDialog();
         // notify the embedding tab
-        if(embeddingTab != null)
+        if (embeddingTab != null)
             embeddingTab.widgetDefaultSelected(e);
     }
 
     public void widgetSelected(SelectionEvent e) {
         updateLaunchConfigurationDialog();
         // notify the embedding tab
-        if(embeddingTab != null)
+        if (embeddingTab != null)
             embeddingTab.widgetSelected(e);
     }
 
     public void modifyText(ModifyEvent e) {
         updateLaunchConfigurationDialog();
         // notify the embedding tab
-        if(embeddingTab != null)
+        if (embeddingTab != null)
             embeddingTab.modifyText(e);
     }
 
@@ -135,7 +135,7 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
         int goUpLeveles = relativeTo.segmentCount() - path.matchingFirstSegments(relativeTo);
         // walk up until the first common segment
         IPath resultPath = new Path("");
-        for(int i=0; i<goUpLeveles; ++i)
+        for (int i=0; i<goUpLeveles; ++i)
             resultPath = resultPath.append("../");
         // add the rest of the path (non common part)
         return resultPath.append(path.removeFirstSegments(path.matchingFirstSegments(relativeTo))).makeRelative();

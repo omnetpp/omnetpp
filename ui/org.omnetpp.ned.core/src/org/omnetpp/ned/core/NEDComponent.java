@@ -260,14 +260,14 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         // additional tables for derived types and types using this one (for notifications)
 		allDerivedTypes.clear();
         // collect all types that are derived from this
-        for(INEDTypeInfo currentComp : getResolver().getAllComponents()) {
+        for (INEDTypeInfo currentComp : getResolver().getAllComponents()) {
             // never send notification to ourselves
             if (currentComp == this)
                 continue;
 
             // check for components the are extending us (directly or indirectly)
             INEDElement element = currentComp.getNEDElement();
-            for(INEDElement child : element) {
+            for (INEDElement child : element) {
                 if (child instanceof ExtendsNode) {
                     String extendsName = ((ExtendsNode)child).getName();
                     if (getName().equals(extendsName)) {

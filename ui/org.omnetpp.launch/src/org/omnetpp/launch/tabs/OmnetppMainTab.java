@@ -50,7 +50,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         @Override
         public Object[] getChildren(Object element) {
             List<Object> filteredChildren = new ArrayList<Object>();
-            for(Object child : super.getChildren(element)) {
+            for (Object child : super.getChildren(element)) {
                 if (child instanceof IProject && ((IProject)child).isAccessible())
                     filteredChildren.add(child);
             }
@@ -71,7 +71,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         @Override
         public Object[] getChildren(Object element) {
             List<Object> filteredChildren = new ArrayList<Object>();
-            for(Object child : super.getChildren(element)) {
+            for (Object child : super.getChildren(element)) {
                 if (child instanceof IFile && isExecutable((IFile)child)
                         || getChildren(child).length > 0)
                         filteredChildren.add(child);

@@ -51,9 +51,9 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         if (getCompoundModule() != null) {
         // if a submodule name has changed we must change all the connections in the same compound module
         // that is attached to this module (so the model will remain consistent)
-            for(ConnectionNodeEx conn : getCompoundModule().getSrcConnectionsFor(getName()))
+            for (ConnectionNodeEx conn : getCompoundModule().getSrcConnectionsFor(getName()))
                 conn.setSrcModule(val);
-            for(ConnectionNodeEx conn : getCompoundModule().getDestConnectionsFor(getName()))
+            for (ConnectionNodeEx conn : getCompoundModule().getDestConnectionsFor(getName()))
                 conn.setDestModule(val);
         }
         // now we can change the name
@@ -154,7 +154,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         ParametersNode parametersNode = getFirstParametersChild();
         if (parametersNode == null)
             return result;
-        for(INEDElement currChild : parametersNode)
+        for (INEDElement currChild : parametersNode)
             if (currChild instanceof ParamNodeEx)
                 result.add((ParamNodeEx)currChild);
 
@@ -190,7 +190,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         GatesNode gatesNode = getFirstGatesChild();
         if (gatesNode == null)
             return result;
-        for(INEDElement currChild : gatesNode)
+        for (INEDElement currChild : gatesNode)
             if (currChild instanceof GateNodeEx)
                 result.add((GateNodeEx)currChild);
 

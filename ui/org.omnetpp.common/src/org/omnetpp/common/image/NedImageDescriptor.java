@@ -193,10 +193,10 @@ public class NedImageDescriptor extends ImageDescriptor {
      * @return <code>true</code> if resource is present <code>false</code> otherwise
      */
     public boolean canCreate() {
-        if(location != null && location.getResourceAsStream(name) == null)
+        if (location != null && location.getResourceAsStream(name) == null)
             return false;
         // check if the file exists
-        if(location == null && !(new File(name)).exists())
+        if (location == null && !(new File(name)).exists())
             return false;
         return true;
     }
@@ -260,7 +260,7 @@ public class NedImageDescriptor extends ImageDescriptor {
      */
     private static ImageData shadeImageData(ImageData data, RGB shade, int weight) {
 
-        if(data == null || shade == null || weight <= 0)
+        if (data == null || shade == null || weight <= 0)
             return data;
 
         int width = data.width;

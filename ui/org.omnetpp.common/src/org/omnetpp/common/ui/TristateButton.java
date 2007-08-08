@@ -69,14 +69,14 @@ public class TristateButton extends Button {
         setGrayed(grayed = false);
         this.addListener(SWT.Selection,new Listener () {
             public void handleEvent(Event e) {
-                if(!eventEn)
+                if (!eventEn)
                     return;
                 
-                if(grayed && win32os == null)
+                if (grayed && win32os == null)
                     // Since Windows does this natively, we don't need to uncolour if
                     // the user is running windows
                     setGrayed(false);
-                else if(TristateButton.this.allowUserGray && !grayed && getSelection())
+                else if (TristateButton.this.allowUserGray && !grayed && getSelection())
                     setGrayed(true);
                 
                 grayed = getGrayed(); // Fix for win32 getting stuck on gray
@@ -91,7 +91,7 @@ public class TristateButton extends Button {
     protected void checkWidget() {
         super.checkWidget();
         
-        if(win32os == null)
+        if (win32os == null)
             return;
         
         try {
@@ -127,10 +127,10 @@ public class TristateButton extends Button {
      * Sets the button into / out of the "gray" state.
      */
     public void setGrayed(boolean grayed) {
-        if((getStyle() & SWT.CHECK) == 0)
+        if ((getStyle() & SWT.CHECK) == 0)
             return;
             
-        if(win32os != null) {
+        if (win32os != null) {
             try {
                 Method getWindowLong = win32os.getMethod("GetWindowLong",int.class,int.class); //$NON-NLS-1$
                 Method setWindowLong = win32os.getMethod("SetWindowLong",int.class,int.class,int.class); //$NON-NLS-1$
@@ -183,10 +183,10 @@ public class TristateButton extends Button {
      * Checks if the button is in the "gray" state.
      */
     public boolean getGrayed() {
-        if((getStyle() & SWT.CHECK) == 0)
+        if ((getStyle() & SWT.CHECK) == 0)
             return false;
         
-        if(win32os != null) {
+        if (win32os != null) {
             try {
                 Method sendMessage = win32os.getMethod("SendMessage",int.class,int.class,int.class,int.class); //$NON-NLS-1$
                 Field  handle      = getClass().getField("handle"); //$NON-NLS-1$

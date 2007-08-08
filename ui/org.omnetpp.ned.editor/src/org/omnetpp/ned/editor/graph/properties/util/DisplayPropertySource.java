@@ -35,7 +35,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
     @Override
     public void modelChanged(NEDModelEvent event) {
-        if(model != null)
+        if (model != null)
             setDisplayString(model.getDisplayString());
     }
 
@@ -45,15 +45,15 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
      */
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         PropertyDescriptor pdesc;
-        if(prop.getType() == DisplayString.PropType.STRING)
+        if (prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.UNIT)
+        else if (prop.getType() == DisplayString.PropType.UNIT)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.INTEGER)
+        else if (prop.getType() == DisplayString.PropType.INTEGER)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.IMAGE)
+        else if (prop.getType() == DisplayString.PropType.IMAGE)
             pdesc = new ImagePropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.COLOR)
+        else if (prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getVisibleName());
         else
             pdesc = new PropertyDescriptor(prop, prop.getVisibleName());  // read only editor
@@ -107,7 +107,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     		return null;
 
         // check if we requested the "single line" DISPLAY property
-        if(propObj == DisplayString.Prop.DISPLAY)
+        if (propObj == DisplayString.Prop.DISPLAY)
         	return getEditableValue();
 
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
@@ -126,7 +126,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     		return;
 
         // check if we requested the "sigle line" DISPLAY property
-        if(propObj == DisplayString.Prop.DISPLAY) {
+        if (propObj == DisplayString.Prop.DISPLAY) {
         	displayString.set((String)value);
         	return;
         }
@@ -147,7 +147,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     		return;
 
         // check if we requested the "sigle line" DISPLAY property, reset the whole display string
-        if(prop == DisplayString.Prop.DISPLAY) {
+        if (prop == DisplayString.Prop.DISPLAY) {
         	displayString.set(null);
         	return;
         }
@@ -162,7 +162,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     		return false;
 
         // check if we requested the "single line" DISPLAY property
-        if(prop == DisplayString.Prop.DISPLAY)
+        if (prop == DisplayString.Prop.DISPLAY)
             return !"".equals(displayString.toString());
 
         // otherwise check a single attribute

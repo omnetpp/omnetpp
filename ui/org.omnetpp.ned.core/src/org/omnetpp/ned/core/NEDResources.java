@@ -282,7 +282,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IFilter f) {
         List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
-        for(INEDTypeInfo comp : getAllComponents())
+        for (INEDTypeInfo comp : getAllComponents())
             if (f.filter(comp))
                 result.add(comp);
         return result;
@@ -290,7 +290,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public Set<String> getAllComponentNamesFilteredBy(IFilter f) {
         Set<String> result = new HashSet<String>();
-        for(INEDTypeInfo comp : getAllComponents())
+        for (INEDTypeInfo comp : getAllComponents())
             if (f.filter(comp))
                 result.add(comp.getName());
         return result;
@@ -674,7 +674,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (inheritanceChanged || displayMayHaveChanged(event)) {
             // notify component listeners (ie. palette manager, where only the component name and
             // icon matters)
-            if(nedComponentChangeListenerList != null && getNEDComponentChangeListenerList().isEnabled())
+            if (nedComponentChangeListenerList != null && getNEDComponentChangeListenerList().isEnabled())
                 nedComponentChangeListenerList.fireModelChanged(event);
         }
 
@@ -682,7 +682,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // in response to this notification)
         // long startMillis = System.currentTimeMillis();
 
-        if(nedModelChangeListenerList != null && getNEDModelChangeListenerList().isEnabled())
+        if (nedModelChangeListenerList != null && getNEDModelChangeListenerList().isEnabled())
             nedModelChangeListenerList.fireModelChanged(event);
 
         // long dt = System.currentTimeMillis() - startMillis;

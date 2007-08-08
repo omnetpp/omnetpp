@@ -115,10 +115,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
                 offset--;
             
             // check if the first char of the word is also ok.
-            if(offset > 0 && wordDetector.isWordStart(viewer.getDocument().getChar(offset - 1)))
+            if (offset > 0 && wordDetector.isWordStart(viewer.getDocument().getChar(offset - 1)))
                 offset--;
             // now we should stand on the first char of the word
-            if(offset + length < viewer.getDocument().getLength() 
+            if (offset + length < viewer.getDocument().getLength() 
                     && wordDetector.isWordStart(viewer.getDocument().getChar(offset + length)))
                 length++;
             // now iterate through the rest of chars until a character cannot be recognized as an in/word char

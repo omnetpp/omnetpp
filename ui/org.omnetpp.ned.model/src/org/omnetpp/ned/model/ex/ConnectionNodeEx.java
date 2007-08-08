@@ -86,7 +86,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	 */
 	public String getSrcModuleWithIndex() {
 		String module = getSrcModule();
-		if(getSrcModuleIndex() != null && !"".equals(getSrcModuleIndex()))
+		if (getSrcModuleIndex() != null && !"".equals(getSrcModuleIndex()))
 			module += "["+getSrcModuleIndex()+"]";
 
 		return module;
@@ -97,7 +97,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	 */
 	public String getDestModuleWithIndex() {
 		String module = getDestModule();
-		if(getDestModuleIndex() != null && !"".equals(getDestModuleIndex()))
+		if (getDestModuleIndex() != null && !"".equals(getDestModuleIndex()))
 			module += "["+getDestModuleIndex()+"]";
 
 		return module;
@@ -127,12 +127,12 @@ public final class ConnectionNodeEx extends ConnectionNode
 	 */
 	public String getSrcGateWithIndex() {
 		String gate = getSrcGate();
-		if(getSrcGatePlusplus())
+		if (getSrcGatePlusplus())
 			gate += "++";
-		if(getSrcGateIndex() != null && !"".equals(getSrcGateIndex()))
+		if (getSrcGateIndex() != null && !"".equals(getSrcGateIndex()))
 			gate += "["+getSrcGateIndex()+"]";
-		if(getSrcGateSubg() == NED_SUBGATE_I) gate+="$i";
-		if(getSrcGateSubg() == NED_SUBGATE_O) gate+="$o";
+		if (getSrcGateSubg() == NED_SUBGATE_I) gate+="$i";
+		if (getSrcGateSubg() == NED_SUBGATE_O) gate+="$o";
 		return gate;
 	}
 
@@ -141,12 +141,12 @@ public final class ConnectionNodeEx extends ConnectionNode
 	 */
 	public String getDestGateWithIndex() {
 		String gate = getDestGate();
-		if(getDestGatePlusplus())
+		if (getDestGatePlusplus())
 			gate += "++";
-		if(getDestGateIndex() != null && !"".equals(getDestGateIndex()))
+		if (getDestGateIndex() != null && !"".equals(getDestGateIndex()))
 			gate += "["+getDestGateIndex()+"]";
-		if(getDestGateSubg() == NED_SUBGATE_I) gate+="$i";
-		if(getDestGateSubg() == NED_SUBGATE_O) gate+="$o";
+		if (getDestGateSubg() == NED_SUBGATE_I) gate+="$i";
+		if (getDestGateSubg() == NED_SUBGATE_O) gate+="$o";
 
 		return gate;
 	}
@@ -183,7 +183,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 
     public String getType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if(channelSpecNode == null)
+        if (channelSpecNode == null)
             return null;
 
         return channelSpecNode.getType();
@@ -200,7 +200,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 
     public String getLikeType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if(channelSpecNode == null)
+        if (channelSpecNode == null)
             return null;
 
         return channelSpecNode.getLikeType();
@@ -218,7 +218,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 
     public String getLikeParam() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if(channelSpecNode == null)
+        if (channelSpecNode == null)
             return null;
 
         return channelSpecNode.getLikeParam();
@@ -273,7 +273,7 @@ public final class ConnectionNodeEx extends ConnectionNode
         if (parametersNode == null)
             return result;
 
-        for(INEDElement currChild : parametersNode)
+        for (INEDElement currChild : parametersNode)
             if (currChild instanceof ParamNodeEx)
                 result.add((ParamNodeEx)currChild);
 

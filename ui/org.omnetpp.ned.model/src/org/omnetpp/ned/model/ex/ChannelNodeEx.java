@@ -73,7 +73,7 @@ public final class ChannelNodeEx extends ChannelNode
         if (extendsNode == null)
             return result;
 
-        for(INEDElement currChild : extendsNode)
+        for (INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
 
@@ -92,7 +92,7 @@ public final class ChannelNodeEx extends ChannelNode
     public List<InterfaceNameNode> getAllInterfaces() {
         List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
 
-        for(INEDElement currChild : this)
+        for (INEDElement currChild : this)
             if (currChild instanceof InterfaceNameNode)
                 result.add((InterfaceNameNode)currChild);
 

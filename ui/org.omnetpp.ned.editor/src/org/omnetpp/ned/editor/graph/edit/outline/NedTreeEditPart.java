@@ -132,7 +132,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         // refresh ourselves
         refresh();
         // delegate to all children and refresh all their appearence
-        for(Object child : getChildren())
+        for (Object child : getChildren())
             ((NedTreeEditPart)child).totalRefresh();
 
     }

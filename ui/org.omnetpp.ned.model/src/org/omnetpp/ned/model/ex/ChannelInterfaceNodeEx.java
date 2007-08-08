@@ -67,7 +67,7 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
     public List<ExtendsNode> getAllExtends() {
         List<ExtendsNode> result = new ArrayList<ExtendsNode>();
 
-        for(INEDElement currChild : this)
+        for (INEDElement currChild : this)
             if (currChild instanceof ExtendsNode)
                 result.add((ExtendsNode)currChild);
 

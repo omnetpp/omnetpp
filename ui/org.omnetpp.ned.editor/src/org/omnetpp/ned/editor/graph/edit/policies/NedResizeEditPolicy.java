@@ -92,7 +92,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
         Color color = PolicyUtil.isEditable(getHost()) ?
                 GraphicalNedEditor.HIGHLIGHT_COLOR : GraphicalNedEditor.LOWLIGHT_COLOR;
         // set the color for all handles
-        for(Object handle : handles)
+        for (Object handle : handles)
             ((IFigure)handle).setForegroundColor(color);
 
         return handles;

@@ -221,7 +221,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
     protected void buildTable() {
         // build ParamLine list (value objects) for dialog editing
-        for(INEDElement element : module.getParams().values()) {
+        for (INEDElement element : module.getParams().values()) {
             // the param declaration of the node
             ParamNodeEx paramDecl = (ParamNodeEx)element;
             // get the the value of the parameter
@@ -449,12 +449,12 @@ public class ParametersDialog extends TitleAreaDialog {
        ParametersNode newParamsNode = paramsNode != null ? (ParametersNode)paramsNode.deepDup(null) :
                                    (ParametersNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);
 
-       for(INEDElement paramNode : newParamsNode)
+       for (INEDElement paramNode : newParamsNode)
            if (paramNode instanceof ParamNodeEx)
                paramNode.removeFromParent();
 
        // add the new nodes
-       for(ParametersDialog.ParamLine paramLine : paramLines) {
+       for (ParametersDialog.ParamLine paramLine : paramLines) {
            ParamNodeEx param = paramLine.getChangedParamNode();
            if (param != null)
                newParamsNode.appendChild(param);

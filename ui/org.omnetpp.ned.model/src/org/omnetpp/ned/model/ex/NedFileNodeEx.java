@@ -18,7 +18,7 @@ public final class NedFileNodeEx extends NedFileNode {
 
 	public List<ITopLevelElement> getTopLevelElements() {
 		List<ITopLevelElement> result = new ArrayList<ITopLevelElement>();
-		for(INEDElement currChild : this)
+		for (INEDElement currChild : this)
 			if (currChild instanceof ITopLevelElement)
 				result.add((ITopLevelElement)currChild);
 

@@ -622,7 +622,7 @@ public class ColorFactory {
     public static String asString(RGB value) {
         // check for color constants first
         String constName = rgb2strMap.get(value);
-        if(constName != null) return constName;
+        if (constName != null) return constName;
 
         // if no constant was found, create a hex description
         return String.format("#%06X", value.red << 16 | value.green << 8 | value.blue);
@@ -647,12 +647,12 @@ public class ColorFactory {
                 return new RGB(constRGB.red, constRGB.green, constRGB.blue);
 
             // if no constant name found, try to parse as hex string
-            if(value.startsWith("#")) {
+            if (value.startsWith("#")) {
                 int rgbVal = Integer.parseInt(value.substring(1), 16);
                 result = new RGB((rgbVal >> 16) & 0xFF, (rgbVal >> 8) & 0xFF, rgbVal & 0xFF);
             }
             // check for HSB syntax and convert
-            if(value.startsWith("@")) {
+            if (value.startsWith("@")) {
                 int hsbVal = Integer.parseInt(value.substring(1), 16);
                 float hue = ((hsbVal >> 16) & 0xFF) / 256.0f * 360.0f;  // 0..360
                 float saturation = ((hsbVal >> 8) & 0xFF) / 256.0f ;    // 0..1
@@ -670,7 +670,7 @@ public class ColorFactory {
      * @return An SWT color object that can be used or <code>null</code> on parse error
      */
     public static Color asColor(String value) {
-        if(value == null) return null;
+        if (value == null) return null;
         // look up in the registry
         Color result = str2rgbRegistry.get(value.toLowerCase());
         // if we have it in the registry, return it

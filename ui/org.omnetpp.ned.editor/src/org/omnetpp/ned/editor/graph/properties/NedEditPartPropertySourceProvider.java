@@ -64,7 +64,7 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
                         !((IReadOnlySupport)object).isEditable());
             
             // store the created property source into the controller so we can reuse it later
-            if(propSource != null && object instanceof IPropertySourceSupport) 
+            if (propSource != null && object instanceof IPropertySourceSupport) 
                 ((IPropertySourceSupport)object).setPropertySource(propSource);
         }
         return propSource;

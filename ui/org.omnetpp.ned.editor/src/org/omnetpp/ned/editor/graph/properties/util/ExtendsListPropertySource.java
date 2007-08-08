@@ -29,7 +29,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
 
         pdesc = new PropertyDescriptor[extendsList.size()];
         int totalCount = 0;
-        for(ExtendsNode extendsElement : extendsList) {
+        for (ExtendsNode extendsElement : extendsList) {
             pdesc[totalCount] = new PropertyDescriptor(extendsElement.getName(), extendsElement.getName());
             pdesc[totalCount].setCategory(CATEGORY);
             pdesc[totalCount].setDescription("Component "+extendsElement.getName()+" - (read only)");
@@ -43,7 +43,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
     public Object getEditableValue() {
         StringBuilder summary = new StringBuilder("");
 
-        for(ExtendsNode extendsElement : model.getAllExtends())
+        for (ExtendsNode extendsElement : model.getAllExtends())
             summary.append(extendsElement.getName()+",");
 
         // strip the trailing ',' char

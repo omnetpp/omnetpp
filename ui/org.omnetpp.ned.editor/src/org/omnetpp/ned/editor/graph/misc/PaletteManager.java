@@ -100,7 +100,7 @@ public class PaletteManager implements INEDChangeListener {
                 = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
         Collections.sort(typeNames);
 
-        for(String name : typeNames) {
+        for (String name : typeNames) {
             INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
             INEDElement nedElement = comp.getNEDElement();
 
@@ -168,7 +168,7 @@ public class PaletteManager implements INEDChangeListener {
                 = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
         Collections.sort(channelNames);
 
-        for(String name : channelNames) {
+        for (String name : channelNames) {
             INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
             ConnectionCreationToolEntry tool
                = new ConnectionCreationToolEntry(

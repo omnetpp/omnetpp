@@ -51,7 +51,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
         
         // first remove the old global and local action handlers
         // then add the ones for the new editor
-        if(part instanceof GraphicalNedEditor) {
+        if (part instanceof GraphicalNedEditor) {
             textContrib.setActiveEditor(activeEditorPart);
             graphContrib.setActiveEditor(activeEditorPart);
         } else if (part instanceof TextualNedEditor) {

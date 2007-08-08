@@ -111,13 +111,13 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
         @Override
         public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
-            if("extends".equals(key)){
+            if ("extends".equals(key)){
                 getSectionForName(currentSectionName).extnds = value;
             }
-            if("description".equals(key)){
+            if ("description".equals(key)){
                 getSectionForName(currentSectionName).descr = value;
             }
-            if("network".equals(key)){
+            if ("network".equals(key)){
                 getSectionForName(currentSectionName).network = value;
             }
         }
@@ -163,7 +163,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         @Override
         public Object[] getChildren(Object element) {
             List<Object> filteredChildren = new ArrayList<Object>();
-            for(Object child : super.getChildren(element)) {
+            for (Object child : super.getChildren(element)) {
                 if (child instanceof IFile && ((IFile)child).getName().matches(regexp)
                                 || getChildren(child).length > 0)
                         filteredChildren.add(child);
@@ -331,7 +331,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING));
             String restArgs = "";        // the rest of the arguments we cannot recognize
             String iniArgs = "", libArgs = "", configArg="", runArg="", uiArg ="";
-            for(int i=0; i<args.length; ++i) {
+            for (int i=0; i<args.length; ++i) {
                 switch (nextType) {
                     case INI:
                         iniArgs += args[i]+" ";
@@ -355,7 +355,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
                         continue;
                 }
 
-                if("-f".equals(args[i]))
+                if ("-f".equals(args[i]))
                     nextType = ArgType.INI;
                 else if ("-c".equals(args[i]))
                     nextType = ArgType.CONFIG;
@@ -417,7 +417,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         else {
             String currentSelection = getConfigName();
             String newConfigNames[] = getConfigNames(inifiles);
-            if(!ObjectUtils.equals(StringUtils.join(fConfigCombo.getItems()," - "),
+            if (!ObjectUtils.equals(StringUtils.join(fConfigCombo.getItems()," - "),
                                    StringUtils.join(newConfigNames," - "))) {
                 fConfigCombo.setItems(newConfigNames);
                 setConfigName(currentSelection);
@@ -592,7 +592,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
         if (fParalelismSpinner != null) {
             fParalelismSpinner.setEnabled(fCmdEnvButton.getSelection());
-            if(!fCmdEnvButton.getSelection())
+            if (!fCmdEnvButton.getSelection())
                 fParalelismSpinner.setSelection(1);
         }
     }
@@ -605,7 +605,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         List<IFile> result = new ArrayList<IFile>();
         String names[] =  StringUtils.split(fLibraryText.getText().trim());
 
-        for(String name : names) {
+        for (String name : names) {
             IPath iniPath = getWorkingDirectoryPath().append(name).makeAbsolute();
             IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
             if (ifiles.length == 1)
@@ -627,7 +627,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         if (names.length == 0)
             names = new String[] {"omnetpp.ini"};
 
-        for(String name : names) {
+        for (String name : names) {
             IPath iniPath = getWorkingDirectoryPath().append(name).makeAbsolute();
             IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
             if (ifiles.length == 1)
@@ -645,7 +645,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
     private String [] getConfigNames(IFile[] inifiles) {
         Map<String,ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<String, ConfigEnumeratorCallback.Section>();
         if (inifiles != null)
-            for(IFile inifile : inifiles) {
+            for (IFile inifile : inifiles) {
                 InifileParser iparser = new InifileParser();
                 try {
                     iparser.parse(inifile, new ConfigEnumeratorCallback(inifile, sections));
@@ -659,7 +659,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             }
         List<String> result = new ArrayList<String>();
         result.add("");
-        for(ConfigEnumeratorCallback.Section sec : sections.values())
+        for (ConfigEnumeratorCallback.Section sec : sections.values())
             result.add(sec.toString());
         return result.toArray(new String[] {});
     }
@@ -684,7 +684,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
      */
     private void setConfigName(String name) {
         fConfigCombo.setText("");
-        for(String line : fConfigCombo.getItems())
+        for (String line : fConfigCombo.getItems())
             if (line.startsWith(name)) {
                 fConfigCombo.setText(line);
                 return;

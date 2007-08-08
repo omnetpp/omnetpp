@@ -271,7 +271,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-        if(fUseDefaultDirButton.getSelection()) {
+        if (fUseDefaultDirButton.getSelection()) {
             configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, (String)null);
         }
         else {
@@ -292,7 +292,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * @since 3.2
      */
     protected String getWorkingDirectoryText() {
-        if(fUseDefaultDirButton.getSelection())
+        if (fUseDefaultDirButton.getSelection())
             return fWorkingDirText.getText().trim();
         return fOtherWorkingText.getText().trim();
     }
@@ -303,7 +303,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * @since 3.2
      */
     protected void setDefaultWorkingDirectoryText(String dir) {
-        if(dir != null) {
+        if (dir != null) {
             fWorkingDirText.setText(dir);
             fUseDefaultDirButton.setSelection(true);
             handleUseDefaultWorkingDirButtonSelected();
@@ -316,7 +316,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * @since 3.2
      */
     protected void setOtherWorkingDirectoryText(String dir) {
-        if(dir != null) {
+        if (dir != null) {
             fOtherWorkingText.setText(dir);
             fUseDefaultDirButton.setSelection(false);
             fUseOtherDirButton.setSelection(true);
@@ -331,14 +331,14 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     protected void setEnabled(boolean enabled) {
         fUseDefaultDirButton.setEnabled(enabled);
         fUseOtherDirButton.setEnabled(enabled);
-        if(fOtherWorkingText.isEnabled()) {
+        if (fOtherWorkingText.isEnabled()) {
             fOtherWorkingText.setEnabled(enabled);
             fWorkspaceButton.setEnabled(enabled);
             fVariablesButton.setEnabled(enabled);
             fFileSystemButton.setEnabled(enabled);
         }
         // in the case where the 'other' text is selected and we want to enable
-        if(fUseOtherDirButton.getSelection() && enabled == true) {
+        if (fUseOtherDirButton.getSelection() && enabled == true) {
             fOtherWorkingText.setEnabled(enabled);
         }
     }
@@ -356,15 +356,15 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         else if (source == fVariablesButton) {
             handleWorkingDirVariablesButtonSelected();
         }
-        else if(source == fUseDefaultDirButton) {
+        else if (source == fUseDefaultDirButton) {
             //only perform the action if this is the button that was selected
-            if(fUseDefaultDirButton.getSelection()) {
+            if (fUseDefaultDirButton.getSelection()) {
                 setDefaultWorkingDir();
             }
         }
-        else if(source == fUseOtherDirButton) {
+        else if (source == fUseOtherDirButton) {
             //only perform the action if this is the button that was selected
-            if(fUseOtherDirButton.getSelection()) {
+            if (fUseOtherDirButton.getSelection()) {
                 handleUseOtherWorkingDirButtonSelected();
             }
         }

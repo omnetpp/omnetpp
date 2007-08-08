@@ -228,11 +228,11 @@ public class ImageFactory {
     private static String getKeyFor(String imageId, String imageSize, RGB shade, int weight) {
         String sizeSuffix = "";
         // strip the size suffix from the imageId
-        if(imageId.endsWith("_s") || imageId.endsWith("_l")) {
+        if (imageId.endsWith("_s") || imageId.endsWith("_l")) {
             sizeSuffix = imageId.substring(imageId.length()-1);
             imageId = imageId.substring(0, imageId.length()-2);
         }
-        if(imageId.endsWith("_vs") || imageId.endsWith("_vl")) {
+        if (imageId.endsWith("_vs") || imageId.endsWith("_vl")) {
             sizeSuffix = imageId.substring(imageId.length()-2);
             imageId = imageId.substring(0, imageId.length()-3);
         }
@@ -243,15 +243,15 @@ public class ImageFactory {
 
         int imageScaling = SIZE_NORMAL;
         // translate the textual size to pixel
-        if(imageSize == null || "".equals(imageSize) ) {
+        if (imageSize == null || "".equals(imageSize) ) {
             imageScaling = SIZE_NORMAL;
-        } else if("vs".equals(imageSize.toLowerCase())) {
+        } else if ("vs".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_VS;
-        } else if("s".equals(imageSize.toLowerCase())) {
+        } else if ("s".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_S;
-        } else if("l".equals(imageSize.toLowerCase())) {
+        } else if ("l".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_L;
-        } else if("vl".equals(imageSize.toLowerCase())) {
+        } else if ("vl".equals(imageSize.toLowerCase())) {
             imageScaling = SIZE_VL;
         } else  try {
                     imageScaling = Integer.valueOf(imageSize).intValue();
@@ -273,7 +273,7 @@ public class ImageFactory {
     private static String getKeyFor(String baseId, int imageSize, RGB shade, int weight) {
         // if imageId is null (ie. no image) then we should return null
         // as an image
-        if(baseId == null) return null;
+        if (baseId == null) return null;
 
         String decoratedImageId = baseId;
         // add the size param to the id
@@ -295,7 +295,7 @@ public class ImageFactory {
             return null;
 
         // adjust the colorization and size parameters for the descriptor
-        if(result instanceof NedImageDescriptor) {
+        if (result instanceof NedImageDescriptor) {
             result.setColorization(shade);
             result.setColorizationWeight(weight);
         }
@@ -317,14 +317,14 @@ public class ImageFactory {
     private static NedImageDescriptor createDescriptor(String baseName, int preferredSize) {
         NedImageDescriptor result;
         // TODO svg support missing
-        for(String currPath : imageDirs)
+        for (String currPath : imageDirs)
             if ((result = createDescriptor(null, currPath, baseName, "png", preferredSize)) != null)
                 return result;
         // if not found in the filesystem, look for it in the JAR file
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png", preferredSize)) != null)
             return result;
         // serach for gifs if no PNG found
-        for(String currPath : imageDirs)
+        for (String currPath : imageDirs)
             if ((result = createDescriptor(null, currPath, baseName, "gif", preferredSize)) != null)
                 return result;
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif", preferredSize)) != null)
@@ -360,14 +360,14 @@ public class ImageFactory {
             String name = (new Path(dir)).append(fileName+sizeSuffix).addFileExtension(ext).toString();
             NedImageDescriptor iDesc = new NedImageDescriptor(refClass, name, SIZE_NORMAL);
             // check if the resource exists
-            if(iDesc.canCreate()) return iDesc;
+            if (iDesc.canCreate()) return iDesc;
         }
 
         // load the normal size image and scale it
         String name = (new Path(dir)).append(fileName).addFileExtension(ext).toString();
         NedImageDescriptor iDesc = new NedImageDescriptor(refClass, name, preferredSize);
         // check if the resource exists
-        if(iDesc.canCreate()) return iDesc;
+        if (iDesc.canCreate()) return iDesc;
 
         return null;
     }
@@ -381,7 +381,7 @@ public class ImageFactory {
             return imageNameList;
 
     	Set<String> result = new HashSet<String>();
-    	for(String basedir : imageDirs) {
+    	for (String basedir : imageDirs) {
 			try {
 				IFileStore baseStore = EFS.getStore(URIUtil.toURI(basedir).normalize());
 	    		result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
@@ -444,9 +444,9 @@ public class ImageFactory {
 			toAdd = toAdd.substring(0, toAdd.length()-4);
 
 			// look for size extensions and remove them
-			if(toAdd.endsWith("_s") || toAdd.endsWith("_l"))
+			if (toAdd.endsWith("_s") || toAdd.endsWith("_l"))
 				toAdd = toAdd.substring(0, toAdd.length()-2);
-			if(toAdd.endsWith("_vs") || toAdd.endsWith("_vl"))
+			if (toAdd.endsWith("_vs") || toAdd.endsWith("_vl"))
 				toAdd = toAdd.substring(0, toAdd.length()-3);
 
     		result.add(toAdd);
@@ -456,7 +456,7 @@ public class ImageFactory {
     	if (fileStore.fetchInfo().isDirectory()
     			&& !fileStore.fetchInfo().getName().startsWith("_internal"))
 			try {
-				for(IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
+				for (IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
 					result.addAll(getNameList(childToAdd, stripBeginning));
 				}
 			} catch (CoreException e) { // do nothing if error occurred

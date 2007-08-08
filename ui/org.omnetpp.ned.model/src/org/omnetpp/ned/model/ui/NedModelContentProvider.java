@@ -55,10 +55,10 @@ public class NedModelContentProvider implements ITreeContentProvider {
         // if this is a channel spec we will give back the parameters subnode's children
         if (currElem instanceof ChannelSpecNode)
             currElem = ((ChannelSpecNode)currElem).getFirstParametersChild();
-        if(currElem == null)
+        if (currElem == null)
             return result.toArray();
 
-        for(INEDElement child : currElem) {
+        for (INEDElement child : currElem) {
             // display only the following classes
             if ((child instanceof NedFileNode) ||
 //                    (child instanceof ImportNode) ||

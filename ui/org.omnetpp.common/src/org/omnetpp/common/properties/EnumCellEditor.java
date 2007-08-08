@@ -21,7 +21,7 @@ public class EnumCellEditor extends ComboBoxCellEditor {
 
 	@Override
 	protected void doSetValue(Object value) {
-		for(int i = 0; i < values.length; ++i)
+		for (int i = 0; i < values.length; ++i)
 			if (value == null && values[i] == null ||
 				value != null && value.equals(values[i])) {
 				super.doSetValue(i);

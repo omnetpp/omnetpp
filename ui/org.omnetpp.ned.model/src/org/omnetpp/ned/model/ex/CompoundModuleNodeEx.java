@@ -56,7 +56,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
 			return result;
-		for(INEDElement currChild : submodulesNode)
+		for (INEDElement currChild : submodulesNode)
 			if (currChild instanceof SubmoduleNodeEx)
 				result.add((SubmoduleNodeEx)currChild);
 
@@ -144,7 +144,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
 
 		INEDElement insertBefore = snode.getFirstChild();
-		for(int i=0; (i<index) && (insertBefore!=null); ++i)
+		for (int i=0; (i<index) && (insertBefore!=null); ++i)
 			insertBefore = insertBefore.getNextSibling();
 
 		snode.insertChildBefore(insertBefore, child);
@@ -187,7 +187,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      * @return
      */
     private void gatherConnections(INEDElement parent, String srcName, String srcGate, String destName, String destGate, List<ConnectionNodeEx> result) {
-        for(INEDElement currChild : parent) {
+        for (INEDElement currChild : parent) {
             if (currChild instanceof ConnectionNodeEx) {
                 ConnectionNodeEx connChild = (ConnectionNodeEx)currChild;
                 // by default add the connection
@@ -338,7 +338,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
         if (extendsNode == null)
             return result;
 
-        for(INEDElement currChild : extendsNode)
+        for (INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
 
@@ -366,7 +366,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     public List<InterfaceNameNode> getAllInterfaces() {
         List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
 
-        for(INEDElement currChild : this)
+        for (INEDElement currChild : this)
             if (currChild instanceof InterfaceNameNode)
                 result.add((InterfaceNameNode)currChild);
 

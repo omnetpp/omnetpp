@@ -47,10 +47,10 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 
         INEDElement parametersNode = node.getFirstChildWithTag(NED_PARAMETERS);
         if (parametersNode != null)
-			for(INEDElement currElement : parametersNode)
-				if(currElement instanceof PropertyNode) {
+			for (INEDElement currElement : parametersNode)
+				if (currElement instanceof PropertyNode) {
 					PropertyNode currProp = (PropertyNode)currElement;
-					if(DISPLAY_PROPERTY.equals(currProp.getName()))
+					if (DISPLAY_PROPERTY.equals(currProp.getName()))
 						return getPropertyValue(currProp);
 				}
 		return null;
@@ -191,7 +191,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
      */
     public static String getFirstExtends(INEDElement node) {
         ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
-        if(extendsNode == null)
+        if (extendsNode == null)
             return null;
 
         return extendsNode.getName();
@@ -272,7 +272,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     public static String getUniqueNameFor(IHasName namedElement, Collection<? extends IHasName> contextCollection) {
         Set<String> nameSet = new HashSet<String>(contextCollection.size());
         // create a string set from the sibling submodules (except the node we want to make unique)
-        for(IHasName sm : contextCollection)
+        for (IHasName sm : contextCollection)
             if (sm != namedElement)
                 nameSet.add(sm.getName());
         return getUniqueNameFor(namedElement, nameSet);

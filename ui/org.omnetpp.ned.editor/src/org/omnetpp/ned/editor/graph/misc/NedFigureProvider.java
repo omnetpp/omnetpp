@@ -45,12 +45,12 @@ public class NedFigureProvider extends AbstractFigureProvider {
         // present ant its name is the same as the filename, we will use only that name
         // otherwise filename_modulename is the syntax
         int numberOfCompoundModules = 0;
-        for(INEDElement c : modelRoot) {
+        for (INEDElement c : modelRoot) {
             if (c instanceof CompoundModuleNodeEx) 
                 numberOfCompoundModules++;
         }
         
-        for(INEDElement child : modelRoot) {
+        for (INEDElement child : modelRoot) {
             if (child instanceof CompoundModuleNodeEx) {
                 CompoundModuleNodeEx cmodule = (CompoundModuleNodeEx)child;
                 CompoundModuleEditPart cmep = (CompoundModuleEditPart)viewer.getEditPartRegistry().get(cmodule);

@@ -70,7 +70,7 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
         if (extendsNode == null)
             return result;
 
-        for(INEDElement currChild : extendsNode)
+        for (INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
 
@@ -99,7 +99,7 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
     public List<InterfaceNameNode> getAllInterfaces() {
         List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
 
-        for(INEDElement currChild : this)
+        for (INEDElement currChild : this)
             if (currChild instanceof InterfaceNameNode)
                 result.add((InterfaceNameNode)currChild);
 

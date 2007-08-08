@@ -54,7 +54,7 @@ public class ConnectionChooser {
                 addConnectionPairsToMenu(connCommand, menu, srcOut, destIn);
 
         for (GateNode srcInOut : srcInOutModuleGates)
-            for(GateNode destInOut : destInOutModuleGates)
+            for (GateNode destInOut : destInOutModuleGates)
                 addConnectionPairsToMenu(connCommand, menu, srcInOut, destInOut);
 
         MenuItem selection = menu.open();
@@ -94,7 +94,7 @@ public class ConnectionChooser {
         if (comp == null)
             return result;
 
-        for(INEDElement elem: comp.getGates().values()) {
+        for (INEDElement elem: comp.getGates().values()) {
             GateNode currGate = (GateNode)elem;
             if (currGate.getType() == gateType)
                 if (nameFilter == null || nameFilter.equals(currGate.getName()))
@@ -159,7 +159,7 @@ public class ConnectionChooser {
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodulename
-		if(srcMod instanceof SubmoduleNodeEx) {
+		if (srcMod instanceof SubmoduleNodeEx) {
 			SubmoduleNodeEx smodNode = (SubmoduleNodeEx)srcMod;
 			conn.setSrcModule(smodNode.getName());
 			if (smodNode.getVectorSize()!= null && !"".equals(smodNode.getVectorSize()))
@@ -167,7 +167,7 @@ public class ConnectionChooser {
 		} else
 			conn.setSrcModule(null);
 
-		if(destMod instanceof SubmoduleNodeEx) {
+		if (destMod instanceof SubmoduleNodeEx) {
 			SubmoduleNodeEx dmodNode = (SubmoduleNodeEx)destMod;
 			conn.setDestModule(dmodNode.getName());
 			if (dmodNode.getVectorSize()!= null && !"".equals(dmodNode.getVectorSize()))
@@ -179,20 +179,20 @@ public class ConnectionChooser {
 		conn.setSrcGate(srcGate.getName());
 		conn.setDestGate(destGate.getName());
 		// if both side is bidirectional gate, use a bidir connection
-		if(srcGate.getType() == GateNode.NED_GATETYPE_INOUT && destGate.getType() == GateNode.NED_GATETYPE_INOUT)
+		if (srcGate.getType() == GateNode.NED_GATETYPE_INOUT && destGate.getType() == GateNode.NED_GATETYPE_INOUT)
 			conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_BIDIR);
 		else
 			conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_L2R);
 
 		// check if we have a module vector and add an index to it.
-		if(srcGate.getIsVector())
-			if(srcGatePP)
+		if (srcGate.getIsVector())
+			if (srcGatePP)
 				conn.setSrcGatePlusplus(true);
 			else
 				conn.setSrcGateIndex(DEFAULT_INDEX);
 
-		if(destGate.getIsVector())
-			if(destGatePP)
+		if (destGate.getIsVector())
+			if (destGatePP)
 				conn.setDestGatePlusplus(true);
 			else
 				conn.setDestGateIndex(DEFAULT_INDEX);

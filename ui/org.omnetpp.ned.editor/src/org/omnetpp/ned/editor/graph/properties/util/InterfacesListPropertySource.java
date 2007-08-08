@@ -28,7 +28,7 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
 
         pdesc = new PropertyDescriptor[interfacesList.size()];
         int totalCount = 0;
-        for(InterfaceNameNode interfaceElement : interfacesList) {
+        for (InterfaceNameNode interfaceElement : interfacesList) {
             pdesc[totalCount] = new PropertyDescriptor(interfaceElement.getName(), interfaceElement.getName());
             pdesc[totalCount].setCategory(CATEGORY);
             pdesc[totalCount].setDescription("Component "+interfaceElement.getName()+" - (read only)");
@@ -42,7 +42,7 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
     public Object getEditableValue() {
         StringBuilder summary = new StringBuilder("");
 
-        for(InterfaceNameNode interfaceElement : model.getAllInterfaces())
+        for (InterfaceNameNode interfaceElement : model.getAllInterfaces())
             summary.append(interfaceElement.getName()+",");
 
         // strip the trailing ',' char

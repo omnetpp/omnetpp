@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.util.StringUtils;
@@ -26,11 +27,13 @@ public class DisplayString implements IDisplayString {
 
     // hold default values (if specified in derived classes)
     // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults'
-    protected DisplayString variableDefaults = null;
-    protected DisplayString emptyDefaults = null;
-    // use only a week reference so if the referenced fallback display string is deleted
+    protected DisplayString variableDefaults = null; //FIXME remove this!!!
+    protected DisplayString emptyDefaults = null;  //FIXME remove this!!!
+
+    // use only a weak reference so if the referenced fallback display string is deleted
     // along with the containing model element, it will not be held in the memory
     protected WeakReference<DisplayString> fallbackDisplayStringRef = null;
+
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
 
@@ -89,8 +92,8 @@ public class DisplayString implements IDisplayString {
          * @return <code>true</code> if ALL tag values are missing or have the default value
          */
         public boolean isEmpty() {
-            for(String val : args)
-                if(val != null && !EMPTY_VALUE.equals(val)) return false;
+            for (String val : args)
+                if (val != null && !EMPTY_VALUE.equals(val)) return false;
             return true;
         }
 
@@ -101,14 +104,14 @@ public class DisplayString implements IDisplayString {
             StringBuffer sb = new StringBuffer(20);
             // check for the last non default value
             int endPos;
-            for(endPos = args.size() - 1; endPos>0; endPos--)
-                if(args.get(endPos) != null && !EMPTY_VALUE.equals(args.get(endPos))) break;
+            for (endPos = args.size() - 1; endPos>0; endPos--)
+                if (args.get(endPos) != null && !EMPTY_VALUE.equals(args.get(endPos))) break;
             // if there are unnecessary default values at the end, throw them away
-            if(endPos < args.size() - 1) args.setSize(endPos + 1);
+            if (endPos < args.size() - 1) args.setSize(endPos + 1);
 
             boolean firstArg = true;
             for (String val : args) {
-                if(firstArg) firstArg = false;
+                if (firstArg) firstArg = false;
                     else sb.append(',');
 
                 if (val != null) sb.append(val);
@@ -193,7 +196,7 @@ public class DisplayString implements IDisplayString {
         if (tagInst == null) return null;
         // check for the value itself
         String val = tagInst.getArg(pos);
-        if(val == null) val = TagInstance.EMPTY_VALUE;
+        if (val == null) val = TagInstance.EMPTY_VALUE;
         return val;
     }
 
@@ -294,10 +297,10 @@ public class DisplayString implements IDisplayString {
     public String toString() {
         StringBuffer sb = new StringBuffer(50);
         boolean firstTag = true;
-        for(TagInstance tag : tagMap.values()) {
+        for (TagInstance tag : tagMap.values()) {
             String tagVal = tag.toString();
-            if(!tagVal.equals("")) {
-                if(firstTag) firstTag = false;
+            if (!tagVal.equals("")) {
+                if (firstTag) firstTag = false;
                     else sb.append(';');
 
                 sb.append(tagVal);
@@ -324,7 +327,7 @@ public class DisplayString implements IDisplayString {
     public Integer getAsInteger(Prop property) {
         String strVal = getAsString(property);
         // if tag not present at all
-        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
+        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
         try {
             return Integer.valueOf(strVal);
         } catch (NumberFormatException e) { }
@@ -334,7 +337,7 @@ public class DisplayString implements IDisplayString {
     public Float getAsFloat(Prop property) {
         String strVal = getAsString(property);
         // if tag not present at all
-        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
+        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
         try {
             return Float.valueOf(strVal);
         } catch (NumberFormatException e) { }
@@ -354,7 +357,7 @@ public class DisplayString implements IDisplayString {
     public Integer getAsIntegerDef(Prop property) {
         String strVal = getAsStringDef(property);
         // if tag not present at all
-        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal))
+        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal))
         	return null;
 
         try {
@@ -488,7 +491,6 @@ public class DisplayString implements IDisplayString {
         width = width > 0 ? width : -1;
         int height = unit2pixel(getAsFloatDef(Prop.HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1;
-
         return new Dimension(width, height);
     }
 

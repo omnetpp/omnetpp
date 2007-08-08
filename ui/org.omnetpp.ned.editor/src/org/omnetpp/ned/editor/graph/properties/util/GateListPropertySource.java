@@ -32,7 +32,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
         pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;
-        for(INEDElement gateElement : gates.values()) {
+        for (INEDElement gateElement : gates.values()) {
             GateNodeEx gateDefNode = (GateNodeEx)gateElement;
             String typeString = gateDefNode.getAttribute(GateNodeEx.ATT_TYPE);
             String definedIn = "";

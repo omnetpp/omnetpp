@@ -72,7 +72,7 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
         if (extendsNode == null)
             return result;
 
-        for(INEDElement currChild : extendsNode)
+        for (INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
 

@@ -157,7 +157,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
             result.add(0);
         } else if ("*".equals(runPar)) {
             // create ALL run numbers scenario
-            for(int i=0; i<maxRunNo; i++)
+            for (int i=0; i<maxRunNo; i++)
                 result.add(i);
         } else {
             // parse hand specified numbers
@@ -174,7 +174,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
                         high = Math.min(Integer.parseInt(lowerUpper[1]), maxRunNo);
                     }
                     // add all integers in the interval to the list
-                    for(int i = low; i<=high; ++i)
+                    for (int i = low; i<=high; ++i)
                         result.add(i);
                 } catch (NumberFormatException e) {
                     return null;

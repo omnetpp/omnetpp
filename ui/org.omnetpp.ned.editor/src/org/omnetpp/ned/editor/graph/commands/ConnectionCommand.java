@@ -138,7 +138,7 @@ public class ConnectionCommand extends Command {
         copyConn(newConn, connModel);
         
         // if the connection is not yet added to the compound module, add it, so later change notification will be handled correctly
-        if(connModel.getParent() == null) 
+        if (connModel.getParent() == null) 
             parentEditPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
     }
 

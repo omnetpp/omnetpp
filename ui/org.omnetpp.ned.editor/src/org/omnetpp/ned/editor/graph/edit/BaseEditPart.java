@@ -51,17 +51,17 @@ abstract public class BaseEditPart
      * Refreshes all visuals and connection models for ALL children (delegates to the children)
      */
     protected void refreshChildrenVisuals() {
-    	for(Object child : getChildren())
+    	for (Object child : getChildren())
     		((AbstractGraphicalEditPart)child).refresh();
     }
 
 
     protected void refreshChildrenConnections() {
-        for(Object child : getChildren()) {
-            for(Object conn : ((AbstractGraphicalEditPart)child).getSourceConnections())
+        for (Object child : getChildren()) {
+            for (Object conn : ((AbstractGraphicalEditPart)child).getSourceConnections())
                 ((AbstractGraphicalEditPart)conn).refresh();
 
-            for(Object conn : ((AbstractGraphicalEditPart)child).getTargetConnections())
+            for (Object conn : ((AbstractGraphicalEditPart)child).getTargetConnections())
                 ((AbstractGraphicalEditPart)conn).refresh();
         }
     }
@@ -74,7 +74,7 @@ abstract public class BaseEditPart
         // refresh ourselves
         refresh();
         // delegate to all children and refresh all their appearance
-        for(Object child : getChildren())
+        for (Object child : getChildren())
             if (child instanceof BaseEditPart)
                 ((BaseEditPart)child).totalRefresh();
             else

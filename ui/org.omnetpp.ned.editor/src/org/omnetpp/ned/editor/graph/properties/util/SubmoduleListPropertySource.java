@@ -30,7 +30,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
 
         pdesc = new PropertyDescriptor[submodules.size()];
         totalSubmoduleCount = inheritedSubmoduleCount = 0;
-        for(SubmoduleNodeEx smodule : submodules) {
+        for (SubmoduleNodeEx smodule : submodules) {
             String definedIn = "";
             if (smodule.getCompoundModule() != model) {
                 inheritedSubmoduleCount++;
