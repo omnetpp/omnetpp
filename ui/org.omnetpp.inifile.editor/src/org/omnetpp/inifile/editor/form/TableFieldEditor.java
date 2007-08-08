@@ -151,7 +151,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		dialog.setInput(list.toArray());
 		dialog.setMessage("Select target section:");
 		dialog.setTitle("New Configuration Key");
-		if (dialog.open() == ListDialog.OK)
+		if (dialog.open() == ListDialog.OK && dialog.getResult().length > 0)
 			return dialog.getResult()[0].toString();
 		return null;
 	}
