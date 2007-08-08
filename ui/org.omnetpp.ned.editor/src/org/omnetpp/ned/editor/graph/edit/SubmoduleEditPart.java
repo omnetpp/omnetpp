@@ -2,13 +2,14 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
@@ -129,7 +130,14 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
         // mark if the model is invalid
         getSubmoduleFigure().setErrorDecoration(getSubmoduleModel().hasErrorMarkers());
-
+        
+        // set layout constraints
+        SubmoduleConstraint constraint = new SubmoduleConstraint();
+        constraint.setLocation(getSubmoduleFigure().getPreferredLocation());
+        constraint.setSize(getSubmoduleFigure().getPreferredSize());
+        System.out.println("constraint for " + nameToDisplay + ": " + constraint);
+        Assert.isTrue(constraint.height != -1 && constraint.width != -1);
+        getSubmoduleFigure().getParent().setConstraint(getSubmoduleFigure(), constraint);
     }
 
     @Override
@@ -141,9 +149,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public boolean isEditable() {
         // editable only if the parent controllers model is the same as the model's parent
-        // ie the submodule is defined in this compound module (not inherited)
-        return super.isEditable() &&
-                getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
+        // i.e. the submodule is defined in this compound module (not inherited)
+        return super.isEditable() && getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
     }
 
     @Override
