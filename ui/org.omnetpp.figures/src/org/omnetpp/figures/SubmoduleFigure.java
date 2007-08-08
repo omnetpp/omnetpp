@@ -207,12 +207,10 @@ public class SubmoduleFigure extends ModuleFigure
       invalidate();
     }
 
-    protected void setShape(Image image, String shape,
+    protected void setShape(Image image, String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
 
         Image img = image;
-        int shapeWidth = getConstraint().width;
-        int shapeHeight = getConstraint().height;
         // handle defaults. if no size is given and no icon is present use a default icon
         if(StringUtils.isEmpty(shape) && img == null && shapeWidth == -1 && shapeHeight == -1)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
@@ -364,6 +362,8 @@ public class SubmoduleFigure extends ModuleFigure
             shape = "";
         }
         setShape(img, shape,
+                dps.getSize(scale).width,
+                dps.getSize(scale).height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
