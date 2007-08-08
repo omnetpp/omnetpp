@@ -32,6 +32,8 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -88,7 +90,7 @@ public class SectionsPage extends FormPage {
 	};
 	private IAction removeAction = new Action("Remove") {
 		public void run() {
-			removeSelectedSection();
+			removeSelectedSections();
 		}	
 	};
 	private IAction gotoParametersAction = new Action("Go To Parameters") {
@@ -107,12 +109,6 @@ public class SectionsPage extends FormPage {
 			this.sectionName = sectionName;
 			this.maxProblemSeverity = maxProblemSeverity;
 			this.isNonexistent = isNonexistent;
-		}
-
-		/* label provider maps to this */
-		@Override
-		public String toString() {
-			return sectionName;
 		}
 	}
 
@@ -188,6 +184,16 @@ public class SectionsPage extends FormPage {
 			}
 		});
 
+		// set up hotkey support
+		treeViewer.getTree().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.DEL)
+					removeSelectedSections();
+				if (e.keyCode == 'A' && (e.stateMask&SWT.CTRL) != 0)
+					treeViewer.getTree().selectAll(); //XXX this does not work, because text editor hotkey masks it
+			}
+		});
+		
 		// export the tree's selection as editor selection
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -280,7 +286,7 @@ public class SectionsPage extends FormPage {
 			if (doc.containsKey(sectionName, EXTENDS))
 				doc.setValue(sectionName, EXTENDS, value);
 			else
-				InifileUtils.addEntry(doc, sectionName, EXTENDS, value, null);
+				InifileUtils.addEntry(doc, sectionName, EXTENDS, value, "");
 		}
 	}
 
@@ -374,7 +380,7 @@ public class SectionsPage extends FormPage {
 	/**
 	 * Invoked by clicking on the "Remove Section" button
 	 */
-	protected void removeSelectedSection() {
+	protected void removeSelectedSections() {
 		try {
 			String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 			if (selection.length != 0) {

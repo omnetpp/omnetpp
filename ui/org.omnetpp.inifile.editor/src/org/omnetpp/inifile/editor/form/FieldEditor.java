@@ -67,7 +67,7 @@ public abstract class FieldEditor extends Composite {
 		try {
 			String key = entry.getKey();
 			if (!inifile.containsKey(section, key))
-				InifileUtils.addEntry(inifile, section, key, value, null);
+				InifileUtils.addEntry(inifile, section, key, value, "");
 			else
 				inifile.setValue(section, key, value);
 		} 

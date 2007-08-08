@@ -197,6 +197,10 @@ public class InifileUtils {
 	public static String validateParameterKey(IInifileDocument doc, String section, String key) {
 		if (key==null || key.equals(""))
 			return "Key cannot be empty";
+		if (key.contains(" ") || key.contains("\t"))
+			return "Key must not contain spaces";
+		if (!StringUtils.containsOnly(key.replaceAll("[a-zA-Z0-9]", "A"), "A_.*?{}[]"))
+			return "Key contains illegal character(s)";
 		if (!key.contains("."))
 			return "Parameter keys must contain at least one dot";
 		if (doc.containsKey(section, key))
@@ -279,7 +283,7 @@ public class InifileUtils {
 		else {
 			// set or add
 			if (!doc.containsKey(section, key))
-				addEntry(doc, section, key, value, null);
+				addEntry(doc, section, key, value, "");
 			else if (!value.equals(doc.getValue(section, key)))
 				doc.setValue(section, key, value);
 		}

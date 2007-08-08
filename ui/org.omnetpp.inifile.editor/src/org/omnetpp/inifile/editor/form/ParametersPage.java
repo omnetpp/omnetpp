@@ -25,6 +25,8 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -65,7 +67,6 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
  * 
  * @author Andras
  */
-//XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
 //XXX when adding params here, editor annotations become out of sync with markers
 public class ParametersPage extends FormPage {
@@ -192,7 +193,17 @@ public class ParametersPage extends FormPage {
 			}
 		});
 
-		//XXX prefix comments with "#" after editing?
+		// set up hotkey support
+		treeViewer.getTree().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.DEL)
+					removeEntries();
+				if (e.keyCode == 'A' && (e.stateMask&SWT.CTRL) != 0)
+					treeViewer.getTree().selectAll(); //XXX this does not work, because text editor hotkey masks it
+			}
+		});
+		
+		// set up cell editing
 		treeViewer.setColumnProperties(new String[] {"key", "value", "comment"});
 		final TableTextCellEditor editors[] = new TableTextCellEditor[3];
 		editors[0] = new TableTextCellEditor(treeViewer, 0);
@@ -227,7 +238,7 @@ public class ParametersPage extends FormPage {
 					element = ((GenericTreeNode)element).getPayload();
 				SectionKey item = (SectionKey) element;
 				if (item==null)
-					return; //FIXME must be debugged how this can possibly happen
+					return;
 				IInifileDocument doc = getInifileDocument();
 				try {
 					System.out.println("CellEditor committing the "+property+" column, value="+value);
@@ -251,8 +262,6 @@ public class ParametersPage extends FormPage {
 						}
 					}
 					else if (property.equals("comment")) {
-						if (value.equals("")) 
-							value = null; // no comment == null
 						if (!nullSafeEquals((String)value, doc.getComment(item.section, item.key))) {
 							doc.setComment(item.section, item.key, (String)value);
 							treeViewer.refresh();
@@ -556,7 +565,7 @@ public class ParametersPage extends FormPage {
 			try {
 				doc.addEntries(section, keys, null, null, null);
 				if (dialog.getAddApplyDefault())
-					InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
+					InifileUtils.addEntry(doc, section, "**.apply-default", "true", "");
 
 				// refresh table and restore selection
 				reread();
