@@ -32,7 +32,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
     private void init() {
-        setName("unnamed");
+        setName("Unnamed");
     }
 
 	public DisplayString getDisplayString() {

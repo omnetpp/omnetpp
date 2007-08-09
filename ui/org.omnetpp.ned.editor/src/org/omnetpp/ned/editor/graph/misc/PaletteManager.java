@@ -185,7 +185,6 @@ public class PaletteManager implements INEDChangeListener {
         return connectionStack;
     }
 
-
     /**
      * Builds a drawer containing basic tools like selection connection etc.
      * @param root
@@ -204,22 +203,13 @@ public class PaletteManager implements INEDChangeListener {
                 new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED));
         controlGroup.add(marquee);
 
-//        tool = new ConnectionCreationToolEntry(
-//                "Connection",
-//                "The connection tool can be used to connect various modules and submodules",
-//                new ModelFactory(ConnectionNodeEx.getStaticTagName()),
-//                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-//                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)//$NON-NLS-1$
-//        );
-//        // sets the required connection tool
-//        tool.setToolClass(NedConnectionCreationTool.class);
         controlGroup.add(createChannelsStack());
 
         return controlGroup;
     }
 
     /**
-     * Builds a drawer conaining base NED components without specifying types like
+     * Builds a drawer containing base NED components without specifying types like
      * simple and compound modules
      * @return
      */
@@ -232,7 +222,7 @@ public class PaletteManager implements INEDChangeListener {
         combined = new CombinedTemplateCreationEntry(
         		"Submodule",
         		"Create a submodule in a compound module",
-        		new ModelFactory(SubmoduleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME),
+        		new ModelFactory(SubmoduleNodeEx.getStaticTagName(), SubmoduleNodeEx.DEFAULT_NAME, SubmoduleNodeEx.DEFAULT_TYPE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE)
         );
@@ -241,7 +231,7 @@ public class PaletteManager implements INEDChangeListener {
         combined = new CombinedTemplateCreationEntry(
                 "Simple module",
                 "Create a simple module type",
-                new ModelFactory(SimpleModuleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME),
+                new ModelFactory(SimpleModuleNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
@@ -250,7 +240,7 @@ public class PaletteManager implements INEDChangeListener {
         combined = new CombinedTemplateCreationEntry(
                 "Compound Module",
                 "Create a compound module type that may contain submodules",
-                new ModelFactory(CompoundModuleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME),
+                new ModelFactory(CompoundModuleNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
@@ -259,7 +249,7 @@ public class PaletteManager implements INEDChangeListener {
         combined = new CombinedTemplateCreationEntry(
                 "Channel",
                 "Create a channel type",
-                new ModelFactory(ChannelNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME.toLowerCase()),
+                new ModelFactory(ChannelNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
@@ -268,7 +258,7 @@ public class PaletteManager implements INEDChangeListener {
         combined = new CombinedTemplateCreationEntry(
         		"Interface",
         		"Create a module interface type",
-        		new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), IHasName.INITIAL_NAME),
+        		new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
@@ -277,7 +267,7 @@ public class PaletteManager implements INEDChangeListener {
         combined = new CombinedTemplateCreationEntry(
                 "Channel interface",
                 "Create a channel interface type",
-                new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), IHasName.INITIAL_NAME),
+                new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
@@ -285,5 +275,4 @@ public class PaletteManager implements INEDChangeListener {
 
         return drawer;
     }
-
 }

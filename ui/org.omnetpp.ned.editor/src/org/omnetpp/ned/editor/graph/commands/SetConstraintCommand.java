@@ -58,19 +58,16 @@ public class SetConstraintCommand extends Command {
         }
         // store for later redo operation
         newDisplayString = module.getDisplayString().toString();
-        System.out.println("displaystring set: "+newDisplayString);
     }
 
     @Override
     public void redo() {
         module.getDisplayString().set(newDisplayString);
-        System.out.println("displaystring set: "+newDisplayString);
     }
 
     @Override
     public void undo() {
         module.getDisplayString().set(oldDisplayString);
-        System.out.println("displaystring set: "+oldDisplayString);
     }
 
     /**

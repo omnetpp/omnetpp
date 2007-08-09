@@ -9,7 +9,6 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
@@ -22,6 +21,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 public final class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
+    public static final String DEFAULT_TYPE = "Unknown";
+    public static final String DEFAULT_NAME = "unnamed";
 
     protected DisplayString displayString = null;
 
@@ -35,8 +36,8 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 	}
 
     private void init() {
-        setName(IHasName.INITIAL_NAME);
-        setType("node");
+        setName(DEFAULT_NAME);
+        setType(DEFAULT_TYPE);
     }
 
     public String getNameWithIndex() {

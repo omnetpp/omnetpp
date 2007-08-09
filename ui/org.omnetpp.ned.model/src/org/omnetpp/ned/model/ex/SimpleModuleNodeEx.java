@@ -27,7 +27,7 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
 	}
 
     private void init() {
-        setName("unnamed");
+        setName("Unnamed");
     }
 
 	public DisplayString getDisplayString() {

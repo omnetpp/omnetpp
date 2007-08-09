@@ -32,6 +32,10 @@ public class TopLevelEditPart extends BaseEditPart {
 		return new TopLevelFigure();
 	}
 
+    public TopLevelFigure getTopLevelFigure() {
+        return (TopLevelFigure)getFigure();
+    }
+
 	@Override
 	protected void refreshVisuals() {
         super.refreshVisuals();
@@ -47,7 +51,7 @@ public class TopLevelEditPart extends BaseEditPart {
             else if (getModel() instanceof ModuleInterfaceNode)
                 nameToDisplay = "Interface: " + nameToDisplay;
 
-            ((TopLevelFigure)getFigure()).setText(nameToDisplay);
+            getTopLevelFigure().setText(nameToDisplay);
     	}
 
     	// parse a display string, so it's easier to get values from it.
@@ -55,7 +59,7 @@ public class TopLevelEditPart extends BaseEditPart {
     	if (getModel() instanceof IHasDisplayString) {
     		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
 
-    		((TopLevelFigure)getFigure()).setDisplayString(dps);
+    		getTopLevelFigure().setDisplayString(dps);
 
             // set icon names for the channel and module/channel interface figures
             // we use special icons for these types
@@ -68,7 +72,7 @@ public class TopLevelEditPart extends BaseEditPart {
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
 
             if (image != null)
-                ((TopLevelFigure)getFigure()).setIcon(image);
+                getTopLevelFigure().setIcon(image);
     	}
     	// indicate the error
         ((TopLevelFigure)getFigure()).setErrorDecoration(getNEDModel().hasErrorMarkers());

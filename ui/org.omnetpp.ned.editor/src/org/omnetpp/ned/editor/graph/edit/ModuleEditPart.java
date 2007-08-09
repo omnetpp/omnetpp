@@ -12,7 +12,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 
 /**
- * Base abstract controller for NedModel and NedFigures. Provides support for 
+ * Base abstract controller for NedModel and NedFigures. Provides support for
  * connection handling and common display attributes.
  */
 abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPart {
@@ -25,8 +25,8 @@ abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPar
 
 
 	/**
-	 * Compute the source connection anchor to be assigned based on the current mouse 
-	 * location and available gates. 
+	 * Compute the source connection anchor to be assigned based on the current mouse
+	 * location and available gates.
 	 * @param p current mouse coordinates
 	 * @return The selected connection anchor
 	 */
@@ -63,9 +63,9 @@ abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPar
      * @return The scale factor of the module
      */
     public abstract float getScale();
-    
+
     /**
-     * @return The compound module itself or the compound module controller 
+     * @return The compound module itself or the compound module controller
      *  which contains this controller
      */
     public abstract CompoundModuleEditPart getCompoundModulePart();

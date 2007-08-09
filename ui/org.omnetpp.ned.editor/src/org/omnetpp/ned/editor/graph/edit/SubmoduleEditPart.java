@@ -6,8 +6,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
+
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
@@ -15,6 +15,11 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 
+/**
+ * Controls the submodule figure according to the model changes.
+ *
+ * @author rhornig
+ */
 public class SubmoduleEditPart extends ModuleEditPart {
     protected GateAnchor gateAnchor;
 
@@ -24,8 +29,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
     }
     /**
      * Returns a newly created Figure of this.
-     *
-     * @return A new Figure of this.
      */
     @Override
     protected IFigure createFigure() {
@@ -36,15 +39,13 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns the Figure for this as an SubmoduleFigure.
-     *
-     * @return Figure of this as a SubmoduleFigure
      */
     public SubmoduleFigure getSubmoduleFigure() {
         return (SubmoduleFigure)getFigure();
     }
 
     /**
-     * @return Helper function to return the model object with correct type
+     * Helper function to return the model object with correct type
      */
     public SubmoduleNodeEx getSubmoduleModel() {
         return (SubmoduleNodeEx)getModel();
@@ -63,8 +64,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
 	/**
 	 * Returns a connection anchor registered for the given gate
-	 * @param gate
-	 * @return
 	 */
 	@Override
     public GateAnchor getConnectionAnchor(String gate) {
@@ -73,8 +72,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the srcModule.
-     *
-     * @return List of connections.
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -85,8 +82,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the destModule.
-     *
-     * @return List of connections.
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -100,8 +95,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected void refreshVisuals() {
-
-        System.out.println("refreshVisuals()");
         // define the properties that determine the visual appearance
     	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
 
@@ -124,18 +117,17 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // set the rest of the display properties
         getSubmoduleFigure().setDisplayString(dps);
 
-        // TODO implement a separate PIN decoration decorator figure in submodule figure
-        if (dps.getLocation(scale) != null)
-        	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
+        // show/hide the pin marker
+        getSubmoduleFigure().setPinDecoration(dps.getLocation(scale) != null);
 
         // mark if the model is invalid
         getSubmoduleFigure().setErrorDecoration(getSubmoduleModel().hasErrorMarkers());
-        
+
         // set layout constraints
         SubmoduleConstraint constraint = new SubmoduleConstraint();
         constraint.setLocation(getSubmoduleFigure().getPreferredLocation());
         constraint.setSize(getSubmoduleFigure().getPreferredSize());
-        System.out.println("constraint for " + nameToDisplay + ": " + constraint);
+        // System.out.println("constraint for " + nameToDisplay + ": " + constraint);
         Assert.isTrue(constraint.height != -1 && constraint.width != -1);
         getSubmoduleFigure().getParent().setConstraint(getSubmoduleFigure(), constraint);
     }
@@ -143,7 +135,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public float getScale() {
         // get the container compound module's scaling factor
-        return ((CompoundModuleEditPart)getParent()).getScale();
+        return getCompoundModulePart().getScale();
     }
 
     @Override
@@ -158,10 +150,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
         return (CompoundModuleEditPart)getParent();
     }
 
-    /* (non-Javadoc)
-     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
-     * open the type of component for double click
-     */
     @Override
     protected INEDElement getNEDElementToOpen() {
         return getSubmoduleModel().getEffectiveTypeRef();
