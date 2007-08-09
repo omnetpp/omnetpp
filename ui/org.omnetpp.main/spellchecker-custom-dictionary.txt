@@ -175,3 +175,7 @@ gui
 hotkey
 tokenizer
 args
+metadata
+bendpoints
+bendpoint
+embedder

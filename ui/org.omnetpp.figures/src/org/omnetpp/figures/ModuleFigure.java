@@ -13,7 +13,7 @@ abstract public class ModuleFigure extends Figure {
 	protected IDisplayString lastDisplayString;
 
     /**
-     * Returns the lastly set displaysting
+     * Returns the most recently set display sting
      * @return
      */
     public IDisplayString getLastDisplayString() {
@@ -21,7 +21,7 @@ abstract public class ModuleFigure extends Figure {
     }
     
     /**
-     * Stro
+     * Stores the display string, and updates the figure accordingly.
      * @param dps
      */
     abstract public void setDisplayString(IDisplayString dps);

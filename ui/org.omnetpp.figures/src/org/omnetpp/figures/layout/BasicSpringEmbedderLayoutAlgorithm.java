@@ -30,7 +30,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     {
         Object key;        // node "handle"
         boolean fixed;     // allowed to move?
-        Anchor anchor;     // not NULL for achored nodes
+        Anchor anchor;     // not NULL for anchored nodes
         double x, y;       // position (of the center of the shape)
         int offx, offy;    // anchored nodes: offset to anchor point (and x,y are calculated)
         int sx, sy;        // half width/height
@@ -380,7 +380,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
                 // color and add to list all nodes connected to n.
                 // (edge list data structure is not really good for this, but execution
-                // time is still negligable compared to relax() iterations)
+                // time is still negligible compared to relax() iterations)
                 for (Edge e : edges)
                 {
                     if (e.from==nn && e.to.color==-1)
@@ -660,6 +660,6 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
     @Override
     public void setAnchorPosition(String anchor, int x, int y) {
-        // TODO NOT YET IMPLEMENTD
+        // TODO NOT YET IMPLEMENTED
     }
 }

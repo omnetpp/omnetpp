@@ -48,7 +48,7 @@ public class CalloutFigure extends Layer {
     @Override
     public void paint(Graphics graphics) {
         graphics.pushState();
-        // set antialiasing on contenet and child/derived figures
+        // set antialiasing on content and child/derived figures
         if (NedFileFigure.antialias != SWT.DEFAULT)
             graphics.setAntialias(NedFileFigure.antialias);
         super.paint(graphics);

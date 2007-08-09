@@ -16,7 +16,7 @@ import org.eclipse.draw2d.Polygon;
 import org.eclipse.draw2d.geometry.*;
 
 /**
- * Draws a regular N-gon. The shape is detemined by a a bouding box, rotation angle and
+ * Draws a regular N-gon. The shape is determined by a a bounding box, rotation angle and
  * the number of sides.
  */
 public class RegularPolygon extends Polygon {
