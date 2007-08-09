@@ -1,5 +1,6 @@
 package org.omnetpp.figures.layout;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Point;
 
 /**
@@ -7,7 +8,11 @@ import org.eclipse.draw2d.geometry.Point;
  */
 public abstract class AbstractGraphLayoutAlgorithm
 {
-    protected int defaultEdgeLen;
+	protected static boolean debug = false;
+ 
+	protected static boolean firstTime = true;
+	
+	protected int defaultEdgeLen;
 
     // params set by setConfineToArea()
     protected int width;
@@ -20,22 +25,38 @@ public abstract class AbstractGraphLayoutAlgorithm
 
     protected int sizingMode;
 
-    protected long rndseed;
+    protected int rndseed;
 
     protected double privRand01() {
-        // standard LCG32 RNG
-        final long GLRAND_MAX = 0x7ffffffeL;
-        final long a=16807, q=127773, r=2836;
-        rndseed=a*rndseed%q - r*rndseed/q;
-        if (rndseed<=0) rndseed+=GLRAND_MAX+1;
-        return rndseed/(double)(GLRAND_MAX+1);
+        // standard LCG32 RNG; see cLCG32 in the simulation kernel
+        final int GLRAND_MAX = 0x7ffffffe;
+        final int a=16807, q=127773, r=2836;
+        rndseed = a * (rndseed % q) - r * (rndseed / q);  // Note: parens are important, don't remove!
+        if (rndseed <= 0) rndseed += GLRAND_MAX + 1;
+        return rndseed / (double)(GLRAND_MAX + 1);
     }
+
+    private void rngSelfTest()
+    {
+    	rndseed = 1;
+        for (int i=0; i<10000; i++)
+            privRand01();
+        Assert.isTrue(rndseed == 1043618065);
+        System.out.println("Layouter: internal RNG tested and OK");
+    }    
 
     /**
      * Constructor
      */
     public AbstractGraphLayoutAlgorithm() {
-        rndseed = 1;
+    	// test the RNG once per session -- do not remove this code!
+    	if (firstTime) {
+    		firstTime = false;
+    		rngSelfTest(); 
+    	}
+    	
+        // go on with constructor
+    	rndseed = 1;
         defaultEdgeLen = 40;
         width = height = border = 0;
         sizingMode = SIZINGMODE_FREE;
@@ -59,7 +80,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * Add node that is anchored to a freely movable anchor point. Nodes anchored
      * to the same anchor point can only move together. Anchor points are
-     * identified by name, and they need not be predeclared (they are registered
+     * identified by name, and they need not be pre-declared (they are registered
      * on demand.) Usage: module vectors in ring, matrix, etc. layout.
      *
      * offx, offy: offset to anchor point
@@ -79,7 +100,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * Set rng seed
      */
-    void setSeed(long seed) {
+    void setSeed(int seed) {
         rndseed = seed;
     }
 

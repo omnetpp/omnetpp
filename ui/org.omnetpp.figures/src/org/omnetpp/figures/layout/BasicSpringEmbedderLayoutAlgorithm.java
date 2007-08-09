@@ -212,6 +212,9 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    if (nodes.isEmpty() || allNodesAreFixed)
 	        return;
 
+	    if (debug) 
+			System.out.println("running layouter: " + nodes.size() + " nodes, " + "allNodesAreFixed=" + allNodesAreFixed + ", haveAnchoredNode=" + haveAnchoredNode + ", haveFixedNode=" + haveFixedNode);
+	    
 	    // consume a some values (manually given seeds are usually small!)
 	    privRand01();
 	    privRand01();
@@ -272,22 +275,24 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    doColoring();
 
 	    // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
-	    //clock_t beg = clock();
 	    int i, maxdcounter=0;
 	    for (i=1; i<maxIterations && maxdcounter<20; i++)
 	    {
 	        double maxd = relax();
 
-	        //debugDraw(i);
-
 	        if (maxd<0.05)
 	            maxdcounter++;
 	        else
 	            maxdcounter=0;
+
+	        if (debug) {
+	        	System.out.println("iteration " + i + ":");
+	        	debugPrintState();
+	        }
 	    }
-	    //clock_t end = clock();
-	    //printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
-	    //       (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
+
+	    if (debug) 
+			System.out.println("layout done: " + nodes.size() + " nodes, " + i + " iterations");
 
 	    // scale back if too big -- BUT scale back only non fixed nodes.
 	    // fixed nodes do not change position
@@ -316,6 +321,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	            double yfact = (height-2*border) / (y2-y1);
 	            if (xfact>1) {xfact=1;} // only scale down if needed, but never magnify
 	            if (yfact>1) {yfact=1;}
+	    	    if (debug) 
+	    			System.out.println("layout scaled back by (" + (1/xfact) + ", " + (1/yfact) + ")");
 	            for (Node n : nodes)
 	            {
 		        	// skip the fixed nodes
@@ -488,15 +495,15 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
             }
 
             // we only  use the direction of (dx,dy) -- node dx,dy is (force * unit vector)
-            double flensq = fx * fx + fy * fy;
-            if (flensq > 0)
-            {
+            //double flensq = fx * fx + fy * fy;
+            //if (flensq > 0)
+            //{
                 //double flen = sqrt(flensq);
                 //n1.dx += repulsiveForce * fx / flen;
                 //n1.dy += repulsiveForce * fy / flen;
                 n1.dx += repulsiveForce * fx;
                 n1.dy += repulsiveForce * fy;
-            }
+            //}
         }
 
 		//    #ifdef USE_CONTRACTING_BOX
@@ -652,6 +659,12 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
         return maxd;
     }
 
+    protected void debugPrintState() {
+    	for (Node n : nodes) {
+    		System.out.println("  " + n.key + ": color=" + n.color + " x=" + n.x + " y=" + n.y + " dx=" + n.dx + " dy=" + n.dy);
+    	}
+    }
+    
     @Override
     public Point getAnchorPosition(String anchor) {
         // TODO NOT YET IMPLEMENTED

@@ -110,7 +110,7 @@ public class SpringEmbedderLayout extends XYLayout {
         // find the place of movable nodes if auto-layout requested
         if (requestAutoLayout) {
             alg = createAutoLayouter(nodeParent, edgeParent);
-            alg.setSeed(algSeed);
+            alg.setSeed((int)algSeed);
             alg.execute();
             requestAutoLayout = false;
         }
