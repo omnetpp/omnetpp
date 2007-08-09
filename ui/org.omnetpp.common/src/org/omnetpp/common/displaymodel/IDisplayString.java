@@ -7,7 +7,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * FIXME undocumented class
- * 
+ *
  * @author rhornig
  */
 public interface IDisplayString {
@@ -27,7 +27,7 @@ public interface IDisplayString {
 
     // default value used if the tag exists but the property contains no value
     public static final String EMPTY_DEFAULTS_STR = "i=,,30;i2=,,30;b=40,24,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=,,grey82,black,2;bgg=,1,grey;bgi=,fixed;ls=black,1,solid";
-    
+
     // example values used if the property contains a $variable
     public static final String VARIABLE_DEFAULTS_STR = "i=abstract/server,red,50;i2=status/execute,red,50;b=40,24,rect,#8080ff,black,2;t=Sample text,t,blue;r=100,white,black,3;bgb=300,200,white,black,5;bgg=100,2,black;bgi=,center;ls=green,3,dashed";
 
@@ -194,61 +194,68 @@ public interface IDisplayString {
      */
     public boolean containsTag(Tag tagName);
 
-        /**
-	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback
-	 * values in ancestor types.
-	 */
+    /**
+     * The value of the property. If the property is empty looks for default values and fallback
+     * values in ancestor types. If nothing found, returns <code>NULL</code>.
+     */
 	public String getAsStringDef(Prop property);
 
-	/**
-	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback
-	 * values in ancestor types.
-	 */
+    /**
+     * The value of the property. If the property is empty looks for default values and fallback
+     * values in ancestor types. If nothing found, returns <code>NULL</code>.
+     */
 	public Integer getAsIntegerDef(Prop property);
 
-	/**
-	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback
-	 * values in ancestor types. If nothing found, returns <code>defValue</code>.
-	 */
+    /**
+     * The value of the property. If the property is empty looks for default values and fallback
+     * values in ancestor types. If nothing found, returns <code>defValue</code>.
+     */
 	public int getAsIntDef(Prop propName, int defValue);
 
 	/**
-	 * @param property The requested property
-	 * @return The value of the property. If the property is empty looks for default values and fallback
+	 * The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types. If nothing found, returns <code>defValue</code>.
 	 */
 	public float getAsFloatDef(Prop propName, float defValue);
 
 	/**
-	 * @return The scaling to be applied on the element. It is coming from the display string
-	 * for the CompoundModule and coming from the container's display string for submodules
+	 * The scaling to be applied on the element. Uses fallback if not specified locally.
+	 * Returns 1.0 if not specified. NOTE that scaling factor is available ONLY in compound module
+	 * display strings.
 	 */
 	public float getScale();
 
 	/**
-	 * Converts a unit based location to pixel based
+	 * Converts a unit based location to pixel based. It DOES return the local value from the displaystring.
+	 * (ie. no fallback is used if the location properties are empty)
      * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
      *              factor stored in the display string will be used
-	 * @return The location property (in pixel)
+	 * @return The location property (in pixel) or NULL if any of the coordinates are missing.
 	 */
 	public Point getLocation(Float scale);
 
 	/**
-	 * @return The size of submodule (in pixels)
+	 * Returns The size of submodule (B tag) (in pixels). Uses fallback if not specified locally.
+     * If width or height is missing returns -1 instead.
+     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     *              factor stored in the display string will be used
 	 */
 	public Dimension getSize(Float scale);
 
-	/**
-	 * @return The size of compound module (in pixels)
-	 */
+    /**
+     * The size of module (in pixel) if represented as compound module (BGB tag).
+     * Uses fallback if the property is not specified locally.
+     * If width or height is missing returns -1 instead.
+     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     *              factor stored in the display string will be used
+     */
 	public Dimension getCompoundSize(Float scale);
 
-	/**
-     * Returns the range converted to pixels
-     * @return
+    /**
+     * Returns the range converted to pixels. Uses fallback if the property is not specified locally.
+     * Returns -1 if no range was specified.
+     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     *              factor stored in the display string will be used
      */
     public int getRange(Float scale);
 
@@ -264,12 +271,12 @@ public interface IDisplayString {
 	 * Converts the provided value (in unit) to pixel
 	 * @param unit
      * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
-	 * @return
+	 * @return Value in pixels
 	 */
 	public int unit2pixel(float unit, Float overrideScale);
 
     /**
-     * Sets the content of the display string
+     * Sets the content of the display string.
      */
     public void set(String newValue);
 

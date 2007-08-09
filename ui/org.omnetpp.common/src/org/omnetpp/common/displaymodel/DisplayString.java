@@ -379,8 +379,6 @@ public class DisplayString implements IDisplayString {
 
 	/**
      * Sets the specified property to the given value in the display string
-     * @param property Property to be set
-     * @param newValue
      */
     public void set(Prop property, String newValue) {
         String oldValue = getAsString(property);
@@ -388,6 +386,9 @@ public class DisplayString implements IDisplayString {
         fireDisplayStringChanged(property, newValue, oldValue);
     }
 
+    /**
+     * Sets the specified property to the given value in the display string
+     */
     public void set(Prop property, int newValue) {
         Integer oldValue = getAsInteger(property);
         setTagArg(property.getTag(), property.getPos(), String.valueOf(newValue));
@@ -402,12 +403,6 @@ public class DisplayString implements IDisplayString {
 	}
 
     // helper functions for setting and getting the location and size properties
-	/**
-     * Converts the provided value (in pixel) to unit
-     * @param pixel
-     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
-     * @return Value in units
-	 */
 	public final float pixel2unit(int pixel, Float overrideScale) {
         if (overrideScale != null)
             return pixel / overrideScale;
@@ -415,12 +410,6 @@ public class DisplayString implements IDisplayString {
 		return  pixel / getScale();
 	}
 
-	/**
-	 * Converts the provided value (in unit) to pixel
-	 * @param unit
-     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
-	 * @return
-	 */
 	public final int unit2pixel(float unit, Float overrideScale) {
         if (overrideScale != null)
             return (int)(unit * overrideScale);
@@ -428,20 +417,15 @@ public class DisplayString implements IDisplayString {
 		return (int)(unit * getScale());
 	}
 
-    /**
-     * Returns the range converted to pixels
-     * @return
-     */
     public int getRange(Float scale) {
     	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f), scale);
     	if (range <= 0) range = -1;
     	return range;
     }
 
-    /* (non-Javadoc)
-	 * @see org.omnetpp.ned2.model.IDisplayString#getLocation()
-	 */
     public Point getLocation(Float scale) {
+        // NOTE: we are intentionally not using fallback here. It does not make much sense to inherit the position
+        // from an ancestor module
         Float x = getAsFloat(Prop.X);
         Float y = getAsFloat(Prop.Y);
         // if it's unspecified in any direction we should return a NULL constraint
@@ -452,7 +436,8 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * @param location Where to place the element (in pixels)
+     * Sets the location properties (P tag). If NULL is given both location property is cleared.
+     * It fires property change notification for Prop.X
      */
     public void setLocation(Point location, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
@@ -476,9 +461,6 @@ public class DisplayString implements IDisplayString {
     	fireDisplayStringChanged(Prop.X, null, null);
     }
 
-    /* (non-Javadoc)
-	 * @see org.omnetpp.ned2.model.IDisplayString#getSize()
-	 */
     public Dimension getSize(Float scale) {
     	int width = unit2pixel(getAsFloatDef(Prop.WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
@@ -488,9 +470,9 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Converts the size given in pixels to unit based size
-     * Sets the size of the element (in pixels)
-     * @param size
+     * Converts the size given in pixels to unit based size and sets the size of the element (B tag).
+     * If negative number is given as width or height the corresponding property is deleted.
+     * It fires property change notification for Prop.WIDTH
      */
     public void setSize(Dimension size, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
@@ -513,12 +495,9 @@ public class DisplayString implements IDisplayString {
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that size change always generates an width change notification regardless
     	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.HEIGHT, null, null);
+    	fireDisplayStringChanged(Prop.WIDTH, null, null);
     }
 
-    /**
-     * @return The size of module (pixel) if represented as compound (bgb tag)
-     */
     public Dimension getCompoundSize(Float scale) {
     	int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
@@ -529,9 +508,10 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Converts the size given in pixels to unit based size
-     * Sets the size of the element (in pixels)
-     * @param size
+     * Converts the size given in pixels to unit based size and
+     * sets the size of the element (BGB tag). If negative number is given as width or height
+     * the corresponding property is deleted.
+     * It fires property change notification for Prop.MODULE_WIDTH
      */
     public void setCompoundSize(Dimension size, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
@@ -558,9 +538,8 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Sets both the size and the location, but sends out only a SINGLE X position change message.
-     * @param loc
-     * @param size
+     * Sets both the size and the location (B and P tag), but sends out only a SINGLE X position change property change notification.
+     * It fires property change notification for Prop.X
      */
     public void setConstraint(Point loc, Dimension size, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change

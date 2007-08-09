@@ -2,17 +2,7 @@ package org.omnetpp.figures;
 
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Ellipse;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ImageFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.RectangleFigure;
-import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.draw2d.Shape;
-import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
@@ -24,6 +14,7 @@ import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -33,12 +24,15 @@ import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
- * FIXME: UNCOCUMENTED CLASS
- * 
+ * Figure representing a submodule inside a compound module figure. Contains several figures attached
+ * to the main figure. They are placed on a different foreground and background layer, so they are
+ * not included when the boundary calculation is done. getPreferredLocation can be
+ * queried after setDisplaystring is called so an appropriate constraint can be created for a layouter.
+ *
  * @author rhornig
  */
 public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDirectEditSupport {
-	// parent figures
+	// parent figures for attached figures
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
 
@@ -67,10 +61,9 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     protected TooltipFigure tooltipFigure;
     protected Shape rangeFigure = new RangeFigure();
 
-    
+
     public SubmoduleFigure() {
         setLayoutManager(new StackLayout());
-        // set line antialiasing on for all drawing n submodules
         rectShapeFigure.setVisible(false);
         rrectShapeFigure.setVisible(false);
         rrectShapeFigure.setCornerDimensions(new Dimension(30, 30));
@@ -153,8 +146,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         super.addNotify();
     }
 
+    /**
+     * Sets the name associated with the submodule.
+     */
     public void setName(String name) {
-        if (nameFigure == null) return; //FIXME WTF is this? --Andras
         nameFigure.setVisible(name != null && !"".equals(name));
         nameFigure.setText(name);
         figureName = name;
@@ -162,7 +157,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     }
 
     protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
-        if (rangeFigure == null) return; //FIXME WTF is this? --Andras
         if (radius > 0) {
             int rad = radius;
             rangeFigure.setVisible(true);
@@ -184,7 +178,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         invalidate();
     }
 
-    public void setTooltipText(String tttext) {
+    protected void setTooltipText(String tttext) {
         if (tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
@@ -198,14 +192,12 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     }
 
     protected void setQueueText(String qtext) {
-        if (queueFigure == null) return; //FIXME WTF is this?
         queueFigure.setVisible(qtext != null && !"".equals(qtext));
         queueFigure.setText(qtext);
         invalidate();
     }
 
     protected void setInfoText(String text, String alignment, Color color) {
-        if (textFigure == null || textAttachLayer == null) return; //FIXME WTF is this? --Andras
         textFigure.setVisible(text != null && !"".equals(text));
         textFigure.setText(text);
         textFigure.setForegroundColor(color);
@@ -226,7 +218,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
             textAttachLayer.setRefPoints(PositionConstants.NORTH_EAST, PositionConstants.NORTH_WEST);
             textAttachLayer.setDeltaXY(2, 0);
         }
-        if (textFigure.getParent() != null) 
+        if (textFigure.getParent() != null)
         	textFigure.getParent().revalidate();
         invalidate();
     }
@@ -237,15 +229,15 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         // handle defaults. if no size is given and no icon is present, use a default icon
         if (StringUtils.isEmpty(shapeName) && image == null)
             image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
-        
+
         // if image changed, update the figure
         if (image != imageFigure.getImage()) {
             imageFigure.setImage(image);
             imageFigure.setVisible(image != null);
         }
         Dimension imageSize = image == null ?
-                new Dimension(0,0) : new Dimension(image.getImageData().width, image.getImageData().height); //FIXME FIXME use getBounds() here!!! Andras
-                
+                new Dimension(0,0) : new Dimension(image.getBounds().width, image.getBounds().height);
+
         // we set the image minimum size, so it will never be clipped
         imageFigure.setPreferredSize(imageSize);
 
@@ -323,7 +315,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         invalidate();
     }
 
-
     /**
      * Sets the external image decoration (for pins)
      * @param img
@@ -342,18 +333,13 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
 
 	/**
 	 * Adjusts the image properties using a displayString object (except the location and size)
-	 * @param dps
 	 */
 	@Override
     public void setDisplayString(IDisplayString dps) {
 		lastDisplayString = dps;
-		
-		// ATTENTION: IT IS STRICTLY *VERBOTEN* TO MANIPULATE LAYOUTER CONSTRAINTS
-		// INSIDE FIGURES. VIOLATION OF THIS RULE RESULTS IN IMMEDIATE EXECUTION.
 
         // get the position from the display string. When a coordinate is missing
-		// in the display string, use Integer.MIN_VALUE.
-		//FIXME: what if only one of the coordinates is given?
+		// in the display string, use Integer.MIN_VALUE. (means: it's UNPINNED)
 		preferredLocation = dps.getLocation(scale);
         if (preferredLocation == null)
         	preferredLocation = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
@@ -387,7 +373,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         Dimension size = dps.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
         boolean widthExist = dps.containsProperty(IDisplayString.Prop.WIDTH);
         boolean heightExist = dps.containsProperty(IDisplayString.Prop.HEIGHT);
-        
+
         // if both are missing, use values from EMPTY_DEFAULTS, otherwise substitute
         // -1 for missing coordinate
         if (!widthExist && heightExist)
@@ -416,17 +402,15 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         invalidate();
 	}
 
-	
     /**
-     * @return The current scaling factor for the submodule
+     * The current scaling factor for the submodule.
      */
     public float getScale() {
         return scale;
     }
 
     /**
-     * Sets the scale factor
-     * @param scale
+     * Sets the scale factor used for drawing.
      */
     public void setScale(float scale) {
         this.scale = scale;
@@ -434,9 +418,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     }
 
 	/**
-	 * Returns the position where the submodule wants to be (based on 
+	 * Returns the position where the submodule wants to be (based on
 	 * display string contents). If the display string does not specify
-	 * a coordinate, Integer.MIN_VALUE is returned there. 
+	 * a coordinate, Integer.MIN_VALUE is returned there. Valid only
+	 * after a setDisplayString() call.
 	 */
     public Point getPreferredLocation() {
 		return preferredLocation;
@@ -457,7 +442,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
 
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
-     * override it to include also the nameFigure, so clicking on submodule name would
+     * We override it to include also the nameFigure, so clicking on submodule name would
      * be counted also as a selection event.
      */
     @Override
@@ -470,13 +455,15 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     }
 
     /**
-     * @return Whether the figure displays a shape
+     * Whether the figure displays a shape
      */
     public boolean isShapeVisible() {
         return shapeVisible;
     }
 
-    // TODO implement error decoration
+    /**
+     * TODO implement error decoration. NOT yet implemented.
+     */
     public void setErrorDecoration(boolean markError) {
         // nameFigure.setForegroundColor(markError ? ColorFactory.RED : null);
     }
