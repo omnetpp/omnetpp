@@ -17,6 +17,7 @@
 
 #include "commondefs.h"
 #include "inttypes.h"
+#include "exception.h"
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
@@ -30,7 +31,7 @@ class COMMON_API LCGRandom
         int32 seed;
 
     public:
-        LCGRandom(int32 seed = 1);
+        LCGRandom(int32 seed=1);
 
         int32 getSeed() { return seed; }
         void setSeed(int32 seed);
@@ -38,6 +39,8 @@ class COMMON_API LCGRandom
         double next01();
 
         int draw(int range);
+
+        void selfTest();
 };
 
 #endif
