@@ -13,7 +13,6 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
@@ -83,68 +82,55 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     @Override
     protected Command createChangeConstraintCommand(EditPart child, Object newConstraint) {
-        IFigure childFigure = ((GraphicalEditPart)child).getFigure();
-        Rectangle figureBounds = childFigure.getBounds();
-        Rectangle modelConstraint = (Rectangle)newConstraint;
         // do not allow change if we are read only components
         if (!PolicyUtil.isEditable(child))
             return null;
 
-        // HACK for fixing issue when the model returns unspecified size (-1,-1)
-        // we have to calculate the center point in that direction manually using the size info
-        // from the figure directly (which knows it's size) This is the inverse transformation of
-        // CenteredXYLayout's transformation.
-//        if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
-//        if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
+        Rectangle modelConstraint = (Rectangle)newConstraint;
 
         // disable the resize if we reach the minimal size
         if (modelConstraint.width == getMinimumSizeFor((GraphicalEditPart)child).width ||
                 modelConstraint.height == getMinimumSizeFor((GraphicalEditPart)child).height)
             return UnexecutableCommand.INSTANCE;
 
-        // get the compound module scaling factor
-        float scale = ((ModuleEditPart)child).getScale();
-
-        CompoundCommand compound = new CompoundCommand();
-
-        // create the constraint change command
-        INamedGraphNode module = (INamedGraphNode) child.getModel();
-        Rectangle oldBounds = (Rectangle)childFigure.getParent().getLayoutManager().getConstraint(childFigure);
-        SetConstraintCommand constrCmd = new SetConstraintCommand(module, scale, oldBounds);
-        constrCmd.setConstraint(modelConstraint); //FIXME if this gets null'ed in the "if" branch, then maybe it should be set in the ELSE branch in the first place!!! --Andras
-
         // check if we have a shape in the figure. If not, the resize command should change the icon size
         // property not the shape size
-        ChangeDisplayPropertyCommand dpchange = null;
-        // icon resize valid only for submodules, where no icon is present and there was a change in the size
-        // of the figure
-        if (child instanceof SubmoduleEditPart && !((SubmoduleFigure)childFigure).isShapeVisible() &&
-                modelConstraint.width > 0) {
-            // delete the move command (we do not change the position if icon resizing is in progress)
-            constrCmd = null; //FIXME WTF ???? why did we create it then in the first place
-            dpchange = new ChangeDisplayPropertyCommand(((SubmoduleEditPart)child).getSubmoduleModel(), IDisplayString.Prop.IMAGESIZE);
-            dpchange.setLabel("Set icon size");
+        INamedGraphNode submodule = (INamedGraphNode) child.getModel();
+        IFigure childFigure = ((GraphicalEditPart)child).getFigure();
+        Rectangle oldBounds = (Rectangle)childFigure.getParent().getLayoutManager().getConstraint(childFigure);
+        boolean widthChanged = modelConstraint.width != oldBounds.width;
+        boolean heightChanged = modelConstraint.height != oldBounds.height;
+        if (child instanceof SubmoduleEditPart && !((SubmoduleFigure)childFigure).isShapeVisible() && (widthChanged || heightChanged)) {
+            // icon resizing operation
             // calculate the desired size, if we support arbitrary resizing, we can simply set
             // the received width value, but for now we have to choose between vs, s, l, vl
-            int ratio = 100*modelConstraint.width / 40;
+            int iconsize = widthChanged ? modelConstraint.width :
+                           heightChanged ? modelConstraint.height :
+                               (int)Math.sqrt(modelConstraint.width*modelConstraint.height);
             String newImageSize = "";
-            if (ratio < 60)
-                newImageSize = "vs";
-            else if (ratio < 100)
-                newImageSize = "s";
-            else if (ratio < 150)
-                newImageSize = "";
-            else if (ratio < 250)
-                newImageSize = "l";
+            if (iconsize <= 20)
+                newImageSize = "vs";    // 16x16 pixel icons
+            else if (iconsize <= 32)
+                newImageSize = "s";     // 24x24 pixel icons
+            else if (iconsize <= 50)
+                newImageSize = "";      // 40x40 pixel icons
+            else if (iconsize <= 80)
+                newImageSize = "l";     // 60x60 pixel icons
             else
-                newImageSize = "vl";
+                newImageSize = "vl";    // 100x100 pixel icons
 
+            ChangeDisplayPropertyCommand dpchange = new ChangeDisplayPropertyCommand(submodule, IDisplayString.Prop.IMAGESIZE);
+            dpchange.setLabel("Set icon size");
             dpchange.setValue(newImageSize);
+            return dpchange;
         }
-
-        compound.add(dpchange);
-        compound.add(constrCmd);
-        return compound;
+        else {
+            // move or resize operation
+            float scale = ((ModuleEditPart)child).getScale();
+            SetConstraintCommand constrCmd = new SetConstraintCommand(submodule, scale, oldBounds);
+            constrCmd.setConstraint(modelConstraint);
+            return constrCmd;
+        }
     }
 
     /**
