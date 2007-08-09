@@ -202,12 +202,6 @@ public interface IDisplayString {
 
     /**
      * The value of the property. If the property is empty looks for default values and fallback
-     * values in ancestor types. If nothing found, returns <code>NULL</code>.
-     */
-	public Integer getAsInt(Prop property);
-
-    /**
-     * The value of the property. If the property is empty looks for default values and fallback
      * values in ancestor types. If nothing found, returns <code>defValue</code>.
      */
 	public int getAsInt(Prop propName, int defValue);
@@ -226,11 +220,11 @@ public interface IDisplayString {
 	public float getScale();
 
 	/**
-	 * Converts a unit based location to pixel based. It DOES return the local value from the displaystring.
-	 * (ie. no fallback is used if the location properties are empty)
+	 * Returns the pixel based location for the module. Converts the unit based values of P tag to pixel.
+	 * Uses fallback if not specified locally. If either location property is missing it returns NULL
+	 * (meaning the module is unpinned)
      * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
      *              factor stored in the display string will be used
-	 * @return The location property (in pixel) or NULL if any of the coordinates are missing.
 	 */
 	public Point getLocation(Float scale);
 

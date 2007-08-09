@@ -310,16 +310,6 @@ public class DisplayString implements IDisplayString {
         return getTagArg(property.getTag(), property.getPos());
     }
 
-//    public Float getAsFloatLocal(Prop property) {
-//        String strVal = getAsStringLocal(property);
-//        // if tag not present at all
-//        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
-//        try {
-//            return Float.valueOf(strVal);
-//        } catch (NumberFormatException e) { }
-//        return new Float(0);
-//    }
-
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsStringDef(org.omnetpp.ned2.model.DisplayString.Prop)
 	 */
@@ -327,27 +317,12 @@ public class DisplayString implements IDisplayString {
         return getTagArgUsingDefs(property.getTag(), property.getPos());
     }
 
-    /* (non-Javadoc)
-	 * @see org.omnetpp.ned2.model.IDisplayString#getAsIntegerDef(org.omnetpp.ned2.model.DisplayString.Prop)
-	 */
-    public Integer getAsInt(Prop property) {
-        String strVal = getAsString(property);
-        // if tag not present at all
-        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal))
-        	return null;
-
-        try {
-            return Integer.valueOf(strVal);
-        } catch (NumberFormatException e) { }
-        return new Integer(0);
-    }
-
-    /* (non-Javadoc)
-	 * @see org.omnetpp.ned2.model.IDisplayString#getAsIntDef(org.omnetpp.ned2.model.DisplayString.Prop, int)
-	 */
     public int getAsInt(Prop propName, int defValue) {
-        Integer propValue = getAsInt(propName);
-        return propValue == null ? defValue : propValue.intValue();
+        try {
+            String propValue = getAsString(propName);
+            return propValue == null ? defValue : Integer.valueOf(propValue);
+        } catch (NumberFormatException e) { }
+        return defValue;
     }
 
 	public float getAsFloat(Prop propName, float defValue) {
@@ -396,18 +371,20 @@ public class DisplayString implements IDisplayString {
     }
 
     public Point getLocation(Float scale) {
-        Float x = getAsFloat(Prop.X, Integer.MIN_VALUE);
-        Float y = getAsFloat(Prop.Y, Integer.MIN_VALUE);
+        // return NaN to signal that the property is missing
+        Float x = getAsFloat(Prop.X, Float.NaN);
+        Float y = getAsFloat(Prop.Y, Float.NaN);
         // if it's unspecified in any direction we should return a NULL constraint
-        if (x.equals(Integer.MIN_VALUE) || y.equals(Integer.MIN_VALUE))
+        if (x.equals(Float.NaN) || y.equals(Float.NaN))
             return null;
 
         return new Point (unit2pixel(x, scale), unit2pixel(y, scale));
     }
 
     /**
-     * Sets the location properties (P tag). If NULL is given both location property is cleared.
-     * It fires property change notification for Prop.X
+     * Sets the location properties (P tag). If NULL is given both location property is cleared
+     * meaning the module is unpinned and can be freely moved by the layouter.
+     * It fires a single property change notification for Prop.X
      */
     public void setLocation(Point location, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
