@@ -9,6 +9,7 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
@@ -125,7 +126,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     	if (!(propObj instanceof DisplayString.Prop))
     		return;
 
-        // check if we requested the "sigle line" DISPLAY property
+        // check if we requested the "single line" DISPLAY property
         if (propObj == DisplayString.Prop.DISPLAY) {
         	displayString.set((String)value);
         	return;
@@ -146,7 +147,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     	if (!(prop instanceof DisplayString.Prop))
     		return;
 
-        // check if we requested the "sigle line" DISPLAY property, reset the whole display string
+        // check if we requested the "single line" DISPLAY property, reset the whole display string
         if (prop == DisplayString.Prop.DISPLAY) {
         	displayString.set(null);
         	return;
@@ -163,11 +164,10 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         // check if we requested the "single line" DISPLAY property
         if (prop == DisplayString.Prop.DISPLAY)
-            return !"".equals(displayString.toString());
+            return StringUtils.isNotEmpty(displayString.toString());
 
         // otherwise check a single attribute
-        String val = displayString.getAsStringLocal((DisplayString.Prop)prop);
-        return val != null && !DisplayString.TagInstance.EMPTY_VALUE.equals(val);
+        return StringUtils.isNotEmpty(displayString.getAsStringLocal((DisplayString.Prop)prop));
     }
 
     @Override
