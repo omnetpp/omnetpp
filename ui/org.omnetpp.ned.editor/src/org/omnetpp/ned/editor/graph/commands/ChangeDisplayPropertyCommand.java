@@ -27,7 +27,7 @@ public class ChangeDisplayPropertyCommand extends Command {
         this.element = element;
         this.property = prop;
         // store the old value for undo support
-        oldValue = element.getDisplayString().getAsString(property);
+        oldValue = element.getDisplayString().getAsStringLocal(property);
     }
 
     @Override

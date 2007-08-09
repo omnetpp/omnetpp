@@ -112,7 +112,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
         // otherwise look for a single tag/attribute
-        String tagVal = displayString.getAsString(prop);
+        String tagVal = displayString.getAsStringLocal(prop);
         // if the property does not exists yet, return default empty value
         if (tagVal == null)
             tagVal = DisplayString.TagInstance.EMPTY_VALUE;
@@ -166,7 +166,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
             return !"".equals(displayString.toString());
 
         // otherwise check a single attribute
-        String val = displayString.getAsString((DisplayString.Prop)prop);
+        String val = displayString.getAsStringLocal((DisplayString.Prop)prop);
         return val != null && !DisplayString.TagInstance.EMPTY_VALUE.equals(val);
     }
 

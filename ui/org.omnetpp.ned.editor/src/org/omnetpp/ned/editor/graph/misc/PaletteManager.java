@@ -115,7 +115,7 @@ public class PaletteManager implements INEDChangeListener {
             ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
             if (nedElement instanceof IHasDisplayString) {
                 IDisplayString dps = ((IHasDisplayString)nedElement).getEffectiveDisplayString();
-                String iid = dps.getAsStringDef(IDisplayString.Prop.IMAGE);
+                String iid = dps.getAsString(IDisplayString.Prop.IMAGE);
                 if (iid != null && !"".equals(iid)) {
                     imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
                     imageDescLarge = ImageFactory.getDescriptor(iid,"s",null,0);

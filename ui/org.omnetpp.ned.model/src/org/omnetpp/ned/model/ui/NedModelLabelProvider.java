@@ -122,7 +122,7 @@ public class NedModelLabelProvider extends LabelProvider {
         Image image = null;
         if (model instanceof IHasDisplayString) {
             DisplayString dps = ((IHasDisplayString) model).getEffectiveDisplayString();
-            image = ImageFactory.getIconImage(dps.getAsStringDef(IDisplayString.Prop.IMAGE));
+            image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
         }
 
         if (image != null)
