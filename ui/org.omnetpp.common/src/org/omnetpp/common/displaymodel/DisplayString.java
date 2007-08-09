@@ -303,51 +303,35 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * @param property
-     * @return Null if tag does not exist, TagInstance.EMPTY_VALUE if the value is empty or the property value itself
+     * The property value. NULL if tag does not exist, TagInstance.EMPTY_VALUE if the value
+     * is empty.
      */
-    public String getAsString(Prop property) {
+    public String getAsStringLocal(Prop property) {
         return getTagArg(property.getTag(), property.getPos());
     }
 
-    /**
-     * Returns the property value as an Integer
-     * @param property
-     * @return The value as Integer or 0 if value was empty or non number,
-     *  and <code>null</code> if the tag was not present at all
-     */
-    public Integer getAsInteger(Prop property) {
-        String strVal = getAsString(property);
-        // if tag not present at all
-        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
-        try {
-            return Integer.valueOf(strVal);
-        } catch (NumberFormatException e) { }
-        return new Integer(0);
-    }
-
-    public Float getAsFloat(Prop property) {
-        String strVal = getAsString(property);
-        // if tag not present at all
-        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
-        try {
-            return Float.valueOf(strVal);
-        } catch (NumberFormatException e) { }
-        return new Float(0);
-    }
+//    public Float getAsFloatLocal(Prop property) {
+//        String strVal = getAsStringLocal(property);
+//        // if tag not present at all
+//        if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
+//        try {
+//            return Float.valueOf(strVal);
+//        } catch (NumberFormatException e) { }
+//        return new Float(0);
+//    }
 
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsStringDef(org.omnetpp.ned2.model.DisplayString.Prop)
 	 */
-    public String getAsStringDef(Prop property) {
+    public String getAsString(Prop property) {
         return getTagArgUsingDefs(property.getTag(), property.getPos());
     }
 
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsIntegerDef(org.omnetpp.ned2.model.DisplayString.Prop)
 	 */
-    public Integer getAsIntegerDef(Prop property) {
-        String strVal = getAsStringDef(property);
+    public Integer getAsInt(Prop property) {
+        String strVal = getAsString(property);
         // if tag not present at all
         if (strVal == null || TagInstance.EMPTY_VALUE.equals(strVal))
         	return null;
@@ -361,17 +345,14 @@ public class DisplayString implements IDisplayString {
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsIntDef(org.omnetpp.ned2.model.DisplayString.Prop, int)
 	 */
-    public int getAsIntDef(Prop propName, int defValue) {
-        Integer propValue = getAsIntegerDef(propName);
+    public int getAsInt(Prop propName, int defValue) {
+        Integer propValue = getAsInt(propName);
         return propValue == null ? defValue : propValue.intValue();
     }
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.ned2.model.IDisplayString#getAsFloatDef(org.omnetpp.ned2.model.DisplayString.Prop, float)
-	 */
-	public float getAsFloatDef(Prop propName, float defValue) {
+	public float getAsFloat(Prop propName, float defValue) {
         try {
-            String propValue = getAsStringDef(propName);
+            String propValue = getAsString(propName);
             return propValue == null ? defValue : Float.valueOf(propValue);
         } catch (NumberFormatException e) { }
         return defValue;
@@ -381,17 +362,8 @@ public class DisplayString implements IDisplayString {
      * Sets the specified property to the given value in the display string
      */
     public void set(Prop property, String newValue) {
-        String oldValue = getAsString(property);
+        String oldValue = getAsStringLocal(property);
         setTagArg(property.getTag(), property.getPos(), newValue);
-        fireDisplayStringChanged(property, newValue, oldValue);
-    }
-
-    /**
-     * Sets the specified property to the given value in the display string
-     */
-    public void set(Prop property, int newValue) {
-        Integer oldValue = getAsInteger(property);
-        setTagArg(property.getTag(), property.getPos(), String.valueOf(newValue));
         fireDisplayStringChanged(property, newValue, oldValue);
     }
 
@@ -399,7 +371,7 @@ public class DisplayString implements IDisplayString {
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
 	 */
 	public float getScale() {
-		return getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
+		return getAsFloat(Prop.MODULE_SCALE, 1.0f);
 	}
 
     // helper functions for setting and getting the location and size properties
@@ -418,18 +390,16 @@ public class DisplayString implements IDisplayString {
 	}
 
     public int getRange(Float scale) {
-    	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f), scale);
+    	int range = unit2pixel(getAsFloat(DisplayString.Prop.RANGE, -1.0f), scale);
     	if (range <= 0) range = -1;
     	return range;
     }
 
     public Point getLocation(Float scale) {
-        // NOTE: we are intentionally not using fallback here. It does not make much sense to inherit the position
-        // from an ancestor module
-        Float x = getAsFloat(Prop.X);
-        Float y = getAsFloat(Prop.Y);
+        Float x = getAsFloat(Prop.X, Integer.MIN_VALUE);
+        Float y = getAsFloat(Prop.Y, Integer.MIN_VALUE);
         // if it's unspecified in any direction we should return a NULL constraint
-        if (x == null || y == null)
+        if (x.equals(Integer.MIN_VALUE) || y.equals(Integer.MIN_VALUE))
             return null;
 
         return new Point (unit2pixel(x, scale), unit2pixel(y, scale));
@@ -462,9 +432,9 @@ public class DisplayString implements IDisplayString {
     }
 
     public Dimension getSize(Float scale) {
-    	int width = unit2pixel(getAsFloatDef(Prop.WIDTH, -1.0f), scale);
+    	int width = unit2pixel(getAsFloat(Prop.WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
-        int height = unit2pixel(getAsFloatDef(Prop.HEIGHT, -1.0f), scale);
+        int height = unit2pixel(getAsFloat(Prop.HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1;
         return new Dimension(width, height);
     }
@@ -499,9 +469,9 @@ public class DisplayString implements IDisplayString {
     }
 
     public Dimension getCompoundSize(Float scale) {
-    	int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f), scale);
+    	int width = unit2pixel(getAsFloat(Prop.MODULE_WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
-        int height = unit2pixel(getAsFloatDef(Prop.MODULE_HEIGHT, -1.0f), scale);
+        int height = unit2pixel(getAsFloat(Prop.MODULE_HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1;
 
         return new Dimension(width, height);

@@ -36,21 +36,21 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
 	public void setDisplayString(IDisplayString dps) {
 
         // shape support
-        String imgSize = dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE);
+        String imgSize = dps.getAsString(IDisplayString.Prop.IMAGESIZE);
         Image img = ImageFactory.getImage(
-        		dps.getAsStringDef(IDisplayString.Prop.IMAGE),
+        		dps.getAsString(IDisplayString.Prop.IMAGE),
         		imgSize,
-        		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
+        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
+        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPCT,0));
 
         // set the figure properties
         setShape(img,
-        		dps.getAsStringDef(IDisplayString.Prop.SHAPE),
+        		dps.getAsString(IDisplayString.Prop.SHAPE),
         		dps.getSize(null).width,
         		dps.getSize(null).height,
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
+        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
         invalidate();
 	}

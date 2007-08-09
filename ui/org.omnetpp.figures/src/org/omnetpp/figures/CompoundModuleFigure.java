@@ -305,43 +305,43 @@ public class CompoundModuleFigure extends ModuleFigure
 		// setup the figure's properties
         // set the icon showing the default representation in the titlebar
         Image img = ImageFactory.getImage(
-        		dps.getAsStringDef(IDisplayString.Prop.IMAGE),
-        		dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE),
-        		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
+        		dps.getAsString(IDisplayString.Prop.IMAGE),
+        		dps.getAsString(IDisplayString.Prop.IMAGESIZE),
+        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
+        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPCT,0));
         setDefaultShape(img,
-        		dps.getAsStringDef(IDisplayString.Prop.SHAPE),
-        		dps.getAsIntDef(IDisplayString.Prop.WIDTH, -1),
-        		dps.getAsIntDef(IDisplayString.Prop.HEIGHT, -1),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
+        		dps.getAsString(IDisplayString.Prop.SHAPE),
+        		dps.getAsInt(IDisplayString.Prop.WIDTH, -1),
+        		dps.getAsInt(IDisplayString.Prop.HEIGHT, -1),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
+        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
         // background color / image
         Image imgback = ImageFactory.getImage(
-        		dps.getAsStringDef(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
+        		dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
 
         // decode the image arrangement
-        String imageArrangementStr = dps.getAsStringDef(IDisplayString.Prop.MODULE_IMAGEARRANGEMENT);
+        String imageArrangementStr = dps.getAsString(IDisplayString.Prop.MODULE_IMAGEARRANGEMENT);
 
         // set the background
         setBackground(
         		imgback,
         		imageArrangementStr,
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_FILLCOL)),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_BORDERCOL)),
-        		dps.getAsIntDef(IDisplayString.Prop.MODULE_BORDERWIDTH, -1));
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_FILLCOL)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDERCOL)),
+        		dps.getAsInt(IDisplayString.Prop.MODULE_BORDERWIDTH, -1));
 
         // scaling support
         setScale(
-                dps.getAsFloatDef(IDisplayString.Prop.MODULE_SCALE, 1),
-                dps.getAsStringDef(IDisplayString.Prop.MODULE_UNIT));
+                dps.getAsFloat(IDisplayString.Prop.MODULE_SCALE, 1),
+                dps.getAsString(IDisplayString.Prop.MODULE_UNIT));
 
         // grid support
         setGrid(
-        		dps.unit2pixel(dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKDISTANCE, -1), null),
-        		dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKNUMBER, -1),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_GRIDCOL)));
+        		dps.unit2pixel(dps.getAsInt(IDisplayString.Prop.MODULE_TICKDISTANCE, -1), null),
+        		dps.getAsInt(IDisplayString.Prop.MODULE_TICKNUMBER, -1),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRIDCOL)));
 
         // finally set the location and size using the models helper methods
         // if the size is specified in the display string we should set it as preferred size
@@ -350,7 +350,7 @@ public class CompoundModuleFigure extends ModuleFigure
         // can affect the size of bounding box
         Dimension newSize = dps.getCompoundSize(null);
 
-        long seed = dps.getAsIntDef(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
+        long seed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
         if (seed != layouter.getSeed()) {
             layouter.setSeed(seed);

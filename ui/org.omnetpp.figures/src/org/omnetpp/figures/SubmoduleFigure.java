@@ -347,27 +347,27 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
 		// range support
         setRange(
         		dps.getRange(getScale()),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEFILLCOL)),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEBORDERCOL)),
-        		dps.getAsIntDef(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
+        		dps.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
         // tooltip support
-        setTooltipText(dps.getAsStringDef(IDisplayString.Prop.TOOLTIP));
+        setTooltipText(dps.getAsString(IDisplayString.Prop.TOOLTIP));
 
         // queue length support
-        setQueueText(dps.getAsStringDef(IDisplayString.Prop.QUEUE));
+        setQueueText(dps.getAsString(IDisplayString.Prop.QUEUE));
 
         // additional text support
-        setInfoText(dps.getAsStringDef(IDisplayString.Prop.TEXT),
-        		dps.getAsStringDef(IDisplayString.Prop.TEXTPOS),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.TEXTCOLOR)));
+        setInfoText(dps.getAsString(IDisplayString.Prop.TEXT),
+        		dps.getAsString(IDisplayString.Prop.TEXTPOS),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.TEXTCOLOR)));
 
         // shape support
-        String imgSize = dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE);
+        String imgSize = dps.getAsString(IDisplayString.Prop.IMAGESIZE);
         Image img = ImageFactory.getImage(
-        		dps.getAsStringDef(IDisplayString.Prop.IMAGE),
+        		dps.getAsString(IDisplayString.Prop.IMAGE),
         		imgSize,
-        		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
+        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
+        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPCT,0));
 
         // rectangle ("b" tag)
         Dimension size = dps.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
@@ -381,23 +381,23 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         if (widthExist && !heightExist)
             size.height = -1;
 
-        String shape = dps.getAsStringDef(IDisplayString.Prop.SHAPE);
+        String shape = dps.getAsString(IDisplayString.Prop.SHAPE);
         if (!dps.containsTag(IDisplayString.Tag.b))
         	shape = "";
         setShape(img, shape,
                 size.width,
                 size.height,
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
+        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
         // set the decoration image properties
         setImageDecoration(
         		        ImageFactory.getImage(
-        				dps.getAsStringDef(IDisplayString.Prop.OVIMAGE),
+        				dps.getAsString(IDisplayString.Prop.OVIMAGE),
         				null,
-        				ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.OVIMAGECOLOR)),
-        				dps.getAsIntDef(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
+        				ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
+        				dps.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
 
         invalidate();
 	}

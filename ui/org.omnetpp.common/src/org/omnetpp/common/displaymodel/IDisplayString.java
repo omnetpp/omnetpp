@@ -176,7 +176,7 @@ public interface IDisplayString {
         }
 
         public String getVisibleDesc() {
-            String defaultValue = getTag() != null ? DisplayString.EMPTY_DEFAULTS.getAsString(this) : null;
+            String defaultValue = getTag() != null ? DisplayString.EMPTY_DEFAULTS.getAsStringLocal(this) : null;
             return visibleDesc + (StringUtils.isNotEmpty(defaultValue) ? " Default: "+defaultValue : "");
         }
     }
@@ -198,25 +198,25 @@ public interface IDisplayString {
      * The value of the property. If the property is empty looks for default values and fallback
      * values in ancestor types. If nothing found, returns <code>NULL</code>.
      */
-	public String getAsStringDef(Prop property);
+	public String getAsString(Prop property);
 
     /**
      * The value of the property. If the property is empty looks for default values and fallback
      * values in ancestor types. If nothing found, returns <code>NULL</code>.
      */
-	public Integer getAsIntegerDef(Prop property);
+	public Integer getAsInt(Prop property);
 
     /**
      * The value of the property. If the property is empty looks for default values and fallback
      * values in ancestor types. If nothing found, returns <code>defValue</code>.
      */
-	public int getAsIntDef(Prop propName, int defValue);
+	public int getAsInt(Prop propName, int defValue);
 
 	/**
 	 * The value of the property. If the property is empty looks for default values and fallback
 	 * values in ancestor types. If nothing found, returns <code>defValue</code>.
 	 */
-	public float getAsFloatDef(Prop propName, float defValue);
+	public float getAsFloat(Prop propName, float defValue);
 
 	/**
 	 * The scaling to be applied on the element. Uses fallback if not specified locally.
