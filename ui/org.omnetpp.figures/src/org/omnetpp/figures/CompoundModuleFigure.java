@@ -354,7 +354,6 @@ public class CompoundModuleFigure extends ModuleFigure
         // if the seed changed we explicitly have to force a re-layout
         if (seed != layouter.getSeed()) {
             layouter.setSeed(seed);
-            // layouter.executeAutoLayout();
             layouter.requestAutoLayout();
         }
 

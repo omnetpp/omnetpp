@@ -6,9 +6,9 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+
 import org.omnetpp.figures.CompoundModuleFigure;
 
 
@@ -105,7 +105,6 @@ public class SpringEmbedderLayout extends XYLayout {
      */
     @Override
     public void layout(IFigure parent) {
-        System.out.println("layout()");
         AbstractGraphLayoutAlgorithm alg = null;
         // find the place of movable nodes if auto-layout requested
         if (requestAutoLayout) {
@@ -118,35 +117,26 @@ public class SpringEmbedderLayout extends XYLayout {
     	// lay out the children according to the auto-layouter
         Point offset = getOrigin(parent);
         for (IFigure f : (List<IFigure>)parent.getChildren()) {
-            Rectangle bounds = new Rectangle();
-            // get the computed location from the auto-layout algorithm (if any)
+            Rectangle oldBounds = f.getBounds().getCopy();
+            Rectangle constr = ((Rectangle)getConstraint(f)).getCopy();
+            boolean isUnpinned = constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE;
+            // first set the size of the figure from the provided constraint object
+            f.setSize(constr.getSize());
+
+            // calculate the new location
+            Rectangle newBounds = f.getBounds().getCopy();
+            // get the computed location from the auto-layout algorithm (if there is an algorithm at all)
             Point loc = alg != null ? alg.getNodePosition(f) : null;
-            // if the algorithm does not have info about this figure or the figure is fixed
-            // (use the figure's location)
-            bounds = ((Rectangle)getConstraint(f)).getCopy();
-            if (loc != null) {
-                // get the position from the algorithm (the size is still coming from the constraint)
-                bounds.setLocation(loc);
-            }
+            // set the location (if algorithm has calculated, get if from the algorithm
+            // if the alg. was not and the module is pinned, simply use the coord from the constraint
+            // if the module was unpinned, use the original bounds center (ie, keep the figuire's center
+            // while changing its size
+            newBounds.setLocation(loc != null ? loc : isUnpinned ? oldBounds.getCenter() : constr.getLocation());
 
-            // if no info is coming from the algorithm or from the layout manager just skip it
-            // do not change the location
-            if (bounds == null || bounds.x == Integer.MIN_VALUE || bounds.y == Integer.MIN_VALUE)
-                continue;
-
-            //FIXME is this "-1" stuff needed?
-            if (bounds.width == -1 || bounds.height == -1) {
-                Dimension preferredSize = f.getPreferredSize(bounds.width, bounds.height);
-                bounds = bounds.getCopy();
-                if (bounds.width == -1)
-                    bounds.width = preferredSize.width;
-                if (bounds.height == -1)
-                    bounds.height = preferredSize.height;
-            }
-            bounds = bounds.getTranslated(offset);
+            newBounds.translate(offset);
             // translate to the middle of the figure
-            bounds.translate(-bounds.width / 2, -bounds.height / 2);
-            f.setBounds(bounds);
+            newBounds.translate(-newBounds.width / 2, -newBounds.height / 2);
+            f.setBounds(newBounds);
         }
     }
 

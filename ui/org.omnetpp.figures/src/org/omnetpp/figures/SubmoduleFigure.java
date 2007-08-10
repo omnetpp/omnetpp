@@ -319,7 +319,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
      * Sets the external image decoration (for pins)
      * @param img
      */
-    public void setImageDecoration(Image img) {
+    protected void setImageDecoration(Image img) {
         if (img != decoratorImageFigure.getImage())
             decoratorImageFigure.setImage(img);
 
@@ -466,5 +466,15 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
      */
     public void setErrorDecoration(boolean markError) {
         // nameFigure.setForegroundColor(markError ? ColorFactory.RED : null);
+    }
+
+    /**
+     * Draws a pin on the module to show whether it can be freely movable
+     */
+    public void setPinDecoration(boolean pinned) {
+        // TODO implement a better image which does not hide the secondary icon decoration
+        // this must be called after setDisplayString
+        if (pinned)
+            setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
     }
 }
