@@ -48,12 +48,11 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         super.createEditPolicies();
         installEditPolicy(EditPolicy.LAYOUT_ROLE,
                           new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane().getLayoutManager()));
-        installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); 
+        installEditPolicy("Snap Feedback", new SnapFeedbackPolicy());
     }
 
     /**
-     * Creates a new Module Figure and returns it.
-     * @return Figure representing the module.
+     * Creates and returns a new module figure
      */
     @Override
     protected IFigure createFigure() {
@@ -63,8 +62,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     /**
-     * Returns the Figure of this as a ModuleFigure.
-     * @return ModuleFigure of this.
+     * Convenience method to return the figure object with the correct type
      */
     protected CompoundModuleFigure getCompoundModuleFigure() {
         return (CompoundModuleFigure) getFigure();
@@ -114,8 +112,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the srcModule.
-     *
-     * @return List of connections.
      */
     @Override
     protected List<ConnectionNodeEx> getModelSourceConnections() {
@@ -124,8 +120,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the destModule.
-     *
-     * @return List of connections.
      */
     @Override
     protected List<ConnectionNodeEx> getModelTargetConnections() {
@@ -147,9 +141,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	/**
 	 * Returns whether the compound module is selectable (mouse is over the bordering area)
 	 * for the selection tool based on the current mouse target coordinates.
-	 * @param x
-	 * @param y
-	 * @return
 	 */
 	public boolean isOnBorder(int x, int y) {
 		return getCompoundModuleFigure().isOnBorder(x, y);
@@ -168,8 +159,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
 	/**
 	 * Returns a connection anchor registered for the given gate
-	 * @param gate
-	 * @return
 	 */
 	@Override
     public GateAnchor getConnectionAnchor(String gate) {

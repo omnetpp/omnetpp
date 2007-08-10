@@ -15,12 +15,13 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 public class NedSelectionSynchronizer extends SelectionSynchronizer {
 
     /**
-     * Maps the given editpart from one viewer to an editpart in another viewer. It returns
-     * <code>null</code> if there is no corresponding part. Travels along the ancestestors toward
-     * the root and returns the first matching ancestor
+     * Maps the given editpart from one viewer to an editpart in another viewer.
+     * It returns null if there is no corresponding part. Travels along the ancestors
+     * towards root, and returns the first matching ancestor.
+     *
      * @param viewer the viewer being mapped to
      * @param part a part from another viewer
-     * @return <code>null</code> or a corresponding editpart
+     * @return <code>null</code>, or a corresponding editpart
      */
     @Override
     protected EditPart convert(EditPartViewer viewer, EditPart part) {

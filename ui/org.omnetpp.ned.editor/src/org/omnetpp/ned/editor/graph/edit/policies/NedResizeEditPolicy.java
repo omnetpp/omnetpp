@@ -22,9 +22,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
 
 
     /**
-     * Creates the figure used for feedback.
-     *
-     * @return the new feedback figure
+     * Creates and returns the figure used for feedback.
      */
     @Override
     protected IFigure createDragSourceFeedbackFigure() {
@@ -66,8 +64,6 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
 
     /**
      * Returns the layer used for displaying feedback.
-     *
-     * @return the feedback layer
      */
     @Override
     protected IFigure getFeedbackLayer() {

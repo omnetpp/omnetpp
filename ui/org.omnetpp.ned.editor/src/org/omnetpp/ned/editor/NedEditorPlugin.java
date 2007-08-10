@@ -47,8 +47,6 @@ public class NedEditorPlugin extends AbstractUIPlugin {
 
     /**
      * Returns the shared instance
-     *
-     * @return the shared instance
      */
     public static NedEditorPlugin getDefault() {
         return plugin;
@@ -56,10 +54,7 @@ public class NedEditorPlugin extends AbstractUIPlugin {
 
     /**
      * Returns an image descriptor for the image file at the given
-     * plug-in relative path
-     *
-     * @param path the path
-     * @return the image descriptor
+     * plug-in relative path.
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(PLUGIN_ID, path);

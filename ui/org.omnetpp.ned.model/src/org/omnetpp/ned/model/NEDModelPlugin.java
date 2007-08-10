@@ -10,8 +10,8 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class NEDModelPlugin extends AbstractUIPlugin {
-    public static String PLUGIN_ID; 
-    
+    public static String PLUGIN_ID;
+
 	//The shared instance.
 	private static NEDModelPlugin plugin;
 
@@ -45,13 +45,11 @@ public class NEDModelPlugin extends AbstractUIPlugin {
 
 	/**
 	 * Returns the shared instance.
-	 *
-	 * @return the shared instance.
 	 */
 	public static NEDModelPlugin getDefault() {
 		return plugin;
 	}
-    
+
     public static void log(Exception e) {
         IStatus status = new Status(Status.ERROR, PLUGIN_ID, 1, e.getMessage(), e);
         getDefault().getLog().log(status);

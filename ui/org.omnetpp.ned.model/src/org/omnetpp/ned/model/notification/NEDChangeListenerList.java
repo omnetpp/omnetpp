@@ -50,17 +50,15 @@ public class NEDChangeListenerList {
 	}
 
     /**
-     * Check whether change notification is enabled
-     * @return
+     * Returns whether change notifications are enabled
      */
     public boolean isEnabled() {
         return enabled;
     }
 
     /**
-     * Enable or disable change notification
-     * @param notifyEnabled The new state requested.
-     * @return The original notification state before the call.
+     * Enable or disable change notifications; returns the original notification
+     * state before the call.
      */
     public boolean setEnabled(boolean notifyEnabled) {
         boolean oldState = this.enabled;
@@ -69,8 +67,8 @@ public class NEDChangeListenerList {
     }
 
     /**
-     * Fires a model change event to all listeners if event sending is enabled
-     * @param event
+     * If change notifications are enabled, fires a model change event
+     * to all listeners; otherwise it does nothing.
      */
     public void fireModelChanged(NEDModelEvent event) {
         if (enabled)

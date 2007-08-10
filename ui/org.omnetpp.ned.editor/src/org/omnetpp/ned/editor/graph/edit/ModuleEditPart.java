@@ -34,8 +34,6 @@ abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPar
 
 	/**
 	 * Returns a connection anchor registered for the given gate
-	 * @param gate
-	 * @return
 	 */
 	public abstract GateAnchor getConnectionAnchor(String gate);
 
@@ -65,18 +63,17 @@ abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPar
     public abstract float getScale();
 
     /**
-     * Returns the compound module itself or the compound module controller
-     *  which contains this controller
+     * Returns the compound module itself, or the compound module editpart
+     * which contains this editpart
      */
     public abstract CompoundModuleEditPart getCompoundModulePart();
 
-    /* (non-Javadoc)
-     * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createOrFindConnection(java.lang.Object)
-     * We must override this method, because the original implementation has a global (per viewer) MAP
+    /**
+     * Reimplemented because the original implementation has a global (per viewer) MAP
      * to store MODEL - PART associations. This is a problem if we want to display a compound module which
      * inherits some submodules and connections from an other one (that is also displayed in this viewer)
      * In those case the original implementation would not create a new PART for the connection in the
-     * derived module but would return the controller from the base module (which is of course wrong)
+     * derived module but would return the editpart from the base module (which is of course wrong)
      * and leads to very strange bugs.
      */
     @Override

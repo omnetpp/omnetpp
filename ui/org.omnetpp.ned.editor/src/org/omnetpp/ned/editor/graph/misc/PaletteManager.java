@@ -82,9 +82,8 @@ public class PaletteManager implements INEDChangeListener {
     }
 
     /**
-     * creates several submodule drawers using currently parsed types
-     * and using the GROUP property as the drawer name
-     * @return
+     * Creates several submodule drawers using currently parsed types,
+     * and using the GROUP property as the drawer name.
      */
     static private List<PaletteContainer> createSubmodulesDrawer() {
         String defaultGroupName = "Submodules";
@@ -187,8 +186,6 @@ public class PaletteManager implements INEDChangeListener {
 
     /**
      * Builds a drawer containing basic tools like selection connection etc.
-     * @param root
-     * @return
      */
     static private PaletteContainer createToolsDrawer(PaletteRoot root) {
         PaletteGroup controlGroup = new PaletteGroup("Tools");
@@ -211,7 +208,6 @@ public class PaletteManager implements INEDChangeListener {
     /**
      * Builds a drawer containing base NED components without specifying types like
      * simple and compound modules
-     * @return
      */
     static private PaletteContainer createComponentsDrawer() {
 

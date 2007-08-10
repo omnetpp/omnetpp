@@ -44,7 +44,7 @@ import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 public class TextualNedEditor extends TextEditor {
 
 	private static TemplateStore fStore;
-    private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; 
+    private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
     /** The context type registry. */
     private static ContributionContextTypeRegistry fRegistry;
 
@@ -60,10 +60,9 @@ public class TextualNedEditor extends TextEditor {
 	public TextualNedEditor() {
 		super();
 	}
+
     /**
      * Returns this plug-in's template store.
-     *
-     * @return the template store of this plug-in instance
      */
     public static TemplateStore getTemplateStore() {
         if (fStore == null) {
@@ -80,8 +79,6 @@ public class TextualNedEditor extends TextEditor {
 
     /**
      * Returns this plug-in's context type registry.
-     *
-     * @return the context type registry for this plug-in instance
      */
     public static ContextTypeRegistry getContextTypeRegistry() {
         if (fRegistry == null) {
@@ -100,15 +97,15 @@ public class TextualNedEditor extends TextEditor {
     protected void createActions() {
 		super.createActions();
 
-		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); 
+		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", a); 
+		setAction("ContentAssistProposal", a);
 
-		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); 
-		setAction("DefineFoldingRegion", a); 
+		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this);
+		setAction("DefineFoldingRegion", a);
 
-        a= new ConvertToNewFormatAction(NedEditorMessages.getResourceBundle(), "ConvertToNewFormat.", this); 
-        setAction("ConvertToNewFormat", a); 
+        a= new ConvertToNewFormatAction(NedEditorMessages.getResourceBundle(), "ConvertToNewFormat.", this);
+        setAction("ConvertToNewFormat", a);
 	}
 
 	/** The <code>TextualNedEditor</code> implementation of this
@@ -202,12 +199,13 @@ public class TextualNedEditor extends TextEditor {
 	@Override
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); 
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal"); 
-		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");  
+		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat");
+		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal");
+		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");
 	}
 
-	/** The <code>TextualNedEditor</code> implementation of this
+	/**
+	 * The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method performs gets
 	 * the ned content outline page if request is for a an
 	 * outline page.
@@ -268,8 +266,8 @@ public class TextualNedEditor extends TextEditor {
 		super.createPartControl(parent);
 		ProjectionViewer viewer= (ProjectionViewer) getSourceViewer();
 		fProjectionSupport= new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); 
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); 
+		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error");
+		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning");
 		fProjectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
         // we should set the selection provider as late as possible because the outer multipage esitor overrides it

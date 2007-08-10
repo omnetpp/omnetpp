@@ -31,12 +31,14 @@ public class ConnectionChooser {
     // only one side of the connection should be selected
     // TODO show which gates are already connected (do not offer those gates)
     /**
-     * This method ask the user which gates should be connected on the source and destination module
+     * This method asks the user which gates should be connected on the source and
+     * destination module.
+     *
      * @param srcModule the source module we are connecting to, should not be NULL
      * @param srcGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
      * @param destModule the destination module we are connecting to, should not be NULL
      * @param destGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
-     * @return
+     * @return TODO what does it return?
      */
     public static ConnectionNode open(ConnectionCommand connCommand) {
         Assert.isNotNull(connCommand.getSrcModule());
@@ -219,11 +221,8 @@ public class ConnectionChooser {
     }
 
     /**
-     * @param connCommand
-     * @param conn
-     * @param srcGate
-     * @param destGate
-     * @return Whether the connection is valid (ie those gates we want to connect are unconneted currently)
+     * Returns whether the connection is valid, that is, the gates we want to connect
+     * are unconnected currently)
      */
     private static boolean isConnectionValid(ConnectionCommand connCommand, ConnectionNode conn, GateNode srcGate, GateNode destGate) {
         CompoundModuleNodeEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();

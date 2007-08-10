@@ -33,8 +33,6 @@ public class TooltipFigure extends FlowPage {
 
     /**
      * Returns the text inside the TextFlow.
-     *
-     * @return the text flow inside the text.
      */
     public String getText() {
         return textFlow.getText();

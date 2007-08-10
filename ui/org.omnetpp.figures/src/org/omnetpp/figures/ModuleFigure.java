@@ -9,23 +9,22 @@ import org.omnetpp.common.displaymodel.IDisplayString;
  * @author rhornig
  */
 abstract public class ModuleFigure extends Figure {
-    protected String figureName = ""; 
+    protected String figureName = "";
 	protected IDisplayString lastDisplayString;
 
     /**
      * Returns the most recently set display sting
-     * @return
      */
     public IDisplayString getLastDisplayString() {
     	return lastDisplayString;
     }
-    
+
     /**
      * Stores the display string, and updates the figure accordingly.
      * @param dps
      */
     abstract public void setDisplayString(IDisplayString dps);
-    
+
     /**
      * temporary debug function to display figure hierarchy
      * @param f

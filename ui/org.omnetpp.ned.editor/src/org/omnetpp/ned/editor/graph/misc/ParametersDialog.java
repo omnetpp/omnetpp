@@ -253,10 +253,10 @@ public class ParametersDialog extends TitleAreaDialog {
     }
 
     /**
-     * @param paramNode
-     * @return The right comment of the parameter
+     * Returns the comment of the parameter; the "right-comment" is used.
      */
-    protected static String getComment(ParamNodeEx paramNode) { CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+    protected static String getComment(ParamNodeEx paramNode) {
+        CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
         return cn == null ? "" : cn.getContent().trim();
     }
 

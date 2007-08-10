@@ -115,11 +115,8 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	}
 
 	/**
-	 * Gets the constraint for the given {@link Connection}.  The constraint is the paths
+	 * Returns the constraint for the given Connection. The constraint is the paths
 	 * list of bend points for this connection.
-	 *
-	 * @param connection The connection whose constraint we are retrieving
-	 * @return The constraint
 	 */
 	public Object getConstraint(Connection connection) {
 		return constraintMap.get(connection);
@@ -128,8 +125,6 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	/**
 	 * Returns the default spacing maintained on either side of a connection. The default
 	 * value is 4.
-	 * @return the connection spacing
-	 * @since 3.2
 	 */
 	public int getSpacing() {
 		return algorithm.getSpacing();

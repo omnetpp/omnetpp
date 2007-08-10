@@ -131,8 +131,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         }
 
         /**
-         * @param name
-         * @return The section with a given name (if not present in the map, adds it)
+         * Returns the section with a given name (if not present in the map, adds it)
          */
         private Section getSectionForName(String name) {
             Section currSection = result.get(name);
@@ -619,7 +618,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     /**
-     * Returns the selected ini files or (omnetpp.ini) if the inifile text line 
+     * Returns the selected ini files or (omnetpp.ini) if the inifile text line
      * is empty. Returns null on error.
      */
     private IFile[] getIniFiles() {
@@ -641,8 +640,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     /**
-     * @param inifiles
-     * @return All the configuration names found in the supplied inifiles
+     * Returns all the configuration names found in the supplied inifiles
      */
     private String [] getConfigNames(IFile[] inifiles) {
         Map<String,ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<String, ConfigEnumeratorCallback.Section>();

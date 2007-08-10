@@ -50,7 +50,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 	}
 
 	/**
-	 * Calculates and returns the Insets for this border.
+	 * Calculates and returns the insets for this border.
 	 *
 	 * @param figure the figure on which Insets calculations are based
 	 * @return the calculated Insets
@@ -70,7 +70,6 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 
 	/**
 	 * Returns the background Color of this TitleBarBorder.
-	 * @return the background color
 	 */
 	protected Color getBackgroundColor() {
 		return fillColor;

@@ -92,15 +92,16 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * It stores its own model as an INEDModel tree, no dependencies from the embedding multi page editor
  * or the sibling text editor allowed. On editor load the provided editorInput (IFile) is used to lookup
  * the NEDResources plugin for the model.
+ *
  * @author rhornig
  */
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
     public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
+
     /**
      * Outline viewer for graphical ned editor
-     * @author rhornig
      */
     class NedOutlinePage extends ContentOutlinePage {
         public NedOutlinePage(EditPartViewer viewer) {
@@ -150,7 +151,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     /**
      * Ned Property sheet page for the graphical ned editor
-     * @author rhornig
      */
     public class NedPropertySheetPage extends PropertySheetPage {
 
@@ -183,11 +183,12 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             getCellEditorActionHandler().setRedoAction(getActionRegistry().getAction(ActionFactory.REDO.getId()));
         }
 
-
-        // BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=185081
         /**
-         * In eclipse no accessor for the private field so it is not possible to override
+         * In Eclipse, there is no accessor for the private field so it is not possible to override
          * the setActionBars method. Once it is fixed remove this method.
+         *
+         * See BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=185081
+         *
          * @return The private cell editor handler, so it is possible to override set action bars.
          */
         private CellEditorActionHandler getCellEditorActionHandler() {
@@ -196,7 +197,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     }
 
-    // ===== MAIN GRAPHIC NED EDITOR ==================================================
     private KeyHandler sharedKeyHandler;
     private PaletteManager paletteManager;
     private NedOutlinePage outlinePage;
@@ -204,8 +204,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     private boolean editorSaving = false;
     private NedFileNodeEx nedFileModel;
     private SelectionSynchronizer synchronizer;
+
     // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
+
 
     public GraphicalNedEditor() {
         setEditDomain(new DefaultEditDomain(this));

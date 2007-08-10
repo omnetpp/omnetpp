@@ -573,16 +573,14 @@ public abstract class NEDElement extends PlatformObject
         if (parent != null)
             parent.appendChild(cloned);
 
-        for (int i = 0; i< getNumAttributes(); ++i) {
+        for (int i = 0; i < getNumAttributes(); ++i)
         	cloned.setAttribute(i, getAttribute(i));
-        }
 
         return cloned;
     }
 
     /**
-     * Creates a deep copy of the tree, optionally providing the new node's parent too
-     * @return
+     * Creates and returns a deep copy of the tree, optionally providing the new node's parent too.
      */
     public INEDElement deepDup(INEDElement parent) {
         INEDElement result = dup(parent);

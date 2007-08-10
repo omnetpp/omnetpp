@@ -15,10 +15,9 @@ public interface INEDTypeResolver {
     /**
      * Interface for filtering methods like getAllComponentNamesFilteredBy().
      */
-    interface IFilter {
+    interface IPredicate {
         /**
-         * @param component
-         * @return True if it shuld be included in the resuting collection
+         * Returns true if the component should be included in the resulting collection
          */
         boolean filter(INEDTypeInfo component);
     };
@@ -86,9 +85,9 @@ public interface INEDTypeResolver {
 	public Collection<INEDTypeInfo> getAllComponents();
 
     /**
-     * Returns all components in the NED files after applying the filter
+     * Returns the components in the NED files that are matched by the predicate
      */
-    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IFilter filter);
+    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate predicate);
 
 	/**
 	 * Returns all simple and compound modules in the NED files.
@@ -116,14 +115,14 @@ public interface INEDTypeResolver {
 	public Collection<INEDTypeInfo> getChannelInterfaces();
 
     /**
-     * Returns all VALID component name in the NED files.
+     * Returns all VALID component names in the NED files.
      */
     public Set<String> getAllComponentNames();
 
     /**
-     * Returns all VALID component name in the NED files after filtered by the filter
+     * Returns all VALID component names in the NED files where the predicate matches
      */
-    public Set<String> getAllComponentNamesFilteredBy(IFilter filter);
+    public Set<String> getAllComponentNamesFilteredBy(IPredicate predicate);
 
     /**
      * Returns ALL names reserved (used) in the NED files (including duplicates)

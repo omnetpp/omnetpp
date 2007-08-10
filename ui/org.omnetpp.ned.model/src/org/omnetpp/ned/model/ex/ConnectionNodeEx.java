@@ -178,7 +178,6 @@ public final class ConnectionNodeEx extends ConnectionNode
 
     /**
      * Checks if the current connection is valid (has valid submodules at both end)
-     * @return
      */
     public boolean isValid() {
         return getSrcModuleRef() != null && getDestModuleRef() != null;

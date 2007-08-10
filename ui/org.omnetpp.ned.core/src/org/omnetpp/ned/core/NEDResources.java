@@ -56,17 +56,17 @@ import org.omnetpp.ned.model.pojo.*;
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // filters for component access with getAllComponentsFilteredBy
-    public static final IFilter SIMPLE_MODULE_FILTER = new IFilter() {
+    public static final IPredicate SIMPLE_MODULE_FILTER = new IPredicate() {
         public boolean filter(INEDTypeInfo component) {
             return component.getNEDElement() instanceof SimpleModuleNode;
         }
     };
-    public static final IFilter COMPOUND_MODULE_FILTER = new IFilter() {
+    public static final IPredicate COMPOUND_MODULE_FILTER = new IPredicate() {
         public boolean filter(INEDTypeInfo component) {
             return component.getNEDElement() instanceof CompoundModuleNode;
         }
     };
-    public static final IFilter NETWORK_FILTER = new IFilter() {
+    public static final IPredicate NETWORK_FILTER = new IPredicate() {
         public boolean filter(INEDTypeInfo component) {
             return component.getNEDElement() instanceof CompoundModuleNodeEx &&
                    ((CompoundModuleNodeEx)component.getNEDElement()).getIsNetwork();
@@ -196,8 +196,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * NED editors should call this when editor content changes.
-     * NOTE: if the provided tree would result the same NED code as the
-     * current model the model WILL NOT BE CHANGED, and the old tree will be kept
+     *
+     * NOTE: If the provided tree would result the same NED code as the
+     * current model, the model will NOT be changed (the old tree
+     * will be kept).
      */
     public synchronized void setNEDFileModel(IFile file, INEDElement tree) {
         if (tree == null)
@@ -209,8 +211,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * @param file The NED file content we are interested in
-     * @return The textual (reformatted) content of the ned file (generated from the model)
+     * Returns the textual (reformatted) content of the NED file, generated
+     * from the model that belongs to the given file.
      */
     public synchronized String getNEDFileText(IFile file) {
         return NEDTreeUtil.generateNedSource(getNEDFileModel(file), true);
@@ -280,7 +282,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return components.values();
     }
 
-    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IFilter f) {
+    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate f) {
         List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
         for (INEDTypeInfo comp : getAllComponents())
             if (f.filter(comp))
@@ -288,7 +290,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return result;
     }
 
-    public Set<String> getAllComponentNamesFilteredBy(IFilter f) {
+    public Set<String> getAllComponentNamesFilteredBy(IPredicate f) {
         Set<String> result = new HashSet<String>();
         for (INEDTypeInfo comp : getAllComponents())
             if (f.filter(comp))
@@ -697,9 +699,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * @param event
-     * @return Whether the inheritance chain has changed somewhere
-     * (name, extends, adding and removing top level nodes)
+     * Returns whether the inheritance chain has changed somewhere
+     * (name, extends, adding and removing top level nodes).
      */
     protected static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
@@ -728,8 +729,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * @param event
-     * @return Whether the display string has changed in the event
+     * Returns whether the display string has changed in the event.
      */
     protected static boolean displayMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
@@ -739,8 +739,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return false;
     }
 
-    // ************************************************************************************************
-    // Synchronize the plugin with the resources in the workspace
+    /**
+     * Synchronize the plugin with the resources in the workspace
+     */
     public synchronized void resourceChanged(IResourceChangeEvent event) {
         try {
             if (event.getDelta() == null)

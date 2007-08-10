@@ -40,8 +40,6 @@ abstract public class BaseEditPart
 
     /**
      * Returns the model associated with this as a INEDElement.
-     *
-     * @return The model of this as a NedElement.
      */
     public INEDElement getNEDModel() {
         return (INEDElement) getModel();

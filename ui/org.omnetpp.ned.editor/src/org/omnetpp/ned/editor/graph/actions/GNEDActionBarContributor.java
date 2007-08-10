@@ -45,6 +45,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
 
     /**
      * Adds the given action to the action registry.
+     *
      * @param action the action to add
      */
     protected void addAction(IAction action) {
@@ -60,6 +61,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
      * editor's <code>ActionRegistry</code>, and those actions will be registered with the
      * ActionBars for this contributor. The editor's action handler and the global action must
      * have the same key.
+     *
      * @param key the key identifying the global action
      */
     protected void addGlobalActionKey(String key) {
@@ -71,6 +73,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
      * RetargetAction is also added as a <code>IPartListener</code> of the contributor's page.
      * Also, the retarget action's ID is flagged as a global action key, by calling {@link
      * #addGlobalActionKey(String)}.
+     *
      * @param action the retarget action being added
      */
     protected void addRetargetAction(RetargetAction action) {
@@ -101,23 +104,21 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
     }
 
     /**
-     * Retrieves an action from the action registry using the given ID.
-     * @param id the ID of the sought action
-     * @return <code>null</code> or the action if found
+     * Retrieves an action from the action registry using the given ID,
+     * or null if not found.
      */
     protected IAction getAction(String id) {
         return getActionRegistry().getAction(id);
     }
 
     /**
-     * returns this contributor's ActionRegsitry.
-     * @return the ActionRegistry
+     * Returns this contributor's ActionRegsitry.
      */
     protected ActionRegistry getActionRegistry() {
         return registry;
     }
 
-    /**
+    /* (non-Javadoc)
      * @see EditorActionBarContributor#init(IActionBars)
      */
     @Override
@@ -127,7 +128,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         super.init(bars);
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.ui.IEditorActionBarContributor#setActiveEditor(IEditorPart)
      */
     @Override
@@ -144,9 +145,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         }
     }
 
-// ********** customize the graphical NED editor ***********************
-
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#buildActions()
      */
     protected void buildActions() {
@@ -179,7 +178,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
 
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#declareGlobalActionKeys()
      */
     protected void declareGlobalActionKeys() {
@@ -188,7 +187,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addGlobalActionKey(ActionFactory.DELETE.getId());
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToToolBar(IToolBarManager)
      */
     @Override
@@ -202,7 +201,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
 
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToMenu(IMenuManager)
      */
     @Override

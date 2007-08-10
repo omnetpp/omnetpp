@@ -38,8 +38,7 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	}
 
 	/**
-	 * This command can be executed ONLY on submodules who has fixed location
-	 * @return
+	 * This command can be executed ONLY on submodules that have a fixed location
 	 */
 	@Override
     protected boolean calculateEnabled() {
@@ -54,8 +53,7 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	}
 
 	/**
-	 * get a command for the request from the containing compound module
-	 * @return
+	 * Created and returns a command for the request from the containing compound module
 	 */
 	private Command getCommand() {
 		List<Object> selEditParts = getSelectedObjects();

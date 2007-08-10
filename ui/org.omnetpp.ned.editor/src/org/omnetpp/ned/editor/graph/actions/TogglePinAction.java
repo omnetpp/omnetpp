@@ -40,7 +40,6 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
 
 	/**
 	 * This command can be executed ONLY on submodules who has fixed location
-	 * @return
 	 */
 	@Override
     protected boolean calculateEnabled() {
@@ -78,7 +77,6 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
      * @param request the ChangeBoundsRequest
      * @param toggleEnabled whether we want to toggle the state of the child
      * @param pinState if toggleEnabled was false, we can set the new pin state directly here
-     * @return the Command
      */
     protected Command getCommand() {
         CompoundCommand resize = new CompoundCommand();

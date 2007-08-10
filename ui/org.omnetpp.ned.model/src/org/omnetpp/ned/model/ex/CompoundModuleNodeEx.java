@@ -53,8 +53,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     // submodule related methods
     /**
      * Returns all submodule containd in THIS module.
-     * @param child
-     * @return
      */
 	protected List<SubmoduleNodeEx> getOwnSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
@@ -83,8 +81,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
 	/**
-	 * @param submoduleName
-	 * @return The submodule (only in THIS module ) with the provided name
+	 * Returns the submodule with the provided name, excluding inherited submodules.
 	 */
 	protected SubmoduleNodeEx getOwnSubmoduleByName(String submoduleName) {
 	    if (submoduleName == null)
@@ -96,9 +93,8 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
     /**
-     * @param submoduleName
-     * @return The submodule (in all ancestor modules) with the provided name (or NULL if
-     * not found)
+     * Returns the submodule (including inherited ones) with the provided name,
+     * or null if not found.
      */
     public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
         // first look in the current module
@@ -114,9 +110,9 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
         // not found
         return null;
     }
+
 	/**
-     * Add a submodule to THIS module
-	 * @param child
+     * Add the given submodule to this module
 	 */
 	public void addSubmodule(SubmoduleNodeEx child) {
         SubmodulesNode snode = getFirstSubmodulesChild();
@@ -189,7 +185,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * @return
+     * TODO add docu
      */
     private void gatherConnections(INEDElement parent, String srcName, String srcGate, String destName, String destGate, List<ConnectionNodeEx> result) {
         for (INEDElement currChild : parent) {
@@ -244,7 +240,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     /**
      * Returns ALL VALID connections contained in / and inherited by this module where this module is the source
-     * @return
      */
     public List<ConnectionNodeEx> getSrcConnections() {
         return getConnections("", null, null, null);
@@ -252,7 +247,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     /**
      * Returns ALL VALID connections contained in / and inherited by this module where this module is the destination
-     * @return
      */
     public List<ConnectionNodeEx> getDestConnections() {
         return getConnections(null, null, "", null);
@@ -261,7 +255,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     /**
      * Returns ALL VALID connections contained in / and inherited by the provided module
      * where this module is the source
-     * @return
      */
     public List<ConnectionNodeEx> getSrcConnectionsFor(String submoduleName) {
         return getConnections(submoduleName,null, null, null);
@@ -270,7 +263,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     /**
      * Returns ALL VALID connections contained in / and inherited by the provided module
      * where this module is the destinaion
-     * @return
      */
     public List<ConnectionNodeEx> getDestConnectionsFor(String submoduleName) {
         return getConnections(null, null, submoduleName, null);

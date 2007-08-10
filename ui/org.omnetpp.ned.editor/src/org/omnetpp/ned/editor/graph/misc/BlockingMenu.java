@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.MenuItem;
 
 /**
  * A popup menu that blocks the execution until an item is selected or the menu is cancelled.
- * 
+ *
  * @author rhornig
  */
 public class BlockingMenu extends Menu {
@@ -30,26 +30,25 @@ public class BlockingMenu extends Menu {
 	public BlockingMenu(MenuItem parentItem) {
 		super(parentItem);
 	}
-	
+
 	/**
 	 * Opens a Menu and blocks the execution so it waits until selection is done.
-	 * @return The selcted MenuItem or <code>null</code> if the menu was cancelled.
+	 * @return The selected MenuItem, or null if the menu was cancelled.
 	 */
 	public MenuItem open() {
 		setVisible(true);
-		
+
 		// block until a selection is done or the menu is cancelled
 		while (!isDisposed () && isVisible ()) {
 			if (!getDisplay().readAndDispatch()) getDisplay().sleep();
 		}
-		
+
 		return selectedMenuItem;
 	}
 
 	/**
 	 * Creates a new menuItem and adds it to the menu.
 	 * @param style
-	 * @return
 	 */
 	public MenuItem addMenuItem(int style) {
 		MenuItem mi = new MenuItem(this, style);
@@ -61,11 +60,11 @@ public class BlockingMenu extends Menu {
 			public void widgetSelected(SelectionEvent e) {
 				selectedMenuItem = (MenuItem)e.widget;
 			}
-			
+
 		});
 		return mi;
 	}
-	
+
 	// override with empty implementation to allow subclassing of SWT controls
 	@Override
 	protected void checkSubclass () {

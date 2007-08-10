@@ -24,8 +24,6 @@ public class TopLevelEditPart extends BaseEditPart {
 
     /**
      * Returns the model associated with this as a INEDElement.
-     *
-     * @return The model of this as a NedElement.
      */
     @Override
 	protected IFigure createFigure() {

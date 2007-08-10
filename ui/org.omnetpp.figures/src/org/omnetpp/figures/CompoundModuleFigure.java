@@ -230,7 +230,6 @@ public class CompoundModuleFigure extends ModuleFigure
 
     /**
      * Helper function to return the current border
-     * @return
      */
     public CompoundModuleBorder getCompoundModuleBorder() {
     	return (CompoundModuleBorder)getBorder();
@@ -377,9 +376,6 @@ public class CompoundModuleFigure extends ModuleFigure
 
 	/**
 	 * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible
-	 * @param x
-	 * @param y
-	 * @return
 	 */
 	public boolean isOnBorder(int x, int y) {
 		Point mouse = new Point(x,y);

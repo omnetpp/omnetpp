@@ -10,8 +10,7 @@ import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 public class PolicyUtil {
 
     /**
-     * @param part
-     * @return whether the given edit part is editable or not
+     * Returns whether the given edit part is editable
      */
     public static boolean isEditable(EditPart part) {
         if (part instanceof IReadOnlySupport)

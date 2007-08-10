@@ -93,9 +93,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     }
 
     /**
-     * Returns the children of this from the model element
-     *
-     * @return List of children.
+     * Returns the children of the model element of this editpart.
      */
     @Override
     protected List getModelChildren() {
@@ -121,7 +119,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
                     totalRefresh();
                 }
             });
-        else // refresh in the current UI thread 
+        else // refresh in the current UI thread
             totalRefresh();
     }
 

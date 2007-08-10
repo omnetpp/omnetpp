@@ -292,7 +292,6 @@ public interface INEDElement extends Iterable<INEDElement> {
 
 	/**
 	 * Creates a deep copy of the tree, optionally providing the new node's parent too
-	 * @return
 	 */
 	public INEDElement deepDup(INEDElement parent);
 

@@ -8,7 +8,7 @@ import org.eclipse.gef.handles.ConnectionHandle;
 import org.eclipse.gef.tools.ConnectionEndpointTracker;
 
 /**
- * A handle used at the end of the {@link org.eclipse.draw2d.Connection}.  
+ * A handle used at the end of the {@link org.eclipse.draw2d.Connection}.
  * This is treated differently than the target of the Connection.
  * Redefined to provide Ned
  */
@@ -44,7 +44,6 @@ public final class NedConnectionStartHandle extends ConnectionHandle
 
 	/**
 	 * Creates and returns a new {@link ConnectionEndpointTracker}.
-	 * @return the new NedConnectionEndpointTracker
 	 */
 	@Override
 	protected DragTracker createDragTracker() {

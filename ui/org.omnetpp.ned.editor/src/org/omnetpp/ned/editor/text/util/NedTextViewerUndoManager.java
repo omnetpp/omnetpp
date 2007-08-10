@@ -37,17 +37,17 @@ import org.eclipse.text.undo.IDocumentUndoManager;
  * <p>
  * This class is not intended to be subclassed.
  * </p>
- * 
+ *
  * @see ITextViewer
  * @see ITextInputListener
  * @see IDocumentUndoManager
  * @see MouseListener
  * @see KeyListener
  * @see DocumentUndoManager
- * 
+ *
  * @since 3.2
  */
-// NOTE This is the copy of TextViewerUndoManager except that it does not set the 
+// NOTE This is the copy of TextViewerUndoManager except that it does not set the
 // autoinsert strategies and do not select the text on undo
 // se uncommented and marked lines
 public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExtension {
@@ -135,7 +135,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
          */
         public void documentUndoNotification(DocumentUndoEvent event ){
             if (!isConnected()) return;
-            
+
             int eventType= event.getEventType();
             if (((eventType & DocumentUndoEvent.ABOUT_TO_UNDO) != 0) || ((eventType & DocumentUndoEvent.ABOUT_TO_REDO) != 0))  {
                 if (event.isCompound()) {
@@ -152,7 +152,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
 //                            ((TextViewer)fTextViewer).ignoreAutoEditStrategies(true);
                     }
                 });
-                
+
             }
             else if (((eventType & DocumentUndoEvent.UNDONE) != 0) || ((eventType & DocumentUndoEvent.REDONE) != 0))  {
                 fTextViewer.getTextWidget().getDisplay().syncExec(new Runnable() {
@@ -169,19 +169,19 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
                     if (extension != null)
                         extension.setRedraw(true);
                 }
-                
+
                 // Reveal the change if this manager's viewer has the focus.
                 if (fTextViewer != null) {
                     StyledText widget= fTextViewer.getTextWidget();
                     if (widget != null && !widget.isDisposed() && (widget.isFocusControl()))// || fTextViewer.getTextWidget() == control))
 // chahanged by rhornig
-                        selectAndReveal(event.getOffset(), 
-                                event.getText() == null || 
+                        selectAndReveal(event.getOffset(),
+                                event.getText() == null ||
                                 (event.getOffset()==0 && fTextViewer.getDocument().getLength()==event.getText().length())
                                    ? 0 : event.getText().length());
-// end change                    
+// end change
                 }
-            }   
+            }
         }
 
     }
@@ -194,16 +194,16 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
 
     /** The text viewer the undo manager is connected to */
     private ITextViewer fTextViewer;
-    
+
     /** The undo level */
     private int fUndoLevel;
-    
+
     /** The document undo manager that is active. */
     private IDocumentUndoManager fDocumentUndoManager;
-    
+
     /** The document that is active. */
     private IDocument fDocument;
-    
+
     /** The document undo listener */
     private IDocumentUndoListener fDocumentUndoListener;
 
@@ -218,8 +218,6 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
 
     /**
      * Returns whether this undo manager is connected to a text viewer.
-     *
-     * @return <code>true</code> if connected, <code>false</code> otherwise
      */
     private boolean isConnected() {
         return fTextViewer != null && fDocumentUndoManager != null;
@@ -345,7 +343,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
     public void reset() {
         if (isConnected())
             fDocumentUndoManager.reset();
-        
+
     }
 
     /*
@@ -374,7 +372,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
             try {
                 fDocumentUndoManager.redo();
             } catch (ExecutionException ex) {
-                openErrorDialog("Redo Failed", ex); 
+                openErrorDialog("Redo Failed", ex);
             }
         }
     }
@@ -387,7 +385,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
             try {
                 fDocumentUndoManager.undo();
             } catch (ExecutionException ex) {
-                openErrorDialog("Undo Failed", ex); 
+                openErrorDialog("Undo Failed", ex);
             }
         }
     }
@@ -419,7 +417,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
         }
         return null;
     }
-    
+
     private void connectDocumentUndoManager(IDocument document) {
         disconnectDocumentUndoManager();
         if (document != null) {

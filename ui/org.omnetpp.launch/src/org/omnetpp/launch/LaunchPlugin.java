@@ -65,8 +65,6 @@ public class LaunchPlugin extends AbstractUIPlugin {
 
 	/**
 	 * Returns the shared instance
-	 *
-	 * @return the shared instance
 	 */
 	public static LaunchPlugin getDefault() {
 		return plugin;
@@ -110,6 +108,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
      *
      * @return an absolute path to a directory in the local file system, or
      * <code>null</code> if unspecified
+     *
      * @throws CoreException if unable to retrieve the associated launch
      * configuration attribute, if unable to resolve any variables, or if the
      * resolved location does not point to an existing directory in the local
@@ -144,6 +143,8 @@ public class LaunchPlugin extends AbstractUIPlugin {
     // run parameters and standard output parsing
 
     /**
+     * TODO comment: what does it do?
+     *
      * @param runPar The provided run string (eg.: 1,2,5,9-23,44,55-70)
      *  "*" means ALL run number: 0-(maxRunNo-1). Empty runPar means: (run#0)
      * @param maxRunNo The maximum run number accepted by the
@@ -187,7 +188,8 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Starts the simulation program
+     * Starts the simulation program.
+     *
      * @param configuration
      * @param additionalArgs extra command line arguments to be prepended to the command line
      * @return The created process object,
@@ -204,10 +206,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * @param configuration
-     * @param additionalArgs
-     * @return
-     * @throws CoreException
+     * TODO document
      */
     public static String[] createCommandLine(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
         IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
@@ -227,8 +226,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * @param configuration
-     * @return The string describing all runs in the scenario or "" if error occurred
+     * Returns a string describing all runs in the scenario, or "" if an error occurred
      */
     public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
         try {
@@ -256,8 +254,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * @param configuration
-     * @return The number of runs available in the given scenario
+     * Returns the number of runs available in the given scenario
      */
     public static int getMaxNumberOfRuns(ILaunchConfiguration configuration) {
         return NumberUtils.toInt(StringUtils.trimToEmpty(
@@ -266,7 +263,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
-     *
+     * TODO document
      * @param text The text to be parsed for progress information
      * @return The process progress reported in the text or -1 if no progress info found
      */

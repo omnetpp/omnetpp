@@ -47,8 +47,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * RequestConstants#REQ_CLONE CLONE}. By default, <code>null</code> is
      * returned.
      *
-     * @param request
-     *            the Clone Request
+     * @param request the Clone Request
      * @return A command to perform the Clone.
      */
     @SuppressWarnings("unchecked")
@@ -171,8 +170,6 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     /**
      * Returns the layer used for displaying feedback. We must return the scaled feedback layer
-     *
-     * @return the feedback layer
      */
     @Override
     protected IFigure getFeedbackLayer() {

@@ -128,9 +128,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     }
 
     /**
-     * Returns a newly created Figure to represent the connection.
-     *
-     * @return The created Figure.
+     * Creates and returns a figure to represent the connection.
      */
     @Override
     protected IFigure createFigure() {
@@ -140,8 +138,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
     /**
      * Returns the model associated to this editpart as a ConnectionNodeEx
-     *
-     * @return Model of this as <code>Wire</code>
      */
     protected ConnectionNodeEx getConnectionModel() {
         return (ConnectionNodeEx) getModel();

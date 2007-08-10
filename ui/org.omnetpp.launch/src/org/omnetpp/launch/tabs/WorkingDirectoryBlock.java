@@ -29,7 +29,8 @@ import org.omnetpp.launch.LaunchPlugin;
 
 //FIXME default working directory should be the directory of the chosen executable file (not the project root)
 /**
- * A little modified version of the JDT-s working block code
+ * A little modified version of the JDT's working block code
+ *
  * @author rhornig
  */
 public class WorkingDirectoryBlock extends OmnetppLaunchTab {
@@ -88,7 +89,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         DirectoryDialog dialog = new DirectoryDialog(getShell());
         dialog.setMessage("Select a workspace relative working directory:");
         String currentWorkingDir = getWorkingDirectoryText();
-        if (!currentWorkingDir.trim().equals("")) { 
+        if (!currentWorkingDir.trim().equals("")) {
             File path = new File(currentWorkingDir);
             if (path.exists()) {
                 dialog.setFilterPath(currentWorkingDir);
@@ -116,7 +117,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         if (results != null && results.length > 0 && results[0] instanceof IPath) {
             IPath path = (IPath)results[0];
             String containerName = path.makeRelative().toString();
-            setOtherWorkingDirectoryText("${workspace_loc:" + containerName + "}");  
+            setOtherWorkingDirectoryText("${workspace_loc:" + containerName + "}");
         }
     }
 
@@ -128,7 +129,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         if (path.length() > 0) {
             IResource res = null;
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-            if (path.startsWith("${workspace_loc:")) { 
+            if (path.startsWith("${workspace_loc:")) {
                 IStringVariableManager manager = VariablesPlugin.getDefault().getStringVariableManager();
                 try {
                     path = manager.performStringSubstitution(path, false);
@@ -149,7 +150,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * The default working dir radio button has been selected.
+     * Runs when the default working dir radio button has been selected.
      */
     private void handleUseDefaultWorkingDirButtonSelected() {
         fWorkspaceButton.setEnabled(false);
@@ -160,9 +161,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * The other working dir radio button has been selected
-     *
-     * @since 3.2
+     * Runs when the other working dir radio button has been selected
      */
     private void handleUseOtherWorkingDirButtonSelected() {
         fOtherWorkingText.setEnabled(true);
@@ -173,7 +172,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * The working dir variables button has been selected
+     * Runs when the working dir variables button has been selected
      */
     private void handleWorkingDirVariablesButtonSelected() {
         StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(getShell());
@@ -197,7 +196,6 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
 
     /**
      * Sets the executable files workspace relative path so the default working directory can be set correctly
-     * @param exeLoc
      */
     public void setExecutableLocation(String exeLoc) {
         executableLoc = exeLoc;
@@ -213,7 +211,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         setMessage(null);
         // if variables are present, we cannot resolve the directory
         String workingDirPath = getWorkingDirectoryText();
-        if (workingDirPath.indexOf("${") >= 0) { 
+        if (workingDirPath.indexOf("${") >= 0) {
             IStringVariableManager manager = VariablesPlugin.getDefault().getStringVariableManager();
             try {
                 manager.validateStringVariables(workingDirPath);
@@ -288,9 +286,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * gets the path from the text box that is selected
-     * @return the working directory the user wishes to use
-     * @since 3.2
+     * Gets the path from the working directory text box
      */
     protected String getWorkingDirectoryText() {
         if (fUseDefaultDirButton.getSelection())
@@ -299,9 +295,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * sets the default working directory text
-     * @param dir the dir to set the widget to
-     * @since 3.2
+     * Sets the default working directory text
      */
     protected void setDefaultWorkingDirectoryText(String dir) {
         if (dir != null) {
@@ -312,9 +306,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * sets the other dir text
-     * @param dir the new text
-     * @since 3.2
+     * Sets the other dir text
      */
     protected void setOtherWorkingDirectoryText(String dir) {
         if (dir != null) {
@@ -327,7 +319,6 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
 
     /**
      * Allows this entire block to be enabled/disabled
-     * @param enabled whether to enable it or not
      */
     protected void setEnabled(boolean enabled) {
         fUseDefaultDirButton.setEnabled(enabled);

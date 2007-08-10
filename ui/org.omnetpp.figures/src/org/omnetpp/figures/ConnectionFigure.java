@@ -144,8 +144,7 @@ public class ConnectionFigure extends PolylineConnection {
 	}
 
     /**
-     * Returns the lastly set display string
-     * @return
+     * Returns the most recently set display string
      */
 	public IDisplayString getLastDisplayString() {
     	return lastDisplayString;

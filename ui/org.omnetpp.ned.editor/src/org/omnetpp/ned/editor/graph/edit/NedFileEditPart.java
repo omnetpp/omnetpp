@@ -62,10 +62,9 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
         NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(this);
         super.deactivate();
     }
+
     /**
-     * Returns a Figure to represent this.
-     *
-     * @return Figure.
+     * Creates and returns a new figure to represent this editpart.
      */
     @Override
     protected IFigure createFigure() {

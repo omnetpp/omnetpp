@@ -287,9 +287,8 @@ public class NEDTreeUtil {
 	}
 
     /**
-     * @param tree1 (can be null)
-     * @param tree2 (can be null)
-     * @return Whether the two trees are considered equal (if both generates the same source representation)
+     * Returns true if the two trees generate the same NED source code.
+     * If either parameter is null, it returns false.
      */
     public static boolean isNEDTreeEqual(INEDElement tree1, INEDElement tree2) {
         if (tree1 == tree2)

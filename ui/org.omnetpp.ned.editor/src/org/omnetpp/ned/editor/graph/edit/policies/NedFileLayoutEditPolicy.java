@@ -109,10 +109,10 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 		INEDElement parent = (INEDElement)getHost().getModel();
 		return new CreateToplevelComponentCommand(parent, where, newElement);
 	}
+
 	/**
-	 * Returns the <code>Command</code> to resize a group of children.
-	 * @param request the ChangeBoundsRequest
-	 * @return the Command
+	 * Returns a Command to resize a group of children, based on the ChangeBoundsRequest
+	 * passed.
 	 */
 	@SuppressWarnings("unchecked")
 	protected Command getResizeChildrenCommand(ChangeBoundsRequest request) {
