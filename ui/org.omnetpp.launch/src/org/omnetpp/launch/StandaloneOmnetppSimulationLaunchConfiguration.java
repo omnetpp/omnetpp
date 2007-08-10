@@ -19,6 +19,11 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.StringUtils;
 
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfigurationDelegate {
 
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)

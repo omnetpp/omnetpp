@@ -5,6 +5,11 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Insets;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class CompoundModuleLineBorder extends LineBorder {
 	/**
 	 * @see org.eclipse.draw2d.Border#paint(IFigure, Graphics, Insets)

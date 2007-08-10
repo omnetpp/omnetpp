@@ -16,7 +16,7 @@ public class NedPresentationAction extends TextEditorAction {
 	 * Constructs and updates the action.
 	 */
 	public NedPresentationAction() {
-		super(NedEditorMessages.getResourceBundle(), "TogglePresentation.", null); //$NON-NLS-1$
+		super(NedEditorMessages.getResourceBundle(), "TogglePresentation.", null); 
 		update();
 	}
 	

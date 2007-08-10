@@ -14,6 +14,11 @@ import java.awt.event.MouseMotionListener;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class EmbeddingTest
 {
 /*	public static void main(String[] args) {

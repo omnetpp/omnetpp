@@ -36,10 +36,15 @@ import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class TextualNedEditor extends TextEditor {
 
 	private static TemplateStore fStore;
-    private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; //$NON-NLS-1$
+    private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; 
     /** The context type registry. */
     private static ContributionContextTypeRegistry fRegistry;
 
@@ -95,15 +100,15 @@ public class TextualNedEditor extends TextEditor {
     protected void createActions() {
 		super.createActions();
 
-		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
+		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); 
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", a); //$NON-NLS-1$
+		setAction("ContentAssistProposal", a); 
 
-		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
-		setAction("DefineFoldingRegion", a); //$NON-NLS-1$
+		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); 
+		setAction("DefineFoldingRegion", a); 
 
-        a= new ConvertToNewFormatAction(NedEditorMessages.getResourceBundle(), "ConvertToNewFormat.", this); //$NON-NLS-1$
-        setAction("ConvertToNewFormat", a); //$NON-NLS-1$
+        a= new ConvertToNewFormatAction(NedEditorMessages.getResourceBundle(), "ConvertToNewFormat.", this); 
+        setAction("ConvertToNewFormat", a); 
 	}
 
 	/** The <code>TextualNedEditor</code> implementation of this
@@ -197,9 +202,9 @@ public class TextualNedEditor extends TextEditor {
 	@Override
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); //$NON-NLS-1$
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal"); //$NON-NLS-1$
-		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");  //$NON-NLS-1$
+		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); 
+		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal"); 
+		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");  
 	}
 
 	/** The <code>TextualNedEditor</code> implementation of this
@@ -263,8 +268,8 @@ public class TextualNedEditor extends TextEditor {
 		super.createPartControl(parent);
 		ProjectionViewer viewer= (ProjectionViewer) getSourceViewer();
 		fProjectionSupport= new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); //$NON-NLS-1$
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
+		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); 
+		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); 
 		fProjectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
         // we should set the selection provider as late as possible because the outer multipage esitor overrides it

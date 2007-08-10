@@ -22,6 +22,11 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 //FIXME validation of embedded types!!!!
 //FIXME finish validator functions! e.g. turn on expression parsing
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class NEDFileValidator implements NEDElementUtil, NEDElementTags {
 	INEDTypeResolver resolver;
 	INEDErrorStore errors;

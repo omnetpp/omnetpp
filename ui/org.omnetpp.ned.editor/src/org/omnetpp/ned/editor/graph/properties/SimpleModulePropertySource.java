@@ -20,6 +20,11 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class SimpleModulePropertySource extends MergedPropertySource {
 
     protected static class SimpleModuleDisplayPropertySource extends DisplayPropertySource {

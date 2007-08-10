@@ -2,6 +2,11 @@ package org.omnetpp.ned.model.notification;
 
 import org.omnetpp.ned.model.INEDElement;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class NEDAttributeChangeEvent extends NEDModelEvent {
     protected String attribute;
     protected Object oldValue;

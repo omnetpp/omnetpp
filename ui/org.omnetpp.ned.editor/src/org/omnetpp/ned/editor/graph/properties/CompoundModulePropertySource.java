@@ -21,6 +21,11 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleListPropertySource;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class CompoundModulePropertySource extends MergedPropertySource {
     // compound module display properties
     protected static class CompoundModuleDisplayPropertySource extends DisplayPropertySource {

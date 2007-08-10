@@ -19,6 +19,11 @@ import org.eclipse.swt.widgets.Text;
 
 import org.omnetpp.figures.misc.IDirectEditSupport;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
                                           implements IDirectEditSupport {
 

@@ -16,6 +16,11 @@ import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class ConnectionNodeEx extends ConnectionNode
     implements IHasType, IHasDisplayString, IHasParameters {
 	private DisplayString displayString = null;

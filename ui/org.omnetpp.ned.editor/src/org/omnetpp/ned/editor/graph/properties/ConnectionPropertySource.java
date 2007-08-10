@@ -17,6 +17,11 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class ConnectionPropertySource extends MergedPropertySource {
 
     // Display property source

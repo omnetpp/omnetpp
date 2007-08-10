@@ -16,6 +16,11 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class SubmodulePropertySource extends MergedPropertySource {
 
 	// submodule specific display property desc

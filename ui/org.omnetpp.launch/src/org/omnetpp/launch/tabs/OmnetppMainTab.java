@@ -112,7 +112,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 		fProgText = SWTFactory.createSingleText(mainComp, 1);
 		fProgText.addModifyListener(this);
 
-		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null); //$NON-NLS-1$
+		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null); 
 		fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent evt) {
@@ -127,7 +127,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         GridLayout ld = (GridLayout)mainComp.getLayout();
         ld.marginHeight = 1;
 
-        fShowDebugViewButton = SWTFactory.createCheckButton(mainComp, "Show Debug View on Launch", null, false, 3); //$NON-NLS-1$
+        fShowDebugViewButton = SWTFactory.createCheckButton(mainComp, "Show Debug View on Launch", null, false, 3); 
         fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent evt) {

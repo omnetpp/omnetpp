@@ -23,7 +23,7 @@ import org.omnetpp.launch.LaunchPlugin;
 public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab implements
     SelectionListener, ModifyListener {
 
-    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
+    protected static final String EMPTY_STRING = ""; 
 
     protected OmnetppLaunchTab embeddingTab = null;
     /**

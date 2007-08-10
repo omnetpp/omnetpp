@@ -14,12 +14,12 @@ public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner 
 
 //    private static NedOutlinePartitionScanner fgInstance;
     
-    public final static String PARTITIONING_ID = "__ned_contentassist_partitioning";   //$NON-NLS-1$
+    public final static String PARTITIONING_ID = "__ned_contentassist_partitioning";   
 
-    public final static String NED_PRIVATE_DOC = "__ned_privatedoc"; //$NON-NLS-1$
-    public final static String NED_DOC = "__ned_doc"; //$NON-NLS-1$
-    public final static String NED_CODE = "__ned_code"; //$NON-NLS-1$
-    public final static String NED_STRING = "__ned_string"; //$NON-NLS-1$
+    public final static String NED_PRIVATE_DOC = "__ned_privatedoc"; 
+    public final static String NED_DOC = "__ned_doc"; 
+    public final static String NED_CODE = "__ned_code"; 
+    public final static String NED_STRING = "__ned_string"; 
 	public final static String[] SUPPORTED_PARTITION_TYPES 
         = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_CODE, NED_PRIVATE_DOC, NED_DOC , NED_STRING};
 
@@ -37,10 +37,10 @@ public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner 
 		List<IPredicateRule> rules= new ArrayList<IPredicateRule>();
 
         // Add rule for single line private comments.
-        rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); //$NON-NLS-1$
+        rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); 
 		
         // Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", nedDocToken)); //$NON-NLS-1$
+		rules.add(new EndOfLineRule("//", nedDocToken)); 
 
 		// Add rule for strings constants.
         // currently the escape char is not implemented in the parser

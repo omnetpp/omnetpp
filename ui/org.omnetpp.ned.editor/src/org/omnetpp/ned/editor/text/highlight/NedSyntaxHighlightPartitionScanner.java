@@ -12,10 +12,10 @@ import org.eclipse.jface.text.rules.*;
  */
 public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanner {
 
-    public final static String PARTITIONING_ID = "__ned_syntaxhighlight_partitioning";   //$NON-NLS-1$
+    public final static String PARTITIONING_ID = "__ned_syntaxhighlight_partitioning";   
 
-    public final static String NED_PRIVATE_DOC = "__ned_privatedoc"; //$NON-NLS-1$
-    public final static String NED_DOC = "__ned_doc"; //$NON-NLS-1$
+    public final static String NED_PRIVATE_DOC = "__ned_privatedoc"; 
+    public final static String NED_DOC = "__ned_doc"; 
 	public final static String[] SUPPORTED_PARTITION_TYPES 
         = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_PRIVATE_DOC, NED_DOC };
 
@@ -31,10 +31,10 @@ public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
 		List<IRule> rules= new ArrayList<IRule>();
 
         // Add rule for single line private comments.
-        rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); //$NON-NLS-1$
+        rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); 
 		
         // Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", nedDocToken)); //$NON-NLS-1$
+		rules.add(new EndOfLineRule("//", nedDocToken)); 
 
 		setPredicateRules(rules.toArray(new IPredicateRule[]{}));
 	}

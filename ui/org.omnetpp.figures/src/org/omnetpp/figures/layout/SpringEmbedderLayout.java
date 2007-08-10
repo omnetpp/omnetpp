@@ -12,6 +12,11 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.figures.CompoundModuleFigure;
 
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class SpringEmbedderLayout extends XYLayout {
 
 	private static final int DEFAULT_MAX_WIDTH = 680;

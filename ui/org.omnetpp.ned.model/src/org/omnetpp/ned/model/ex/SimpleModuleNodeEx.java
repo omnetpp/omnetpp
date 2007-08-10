@@ -12,6 +12,11 @@ import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeNode {
 
 

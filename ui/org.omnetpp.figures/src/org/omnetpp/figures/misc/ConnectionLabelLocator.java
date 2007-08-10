@@ -7,6 +7,11 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class ConnectionLabelLocator extends ConnectionLocator {
 
     public ConnectionLabelLocator(Connection connection) {

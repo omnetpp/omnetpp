@@ -123,10 +123,10 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         IBindingService bindingService= (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
         if (bindingService != null)
-            keyBinding= bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu"); //$NON-NLS-1$
+            keyBinding= bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu"); 
 
         if (keyBinding == null)
-            keyBinding= ""; //$NON-NLS-1$
+            keyBinding= ""; 
 
         return NLS.bind("Show In \t{0}",keyBinding);
     }

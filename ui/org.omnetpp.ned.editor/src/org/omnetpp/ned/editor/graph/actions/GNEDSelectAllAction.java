@@ -10,6 +10,11 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class GNEDSelectAllAction extends SelectAllAction {
 
     IWorkbenchPart wbp;

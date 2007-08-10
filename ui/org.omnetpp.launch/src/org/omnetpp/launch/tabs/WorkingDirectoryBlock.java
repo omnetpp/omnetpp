@@ -88,7 +88,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         DirectoryDialog dialog = new DirectoryDialog(getShell());
         dialog.setMessage("Select a workspace relative working directory:");
         String currentWorkingDir = getWorkingDirectoryText();
-        if (!currentWorkingDir.trim().equals("")) { //$NON-NLS-1$
+        if (!currentWorkingDir.trim().equals("")) { 
             File path = new File(currentWorkingDir);
             if (path.exists()) {
                 dialog.setFilterPath(currentWorkingDir);
@@ -116,7 +116,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         if (results != null && results.length > 0 && results[0] instanceof IPath) {
             IPath path = (IPath)results[0];
             String containerName = path.makeRelative().toString();
-            setOtherWorkingDirectoryText("${workspace_loc:" + containerName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+            setOtherWorkingDirectoryText("${workspace_loc:" + containerName + "}");  
         }
     }
 
@@ -128,7 +128,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         if (path.length() > 0) {
             IResource res = null;
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-            if (path.startsWith("${workspace_loc:")) { //$NON-NLS-1$
+            if (path.startsWith("${workspace_loc:")) { 
                 IStringVariableManager manager = VariablesPlugin.getDefault().getStringVariableManager();
                 try {
                     path = manager.performStringSubstitution(path, false);
@@ -213,7 +213,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         setMessage(null);
         // if variables are present, we cannot resolve the directory
         String workingDirPath = getWorkingDirectoryText();
-        if (workingDirPath.indexOf("${") >= 0) { //$NON-NLS-1$
+        if (workingDirPath.indexOf("${") >= 0) { 
             IStringVariableManager manager = VariablesPlugin.getDefault().getStringVariableManager();
             try {
                 manager.validateStringVariables(workingDirPath);

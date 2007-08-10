@@ -18,6 +18,11 @@ import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {

@@ -215,7 +215,7 @@ public class PaletteManager implements INEDChangeListener {
      */
     static private PaletteContainer createComponentsDrawer() {
 
-        PaletteGroup drawer = new PaletteGroup("Components");//$NON-NLS-1$
+        PaletteGroup drawer = new PaletteGroup("Components");
 
         CombinedTemplateCreationEntry combined;
 

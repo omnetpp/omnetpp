@@ -17,6 +17,11 @@ import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.model.pojo.SubmodulesNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class CompoundModuleNodeEx extends CompoundModuleNode
 				implements IModuleTypeNode, INamedGraphNode {
 

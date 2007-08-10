@@ -14,6 +14,11 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "Layout";

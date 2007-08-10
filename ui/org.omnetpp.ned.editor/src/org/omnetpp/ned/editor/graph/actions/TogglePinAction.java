@@ -17,6 +17,11 @@ import org.omnetpp.ned.editor.graph.edit.policies.PolicyUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "Pinned";

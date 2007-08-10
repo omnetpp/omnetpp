@@ -31,6 +31,11 @@ import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class CompoundModuleEditPart extends ModuleEditPart {
 
     // stores  the connection model - connection controller mapping for the compound module
@@ -43,7 +48,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         super.createEditPolicies();
         installEditPolicy(EditPolicy.LAYOUT_ROLE,
                           new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane().getLayoutManager()));
-        installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
+        installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); 
     }
 
     /**

@@ -9,6 +9,11 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public interface INEDElement extends Iterable<INEDElement> {
 
 	public Iterator<INEDElement> iterator();

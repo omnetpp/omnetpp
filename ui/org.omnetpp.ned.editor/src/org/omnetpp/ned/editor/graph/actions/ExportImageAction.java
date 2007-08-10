@@ -10,6 +10,11 @@ import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 
 import de.unikassel.imageexport.wizards.ExportImageOfCurrentDiagramWizard;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class ExportImageAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "ExportImage";

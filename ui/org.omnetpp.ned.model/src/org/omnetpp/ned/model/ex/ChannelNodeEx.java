@@ -18,6 +18,11 @@ import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class ChannelNodeEx extends ChannelNode
 				implements IHasDisplayString, IHasParent,
                            IHasName, IHasAncestors, IHasInterfaces,

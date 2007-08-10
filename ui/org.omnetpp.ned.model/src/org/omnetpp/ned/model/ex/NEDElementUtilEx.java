@@ -29,6 +29,11 @@ import org.omnetpp.ned.model.pojo.PropertyNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	public static final String DISPLAY_PROPERTY = "display";
 

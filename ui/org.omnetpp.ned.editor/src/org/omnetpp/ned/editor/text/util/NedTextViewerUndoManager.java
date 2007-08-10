@@ -374,7 +374,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
             try {
                 fDocumentUndoManager.redo();
             } catch (ExecutionException ex) {
-                openErrorDialog("Redo Failed", ex); //$NON-NLS-1$
+                openErrorDialog("Redo Failed", ex); 
             }
         }
     }
@@ -387,7 +387,7 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
             try {
                 fDocumentUndoManager.undo();
             } catch (ExecutionException ex) {
-                openErrorDialog("Undo Failed", ex); //$NON-NLS-1$
+                openErrorDialog("Undo Failed", ex); 
             }
         }
     }

@@ -8,6 +8,11 @@ import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.ParagraphTextLayout;
 import org.eclipse.draw2d.text.TextFlow;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class TooltipFigure extends FlowPage {
 
     private final TextFlow textFlow;

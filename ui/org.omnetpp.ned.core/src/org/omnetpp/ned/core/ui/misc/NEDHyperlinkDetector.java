@@ -10,6 +10,11 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class NEDHyperlinkDetector implements IHyperlinkDetector {
 
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {

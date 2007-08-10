@@ -12,6 +12,11 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.model.INEDElement;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
     @SuppressWarnings("unchecked")

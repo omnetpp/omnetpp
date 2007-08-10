@@ -16,6 +16,11 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
 		implements IHasDisplayString, IHasAncestors, IHasParent,
                    IHasName, ITopLevelElement, IHasParameters {

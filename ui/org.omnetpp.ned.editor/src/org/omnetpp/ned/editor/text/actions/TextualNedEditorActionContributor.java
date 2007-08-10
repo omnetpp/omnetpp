@@ -23,7 +23,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 	 */
 	public TextualNedEditorActionContributor() {
 		super();
-		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
+		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal."); 
 		fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS); 
 	}
 	
@@ -48,7 +48,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 		if (part instanceof ITextEditor)
 			editor= (ITextEditor) part;
 
-		fContentAssistProposal.setAction(getAction(editor, "ContentAssistProposal")); //$NON-NLS-1$
+		fContentAssistProposal.setAction(getAction(editor, "ContentAssistProposal")); 
 
 	}
 	

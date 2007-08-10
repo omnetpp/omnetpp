@@ -8,6 +8,11 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class ModuleInterfacePropertySource extends MergedPropertySource {
 
     public ModuleInterfacePropertySource(ModuleInterfaceNodeEx nodeModel) {

@@ -5,6 +5,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class NewNEDFileWizard extends Wizard implements INewWizard {
     private NewNEDFileWizardPage1 page1 = null;
 

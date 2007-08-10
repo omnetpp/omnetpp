@@ -17,6 +17,11 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
 		implements IHasDisplayString, IHasParent,
                    IHasAncestors, IHasName, ITopLevelElement,

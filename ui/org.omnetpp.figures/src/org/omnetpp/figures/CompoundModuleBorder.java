@@ -7,6 +7,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class CompoundModuleBorder extends CompoundBorder implements LabeledBorder
 {
 	/**

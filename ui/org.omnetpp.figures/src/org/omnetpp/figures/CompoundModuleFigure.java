@@ -20,6 +20,11 @@ import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class CompoundModuleFigure extends ModuleFigure
 				implements ILayerSupport, HandleBounds, IDirectEditSupport {
 

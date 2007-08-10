@@ -13,6 +13,11 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.misc.ConnectionLabelLocator;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class ConnectionFigure extends PolylineConnection {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;

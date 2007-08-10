@@ -22,6 +22,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
     private static String[] NEDFILE_TEMPLATES = {

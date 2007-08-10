@@ -8,6 +8,11 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
 import org.omnetpp.launch.tabs.OmnetppMainTab;
 
+/**
+ * TODO add documentation
+ *
+ * @author rhornig
+ */
 public class StandaloneOmnetppLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
     public StandaloneOmnetppLaunchConfigurationTabGroup() {

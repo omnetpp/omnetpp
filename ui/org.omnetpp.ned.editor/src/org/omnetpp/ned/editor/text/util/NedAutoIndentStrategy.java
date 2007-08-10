@@ -23,7 +23,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	public void customizeDocumentCommand(IDocument d, DocumentCommand c) {
 		if (c.length == 0 && c.text != null && endsWithDelimiter(d, c.text))
 			smartIndentAfterNewLine(d, c);
-		else if ("}".equals(c.text)) { //$NON-NLS-1$
+		else if ("}".equals(c.text)) { 
 			smartInsertAfterBracket(d, c);
 		}
 	}
@@ -171,7 +171,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			int whiteend= findEndOfWhiteSpace(document, start, end);
 			return document.get(start, whiteend - start);
 		}
-		return ""; //$NON-NLS-1$
+		return ""; 
 	}
 
 	/**
