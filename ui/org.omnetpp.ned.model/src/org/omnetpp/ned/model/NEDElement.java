@@ -28,12 +28,14 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  * Base class for objects in a NED object tree, the XML-based
  * in-memory representation for NED files. An instance of a INEDElement
  * subclass represent an XML element.
+ *
  * INEDElement provides a DOM-like, generic access to the tree;
  * subclasses additionally provide a typed interface.
+ *
  * It extends PlatformObject to have a default IAdaptable implementation
  * primarily for PropertySheet support.
  *
- * @author rhornig
+ * @author andras, rhornig
  */
 public abstract class NEDElement extends PlatformObject
             implements INEDElement, IDisplayStringChangeListener, IModelProvider
@@ -554,6 +556,9 @@ public abstract class NEDElement extends PlatformObject
         	getParent().removeChild(this);
     }
 
+    /**
+     * Returns true if this node has children.
+     */
     public boolean hasChildren() {
     	return getFirstChild() != null;
     }
@@ -595,7 +600,7 @@ public abstract class NEDElement extends PlatformObject
 
     /**
      * Returns the TypeInfo belonging to the containing (toplevel) component
-     * that was added by the incremental builder (type resolver). Or null if none was found.
+     * that was added by the incremental builder (type resolver), or null if none was found.
      * Cross references and other supporting lists can be accessed via typeInfo.
      * The typeInfo can be NULL if this element is duplicated or invalid.
      */
@@ -605,7 +610,8 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * @param typeInfo Sets the component type info data. Should be used by the incremental builder ONLY.
+     * Stores a backreference to the typeinfo of this node. Should be used by the
+     * incremental builder ONLY.
      */
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         Assert.isNotNull(typeInfo);
@@ -615,8 +621,6 @@ public abstract class NEDElement extends PlatformObject
         getListeners().add(typeInfo);
         this.typeInfo = typeInfo;
     }
-
-    // ******************* notification helpers ************************************
 
     /**
      * Returns the listener list attached to this element
@@ -628,24 +632,28 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Fires a model change element (forwards it to he listener list if any)
-     * @param event
+     * If change notifications are enabled, notifies listeners about a model change;
+     * otherwise it does nothing.
      */
     public void fireModelChanged(NEDModelEvent event) {
         if (listeners == null || !getListeners().isEnabled())
             return;
-        //forward to the listerList
         listeners.fireModelChanged(event);
     }
 
-    /* (non-Javadoc)
-     * @see org.omnetpp.common.displaymodel.IDisplayStringChangeListener#propertyChanged(org.omnetpp.common.displaymodel.IDisplayString, org.omnetpp.common.displaymodel.IDisplayString.Prop, java.lang.Object, java.lang.Object)
-     * this method pass back the modified display string to the model, but it should be called only if the element
-     * really support the additional display string property (ie. IHasDisplayString)
-     * also fires a model attribute change event (converts the propertyChange event to attribute change)
+    /**
+     * Implements IDisplayStringChangeListener.propertyChanged().
+     *
+     * This method passes back the modified display string to the model, but it
+     * should only be called if the element really supports the additional
+     * display string property (i.e. this element implements IHasDisplayString).
+     *
+     * Also fires a model attribute change event, by converting the property
+     * change event to a model attribute change event.
      */
     public void propertyChanged(IDisplayString source, Prop changedProp, Object newValue, Object oldValue) {
         Assert.isTrue(this instanceof IHasDisplayString, "propertyChanged should be called only as a result of notificaton from an attached DisplayString");
+
         // synchronize it to the underlying model
         NEDElementUtilEx.setDisplayString(this, source.toString());
         String propertyName =
@@ -654,11 +662,8 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Walk upwards in  the tree and send the notification when a listener exists for that node.
-     * Fires notification only if the notification on the starting node's listener list is enebled
-     * @param attr the attribute under change
-     * @param newValue the new value of the attribute
-     * @param newValue the old value of the attribute
+     * Notifies the listeners of all parents up to the root that an attribute of
+     * this element was changed.
      */
     protected void fireAttributeChanged(String attr, Object newValue, Object oldValue) {
         if (listeners != null && !getListeners().isEnabled())
@@ -673,10 +678,8 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Walk upwards in  the tree and send the notification when a listener exists for that node
-     * @param attr the attribute under change
-     * @param newValue the new value of the attribute
-     * @param newValue the old value of the attribute
+     * Notifies the listeners of all parents up to the root that the child was
+     * inserted into this element.
      */
     protected void fireChildInserted(INEDElement child, INEDElement where) {
         if (listeners != null && !getListeners().isEnabled())
@@ -692,10 +695,8 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Walk upwards in  the tree and send the notification when a listener exists for that node
-     * @param attr the attribute under change
-     * @param newValue the new value of the attribute
-     * @param newValue the old value of the attribute
+     * Notifies the listeners of all parents up to the root that the child was
+     * removed from this element.
      */
     protected void fireChildRemoved(INEDElement child) {
         if (listeners != null && !getListeners().isEnabled())
@@ -710,9 +711,8 @@ public abstract class NEDElement extends PlatformObject
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.omnetpp.ned.model.interfaces.IModelProvider#getModel()
-     * We provide ourselves as a model
+    /**
+     * Implementation of IModelProvider method. Returns "this".
      */
     public INEDElement getNEDModel() {
         return this;
@@ -729,7 +729,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Returns the re-generated source (text form) of this element
+     * Generates NED source for this tree, and returns it.
      */
     public String getSource() {
         return NEDTreeUtil.generateNedSource(this, true);
@@ -743,14 +743,11 @@ public abstract class NEDElement extends PlatformObject
         return errorMarkerIds.size() > 0;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     * For debugging purposes
-     */
+    // For debugging purposes only
     @Override
     public String toString() {
         return getClass().getSimpleName() + " " + (getAttribute("name") != null ? getAttribute("name") : "");
-//        return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
+        //return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
     }
 };
 
