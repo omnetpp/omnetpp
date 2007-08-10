@@ -4,6 +4,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -96,5 +98,35 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 		}
 		return image;
 	}
-
+	
+	/**
+	 * Decorates the given image with the overlay image (either can be null),
+	 * and caches and returns the result. Key is a key which will be used to 
+	 * retrieve the cached image from the plugin image registry, must be unique.
+	 * Flags affects the alignment of the overlay image, use SWT constants like
+	 * BEGINING, END, TOP, BOTTOM. 
+	 */
+	public static Image getDecoratedImage(Image image, Image overlayImage, int flags, String key) {
+		key = "decorated-image:" + key;
+		ImageRegistry imageRegistry = getDefault().getImageRegistry();
+		Image result = imageRegistry.get(key);
+		if (result == null) {
+			if (overlayImage == null)
+				result = image;
+			else {
+				int width = image == null ? 16 : image.getBounds().width;
+				int height = image == null ? 16 : image.getBounds().height;
+				int x = (flags&SWT.BEGINNING)!=0 ? 0 : (flags&SWT.END)!=0 ? width - overlayImage.getBounds().width : 0;
+				int y = (flags&SWT.TOP)!=0 ? 0 : (flags&SWT.BOTTOM)!=0 ? height - overlayImage.getBounds().height : 0;
+				result = new Image(null, width, height); // SWT.IMAGE_COPY does not seem to work (exception)
+				GC gc = new GC(result);
+				if (image != null) gc.drawImage(image, 0, 0);
+				gc.drawImage(overlayImage, x, y);
+				gc.dispose();
+			}
+			imageRegistry.put(key, result);
+		}
+		return result;
+	}
+	
 }
