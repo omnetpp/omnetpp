@@ -70,7 +70,7 @@ public class InifileAnalyzer {
 	private boolean changed = true;
 	private Set<String> sectionsCausingCycles;
 	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
-
+	
 	/**
 	 * Classifies inifile keys; see getKeyType().
 	 */
@@ -756,7 +756,7 @@ public class InifileAnalyzer {
 		analyzeIfChanged();
 		return sectionsCausingCycles.contains(section);
 	}
-	
+
 	/**
 	 * Classify an inifile key, based on its syntax.
 	 * XXX syntax rules used here must be enforced throughout the system
@@ -906,7 +906,7 @@ public class InifileAnalyzer {
 	 * Returns names of declared iteration variables ("${variable=...}") from 
 	 * the given section and all its fallback sections.
 	 */
-	public String[] getVariableNames(String activeSection) {
+	public String[] getIterationVariableNames(String activeSection) {
 		synchronized (doc) {
 			analyzeIfChanged();
 			List<String> result = new ArrayList<String>();
@@ -921,11 +921,28 @@ public class InifileAnalyzer {
 		}
 	}
 
+	/**
+	 * Returns true if the given section or any of its fallback sections
+	 * declare an iteration variable ("${variable=...}"). 
+	 */
+	public boolean containsIterationVariables(String activeSection) {
+		synchronized (doc) {
+			analyzeIfChanged();
+			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+			for (String section : sectionChain) {
+				SectionData sectionData = (SectionData) doc.getSectionData(section);
+				if (!sectionData.iterationVariables.isEmpty())
+					return true;
+			}
+			return false;
+		}
+	}
+
 	/** 
 	 * Returns the value string (e.g. "1,2,6..10") for an iteration variable 
 	 * from the given section and its fallback sections.
 	 */
-	public String getVariableValueString(String activeSection, String variable) {
+	public String getIterationVariableValueString(String activeSection, String variable) {
 		//XXX what to return for predefined variables?
 		synchronized (doc) {
 			analyzeIfChanged();

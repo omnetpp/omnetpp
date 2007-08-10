@@ -217,7 +217,7 @@ public interface IInifileDocument {
 
 	/**
 	 * Returns the comment on the section heading's line. Throws error if section 
-	 * doesn't exist; returns comment of the first heading if there're more than one.
+	 * doesn't exist; returns comment of the first heading if there's more than one.
 	 * The comment is returned with the leading "#" and preceding whitespace. 
 	 */
 	String getRawSectionComment(String section);

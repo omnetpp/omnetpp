@@ -52,7 +52,6 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
-import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigKey;
@@ -68,11 +67,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * @author Andras
  */
 public class SectionsPage extends FormPage {
-	public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
-	public static final Image ICON_SECTION_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_warning.gif");
-	public static final Image ICON_SECTION_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_error.gif");
-	public static final Image ICON_SECTION_NONEXISTENT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_nonexistent.gif");
-	
 	private static final String HINT_TEXT = "\nHINT: Drag sections to edit the hierarchy. Hierarchy defines the fallback order for lookups.";
 
 	private Label label;
@@ -160,13 +154,7 @@ public class SectionsPage extends FormPage {
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SectionData) {
 					SectionData payload = (SectionData) element;
-					if (payload.isNonexistent)
-						return ICON_SECTION_NONEXISTENT;
-					switch (payload.maxProblemSeverity) {
-						case IMarker.SEVERITY_WARNING: return ICON_SECTION_WARNING;
-						case IMarker.SEVERITY_ERROR: return ICON_SECTION_ERROR;
-						default: return ICON_SECTION; 
-					}
+					return InifileUtils.getSectionImage(payload.sectionName, getInifileAnalyzer());
 				}
 				return null;
 			}

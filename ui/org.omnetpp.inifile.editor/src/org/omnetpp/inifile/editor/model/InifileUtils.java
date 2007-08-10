@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.model;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -15,10 +16,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.IDecoratorManager;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
@@ -34,6 +33,18 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * @author Andras
  */
 public class InifileUtils {
+	// for getSectionImage():
+	public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
+	public static final Image ICON_SECTION_NONEXISTENT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_nonexistent.gif");
+	public static final Image ICON_SECTION_SINGLE = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_single.gif");
+	public static final Image ICON_SECTION_REPEAT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_repeat.gif");
+	public static final Image ICON_SECTION_ITER = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iter.gif");
+	public static final Image ICON_SECTION_ITERREP = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iterrep.gif");
+
+	public static final Image ICON_OVR_ERROR = InifileEditorPlugin.getCachedImage("icons/full/ovr16/error.gif");
+	public static final Image ICON_OVR_WARNING = InifileEditorPlugin.getCachedImage("icons/full/ovr16/warning.gif");
+	public static final Image ICON_OVR_INFO = InifileEditorPlugin.getCachedImage("icons/full/ovr16/info.gif");
+	
 	/**
 	 * Looks up a configuration value in the given section or its fallback sections.
 	 * Returns null if not found.
@@ -339,13 +350,34 @@ public class InifileUtils {
 		return severity;
 	}
 
-	//XXX new function, to be used in all trees/tables where sections are displayed
-	public static Image getSectionImage(String sectionName, IInifileDocument doc) {
+	/** 
+	 * Returns an image for the given section, complete with error/warning markers etc.
+	 */
+	public static Image getSectionImage(String sectionName, InifileAnalyzer analyzer) {
+		IInifileDocument doc = analyzer.getDocument();
+
+		// base image
+		boolean exists = analyzer.getDocument().containsSection(sectionName);
+		boolean containsIteration = exists ? analyzer.containsIterationVariables(sectionName) : false;
+		boolean containsRepeat = exists ? lookupConfig(sectionName, CFGID_REPEAT.getKey(), doc) != null : false;
+		Image sectionImage = !exists ? ICON_SECTION_NONEXISTENT :
+			(containsIteration && containsRepeat) ? ICON_SECTION_ITERREP :
+				(containsIteration && !containsRepeat) ? ICON_SECTION_ITER :
+					(!containsIteration && containsRepeat) ? ICON_SECTION_REPEAT :
+						(!containsIteration && !containsRepeat) ? ICON_SECTION_SINGLE :
+						ICON_SECTION; // never happens
+		
+		// error/warning decoration
 		IMarker[] markers = getProblemMarkersForWholeSection(sectionName, doc);
 		int maxProblemSeverity = getMaximumSeverity(markers);
+		Image overlayImage = maxProblemSeverity == IMarker.SEVERITY_ERROR ? ICON_OVR_ERROR : 
+			maxProblemSeverity == IMarker.SEVERITY_WARNING ? ICON_OVR_WARNING : 
+				maxProblemSeverity == IMarker.SEVERITY_INFO ? ICON_OVR_INFO :
+					null;
 		
-		//IDecoratorManager decoratorManager = PlatformUI.getWorkbench().getDecoratorManager();
-		//decoratorManager.decorateImage(image, element)
-		return null;
+		// return decorated image
+		String key = "section:"+exists+":"+containsIteration+":"+containsRepeat+":"+maxProblemSeverity;
+		return InifileEditorPlugin.getDecoratedImage(sectionImage, overlayImage, SWT.BEGINNING|SWT.BOTTOM, key);
 	}
+	
 }

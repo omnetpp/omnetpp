@@ -186,7 +186,7 @@ public class ParametersPage extends FormPage {
 				}
 				else {
 					if (columnIndex==0)
-						return SectionsPage.ICON_SECTION;
+						return InifileUtils.getSectionImage((String)element, getInifileAnalyzer());
 				}
 				return null;
 			}

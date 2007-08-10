@@ -15,15 +15,16 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
-import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Content outline page for the inifile editor.
@@ -53,7 +54,9 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		getTreeViewer().setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
-				return ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
+				String sectionName = (String)element;
+				InifileAnalyzer inifileAnalyzer = inifileEditor.getEditorData().getInifileAnalyzer();
+				return InifileUtils.getSectionImage(sectionName, inifileAnalyzer);
 			}
 
 			@Override

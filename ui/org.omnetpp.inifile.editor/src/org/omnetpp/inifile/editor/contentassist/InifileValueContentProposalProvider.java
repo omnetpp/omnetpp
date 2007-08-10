@@ -117,7 +117,7 @@ s	 * before getting presented to the user.
 
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
-			p.addAll(toProposals(analyzer.getVariableNames(section)));
+			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
 			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 		}
 
@@ -135,7 +135,7 @@ s	 * before getting presented to the user.
 		else if (entry==CFGID_CONSTRAINT) {
 			// offer variable names after "$"
 			if (prefix.matches(".*\\$[A-Za-z0-9_]*")) {
-				p.addAll(toProposals(analyzer.getVariableNames(section)));
+				p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
 				p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 			}
 		}
@@ -175,7 +175,7 @@ s	 * before getting presented to the user.
 
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
-			p.addAll(toProposals(analyzer.getVariableNames(section)));
+			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
 			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 		}
 		
@@ -231,7 +231,7 @@ s	 * before getting presented to the user.
 
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
-			p.addAll(toProposals(analyzer.getVariableNames(section)));
+			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
 			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 		}
 

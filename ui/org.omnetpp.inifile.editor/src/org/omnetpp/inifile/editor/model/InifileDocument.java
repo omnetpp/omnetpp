@@ -635,12 +635,13 @@ public class InifileDocument implements IInifileDocument {
 
 	/**
 	 * Returns the first editable section heading, or if none are editable, the first one.
+	 * Returns null if there's no such section.
 	 */
 	protected SectionHeadingLine lookupPreferredSectionHeading(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
 		if (section == null)
-			throw new IllegalArgumentException("Section does not exist: ["+sectionName+"]");
+			return null;
 		for (SectionHeadingLine line : section.headingLines)
 			if (isEditable(line))
 				return line;
@@ -649,6 +650,8 @@ public class InifileDocument implements IInifileDocument {
 
 	protected SectionHeadingLine getFirstEditableSectionHeading(String sectionName) {
 		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
+		if (line == null)
+			throw new IllegalArgumentException("Section does not exist: ["+sectionName+"]");
 		if (!isEditable(line))
 			throw new IllegalArgumentException("Section comes from an included file: ["+sectionName+"]");
 		return line;
@@ -723,6 +726,8 @@ public class InifileDocument implements IInifileDocument {
 
 	public LineInfo getSectionLineDetails(String sectionName) {
 		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
+		if (line == null)
+			return null;
 		return new LineInfo(line.file, line.lineNumber, line.lastLine-line.lineNumber+1, !isEditable(line));
 	} 
 
@@ -735,7 +740,10 @@ public class InifileDocument implements IInifileDocument {
 	}
 	
 	public String getRawSectionComment(String sectionName) {
-		return lookupPreferredSectionHeading(sectionName).rawComment;
+		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
+		if (line == null)
+			throw new IllegalArgumentException("Section does not exist: ["+sectionName+"]");
+		return line.rawComment;
 	}
 
 	public void setRawSectionComment(String sectionName, String rawComment) {
