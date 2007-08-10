@@ -10,6 +10,7 @@ import org.omnetpp.ned.model.pojo.ExtendsNode;
 
 /**
  * Property source to display all submodules for a given compound module
+ *
  * @author rhornig
  */
 public class ExtendsListPropertySource extends NotifiedPropertySource {

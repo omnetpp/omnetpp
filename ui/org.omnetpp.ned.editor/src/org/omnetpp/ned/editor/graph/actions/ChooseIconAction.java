@@ -20,6 +20,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Action to edit the icon propery
+ *
  * @author rhornig
  */
 public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction {

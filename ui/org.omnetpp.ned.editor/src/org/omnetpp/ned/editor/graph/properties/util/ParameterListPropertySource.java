@@ -19,6 +19,7 @@ import org.omnetpp.ned.model.interfaces.IHasParameters;
 
 /**
  * Property source to display all parameters for a given component
+ *
  * @author rhornig
  */
 public class ParameterListPropertySource extends NotifiedPropertySource

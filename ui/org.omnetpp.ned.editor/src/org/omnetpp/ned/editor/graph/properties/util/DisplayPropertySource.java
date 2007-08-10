@@ -13,6 +13,11 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
+/**
+ * TODO documentation
+ *
+ * @author rhornig
+ */
 //TODO Some property needs a combo box cell editor
 //TODO implement number cell editor
 abstract public class DisplayPropertySource extends NotifiedPropertySource {

@@ -14,7 +14,7 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
 /**
  * Figure to represent top level components like SimpleModule, Channel, 
  * Channel Interface and Module Interface.
- * 
+ *
  * @author rhornig
  */
 public class TopLevelFigure extends Label implements IDirectEditSupport {

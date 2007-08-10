@@ -11,6 +11,7 @@ import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 
 /**
  * Generally this contains only the delet command for the connections
+ *
  * @author rhornig
  */
 public class NedConnectionEditPolicy extends ConnectionEditPolicy {

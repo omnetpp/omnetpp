@@ -28,6 +28,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * A job to launch a single simulation process in the background
+ *
  * @author rhornig
  */
 public class SimulationLauncherJob extends Job {

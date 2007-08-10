@@ -18,6 +18,7 @@ import org.omnetpp.launch.LaunchPlugin;
 
 /**
  * Base class for omnetpp launch tabs
+ *
  * @author rhornig
  */
 public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab implements

@@ -7,6 +7,7 @@ import org.eclipse.swt.SWT;
 
 /**
  * Top level figure corresponding to a NED file
+ *
  * @author rhornig
  */
 public class NedFileFigure extends Layer {

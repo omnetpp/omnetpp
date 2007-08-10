@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.omnetpp.launch;
 
 import java.util.ArrayList;
@@ -18,6 +15,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 
 /**
  * A job that can execute several simulation in serial or concurrent manner
+ *
  * @author rhornig
  */
 public class BatchedSimulationLauncherJob extends Job implements IJobChangeListener {

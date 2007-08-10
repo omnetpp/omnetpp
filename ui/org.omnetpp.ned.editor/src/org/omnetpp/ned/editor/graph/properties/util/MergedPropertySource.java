@@ -11,6 +11,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Merges several IPropertySource into a single PropertySource (flattens structure)
+ *
  * @author rhornig
  */
 public class MergedPropertySource implements IPropertySource2 {

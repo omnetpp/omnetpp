@@ -8,6 +8,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Represents a Hyperlink that points to a NED type
+ *
  * @author rhornig
  */
 public class NEDHyperlink implements IHyperlink {

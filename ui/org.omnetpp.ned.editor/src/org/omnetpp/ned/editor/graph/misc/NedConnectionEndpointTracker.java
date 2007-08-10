@@ -13,7 +13,7 @@ import org.omnetpp.ned.model.pojo.ConnectionNode;
 /**
  * Special drag tracker for connection handles that requests gate names if the source or
  * target handle is reconnected.
- * 
+ *
  * @author rhornig
  */
 public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {

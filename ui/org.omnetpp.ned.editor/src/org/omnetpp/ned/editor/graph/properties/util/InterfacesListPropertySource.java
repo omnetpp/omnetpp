@@ -9,6 +9,7 @@ import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
 /**
  * Property source to display whis components are implemented
+ *
  * @author rhornig
  */
 public class InterfacesListPropertySource extends NotifiedPropertySource {

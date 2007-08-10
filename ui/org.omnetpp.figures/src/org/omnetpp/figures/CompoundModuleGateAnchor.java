@@ -10,8 +10,8 @@ import org.omnetpp.figures.misc.GateAnchor;
  * Gate anchor used by the compound module. It can be locked to a specific point
  * on the edge of the compound module or can be left "floating" along any edge
  * resulting the shortest connection possible to that side of the compound module
- * @author rhornig
  *
+ * @author rhornig
  */
 public class CompoundModuleGateAnchor extends GateAnchor {
 	protected int edgeConstraint = PositionConstants.NSEW;

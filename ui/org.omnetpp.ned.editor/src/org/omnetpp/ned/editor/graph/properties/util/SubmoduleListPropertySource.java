@@ -9,6 +9,7 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 /**
  * Property source to display all submodules for a given compound module
+ *
  * @author rhornig
  */
 public class SubmoduleListPropertySource extends NotifiedPropertySource {

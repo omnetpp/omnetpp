@@ -6,6 +6,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
  * Rename any element which has a name attribute
+ *
  * @author rhornig
  */
 public class RenameCommand extends Command {

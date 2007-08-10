@@ -28,6 +28,7 @@ import org.omnetpp.ned.model.pojo.TypesNode;
 
 /**
  * A content provider that gives a basic overview structure for a ned model tree
+ *
  * @author rhornig
  */
 public class NedModelContentProvider implements ITreeContentProvider {

@@ -9,6 +9,7 @@ import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
 
 /**
  * Property source for channel interfaces
+ *
  * @author rhornig
  */
 public class ChannelInterfacePropertySource extends MergedPropertySource {

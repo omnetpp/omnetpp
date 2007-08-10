@@ -19,6 +19,8 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Provides support for Container EditParts.
+ *
+ * @author rhornig
  */
 abstract public class BaseEditPart
                            extends AbstractGraphicalEditPart

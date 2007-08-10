@@ -54,6 +54,7 @@ import org.omnetpp.ned.model.pojo.ParametersNode;
 
 /**
  * Dialog for editing parameters in a module or channel.
+ *
  * @author rhornig
  */
 public class ParametersDialog extends TitleAreaDialog {

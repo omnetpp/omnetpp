@@ -10,6 +10,7 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
  * Get the custom templates from the plugin's preference store
+ *
  * @author rhornig
  */
 public class NedTemplateCompletionProcessor extends IncrementalCompletionProcessor {

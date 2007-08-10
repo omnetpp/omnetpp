@@ -5,6 +5,8 @@ import org.eclipse.draw2d.geometry.Point;
 
 /**
  * Abstract base class for graph layouting algorithms.
+ *
+ * @author andras
  */
 public abstract class AbstractGraphLayoutAlgorithm
 {

@@ -18,6 +18,7 @@ import org.omnetpp.ned.model.ex.ChannelNodeEx;
 
 /**
  * Property source for channels
+ *
  * @author rhornig
  */
 public class ChannelPropertySource extends MergedPropertySource {

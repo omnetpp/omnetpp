@@ -4,6 +4,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 
 /**
  * Objects that support property sheets should implement this interface
+ *
  * @author rhornig
  */
 public interface IPropertySourceSupport {

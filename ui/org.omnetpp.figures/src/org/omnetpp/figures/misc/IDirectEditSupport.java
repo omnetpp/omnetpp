@@ -4,6 +4,7 @@ import org.eclipse.gef.tools.CellEditorLocator;
 
 /**
  * Figures that support direct editing their name should implement this interface
+ *
  * @author rhornig
  */
 public interface IDirectEditSupport {

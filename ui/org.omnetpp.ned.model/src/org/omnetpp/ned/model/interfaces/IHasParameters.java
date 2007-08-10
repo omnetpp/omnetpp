@@ -6,6 +6,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Interface for acquiring parameter lists for the object
+ *
  * @author rhornig
  */
 public interface IHasParameters extends INEDElement {

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.omnetpp.ned.editor.text.actions;
 
 import java.util.ResourceBundle;
@@ -18,6 +15,7 @@ import org.eclipse.ui.texteditor.TextEditorAction;
 
 /**
  * Allows to define a folding region in the ned file 
+ *
  * @author rhornig
  */
 public class DefineFoldingRegionAction extends TextEditorAction {

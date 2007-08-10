@@ -7,6 +7,7 @@ import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
 /**
  * Objects that can implement other interfaces
+ *
  * @author rhornig
  */
 public interface IHasInterfaces extends INEDElement {

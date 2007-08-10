@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.DialogCellEditor;
 
 /**
  * Provides a dialog cell editor that allows the editing of several properties
+ *
  * @author rhornig
  */
 public interface IDialogCellEditorProvider {

@@ -8,7 +8,7 @@ import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 /**
  * Special selection tool that allows the dragging of compound modules ONLY by clicking
  * on the border area of a compound module.
- * 
+ *
  * @author rhornig
  */
 public class NedSelectionTool extends PanningSelectionTool {

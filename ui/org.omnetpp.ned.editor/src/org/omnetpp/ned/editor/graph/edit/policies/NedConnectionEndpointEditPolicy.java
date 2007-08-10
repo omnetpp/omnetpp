@@ -14,6 +14,7 @@ import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 
 /**
  * Defines selection handle creation/removal
+ *
  * @author rhornig
  */
 public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolicy {

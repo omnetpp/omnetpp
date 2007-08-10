@@ -8,6 +8,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
  * A property source that is notified of the underlying model changes
+ *
  * @author rhornig
  */
 abstract public class NotifiedPropertySource

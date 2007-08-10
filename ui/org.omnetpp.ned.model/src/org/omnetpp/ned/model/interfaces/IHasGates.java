@@ -6,6 +6,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Elements that may contain gates
+ *
  * @author rhornig
  */
 public interface IHasGates extends INEDElement {

@@ -23,6 +23,8 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
  *       - derived list (name and INEDElement) of elements directly or indirectly derived from this element
  *       - methods returning the INEDElement list instead of simple name list (for all methods)
  *       - access to toplevel components via this interface ???
+ *
+ * @author rhornig
  */
 public interface INEDTypeInfo extends INEDChangeListener {
 	/**

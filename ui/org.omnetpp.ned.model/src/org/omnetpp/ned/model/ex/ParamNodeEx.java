@@ -8,6 +8,7 @@ import org.omnetpp.ned.model.pojo.ParamNode;
 
 /**
  * Extended parameter node
+ *
  * @author rhornig
  */
 public final class ParamNodeEx extends ParamNode implements IHasName, IHasParent {

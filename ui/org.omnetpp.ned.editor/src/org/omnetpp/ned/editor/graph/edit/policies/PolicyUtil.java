@@ -5,6 +5,7 @@ import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 
 /**
  * Static helper functions for policy classes
+ *
  * @author rhornig
  */
 public class PolicyUtil {

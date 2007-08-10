@@ -10,6 +10,7 @@ import org.omnetpp.ned.model.interfaces.IHasType;
 /**
  * A factory used to create new model elements corresponding to graphical editor elements
  * Type and name must ba provided.
+ *
  * @author rhornig
  */
 public class ModelFactory implements CreationFactory {

@@ -12,6 +12,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Action to edit the parameters
+ *
  * @author rhornig
  */
 public class ParametersDialogAction extends org.eclipse.gef.ui.actions.SelectionAction {

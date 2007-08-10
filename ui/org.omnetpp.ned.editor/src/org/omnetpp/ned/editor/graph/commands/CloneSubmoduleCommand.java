@@ -16,6 +16,7 @@ import org.omnetpp.ned.model.pojo.ConnectionsNode;
 
 /**
  * Clones a set of submodules (copy operation)
+ *
  * @author rhornig
  */
 public class CloneSubmoduleCommand extends Command {

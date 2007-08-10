@@ -8,6 +8,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Handle direct edit request which is a rename in our case
+ *
  * @author rhornig
  */
 public class NedDirectEditPolicy extends DirectEditPolicy {

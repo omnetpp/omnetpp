@@ -8,6 +8,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
  * A property source for displaying names
+ *
  * @author rhornig
  */
 public class NamePropertySource implements IPropertySource2 {

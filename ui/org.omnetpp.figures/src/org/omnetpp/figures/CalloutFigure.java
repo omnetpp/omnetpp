@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 
 /**
  * A figure that resembles a cartoon style callout box. Can show/hide itself using a timer
+ *
  * @author rhornig
  */
 // you may attach the figure to an other figure at specific anchor points, for example:

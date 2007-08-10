@@ -6,6 +6,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Adds a NED element to the model tree
+ *
  * @author rhornig
  */
 public class AddNEDElementCommand extends Command {

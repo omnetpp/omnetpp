@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 
 /**
  * Clones a set of {@link INEDElement} (copy operation)
+ *
  * @author rhornig
  */
 public class CloneCommand extends Command {

@@ -21,6 +21,7 @@ import de.unikassel.imageexport.providers.AbstractFigureProvider;
 /**
  * Figure provider for image export plugins, returns all compound module figures
  * in the given file, along with their names.
+ *
  * @author rhornig
  */
 public class NedFigureProvider extends AbstractFigureProvider {

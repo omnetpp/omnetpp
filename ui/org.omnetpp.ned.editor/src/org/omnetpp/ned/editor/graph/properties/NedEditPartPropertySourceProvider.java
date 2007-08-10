@@ -16,6 +16,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Provides property sources for NED elements
+ *
  * @author rhornig
  */
 public class NedEditPartPropertySourceProvider implements IPropertySourceProvider {

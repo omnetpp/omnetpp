@@ -27,6 +27,7 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 
 /**
  * Adds Graphical ned editor actions to the action bar.
+ *
  * @author rhornig
  */
 //FIXME why doesn't this comment go into the normal class comment? --Andras

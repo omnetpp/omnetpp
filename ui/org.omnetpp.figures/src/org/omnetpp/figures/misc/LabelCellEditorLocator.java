@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Places the cell editor over the provided label (and sets its fontsize too)
+ *
  * @author rhornig
  */
 public class LabelCellEditorLocator implements CellEditorLocator {

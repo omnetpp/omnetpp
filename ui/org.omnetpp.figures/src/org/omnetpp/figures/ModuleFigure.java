@@ -6,6 +6,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
  * It is a generic 'Module' (anything that can have a display string and a connection)
+ *
  * @author rhornig
  */
 abstract public class ModuleFigure extends Figure {

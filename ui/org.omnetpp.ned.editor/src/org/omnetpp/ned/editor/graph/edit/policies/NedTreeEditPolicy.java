@@ -9,6 +9,7 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 
 /**
  * Edit policy for tree editing of GEF parts. Used in the graphical editor's outline view.
+ *
  * @author rhornig
  */
 public class NedTreeEditPolicy extends AbstractEditPolicy {

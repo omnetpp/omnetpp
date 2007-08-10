@@ -4,6 +4,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Objects that have a name property
+ *
  * @author rhornig
  */
 public interface IHasName extends INEDElement {

@@ -7,6 +7,7 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 /**
  * Adds a newly created Submodule element to a compound module.
+ *
  * @author rhornig
  */
 public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {

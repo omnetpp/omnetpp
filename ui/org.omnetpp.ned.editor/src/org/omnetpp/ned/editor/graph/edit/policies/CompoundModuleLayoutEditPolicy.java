@@ -33,6 +33,7 @@ import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
  * Layout policy used in compound modules. Handles cloning, creation, resizing of submodules
+ *
  * @author rhornig
  */
 public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {

@@ -12,7 +12,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 /** 
  * The NedAnnotationHover provides the hover support for java editors.
  */
- 
 public class NedAnnotationHover implements IAnnotationHover {
 
     /* (non-Javadoc)

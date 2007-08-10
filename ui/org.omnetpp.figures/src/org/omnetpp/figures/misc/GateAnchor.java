@@ -5,6 +5,7 @@ import org.eclipse.draw2d.IFigure;
 
 /**
  * Provides support for Ned Model specific behaviors ie: gatename
+ *
  * @author rhornig
  */
 public class GateAnchor extends ChopboxAnchor {

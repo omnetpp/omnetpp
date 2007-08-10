@@ -27,6 +27,7 @@ import org.omnetpp.ned.model.INEDElement;
 /**
  * A marker synchronizer specialized to sync NED parsing and consistency problems. Can accept error stores
  * received from the NED parser.
+ *
  * @author rhornig
  */
 public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {

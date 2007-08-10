@@ -6,7 +6,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * Behaves exactly like the rectangle (i.e. can be used with XYLayout, however, it adds
  * additional info what makes possible additional layouting specific to submodule vectors
  * (ring, mesh etc...)
- * 
+ *
  * @author rhornig
  */
 public class SubmoduleConstraint extends Rectangle {

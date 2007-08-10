@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.edit;
 
 /**
  * Interface to allow checking whether the edit part should be edited
+ *
  * @author rhornig
  */
 public interface IReadOnlySupport {

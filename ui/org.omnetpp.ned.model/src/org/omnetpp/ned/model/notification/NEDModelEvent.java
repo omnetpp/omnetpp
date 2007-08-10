@@ -5,6 +5,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Defines a generic model change
+ *
  * @author rhornig
  */
 public abstract class NEDModelEvent {

@@ -9,6 +9,7 @@ import org.omnetpp.ned.model.pojo.GateNode;
 
 /**
  * Extended GateNode
+ *
  * @author rhornig
  */
 public final class GateNodeEx extends GateNode implements IHasIndex, IHasName, IHasParent {

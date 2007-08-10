@@ -14,6 +14,7 @@ import org.omnetpp.ned.model.pojo.ConnectionsNode;
 /**
  * Deletes an object from the model and as a special case also removes all
  * associated connections if the object was a SubmoduleNode
+ *
  * @author rhornig
  */
 public class DeleteCommand extends Command {

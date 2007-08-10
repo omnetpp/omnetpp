@@ -4,6 +4,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * An object that can be added / removed to/from the model tree
+ *
  * @author rhornig
  */
 public interface IHasParent extends INEDElement {

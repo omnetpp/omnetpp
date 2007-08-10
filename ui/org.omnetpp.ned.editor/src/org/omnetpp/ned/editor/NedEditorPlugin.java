@@ -8,6 +8,7 @@ import org.osgi.framework.BundleContext;
 
 /**
  * Plugin activator for ned editor plugin
+ *
  * @author rhornig
  */
 public class NedEditorPlugin extends AbstractUIPlugin {

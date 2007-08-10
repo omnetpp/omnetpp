@@ -11,6 +11,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
  * Property source to display all submodules for a given compound module
+ *
  * @author rhornig
  */
 public class GateListPropertySource extends NotifiedPropertySource {

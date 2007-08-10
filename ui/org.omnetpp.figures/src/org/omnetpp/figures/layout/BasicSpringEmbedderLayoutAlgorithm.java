@@ -15,6 +15,8 @@ import org.eclipse.draw2d.geometry.Point;
  *    500 x 10 pixels)
  *  - ignores connections to the parent module (nodes which are connected
  *    to the parent may end up in the middle of the layout)
+ *
+ * @author andras
  */
 public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgorithm
 {

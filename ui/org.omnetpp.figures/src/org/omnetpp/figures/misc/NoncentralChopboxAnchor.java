@@ -8,6 +8,7 @@ import org.eclipse.gef.handles.HandleBounds;
 
 /**
  * Creates a special chopbox anchor, where the reference point is not the owner figure's center
+ *
  * @author rhornig
  */
 public class NoncentralChopboxAnchor extends GateAnchor {

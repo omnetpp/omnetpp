@@ -7,6 +7,7 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Adds support for deleting model elements
+ *
  * @author rhornig
  */
 public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.ComponentEditPolicy {

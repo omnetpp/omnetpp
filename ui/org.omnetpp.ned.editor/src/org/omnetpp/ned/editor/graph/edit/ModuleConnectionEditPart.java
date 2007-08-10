@@ -22,6 +22,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Implements a Connection editpart to represent a wire-like connection.
+ *
  * @author rhornig
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart
