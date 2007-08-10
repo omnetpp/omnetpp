@@ -94,8 +94,6 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
         return resize.unwrap();
     }
 
-
-
     /**
      * Generate a constraint change command in response to a pin/unpin request
      * @param request

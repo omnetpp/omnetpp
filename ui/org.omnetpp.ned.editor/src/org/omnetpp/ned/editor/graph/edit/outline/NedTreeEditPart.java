@@ -42,9 +42,6 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
 
     /**
      * Constructor initializes this with the given model.
-     *
-     * @param model
-     *            Model for this.
      */
     public NedTreeEditPart(Object model) {
         super(model);

@@ -385,16 +385,14 @@ public class CompoundModuleFigure extends ModuleFigure
 	}
 
 	/**
-	 * Utility function to add a submodule child figure to the correct layer
-	 * @param submoduleFig
+	 * Adds the given submodule child figure to the correct layer
 	 */
 	public void addSubmoduleFigure(SubmoduleFigure submoduleFig) {
 		pane.add(submoduleFig);
 	}
 
 	/**
-	 * Removes a submoduleFigure from the compound module
-	 * @param submoduleFig
+	 * Removes a submodule child figure from the compound module
 	 */
 	public void removeSubmoduleFigure(SubmoduleFigure submoduleFig) {
 		pane.remove(submoduleFig);
@@ -402,24 +400,28 @@ public class CompoundModuleFigure extends ModuleFigure
 
 	/**
 	 * Adds a connection figure to the connection layer of the compound module
-	 * @param conn
 	 */
 	public void addConnectionFigure(Connection conn) {
 		connectionLayer.add(conn);
 	}
 
+	/**
+	 * Removes a connection child figure from the compound module
+	 */
 	public void removeConnectionFigure(Connection conn) {
 		connectionLayer.remove(conn);
 	}
 
 	/**
 	 * Adds a message decoration figure above connection layer of the compound module
-	 * @param conn
 	 */
 	public void addMessageFigure(IFigure messageFigure) {
 		messageLayer.add(messageFigure);
 	}
 
+	/**
+	 * Removes a message decoration child figure from the compound module
+	 */
 	public void removeMessageFigure(IFigure messageFigure) {
 		messageLayer.remove(messageFigure);
 	}

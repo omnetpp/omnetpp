@@ -24,7 +24,7 @@ import org.omnetpp.launch.LaunchPlugin;
 public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab implements
     SelectionListener, ModifyListener {
 
-    protected static final String EMPTY_STRING = ""; 
+    protected static final String EMPTY_STRING = "";
 
     protected OmnetppLaunchTab embeddingTab = null;
     /**
@@ -127,16 +127,16 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
     }
 
     /**
-     * @param path
+     * Utility function: constructs a path that is @param path
      * @param relativeTo
      * @return The provided path in relative form to the relativeTo path
      */
     protected static IPath makeRelativePathTo(IPath path, IPath relativeTo) {
 
-        int goUpLeveles = relativeTo.segmentCount() - path.matchingFirstSegments(relativeTo);
+        int goUpLevels = relativeTo.segmentCount() - path.matchingFirstSegments(relativeTo);
         // walk up until the first common segment
         IPath resultPath = new Path("");
-        for (int i=0; i<goUpLeveles; ++i)
+        for (int i=0; i<goUpLevels; ++i)
             resultPath = resultPath.append("../");
         // add the rest of the path (non common part)
         return resultPath.append(path.removeFirstSegments(path.matchingFirstSegments(relativeTo))).makeRelative();

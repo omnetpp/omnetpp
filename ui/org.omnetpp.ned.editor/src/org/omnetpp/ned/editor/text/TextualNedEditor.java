@@ -1,7 +1,5 @@
 package org.omnetpp.ned.editor.text;
 
-
-
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -143,9 +141,9 @@ public class TextualNedEditor extends TextEditor {
 			fOutlinePage.update();
 	}
 
-	/** The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method performs any extra
-	 * save as behavior required by the ned editor.
+	/**
+	 * The TextualNedEditor implementation of this AbstractTextEditor
+	 * method performs any extra behaviour needed by the NED editor.
 	 */
 	@Override
     public void doSaveAs() {
@@ -154,12 +152,10 @@ public class TextualNedEditor extends TextEditor {
 			fOutlinePage.update();
 	}
 
-	/** The <code>TextualNedEditor</code> implementation of this
+	/**
+	 * The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method performs sets the
 	 * input of the outline page after AbstractTextEditor has set input.
-	 *
-	 * @param input the editor input
-	 * @throws CoreException in case the input can not be set
 	 */
 	@Override
     public void doSetInput(IEditorInput input) throws CoreException {
@@ -172,8 +168,7 @@ public class TextualNedEditor extends TextEditor {
 	}
 
 	/**
-	 * Sets the content of the text editor with the given string
-	 * @param content
+	 * Sets the content of the text editor to the given string.
 	 */
 	public void setText(String content) {
 		getDocument().set(content);

@@ -52,7 +52,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     // submodule related methods
     /**
-     * Returns all submodule containd in THIS module.
+     * Returns all submodules contained in THIS module.
      */
 	protected List<SubmoduleNodeEx> getOwnSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
@@ -124,7 +124,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     /**
      * Remove a specfic child from this module.
-     * @param child
      */
 	public void removeSubmodule(SubmoduleNodeEx child) {
         child.removeFromParent();
@@ -152,12 +151,11 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
     /**
-     * Insert the child at the give position.
-     * @param insertBefore
-     * @param child
+     * Insert the submodule child at the given position. (Internally, a
+     * "submodules:" node will be created if not yet present).
      */
 	public void insertSubmodule(SubmoduleNodeEx insertBefore, SubmoduleNodeEx child) {
-		// check wheter Submodules node exists and create one if doesn't
+		// check whether Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null)
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
@@ -269,8 +267,8 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * Add this connection to the model (connections section)
-     * @param conn
+     * Add this connection to the model (to the "connections" section; it will
+     * be created if not yet exists)
      */
 	public void addConnection(ConnectionNodeEx conn) {
 		insertConnection(null, conn);
@@ -279,6 +277,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     /**
      * Add this connection to the model (connections section)
      * @param insertBefore The sibling connection before we want to insert our conn
+     * FIXME what if insertBefore==null ??? --Andras
      * @param conn
      */
 	public void insertConnection(ConnectionNodeEx insertBefore, ConnectionNodeEx conn) {
@@ -296,7 +295,6 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     /**
      * Removes the connecion from the model
-     * @param conn
      */
 	public void removeConnection(ConnectionNodeEx conn) {
 		conn.removeFromParent();

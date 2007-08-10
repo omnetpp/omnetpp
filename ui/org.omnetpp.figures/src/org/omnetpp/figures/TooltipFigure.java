@@ -40,9 +40,6 @@ public class TooltipFigure extends FlowPage {
 
     /**
      * Sets the text of the TextFlow to the given value.
-     *
-     * @param newText
-     *            the new text value.
      */
     public void setText(String newText) {
         textFlow.setText(newText);

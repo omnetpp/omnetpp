@@ -5,7 +5,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
- * Anchor where the reference point can be anything inside the figure and the ancor is placed
+ * Anchor where the reference point can be anything inside the figure and the anchor is placed
  * on the bounding box, or it can be pinned down to any inside point.
  *
  * @author rhornig
@@ -19,20 +19,17 @@ public class PinnableNoncentralChopboxAnchor extends NoncentralChopboxAnchor {
     private boolean pinnedDown = false;
 
     /**
-     * Create an anchor in unpinned state (default loc is the middle of the owner once it's
-     * pinned down.
-     * @param owner
+     * Create an anchor in unpinned state. (If it gets pinned, default location
+     * will be the middle of the owner.)
      */
     public PinnableNoncentralChopboxAnchor(IFigure owner) {
         super(owner);
     }
 
-
     /**
-     * Create an anchor whith given location in pinned down state.
-     * @param owner
-     * @param pinnedLocationX
-     * @param pinnedLocationY
+     * Create an anchor at the given location in pinned-down state.
+     * The location x, y parameters are relative to the owner area,
+     * i.e. 0.0 means left/top, and 1.0 means right/bottom.
      */
     public PinnableNoncentralChopboxAnchor(IFigure owner, double pinnedLocationX, double pinnedLocationY) {
         super(owner);
@@ -44,7 +41,9 @@ public class PinnableNoncentralChopboxAnchor extends NoncentralChopboxAnchor {
 
     @Override
     public Point getLocation(Point foreignRef) {
-        if (!isPinnedDown()) return super.getLocation(foreignRef);
+        if (!isPinnedDown())
+            return super.getLocation(foreignRef);
+
         // if we are pinned, return the current fixed reference point as the location
         return getReferencePoint();
     }
@@ -62,11 +61,9 @@ public class PinnableNoncentralChopboxAnchor extends NoncentralChopboxAnchor {
         return new Point(Math.round(oX), Math.round(oY));
     }
 
-
     public boolean isPinnedDown() {
         return pinnedDown;
     }
-
 
     public void setPinnedDown(boolean pinnedDown) {
         if (this.pinnedDown != pinnedDown) {

@@ -18,6 +18,7 @@ public class ChangeDisplayPropertyCommand extends Command {
 
 
     /**
+     * Constructor.
      * @param element The element where display property must be set
      * @param prop
      */

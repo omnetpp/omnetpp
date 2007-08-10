@@ -33,7 +33,7 @@ public class BlockingMenu extends Menu {
 
 	/**
 	 * Opens a Menu and blocks the execution so it waits until selection is done.
-	 * @return The selected MenuItem, or null if the menu was cancelled.
+	 * Returns the selected MenuItem, or null if the menu was cancelled.
 	 */
 	public MenuItem open() {
 		setVisible(true);
@@ -47,8 +47,7 @@ public class BlockingMenu extends Menu {
 	}
 
 	/**
-	 * Creates a new menuItem and adds it to the menu.
-	 * @param style
+	 * Creates a new MenuItem with the given SWT style, and adds it to the menu.
 	 */
 	public MenuItem addMenuItem(int style) {
 		MenuItem mi = new MenuItem(this, style);

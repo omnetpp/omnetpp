@@ -14,6 +14,8 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
  * DirectEditManager for renameable objects
+ *
+ * @author rhornig
  */
 public class RenameDirectEditManager extends DirectEditManager {
 

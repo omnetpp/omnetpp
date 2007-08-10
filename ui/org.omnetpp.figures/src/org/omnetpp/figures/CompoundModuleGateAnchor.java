@@ -98,7 +98,7 @@ public class CompoundModuleGateAnchor extends GateAnchor {
 
 	/**
 	 * Sets the edges where the connection is free to move
-	 * @param edges
+	 * @param edges  TODO what the heck does "edges" mean ????
 	 */
 	public void setFreeEdge(int edges) {
 		edgeConstraint = edges;

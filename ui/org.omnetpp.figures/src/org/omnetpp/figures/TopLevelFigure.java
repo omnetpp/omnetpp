@@ -12,7 +12,7 @@ import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
- * Figure to represent top level components like SimpleModule, Channel, 
+ * Figure to represent top level components like SimpleModule, Channel,
  * Channel Interface and Module Interface.
  *
  * @author rhornig
@@ -33,8 +33,8 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
     }
 
     /**
-	 * Adjusts the image properties using a displayString object (except the location and size)
-	 * @param dps
+	 * Adjusts the image properties using a displayString object (except the location
+	 * and size)
 	 */
 	public void setDisplayString(IDisplayString dps) {
 
