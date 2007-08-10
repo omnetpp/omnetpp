@@ -642,7 +642,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // ******************* notification helpers ************************************
 
     /**
-     * @return The listener list attached to the plugin which is notified about
+     * Returns the listener list attached to the plugin which is notified about
      * TOP LEVEL COMPONENT changes (name, inheritance and visual appearence changes)
      */
     public NEDChangeListenerList getNEDComponentChangeListenerList() {
@@ -652,7 +652,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * @return The listener list attached to the plugin which is notified about
+     * Returns the listener list attached to the plugin which is notified about
      * ANY change in the NED model (ie. any change in any file)
      */
     public NEDChangeListenerList getNEDModelChangeListenerList() {

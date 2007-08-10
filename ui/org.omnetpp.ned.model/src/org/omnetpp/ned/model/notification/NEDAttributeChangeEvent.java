@@ -26,21 +26,21 @@ public class NEDAttributeChangeEvent extends NEDModelEvent {
     }
 
     /**
-     * @return The attribute that has changed
+     * Returns the attribute that has changed
      */
     public String getAttribute() {
         return attribute;
     }
 
     /**
-     * @return The new value of the attribute
+     * Returns the new value of the attribute
      */
     public Object getNewValue() {
         return newValue;
     }
 
     /**
-     * @return The original value of the attribute
+     * Returns the original value of the attribute
      */
     public Object getOldValue() {
         return oldValue;

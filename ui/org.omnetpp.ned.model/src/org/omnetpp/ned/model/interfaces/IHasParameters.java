@@ -11,13 +11,13 @@ import org.omnetpp.ned.model.INEDElement;
 public interface IHasParameters extends INEDElement {
 
     /**
-     * @return The name / parameter node association. You SHOULD NOT modify the returned
+     * Returns the name / parameter node association. You SHOULD NOT modify the returned
      * map.
      */
     public Map<String, INEDElement> getParams();
 
     /**
-     * @return The name / parameter node association where the last parameter - value
+     * Returns the name / parameter node association where the last parameter - value
      * assignment was done. You SHOULD NOT modify the returned map.
      */
     public Map<String, INEDElement> getParamValues();

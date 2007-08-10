@@ -31,7 +31,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public String getName();
 
     /**
-     * @return The resolver implementation that created this typeInfo object
+     * Returns the resolver implementation that created this typeInfo object
      */
     public INEDTypeResolver getResolver();
 
@@ -82,11 +82,12 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, INEDElement> getSubmods();
 
     /**
-     * @return All types derived from this type
+     * Returns the list of all types derived from this type
      */
     public List<INEDTypeInfo> getAllDerivedTypes();
+    
     /**
-     * @return All types that are using internally this type (i.e. compound
+     * Returns the list of all types that are using internally this type (i.e. compound
      * modules that contain submodules or connections with this type)
      */
     public List<INEDTypeInfo> getAllUsingTypes();

@@ -23,7 +23,7 @@ public abstract class NEDModelEvent {
     }
 
     /**
-     * @return Which NED element caused the change notification
+     * Returns which element caused the change notification
      */
     public INEDElement getSource() {
         return source;
@@ -38,8 +38,8 @@ public abstract class NEDModelEvent {
     }
 
     /**
-     * @return The serial number of the event. Each event has a unique serial number,which
-     *         increases as new events are created
+     * Returns the unique serial number of the event. (Serial numbers increase
+     * as new events are created.)
      */
     public long getSerial() {
         return serial;

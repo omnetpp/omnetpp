@@ -37,14 +37,14 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
     }
 
     /**
-     * @return The new child node that was inserted
+     * Returns the new child node that was inserted
      */
     public INEDElement getChild() {
         return child;
     }
 
     /**
-     * @return The location of the change (The new child was removed before this node)
+     * Returns the location of the change (The new child was removed before this node)
      *         (or was removed at the end if it's NULL)
      */
     public INEDElement getOldLocation() {
@@ -52,7 +52,7 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
     }
 
     /**
-     * @return The location of the change (The new child was added before this node)
+     * Returns the location of the change (The new child was added before this node)
      *         (or was appended at the end if it's NULL)
      */
     public INEDElement getNewLocation() {
@@ -60,7 +60,7 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
     }
 
     /**
-     * @return The type of this change.
+     * Returns the type of this change.
      */
     public Type getType() {
         return type;

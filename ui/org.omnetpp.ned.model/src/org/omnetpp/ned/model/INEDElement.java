@@ -269,7 +269,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public void setUserData(Object key, Object value);
 
 	/**
-	 * @return User specific data, not belonging to the model directly
+	 * Returns user specific data, not belonging to the model directly
 	 */
 	public Object getUserData(Object key);
 
@@ -281,7 +281,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public boolean hasChildren();
 
 	/**
-	 * @return Derived classes can override to print extra transient data for debugging
+	 * Derived classes can override this method to print extra transient information for debugging
 	 */
 	public String debugString();
 
@@ -310,7 +310,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
 
 	/**
-	 * @return The listener list attached to this element
+	 * Returns the listener list attached to this element
 	 */
 	public NEDChangeListenerList getListeners();
 
@@ -336,23 +336,23 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDElement getNEDModel();
 
 	/**
-	 * @return The banner comment belonging to the element (if any)
+	 * Returns the banner comment belonging to the element (if any)
 	 */
 	public String getComment();
 
 	/**
-	 * @return The re-generated source (text form) of this element
+	 * Returns the re-generated source (text form) of this element
 	 */
 	public String getSource();
 
 	/**
-	 * @return The collection that contains the error marker ids attached to this ned element
-	 * if the size is > 0 the NEDElement has an error
+	 * Returns a collection that contains the error marker ids attached to this ned element
+	 * if the size is > 0 the element has an error
 	 */
 	public List<Integer> getErrorMarkerIds();
 
 	/**
-	 * @return true if the NEDELEMENT has attached errors/markers
+	 * Returns the true if the element has attached errors/markers
 	 */
 	public boolean hasErrorMarkers();
 

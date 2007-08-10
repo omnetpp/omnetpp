@@ -103,7 +103,7 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
     }
 
     /**
-     * @return The currently selected EXE file (or null if none selected)
+     * Returns the currently selected EXE file (or null if none selected)
      */
     protected IFile getExeFile() {
         IFile exefile = null;
@@ -118,7 +118,7 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
     }
 
     /**
-     * @return The project in which the currently selected EXE file is located
+     * Returns the project in which the currently selected EXE file is located
      */
     protected IProject getProject() {
         IFile exeFile = getExeFile();

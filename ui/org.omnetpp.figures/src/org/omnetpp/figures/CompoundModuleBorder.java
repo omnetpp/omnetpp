@@ -45,7 +45,7 @@ public class CompoundModuleBorder extends CompoundBorder implements LabeledBorde
 	}
 
 	/**
-	 * @return the label for this border
+	 * Returns the label for this border
 	 */
 	public String getLabel() {
 		return getTitleBorder().getLabel();

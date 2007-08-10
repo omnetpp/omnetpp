@@ -9,7 +9,7 @@ import org.eclipse.gef.tools.CellEditorLocator;
 public interface IDirectEditSupport {
 
     /**
-     * @return The text that should be direct edited
+     * Returns the text that should be direct edited
      */
     String getDirectEditText();
 
@@ -21,7 +21,7 @@ public interface IDirectEditSupport {
     void setDirectEditTextVisible(boolean visible);
 
     /**
-     * @return An editor locator to place the cell editor at the correct place
+     * Returns an editor locator for placing the cell editor
      */
     CellEditorLocator getDirectEditCellEditorLocator();
 }

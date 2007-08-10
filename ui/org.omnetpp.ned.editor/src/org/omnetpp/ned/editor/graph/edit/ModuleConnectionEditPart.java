@@ -184,7 +184,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     }
 
     /**
-     * @return The compound module part this connection part belongs to
+     * Returns the compound module part this connection part belongs to
      */
     public CompoundModuleEditPart getCompoundModulePart() {
         return (CompoundModuleEditPart)getParent();

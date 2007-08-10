@@ -601,8 +601,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     /**
-     * @return The selected library files
-     * on error it returns NULL
+     * Returns the selected library files. Returns null on on error
      */
     private IFile[] getLibFiles() {
         List<IFile> result = new ArrayList<IFile>();
@@ -620,8 +619,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     /**
-     * @return The selected ini files or (omnetpp.ini) if the inifile text line is empty
-     * on error it returns NULL
+     * Returns the selected ini files or (omnetpp.ini) if the inifile text line 
+     * is empty. Returns null on error.
      */
     private IFile[] getIniFiles() {
         List<IFile> result = new ArrayList<IFile>();
@@ -668,14 +667,14 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     /**
-     * @return Whether the currently selected line in the config combo is a scenario
+     * Returns whether the currently selected line in the config combo is a scenario
      */
     private boolean isScenario() {
         return fConfigCombo.getText().contains("(scenario)");
     }
 
     /**
-     * @return The currently selected config name (after stripping the comments an other stuff)
+     * Returns the currently selected config name (after stripping the comments an other stuff)
      */
     private String getConfigName() {
         return StringUtils.substringBefore(fConfigCombo.getText(), "--").trim();

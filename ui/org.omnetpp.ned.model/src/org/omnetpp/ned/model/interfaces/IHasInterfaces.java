@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 public interface IHasInterfaces extends INEDElement {
 
     /**
-     * @return All ned elements (interface nodes) that are implemented by this object
+     * Returns the list of all ned elements (interface nodes) that are implemented by this object
      */
     public List<InterfaceNameNode> getAllInterfaces();
 }

@@ -71,7 +71,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     /**
-     * @return Helper function to return the model object with correct type
+     * Convenience method to return the model object with the correct type
      */
     public CompoundModuleNodeEx getCompoundModuleModel() {
         return (CompoundModuleNodeEx)getModel();
@@ -177,7 +177,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	}
 
     /**
-     * @return The current scaling factor of the compound module
+     * Returns the current scaling factor of the compound module
      */
     @Override
     public float getScale() {
@@ -190,7 +190,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     /**
-     * @return The MAP that contains the connection model - controller associations
+     * Returns the MAP that contains the connection model - controller associations
      */
     public Map<Object, ConnectionEditPart> getModelToConnectionPartsRegistry() {
         return modelToConnectionPartsRegistry;

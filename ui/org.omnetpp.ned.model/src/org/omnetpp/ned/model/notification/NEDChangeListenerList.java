@@ -38,7 +38,7 @@ public class NEDChangeListenerList {
 	}
 
 	/**
-	 * @return The listener list's copy so adding/removing listeners during
+	 * Returns the listener list's copy so adding/removing listeners during
      * notification is allowed.
 	 */
 	public INEDChangeListener[] getListeners() {

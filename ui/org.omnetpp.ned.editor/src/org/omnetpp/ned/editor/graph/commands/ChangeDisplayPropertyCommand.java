@@ -59,14 +59,14 @@ public class ChangeDisplayPropertyCommand extends Command {
     }
 
     /**
-     * @return The original value of the element's property
+     * Returns the original value of the element's property
      */
     public String getOldValue() {
         return oldValue;
     }
 
     /**
-     * @return The element to be changed
+     * Returns the element to be changed
      */
     public IHasDisplayString getElement() {
         return element;

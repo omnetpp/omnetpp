@@ -21,7 +21,7 @@ public final class ParamNodeEx extends ParamNode implements IHasName, IHasParent
     }
 
     /**
-     * @return Which module or channel or any named element contains this parameter definition
+     * Returns the module, channel or any named element that contains this parameter definition
      */
     public INEDElement getContainingTopLevelElement() {
         INEDElement parent = getParent();

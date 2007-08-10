@@ -57,7 +57,7 @@ public class ConnectionCommand extends Command {
     }
     
     /**
-     * @return True if we are currently creating a new connection 
+     * Returns true if we are currently creating a new connection 
      */
     public boolean isCreating() {
         // new connections are not inserted into the model
@@ -65,7 +65,7 @@ public class ConnectionCommand extends Command {
     }
     
     /**
-     * @return True if we are deleting the given connection
+     * Returns true if we are deleting the given connection
      */
     public boolean isDeleting() {
         // deleting if both src and dest module is null
@@ -73,14 +73,14 @@ public class ConnectionCommand extends Command {
     }
     
     /**
-     * @return If we are reconnecting the source end
+     * Returns true if we are reconnecting the source end
      */
     public boolean isSrcMoving() {
         return !isCreating() && !isDeleting() && srcModule != oldSrcModule;
     }
     
     /**
-     * @return If we are reconnecting the source end
+     * Returns true if we are reconnecting the source end
      */
     public boolean isDestMoving() {
         return !isCreating() && !isDeleting() && destModule != oldDestModule;
@@ -210,15 +210,15 @@ public class ConnectionCommand extends Command {
 	}
     
     /**
-     * @return The connection node used as a template, for the command. If the command is executed
-     * the model will have the same content as the temaplate connection.
+     * Returns the connection node used as a template, for the command. If the command is executed
+     * the model will have the same content as the template connection.
      */
     public ConnectionNode getConnectionTemplate() {
     	return newConn;
     }
 
     /**
-     * @return The parent editPart of this connection
+     * Returns the parent editPart of this connection
      */
     public CompoundModuleEditPart getParentEditPart() {
         return parentEditPart;

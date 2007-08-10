@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.DialogCellEditor;
 public interface IDialogCellEditorProvider {
 
     /**
-     * @return A dialog editor that allows the editing of the property source.
+     * Returns a dialog editor that allows the editing of the property source.
      * DelegatingPropertySource uses this editor for editing
      */
     DialogCellEditor getCellEditor();

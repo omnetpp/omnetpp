@@ -159,7 +159,7 @@ public class ParametersDialog extends TitleAreaDialog {
         }
 
         /**
-         * @return The original node if no change occurred, or a new one with modified attributes
+         * Returns the original node if no change occurred, or a new one with modified attributes
          */
         public ParamNodeEx getChangedParamNode() {
             ParamNodeEx result = null;

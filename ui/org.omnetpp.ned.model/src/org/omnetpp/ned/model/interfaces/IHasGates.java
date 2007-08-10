@@ -11,12 +11,12 @@ import org.omnetpp.ned.model.INEDElement;
 public interface IHasGates extends INEDElement {
 
     /**
-     * @return All Gate elements
+     * Returns the list of all gate elements
      */
     Map<String, INEDElement> getGates();
 
     /**
-     * @return All Gate elements wheter size is specified
+     * Returns the list of all gate elements where size is specified
      */
     Map<String, INEDElement> getGateSizes();
 

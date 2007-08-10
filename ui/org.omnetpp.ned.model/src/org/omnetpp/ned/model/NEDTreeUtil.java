@@ -302,14 +302,14 @@ public class NEDTreeUtil {
     }
 
     /**
-     * @return The default content provider for ned model trees
+     * Returns the default content provider for ned model trees
      */
     public static ITreeContentProvider getNedModelContentProvider() {
         return nedModelContentProvider;
     }
 
     /**
-     * @return The default label/icon provider for ned model trees
+     * Returns the default label/icon provider for ned model trees
      */
     public static ILabelProvider getNedModelLabelProvider() {
         return nedModelLabelProvider;

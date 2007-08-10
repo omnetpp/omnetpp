@@ -183,14 +183,14 @@ public class TextualNedEditor extends TextEditor {
 	}
 
 	/**
-	 * @return The content of the text editor
+	 * Returns the content of the text editor
 	 */
 	public String getText() {
 		return getDocument().get();
 	}
 
     /**
-     * @return The current document under editing
+     * Returns the current document under editing
      */
     public IDocument getDocument() {
         return getDocumentProvider().getDocument(getEditorInput());
@@ -299,7 +299,7 @@ public class TextualNedEditor extends TextEditor {
     }
 
     /**
-     * @return Whether the content of the editor has changed since the last markContent call.
+     * Returns whether the content of the editor has changed since the last markContent call.
      */
     public boolean hasContentChanged() {
         if (getText() == null)

@@ -164,7 +164,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	}
 
 	/**
-	 * @return The current seed value
+	 * Returns the current seed value
 	 */
 	public long getSeed() {
 		return algSeed;

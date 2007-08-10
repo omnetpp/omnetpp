@@ -29,7 +29,7 @@ public final class GateNodeEx extends GateNode implements IHasIndex, IHasName, I
     }
 
     /**
-     * @return Which module  contains this gate definition
+     * Returns the module that contains this gate definition
      */
     public INEDElement getContainingTopLevelElement() {
         INEDElement parent = getParent();

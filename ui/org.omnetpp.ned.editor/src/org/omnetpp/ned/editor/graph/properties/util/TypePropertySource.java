@@ -55,7 +55,7 @@ public abstract class TypePropertySource implements IPropertySource2 {
         }
 
         /**
-         * @return The list of possible values that will be used to fill a dropdown box.
+         * Returns the list of possible values that will be used to fill a dropdown box.
          */
         protected abstract List<String> getPossibleValues();
 

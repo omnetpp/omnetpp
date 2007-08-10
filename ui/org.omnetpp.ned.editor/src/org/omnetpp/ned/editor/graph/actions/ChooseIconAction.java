@@ -58,7 +58,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
     }
 
     /**
-     * @return The id of the selected image
+     * Returns the id of the selected image
      */
     protected String openDialogBox(String initialValue) {
         ImageSelectionDialog dialog =
@@ -71,7 +71,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
     }
 
     /**
-     * @return The command used for changing the image property
+     * Returns the command used for changing the image property
      */
     protected Command getCommand() {
         if (getSelectedObjects().size() > 0) {

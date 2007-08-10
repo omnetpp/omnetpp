@@ -14,7 +14,7 @@ public interface IHasParent extends INEDElement {
 	public void removeFromParent();
 
 	/**
-	 * @return The parent of the given model element (if inserted into the model)
+	 * Returns the parent of the given model element (if inserted into the model)
 	 */
 	public INEDElement getParent();
 }

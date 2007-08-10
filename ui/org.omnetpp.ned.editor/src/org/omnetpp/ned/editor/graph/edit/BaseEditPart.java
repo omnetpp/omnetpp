@@ -136,7 +136,7 @@ abstract public class BaseEditPart
         this.propertySource = propertySource;
     }
     /**
-     * @return Should return the type name that must be opened if the user double clicks the module
+     * Returns the type name that must be opened if the user double clicks the module
      */
     protected abstract INEDElement getNEDElementToOpen();
 }

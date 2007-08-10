@@ -204,7 +204,7 @@ public class CompoundModuleFigure extends ModuleFigure
     }
 
     /**
-     * @return the bounds where the anchors should be placed
+     * Returns the bounds where the anchors should be placed
      */
     public Rectangle getAnchorBounds() {
     	Rectangle box = getClientArea();

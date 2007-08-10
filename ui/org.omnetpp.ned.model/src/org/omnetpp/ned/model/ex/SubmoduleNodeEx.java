@@ -94,7 +94,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     }
 
 	/**
-	 * @return The compound module containing the definition of this connection
+	 * Returns the compound module containing the definition of this connection
 	 */
 	public CompoundModuleNodeEx getCompoundModule() {
         INEDElement parent = getParent();
@@ -106,16 +106,16 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 	// connection related methods
 
 	/**
-	 * @return All source connections that connect to this node and defined
-     * in the parent compound module. connections defined in derived modules
-     * are NOT included here
+	 * Returns the list of all source connections that connect to this node and defined
+	 * in the parent compound module. connections defined in derived modules
+	 * are NOT included here
 	 */
 	public List<ConnectionNodeEx> getSrcConnections() {
 		return getCompoundModule().getSrcConnectionsFor(getName());
 	}
 
     /**
-     * @return All connections that connect to this node and defined in the
+     * Returns the list of all connections that connect to this node and defined in the
      * parent compound module. connections defined in derived modules are
      * NOT included here
      */
@@ -153,7 +153,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     }
 
     /**
-     * @return All parameters assigned in this submodule's body
+     * Returns the list of all parameters assigned in this submodule's body
      */
     public List<ParamNodeEx> getOwnParams() {
         List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
@@ -189,7 +189,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 
     // gate support
     /**
-     * @return All gates assigned in this submodule's body
+     * Returns the list of all gates assigned in this submodule's body
      */
     public List<GateNodeEx> getOwnGates() {
         List<GateNodeEx> result = new ArrayList<GateNodeEx>();

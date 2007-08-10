@@ -69,7 +69,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
     /**
-     * @return All direct and inherited submodules
+     * Returns the list of all direct and inherited submodules
      */
     public List<SubmoduleNodeEx> getSubmodules() {
         List<SubmoduleNodeEx> result = getOwnSubmodules();

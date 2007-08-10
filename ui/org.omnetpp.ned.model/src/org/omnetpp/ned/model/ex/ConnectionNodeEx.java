@@ -87,7 +87,7 @@ public final class ConnectionNodeEx extends ConnectionNode
     }
 
 	/**
-	 * @return Identifier of the source module instance the connection connected to
+	 * Returns the identifier of the source module instance the connection connected to
 	 */
 	public String getSrcModuleWithIndex() {
 		String module = getSrcModule();
@@ -98,7 +98,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	}
 
 	/**
-	 * @return Identifier of the destination gate instance the connection connected to
+	 * Returns the identifier of the destination gate instance the connection connected to
 	 */
 	public String getDestModuleWithIndex() {
 		String module = getDestModule();
@@ -109,7 +109,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	}
 
 	/**
-	 * @return The fully qualified src gate name (with module, index, gate, index)
+	 * Returns the fully qualified src gate name (with module, index, gate, index)
 	 */
 	public String getSrcGateFullyQualified() {
 		String result = getSrcModuleWithIndex();
@@ -118,7 +118,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 		return result;
 	}
 	/**
-	 * @return The fully qualified dest gate name (with module, index, gate, index)
+	 * Returns the fully qualified dest gate name (with module, index, gate, index)
 	 */
 	public String getDestGateFullyQualified() {
 		String result = getDestModuleWithIndex();
@@ -128,7 +128,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	}
 
 	/**
-	 * @return Identifier of the source gate instance the connection connected to
+	 * Returns the identifier of the source gate instance the connection connected to
 	 */
 	public String getSrcGateWithIndex() {
 		String gate = getSrcGate();
@@ -142,7 +142,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	}
 
 	/**
-	 * @return Identifier of the destination gate instance the connection connected to
+	 * Returns the identifier of the destination gate instance the connection connected to
 	 */
 	public String getDestGateWithIndex() {
 		String gate = getDestGate();
@@ -167,7 +167,7 @@ public final class ConnectionNodeEx extends ConnectionNode
     }
 
     /**
-     * @return The compound module containing the definition of this connection
+     * Returns the compound module containing the definition of this connection
      */
     public CompoundModuleNodeEx getCompoundModule() {
         INEDElement parent = getParent();
@@ -264,7 +264,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 
 
     /**
-     * @return All parameters assigned in this module (inside the channel spec element)
+     * Returns a list of all parameters assigned in this module (inside the channel spec element)
      */
     public List<ParamNodeEx> getOwnParams() {
         // FIXME does not include parameters in param groups !!!

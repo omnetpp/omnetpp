@@ -536,7 +536,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * @return User specific data, not belonging to the model directly
+     * Returns the user data object, not belonging to the model directly
      */
     public Object getUserData(Object key) {
         if (userData != null)
@@ -545,7 +545,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * remove this node from the parent if any.
+     * Removes this node from the parent, if it has one.
      */
     public void removeFromParent() {
         if (getParent() != null)
@@ -557,7 +557,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * @return Derived classes can override to print extra transient data for debugging
+     * Derived classes can override to print extra transient information for debugging
      */
     public String debugString() {
         return getTagName() + " " + getAttribute("name") + getSourceLocation();
@@ -619,7 +619,7 @@ public abstract class NEDElement extends PlatformObject
     // ******************* notification helpers ************************************
 
     /**
-     * @return The listener list attached to this element
+     * Returns the listener list attached to this element
      */
     public NEDChangeListenerList getListeners() {
         if (listeners == null)
@@ -719,7 +719,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * @return The banner comment belonging to the element (if any)
+     * Returns the banner comment belonging to the element (if any)
      */
     public String getComment() {
         CommentNode cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "banner");
@@ -729,7 +729,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * @return The re-generated source (text form) of this element
+     * Returns the re-generated source (text form) of this element
      */
     public String getSource() {
         return NEDTreeUtil.generateNedSource(this, true);

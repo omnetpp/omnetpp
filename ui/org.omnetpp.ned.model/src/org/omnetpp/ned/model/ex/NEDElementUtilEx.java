@@ -192,7 +192,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	}
 
     /**
-     * @return The name of the first extends nod (or null if none present)
+     * Returns the name of the first extends nod (or null if none present)
      */
     public static String getFirstExtends(INEDElement node) {
         ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
@@ -237,7 +237,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	}
 
     /**
-     * @return The name of component but stripped any digits from the right ie: name123 would be name
+     * Returns the name of component but stripped any digits from the right ie: name123 would be name
      */
     private static String getNameBase(String name) {
         int i = name.length()-1;

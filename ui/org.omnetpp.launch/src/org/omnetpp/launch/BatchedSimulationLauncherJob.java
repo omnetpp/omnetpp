@@ -111,14 +111,15 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
     }
 
     /**
-     * @return Whether we can schedule this job (the number scheduled and unfinished jobs are < maxParalellJobs)
+     * Returns whether we can schedule this job (the number scheduled and 
+     * unfinished jobs are < maxParalellJobs)
      */
     protected synchronized boolean isSchedulable() {
         return runIndex - finishedJobs < maxParalelJobs && runIndex < runJobs.size();
     }
 
     /**
-     * @return All job has been finished
+     * Returns whether all jobs have been finished
      */
     protected synchronized boolean isFinished() {
         return finishedJobs >= runJobs.size();

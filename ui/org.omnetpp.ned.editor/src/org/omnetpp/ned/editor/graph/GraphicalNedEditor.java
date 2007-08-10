@@ -554,7 +554,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     /**
-     * @return Whether the content of the editor has changed since the last markContent call.
+     * Returns whether the content of the editor has changed since the last markContent call.
      */
     public boolean hasContentChanged() {
         return !(lastUndoCommand == getCommandStack().getUndoCommand());

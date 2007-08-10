@@ -60,12 +60,12 @@ abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPar
 	}
 
     /**
-     * @return The scale factor of the module
+     * Returns the scale factor of the module
      */
     public abstract float getScale();
 
     /**
-     * @return The compound module itself or the compound module controller
+     * Returns the compound module itself or the compound module controller
      *  which contains this controller
      */
     public abstract CompoundModuleEditPart getCompoundModulePart();

@@ -4,16 +4,17 @@ import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Elements that have type-like property
+ *
  * @author rhornig
  */
 public interface IHasType extends INEDElement {
     /**
-     * @return The type of the object
+     * Returns the type of the object
      */
     public String getType();
 
     /**
-     * @return The type info after the like keyword
+     * Returns the type info after the like keyword
      */
     public String getLikeType();
 
@@ -24,7 +25,7 @@ public interface IHasType extends INEDElement {
     public void setLikeType(String type);
 
     /**
-     * @return The like-param of the implemented if
+     * Returns the like-param of the implemented if
      */
     public String getLikeParam();
 
@@ -34,7 +35,7 @@ public interface IHasType extends INEDElement {
      */
     public void setLikeParam(String type);
     /**
-     * @return The type or the likeType if type was not specified
+     * Returns the type or the likeType if type was not specified
      */
     public String getEffectiveType();
 
@@ -44,13 +45,14 @@ public interface IHasType extends INEDElement {
     public void setType(String type);
 
     /**
-     * @return The TRypeInfo object of the TYPE of this component. ie this method checks the typename
-     *         of this element and looks up the typeinfo object to that
+     * Returns the typeinfo object of the TYPE of this component. That is, 
+     * this method checks the typename of this element, and looks up the 
+     * typeinfo object from that.
      */
     public INEDTypeInfo getTypeNEDTypeInfo();
 
     /**
-     * @return The model element that represents the type of this element
+     * Returns the model element that represents the type of this element
      */
     public INEDElement getEffectiveTypeRef();
 }

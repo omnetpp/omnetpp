@@ -9,7 +9,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 public interface IPropertySourceSupport {
 
     /**
-     * @return The cached property source (if any)
+     * Returns the cached property source (if any)
      */
     public IPropertySource getPropertySource();
 

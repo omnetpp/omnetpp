@@ -6,12 +6,12 @@ package org.omnetpp.ned.editor.graph.edit;
  */
 public interface IReadOnlySupport {
     /**
-     * @return Whether this edit part can be edited.
+     * Returns the whether this edit part can be edited.
      */
     public boolean isEditable();
 
     /**
-     * @param editable Whether the edit part will be allowed to be edited
+     * Set whether the edit part will be allowed to be edited
      */
     public void setEditable(boolean editable);
 }
