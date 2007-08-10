@@ -179,3 +179,5 @@ metadata
 bendpoints
 bendpoint
 embedder
+greyscale
+resampling

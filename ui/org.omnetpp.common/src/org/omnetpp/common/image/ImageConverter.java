@@ -243,7 +243,7 @@ public class ImageConverter {
             // OK, original image has alpha channel. Trick: we create an
             // alpha mask image (a greyscale image purely from the alpha
             // channel as input), scale it like we did the original image,
-            // then copy out the resulting grayscale values as alphas.
+            // then copy out the resulting greyscale values as alphas.
 
             // turn alpha into greyscale
             for (int y=0; y < imageData.height; y++) {
