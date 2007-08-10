@@ -44,19 +44,19 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 		}
 	}
 
-	private Map constraintMap = new HashMap();
-	private Map figuresToBounds;
-	private Map connectionToPaths;
+	private Map<Connection,Object> constraintMap = new HashMap<Connection,Object>();
+	private Map<IFigure,Rectangle> figuresToBounds;
+	private Map<Connection,Path> connectionToPaths;
 	private boolean isDirty;
 	private ShortestPathRouter algorithm = new ShortestPathRouter();
 	private IFigure container;
-	private Set staleConnections = new HashSet();
+	private Set<Connection> staleConnections = new HashSet<Connection>();
 	private LayoutListener listener = new LayoutTracker();
 
 	private FigureListener figureListener = new FigureListener() {
 		public void figureMoved(IFigure source) {
 			Rectangle newBounds = source.getBounds().getCopy();
-			if (algorithm.updateObstacle((Rectangle)figuresToBounds.get(source), newBounds)) {
+			if (algorithm.updateObstacle(figuresToBounds.get(source), newBounds)) {
 				queueSomeRouting();
 				isDirty = true;
 			}
@@ -94,7 +94,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	}
 
 	private void hookAll() {
-		figuresToBounds = new HashMap();
+		figuresToBounds = new HashMap<IFigure,Rectangle>();
 		for (int i = 0; i < container.getChildren().size(); i++)
 			addChild((IFigure)container.getChildren().get(i));
 		container.addLayoutListener(listener);
@@ -103,7 +103,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	private void unhookAll() {
 		container.removeLayoutListener(listener);
 		if (figuresToBounds != null) {
-			Iterator figureItr = figuresToBounds.keySet().iterator();
+			Iterator<IFigure> figureItr = figuresToBounds.keySet().iterator();
 			while (figureItr.hasNext()) {
 				//Must use iterator's remove to avoid concurrent modification
 				IFigure child = (IFigure)figureItr.next();
@@ -151,10 +151,11 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 		((Connection)staleConnections.iterator().next()).revalidate();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processStaleConnections() {
-		Iterator iter = staleConnections.iterator();
+		Iterator<Connection> iter = staleConnections.iterator();
 		if (iter.hasNext() && connectionToPaths == null) {
-			connectionToPaths = new HashMap();
+			connectionToPaths = new HashMap<Connection,Path>();
 			hookAll();
 		}
 
@@ -253,6 +254,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	/**
 	 * @see ConnectionRouter#route(Connection)
 	 */
+	@SuppressWarnings("unchecked")
 	public void route(Connection conn) {
 		if (isDirty) {
 			ignoreInvalidate = true;

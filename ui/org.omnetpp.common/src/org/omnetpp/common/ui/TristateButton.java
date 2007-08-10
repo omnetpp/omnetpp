@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Listener;
  * 
  * @author emiranda, <a href="mailto:klaus.wenger@u14n.com">Klaus Wenger</a>
  */
+@SuppressWarnings("unchecked")
 public class TristateButton extends Button {
     private boolean grayed;        // The "gray" state flag
     private boolean eventEn;       // Used for disabling events so that we don't self trigger them

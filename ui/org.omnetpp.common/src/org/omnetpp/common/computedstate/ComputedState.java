@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@SuppressWarnings("unchecked")
 public class ComputedState<T> {
 	private static long currentPulse = 0;
 	
