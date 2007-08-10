@@ -19,7 +19,9 @@ import org.omnetpp.ned.model.ui.NedModelContentProvider;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
- * Utility functions working on NEDELelemt trees. Conversions, serialization, dumping of trees.
+ * Utility functions working on NEDElement trees. Conversions, serialization, dumping of trees.
+ *
+ * @author rhornig
  */
 public class NEDTreeUtil {
 

@@ -10,6 +10,8 @@ import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
 
 /**
  * Configures the NED editor by adding all sorts of features into it 
+ *
+ * @author rhornig
  */
 //TODO "F3 Goto declaration" or ctrl-click "Follow Hyperlink" feature
 public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {

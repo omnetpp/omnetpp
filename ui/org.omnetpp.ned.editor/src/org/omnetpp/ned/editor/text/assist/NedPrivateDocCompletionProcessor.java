@@ -9,6 +9,8 @@ import org.omnetpp.common.editor.text.NedCompletionHelper;
 
 /**
  * Private NED documentation completion processor.
+ *
+ * @author rhornig
  */
 public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProcessor {
 

@@ -38,6 +38,8 @@ import org.omnetpp.ned.editor.text.util.NedTextViewerUndoManager;
 
 /**
  * Configuration for an <code>SourceViewer</code> which shows NED code.
+ *
+ * @author rhornig
  */
 public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 

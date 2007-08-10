@@ -17,6 +17,8 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 /**
  * Handles feedback figures during move and resize and enables / disables
  * drag and resize.
+ *
+ * @author rhornig
  */
 public class NedResizeEditPolicy extends ResizableEditPolicy {
 

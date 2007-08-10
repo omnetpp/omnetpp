@@ -22,6 +22,8 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Example implementation for an <code>ITextHover</code> which hovers over NED code.
+ *
+ * @author rhornig
  */
 // TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 public class NedTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {

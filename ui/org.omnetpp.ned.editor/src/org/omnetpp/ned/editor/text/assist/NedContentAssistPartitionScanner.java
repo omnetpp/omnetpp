@@ -9,6 +9,8 @@ import org.eclipse.jface.text.rules.*;
 
 /**
  * This scanner recognizes the different partitions needed for different content assists.
+ *
+ * @author rhornig
  */
 public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner {
 

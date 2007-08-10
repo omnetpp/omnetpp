@@ -13,6 +13,8 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 /**
  * This class has one instance per NED editor, and performs 
  * background NED parsing.
+ *
+ * @author rhornig
  */
 public class NEDReconcileStrategy implements IReconcilingStrategy {
 

@@ -14,6 +14,8 @@ import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for
  * connection handling and common display attributes.
+ *
+ * @author rhornig
  */
 abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPart {
 

@@ -9,7 +9,6 @@ import org.omnetpp.ned.model.interfaces.INamedGraphNode;
  * Change the size and location of a compound module (location cannot be changed)
  *
  * @author rhornig
- *
  */
 public class ChangeLayoutSeedCommand extends Command {
 	private int oldSeed = 1;

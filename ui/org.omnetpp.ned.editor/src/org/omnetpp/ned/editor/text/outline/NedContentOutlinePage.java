@@ -23,6 +23,8 @@ import org.omnetpp.ned.model.NEDTreeUtil;
 
 /**
  * XXX notify after every run of the reconciler
+ *
+ * @author rhornig
  */
 public class NedContentOutlinePage extends ContentOutlinePage {
 	protected IFileEditorInput fInput;

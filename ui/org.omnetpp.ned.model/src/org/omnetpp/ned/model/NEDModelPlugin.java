@@ -7,7 +7,9 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.osgi.framework.BundleContext;
 
 /**
- * The main plugin class to be used in the desktop.
+ * Activator class for the NED model plug-in.
+ *
+ * @author rhornig
  */
 public class NEDModelPlugin extends AbstractUIPlugin {
     public static String PLUGIN_ID;

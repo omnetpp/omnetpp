@@ -14,6 +14,8 @@ import org.omnetpp.ned.editor.text.NedEditorMessages;
 
 /**
  * Contributes interesting Java actions to the desktop's Edit menu and the toolbar.
+ *
+ * @author rhornig
  */
 public class TextualNedEditorActionContributor extends TextEditorActionContributor {
 	protected RetargetTextEditorAction fContentAssistProposal;

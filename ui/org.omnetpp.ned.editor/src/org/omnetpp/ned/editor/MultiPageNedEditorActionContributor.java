@@ -12,6 +12,8 @@ import org.omnetpp.ned.editor.text.actions.TextualNedEditorActionContributor;
  * Manages the installation/deinstallation of global actions for multi-page editors.
  * Responsible for the redirection of global actions to the active editor.
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
+ *
+ * @author rhornig
  */
 public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBarContributor {
     private GNEDActionBarContributor graphContrib;

@@ -3,6 +3,8 @@ package org.omnetpp.ned.model;
 /**
  * Value object, stores a line:col..line:col region in a source file. 
  * Used for relating NEDElements back to the source code.
+ *
+ * @author rhornig
  */
 public class NEDSourceRegion {
     public int startLine;

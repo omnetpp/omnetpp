@@ -9,6 +9,8 @@ import org.eclipse.jface.text.rules.*;
 
 /**
  * This scanner recognizes the different partitions needed for different syntax highlighting areas.
+ *
+ * @author rhornig
  */
 public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanner {
 

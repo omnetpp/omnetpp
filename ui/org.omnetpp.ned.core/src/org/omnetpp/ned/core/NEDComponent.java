@@ -31,6 +31,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Default implementation of INEDComponent.
+ *
+ * @author rhornig
  */
 public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 

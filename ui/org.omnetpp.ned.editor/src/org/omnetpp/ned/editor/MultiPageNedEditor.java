@@ -57,6 +57,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * Multi-page NED editor.
  *
  * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!!
+ *
+ * @author rhornig
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource {

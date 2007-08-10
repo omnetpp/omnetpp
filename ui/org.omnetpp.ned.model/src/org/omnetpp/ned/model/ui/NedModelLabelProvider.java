@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.omnetpp.ned.model.ui;
 
 import org.eclipse.jface.viewers.LabelProvider;

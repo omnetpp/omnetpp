@@ -9,6 +9,8 @@ import org.omnetpp.ned.editor.text.NedEditorMessages;
  * A toolbar action which toggles the presentation model of the
  * connected text editor. The editor shows either the highlight range
  * only or always the whole document.
+ *
+ * @author rhornig
  */
 public class NedPresentationAction extends TextEditorAction {
 

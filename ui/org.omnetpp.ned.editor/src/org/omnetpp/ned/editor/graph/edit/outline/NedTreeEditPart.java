@@ -29,7 +29,9 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.NedFileNode;
 
 /**
- * EditPart for Logic components in the Tree.
+ * EditPart for for the NED outline view.
+ *
+ * @author rhornig
  */
 public class NedTreeEditPart extends AbstractTreeEditPart implements
         INEDChangeListener, IPropertySourceSupport, IModelProvider {

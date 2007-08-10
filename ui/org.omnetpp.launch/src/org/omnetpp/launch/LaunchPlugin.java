@@ -27,6 +27,8 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * The activator class controls the plug-in life cycle
+ *
+ * @author rhornig
  */
 public class LaunchPlugin extends AbstractUIPlugin {
 

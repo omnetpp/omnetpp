@@ -32,6 +32,8 @@ import org.omnetpp.launch.LaunchPlugin;
 
 /**
  * A launch configuration tab that displays and edits omnetpp project
+ *
+ * @author rhornig
  */
 public class OmnetppMainTab extends OmnetppLaunchTab {
 

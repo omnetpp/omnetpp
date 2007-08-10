@@ -46,6 +46,8 @@ import org.omnetpp.launch.LaunchPlugin;
 // TODO check what user interface is present in the exe (-q userinterfaces) and disable which is not
 /**
  * A launch configuration tab that displays and edits omnetpp project
+ *
+ * @author rhornig
  */
 public class SimulationTab extends OmnetppLaunchTab  {
     protected final String DEFAULT_RUNTOOLTIP= "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for ALL runs) (default: 0)";

@@ -32,6 +32,8 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  * subclasses additionally provide a typed interface.
  * It extends PlatformObject to have a default IAdaptable implementation
  * primarily for PropertySheet support.
+ *
+ * @author rhornig
  */
 public abstract class NEDElement extends PlatformObject
             implements INEDElement, IDisplayStringChangeListener, IModelProvider

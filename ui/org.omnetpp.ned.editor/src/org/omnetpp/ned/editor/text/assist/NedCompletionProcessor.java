@@ -33,6 +33,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 //    org.eclipse.jdt.ui.actions.OpenEditorActionGroup
 /**
  * NED completion processor.
+ *
+ * @author rhornig
  */
 public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 

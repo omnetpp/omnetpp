@@ -11,6 +11,8 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
  * Auto indent line strategy sensitive to brackets.
+ *
+ * @author rhornig
  */
 public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 

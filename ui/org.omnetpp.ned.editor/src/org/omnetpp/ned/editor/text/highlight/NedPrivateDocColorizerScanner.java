@@ -12,6 +12,8 @@ import org.omnetpp.common.editor.text.NedCompletionHelper;
 
 /**
  * A rule based PrivatedNedDoc scanner.
+ *
+ * @author rhornig
  */
 public class NedPrivateDocColorizerScanner extends RuleBasedScanner {
 

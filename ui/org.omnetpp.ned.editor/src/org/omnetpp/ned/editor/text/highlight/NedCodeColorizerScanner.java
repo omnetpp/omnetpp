@@ -9,6 +9,8 @@ import org.omnetpp.common.editor.text.NedCompletionHelper;
 
 /**
  * A NED code scanner.
+ *
+ * @author rhornig
  */
 public class NedCodeColorizerScanner extends RuleBasedScanner {
 

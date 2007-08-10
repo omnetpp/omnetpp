@@ -11,6 +11,8 @@ import org.eclipse.gef.tools.ConnectionEndpointTracker;
  * A handle used at the end of the {@link org.eclipse.draw2d.Connection}.
  * This is treated differently than the target of the Connection.
  * Redefined to provide Ned
+ *
+ * @author rhornig
  */
 public final class NedConnectionStartHandle extends ConnectionHandle
 {

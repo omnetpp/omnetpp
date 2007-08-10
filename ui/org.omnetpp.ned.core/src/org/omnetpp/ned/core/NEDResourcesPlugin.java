@@ -23,6 +23,8 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
  * The main plugin class to be used in the desktop.
+ *
+ * @author rhornig
  */
 public class NEDResourcesPlugin extends AbstractUIPlugin {
 
