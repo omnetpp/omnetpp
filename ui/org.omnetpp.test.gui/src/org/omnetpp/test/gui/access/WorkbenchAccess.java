@@ -22,7 +22,7 @@ public class WorkbenchAccess extends Access
 
 	@InUIThread
 	public ShellAccess findShellByTitle(final String title) {
-		return new ShellAccess((Shell)findWidget(getDisplay().getShells(), new IPredicate() {
+		return new ShellAccess((Shell)findObject(getDisplay().getShells(), new IPredicate() {
 			public boolean matches(Object object) {
 				Shell shell = (Shell)object;
 

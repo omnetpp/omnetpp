@@ -237,22 +237,6 @@ public class Access {
 	}
 
 	@InUIThread
-	public static Widget findWidget(Widget[] widgets, IPredicate predicate) {
-		return theOnlyWidget(collectWidgets(widgets, predicate));
-	}
-
-	@InUIThread
-	public static List<Widget> collectWidgets(Widget[] widgets, IPredicate predicate) {
-		ArrayList<Widget> resultWidgets = new ArrayList<Widget>();
-
-		for (Widget widget : widgets)
-			if (predicate.matches(widget))
-				resultWidgets.add(widget);
-
-		return resultWidgets;
-	}
-
-	@InUIThread
 	public static Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
 		return theOnlyControl(collectDescendantControls(composite, new IPredicate() {
 			public boolean matches(Object control) {
