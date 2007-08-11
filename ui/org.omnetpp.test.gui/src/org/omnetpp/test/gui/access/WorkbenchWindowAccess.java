@@ -2,7 +2,10 @@ package org.omnetpp.test.gui.access;
 
 import java.util.ArrayList;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -29,6 +32,21 @@ public class WorkbenchWindowAccess extends CompositeAccess<Shell> {
 		return workbenchWindow;
 	}
 
+	@InUIThread
+	public MenuAccess getMenuBar() {
+		return new MenuAccess(getWorkbenchWindow().getShell().getMenuBar());
+	}
+	
+	/* no @InUIThread! */
+	public void chooseFromMainMenu(String labelPath) {
+		Assert.assertTrue("must be in a background thread for menu selection to work", Display.getCurrent()==null);
+
+		MenuAccess menuAccess = getMenuBar();
+		for (String label : labelPath.split("\\|"))
+			//menuAccess = menuAccess.findMenuItemByLabel(label).activateWithMouseClick();
+			menuAccess = menuAccess.activateMenuItemWithMouse(label);
+	}
+	
 	@InUIThread
 	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
 		return new ViewPartAccess(getWorkbenchWindow().getPages()[0].showView(viewId));

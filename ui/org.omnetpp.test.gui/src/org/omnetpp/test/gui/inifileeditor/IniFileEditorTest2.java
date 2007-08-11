@@ -16,8 +16,14 @@ public class IniFileEditorTest2 extends GUITestCase {
 	protected String fileName = "omnetpp.ini";
 
 	protected void createNewInifile() throws CoreException {
+		
 		//WorkbenchAccess.startTracingEvents();
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
+
+		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
+		Access.sleep(2);
+		workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
+		Access.sleep(2);
 
 		// Test setup: close all editors, delete the inifile left over from previous runs 
 		workbenchAccess.closeAllEditorPartsWithHotKey();
