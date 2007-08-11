@@ -2,11 +2,14 @@ package org.omnetpp.test.gui.access;
 
 import java.util.List;
 
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.test.gui.InUIThread;
 
 public class CompositeAccess<T extends Composite> extends ControlAccess<T>
@@ -63,6 +66,21 @@ public class CompositeAccess<T extends Composite> extends ControlAccess<T>
 
 		// TODO: should consider layout
 		return new TextAccess((Text)findDescendantControl(labelControl.getParent(), Text.class));
+	}
+
+	@InUIThread
+	public TreeAccess findTree() {
+		return new TreeAccess((Tree)findDescendantControl(getComposite(), Tree.class));
+	}
+
+	@InUIThread
+	public TableAccess findTable() {
+		return new TableAccess((Table)findDescendantControl(getComposite(), Table.class));
+	}
+
+	@InUIThread
+	public StyledTextAccess findTextEditor() {
+		return new StyledTextAccess((StyledText) Access.findDescendantControl(getComposite(), StyledText.class));
 	}
 
 }

@@ -8,35 +8,30 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.test.gui.EventTracer;
 import org.omnetpp.test.gui.InUIThread;
 
-public class WorkbenchAccess extends Access
-{
-	@InUIThread
-	public static void startTracingEvents() {
-		EventTracer.start();
+public class WorkbenchWindowAccess extends CompositeAccess<Shell> {
+	private IWorkbenchWindow workbenchWindow;
+	
+	public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
+		super(workbenchWindow.getShell());
+		this.workbenchWindow = workbenchWindow;
 	}
 
-	@InUIThread
-	public ShellAccess findShellByTitle(final String title) {
-		return new ShellAccess((Shell)findObject(getDisplay().getShells(), new IPredicate() {
-			public boolean matches(Object object) {
-				Shell shell = (Shell)object;
-
-				if (debug)
-					System.out.println("Trying to collect shell: " + shell.getText());
-
-				return shell.getText().matches(title);
-			}
-		}));
+	public Shell getShell() {
+		return widget;
+	}
+	
+	public IWorkbenchWindow getWorkbenchWindow() {
+		return workbenchWindow;
 	}
 
 	@InUIThread
 	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
-		return new ViewPartAccess(getWorkbench().getActiveWorkbenchWindow().getPages()[0].showView(viewId));
+		return new ViewPartAccess(getWorkbenchWindow().getPages()[0].showView(viewId));
 	}
 
 	@InUIThread
@@ -48,7 +43,7 @@ public class WorkbenchAccess extends Access
 	public ViewPartAccess findViewPartByPartName(String title, boolean restore) {
 		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
 
-		for (IWorkbenchPage page : getWorkbench().getActiveWorkbenchWindow().getPages()) {
+		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
 			for (IViewReference viewReference : page.getViewReferences()) {
 				if (debug)
 					System.out.println("Looking at view part: " + viewReference.getPartName());
@@ -87,5 +82,4 @@ public class WorkbenchAccess extends Access
 	public void saveCurrentEditorPartWithHotKey() {
 		pressKey('s', SWT.CONTROL);
 	}
-
 }

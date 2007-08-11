@@ -7,15 +7,12 @@ import org.eclipse.swt.internal.win32.MSG;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.WorkbenchAccess;
 
 
 public abstract class GUITestCase extends TestCase {
 	private final static boolean debug = true;
 	
 	private Throwable testThrowable;
-	
-	protected WorkbenchAccess workbenchAccess = new WorkbenchAccess();
 	
 	public abstract class Test {
 		public abstract void run() throws Exception;

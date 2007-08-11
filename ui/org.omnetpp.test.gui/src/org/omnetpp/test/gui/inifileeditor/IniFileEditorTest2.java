@@ -6,9 +6,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.test.gui.GUITestCase;
+import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.EditorPartAccess;
 import org.omnetpp.test.gui.access.MenuAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
@@ -16,6 +16,7 @@ import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.TreeAccess;
 import org.omnetpp.test.gui.access.TreeItemAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
+import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
 
 public class IniFileEditorTest2 extends GUITestCase {
@@ -29,6 +30,8 @@ public class IniFileEditorTest2 extends GUITestCase {
 	}
 
 	protected void createNewIniFile() throws CoreException {
+		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
+		
 		// Test setup: close all editors, delete the inifile left over from previous runs 
 		workbenchAccess.closeAllEditorPartsWithHotKey();
 		ensureProjectFileDeleted(projectName, fileName);
@@ -43,15 +46,15 @@ public class IniFileEditorTest2 extends GUITestCase {
 		submenuAccess.activateMenuItemWithMouse("Other.*");
 
 		// Open the "OMNEST/OMNeT++" category in the "New" dialog, and double-click "Ini file" in it
-		ShellAccess shellAccess = workbenchAccess.findShellByTitle("New");
-		TreeAccess treeAccess = new TreeAccess((Tree)shellAccess.findDescendantControl(shellAccess.getShell(), Tree.class));
+		ShellAccess shellAccess = Access.findShellByTitle("New");
+		TreeAccess treeAccess = new TreeAccess((Tree)Access.findDescendantControl(shellAccess.getShell(), Tree.class));
 		TreeItemAccess treeItemAccess = treeAccess.findTreeItemByContent(".*OMNEST.*");
 		treeItemAccess.click();
 		workbenchAccess.pressKey(SWT.ARROW_RIGHT); // open tree node
 		treeAccess.findTreeItemByContent("Ini.*").doubleClick(); 
 
 		// Enter the file name in the dialog, and click "Finish"
-		ShellAccess shellAccess2 = workbenchAccess.findShellByTitle("New Ini File");
+		ShellAccess shellAccess2 = Access.findShellByTitle("New Ini File");
 		shellAccess2.findTextNearLabel("File name.*").typeIn(fileName);
 		shellAccess2.findButtonWithLabel("Finish").activateWithMouseClick();
 		
@@ -68,6 +71,8 @@ public class IniFileEditorTest2 extends GUITestCase {
 	public void testWizardResult() throws Throwable {
 		//WorkbenchAccess.startTracingEvents();
 		createNewIniFile();
+
+		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		
 		// Find the inifile editor, and switch to its text page
 		EditorPartAccess editorAccess = workbenchAccess.findEditorByTitle(fileName);
@@ -75,15 +80,18 @@ public class IniFileEditorTest2 extends GUITestCase {
 		//Access.dumpWidgetHierarchy(editorAccess.getRootControl());
 
 		// Find the text editor in it, and verify it has the right content
-		StyledTextAccess textAccess = new StyledTextAccess((StyledText) editorAccess.findDescendantControl(editorAccess.getRootControl(), StyledText.class));
+		StyledTextAccess textAccess = editorAccess.findTextEditor();
 		String editorContent = textAccess.getText();
-		Assert.assertTrue(editorContent.equals("[General]\npreload-ned-files = *.ned\nnetwork = "));
+		System.out.println("Editor contents: >>>" + editorContent + "<<<");
+		Assert.assertTrue(editorContent.equals("[General]\npreload-ned-files = *.ned\nnetwork = \n"));
 	}
 	
 	public void testWrongNetwork() throws Throwable {
 		//WorkbenchAccess.startTracingEvents();
 		createNewIniFile();
 
+		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
+		
 		// Find the inifile editor and switch it to text mode
 		workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 

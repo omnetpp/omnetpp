@@ -5,7 +5,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
@@ -19,9 +18,11 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.test.gui.EventTracer;
 import org.omnetpp.test.gui.InUIThread;
 
 public class Access {
@@ -31,24 +32,44 @@ public class Access {
 	public final static int MIDDLE_MOUSE_BUTTON = 2;
 	public final static int RIGHT_MOUSE_BUTTON = 3;
 
-	@InUIThread
+	public static Display getDisplay() {
+		Display display = Display.getCurrent();
+		return display != null ? display : Display.getDefault();
+	}
+
 	public static IWorkbench getWorkbench() {
 		return PlatformUI.getWorkbench();
 	}
 
 	@InUIThread
-	public static Display getDisplay() {
-		Display display = Display.getCurrent();
+	public static IWorkbenchWindow getActiveWorkbenchWindow() {
+		IWorkbenchWindow workbenchWindow = getWorkbench().getActiveWorkbenchWindow();
+		Assert.assertNotNull("no active workbench window", workbenchWindow);
+		return workbenchWindow;
+	}
 
-		if (display != null)
-			return display;
-		else
-			return Display.getDefault();
+	@InUIThread
+	public static WorkbenchWindowAccess getWorkbenchWindowAccess() {
+		return new WorkbenchWindowAccess(getWorkbench().getActiveWorkbenchWindow());
 	}
 
 	@InUIThread
 	public static Shell getActiveShell() {
 		return getDisplay().getActiveShell();
+	}
+
+	@InUIThread
+	public static ShellAccess findShellByTitle(final String title) {
+		return new ShellAccess((Shell)findObject(getDisplay().getShells(), new IPredicate() {
+			public boolean matches(Object object) {
+				Shell shell = (Shell)object;
+
+				if (debug)
+					System.out.println("Trying to collect shell: " + shell.getText());
+
+				return shell.getText().matches(title);
+			}
+		}));
 	}
 
 	@InUIThread
@@ -82,142 +103,18 @@ public class Access {
 		}
 	}
 
-	protected Event newEvent(int type) {
+	@InUIThread
+	public static void startTracingEvents() {
+		EventTracer.start();
+	}
+
+	public static Event newEvent(Widget widget, int type) {
 		Event event = new Event();
+		event.widget = widget;
 		event.type = type;
 		event.display = getDisplay();
 
 		return event;
-	}
-
-	@InUIThread
-	public void pressKey(int keyCode) {
-		pressKey(keyCode, SWT.None);
-	}
-
-	@InUIThread
-	public void pressKey(int keyCode, int modifierKeys) {
-		pressKey((char)0, keyCode, modifierKeys);
-	}
-
-	@InUIThread
-	public void pressKey(char character) {
-		pressKey(character, SWT.None);
-	}
-
-	@InUIThread
-	public void pressKey(char character, int modifierKeys) {
-		pressKey(character, 0, modifierKeys);
-	}
-
-	@InUIThread
-	public void pressKey(char character, int keyCode, int modifierKeys) {
-		Event event;
-
-		if (modifierKeys != 0) {
-			if ((modifierKeys & SWT.SHIFT) != 0) {
-				event = newEvent(SWT.KeyDown);
-				event.keyCode = SWT.SHIFT;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.CONTROL) != 0) {
-				event = newEvent(SWT.KeyDown);
-				event.keyCode = SWT.CONTROL;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.ALT) != 0) {
-				event = newEvent(SWT.KeyDown);
-				event.keyCode = SWT.ALT;
-				postEvent(event);
-			}
-		}
-
-		event = newEvent(SWT.KeyDown);
-		event.character = character;
-		event.keyCode = keyCode;
-		postEvent(event);
-
-		event = newEvent(SWT.KeyUp);
-		event.keyCode = keyCode;
-		event.character = (char)keyCode;
-		postEvent(event);
-
-		if (modifierKeys != 0) {
-			if ((modifierKeys & SWT.SHIFT) != 0) {
-				event = newEvent(SWT.KeyUp);
-				event.keyCode = SWT.SHIFT;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.CONTROL) != 0) {
-				event = newEvent(SWT.KeyUp);
-				event.keyCode = SWT.CONTROL;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.ALT) != 0) {
-				event = newEvent(SWT.KeyUp);
-				event.keyCode = SWT.ALT;
-				postEvent(event);
-			}
-		}
-	}
-
-	@InUIThread
-	public void typeIn(String text) {
-		for (int i = 0; i < text.length(); i++)
-			pressKey(text.charAt(i));
-	}
-
-	protected void postMouseEvent(int type, int button, int x, int y) {
-		Event event = newEvent(type); // e.g. SWT.MouseMove
-		event.button = button;
-		event.x = x;
-		event.y = y;
-		event.count = 1;
-		postEvent(event);
-	}
-
-	@InUIThread
-	public void click(int button, int x, int y) {
-		postMouseEvent(SWT.MouseMove, button, x, y);
-		postMouseEvent(SWT.MouseDown, button, x, y);
-		postMouseEvent(SWT.MouseUp, button, x, y);
-	}
-
-	@InUIThread
-	public void doubleClick(int button, int x, int y) {
-		click(button, x, y);
-		postMouseEvent(SWT.MouseDown, button, x, y);
-		postMouseEvent(SWT.MouseDoubleClick, button, x, y);
-		postMouseEvent(SWT.MouseUp, button, x, y);
-	}
-
-	@InUIThread
-	public void click(int button, Point point) {
-		click(button, point.x, point.y);
-	}
-
-	@InUIThread
-	public void doubleClick(int button, Point point) {
-		doubleClick(button, point.x, point.y);
-	}
-
-	@InUIThread
-	public void clickCenter(int button, Rectangle rectangle) {
-		click(button, getCenter(rectangle));
-	}
-
-	@InUIThread
-	public void doubleClickCenter(int button, Rectangle rectangle) {
-		doubleClick(button, getCenter(rectangle));
-	}
-
-	@InUIThread
-	public void clickCTabItem(CTabItem cTabItem) {
-		click(LEFT_MOUSE_BUTTON, cTabItem.getParent().toDisplay(getCenter(cTabItem.getBounds())));
 	}
 
 	@InUIThread
