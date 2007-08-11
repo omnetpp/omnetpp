@@ -7,7 +7,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 
 import java.util.ArrayList;
 
@@ -104,12 +103,11 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Chops off potential "Config " or "Scenario " prefix from a sectionName.
+	 * Chops off potential "Config " prefix from a section name.
 	 */
 	public static String removeSectionNamePrefix(String sectionName) {
 		return sectionName.replaceFirst(".+ +", "");
 	}
-
 	
 	/**
 	 * Resolves the run-time NED type of a "like" submodule, using the parameter
@@ -190,8 +188,6 @@ public class InifileUtils {
         String extendsName = doc.getValue(section, EXTENDS);
         if (extendsName==null)
         	return doc.containsSection(GENERAL) ? GENERAL : null;
-        if (section.startsWith(SCENARIO_) && doc.containsSection(SCENARIO_+extendsName))
-	        return SCENARIO_+extendsName;
         else if (doc.containsSection(CONFIG_+extendsName)) 
         	return CONFIG_+extendsName;
         else

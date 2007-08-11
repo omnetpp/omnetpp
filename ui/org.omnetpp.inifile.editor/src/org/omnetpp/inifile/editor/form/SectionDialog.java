@@ -2,7 +2,6 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +44,6 @@ public class SectionDialog extends TitleAreaDialog {
 	private String originalSectionName;
 
 	// widgets
-	private Combo sectionTypeCombo;
 	private Text configNameText;
 	private Text descriptionText;
 	private Combo extendsCombo;
@@ -106,13 +104,7 @@ public class SectionDialog extends TitleAreaDialog {
 		// section name field
 		createLabel(group1, "Section Name:", parent.getFont());
 		
-		Composite c = new Composite(group1, SWT.NONE);
-		c.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        GridLayout gridLayout = new GridLayout(2,false);
-        gridLayout.marginHeight = gridLayout.marginWidth = 0;
-		c.setLayout(gridLayout);
-		sectionTypeCombo = new Combo(c, SWT.READ_ONLY | SWT.BORDER);
-		configNameText = new Text(c, SWT.SINGLE | SWT.BORDER);
+		configNameText = new Text(group1, SWT.SINGLE | SWT.BORDER);
 		configNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// description field
@@ -132,10 +124,6 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo = new Combo(group2, SWT.BORDER);
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		// fill "section type" combo
-		sectionTypeCombo.add(CONFIG_);
-		sectionTypeCombo.add(SCENARIO_);
-		
 		// fill "extends" combo
 		if (GENERAL.equals(originalSectionName))
 			extendsCombo.setEnabled(false);
@@ -156,10 +144,8 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
 		
 		// fill dialog fields with initial contents
-		boolean isConfig = sectionName==null || sectionName.equals(GENERAL) || !sectionName.startsWith(SCENARIO_);
-		sectionTypeCombo.setText(isConfig ? CONFIG_ : SCENARIO_);
 		if (sectionName!=null) 
-			configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", "").replaceFirst(SCENARIO_+" *", ""));
+			configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", ""));
 		if (description!=null) 
 			descriptionText.setText(description);
         if (extendsSection!=null) 
@@ -175,7 +161,6 @@ public class SectionDialog extends TitleAreaDialog {
                 validateDialogContents();
             }
         };
-        sectionTypeCombo.addModifyListener(listener);
         configNameText.addModifyListener(listener);
         descriptionText.addModifyListener(listener);
         extendsCombo.addModifyListener(listener);
@@ -191,8 +176,7 @@ public class SectionDialog extends TitleAreaDialog {
 
 	/**
 	 * Return list of sections that would not create a cycle if the given 
-	 * section extended them. Moreover, does not offer Scenario sections
-	 * as base for a Config.
+	 * section extended them.
 	 */
 	protected String[] getNonCycleSectionNames(String section) {
 		String[] sectionNames = doc.getSectionNames();
@@ -200,10 +184,9 @@ public class SectionDialog extends TitleAreaDialog {
 			return sectionNames;  // a new section can extend anything
 
 		// choose sections whose fallback chain doesn't contain the given section
-		boolean skipScenarios = section.startsWith(CONFIG_); 
 		List<String> result = new ArrayList<String>();
 		for (String candidate : sectionNames)
-			if ((!skipScenarios || candidate.startsWith(CONFIG_)) && !InifileUtils.sectionChainContains(doc, candidate, section))
+			if (!InifileUtils.sectionChainContains(doc, candidate, section))
 				result.add(candidate);
 		return result.toArray(new String[]{});
 	}
@@ -271,13 +254,6 @@ public class SectionDialog extends TitleAreaDialog {
 		if (!(CONFIG_+configName).equals(originalSectionName))
 			if (doc.containsSection(CONFIG_+configName)) 
 				return "A section named ["+CONFIG_+configName+"] already exists";
-		if (!(SCENARIO_+configName).equals(originalSectionName))
-			if (doc.containsSection(SCENARIO_+configName)) 
-				return "A section named ["+SCENARIO_+configName+"] already exists";
-		String sectionType = sectionTypeCombo.getText();
-		if (sectionType.equals(SCENARIO_) && configName.equals(GENERAL))
-			return "["+SCENARIO_+GENERAL+"] is not a legal name";
-		//XXX a Config cannot extend a Scenario
 
 		//XXX check that selected network exists
 
@@ -285,9 +261,8 @@ public class SectionDialog extends TitleAreaDialog {
 	}
 	
 	private String assembleSectionName() {
-		String sectionType = sectionTypeCombo.getText();
 		String configName = configNameText.getText().trim();
-		return configName.equals(GENERAL) ? configName : sectionType+configName;
+		return configName.equals(GENERAL) ? GENERAL : CONFIG_+configName;
 	}
 	
     @SuppressWarnings("unchecked")

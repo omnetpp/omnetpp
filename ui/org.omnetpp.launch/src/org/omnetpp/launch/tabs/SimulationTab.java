@@ -55,7 +55,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	protected Text fInifileText;
 	protected Combo fConfigCombo;
     protected Text fRunText;
-    protected Spinner fParalelismSpinner;
+    protected Spinner fParallelismSpinner;
     protected Button fDefaultEnvButton;
     protected Button fCmdEnvButton;
     protected Button fTkEnvButton;
@@ -68,19 +68,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
     /**
      * Reads the ini file and enumerates all config sections. resolves include directives recursively
-     * @author rhornig
      */
     protected class ConfigEnumeratorCallback extends InifileParser.ParserAdapter {
         class Section {
             String name;
-            boolean isScenario = false;
             String network;
             String extnds;
             String descr;
             @Override
             public String toString() {
                 String additional = (StringUtils.isEmpty(descr)? "" : " "+descr)+
-                                    (isScenario ? " (scenario)" : "")+
                                     (StringUtils.isEmpty(extnds)? "" : " (extends: "+extnds+")")+
                                     (StringUtils.isEmpty(network)? "" : " (network: "+network+")");
                 return name +(StringUtils.isEmpty(additional) ? "" : " --"+additional);
@@ -128,8 +125,6 @@ public class SimulationTab extends OmnetppLaunchTab  {
         @Override
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
             currentSectionName = StringUtils.removeStart(sectionName,"Config ");
-            currentSectionName = StringUtils.removeStart(currentSectionName,"Scenario ");
-            getSectionForName(currentSectionName).isScenario = sectionName.startsWith("Scenario");
         }
 
         /**
@@ -254,10 +249,10 @@ public class SimulationTab extends OmnetppLaunchTab  {
         // parallel execution is not possible under CDT
         if (!cdtContributed) {
             SWTFactory.createLabel(comp, "Processes to run in parallel:", 1);
-            fParalelismSpinner = new Spinner(comp, SWT.BORDER);
-            fParalelismSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-            fParalelismSpinner.setMinimum(1);
-            fParalelismSpinner.addModifyListener(this);
+            fParallelismSpinner = new Spinner(comp, SWT.BORDER);
+            fParallelismSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+            fParallelismSpinner.setMinimum(1);
+            fParallelismSpinner.addModifyListener(this);
         }
     }
 
@@ -405,8 +400,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 // otherwise we get it from a separate attribute
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, EMPTY_STRING));
 
-            if (fParalelismSpinner != null)
-                fParalelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_PARALELISM, 1));
+            if (fParallelismSpinner != null)
+                fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_PARALLELISM, 1));
 
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
@@ -447,8 +442,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
             config.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
         }
 
-        if (fParalelismSpinner != null)
-            config.setAttribute(IOmnetppLaunchConstants.ATTR_PARALELISM, fParalelismSpinner.getSelection());
+        if (fParallelismSpinner != null)
+            config.setAttribute(IOmnetppLaunchConstants.ATTR_PARALLELISM, fParallelismSpinner.getSelection());
 
         if (fCmdEnvButton.getSelection())
             arg += "-u Cmdenv ";
@@ -594,10 +589,10 @@ public class SimulationTab extends OmnetppLaunchTab  {
             fOtherEnvText.setText("");
         fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
-        if (fParalelismSpinner != null) {
-            fParalelismSpinner.setEnabled(fCmdEnvButton.getSelection());
+        if (fParallelismSpinner != null) {
+            fParallelismSpinner.setEnabled(fCmdEnvButton.getSelection());
             if (!fCmdEnvButton.getSelection())
-                fParalelismSpinner.setSelection(1);
+                fParallelismSpinner.setSelection(1);
         }
     }
 
@@ -670,7 +665,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
      * Returns whether the currently selected line in the config combo is a scenario
      */
     private boolean isScenario() {
-        return fConfigCombo.getText().contains("(scenario)");
+    	//FIXME scenario sections are now also called [Config ...], so more sophisticated parsing is needed to figure out of which sections are in fact scenarios --Andras
+        return fConfigCombo.getText().contains("(scenario)"); //FIXME by checking the label??? --Andras
     }
 
     /**

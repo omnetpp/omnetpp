@@ -103,13 +103,10 @@ s	 * before getting presented to the user.
 		// IMPORTANT: Remember to update isContentAssistAvailable() when this method gets extended!
 		if (entry==CFGID_EXTENDS) {
 			ArrayList<String> names = new ArrayList<String>();
+			// propose only sections that won't introduce section cycles
 			for (String section : doc.getSectionNames())
-				if (!section.equals(GENERAL) && // [General] cannot be extended
-					!InifileUtils.sectionChainContains(doc, section, this.section) && // prevent cycles
-					(this.section.startsWith(SCENARIO_) || section.startsWith(CONFIG_))) // a Config cannot extend a Scenario
-				{
+				if (!section.equals(GENERAL) && !InifileUtils.sectionChainContains(doc, section, this.section))
 					names.add(InifileUtils.removeSectionNamePrefix(section));
-				}
 			return sort(toProposals(names.toArray(new String[]{})));
 		}
 

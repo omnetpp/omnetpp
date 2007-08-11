@@ -7,7 +7,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.SCENARIO_;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_INT;
@@ -57,7 +56,6 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author Andras
  */
-//XXX validate that ${} can only occur in Scenario sections
 //XXX consider this:
 //Net.host[0].p = ...
 //Net.host[*].p = ...
@@ -243,21 +241,15 @@ public class InifileAnalyzer {
 
 		for (String section : doc.getSectionNames()) {
 			if (!section.equals(GENERAL)) {
-				if (!section.startsWith(CONFIG_) && !section.startsWith(SCENARIO_))
-					addError(section, "Invalid section name: must be [General], [Config <name>] or [Scenario <name>]");
+				if (!section.startsWith(CONFIG_))
+					addError(section, "Invalid section name: must be [General] or [Config <name>]");
 				else if (section.contains("  "))
 					addError(section, "Invalid section name: contains too many spaces");
 				else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
 					addError(section, "Invalid section name: contains illegal character(s)");
-				else if (section.startsWith(SCENARIO_) && doc.containsSection(section.replaceFirst(SCENARIO_, CONFIG_)))
-					addError(section, "Invalid section name: a ["+section.replaceFirst(SCENARIO_, CONFIG_)+"] section already exists");
 				String extendsName = doc.getValue(section, EXTENDS);
-				if (extendsName != null) {
-					if (!doc.containsSection(CONFIG_+extendsName) && !doc.containsSection(SCENARIO_+extendsName))
-						addError(section, EXTENDS, "No such section: [Config "+extendsName+"] or [Scenario "+extendsName+"]");
-					else if (section.startsWith(CONFIG_) && doc.containsSection(SCENARIO_+extendsName) && !doc.containsSection(CONFIG_+extendsName))
-						addError(section, EXTENDS, "A Config section cannot extend a Scenario section");
-				}
+				if (extendsName != null && !doc.containsSection(CONFIG_+extendsName))
+					addError(section, EXTENDS, "No such section: [Config "+extendsName+"]");
 			}
 		}			
 

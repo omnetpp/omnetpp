@@ -52,7 +52,7 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
             });
         }
 
-        int paralelism = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PARALELISM, 1);
+        int paralelism = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PARALLELISM, 1);
         boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
         // start a single or batched launch job
         Job job;

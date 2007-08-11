@@ -33,9 +33,6 @@ public class ConfigRegistry {
 	/** Name prefix for the [Section <name>] sections; includes a trailing space. */
 	public static final String CONFIG_ = "Config ";
 
-	/** Name prefix for the [Scenario <name>] sections; includes a trailing space. */
-	public static final String SCENARIO_ = "Scenario ";
-
 	/** Name of the "extends=" config key */
 	public static final String EXTENDS; // initialized at the bottom of this file
 
@@ -148,9 +145,8 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_CMDENV_CONFIG_NAME = addGlobalEntry(
         "cmdenv-config-name", CFG_STRING, null,
         "Specifies the name of the configuration to be run (for a value `Foo', " +
-        "section [Config Foo] or [Scenario Foo] will be used from the ini file). See " +
-        "also cmdenv-runs-to-execute=. The -c command line option overrides this " +
-        "setting.");
+        "section [Config Foo] will be used from the ini file). See also " +
+        "cmdenv-runs-to-execute=. The -c command line option overrides this setting.");
     public static final ConfigKey CFGID_CMDENV_EV_OUTPUT = addPerObjectEntry(
         "cmdenv-ev-output", CFG_BOOL, "true",
         "When cmdenv-express-mode=false: whether Cmdenv should print debug messages " +
@@ -208,7 +204,7 @@ public class ConfigRegistry {
         "interface.");
     public static final ConfigKey CFGID_CONSTRAINT = addPerRunEntry(
         "constraint", CFG_STRING, null,
-        "For scenarios. Contains an expression that iteration variables (${} syntax) " +
+        "For defining scenarios. Contains an expression that iteration variables (${} syntax) " +
         "must satisfy for that simulation to run. Example: $i < $j+1.");
     public static final ConfigKey CFGID_CPU_TIME_LIMIT = addPerRunEntryU(
         "cpu-time-limit", "s", null,
@@ -396,7 +392,7 @@ public class ConfigRegistry {
         "separated by comma. Example: ..100, 200..400, 900..");
     public static final ConfigKey CFGID_REPEAT = addPerRunEntry(
         "repeat", CFG_INT, "1",
-        "For scenarios. Specifies how many replications should be done with the same " +
+        "Specifies how many replications should be done with the same " +
         "parameters (iteration variables). This is typically used to perform " +
         "multiple runs with different random number seeds. The loop variable is " +
         "available as ${repetition}. See also: seed-set= key.");
