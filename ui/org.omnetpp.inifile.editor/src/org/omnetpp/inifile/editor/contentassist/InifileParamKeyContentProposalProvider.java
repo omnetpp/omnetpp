@@ -15,14 +15,14 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 
 /**
- * Generate proposals for inifile parameter and per-object config keys.
+ * Generate proposals for inifile parameters.
  * 
  * Used for the text editor and field editors.
  * 
  * @author Andras
  */
 //XXX suggest apply-default for parameters that have default value?
-//XXX add icons (different icon for modules, parameters, apply-default, config,...)
+//XXX add icons (different icon for modules, parameters, apply-default)
 public class InifileParamKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;

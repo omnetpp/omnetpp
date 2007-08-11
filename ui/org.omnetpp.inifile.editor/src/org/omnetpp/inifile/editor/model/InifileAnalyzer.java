@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +86,8 @@ public class InifileAnalyzer {
         String varname; // printable variable name ("x"); null for an unnamed variable
         String value;   // "1,2,5..10"; never empty
         String parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
+        String section; // section where it was defined 
+        String key;     // key where it was defined 
     };
 
     /**
@@ -188,6 +191,17 @@ public class InifileAnalyzer {
 				}
 			}
 
+			// make sure that an iteration variable isn't redefined in other sections
+			for (String section : doc.getSectionNames()) {
+				String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+				Map<String, IterationVariable> namedIterations = ((SectionData) doc.getSectionData(section)).namedIterations;
+				for (String var : namedIterations.keySet())
+					for (String ancestorSection : sectionChain)
+						if (!section.equals(ancestorSection))
+							if (((SectionData) doc.getSectionData(ancestorSection)).namedIterations.containsKey(var))
+								addError(section, namedIterations.get(var).key, "Redeclaration of iteration variable $"+var+", originally defined in section ["+ancestorSection+"]");
+			}
+			
 			// warn for unused param keys; this must be done AFTER changed=false
 			for (String section : doc.getSectionNames())
 				for (String key : getUnusedParameterKeys(section))
@@ -246,6 +260,8 @@ public class InifileAnalyzer {
 					addError(section, "Invalid section name: must be [General] or [Config <name>]");
 				else if (section.contains("  "))
 					addError(section, "Invalid section name: contains too many spaces");
+				else if (!section.substring(0,1).matches("[a-zA-Z_]"))
+					addError(section, "Invalid section name: config name must begin a letter or underscore");
 				else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
 					addError(section, "Invalid section name: contains illegal character(s)");
 				String extendsName = doc.getValue(section, EXTENDS);
@@ -488,7 +504,26 @@ public class InifileAnalyzer {
 
 		// check validity of some settings, like record-interval=, etc
 		if (e==CFGID_RECORDING_INTERVAL) {
-			//XXX validate syntax
+			// validate syntax
+			StringTokenizer tokenizer = new StringTokenizer(value, ",");
+			while (tokenizer.hasMoreTokens()) {
+				String interval = tokenizer.nextToken();
+				if (!interval.contains(".."))
+					addError(section, key, "Syntax error in output vector interval");
+				else {
+					try {
+						String from = StringUtils.substringBefore(interval, "..").trim();
+						String to = StringUtils.substringAfter(interval, "..").trim();
+						if (!from.isEmpty() && !from.contains("${")) 
+							Double.parseDouble(from);  // check format
+						if (!to.isEmpty() && !to.contains("${")) 
+							Double.parseDouble(to);  // check format
+					} 
+					catch (NumberFormatException ex) {
+						addError(section, key, "Syntax error in output vector interval");
+					}
+				}
+			}
 		}
 	}
 
@@ -521,11 +556,15 @@ public class InifileAnalyzer {
 			v.varname = m.group(2);
 			v.value = m.group(3);
 			v.parvar = m.group(5);
+			v.section = section;
+			v.key = key;
 			System.out.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
 			if (Arrays.asList(PREDEFINED_CONFIGVARS).contains(v.varname))
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
 			else if (sectionData.namedIterations.containsKey(v.varname))
-				addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}"); // FIXME check the whole section chain for such clashes!
+				// Note: checking that it doesn't redefine a variable in a base section can only be done
+				// elsewhere, after all sections have been processed 
+				addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}");
 			else {
 				sectionData.iterations.add(v);
 				if (v.varname != null)
@@ -677,7 +716,7 @@ public class InifileAnalyzer {
 	 */
 	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
-		String nedValue = paramValueNode==null ? null : paramValueNode.getValue(); //XXX what if parsed expressions?
+		String nedValue = paramValueNode==null ? null : paramValueNode.getValue();
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
 		boolean isNedDefault = paramValueNode==null ? false : paramValueNode.getIsDefault();
 
@@ -755,9 +794,7 @@ public class InifileAnalyzer {
 
 	/**
 	 * Classify an inifile key, based on its syntax.
-	 * XXX syntax rules used here must be enforced throughout the system
 	 */
-	//XXX into InifileUtils? (KeyType too)
 	public static KeyType getKeyType(String key) {
 		if (!key.contains("."))
 			return KeyType.CONFIG;  // contains no dot
@@ -864,7 +901,6 @@ public class InifileAnalyzer {
 		}
 	}
 
-	//XXX to InifileUtils?
 	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
 		switch (res.type) {
 			case UNASSIGNED:
@@ -940,7 +976,6 @@ public class InifileAnalyzer {
 	 * from the given section and its fallback sections.
 	 */
 	public String getIterationVariableValueString(String activeSection, String variable) {
-		//XXX what to return for predefined variables?
 		synchronized (doc) {
 			analyzeIfChanged();
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);

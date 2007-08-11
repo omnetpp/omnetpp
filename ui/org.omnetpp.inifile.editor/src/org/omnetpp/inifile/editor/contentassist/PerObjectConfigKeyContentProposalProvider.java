@@ -1,9 +1,5 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,22 +11,21 @@ import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
- * Generate completion proposals for inifile config keys.
+ * Generate proposals for inifile per-object config keys.
  * 
  * Used for the text editor and field editors.
  * 
  * @author Andras
  */
-public class InifileConfigKeyContentProposalProvider extends ContentProposalProvider {
+public class PerObjectConfigKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;
 	private IInifileDocument doc;
 	//private InifileAnalyzer analyzer;
 
-	public InifileConfigKeyContentProposalProvider(String section, boolean addEqualSign, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public PerObjectConfigKeyContentProposalProvider(String section, boolean addEqualSign, IInifileDocument doc, InifileAnalyzer analyzer) {
 		super(true);
 		this.section = section;
 		this.addEqualSign = addEqualSign;
@@ -43,17 +38,13 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		this.addEqualSign = addEqualSign;
 	}
 
-	/**
-	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
-	 * before getting presented to the user.
-	 */
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
-		// idea considered and discarded: don't propose those already there (would confuse user)
-		if (section != null) {
-			for (ConfigKey e : ConfigRegistry.getEntries()) {
-				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
-					String content = e.getKey()+(addEqualSign ? " = " : "");
+		if (section != null && prefix.contains(".")) {
+			String prefixBase = prefix.substring(0, prefix.lastIndexOf('.')+1);
+			for (ConfigKey e : ConfigRegistry.getPerObjectEntries()) {
+				if (e != ConfigRegistry.CFGID_APPLY_DEFAULT) { // that's handled by InifileParamKeyContentProposalProvider
+					String content = prefixBase + e.getKey()+(addEqualSign ? " = " : "");
 					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
 				}
 			}
@@ -68,20 +59,8 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		String key = entry.getKey();
 		String text = "";
 
-		// see where else it is already set
-		if (doc.containsKey(section, key)) {
-			text += "<!> Already set in this section.\n\n";
-			return text;
-		}
-		if (doc != null && entry!=CFGID_DESCRIPTION && entry!=CFGID_EXTENDS) {
-			String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
-			for (String sec : sectionChain)
-				if (doc.containsKey(sec, key))
-					text += "<!> Set in ["+sec+"] to "+doc.getValue(sec, key)+"; set here to override it.\n\n";
-		}
-		
 		// generate "standard" documentation for it
-		text += key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
+		text += "<object-fullpath-pattern>." + key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
 		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
 			text += ", default: " + entry.getDefaultValue();
 		if (entry.getUnit()!=null)
@@ -91,5 +70,4 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 
 		return text;
 	}
-	
 }

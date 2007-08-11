@@ -33,8 +33,10 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.contentassist.InifileConfigKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
+import org.omnetpp.inifile.editor.contentassist.PerObjectConfigKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**
@@ -95,6 +97,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 
 		// try to determine which section we are in
 		IInifileDocument doc = editorData.getInifileDocument(); 
+		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		String section = doc.getSectionForLine(lineNumber);
 		
 		Set<String> proposals = new HashSet<String>();
@@ -145,13 +148,17 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				if (!linePrefix.contains("=")) {
 					// offer parameter keys
 					if (section != null) {
-						IContentProposalProvider paramProposalProvider = new InifileParamKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
+						IContentProposalProvider paramProposalProvider = new InifileParamKeyContentProposalProvider(section, true, doc, analyzer);
 						IContentProposal[] paramProposals = paramProposalProvider.getProposals(linePrefix, linePrefix.length());
 						addProposals(result, paramProposals, documentOffset);
+
+						IContentProposalProvider perObjectConfigProposalProvider = new PerObjectConfigKeyContentProposalProvider(section, true, doc, analyzer);
+						IContentProposal[] keyProposals = perObjectConfigProposalProvider.getProposals(linePrefix, linePrefix.length());
+						addProposals(result, keyProposals, documentOffset);
 					}
 
 					// offer configuration keys
-					IContentProposalProvider configProposalProvider = new InifileConfigKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
+					IContentProposalProvider configProposalProvider = new InifileConfigKeyContentProposalProvider(section, true, doc, analyzer);
 					IContentProposal[] keyProposals = configProposalProvider.getProposals(linePrefix, linePrefix.length());
 					addProposals(result, keyProposals, documentOffset);
 				}
@@ -159,7 +166,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					// offer value completions
 					String key = linePrefix.replaceFirst("=.*", "").trim();
 					String value = linePrefix.replaceFirst(".*?=", "").trim();
-					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, editorData.getInifileAnalyzer(), true);
+					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, analyzer, true);
 					IContentProposal[] valueProposals = proposalProvider.getProposals(value, value.length());
 					
 					// re-wrap IContentProposals as ICompletionProposal
