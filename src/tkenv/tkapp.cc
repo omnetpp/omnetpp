@@ -275,13 +275,13 @@ void TOmnetTkApp::shutdown()
 void TOmnetTkApp::printUISpecificHelp()
 {
     ev << "Tkenv-specific options:\n";
-    ev << "  -c <configname-or-scenarioname>\n";
-    ev << "                Select a given configuration or scenario for execution. With\n";
-    ev << "                inifile-based configuration, this means the [Scenario <name>] or\n";
-    ev << "                [Config <name>] sections; the default is the [General] section.\n";
+    ev << "  -c <configname>\n";
+    ev << "                Select a given configuration for execution. With inifile-based\n";
+    ev << "                configuration database, this selects the [Config <configname>]\n";
+    ev << "                section; the default is the [General] section.\n";
     ev << "                See also: -r.\n";
-    ev << "  -r <run>      Set up the specified run in the scenario selected with the -c\n";
-    ev << "                option\n";
+    ev << "  -r <run>      Set up the specified run in the configuration selected with the\n";
+    ev << "                -c option\n";
     ev << "\n";
 }
 

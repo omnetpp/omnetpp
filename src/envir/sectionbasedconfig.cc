@@ -31,9 +31,6 @@
 //XXX test the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
 //XXX make sure quoting "$\{" works!
-//XXX validation: make sure that a Config and a Scenario cannot have the same name!
-//XXX validation: make sure a Config cannot extend a Scenario!
-
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 
 
@@ -107,41 +104,36 @@ int SectionBasedConfiguration::getActiveRunNumber() const
 
 std::vector<std::string> SectionBasedConfiguration::getConfigNames()
 {
-    // use a set so that [Config X] and [Scenario X] only produce one X in the result
-    std::set<std::string> uniqueNames;
+    std::vector<std::string> result;
     for (int i=0; i<ini->getNumSections(); i++)
     {
         const char *section = ini->getSectionName(i);
         if (strcmp(section, "General")==0)
-            uniqueNames.insert(section);
+            result.push_back(section);
         else if (strncmp(section, "Config ", 7)==0)
-            uniqueNames.insert(section+7);
-        else if (strncmp(section, "Scenario ", 9)==0)
-            uniqueNames.insert(section+9);
+            result.push_back(section+7);
+        else
+            ; // nothing - leave out bogus section names
     }
-    std::vector<std::string> result;
-    for (std::set<std::string>::iterator it=uniqueNames.begin(); it!=uniqueNames.end(); it++)
-        result.push_back(*it);
     return result;
-
 }
 
-std::string SectionBasedConfiguration::getConfigDescription(const char *scenarioOrConfigName) const
+std::string SectionBasedConfiguration::getConfigDescription(const char *configName) const
 {
-    int sectionId = resolveConfigName(scenarioOrConfigName);
+    int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
-        throw cRuntimeError("No such config or scenario: %s", scenarioOrConfigName);
+        throw cRuntimeError("No such config: %s", configName);
 
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
     return opp_nulltoempty(internalGetValue(sectionChain, "description"));
 }
 
-std::string SectionBasedConfiguration::getBaseConfig(const char *scenarioOrConfigName) const
+std::string SectionBasedConfiguration::getBaseConfig(const char *configName) const
 {
-    int sectionId = resolveConfigName(scenarioOrConfigName);
+    int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
-        throw cRuntimeError("No such config or scenario: %s", scenarioOrConfigName);
+        throw cRuntimeError("No such config: %s", configName);
     int entryId = internalFindEntry(sectionId, "extends");
     std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
     if (extends.empty())
@@ -150,17 +142,15 @@ std::string SectionBasedConfiguration::getBaseConfig(const char *scenarioOrConfi
     return baseSectionId==-1 ? "" : extends;
 }
 
-int SectionBasedConfiguration::resolveConfigName(const char *scenarioOrConfigName) const
+int SectionBasedConfiguration::resolveConfigName(const char *configName) const
 {
-    if (!scenarioOrConfigName || !scenarioOrConfigName[0])
+    if (!configName || !configName[0])
         throw cRuntimeError("Empty config name specified");
     int id = -1;
-    if (!strcmp(scenarioOrConfigName, "General"))
+    if (!strcmp(configName, "General"))
         id = internalFindSection("General");
     if (id == -1)
-        id = internalFindSection((std::string("Scenario ")+scenarioOrConfigName).c_str());
-    if (id == -1)
-        id = internalFindSection((std::string("Config ")+scenarioOrConfigName).c_str());
+        id = internalFindSection((std::string("Config ")+configName).c_str());
     return id;
 }
 
@@ -175,18 +165,18 @@ static std::string opp_makedatetimestring()
     return timestr;
 }
 
-void SectionBasedConfiguration::activateConfig(const char *scenarioOrConfigName, int runNumber)
+void SectionBasedConfiguration::activateConfig(const char *configName, int runNumber)
 {
     clear();
 
-    activeConfig = scenarioOrConfigName==NULL ? "" : scenarioOrConfigName;
+    activeConfig = configName==NULL ? "" : configName;
     activeRunNumber = runNumber;
 
-    int sectionId = resolveConfigName(scenarioOrConfigName);
-    if (sectionId == -1 && !strcmp(scenarioOrConfigName, "General"))
+    int sectionId = resolveConfigName(configName);
+    if (sectionId == -1 && !strcmp(configName, "General"))
         return;  // allow activating "General" even if it's empty
     if (sectionId == -1)
-        throw cRuntimeError("No such config or scenario: %s", scenarioOrConfigName);
+        throw cRuntimeError("No such config: %s", configName);
 
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
@@ -256,11 +246,11 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
 }
 
-int SectionBasedConfiguration::getNumRunsInScenario(const char *scenarioName) const
+int SectionBasedConfiguration::getNumRunsInScenario(const char *configName) const
 {
-    int sectionId = resolveConfigName(scenarioName);
+    int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
-        return 0;  // no such scenario or config
+        return 0;  // no such config
 
     // extract all iteration vars from values within this section
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
@@ -279,11 +269,11 @@ int SectionBasedConfiguration::getNumRunsInScenario(const char *scenarioName) co
     }
 }
 
-std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *scenarioName, bool detailed) const
+std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *configName, bool detailed) const
 {
-    int sectionId = resolveConfigName(scenarioName);
+    int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
-        throw cRuntimeError("No such scenario: %s", scenarioName);
+        throw cRuntimeError("No such config: %s", configName);
 
     // extract all iteration vars from values within this section
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
@@ -314,7 +304,7 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
                 {
                     // itervars, plus all entries that contain ${..}
                     runstring += std::string("\t# ") + scenario.str() + "\n";
-                    (const_cast<SectionBasedConfiguration *>(this))->setupVariables(scenarioName, result.size(), &scenario, sectionChain);
+                    (const_cast<SectionBasedConfiguration *>(this))->setupVariables(configName, result.size(), &scenario, sectionChain);
                     for (int i=0; i<sectionChain.size(); i++)
                     {
                         int sectionId = sectionChain[i];
@@ -354,7 +344,6 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     for (int i=0; i<sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
-        bool isScenarioSection = ini->getSectionName(sectionId)[0]=='S';
         for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
         {
             const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
@@ -371,9 +360,6 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
 
                 if (!loc.value.empty() && loc.parvar.empty())
                 {
-                    if (!isScenarioSection)
-                        throw cRuntimeError("Scenario generator: iterations may only occur in Scenario sections but not in Config sections");
-
                     // store variable
                     if (!loc.varname.empty())
                     {
@@ -820,7 +806,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
         }
     }
 
-    // check section names; also make sure names of Configs and Scenarios don't clash
+    // check section names
     std::set<std::string> configNames;
     for (int i=0; i<ini->getNumSections(); i++)
     {
@@ -830,14 +816,14 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             ; // OK
         else if (strncmp(section, "Config ", 7)==0)
             configName  = section+7;
-        else if (strncmp(section, "Scenario ", 9)==0)
-            configName  = section+9;
         else
-            throw cRuntimeError("Invalid section name [%s], should be [General], [Config <name>] or [Scenario <name>]", section);
+            throw cRuntimeError("Invalid section name [%s], should be [General] or [Config <name>]", section);
         if (configName)
         {
             if (*configName == ' ')
                 throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
+            if (!isalpha(*configName) && *configName!='_')
+                throw cRuntimeError("Invalid section name [%s]: config name must begin with a letter or underscore", section);
             for (const char *s=configName; *s; s++)
                 if (!isalnum(*s) && strchr("-_@", *s)==NULL)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
@@ -882,7 +868,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     // warn for invalid "extends" names
                     const char *value = ini->getEntry(i, j).getValue();
                     if (configNames.find(value)==configNames.end())
-                        throw cRuntimeError("No such config or scenario: %s", value);
+                        throw cRuntimeError("No such config: %s", value);
 
                     // check for section cycles
                     resolveSectionChain(section);  //XXX move that check here?
@@ -908,12 +894,6 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                         throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
                 }
             }
-
-            // check value: make sure ${} only occurs within Scenario sections
-            //XXX needed?
-            const char *value = ini->getEntry(i, j).getValue();
-            if (strstr(value, "${")!=NULL && section[0]!='S')
-                throw cRuntimeError("Wrong value for %s=%s : ${} variables are only allowed within Scenario sections", key, value);
         }
     }
 }

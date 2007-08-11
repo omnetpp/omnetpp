@@ -35,7 +35,7 @@
 
 #define CMDENV_EXTRASTACK_KB  "8"
 
-Register_GlobalConfigEntry(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] or [Scenario Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
+Register_GlobalConfigEntry(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
 Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
 Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
@@ -200,7 +200,7 @@ int TCmdenvApp::run()
 
     if (opt_printnumruns)
     {
-        ev.printf("Scenario: %s\n", opt_configname.c_str());
+        ev.printf("Config: %s\n", opt_configname.c_str());
         ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_configname.c_str()));
 
         if (opt_printconfigdetails || opt_printconfigdetails2)
@@ -244,7 +244,6 @@ int TCmdenvApp::run()
             ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runnumber);
             ::fflush(fout);
 
-            //FIXME by default, this will want to run [General] only -- NOT GOOD!!! should run all configs, all runs? or ask?
             cfg->activateConfig(opt_configname.c_str(), runnumber);
 
             const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
@@ -594,19 +593,19 @@ void TCmdenvApp::simulationEvent(cMessage *msg)
 void TCmdenvApp::printUISpecificHelp()
 {
     ev << "Cmdenv-specific options:\n";
-    ev << "  -n <scenarioname>\n";
-    ev << "                Print the number of runs in the given scenario, and exit.\n";
-    ev << "  -c <configname-or-scenarioname>\n";
-    ev << "                Select a given configuration or scenario for execution. With\n";
-    ev << "                inifile-based configuration, this means the [Scenario <name>] or\n";
-    ev << "                [Config <name>] sections; the default is the [General] section.\n";
+    ev << "  -n <configname>\n";
+    ev << "                Print the number of runs in the given configuration, and exit.\n";
+    ev << "  -c <configname>\n";
+    ev << "                Select a given configuration for execution. With inifile-based\n";
+    ev << "                configuration database, this selects the [Config <configname>]\n";
+    ev << "                section; the default is the [General] section.\n";
     ev << "                See also: -r.\n";
-    ev << "  -r <runs>     Execute the specified runs in the scenario selected with the\n";
+    ev << "  -r <runs>     Execute the specified runs in the configuration selected with the\n";
     ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
     ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
-    ev << "                runs will be executed.\n" ;
-    ev << "  -g, -G        Modifies -n or -c: additionally, print unrolled scenario,\n";
-    ev << "                scenario variables, etc. -G provides more details.\n";
+    ev << "                runs of that configuration will be executed.\n" ;
+    ev << "  -g, -G        Make -n and -c more verbose: print the unrolled configuration,\n";
+    ev << "                iteration variables, etc. -G provides more details than -g.\n";
     ev << "\n";
 }
 

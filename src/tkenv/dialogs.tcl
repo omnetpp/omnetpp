@@ -106,7 +106,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
         }
 
         label $w.f.m -anchor w -justify left -text "Set up one of the runs defined in omnetpp.ini."
-        label-combo $w.f.c "Config or scenario:" $configlist $configname
+        label-combo $w.f.c "Config name:" $configlist $configname
         label-combo $w.f.c2 "Run number:" {} $runnumber
         pack $w.f.m -fill x -padx 2 -pady 2 -side top
         pack $w.f.c -fill x -padx 2 -pady 2 -side top
