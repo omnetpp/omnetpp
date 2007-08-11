@@ -221,12 +221,12 @@ public class Access {
 	}
 
 	@InUIThread
-	public Object findObject(Object[] objects, IPredicate predicate) {
+	public static Object findObject(Object[] objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate));
 	}
 
 	@InUIThread
-	public List<Object> collectObjects(Object[] objects, IPredicate predicate) {
+	public static List<Object> collectObjects(Object[] objects, IPredicate predicate) {
 		ArrayList<Object> resultObjects = new ArrayList<Object>();
 
 		for (Object object : objects)
@@ -237,12 +237,12 @@ public class Access {
 	}
 
 	@InUIThread
-	public Widget findWidget(Widget[] widgets, IPredicate predicate) {
+	public static Widget findWidget(Widget[] widgets, IPredicate predicate) {
 		return theOnlyWidget(collectWidgets(widgets, predicate));
 	}
 
 	@InUIThread
-	public List<Widget> collectWidgets(Widget[] widgets, IPredicate predicate) {
+	public static List<Widget> collectWidgets(Widget[] widgets, IPredicate predicate) {
 		ArrayList<Widget> resultWidgets = new ArrayList<Widget>();
 
 		for (Widget widget : widgets)
@@ -253,7 +253,7 @@ public class Access {
 	}
 
 	@InUIThread
-	public Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
+	public static Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
 		return theOnlyControl(collectDescendantControls(composite, new IPredicate() {
 			public boolean matches(Object control) {
 				return clazz.isInstance(control);
@@ -262,18 +262,18 @@ public class Access {
 	}
 
 	@InUIThread
-	public Control findDescendantControl(Composite composite, IPredicate predicate) {
+	public static Control findDescendantControl(Composite composite, IPredicate predicate) {
 		return theOnlyControl(collectDescendantControls(composite, predicate));
 	}
 
 	@InUIThread
-	public List<Control> collectDescendantControls(Composite composite, IPredicate predicate) {
+	public static List<Control> collectDescendantControls(Composite composite, IPredicate predicate) {
 		ArrayList<Control> controls = new ArrayList<Control>();
 		collectDescendantControls(composite, predicate, controls);
 		return controls;
 	}
 
-	protected void collectDescendantControls(Composite composite, IPredicate predicate, List<Control> controls) {
+	protected static void collectDescendantControls(Composite composite, IPredicate predicate, List<Control> controls) {
 		for (Control control : composite.getChildren()) {
 			if (control instanceof Composite)
 				collectDescendantControls((Composite)control, predicate, controls);
@@ -283,7 +283,7 @@ public class Access {
 		}
 	}
 
-	protected CTabItem findDescendantCTabItemByLabel(Composite composite, final String label) {
+	protected static CTabItem findDescendantCTabItemByLabel(Composite composite, final String label) {
 		CTabFolder cTabFolder = (CTabFolder)findDescendantControl(composite, new IPredicate() {
 			public boolean matches(Object object) {
 				if (object instanceof CTabFolder) {
