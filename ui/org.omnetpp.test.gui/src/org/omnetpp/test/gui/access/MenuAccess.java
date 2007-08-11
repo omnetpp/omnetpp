@@ -23,6 +23,7 @@ public class MenuAccess extends WidgetAccess<Menu> {
 	 */
 	@InUIThread
 	public MenuAccess activateMenuItemWithMouse(String label) {
+		System.out.println("Activating menu item: " + label);
 		return findMenuItemByLabel(label).activateWithMouseClick();
 	}
 
