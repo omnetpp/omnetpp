@@ -82,7 +82,7 @@ public class InifileAnalyzer {
      * Used internally: an iteration variable "${...}", stored as part of SectionData
      */
 	static class IterationVariable {
-        String varname; // printable variable name ("x"); "" for an unnamed variable
+        String varname; // printable variable name ("x"); null for an unnamed variable
         String value;   // "1,2,5..10"; never empty
         String parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
     };
@@ -102,7 +102,8 @@ public class InifileAnalyzer {
 	static class SectionData {
 		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>();
 		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>(); // incl. unassigned
-		Map<String,IterationVariable> iterationVariables = new HashMap<String, IterationVariable>(); 
+		List<IterationVariable> iterations = new ArrayList<IterationVariable>(); 
+		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>(); 
 	}
 
    
@@ -350,7 +351,7 @@ public class InifileAnalyzer {
 		while (m.find()) {
 			foundAny = true;
 			String varname = m.group(1);
-			if (!sectionData.iterationVariables.containsKey(varname) && !Arrays.asList(PREDEFINED_CONFIGVARS).contains(varname))
+			if (!sectionData.namedIterations.containsKey(varname) && !Arrays.asList(PREDEFINED_CONFIGVARS).contains(varname))
 				addError(section, key, "${"+varname+"} is undefined");
 		}
 		return foundAny;
@@ -494,7 +495,7 @@ public class InifileAnalyzer {
 	protected void collectIterationVariables() {
 		for (String section : doc.getSectionNames()) {
 			SectionData sectionData = (SectionData) doc.getSectionData(section);
-			sectionData.iterationVariables.clear();
+			sectionData.namedIterations.clear();
 			for (String key : doc.getKeys(section))
 				if (doc.getValue(section, key).indexOf('$') != -1)
 					parseIterationVariables(section, key);
@@ -504,8 +505,8 @@ public class InifileAnalyzer {
 	protected void parseIterationVariables(String section, String key) {
 		Pattern p = Pattern.compile(
 				"\\$\\{" +   // opening dollar+brace
-				"\\s*([a-zA-Z0-9@_-]+)" + // variable name
-				"\\s*=\\s*" +  // equals
+				"(\\s*([a-zA-Z0-9@_-]+)" + // variable name (opt)
+				"\\s*=)?" +  // equals (opt)
 				"\\s*(.*?)" +  // value string
 				"\\s*(!\\s*([a-zA-Z0-9@_-]+))?" + // optional trailing "! variable"
 				"\\s*\\}");  // closing brace
@@ -517,16 +518,19 @@ public class InifileAnalyzer {
 		// find all occurrences of the pattern in the input string
 		while (m.find()) {
 			IterationVariable v = new IterationVariable();
-			v.varname = m.group(1);
-			v.value = m.group(2);
-			v.parvar = m.group(4);
-			//System.out.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
+			v.varname = m.group(2);
+			v.value = m.group(3);
+			v.parvar = m.group(5);
+			System.out.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
 			if (Arrays.asList(PREDEFINED_CONFIGVARS).contains(v.varname))
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
-			else if (sectionData.iterationVariables.containsKey(v.varname))
+			else if (sectionData.namedIterations.containsKey(v.varname))
 				addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}"); // FIXME check the whole section chain for such clashes!
-			else
-				sectionData.iterationVariables.put(v.varname, v);
+			else {
+				sectionData.iterations.add(v);
+				if (v.varname != null)
+					sectionData.namedIterations.put(v.varname, v); 
+			}
 		}
 	}
 
@@ -896,7 +900,8 @@ public class InifileAnalyzer {
 
 	/**
 	 * Returns names of declared iteration variables ("${variable=...}") from 
-	 * the given section and all its fallback sections.
+	 * the given section and all its fallback sections. Note: unnamed iterations
+	 * are not in the list.
 	 */
 	public String[] getIterationVariableNames(String activeSection) {
 		synchronized (doc) {
@@ -905,7 +910,7 @@ public class InifileAnalyzer {
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 			for (String section : sectionChain) {
 				SectionData sectionData = (SectionData) doc.getSectionData(section);
-				result.addAll(sectionData.iterationVariables.keySet());
+				result.addAll(sectionData.namedIterations.keySet());
 			}
 			String[] array = result.toArray(new String[]{});
 			Arrays.sort(array);
@@ -915,15 +920,15 @@ public class InifileAnalyzer {
 
 	/**
 	 * Returns true if the given section or any of its fallback sections
-	 * declare an iteration variable ("${variable=...}"). 
+	 * contain an iteration, like "${1,2,5}" or "${x=1,2,5}".
 	 */
-	public boolean containsIterationVariables(String activeSection) {
+	public boolean containsIteration(String activeSection) {
 		synchronized (doc) {
 			analyzeIfChanged();
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 			for (String section : sectionChain) {
 				SectionData sectionData = (SectionData) doc.getSectionData(section);
-				if (!sectionData.iterationVariables.isEmpty())
+				if (!sectionData.iterations.isEmpty())
 					return true;
 			}
 			return false;
@@ -941,8 +946,8 @@ public class InifileAnalyzer {
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 			for (String section : sectionChain) {
 				SectionData sectionData = (SectionData) doc.getSectionData(section);
-				if (sectionData.iterationVariables.containsKey(variable))
-					return sectionData.iterationVariables.get(variable).value;
+				if (sectionData.namedIterations.containsKey(variable))
+					return sectionData.namedIterations.get(variable).value;
 			}
 			return null;
 		}

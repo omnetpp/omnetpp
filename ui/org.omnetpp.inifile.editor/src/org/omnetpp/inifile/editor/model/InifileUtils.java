@@ -354,7 +354,7 @@ public class InifileUtils {
 
 		// base image
 		boolean exists = analyzer.getDocument().containsSection(sectionName);
-		boolean containsIteration = exists ? analyzer.containsIterationVariables(sectionName) : false;
+		boolean containsIteration = exists ? analyzer.containsIteration(sectionName) : false;
 		boolean containsRepeat = exists ? lookupConfig(sectionName, CFGID_REPEAT.getKey(), doc) != null : false;
 		Image sectionImage = !exists ? ICON_SECTION_NONEXISTENT :
 			(containsIteration && containsRepeat) ? ICON_SECTION_ITERREP :
