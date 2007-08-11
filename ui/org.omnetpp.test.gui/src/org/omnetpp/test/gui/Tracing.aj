@@ -19,7 +19,7 @@ public aspect Tracing {
 //	      return result;
 //	   }
 
-	   static private void printParameters(JoinPoint jp) {
+	   static protected void printParameters(JoinPoint jp) {
 	      println("Arguments: " );
 	      Object[] args = jp.getArgs();
 	      String[] names = ((CodeSignature)jp.getSignature()).getParameterNames();

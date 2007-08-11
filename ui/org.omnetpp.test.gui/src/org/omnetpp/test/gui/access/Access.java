@@ -32,7 +32,7 @@ public class Access {
 	public final static int RIGHT_MOUSE_BUTTON = 3;
 
 	@InUIThread
-	public IWorkbench getWorkbench() {
+	public static IWorkbench getWorkbench() {
 		return PlatformUI.getWorkbench();
 	}
 
@@ -47,12 +47,12 @@ public class Access {
 	}
 
 	@InUIThread
-	public Shell getActiveShell() {
+	public static Shell getActiveShell() {
 		return getDisplay().getActiveShell();
 	}
 
 	@InUIThread
-	public void postEvent(Event event) {
+	public static void postEvent(Event event) {
 		if (debug)
 			System.out.println("Posting event: " + event);
 
@@ -60,7 +60,7 @@ public class Access {
 	}
 
 	@InUIThread
-	public void processEvents() {
+	public static void processEvents() {
 		if (debug)
 			System.out.println("Processing events started");
 
