@@ -14,38 +14,38 @@ import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
 
 public class IniFileEditorTestUtils {
-	
+
 	public static void ensureProjectFileDeleted(String projectName, String fileName) throws CoreException {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(fileName);
 		if (file.exists())
 			file.delete(true, null);
 	}
 
-	public static void choosePerspectiveFromDialog(String perspectiveLabel) { 
-		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-		workbenchAccess.chooseFromMainMenu("Window|Open Perspective|Other.*");
+	public static void choosePerspectiveFromDialog(String perspectiveLabel) {
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		workbenchWindow.chooseFromMainMenu("Window|Open Perspective|Other.*");
 		ShellAccess dialog = Access.findShellByTitle("Open Perspective");
 		dialog.findTable().findTableItemByContent(perspectiveLabel).reveal().doubleClick();
 	}
 
-	public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) { 
-		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-		workbenchAccess.chooseFromMainMenu("Window|Show View|Other.*");
+	public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) {
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		workbenchWindow.chooseFromMainMenu("Window|Show View|Other.*");
 		TreeAccess tree = Access.findShellByTitle("Show View").findTree();
 		tree.findTreeItemByContent(viewCategory).reveal().click();
 		tree.pressKey(SWT.ARROW_RIGHT); // open category node
 		tree.findTreeItemByContent(viewLabel).reveal().doubleClick();
-		//return workbenchAccess.findViewPartByTitle(viewLabel, true);
-		return (ViewPartAccess) workbenchAccess.getActivePart();
+		//return workbenchWindow.findViewPartByTitle(viewLabel, true);
+		return (ViewPartAccess) workbenchWindow.getActivePart();
 	}
 
 	public static TreeItemAccess findInProjectExplorerView(String path) {
-		//ViewPartAccess projectExplorerView = workbenchAccess.findViewPartByTitle("Project Explorer", true);
+		//ViewPartAccess projectExplorerView = workbenchWindow.findViewPartByTitle("Project Explorer", true);
 		ViewPartAccess projectExplorerView = chooseViewFromDialog("General", "Project Explorer");
 		TreeAccess tree = projectExplorerView.findTree();
 		tree.assertHasFocus();
 
-		// Note that findTreeItemByContent() does deep search, so this code won't work 
+		// Note that findTreeItemByContent() does deep search, so this code won't work
 		// if any segment is not fully unique in the tree!
 
 		// open project and folder tree nodes
@@ -56,42 +56,42 @@ public class IniFileEditorTestUtils {
 		return tree.findTreeItemByContent(new Path(path).lastSegment()).reveal();
 	}
 
-	public static void createNewIniFileByWizard1(String projectName, String fileName, String networkName) { 
+	public static void createNewIniFileByWizard1(String projectName, String fileName, String networkName) {
 		// Select the project in the "Project Explorer" view, and choose "New|Other..." from its context menu
 		findInProjectExplorerView(projectName).chooseFromContextMenu("New|Other.*");
 
 		// Open the "OMNEST/OMNeT++" category in the "New" dialog, and double-click "Ini file" in it
-		ShellAccess shellAccess = Access.findShellByTitle("New");
-		TreeAccess treeAccess = shellAccess.findTree();
-		TreeItemAccess treeItemAccess = treeAccess.findTreeItemByContent(".*OMNEST.*");
-		treeItemAccess.click();
-		shellAccess.pressKey(SWT.ARROW_RIGHT); // open tree node
-		treeAccess.findTreeItemByContent("Ini.*").doubleClick(); 
+		ShellAccess shell = Access.findShellByTitle("New");
+		TreeAccess tree = shell.findTree();
+		TreeItemAccess treeItem = tree.findTreeItemByContent(".*OMNEST.*");
+		treeItem.click();
+		shell.pressKey(SWT.ARROW_RIGHT); // open tree node
+		tree.findTreeItemByContent("Ini.*").doubleClick();
 
 		fillNewInifileWizard(null, fileName, networkName);
-		
+
 		// make sure the file really exists
 		WorkspaceAccess.assertFileExists(projectName+"/"+fileName);
 	}
 
-	public static void createNewIniFileByWizard2(String parentFolder, String fileName, String networkName) { 
-		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
+	public static void createNewIniFileByWizard2(String parentFolder, String fileName, String networkName) {
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|Inifile" in the menu
-		workbenchAccess.chooseFromMainMenu("File|New.*|Ini.*");
+		workbenchWindow.chooseFromMainMenu("File|New.*|Ini.*");
 		fillNewInifileWizard(parentFolder, fileName, networkName); // fill in wizard
 		WorkspaceAccess.assertFileExists(parentFolder+"/"+fileName); // make sure file got created
 	}
 
 	public static void fillNewInifileWizard(String parentFolder, String fileName, String networkName) {
 		// fill in the fields in the dialog, then click "Finish"
-		ShellAccess shellAccess = Access.findShellByTitle("New Ini File");
-		//Access.dumpWidgetHierarchy(shellAccess.getShell());
+		ShellAccess shell = Access.findShellByTitle("New Ini File");
+		//Access.dumpWidgetHierarchy(shell.getShell());
 		if (parentFolder != null)
-			shellAccess.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
+			shell.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
 		if (fileName != null)
-			shellAccess.findTextAfterLabel("File name.*").clickAndType(fileName);
+			shell.findTextAfterLabel("File name.*").clickAndType(fileName);
 		if (networkName != null)
-			shellAccess.findComboAfterLabel("NED Network:").clickAndType(networkName);
-		shellAccess.findButtonWithLabel("Finish").activateWithMouseClick();
+			shell.findComboAfterLabel("NED Network:").clickAndType(networkName);
+		shell.findButtonWithLabel("Finish").activateWithMouseClick();
 	}
 }

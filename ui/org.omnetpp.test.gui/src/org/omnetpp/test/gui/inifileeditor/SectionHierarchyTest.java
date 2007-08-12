@@ -16,12 +16,12 @@ public class SectionHierarchyTest extends GUITestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		WorkbenchWindowAccess workbenchWindowAccess = Access.getWorkbenchWindowAccess();
-		workbenchWindowAccess.assertIsActiveShell();
-		workbenchWindowAccess.closeAllEditorPartsWithHotKey();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		workbenchWindow.assertIsActiveShell();
+		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceAccess.createFileWithContent(filePath, "");
 		IniFileEditorTestUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
-		workbenchWindowAccess.findEditorPartByTitle(fileName); //TODO .assertClass(InifileEditor.class)
+		workbenchWindow.findEditorPartByTitle(fileName); //TODO .assertClass(InifileEditor.class)
 	}
 	
 	public void testWrongNetwork() throws Throwable {
