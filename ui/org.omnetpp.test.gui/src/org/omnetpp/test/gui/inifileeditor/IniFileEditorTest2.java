@@ -28,7 +28,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 		
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-		workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+		workbenchAccess.findEditorPartByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 //		Access.sleep(2);
 //		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
 //		Access.sleep(2);
@@ -44,12 +44,12 @@ public class IniFileEditorTest2 extends GUITestCase {
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		
 		// Find the inifile editor, and switch to its text page
-		EditorPartAccess editorAccess = workbenchAccess.findEditorByTitle(fileName);
+		EditorPartAccess editorAccess = workbenchAccess.findEditorPartByTitle(fileName);
 		editorAccess.activatePageInMultiPageEditorByLabel("Text");
 		//Access.dumpWidgetHierarchy(editorAccess.getRootControl());
 
 		// Find the text editor in it, and verify it has the right content
-		StyledTextAccess textAccess = editorAccess.findTextEditor();
+		StyledTextAccess textAccess = editorAccess.findStyledText();
 		String editorContent = textAccess.getText();
 		System.out.println("Editor contents: >>>" + editorContent + "<<<");
 		Assert.assertTrue(editorContent.equals("[General]\npreload-ned-files = *.ned\nnetwork = \n"));
@@ -63,17 +63,17 @@ public class IniFileEditorTest2 extends GUITestCase {
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		
 		// Find the inifile editor and switch it to text mode
-		workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+		workbenchAccess.findEditorPartByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
 
 		// Wizard has created the file with an empty "network=" line; type "Undefined" there as network name
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);
 		workbenchAccess.pressKey(SWT.END);
 		workbenchAccess.typeKeySequence(" Undefined");
-		workbenchAccess.saveCurrentEditorPartWithHotKey();
+		workbenchAccess.getActiveEditorPart().saveWithHotKey();
 
 		// The "Problems" view must display a "No such NED network" error
-		ViewPartAccess problemsViewAccess = workbenchAccess.findViewPartByPartName("Problems", true);
+		ViewPartAccess problemsViewAccess = workbenchAccess.findViewPartByTitle("Problems", true);
 		problemsViewAccess.activateWithMouseClick();
 		problemsViewAccess.findTree().findTreeItemByContent(".*No such NED network.*");
 	}

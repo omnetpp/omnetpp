@@ -76,7 +76,7 @@ public class CompositeAccess<T extends Composite> extends ControlAccess<T>
 	}
 
 	@InUIThread
-	public StyledTextAccess findTextEditor() {
+	public StyledTextAccess findStyledText() {
 		return new StyledTextAccess((StyledText) Access.findDescendantControl(getComposite(), StyledText.class));
 	}
 

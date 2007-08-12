@@ -43,17 +43,27 @@ public class WorkbenchWindowAccess extends ShellAccess {
 	}
 	
 	@InUIThread
+	public EditorPartAccess getActiveEditorPart() {
+		return new EditorPartAccess(getWorkbenchWindow().getPages()[0].getActiveEditor());
+	}
+
+	@InUIThread
+	public WorkbenchPartAccess getActivePart() {
+		return new WorkbenchPartAccess(getWorkbenchWindow().getPages()[0].getActivePart());
+	}
+
+	@InUIThread
 	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
 		return new ViewPartAccess(getWorkbenchWindow().getPages()[0].showView(viewId));
 	}
 
 	@InUIThread
-	public ViewPartAccess findViewPartByPartName(String title) {
-		return findViewPartByPartName(title, false);
+	public ViewPartAccess findViewPartByTitle(String title) {
+		return findViewPartByTitle(title, true);
 	}
 
 	@InUIThread
-	public ViewPartAccess findViewPartByPartName(String title, boolean restore) {
+	public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
 		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
 
 		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
@@ -70,7 +80,12 @@ public class WorkbenchWindowAccess extends ShellAccess {
 	}
 
 	@InUIThread
-	public EditorPartAccess findEditorByTitle(String title) {
+	public EditorPartAccess findEditorPartByTitle(String title) {
+		return findEditorPartByTitle(title, true);
+	}
+	
+	@InUIThread
+	public EditorPartAccess findEditorPartByTitle(String title, boolean restore) {
 		ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
 
 		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
@@ -79,20 +94,14 @@ public class WorkbenchWindowAccess extends ShellAccess {
 					System.out.println("Looking at editor part: " + editorReference.getTitle());
 
 				if (editorReference.getTitle().matches(title))
-					result.add(new EditorPartAccess((IEditorPart)editorReference.getEditor(false)));
+					result.add(new EditorPartAccess((IEditorPart)editorReference.getEditor(restore)));
 			}
 		}
-
 		return (EditorPartAccess)theOnlyObject(result);
 	}
 
 	@InUIThread
 	public void closeAllEditorPartsWithHotKey() {
 		pressKey('w', SWT.CONTROL + SWT.SHIFT);
-	}
-
-	@InUIThread
-	public void saveCurrentEditorPartWithHotKey() {
-		pressKey('s', SWT.CONTROL);
 	}
 }

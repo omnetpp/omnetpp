@@ -30,7 +30,7 @@ public class IniFileEditorTestUtils {
 	public static TreeItemAccess findInProjectExplorerView(String resourceName) {
 		Assert.assertTrue(!resourceName.contains("/"));
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-		TreeAccess projectTreeAccess = workbenchAccess.findViewPartByPartName("Project Explorer", true).findTree();
+		TreeAccess projectTreeAccess = workbenchAccess.findViewPartByTitle("Project Explorer", true).findTree();
 		return projectTreeAccess.findTreeItemByContent(resourceName);
 	}
 
