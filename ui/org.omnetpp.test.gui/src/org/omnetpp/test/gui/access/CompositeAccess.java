@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -18,7 +19,7 @@ public class CompositeAccess<T extends Composite> extends ControlAccess<T>
 		super(composite);
 	}
 
-	public T getComposite() {
+	public Composite getComposite() {
 		return widget;
 	}
 
@@ -51,21 +52,17 @@ public class CompositeAccess<T extends Composite> extends ControlAccess<T>
 	}
 
 	@InUIThread
-	public TextAccess findTextNearLabel(final String label) {
+	public LabelAccess findLabel(final String label) {
 		Label labelControl = (Label)findDescendantControl(getComposite(), new IPredicate() {
 			public boolean matches(Object object) {
 				if (object instanceof Label) {
 					Label labelControl = (Label)object;
-
 					return labelControl.getText().replace("&", "").matches(label);
 				}
-
 				return false;
 			}
 		});
-
-		// TODO: should consider layout
-		return new TextAccess((Text)findDescendantControl(labelControl.getParent(), Text.class));
+		return new LabelAccess(labelControl);
 	}
 
 	@InUIThread
@@ -81,6 +78,18 @@ public class CompositeAccess<T extends Composite> extends ControlAccess<T>
 	@InUIThread
 	public StyledTextAccess findTextEditor() {
 		return new StyledTextAccess((StyledText) Access.findDescendantControl(getComposite(), StyledText.class));
+	}
+
+	@InUIThread
+	public TextAccess findTextAfterLabel(String label) {
+		final LabelAccess labelAccess = findLabel(label);
+		return new TextAccess((Text)labelAccess.findNextControl(Text.class));
+	}
+
+	@InUIThread
+	public ComboAccess findComboAfterLabel(String label) {
+		final LabelAccess labelAccess = findLabel(label);
+		return new ComboAccess((Combo)labelAccess.findNextControl(Combo.class));
 	}
 
 }

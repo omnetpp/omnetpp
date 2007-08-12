@@ -18,8 +18,10 @@ public class TableAccess extends ControlAccess<Table>
 	public TableItemAccess findTableItemByContent(final String content) {
 		return new TableItemAccess((TableItem)findObject(widget.getItems(), new IPredicate() {
 			public boolean matches(Object object) {
+				// true if the "main" text or any column text matches
 				TableItem tableItem = (TableItem)object;
-				// true if any column matches the text
+				if (tableItem.getText().matches(content)) // not the same as column[0]!
+					return true;
 				for (int i = 0; i < widget.getColumnCount(); i++)
 					if (tableItem.getText(i).matches(content))
 						return true;

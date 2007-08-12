@@ -78,7 +78,7 @@ public class WorkbenchWindowAccess extends CompositeAccess<Shell> {
 	public EditorPartAccess findEditorByTitle(String title) {
 		ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
 
-		for (IWorkbenchPage page : getWorkbench().getActiveWorkbenchWindow().getPages()) {
+		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
 			for (IEditorReference editorReference : page.getEditorReferences()) {
 				if (debug)
 					System.out.println("Looking at editor part: " + editorReference.getTitle());

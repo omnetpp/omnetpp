@@ -20,16 +20,16 @@ public class IniFileEditorTest2 extends GUITestCase {
 		//WorkbenchAccess.startTracingEvents();
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 
-		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
-		Access.sleep(2);
-		workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
-		Access.sleep(2);
+//		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
+//		Access.sleep(2);
+//		workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
+//		Access.sleep(2);
 
 		// Test setup: close all editors, delete the inifile left over from previous runs 
 		workbenchAccess.closeAllEditorPartsWithHotKey();
 		IniFileEditorTestUtils.ensureProjectFileDeleted(projectName, fileName);
 		
-		IniFileEditorTestUtils.createNewIniFileByWizard(projectName, fileName, null);
+		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, null);
 	}
 	
 	public void testCreateIniFile() throws Throwable {
@@ -67,7 +67,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);
 		workbenchAccess.pressKey(SWT.END);
-		workbenchAccess.typeIn(" Undefined");
+		workbenchAccess.typeKeySequence(" Undefined");
 		workbenchAccess.saveCurrentEditorPartWithHotKey();
 
 		// The "Problems" view must display a "No such NED network" error

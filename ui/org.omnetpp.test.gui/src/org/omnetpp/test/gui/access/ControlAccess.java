@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.access;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.eclipse.swt.graphics.Point;
@@ -41,4 +43,31 @@ public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 	protected Menu getContextMenu() {
 		return widget.getMenu();
 	}
+
+	@InUIThread
+	public Control findNextControl(final IPredicate predicate) {
+		// Returns the first control after this one that matches the predicate
+		// TODO: should consider layout
+		List<Control> objects = collectDescendantControls(widget.getShell(), new IPredicate() {
+			boolean thisWidgetSeen = false;
+			public boolean matches(Object object) {
+				if (object == widget)
+					thisWidgetSeen = true;
+				return thisWidgetSeen && predicate.matches(object);
+			}
+		});
+		Assert.assertTrue("No object found", objects.size() > 0);
+		return objects.get(0);
+	}
+
+	@InUIThread
+	public Control findNextControl(final Class<? extends Control> clazz) {
+		return findNextControl(new IPredicate() {
+			public boolean matches(Object object) {
+				return clazz.isInstance(object);
+			}
+		});
+	}
+
 }
+

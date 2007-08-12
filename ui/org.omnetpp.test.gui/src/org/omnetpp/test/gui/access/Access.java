@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -37,20 +36,11 @@ public class Access {
 		return display != null ? display : Display.getDefault();
 	}
 
-	public static IWorkbench getWorkbench() {
-		return PlatformUI.getWorkbench();
-	}
-
-	@InUIThread
-	public static IWorkbenchWindow getActiveWorkbenchWindow() {
-		IWorkbenchWindow workbenchWindow = getWorkbench().getActiveWorkbenchWindow();
-		Assert.assertNotNull("no active workbench window", workbenchWindow);
-		return workbenchWindow;
-	}
-
 	@InUIThread
 	public static WorkbenchWindowAccess getWorkbenchWindowAccess() {
-		return new WorkbenchWindowAccess(getWorkbench().getActiveWorkbenchWindow());
+		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		Assert.assertNotNull("no active workbench window", workbenchWindow);
+		return new WorkbenchWindowAccess(workbenchWindow);
 	}
 
 	@InUIThread
@@ -93,7 +83,7 @@ public class Access {
 			System.out.println("Processing events finished");
 	}
 
-	@InUIThread
+	/* no @InUIThread! */
 	public static void sleep(double seconds) {
 		try {
 			Thread.sleep((long)(seconds * 1000));
