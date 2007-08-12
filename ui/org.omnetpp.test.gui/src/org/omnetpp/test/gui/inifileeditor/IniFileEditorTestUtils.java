@@ -61,15 +61,15 @@ public class IniFileEditorTestUtils {
 	}
 
 	public static void fillNewInifileWizard(String parentFolder, String fileName, String networkName) {
-		// Enter the file name in the dialog, and click "Finish"
+		// fill in the fields in the dialog, then click "Finish"
 		ShellAccess shellAccess = Access.findShellByTitle("New Ini File");
-		Access.dumpWidgetHierarchy(shellAccess.getShell());
+		//Access.dumpWidgetHierarchy(shellAccess.getShell());
 		if (parentFolder != null)
 			shellAccess.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
 		if (fileName != null)
 			shellAccess.findTextAfterLabel("File name.*").clickAndType(fileName);
 		if (networkName != null)
-			shellAccess.findTextAfterLabel("NED Network:").clickAndType(networkName);
+			shellAccess.findComboAfterLabel("NED Network:").clickAndType(networkName);
 		shellAccess.findButtonWithLabel("Finish").activateWithMouseClick();
 	}
 }

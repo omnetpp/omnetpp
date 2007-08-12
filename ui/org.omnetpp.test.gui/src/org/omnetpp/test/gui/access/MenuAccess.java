@@ -23,7 +23,7 @@ public class MenuAccess extends WidgetAccess<Menu> {
 	 */
 	@InUIThread
 	public MenuAccess activateMenuItemWithMouse(String label) {
-		System.out.println("Activating menu item: " + label);
+		//System.out.println("Activating menu item: " + label);
 		return findMenuItemByLabel(label).activateWithMouseClick();
 	}
 
@@ -40,13 +40,9 @@ public class MenuAccess extends WidgetAccess<Menu> {
 	@InUIThread
 	public List<MenuItem> collectMenuItems(Menu menu, IPredicate predicate) {
 		ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
-		for (MenuItem menuItem : menu.getItems()) {
-			System.out.println("checking menu item: " + menuItem.getText());
-			if (predicate.matches(menuItem)) {
-				System.out.println("--> found match: " + menuItem.getText());
+		for (MenuItem menuItem : menu.getItems())
+			if (predicate.matches(menuItem))
 				resultMenuItems.add(menuItem);
-			}
-		}
 		return resultMenuItems;
 	}
 

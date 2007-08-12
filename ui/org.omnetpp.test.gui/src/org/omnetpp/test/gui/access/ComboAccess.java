@@ -27,7 +27,8 @@ public class ComboAccess extends ControlAccess<Combo>
 	
 	@InUIThread
 	public void clickAndType(String text) {
-		assertEditable(); // otherwise cannot type
+		assertEnabled();
+		assertEditable();
 		click(); // focus
 		pressKey(SWT.HOME);
 		pressKey(SWT.END, SWT.SHIFT);  // select all

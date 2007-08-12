@@ -15,30 +15,30 @@ public class IniFileEditorTest2 extends GUITestCase {
 	protected String projectName = "test-project";
 	protected String fileName = "omnetpp.ini";
 
-	protected void createNewInifile() throws CoreException {
-		
-		//WorkbenchAccess.startTracingEvents();
-		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-
-//		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
-//		Access.sleep(2);
-//		workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
-//		Access.sleep(2);
-
+	protected void prepareForTest() throws CoreException {
 		// Test setup: close all editors, delete the inifile left over from previous runs 
+		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		workbenchAccess.closeAllEditorPartsWithHotKey();
 		IniFileEditorTestUtils.ensureProjectFileDeleted(projectName, fileName);
-		
-		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, null);
 	}
 	
 	public void testCreateIniFile() throws Throwable {
-		createNewInifile();
+		prepareForTest();
+		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
+		
+		//Access.getWorkbenchWindowAccess().findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+		//Access.sleep(5);
+		
+		//workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
+		//Access.sleep(2);
+		//workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
+		//Access.sleep(2);
 	}
 
 	public void testWizardResult() throws Throwable {
 		//WorkbenchAccess.startTracingEvents();
-		createNewInifile();
+		prepareForTest();
+		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		
@@ -56,7 +56,8 @@ public class IniFileEditorTest2 extends GUITestCase {
 	
 	public void testWrongNetwork() throws Throwable {
 		//WorkbenchAccess.startTracingEvents();
-		createNewInifile();
+		prepareForTest();
+		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		
