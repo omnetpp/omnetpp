@@ -18,6 +18,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 	protected void prepareForTest() throws CoreException {
 		// Test setup: close all editors, delete the inifile left over from previous runs 
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
+		workbenchAccess.assertIsActiveShell();
 		workbenchAccess.closeAllEditorPartsWithHotKey();
 		IniFileEditorTestUtils.ensureProjectFileDeleted(projectName, fileName);
 	}
@@ -26,13 +27,13 @@ public class IniFileEditorTest2 extends GUITestCase {
 		prepareForTest();
 		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 		
-		//Access.getWorkbenchWindowAccess().findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
-		//Access.sleep(5);
-		
-		//workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
-		//Access.sleep(2);
-		//workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
-		//Access.sleep(2);
+		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
+		workbenchAccess.findEditorByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+//		Access.sleep(2);
+//		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
+//		Access.sleep(2);
+//		workbenchAccess.chooseFromMainMenu("Window|Show View|Tasks");
+//		Access.sleep(2);
 	}
 
 	public void testWizardResult() throws Throwable {

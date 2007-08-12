@@ -6,7 +6,6 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IViewReference;
@@ -16,7 +15,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.test.gui.InUIThread;
 
-public class WorkbenchWindowAccess extends CompositeAccess<Shell> {
+public class WorkbenchWindowAccess extends ShellAccess {
 	private IWorkbenchWindow workbenchWindow;
 	
 	public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
@@ -24,10 +23,6 @@ public class WorkbenchWindowAccess extends CompositeAccess<Shell> {
 		this.workbenchWindow = workbenchWindow;
 	}
 
-	public Shell getShell() {
-		return widget;
-	}
-	
 	public IWorkbenchWindow getWorkbenchWindow() {
 		return workbenchWindow;
 	}

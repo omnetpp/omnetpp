@@ -21,17 +21,17 @@ public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 
 	@InUIThread
 	public void assertEnabled() {
-		Assert.assertTrue(widget.getEnabled());
+		Assert.assertTrue("control is disabled", widget.getEnabled());
 	}
 
 	@InUIThread
 	public void assertHasFocus() {
-		Assert.assertTrue(widget.isFocusControl());
+		Assert.assertTrue("control has no focus", widget.isFocusControl());
 	}
 
 	@InUIThread
 	public void assertVisible() {
-		Assert.assertTrue(widget.isVisible());
+		Assert.assertTrue("control not visible", widget.isVisible());
 	}
 
 	@Override

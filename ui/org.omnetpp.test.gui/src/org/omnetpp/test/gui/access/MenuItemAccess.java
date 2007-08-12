@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.access;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
@@ -18,7 +20,16 @@ public class MenuItemAccess extends ClickableWidgetAccess<MenuItem>
 	}
 
 	@InUIThread
+	public void assertEnabled() {
+		if (!widget.isEnabled()) {
+	    	MenuAccess.closeMenus();
+	    	Assert.assertTrue("menu item is disabled", false);
+		}
+	}
+	
+	@InUIThread
 	public MenuAccess activateWithMouseClick() {
+		assertEnabled();
 		click();
 		return widget.getMenu() == null ? null : new MenuAccess(widget.getMenu());
 	}

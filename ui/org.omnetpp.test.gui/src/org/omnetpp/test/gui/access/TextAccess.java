@@ -22,7 +22,7 @@ public class TextAccess extends ControlAccess<Text>
 	}
 
 	public void assertEditable() {
-		Assert.assertTrue((widget.getStyle() & SWT.READ_ONLY) == 0);
+		Assert.assertTrue("text control is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
 	}
 
 	@InUIThread

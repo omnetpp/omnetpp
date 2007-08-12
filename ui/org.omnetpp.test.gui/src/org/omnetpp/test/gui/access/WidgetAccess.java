@@ -10,12 +10,11 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.test.gui.InUIThread;
 
-public class WidgetAccess<T extends Widget> extends Access
+public class WidgetAccess<T extends Widget> extends Access 
 {
 	protected T widget;
 
-	public WidgetAccess(T widget)
-	{
+	public WidgetAccess(T widget) {
 		Assert.assertTrue(widget != null);
 		this.widget = widget;
 	}

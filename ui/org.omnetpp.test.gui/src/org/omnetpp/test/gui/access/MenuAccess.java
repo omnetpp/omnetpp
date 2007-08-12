@@ -3,8 +3,12 @@ package org.omnetpp.test.gui.access;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.test.gui.InUIThread;
 
 public class MenuAccess extends WidgetAccess<Menu> {
@@ -29,12 +33,17 @@ public class MenuAccess extends WidgetAccess<Menu> {
 
 	@InUIThread
 	public MenuItemAccess findMenuItemByLabel(final String label) {
-		return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(widget, new IPredicate() {
-			public boolean matches(Object object) {
-				String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
-				return menuItemLabel.matches(label);
-			}
-		})));
+		try {
+			return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(widget, new IPredicate() {
+				public boolean matches(Object object) {
+					String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
+					return menuItemLabel.matches(label);
+				}
+			})));
+		} catch (RuntimeException e) {
+			closeMenus();
+			throw e;
+		}
 	}
 
 	@InUIThread
@@ -46,6 +55,29 @@ public class MenuAccess extends WidgetAccess<Menu> {
 		return resultMenuItems;
 	}
 
+	@InUIThread
+	public static void closeMenus() {
+		// we need to manually close the menus whenever an error occurs during 
+		// menu processing (e.g. assert failed: menu item not found or 
+		// disabled), otherwise the event loop will sit there forever.
+		// However, there seems to be no clean way of doing it; here we try
+		// to click at the caption bar (i.e. the window manager decoration)
+		// of the workbench window if that's the active shell. We don't do 
+		// anything if some other shell is active, as it might have unwanted
+		// side effects. Issue: menu might actually be exactly there where
+		// we want to click, try avoid hitting it...
+		//
+		Shell workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		if (workbenchWindow != null && workbenchWindow == Display.getCurrent().getActiveShell()) {
+			Rectangle bounds = workbenchWindow.getBounds(); // note: this includes "trimmings" as well
+			if (bounds.width > 200) {
+				int x = bounds.x + bounds.width - 150; // click on the right side, to avoid menus which are usually on the left
+				int y = bounds.y + 1;  // top edge of caption bar ("trimmings")
+				new ShellAccess(workbenchWindow).click(Access.LEFT_MOUSE_BUTTON, x, y);
+			}
+		}
+	}
+	
 // the following code searches in the menus recursively -- retained just in case it might be needed somewhere...
 //	@InUIThread
 //	public MenuAccess activateMenuItemWithMouse_Recursive(String label) {

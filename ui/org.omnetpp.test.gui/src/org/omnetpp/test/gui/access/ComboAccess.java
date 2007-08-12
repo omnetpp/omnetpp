@@ -22,7 +22,7 @@ public class ComboAccess extends ControlAccess<Combo>
 	}
 
 	public void assertEditable() {
-		Assert.assertTrue((widget.getStyle() & SWT.READ_ONLY) == 0);
+		Assert.assertTrue("combo is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
 	}
 	
 	@InUIThread

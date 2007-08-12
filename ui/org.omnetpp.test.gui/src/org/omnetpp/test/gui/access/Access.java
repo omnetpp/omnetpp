@@ -165,7 +165,7 @@ public class Access {
 						}
 					});
 
-					Assert.assertTrue(cTabItems.size() < 2);
+					Assert.assertTrue("more than one matching CTabItem found", cTabItems.size() < 2);
 
 					if (cTabItems.size() == 0)
 						return false;
