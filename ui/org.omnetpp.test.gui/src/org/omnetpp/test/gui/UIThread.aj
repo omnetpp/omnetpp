@@ -43,7 +43,8 @@ public aspect UIThread {
 	 * JUnit test case methods should be run in a background thread so that
 	 * they can run independent of the UI.
 	 */
-	void around(final GUITestCase t): target(t) && execution(public void test*()) {
+	void around(final GUITestCase t): target(t) && (execution(public void test*()) || 
+			execution(void setUp()) || execution(void tearDown())) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    System.out.println("AJ: running test case: " + method);
 	    try {

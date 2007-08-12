@@ -28,7 +28,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 		IniFileEditorTestUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 		
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-		workbenchAccess.findEditorPartByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+		workbenchAccess.findEditorPartByTitle(fileName).activatePage("Text");
 //		Access.sleep(2);
 //		workbenchAccess.chooseFromMainMenu("Window|Show View|Problems");
 //		Access.sleep(2);
@@ -45,7 +45,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 		
 		// Find the inifile editor, and switch to its text page
 		EditorPartAccess editorAccess = workbenchAccess.findEditorPartByTitle(fileName);
-		editorAccess.activatePageInMultiPageEditorByLabel("Text");
+		editorAccess.activatePage("Text");
 		//Access.dumpWidgetHierarchy(editorAccess.getRootControl());
 
 		// Find the text editor in it, and verify it has the right content
@@ -63,7 +63,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		
 		// Find the inifile editor and switch it to text mode
-		workbenchAccess.findEditorPartByTitle(fileName).activatePageInMultiPageEditorByLabel("Text");
+		workbenchAccess.findEditorPartByTitle(fileName).activatePage("Text");
 
 		// Wizard has created the file with an empty "network=" line; type "Undefined" there as network name
 		workbenchAccess.pressKey(SWT.ARROW_DOWN);

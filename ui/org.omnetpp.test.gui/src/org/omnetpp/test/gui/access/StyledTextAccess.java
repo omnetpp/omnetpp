@@ -17,4 +17,5 @@ public class StyledTextAccess extends CompositeAccess<StyledText>
 	public String getText() {
 		return widget.getText();
 	}
+
 }

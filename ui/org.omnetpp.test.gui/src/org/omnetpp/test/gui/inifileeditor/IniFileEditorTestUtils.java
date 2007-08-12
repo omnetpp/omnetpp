@@ -1,15 +1,15 @@
 package org.omnetpp.test.gui.inifileeditor;
 
-import junit.framework.Assert;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.TreeAccess;
 import org.omnetpp.test.gui.access.TreeItemAccess;
+import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
 
@@ -24,14 +24,36 @@ public class IniFileEditorTestUtils {
 	public static void choosePerspectiveFromDialog(String perspectiveLabel) { 
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
 		workbenchAccess.chooseFromMainMenu("Window|Open Perspective|Other.*");
-		Access.findShellByTitle("Open Perspective").findTable().findTableItemByContent(perspectiveLabel).doubleClick();
+		ShellAccess dialog = Access.findShellByTitle("Open Perspective");
+		dialog.findTable().findTableItemByContent(perspectiveLabel).reveal().doubleClick();
 	}
 
-	public static TreeItemAccess findInProjectExplorerView(String resourceName) {
-		Assert.assertTrue(!resourceName.contains("/"));
+	public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) { 
 		WorkbenchWindowAccess workbenchAccess = Access.getWorkbenchWindowAccess();
-		TreeAccess projectTreeAccess = workbenchAccess.findViewPartByTitle("Project Explorer", true).findTree();
-		return projectTreeAccess.findTreeItemByContent(resourceName);
+		workbenchAccess.chooseFromMainMenu("Window|Show View|Other.*");
+		TreeAccess tree = Access.findShellByTitle("Show View").findTree();
+		tree.findTreeItemByContent(viewCategory).reveal().click();
+		tree.pressKey(SWT.ARROW_RIGHT); // open category node
+		tree.findTreeItemByContent(viewLabel).reveal().doubleClick();
+		//return workbenchAccess.findViewPartByTitle(viewLabel, true);
+		return (ViewPartAccess) workbenchAccess.getActivePart();
+	}
+
+	public static TreeItemAccess findInProjectExplorerView(String path) {
+		//ViewPartAccess projectExplorerView = workbenchAccess.findViewPartByTitle("Project Explorer", true);
+		ViewPartAccess projectExplorerView = chooseViewFromDialog("General", "Project Explorer");
+		TreeAccess tree = projectExplorerView.findTree();
+		tree.assertHasFocus();
+
+		// Note that findTreeItemByContent() does deep search, so this code won't work 
+		// if any segment is not fully unique in the tree!
+
+		// open project and folder tree nodes
+		for (String pathSegment : new Path(path).removeLastSegments(1).segments()) {
+			tree.findTreeItemByContent(pathSegment).reveal().click();
+			tree.pressKey(SWT.ARROW_RIGHT);
+		}
+		return tree.findTreeItemByContent(new Path(path).lastSegment()).reveal();
 	}
 
 	public static void createNewIniFileByWizard1(String projectName, String fileName, String networkName) { 

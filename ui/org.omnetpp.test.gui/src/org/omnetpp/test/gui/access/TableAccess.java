@@ -20,6 +20,7 @@ public class TableAccess extends ControlAccess<Table>
 			public boolean matches(Object object) {
 				// true if the "main" text or any column text matches
 				TableItem tableItem = (TableItem)object;
+				System.out.println("  checking: " + tableItem);
 				if (tableItem.getText().matches(content)) // not the same as column[0]!
 					return true;
 				for (int i = 0; i < widget.getColumnCount(); i++)

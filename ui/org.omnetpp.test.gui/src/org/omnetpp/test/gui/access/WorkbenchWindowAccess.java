@@ -8,8 +8,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
@@ -49,7 +51,11 @@ public class WorkbenchWindowAccess extends ShellAccess {
 
 	@InUIThread
 	public WorkbenchPartAccess getActivePart() {
-		return new WorkbenchPartAccess(getWorkbenchWindow().getPages()[0].getActivePart());
+		IWorkbenchPart activePart = getWorkbenchWindow().getPages()[0].getActivePart();
+		if (activePart instanceof IEditorPart)
+			return new EditorPartAccess((IEditorPart)activePart);
+		else 
+			return new ViewPartAccess((IViewPart)activePart);
 	}
 
 	@InUIThread
@@ -68,9 +74,7 @@ public class WorkbenchWindowAccess extends ShellAccess {
 
 		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
 			for (IViewReference viewReference : page.getViewReferences()) {
-				if (debug)
-					System.out.println("Looking at view part: " + viewReference.getPartName());
-
+				System.out.println("  checking viewpart: " + viewReference.getPartName());
 				if (viewReference.getPartName().matches(title))
 					result.add(new ViewPartAccess((ViewPart)viewReference.getView(restore)));
 			}
@@ -90,9 +94,7 @@ public class WorkbenchWindowAccess extends ShellAccess {
 
 		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
 			for (IEditorReference editorReference : page.getEditorReferences()) {
-				if (debug)
-					System.out.println("Looking at editor part: " + editorReference.getTitle());
-
+				System.out.println("  checking editorpart: " + editorReference.getTitle());
 				if (editorReference.getTitle().matches(title))
 					result.add(new EditorPartAccess((IEditorPart)editorReference.getEditor(restore)));
 			}

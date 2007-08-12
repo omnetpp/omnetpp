@@ -19,14 +19,16 @@ public class TreeAccess extends ControlAccess<Tree>
 
 	@InUIThread
 	public TreeItemAccess findTreeItemByContent(final String content) {
-		return new TreeItemAccess((TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
+		TreeItem treeItem = (TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
-				String treeItemContent = ((TreeItem)object).getText();
-				if (debug)
-					System.out.println("checking tree item: " + treeItemContent);
+				TreeItem treeItem = (TreeItem)object;
+				System.out.println("  checking: " + treeItem);
+				String treeItemContent = treeItem.getText();
 				return treeItemContent.matches(content);
 			}
-		})));
+		}));
+		System.out.println(treeItem + ":" + treeItem.getBounds()); 
+		return new TreeItemAccess(treeItem);
 	}
 
 	@InUIThread

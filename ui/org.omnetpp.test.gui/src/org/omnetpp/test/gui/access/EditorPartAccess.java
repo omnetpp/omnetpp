@@ -16,7 +16,7 @@ public class EditorPartAccess extends WorkbenchPartAccess {
 	}
 	
 	@InUIThread
-	public void activatePageInMultiPageEditorByLabel(final String label) {
+	public void activatePage(final String label) {
 		CTabItem cTabItem = findDescendantCTabItemByLabel(getComposite().getParent(), label);
 		clickCTabItem(cTabItem);
 	}

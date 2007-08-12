@@ -68,6 +68,7 @@ public class WorkspaceAccess {
 	public static void createFileWithContent(String path, String content) throws Exception {
 		Assert.assertTrue("must called from a background thread", Display.getCurrent()==null);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+		if (file.exists()) file.delete(true, null);
 		file.create(new ByteArrayInputStream(content.getBytes()), true, null);
 		WorkspaceAccess.assertFileExistsWithContent(path, content); // wait until background job finishes
 	}
