@@ -11,7 +11,7 @@ import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 
-public class IniFileEditorTest2 extends GUITestCase {
+public class IniFileEditorTest extends GUITestCase {
 	protected String projectName = "test-project";
 	protected String fileName = "omnetpp.ini";
 
@@ -52,7 +52,7 @@ public class IniFileEditorTest2 extends GUITestCase {
 		StyledTextAccess text = editor.findStyledText();
 		String editorContent = text.getText();
 		System.out.println("Editor contents: >>>" + editorContent + "<<<");
-		Assert.assertTrue(editorContent.equals("[General]\npreload-ned-files = *.ned\nnetwork = \n"));
+		Assert.assertTrue(editorContent.equals("[General]\npreload-ned-files = *.ned\nnetwork = some-network\n"));
 	}
 
 	public void testWrongNetwork() throws Throwable {
