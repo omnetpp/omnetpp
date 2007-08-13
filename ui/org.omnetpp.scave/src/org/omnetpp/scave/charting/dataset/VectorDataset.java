@@ -1,16 +1,25 @@
 package org.omnetpp.scave.charting.dataset;
 
-import java.util.Arrays;
+import static org.omnetpp.scave.model2.FilterUtil.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.FilterUtil.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.FilterUtil.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.FilterUtil.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.model2.RunAttribute;
+import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.ResultItemFormatter;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * IXYDataset implementation for output vectors.
@@ -23,19 +32,41 @@ public class VectorDataset implements IXYDataset {
 	private String[] seriesKeys;
 	private XYArray[] seriesData;
 
+	/**
+	 * Creates an empty dataset.
+	 */
 	public VectorDataset() {
 		this.idlist = new IDList();
 		this.seriesKeys = new String[] {};
 		this.seriesData = new XYArray[] {};
 	}
-
-	public VectorDataset(IDList idlist, XYArray[] seriesData, ResultFileManager manager) {
+	
+	/**
+	 * Creates a dataset containing vectors from {@code idlist}.
+	 * The data of the vectors are not loaded/computed, so
+	 * each series will have 0 items.
+	 * Intended for accessing the series keys only
+	 * (property sheet, edit dialog).
+	 */
+	public VectorDataset(IDList idlist, String lineNameFormat, ResultFileManager manager) {
 		Assert.isLegal(idlist != null);
 		Assert.isLegal(manager != null);
-		Assert.isTrue(seriesData == null || idlist.size() == seriesData.length);
 		this.idlist = idlist;
+		ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+		String format = StringUtils.isEmpty(lineNameFormat) ? getLineNameFormat(items) : lineNameFormat;
+		this.seriesKeys = ResultItemFormatter.formatResultItems(format, items);
+		Assert.isTrue(idlist.size() == seriesKeys.length);
+	}
+
+	/**
+	 * Creates a dataset containing vectors from {@code idlist}.
+	 * The data of the vectors are loaded/computed.
+	 * Intended for displaying the dataset (e.g. charts).
+	 */
+	public VectorDataset(IDList idlist, XYArray[] seriesData, String lineNameFormat, ResultFileManager manager) {
+		this(idlist, lineNameFormat, manager);
+		Assert.isTrue(seriesData != null || idlist.size() == seriesData.length);
 		this.seriesData = seriesData;
-		this.seriesKeys = getResultItemIDs(idlist, manager);
 	}
 	
 	public int getSeriesCount() {
@@ -71,49 +102,37 @@ public class VectorDataset implements IXYDataset {
 	}
 	
 	/**
-	 * Returns the ids of data items in the <code>idlist</code>.
-	 * The id is formed from the file name, run number, run id, module name,
-	 * data name, experiment, measurement and replication.
-	 * Constant fields will be omitted from the id.
+	 * Returns the default format string for names of the lines in {@code items}.
+	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
+	 * but fields that are the same for each item are omitted.
+	 * If all the fields has the same value in {@code items}, then the "{index}" is used as 
+	 * the format string. 
 	 */
-	public String[] getResultItemIDs(IDList idlist, ResultFileManager manager) {
-		String[][] nameFragments = new String[(int)idlist.size()][];
-		for (int i = 0; i < idlist.size(); ++i) {
-			ResultItem item = manager.getItem(idlist.get(i));
-			Run run = item.getFileRun().getRun();
-			nameFragments[i] = new String[8];
-			nameFragments[i][0] = item.getFileRun().getFile().getFilePath();
-			nameFragments[i][1] = String.valueOf(run.getRunNumber());
-			nameFragments[i][2] = String.valueOf(run.getRunName());
-			nameFragments[i][3] = item.getModuleName();
-			nameFragments[i][4] = item.getName();
-			nameFragments[i][5] = run.getAttribute(RunAttribute.EXPERIMENT);
-			nameFragments[i][6] = run.getAttribute(RunAttribute.REPLICATION);
-			nameFragments[i][7] = run.getAttribute(RunAttribute.MEASUREMENT);
-		}
-
-		boolean[] same = new boolean[8];
-		Arrays.fill(same, true);
-		for (int i = 1; i < nameFragments.length; ++i) {
-			for (int j = 0; j < 8; ++j)
-				if (same[j] && !ObjectUtils.equals(nameFragments[0][j], nameFragments[i][j]))
-					same[j] = false;
-		}
-
-		String[] result = new String[nameFragments.length];
-		for (int i = 0; i < result.length; ++i) {
-			StringBuffer id = new StringBuffer(30);
-			for (int j = 0; j < 8; ++j)
-				if (!same[j])
-					id.append(nameFragments[i][j]).append(" ");
-			if (id.length() == 0)
-				id.append(i);
-			else
-				id.deleteCharAt(id.length() - 1);
-			result[i] = id.toString();
+	private String getLineNameFormat(ResultItem[] items) {
+		if (idlist.isEmpty())
+			return "";
+		
+		StringBuffer sbFormat = new StringBuffer();
+		char separator = ' ';
+		String[] fields = new String[] {FIELD_FILENAME, FIELD_RUNNAME, RUNNUMBER, FIELD_MODULENAME, FIELD_DATANAME,
+										EXPERIMENT, MEASUREMENT, REPLICATION};
+		for (String field : fields) {
+			String firstValue = FilterUtil.getFieldValue(items[0], field);
+			
+			for (int i = 1; i < items.length; ++i) {
+				String value = FilterUtil.getFieldValue(items[i], field);
+				if (!ObjectUtils.equals(firstValue, value)) {
+					sbFormat.append('{').append(field).append('}').append(separator);
+					break;
+				}
+			}
 		}
 		
-		Assert.isTrue(idlist.size() == result.length);
-		return result;
+		if (sbFormat.length() > 0)
+			sbFormat.deleteCharAt(sbFormat.length() - 1);
+		else
+			sbFormat.append("{index}");
+		
+		return sbFormat.toString();
 	}
 }

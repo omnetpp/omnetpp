@@ -204,10 +204,11 @@ public class DatasetManager {
 		//TODO update progressMonitor
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		IDList idlist = IDList.EMPTY;
+		
+		String lineNameFormat = chart.getLineNameFormat();
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, chart, computeData);
-		idlist = builder.getDisplayedIDs();
+		IDList idlist = builder.getDisplayedIDs();
 
 		XYArray[] dataValues = null;
 		if (dataflowManager != null) {
@@ -216,7 +217,9 @@ public class DatasetManager {
 			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
 		}
 		
-		return new VectorDataset(idlist, dataValues, manager);
+		return dataValues != null ?
+				new VectorDataset(idlist, dataValues, lineNameFormat, manager) :
+				new VectorDataset(idlist, lineNameFormat, manager);
 	}
 	
 	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
