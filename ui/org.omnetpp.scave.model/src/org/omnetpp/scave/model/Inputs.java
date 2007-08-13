@@ -38,7 +38,7 @@ public interface Inputs extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Inputs</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getInputs_Inputs()
-	 * @model type="org.omnetpp.scave.model.InputFile" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<InputFile> getInputs();

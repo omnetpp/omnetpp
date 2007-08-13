@@ -1049,13 +1049,31 @@ public interface ScaveModelPackage extends EPackage {
 	int BAR_CHART__GROUP_BY = CHART_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Group Name Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__GROUP_NAME_FORMAT = CHART_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Bar Name Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__BAR_NAME_FORMAT = CHART_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Bar Chart</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 1;
+	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.
@@ -1095,13 +1113,22 @@ public interface ScaveModelPackage extends EPackage {
 	int LINE_CHART__PROPERTIES = CHART__PROPERTIES;
 
 	/**
+	 * The feature id for the '<em><b>Line Name Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LINE_CHART__LINE_NAME_FORMAT = CHART_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Line Chart</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LINE_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
+	int LINE_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.HistogramChartImpl <em>Histogram Chart</em>}' class.
@@ -1837,6 +1864,28 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getBarChart_GroupBy();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Group Name Format</em>'.
+	 * @see org.omnetpp.scave.model.BarChart#getGroupNameFormat()
+	 * @see #getBarChart()
+	 * @generated
+	 */
+	EAttribute getBarChart_GroupNameFormat();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.BarChart#getBarNameFormat <em>Bar Name Format</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Bar Name Format</em>'.
+	 * @see org.omnetpp.scave.model.BarChart#getBarNameFormat()
+	 * @see #getBarChart()
+	 * @generated
+	 */
+	EAttribute getBarChart_BarNameFormat();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1845,6 +1894,17 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getLineChart();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.LineChart#getLineNameFormat <em>Line Name Format</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Line Name Format</em>'.
+	 * @see org.omnetpp.scave.model.LineChart#getLineNameFormat()
+	 * @see #getLineChart()
+	 * @generated
+	 */
+	EAttribute getLineChart_LineNameFormat();
 
 	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.HistogramChart <em>Histogram Chart</em>}'.
@@ -2436,6 +2496,22 @@ public interface ScaveModelPackage extends EPackage {
 		EAttribute BAR_CHART__GROUP_BY = eINSTANCE.getBarChart_GroupBy();
 
 		/**
+		 * The meta object literal for the '<em><b>Group Name Format</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BAR_CHART__GROUP_NAME_FORMAT = eINSTANCE.getBarChart_GroupNameFormat();
+
+		/**
+		 * The meta object literal for the '<em><b>Bar Name Format</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BAR_CHART__BAR_NAME_FORMAT = eINSTANCE.getBarChart_BarNameFormat();
+
+		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2444,6 +2520,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass LINE_CHART = eINSTANCE.getLineChart();
+
+		/**
+		 * The meta object literal for the '<em><b>Line Name Format</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LINE_CHART__LINE_NAME_FORMAT = eINSTANCE.getLineChart_LineNameFormat();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.HistogramChartImpl <em>Histogram Chart</em>}' class.

@@ -64,7 +64,7 @@ public interface Chart extends DatasetItem {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Filters</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Filters()
-	 * @model type="org.omnetpp.scave.model.SelectDeselectOp" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<SelectDeselectOp> getFilters();
@@ -80,7 +80,7 @@ public interface Chart extends DatasetItem {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Properties</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Properties()
-	 * @model type="org.omnetpp.scave.model.Property" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<Property> getProperties();

@@ -29,6 +29,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getGroupBy <em>Group By</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getGroupNameFormat <em>Group Name Format</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getBarNameFormat <em>Bar Name Format</em>}</li>
  * </ul>
  * </p>
  *
@@ -44,6 +46,46 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * @ordered
 	 */
 	protected EList<String> groupBy;
+
+	/**
+	 * The default value of the '{@link #getGroupNameFormat() <em>Group Name Format</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getGroupNameFormat()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String GROUP_NAME_FORMAT_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getGroupNameFormat() <em>Group Name Format</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getGroupNameFormat()
+	 * @generated
+	 * @ordered
+	 */
+	protected String groupNameFormat = GROUP_NAME_FORMAT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getBarNameFormat() <em>Bar Name Format</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBarNameFormat()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String BAR_NAME_FORMAT_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getBarNameFormat() <em>Bar Name Format</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBarNameFormat()
+	 * @generated
+	 * @ordered
+	 */
+	protected String barNameFormat = BAR_NAME_FORMAT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -81,11 +123,57 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getGroupNameFormat() {
+		return groupNameFormat;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setGroupNameFormat(String newGroupNameFormat) {
+		String oldGroupNameFormat = groupNameFormat;
+		groupNameFormat = newGroupNameFormat;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT, oldGroupNameFormat, groupNameFormat));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getBarNameFormat() {
+		return barNameFormat;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setBarNameFormat(String newBarNameFormat) {
+		String oldBarNameFormat = barNameFormat;
+		barNameFormat = newBarNameFormat;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT, oldBarNameFormat, barNameFormat));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
 				return getGroupBy();
+			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+				return getGroupNameFormat();
+			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+				return getBarNameFormat();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -103,6 +191,12 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 				getGroupBy().clear();
 				getGroupBy().addAll((Collection<? extends String>)newValue);
 				return;
+			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+				setGroupNameFormat((String)newValue);
+				return;
+			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+				setBarNameFormat((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -118,6 +212,12 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
 				getGroupBy().clear();
 				return;
+			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+				setGroupNameFormat(GROUP_NAME_FORMAT_EDEFAULT);
+				return;
+			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+				setBarNameFormat(BAR_NAME_FORMAT_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -132,6 +232,10 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 		switch (featureID) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
 				return groupBy != null && !groupBy.isEmpty();
+			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+				return GROUP_NAME_FORMAT_EDEFAULT == null ? groupNameFormat != null : !GROUP_NAME_FORMAT_EDEFAULT.equals(groupNameFormat);
+			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+				return BAR_NAME_FORMAT_EDEFAULT == null ? barNameFormat != null : !BAR_NAME_FORMAT_EDEFAULT.equals(barNameFormat);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -148,6 +252,10 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (groupBy: ");
 		result.append(groupBy);
+		result.append(", groupNameFormat: ");
+		result.append(groupNameFormat);
+		result.append(", barNameFormat: ");
+		result.append(barNameFormat);
 		result.append(')');
 		return result.toString();
 	}

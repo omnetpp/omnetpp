@@ -64,7 +64,7 @@ public interface ProcessingOp extends DatasetItem {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Filters</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getProcessingOp_Filters()
-	 * @model type="org.omnetpp.scave.model.SelectDeselectOp" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<SelectDeselectOp> getFilters();
@@ -80,7 +80,7 @@ public interface ProcessingOp extends DatasetItem {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Params</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getProcessingOp_Params()
-	 * @model type="org.omnetpp.scave.model.Param" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<Param> getParams();

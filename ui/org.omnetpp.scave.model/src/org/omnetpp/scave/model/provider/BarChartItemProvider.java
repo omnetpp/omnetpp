@@ -66,6 +66,8 @@ public class BarChartItemProvider
 			super.getPropertyDescriptors(object);
 
 			addGroupByPropertyDescriptor(object);
+			addGroupNameFormatPropertyDescriptor(object);
+			addBarNameFormatPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -84,6 +86,50 @@ public class BarChartItemProvider
 				 getString("_UI_BarChart_groupBy_feature"),
 				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupBy_feature", "_UI_BarChart_type"),
 				 ScaveModelPackage.Literals.BAR_CHART__GROUP_BY,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Group Name Format feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addGroupNameFormatPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_BarChart_groupNameFormat_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupNameFormat_feature", "_UI_BarChart_type"),
+				 ScaveModelPackage.Literals.BAR_CHART__GROUP_NAME_FORMAT,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Bar Name Format feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addBarNameFormatPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_BarChart_barNameFormat_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_barNameFormat_feature", "_UI_BarChart_type"),
+				 ScaveModelPackage.Literals.BAR_CHART__BAR_NAME_FORMAT,
 				 true,
 				 false,
 				 false,
@@ -130,6 +176,8 @@ public class BarChartItemProvider
 
 		switch (notification.getFeatureID(BarChart.class)) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
+			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}

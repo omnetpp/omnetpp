@@ -36,7 +36,7 @@ public interface Select extends SelectDeselectOp {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Excepts</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getSelect_Excepts()
-	 * @model type="org.omnetpp.scave.model.Except" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<Except> getExcepts();

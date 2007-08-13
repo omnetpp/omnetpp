@@ -103,8 +103,12 @@
   <eClassifiers xsi:type="ecore:EClass" name="BarChart" eSuperTypes="#//Chart">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupBy" ordered="false"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupNameFormat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="barNameFormat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="LineChart" eSuperTypes="#//Chart"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LineChart" eSuperTypes="#//Chart">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lineNameFormat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="HistogramChart" eSuperTypes="#//Chart"/>
   <eClassifiers xsi:type="ecore:EClass" name="ScatterChart" eSuperTypes="#//Chart">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="xDataModule" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

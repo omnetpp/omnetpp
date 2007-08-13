@@ -18,6 +18,8 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupBy <em>Group By</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.BarChart#getBarNameFormat <em>Bar Name Format</em>}</li>
  * </ul>
  * </p>
  *
@@ -37,9 +39,61 @@ public interface BarChart extends Chart {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Group By</em>' attribute list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_GroupBy()
-	 * @model type="java.lang.String" ordered="false"
+	 * @model ordered="false"
 	 * @generated
 	 */
 	EList<String> getGroupBy();
+
+	/**
+	 * Returns the value of the '<em><b>Group Name Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Group Name Format</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Group Name Format</em>' attribute.
+	 * @see #setGroupNameFormat(String)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_GroupNameFormat()
+	 * @model
+	 * @generated
+	 */
+	String getGroupNameFormat();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Group Name Format</em>' attribute.
+	 * @see #getGroupNameFormat()
+	 * @generated
+	 */
+	void setGroupNameFormat(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Bar Name Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Bar Name Format</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Bar Name Format</em>' attribute.
+	 * @see #setBarNameFormat(String)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_BarNameFormat()
+	 * @model
+	 * @generated
+	 */
+	String getBarNameFormat();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.BarChart#getBarNameFormat <em>Bar Name Format</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Bar Name Format</em>' attribute.
+	 * @see #getBarNameFormat()
+	 * @generated
+	 */
+	void setBarNameFormat(String value);
 
 } // BarChart

@@ -65,7 +65,7 @@ public interface ChartSheet extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Charts</em>' reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChartSheet_Charts()
-	 * @model type="org.omnetpp.scave.model.Chart"
+	 * @model
 	 * @generated
 	 */
 	EList<Chart> getCharts();

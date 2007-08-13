@@ -38,7 +38,7 @@ public interface ChartSheets extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Chart Sheets</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChartSheets_ChartSheets()
-	 * @model type="org.omnetpp.scave.model.ChartSheet" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<ChartSheet> getChartSheets();

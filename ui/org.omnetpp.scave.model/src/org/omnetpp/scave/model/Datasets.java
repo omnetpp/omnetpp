@@ -38,7 +38,7 @@ public interface Datasets extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Datasets</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getDatasets_Datasets()
-	 * @model type="org.omnetpp.scave.model.Dataset" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<Dataset> getDatasets();

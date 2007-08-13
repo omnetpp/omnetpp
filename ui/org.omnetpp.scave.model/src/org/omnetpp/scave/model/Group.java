@@ -37,7 +37,7 @@ public interface Group extends DatasetItem {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Items</em>' containment reference list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getGroup_Items()
-	 * @model type="org.omnetpp.scave.model.DatasetItem" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<DatasetItem> getItems();
