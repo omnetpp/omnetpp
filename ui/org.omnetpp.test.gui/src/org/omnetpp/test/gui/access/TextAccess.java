@@ -32,6 +32,6 @@ public class TextAccess extends ControlAccess<Text>
 		click(); // focus
 		pressKey(SWT.HOME);
 		pressKey(SWT.END, SWT.SHIFT);  // select all
-		typeKeySequence(text); // typing will replace content
+		typeIn(text); // typing will replace content
 	}
 }

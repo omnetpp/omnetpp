@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -37,6 +39,11 @@ public aspect UIThread {
 	    		}
 	    	});
 	    }
+	}
+	
+	before(): execution(@NotInUIThread * *(..)) {
+	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
+		Assert.assertTrue("Must be in a background thread to call: " + method, Display.getCurrent()==null);
 	}
 
 	/**

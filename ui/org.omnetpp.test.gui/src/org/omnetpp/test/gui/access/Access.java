@@ -23,6 +23,7 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.test.gui.EventTracer;
 import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
 
 public class Access {
 	protected final static boolean debug = true;
@@ -83,7 +84,7 @@ public class Access {
 			System.out.println("Processing events finished");
 	}
 
-	/* no @InUIThread! */
+	@NotInUIThread
 	public static void sleep(double seconds) {
 		try {
 			Thread.sleep((long)(seconds * 1000));

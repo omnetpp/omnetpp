@@ -69,7 +69,9 @@ public class IniFileEditorTest extends GUITestCase {
 		workbenchWindow.pressKey(SWT.ARROW_DOWN);
 		workbenchWindow.pressKey(SWT.ARROW_DOWN);
 		workbenchWindow.pressKey(SWT.END);
-		workbenchWindow.typeKeySequence(" Undefined");
+		
+		StyledTextAccess styledText = workbenchWindow.getActiveEditorPart().findStyledText();
+		styledText.typeIn(" Undefined");
 		workbenchWindow.getActiveEditorPart().saveWithHotKey();
 
 		// The "Problems" view must display a "No such NED network" error

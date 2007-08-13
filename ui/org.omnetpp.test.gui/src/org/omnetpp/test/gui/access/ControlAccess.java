@@ -45,6 +45,14 @@ public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 	}
 
 	@InUIThread
+	public void typeIn(String text) {
+		assertHasFocus();
+
+		for (int i = 0; i < text.length(); i++)
+			pressKey(text.charAt(i));
+	}
+
+	@InUIThread
 	public Control findNextControl(final IPredicate predicate) {
 		// Returns the first control after this one that matches the predicate
 		// TODO: should consider layout

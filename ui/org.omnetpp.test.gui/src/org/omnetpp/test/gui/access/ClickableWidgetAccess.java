@@ -1,12 +1,10 @@
 package org.omnetpp.test.gui.access;
 
-import junit.framework.Assert;
-
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
 
 public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAccess<T>
 {
@@ -44,10 +42,8 @@ public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAcce
 		return new MenuAccess(getContextMenu());
 	}
 
-	/* no @InUIThread! */
+	@NotInUIThread
 	public void chooseFromContextMenu(String labelPath) {
-		Assert.assertTrue("must be in a background thread for menu selection to work", Display.getCurrent()==null);
-
 		MenuAccess menuAccess = activateContextMenuWithMouseClick();
 		for (String label : labelPath.split("\\|"))
 			menuAccess = menuAccess.activateMenuItemWithMouse(label);

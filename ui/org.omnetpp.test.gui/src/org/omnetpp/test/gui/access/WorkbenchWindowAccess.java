@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
 
 public class WorkbenchWindowAccess extends ShellAccess {
 	private IWorkbenchWindow workbenchWindow;
@@ -34,10 +35,8 @@ public class WorkbenchWindowAccess extends ShellAccess {
 		return new MenuAccess(getWorkbenchWindow().getShell().getMenuBar());
 	}
 	
-	/* no @InUIThread! */
+	@NotInUIThread
 	public void chooseFromMainMenu(String labelPath) {
-		Assert.assertTrue("must be in a background thread for menu selection to work", Display.getCurrent()==null);
-
 		MenuAccess menuAccess = getMenuBar();
 		for (String label : labelPath.split("\\|"))
 			//menuAccess = menuAccess.findMenuItemByLabel(label).activateWithMouseClick();

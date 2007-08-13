@@ -12,6 +12,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.NotInUIThread;
 
 public class WorkspaceAccess {
 
@@ -64,9 +68,8 @@ public class WorkspaceAccess {
 		Assert.assertTrue("file content differs from expected", actualContent.equals(content));
 	}
 	
-	/* no @InUIThread! */
+	@NotInUIThread
 	public static void createFileWithContent(String path, String content) throws Exception {
-		Assert.assertTrue("must called from a background thread", Display.getCurrent()==null);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
 		if (file.exists()) file.delete(true, null);
 		file.create(new ByteArrayInputStream(content.getBytes()), true, null);

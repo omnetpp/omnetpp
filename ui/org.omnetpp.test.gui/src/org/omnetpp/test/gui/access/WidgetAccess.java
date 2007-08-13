@@ -102,13 +102,6 @@ public class WidgetAccess<T extends Widget> extends Access
 		}
 	}
 
-	@InUIThread
-	public void typeKeySequence(String text) {
-		// Attention: there's no guarantee that the focus is in this control!
-		for (int i = 0; i < text.length(); i++)
-			pressKey(text.charAt(i));
-	}
-
 	protected void postMouseEvent(int type, int button, int x, int y) {
 		Event event = newEvent(type); // e.g. SWT.MouseMove
 		event.button = button;

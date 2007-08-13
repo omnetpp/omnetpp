@@ -28,10 +28,10 @@ public class SectionHierarchyTest extends GUITestCase {
 		WorkbenchWindowAccess workbenchWindowAccess = Access.getWorkbenchWindowAccess();
 		EditorPartAccess editor = workbenchWindowAccess.getActiveEditorPart();
 		editor.activatePage("Text");
-		StyledTextAccess textEditor = editor.findStyledText();
-		textEditor.assertHasFocus();
-		textEditor.pressKey('A', SWT.CTRL); // select all
-		textEditor.typeKeySequence("Hello");
+		StyledTextAccess styledText = editor.findStyledText();
+		styledText.assertHasFocus();
+		styledText.pressKey('A', SWT.CTRL); // select all
+		styledText.typeIn("Hello");
 
 		// The "Problems" view must display a "No such NED network" error
 		ViewPartAccess problemsViewAccess = workbenchWindowAccess.findViewPartByTitle("Problems", true);
