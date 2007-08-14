@@ -16,6 +16,7 @@
 		<accessrules>
 			<accessrule kind="accessible" pattern="org/eclipse/core/internal/preferences/Base64"/>
 			<accessrule kind="accessible" pattern="org/eclipse/jface/internal/text/html/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/ui/internal/texteditor/quickdiff/compare/rangedifferencer/**"/>
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

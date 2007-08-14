@@ -17,6 +17,29 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		return join(splitCamelCaseString(capitalize(javaIdString), '_').iterator(), ' ');
 	}
 
+	/**
+	 * Splits up text into lines which including the new line character.
+	 * The concatenation of lines must be equal to text.
+	 */
+	public static String[] splitToLines(String text) {
+		ArrayList<String> result = new ArrayList<String>();
+		int beginningOfLine = 0;
+		int endOfLine = text.indexOf('\n');
+
+		while (endOfLine != -1) {
+			int beginningOfNextLine = endOfLine + 1;
+			result.add(text.substring(beginningOfLine, beginningOfNextLine));
+
+			beginningOfLine = beginningOfNextLine;
+			endOfLine = text.indexOf('\n', beginningOfLine);
+		}
+
+		if (beginningOfLine != text.length() || text.length() == 0)
+			result.add(text.substring(beginningOfLine, text.length()));
+		
+		return result.toArray(new String[0]);
+	}
+
 	public static List<String> splitCamelCaseString(String str, char separator)
 	{
 		List<String> result = new ArrayList<String>();
