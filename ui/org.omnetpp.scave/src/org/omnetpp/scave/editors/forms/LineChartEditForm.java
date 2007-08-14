@@ -85,11 +85,6 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	}
 
 	@Override
-	public int getFeatureCount() {
-		return features.length;
-	}
-
-	@Override
 	public EStructuralFeature[] getFeatures() {
 		return features;
 	}

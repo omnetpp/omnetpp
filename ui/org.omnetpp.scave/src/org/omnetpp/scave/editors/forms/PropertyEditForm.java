@@ -54,13 +54,6 @@ public class PropertyEditForm implements IScaveObjectEditForm {
 	}
 
 	/**
-	 * Returns the number of features on this form.
-	 */
-	public int getFeatureCount() {
-		return features.length;
-	}
-
-	/**
 	 * Returns the features edited on this form.
 	 */
 	public EStructuralFeature[] getFeatures() {

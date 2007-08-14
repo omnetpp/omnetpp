@@ -36,13 +36,9 @@ public interface IScaveObjectEditForm {
 
 	/**
 	 * Returns the features edited on this form.
+	 * Do not modify the returned array.
 	 */
 	EStructuralFeature[] getFeatures();
-	
-	/**
-	 * Returns the number of the features edited on this form.
-	 */
-	int getFeatureCount(); // TODO remove this method
 	
 	/**
 	 * Returns the value of the control associated with the specified feature. 

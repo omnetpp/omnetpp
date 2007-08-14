@@ -85,10 +85,6 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		return "Modify the properties of the operation.";
 	}
 
-	public int getFeatureCount() {
-		return features.length;
-	}
-
 	public EStructuralFeature[] getFeatures() {
 		return features;
 	}

@@ -95,11 +95,6 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	public String getDescription() {
 		return "Select the operation and set the parameters.";
 	}
-
-	public int getFeatureCount() {
-		return features.length;
-	}
-
 	public EStructuralFeature[] getFeatures() {
 		return features;
 	}
