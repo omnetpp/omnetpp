@@ -14,17 +14,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarFields;
-import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
-public class ScatterChartEditForm extends LineChartEditForm {
+public class ScatterChartEditForm extends BaseLineChartEditForm {
 
 	
 	private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
@@ -42,8 +43,9 @@ public class ScatterChartEditForm extends LineChartEditForm {
 	private String[] moduleNames = ArrayUtils.EMPTY_STRING_ARRAY;
 	private String[] dataNames = ArrayUtils.EMPTY_STRING_ARRAY;
 	
-	public ScatterChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+	public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
+		updateLineNames(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL); 
@@ -51,6 +53,21 @@ public class ScatterChartEditForm extends LineChartEditForm {
 			dataNames = ScaveModelUtil.getScalarFields(idlist, ScalarFields.NAME, manager);
 		}
 	}
+	
+	protected void updateLineNames(String formatString) {
+		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
+		IXYDataset xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
+		lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
+		if (xydataset != null) {
+			lineNames = new String[xydataset.getSeriesCount()];
+			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
+				lineNames[i] = xydataset.getSeriesKey(i);
+		}
+
+		if (linesTableViewer != null)
+			linesTableViewer.setInput(lineNames);
+	}
+	
 	
 	/**
 	 * Returns the features edited on this form.

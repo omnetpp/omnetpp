@@ -197,15 +197,15 @@ public class DatasetManager {
 	}
 	
 	public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
-		return createVectorDataset(chart, null, true, manager, progressMonitor);
+		return createVectorDataset(chart, null, chart.getLineNameFormat(), true, manager, progressMonitor);
 	}
 	
-	public static VectorDataset createVectorDataset(LineChart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) {
+	public static VectorDataset createVectorDataset(LineChart chart, Dataset dataset,
+			String lineNameFormat, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		
-		String lineNameFormat = chart.getLineNameFormat();
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, chart, computeData);
 		IDList idlist = builder.getDisplayedIDs();
@@ -242,8 +242,10 @@ public class DatasetManager {
 	}
 	
 	public static IXYDataset createXYDataset(Chart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor monitor) {
-		if (chart instanceof LineChart)
-			return createVectorDataset((LineChart)chart, dataset, computeData, manager, null);
+		if (chart instanceof LineChart) {
+			LineChart lineChart = (LineChart)chart;
+			return createVectorDataset(lineChart, dataset, lineChart.getLineNameFormat(), computeData, manager, null);
+		}
 		else if (chart instanceof ScatterChart)
 			return createScatterPlotDataset((ScatterChart)chart, dataset, manager, monitor);
 		else

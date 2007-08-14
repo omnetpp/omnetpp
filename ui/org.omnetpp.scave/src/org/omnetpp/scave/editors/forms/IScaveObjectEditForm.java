@@ -42,7 +42,7 @@ public interface IScaveObjectEditForm {
 	/**
 	 * Returns the number of the features edited on this form.
 	 */
-	int getFeatureCount();
+	int getFeatureCount(); // TODO remove this method
 	
 	/**
 	 * Returns the value of the control associated with the specified feature. 

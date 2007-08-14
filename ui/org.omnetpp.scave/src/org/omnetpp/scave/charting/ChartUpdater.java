@@ -12,6 +12,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -88,6 +89,15 @@ public class ChartUpdater {
 			if (notifier instanceof BarChart) {
 				switch (notification.getFeatureID(BarChart.class)) {
 				case ScaveModelPackage.BAR_CHART__GROUP_BY:
+				case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
+				case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+					scheduleDatasetUpdate();
+					break;
+				}
+			}
+			else if (notifier instanceof LineChart) {
+				switch (notification.getFeatureID(LineChart.class)) {
+				case ScaveModelPackage.LINE_CHART__LINE_NAME_FORMAT:
 					scheduleDatasetUpdate();
 					break;
 				}

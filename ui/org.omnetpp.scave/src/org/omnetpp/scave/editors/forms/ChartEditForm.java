@@ -194,7 +194,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		final Composite panel = (Composite)item.getControl();
 		
 		if (TAB_MAIN.equals(name)) {
-			nameText = createTextField("Name:", panel);
+			nameText = createTextField("Chart name:", panel);
 			nameText.setFocus();
 		}
 		else if (TAB_TITLES.equals(name)) {

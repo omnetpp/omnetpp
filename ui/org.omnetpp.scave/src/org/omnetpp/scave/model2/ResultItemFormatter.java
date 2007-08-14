@@ -24,7 +24,7 @@ import org.omnetpp.scave.engine.ResultItem;
  */
 public class ResultItemFormatter {
 	
-	private static final String fieldSpecifierRE = "(^\\{|[^\\\\]\\{)([a-zA-Z]+)\\}";
+	private static final String fieldSpecifierRE = "(?<!\\\\)\\{([a-zA-Z]+)\\}";
 	private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
 	
 	private static final Map<String,IResultItemFormatter> formatters;
@@ -83,15 +83,16 @@ public class ResultItemFormatter {
 		while (start < len) {
 		    if (matcher.find(start)) {
 		    	// add previous characters as fixed string
-				if (matcher.start(2)-1 != start)
-				    formatObjs.add(format.substring(start, matcher.start(2)-1));
+				if (matcher.start() != start)
+				    formatObjs.add(format.substring(start, matcher.start()));
 
-				String fieldName = matcher.group(2);
+				String fieldName = matcher.group(1);
 				IResultItemFormatter formatter = getFormatter(fieldName);
-				if (formatter != null) {
+				if (formatter != null)
 					formatObjs.add(formatter);
-					start = matcher.end();
-				}
+				else
+					formatObjs.add(format.substring(matcher.start(), matcher.end()));
+				start = matcher.end();
 		    }
 		    else {
 				// No more valid format specifiers.

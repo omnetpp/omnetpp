@@ -51,11 +51,11 @@ public class ScaveObjectEditFormFactory {
 	public IScaveObjectEditForm createForm(EObject object, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		
 		if (object instanceof BarChart)
-			return new BarChartEditForm((Chart)object, parent, formParameters, manager);
+			return new BarChartEditForm((BarChart)object, parent, formParameters, manager);
 		else if (object instanceof ScatterChart)
-			return new ScatterChartEditForm((Chart)object, parent, formParameters, manager);
+			return new ScatterChartEditForm((ScatterChart)object, parent, formParameters, manager);
 		else if (object instanceof LineChart)
-			return new LineChartEditForm((Chart)object, parent, formParameters, manager);
+			return new LineChartEditForm((LineChart)object, parent, formParameters, manager);
 		else if (object instanceof Chart)
 			return new ChartEditForm((Chart)object, parent, formParameters, manager);
 		else if (object instanceof ChartSheet)

@@ -374,8 +374,6 @@ public class ChartProperties extends PropertySource {
 			return descriptors;
 		}
 	}
-	
-	
 
 	public static class VectorChartProperties extends ChartProperties
 	{
