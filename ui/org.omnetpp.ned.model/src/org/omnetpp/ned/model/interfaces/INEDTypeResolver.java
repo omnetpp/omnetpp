@@ -63,7 +63,7 @@ public interface INEDTypeResolver {
 	public boolean hasError(IFile file);
 
 	/**
-	 * Returns a component declated at the given file/line. The line number should
+	 * Returns a component declared at the given file/line. The line number should
 	 * point into the declaration of the component. Returns null if no such component
 	 * was found.
 	 *
@@ -72,7 +72,7 @@ public interface INEDTypeResolver {
 	public INEDTypeInfo getComponentAt(IFile file, int lineNumber);
 
     /**
-     * Returns a INEDElement at the given file/line/column. returns nul if no ned element
+     * Returns a INEDElement at the given file/line/column. returns null if no ned element
      * found under the position
      *
      * @param file - must not be null
@@ -125,9 +125,9 @@ public interface INEDTypeResolver {
     public Set<String> getAllComponentNamesFilteredBy(IPredicate predicate);
 
     /**
-     * Returns ALL names reserved (used) in the NED files (including duplicates)
+     * Returns ALL component names in the NED files, including duplicates.
      */
-    public Set<String> getReservedNames();
+    public Set<String> getReservedComponentNames();
 
     /**
 	 * Returns all module names in the NED files.

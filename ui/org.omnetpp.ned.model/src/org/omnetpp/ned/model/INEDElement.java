@@ -6,7 +6,7 @@ import java.util.List;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.notification.NEDChangeListenerList;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
@@ -31,7 +31,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public int getTagCode();
 
 	/**
-	 * Returns a unique id, originally set by the contructor.
+	 * Returns a unique id, originally set by the constructor.
 	 */
 	public long getId();
 
@@ -227,7 +227,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * Returns pointer to the next sibling of this element with the given
 	 * tag code. Return null if there're no such subsequent elements.
 	 *
-	 * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
+	 * getFirstChildWithTag() and getNextSiblingWithTag() are a convenient way
 	 * to loop through elements with a certain tag code in the child list:
 	 *
 	 * <pre>
@@ -304,18 +304,35 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDTypeInfo getContainerNEDTypeInfo();
 
 	/**
-	 * @param typeInfo Sets the component type info data. Should be used by the incremental builder ONLY.
+	 * Sets the component type info data. Should be used by the incremental builder ONLY.
 	 */
 	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
 
 	/**
-	 * Returns the listener list attached to this element
+	 * Adds a new NED change listener to the element. The
+	 * listener will receive notifications from the whole
+	 * NEDElement subtree (i.e. this element and all elements 
+	 * under it.
 	 */
-	public NEDChangeListenerList getListeners();
+	public void addNEDChangeListener(INEDChangeListener listener);
 
 	/**
-	 * Fires a model change element (forwards it to he listener list if any)
-	 * @param event
+	 * Removes a NED change listener from the element.
+	 */
+	public void removeNEDChangeListener(INEDChangeListener listener);
+
+	/**
+	 * Returns true if NED change notifications are enabled.
+	 */
+	public boolean isNotificationEnabled();
+
+	/**
+	 * Enable/disable NED change notifications.
+	 */
+	public boolean setNotificationEnabled(boolean enabled);
+	
+	/**
+	 * Fires a model change element (forwards it to the listener list if any)
 	 */
 	public void fireModelChanged(NEDModelEvent event);
 

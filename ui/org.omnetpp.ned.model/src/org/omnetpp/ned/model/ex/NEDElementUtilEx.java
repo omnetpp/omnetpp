@@ -160,7 +160,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
             return;
         }
 
-		// look for propertykey
+		// look for the property key
 		INEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_NAME, "");
 		if (propertyKeyNode == null) {
 			propertyKeyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY_KEY);
@@ -175,8 +175,8 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 			propertyKeyNode.appendChild(literalNode);
 		}
 
-		boolean isNotifyEnabled = literalNode.getListeners().isEnabled();
-		literalNode.getListeners().setEnabled(false);
+		boolean isNotifyEnabled = literalNode.isNotificationEnabled();
+		literalNode.setNotificationEnabled(false);
 		// finally set the value of display string
 		literalNode.setType(NED_CONST_STRING);
 		literalNode.setValue(dspString);
@@ -184,7 +184,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 		// be generated from VALUE not from the text attribute
 		literalNode.setText(null);
 		// set notification back to the original state
-		literalNode.getListeners().setEnabled(isNotifyEnabled);
+		literalNode.setNotificationEnabled(isNotifyEnabled);
 	}
 
     /**
@@ -199,7 +199,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     }
 
     /**
-     * Sets the name of object that is extendes by node. if we set it to null or "" the node will be removed
+     * Sets the name of object that is extended by node. if we set it to null or "" the node will be removed
      * @param node The node which extends the provided type
      * @param ext The name of the type that is extended
      */

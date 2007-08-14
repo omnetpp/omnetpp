@@ -332,7 +332,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return components.keySet();
     }
 
-    public synchronized Set<String> getReservedNames() {
+    public synchronized Set<String> getReservedComponentNames() {
         if (needsRehash)
             rehash();
         return reservedNames;
@@ -446,7 +446,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public synchronized void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
             // remove our model change from the file
-            nedFiles.get(file).getListeners().remove(nedModelChangeListener);
+            nedFiles.get(file).removeNEDChangeListener(nedModelChangeListener);
             nedFiles.remove(file);
             needsRehash = true;
         }
@@ -462,10 +462,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             needsRehash = true;
             nedFiles.put(file, tree);
             // add ourselves to the tree root as a listener
-            tree.getListeners().add(nedModelChangeListener);
+            tree.addNEDChangeListener(nedModelChangeListener);
             // remove ourselves from the old tree which is no longer used
             if (oldTree != null)
-                oldTree.getListeners().remove(nedModelChangeListener);
+                oldTree.removeNEDChangeListener(nedModelChangeListener);
             // fire a ned change notification (new tree added)
             nedModelChanged(new NEDStructuralChangeEvent(tree, tree, NEDStructuralChangeEvent.Type.INSERTION,tree,tree));
         }

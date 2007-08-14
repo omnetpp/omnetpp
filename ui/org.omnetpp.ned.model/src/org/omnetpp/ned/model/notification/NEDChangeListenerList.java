@@ -12,7 +12,7 @@ public class NEDChangeListenerList {
     protected boolean enabled = true;
 
 	/**
-	 * @param listener Adds a new model change listener
+	 * Adds a new model change listener.
 	 */
 	public void add(INEDChangeListener listener) {
 		array = copyArray(array.length+1);
@@ -20,7 +20,7 @@ public class NEDChangeListenerList {
 	}
 
 	/**
-	 * @param listener Removes a listener from the list
+	 * Removes a listener from the list.
 	 */
 	public void remove(INEDChangeListener listener) {
 		for (int i=0; i<array.length; i++) {

@@ -50,7 +50,7 @@ public class CreateToplevelComponentCommand extends Command {
             if (namedChild.getName() == null || "".equals(namedChild.getName()))
                 namedChild.setName("unnamed");
             // make the name unique
-            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedNames();
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();
             namedChild.setName(NEDElementUtilEx.getUniqueNameFor(namedChild, context));
         }
 

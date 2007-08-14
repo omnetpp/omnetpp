@@ -17,6 +17,7 @@ import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -459,7 +460,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the next sibling of this element with the given
 	 * tag code. Return null if there're no such subsequent elements.
 	 *
-	 * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
+	 * getFirstChildWithTag() and getNextSiblingWithTag() are a convenient way
 	 * to loop through elements with a certain tag code in the child list:
 	 *
 	 * <pre>
@@ -625,11 +626,42 @@ public abstract class NEDElement extends PlatformObject
     /**
      * Returns the listener list attached to this element
      */
-    public NEDChangeListenerList getListeners() {
+    protected NEDChangeListenerList getListeners() {
         if (listeners == null)
             listeners = new NEDChangeListenerList();
         return listeners;
     }
+
+	/**
+	 * Adds a new NED change listener to the element. The
+	 * listener will receive notifications from the whole
+	 * NEDElement subtree (i.e. this element and all elements 
+	 * under it.
+	 */
+	public void addNEDChangeListener(INEDChangeListener listener) {
+		getListeners().add(listener);
+	}
+
+	/**
+	 * Removes a NED change listener from the element.
+	 */
+	public void removeNEDChangeListener(INEDChangeListener listener) {
+		getListeners().remove(listener);
+	}
+
+	/**
+	 * Returns true if NED change notifications are enabled.
+	 */
+	public boolean isNotificationEnabled() {
+		return getListeners().isEnabled();
+	}
+
+	/**
+	 * Enable/disable NED change notifications.
+	 */
+	public boolean setNotificationEnabled(boolean enabled) {
+		return getListeners().setEnabled(enabled);
+	}
 
     /**
      * If change notifications are enabled, notifies listeners about a model change;

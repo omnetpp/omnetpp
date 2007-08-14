@@ -22,7 +22,7 @@ abstract public class NotifiedPropertySource
     public NotifiedPropertySource(INEDElement model) {
         // register the property source as a listener for the model,
     	// so it will be notified when someone changes the underlying model
-        model.getListeners().add(this);
+        model.addNEDChangeListener(this);
     }
 
     abstract public boolean isPropertyResettable(Object id);
