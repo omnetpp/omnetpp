@@ -237,7 +237,7 @@ public class TextualNedEditor extends TextEditor {
 		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
 	}
 
-	/*
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
 	@Override
@@ -253,7 +253,7 @@ public class TextualNedEditor extends TextEditor {
 		return viewer;
 	}
 
-	/*
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
@@ -272,7 +272,7 @@ public class TextualNedEditor extends TextEditor {
         getSite().setSelectionProvider(new NedSelectionProvider(this));
 	}
 
-	/*
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
 	 */
 	@Override
@@ -285,14 +285,18 @@ public class TextualNedEditor extends TextEditor {
 	}
 
     /**
-     * Marks the current editor content state, so we will be able to detect any change in the editor
+     * Marks the current editor content state, so we will be able to detect 
+     * changes in the editor.
+     *  
+     * @see hasContentChanged()
      */
     public void markContent() {
         lastContent = getText();
     }
 
     /**
-     * Returns whether the content of the editor has changed since the last markContent call.
+     * Returns whether the content of the editor has changed since the last 
+     * markContent() call.
      */
     public boolean hasContentChanged() {
         if (getText() == null)
