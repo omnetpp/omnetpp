@@ -26,8 +26,8 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
-
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -220,7 +220,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                     res.setNEDFileModel(file, graphEditor.getModel());
 
                 // generate text representation from the model
-                textEditor.setText(source);
+                TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(textEditor.getDocument(), source);
                 textEditor.markContent();
             }
             //
