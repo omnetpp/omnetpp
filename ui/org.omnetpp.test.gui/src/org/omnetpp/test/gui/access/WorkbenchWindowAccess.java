@@ -2,10 +2,7 @@ package org.omnetpp.test.gui.access;
 
 import java.util.ArrayList;
 
-import junit.framework.Assert;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IViewPart;
