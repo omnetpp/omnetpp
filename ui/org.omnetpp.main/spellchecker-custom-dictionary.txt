@@ -181,3 +181,4 @@ bendpoint
 embedder
 greyscale
 resampling
+colorizer

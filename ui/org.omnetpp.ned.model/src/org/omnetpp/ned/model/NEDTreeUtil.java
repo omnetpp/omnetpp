@@ -102,7 +102,7 @@ public class NEDTreeUtil {
 			dtdvalidator.validate(swigTree);
             // drop the tree if the validator added ANY new messages
             // FIXME we should check only for new error messages
-            // currently validator do not add warning or info messageses
+            // currently validator do not add warning or info messages
 			if (errors.numMessages()!=errs) {
 				// DTD validation produced additional errors -- give up
 				swigTree.delete();
@@ -134,7 +134,7 @@ public class NEDTreeUtil {
 
 	/**
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.
-	 * WARNING there are two different NEDElement types hadled in this function.
+	 * NOTE: There are two different NEDElement types handled in this function.
 	 */
 	public static INEDElement swig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore errors) {
 		INEDElement pojoNode = null;
@@ -180,7 +180,7 @@ public class NEDTreeUtil {
 
 	/**
 	 * Converts a plain java NEDElement tree to a native C++ (SWIG-wrapped) tree.
-	 * WARNING there are two differenet NEDElement types hadled in this function.
+	 * NOTE: There are two different NEDElement types handled in this function.
 	 */
 	public static NEDElement pojo2swig(INEDElement pojoNode) {
 
@@ -217,7 +217,7 @@ public class NEDTreeUtil {
             filterPojoTree(child);
         }
 
-        // se if the current node can be filtered out
+        // see if the current node can be filtered out
 
         // skip a channel spec if it does not contain any meaningful information
         if (pojoNode instanceof ChannelSpecNode) {
