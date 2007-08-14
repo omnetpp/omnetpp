@@ -645,7 +645,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * Returns the listener list attached to the plugin which is notified about
-     * TOP LEVEL COMPONENT changes (name, inheritance and visual appearence changes)
+     * TOP LEVEL COMPONENT changes (name, inheritance and visual appearance changes)
      */
     public NEDChangeListenerList getNEDComponentChangeListenerList() {
         if (nedComponentChangeListenerList == null)

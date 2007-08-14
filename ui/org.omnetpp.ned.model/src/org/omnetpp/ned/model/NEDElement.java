@@ -26,13 +26,8 @@ import org.omnetpp.ned.model.pojo.CommentNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
- * Base class for objects in a NED object tree, the XML-based
- * in-memory representation for NED files. An instance of a INEDElement
- * subclass represent an XML element.
- *
- * INEDElement provides a DOM-like, generic access to the tree;
- * subclasses additionally provide a typed interface.
- *
+ * The default implementation of INEDElement.
+ * 
  * It extends PlatformObject to have a default IAdaptable implementation
  * primarily for PropertySheet support.
  *
@@ -134,79 +129,40 @@ public abstract class NEDElement extends PlatformObject
 		id = ++lastid;
 	}
 
-	/**
-	 * Constructor. Takes parent element.
-	 */
 	public NEDElement(INEDElement parent) {
 		super();
 		if (parent != null)
 			parent.appendChild(this);
 	}
 
-	/**
-	 * Overridden in subclasses to return the name of the XML element the class
-	 * represents.
-	 */
 	abstract public String getTagName();
 
-	/**
-	 * Overridden in subclasses to return the numeric code (NED_xxx) of the
-	 * XML element the class represents.
-	 */
 	abstract public int getTagCode();
 
-	/**
-	 * Returns a unique id, originally set by the contructor.
-	 */
 	public long getId() {
 		return id;
 	}
 
-	/**
-	 * Unique id assigned by the constructor can be overwritten here.
-	 */
 	public void setId(long _id) {
 		id = _id;
 	}
 
-	/**
-	 * Returns a string containing a file/line position showing where this
-	 * element originally came from.
-	 */
 	public String getSourceLocation() {
 		return srcloc;
 	}
 
-	/**
-	 * Sets location string (a string containing a file/line position showing
-	 * where this element originally came from). Called by the (NED/XML) parser.
-	 */
 	public void setSourceLocation(String loc) {
 		srcloc = loc;
 	}
 
-    /**
-     * Returns the source region, containing a line:col region in the source file
-     * that corresponds to this element.
-     */
 	public NEDSourceRegion getSourceRegion() {
 		return srcregion;
 	}
 
-    /**
-     * Sets source region, containing a line:col region in the source file
-     * that corresponds to this element. Info comes from the NED parser.
-     */
 	public void setSourceRegion(NEDSourceRegion region) {
 		srcregion = region;
 	}
 
-    /**
-	 * Sets every attribute to its default value (as returned by getAttributeDefault()).
-	 * Attributes without a default value are not affected.
-	 *
-	 * This method is called from the constructors of derived classes.
-	 */
 	public void applyDefaults() {
 		int n = getNumAttributes();
 		for (int i=0; i<n; i++)
@@ -217,25 +173,10 @@ public abstract class NEDElement extends PlatformObject
 		}
 	}
 
-	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the number of attributes defined in the DTD.
-	 */
 	abstract public int getNumAttributes();
 
-	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the name of the kth attribute as defined in the DTD.
-	 *
-	 * It should return null if k is out of range (i.e. negative or greater than
-	 * getNumAttributes()).
-	 */
 	abstract public String getAttributeName(int k);
 
-	/**
-	 * Returns the index of the given attribute. It returns -1 if the attribute
-	 * is not found. Relies on getNumAttributes() and getAttributeName().
-	 */
 	public int lookupAttribute(String attr) {
 		int n = getNumAttributes();
 		for (int i=0; i<n; i++)
@@ -247,80 +188,31 @@ public abstract class NEDElement extends PlatformObject
 		return -1;
 	}
 
-	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the value of the kth attribute (i.e. the attribute with the name
-	 * getAttributeName(k)).
-	 *
-	 * It should return null if k is out of range (i.e. negative or greater than
-	 * getNumAttributes()).
-	 */
 	abstract public String getAttribute(int k);
 
-	/**
-	 * Returns the value of the attribute with the given name.
-	 * Relies on lookupAttribute() and getAttribute().
-	 *
-	 * It returns null if the given attribute is not found.
-	 */
 	public String getAttribute(String attr) {
 		int k = lookupAttribute(attr);
 		return getAttribute(k);
 	}
 
-	/**
-	 * Pure virtual method, it should be redefined in subclasses to set
-	 * the value of the kth attribute (i.e. the attribute with the name
-	 * getAttributeName(k)).
-	 *
-	 * If k is out of range (i.e. negative or greater than getNumAttributes()),
-	 * the call should be ignored.
-	 */
 	abstract public void setAttribute(int k, String value);
 
-	/**
-	 * Sets the value of the attribute with the given name.
-	 * Relies on lookupAttribute() and setAttribute().
-	 *
-	 * If the given attribute is not found, the call has no effect.
-	 */
 	public void setAttribute(String attr, String value) {
 		int k = lookupAttribute(attr);
 		setAttribute(k,value);
 	}
 
-	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the default value of the kth attribute, as defined in the DTD.
-	 *
-	 * It should return null if k is out of range (i.e. negative or greater than
-	 * getNumAttributes()), or if the attribute is #REQUIRED; and return ""
-	 * if the attribute is #IMPLIED.
-	 */
 	abstract public String getAttributeDefault(int k);
 
-	/**
-	 * Returns the default value of the given attribute, as defined in the DTD.
-	 * Relies on lookupAttribute() and getAttributeDefault().
-	 *
-	 * It returns null if the given attribute is not found.
-	 */
 	public String getAttributeDefault(String attr) {
 		int k = lookupAttribute(attr);
 		return getAttributeDefault(k);
 	}
 
-	/**
-	 * Returns the parent element, or null if this element has no parent.
-	 */
 	public INEDElement getParent() {
 		return parent;
 	}
 
-    /**
-     * Returns the index'th child element, or null if this element
-     * has no children.
-     */
     public INEDElement getChild(int index) {
         int i = 0;
         for (INEDElement elem : this) {
@@ -330,54 +222,22 @@ public abstract class NEDElement extends PlatformObject
         return null;
     }
 
-    /**
-	 * Returns pointer to the first child element, or null if this element
-	 * has no children.
-	 */
 	public INEDElement getFirstChild() {
 		return firstchild;
 	}
 
-	/**
-	 * Returns pointer to the last child element, or null if this element
-	 * has no children.
-	 */
 	public INEDElement getLastChild() {
 		return lastchild;
 	}
 
-	/**
-	 * Returns pointer to the next sibling of this element (i.e. the next child
-	 * in the parent element). Returns null if there're no subsequent elements.
-	 *
-	 * getFirstChild() and getNextSibling() can be used to loop through
-	 * the child list:
-	 *
-	 * <pre>
-	 * for (INEDElement *child=node.getFirstChild(); child; child = child.getNextSibling())
-	 * {
-	 *    ...
-	 * }
-	 * </pre>
-	 *
-	 */
 	public INEDElement getNextSibling() {
 		return nextsibling;
 	}
 
-	/**
-	 * Returns pointer to the previous sibling of this element (i.e. the previous child
-	 * in the parent element). Returns null if there're no elements before this one.
-	 */
 	public INEDElement getPrevSibling() {
 		return prevsibling;
 	}
 
-	/**
-	 * Appends the given element at the end of the child element list.
-	 *
-	 * The node pointer passed should not be null.
-	 */
 	public void appendChild(INEDElement inode) {
 		NEDElement node = (NEDElement) inode;
 		if (node.parent!=null)
@@ -393,14 +253,6 @@ public abstract class NEDElement extends PlatformObject
 		fireChildInserted(node,null);
 	}
 
-	/**
-	 * Inserts the given element just before the specified child element
-	 * in the child element list.
-	 *
-	 * The where element must be a child of this element. If where == NULL
-	 * the node is appended at the end of the list.
-	 * The node pointer passed should not be null.
-	 */
 	public void insertChildBefore(INEDElement iwhere, INEDElement inode) {
 		if (iwhere == null) {
 			appendChild(inode);
@@ -421,11 +273,6 @@ public abstract class NEDElement extends PlatformObject
 		fireChildInserted(node, where);
 	}
 
-	/**
-	 * Removes the given element from the child element list.
-	 *
-	 * The pointer passed should be a child of this element.
-	 */
 	public INEDElement removeChild(INEDElement inode) {
 		NEDElement node = (NEDElement) inode;
 		if (node.prevsibling!=null)
@@ -441,10 +288,6 @@ public abstract class NEDElement extends PlatformObject
 		return node;
 	}
 
-	/**
-	 * Returns pointer to the first child element with the given tag code,
-	 * or null if this element has no such children.
-	 */
 	public INEDElement getFirstChildWithTag(int tagcode) {
 		INEDElement node = firstchild;
 		while (node!=null)
@@ -456,20 +299,6 @@ public abstract class NEDElement extends PlatformObject
 		return null;
 	}
 
-	/**
-	 * Returns pointer to the next sibling of this element with the given
-	 * tag code. Return null if there're no such subsequent elements.
-	 *
-	 * getFirstChildWithTag() and getNextSiblingWithTag() are a convenient way
-	 * to loop through elements with a certain tag code in the child list:
-	 *
-	 * <pre>
-	 * for (INEDElement *child=node.getFirstChildWithTag(tagcode); child; child = child.getNextSiblingWithTag(tagcode))
-	 * {
-	 *     ...
-	 * }
-	 * </pre>
-	 */
 	public INEDElement getNextSiblingWithTag(int tagcode) {
 		INEDElement node = this.nextsibling;
 		while (node!=null)
@@ -481,9 +310,6 @@ public abstract class NEDElement extends PlatformObject
 		return null;
 	}
 
-	/**
-	 * Returns the number of child elements.
-	 */
 	public int getNumChildren() {
 		int n = 0;
 		for (INEDElement node = firstchild; node!=null; node = node.getNextSibling())
@@ -491,9 +317,6 @@ public abstract class NEDElement extends PlatformObject
 		return n;
 	}
 
-	/**
-	 * Returns the number of child elements with the given tag code.
-	 */
 	public int getNumChildrenWithTag(int tagcode) {
 		int n = 0;
 		for (INEDElement node = firstchild; node!=null; node = node.getNextSibling())
@@ -502,10 +325,6 @@ public abstract class NEDElement extends PlatformObject
 		return n;
 	}
 
-	/**
-	 * Returns find first child element with the give tagcode and the given
-	 * attribute (optionally) having the given value. Returns null if not found.
-	 */
 	public INEDElement getFirstChildWithAttribute(int tagcode, String attr, String attrvalue) {
 		for (INEDElement child=getFirstChildWithTag(tagcode); child!=null; child = child.getNextSiblingWithTag(tagcode))
 		{
@@ -516,10 +335,6 @@ public abstract class NEDElement extends PlatformObject
 		return null;
 	}
 
-	/**
-	 * Climb up in the element tree until it finds an element with the given tagcode.
-	 * Returns null if not found.
-	 */
 	public INEDElement getParentWithTag(int tagcode) {
 		INEDElement parent = this.getParent();
 		while (parent!=null && parent.getTagCode()!=tagcode)
@@ -527,10 +342,6 @@ public abstract class NEDElement extends PlatformObject
 		return parent;
 	}
 
-    /**
-     * UserData not belonging directly to the model can be stored using a key. If the value
-     * is NULL the data will be deleted.
-     */
     public void setUserData(Object key, Object value) {
         if (userData == null)
             userData = new HashMap<Object,Object>();
@@ -540,40 +351,25 @@ public abstract class NEDElement extends PlatformObject
             userData.remove(key);
     }
 
-    /**
-     * Returns the user data object, not belonging to the model directly
-     */
     public Object getUserData(Object key) {
         if (userData != null)
             return userData.get(key);
         return null;
     }
 
-    /**
-     * Removes this node from the parent, if it has one.
-     */
     public void removeFromParent() {
         if (getParent() != null)
         	getParent().removeChild(this);
     }
 
-    /**
-     * Returns true if this node has children.
-     */
     public boolean hasChildren() {
     	return getFirstChild() != null;
     }
 
-    /**
-     * Derived classes can override to print extra transient information for debugging
-     */
     public String debugString() {
         return getTagName() + " " + getAttribute("name") + getSourceLocation();
     }
 
-    /**
-     * Creates a shallow copy of the tree, but removes it from the tree hierarchy and throws away all children
-     */
     public INEDElement dup(INEDElement parent) {
         INEDElement cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
 
@@ -587,9 +383,6 @@ public abstract class NEDElement extends PlatformObject
         return cloned;
     }
 
-    /**
-     * Creates and returns a deep copy of the tree, optionally providing the new node's parent too.
-     */
     public INEDElement deepDup(INEDElement parent) {
         INEDElement result = dup(parent);
 
@@ -599,21 +392,11 @@ public abstract class NEDElement extends PlatformObject
         return result;
     }
 
-    /**
-     * Returns the TypeInfo belonging to the containing (toplevel) component
-     * that was added by the incremental builder (type resolver), or null if none was found.
-     * Cross references and other supporting lists can be accessed via typeInfo.
-     * The typeInfo can be NULL if this element is duplicated or invalid.
-     */
     public INEDTypeInfo getContainerNEDTypeInfo() {
     	// if we don't have it, fetch it from the parent
     	return typeInfo != null || getParent() == null ? typeInfo : getParent().getContainerNEDTypeInfo();
     }
 
-    /**
-     * Stores a backreference to the typeinfo of this node. Should be used by the
-     * incremental builder ONLY.
-     */
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         Assert.isNotNull(typeInfo);
         Assert.isTrue(this instanceof ITopLevelElement, "TypeInfo should be set only on a TopLevelElement");
@@ -632,41 +415,22 @@ public abstract class NEDElement extends PlatformObject
         return listeners;
     }
 
-	/**
-	 * Adds a new NED change listener to the element. The
-	 * listener will receive notifications from the whole
-	 * NEDElement subtree (i.e. this element and all elements 
-	 * under it.
-	 */
 	public void addNEDChangeListener(INEDChangeListener listener) {
 		getListeners().add(listener);
 	}
 
-	/**
-	 * Removes a NED change listener from the element.
-	 */
 	public void removeNEDChangeListener(INEDChangeListener listener) {
 		getListeners().remove(listener);
 	}
 
-	/**
-	 * Returns true if NED change notifications are enabled.
-	 */
 	public boolean isNotificationEnabled() {
 		return getListeners().isEnabled();
 	}
 
-	/**
-	 * Enable/disable NED change notifications.
-	 */
 	public boolean setNotificationEnabled(boolean enabled) {
 		return getListeners().setEnabled(enabled);
 	}
 
-    /**
-     * If change notifications are enabled, notifies listeners about a model change;
-     * otherwise it does nothing.
-     */
     public void fireModelChanged(NEDModelEvent event) {
         if (listeners == null || !getListeners().isEnabled())
             return;
@@ -743,16 +507,13 @@ public abstract class NEDElement extends PlatformObject
         }
     }
 
-    /**
-     * Implementation of IModelProvider method. Returns "this".
+    /* (non-Javadoc)
+     * @see org.omnetpp.ned.model.interfaces.IModelProvider#getNEDModel()
      */
     public INEDElement getNEDModel() {
         return this;
     }
 
-    /**
-     * Returns the banner comment belonging to the element (if any)
-     */
     public String getComment() {
         CommentNode cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "banner");
         if (cn == null)
@@ -760,9 +521,6 @@ public abstract class NEDElement extends PlatformObject
         return cn == null ? null : cn.getContent().trim();
     }
 
-    /**
-     * Generates NED source for this tree, and returns it.
-     */
     public String getSource() {
         return NEDTreeUtil.generateNedSource(this, true);
     }

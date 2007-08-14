@@ -3,30 +3,31 @@ package org.omnetpp.ned.model;
 import java.util.Iterator;
 import java.util.List;
 
-import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
- * TODO add documentation
+ * Base class for objects in a NED object tree, the XML-based
+ * in-memory representation for NED files. An instance of a INEDElement
+ * subclass represent an XML element.
  *
- * @author rhornig
+ * INEDElement provides a DOM-like, generic access to the tree;
+ * subclasses additionally provide a typed interface.
+ *
+ * @author andras, rhornig
  */
 public interface INEDElement extends Iterable<INEDElement> {
 
 	public Iterator<INEDElement> iterator();
 
 	/**
-	 * Overridden in subclasses to return the name of the XML element the class
-	 * represents.
+	 * Returns the name of the XML element the class represents.
 	 */
 	public String getTagName();
 
 	/**
-	 * Overridden in subclasses to return the numeric code (NED_xxx) of the
-	 * XML element the class represents.
+	 * Returns the numeric code (NED_xxx) of the XML element the class represents.
 	 */
 	public int getTagCode();
 
@@ -73,14 +74,12 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public void applyDefaults();
 
 	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the number of attributes defined in the DTD.
+	 * Returns the number of attributes defined in the DTD.
 	 */
 	public int getNumAttributes();
 
 	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the name of the kth attribute as defined in the DTD.
+	 * Returns the name of the kth attribute as defined in the DTD.
 	 *
 	 * It should return null if k is out of range (i.e. negative or greater than
 	 * getNumAttributes()).
@@ -94,8 +93,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public int lookupAttribute(String attr);
 
 	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the value of the kth attribute (i.e. the attribute with the name
+	 * Returns the value of the kth attribute (i.e. the attribute with the name
 	 * getAttributeName(k)).
 	 *
 	 * It should return null if k is out of range (i.e. negative or greater than
@@ -112,8 +110,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public String getAttribute(String attr);
 
 	/**
-	 * Pure virtual method, it should be redefined in subclasses to set
-	 * the value of the kth attribute (i.e. the attribute with the name
+	 * Sets the value of the kth attribute (i.e. the attribute with the name
 	 * getAttributeName(k)).
 	 *
 	 * If k is out of range (i.e. negative or greater than getNumAttributes()),
@@ -130,8 +127,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public void setAttribute(String attr, String value);
 
 	/**
-	 * Pure virtual method, it should be redefined in subclasses to return
-	 * the default value of the kth attribute, as defined in the DTD.
+	 * Returns the default value of the kth attribute, as defined in the DTD.
 	 *
 	 * It should return null if k is out of range (i.e. negative or greater than
 	 * getNumAttributes()), or if the attribute is #REQUIRED; and return ""
@@ -274,10 +270,13 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public Object getUserData(Object key);
 
 	/**
-	 * remove this node from the parent if any.
+	 * Remove this node from the parent if it has one.
 	 */
 	public void removeFromParent();
 
+	/**
+	 * Returns whether this element has any child elements
+	 */
 	public boolean hasChildren();
 
 	/**
@@ -336,21 +335,6 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 */
 	public void fireModelChanged(NEDModelEvent event);
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.common.displaymodel.IDisplayStringChangeListener#propertyChanged(org.omnetpp.common.displaymodel.IDisplayString, org.omnetpp.common.displaymodel.IDisplayString.Prop, java.lang.Object, java.lang.Object)
-	 * this method pass back the modified display string to the model, but it should be called only if the element
-	 * really support the additional display string property (ie. IHasDisplayString)
-	 * also fires a model attribute change event (converts the propertyChange event to attribute change)
-	 */
-	public void propertyChanged(IDisplayString source, Prop changedProp,
-			Object newValue, Object oldValue);
-
-	/* (non-Javadoc)
-	 * @see org.omnetpp.ned.model.interfaces.IModelProvider#getModel()
-	 * We provide ourselves as a model
-	 */
-	public INEDElement getNEDModel();
-
 	/**
 	 * Returns the banner comment belonging to the element (if any)
 	 */
@@ -371,11 +355,4 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * Returns the true if the element has attached errors/markers
 	 */
 	public boolean hasErrorMarkers();
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 * For debugging purposes
-	 */
-	public String toString();
-
 }
