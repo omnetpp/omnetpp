@@ -10,6 +10,7 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterSyntax;
 import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.ResultItemFields;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
@@ -39,7 +40,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	
 	
 	static {
-		String[] filterFields = FilterUtil.getFieldNames();
+		String[] filterFields = ResultItemFields.getFieldNames();
 		fieldProposals = new ContentProposal[filterFields.length];
 		for (int i = 0; i < filterFields.length; ++i) {
 			fieldProposals[i] = new ContentProposal(filterFields[i], filterFields[i]+"()");
@@ -62,7 +63,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	public void setFilterHints(FilterHints hints) {
 		// add pattern proposals for the filter hints
 		patternProposals.clear();
-		for (String field : FilterUtil.getFieldNames()) {
+		for (String field : ResultItemFields.getFieldNames()) {
 			String[] patterns = hints.getHints(field);
 			if (patterns != null) {
 				ContentProposal[] proposals = new ContentProposal[patterns.length];

@@ -1,9 +1,9 @@
 package org.omnetpp.scave.charting.dataset;
 
-import static org.omnetpp.scave.model2.FilterUtil.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.FilterUtil.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.FilterUtil.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.FilterUtil.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
 import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
@@ -17,7 +17,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.ResultItemFields;
 import org.omnetpp.scave.model2.ResultItemFormatter;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -117,10 +117,10 @@ public class VectorDataset implements IXYDataset {
 		String[] fields = new String[] {FIELD_FILENAME, FIELD_RUNNAME, RUNNUMBER, FIELD_MODULENAME, FIELD_DATANAME,
 										EXPERIMENT, MEASUREMENT, REPLICATION};
 		for (String field : fields) {
-			String firstValue = FilterUtil.getFieldValue(items[0], field);
+			String firstValue = ResultItemFields.getFieldValue(items[0], field);
 			
 			for (int i = 1; i < items.length; ++i) {
-				String value = FilterUtil.getFieldValue(items[i], field);
+				String value = ResultItemFields.getFieldValue(items[i], field);
 				if (!ObjectUtils.equals(firstValue, value)) {
 					sbFormat.append('{').append(field).append('}').append(separator);
 					break;

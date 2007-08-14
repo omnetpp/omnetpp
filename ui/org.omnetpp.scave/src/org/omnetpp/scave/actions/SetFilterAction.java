@@ -1,5 +1,8 @@
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -52,7 +55,7 @@ public class SetFilterAction extends AbstractScaveAction {
 		if (object instanceof InputFile) {
 			FilterUtil filterUtil = new FilterUtil();
 			InputFile inputFile = (InputFile)object;
-			filterUtil.setField(FilterUtil.FIELD_FILENAME, inputFile.getName());
+			filterUtil.setField(FIELD_FILENAME, inputFile.getName());
 			return filterUtil;
 		}
 		else if (object instanceof GenericTreeNode) {
@@ -67,11 +70,11 @@ public class SetFilterAction extends AbstractScaveAction {
 
 			if (payload instanceof ResultFile) {
 				ResultFile resultFile = (ResultFile)payload;
-				filterUtil.setField(FilterUtil.FIELD_FILENAME, resultFile.getFilePath());
+				filterUtil.setField(FIELD_FILENAME, resultFile.getFilePath());
 			}
 			else if (payload instanceof Run) {
 				Run run = (Run)payload;
-				filterUtil.setField(FilterUtil.FIELD_RUNNAME, run.getRunName());
+				filterUtil.setField(FIELD_RUNNAME, run.getRunName());
 			}
 			else if (payload instanceof RunAttribute) {
 				RunAttribute attr = (RunAttribute)payload;

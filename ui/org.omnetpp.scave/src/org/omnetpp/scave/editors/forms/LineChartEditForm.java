@@ -20,7 +20,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
-import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.ResultItemFields;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class LineChartEditForm extends BaseLineChartEditForm {
@@ -51,7 +51,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 		Composite panel = (Composite)item.getControl();
 		if (TAB_MAIN.equals(name)) {
 			lineNamePattern = createTextField("Line names:", panel);
-			new ResultItemNamePatternField(lineNamePattern, FilterUtil.getFieldNames());
+			new ResultItemNamePatternField(lineNamePattern, ResultItemFields.getFieldNames());
 		}
 		else if (TAB_LINES.equals(name)) {
 			TabFolder tabfolder = item.getParent();

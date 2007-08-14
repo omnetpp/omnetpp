@@ -1,5 +1,15 @@
 package org.omnetpp.scave.editors.datatable;
 
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.RunAttribute.CONFIG;
+import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +43,6 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.RunAttribute;
 
 /**
@@ -86,21 +95,21 @@ public class DataTable extends Table {
 	}
 
 	private static final Column COL_DIRECTORY = new Column("Directory", null, 60, true);
-	private static final Column COL_FILE = new Column("File name", FilterUtil.FIELD_FILENAME,100, true);
-	private static final Column COL_CONFIG = new Column("Config name", RunAttribute.CONFIG, 100, true);
-	private static final Column COL_RUNNUMBER = new Column("Run number", RunAttribute.RUNNUMBER, 20, true);
-	private static final Column COL_RUN_ID = new Column("Run id", FilterUtil.FIELD_RUNNAME, 100, true);
-	private static final Column COL_MODULE = new Column("Module", FilterUtil.FIELD_MODULENAME, 160, true);
-	private static final Column COL_DATA = new Column("Name", FilterUtil.FIELD_DATANAME, 100, true);
+	private static final Column COL_FILE = new Column("File name", FIELD_FILENAME,100, true);
+	private static final Column COL_CONFIG = new Column("Config name", CONFIG, 100, true);
+	private static final Column COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true);
+	private static final Column COL_RUN_ID = new Column("Run id", FIELD_RUNNAME, 100, true);
+	private static final Column COL_MODULE = new Column("Module", FIELD_MODULENAME, 160, true);
+	private static final Column COL_DATA = new Column("Name", FIELD_DATANAME, 100, true);
 	private static final Column COL_VALUE = new Column("Value", null, 80, true);
 	private static final Column COL_COUNT = new Column("Count", null, 50, true);
 	private static final Column COL_MEAN = new Column("Mean", null, 60, true);
 	private static final Column COL_STDDEV = new Column("StdDev", null, 60, true);
 	private static final Column COL_MIN = new Column("Min", null, 60, false);
 	private static final Column COL_MAX = new Column("Max", null, 60, false);
-	private static final Column COL_EXPERIMENT = new Column("Experiment", RunAttribute.EXPERIMENT, 60, false);
-	private static final Column COL_MEASUREMENT = new Column("Measurement", RunAttribute.MEASUREMENT, 60, false);
-	private static final Column COL_REPLICATION = new Column("Replication", RunAttribute.REPLICATION, 60, false);
+	private static final Column COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 60, false);
+	private static final Column COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 60, false);
+	private static final Column COL_REPLICATION = new Column("Replication", REPLICATION, 60, false);
 	
 	private static final Column[] allScalarColumns = new Column[] {
 		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,

@@ -1,5 +1,10 @@
 package org.omnetpp.scave.model2;
 
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,15 +36,15 @@ public class ResultItemFormatter {
 	
 	static {
 		formatters = new HashMap<String,IResultItemFormatter>();
-		for (String field : FilterUtil.getFieldNames()) {
+		for (String field : ResultItemFields.getFieldNames()) {
 			IResultItemFormatter formatter = null;
-			if (field.equals(FilterUtil.FIELD_FILENAME))
+			if (field.equals(FIELD_FILENAME))
 				formatter = new FileNameFormatter();
-			else if (field.equals(FilterUtil.FIELD_RUNNAME))
+			else if (field.equals(FIELD_RUNNAME))
 				formatter = new RunNameFormatter();
-			else if (field.equals(FilterUtil.FIELD_MODULENAME))
+			else if (field.equals(FIELD_MODULENAME))
 				formatter = new ModuleNameFormatter();
-			else if (field.equals(FilterUtil.FIELD_DATANAME))
+			else if (field.equals(FIELD_DATANAME))
 				formatter = new DataNameFormatter();
 			else if (RunAttribute.isRunAttribute(field))
 				formatter = new RunAttributeFormatter(field);

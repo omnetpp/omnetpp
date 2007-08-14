@@ -1,5 +1,10 @@
 package org.omnetpp.scave.model2;
 
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,10 +37,10 @@ public class FilterHints {
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 
-		setHints(FilterUtil.FIELD_FILENAME, getFileNameFilterHints(fileList));
-		setHints(FilterUtil.FIELD_RUNNAME, getRunNameFilterHints(runList));
-		setHints(FilterUtil.FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
-		setHints(FilterUtil.FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
+		setHints(FIELD_FILENAME, getFileNameFilterHints(fileList));
+		setHints(FIELD_RUNNAME, getRunNameFilterHints(runList));
+		setHints(FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
+		setHints(FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
 		for (String attrName : RunAttribute.getNames())
 			setHints(attrName, getFilterHintsForRunAttribute(manager, runList, attrName));
 	}

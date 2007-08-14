@@ -1,5 +1,11 @@
 package org.omnetpp.scave.editors.ui;
 
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
+
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -13,8 +19,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model2.FilterUtil;
-import org.omnetpp.scave.model2.RunAttribute;
 
 /**
  * This dialog is called from CreateChartTemplateAction.
@@ -92,12 +96,12 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
 		int i = 0;
 		runidButtons = new Button[5];
-		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", FilterUtil.FIELD_RUNNAME);
-		runidButtons[i++] = createCheckbox(group, "file name", FilterUtil.FIELD_FILENAME);
+		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", FIELD_RUNNAME);
+		runidButtons[i++] = createCheckbox(group, "file name", FIELD_FILENAME);
 		label = new Label(group, SWT.NONE); // placeholder
-		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", RunAttribute.EXPERIMENT);
-		Button measurementCb = runidButtons[i++] = createCheckbox(group, "measurement", RunAttribute.MEASUREMENT);
-		Button replicationCb = runidButtons[i++] = createCheckbox(group, "replication", RunAttribute.REPLICATION);
+		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", EXPERIMENT);
+		Button measurementCb = runidButtons[i++] = createCheckbox(group, "measurement", MEASUREMENT);
+		Button replicationCb = runidButtons[i++] = createCheckbox(group, "replication", REPLICATION);
 
 		addDependency(runnameCb, true, new Button[] {experimentCb, measurementCb, replicationCb} , false);
 		addDependency(measurementCb, true, new Button[] {experimentCb}, true);

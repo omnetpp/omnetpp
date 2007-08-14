@@ -1,11 +1,15 @@
 package org.omnetpp.scave.model2;
 
-import java.util.ArrayList;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,20 +31,6 @@ import org.omnetpp.scave.model2.FilterSyntax.TokenType;
  * Whether a pattern is in a representable form can be determined by calling isANDPattern().
  */
 public class FilterUtil {
-
-	public static final String FIELD_FILENAME = "file";
-	public static final String FIELD_RUNNAME = "run";
-	public static final String FIELD_MODULENAME = "module";
-	public static final String FIELD_DATANAME = "name";
-
-	private static String[] fieldNames;
-	
-	static {
-		List<String> fields = new ArrayList<String>();
-		fields.addAll(Arrays.asList(new String[] {FIELD_FILENAME, FIELD_RUNNAME, FIELD_MODULENAME, FIELD_DATANAME}));
-		fields.addAll(Arrays.asList(RunAttribute.getNames()));
-		fieldNames = fields.toArray(new String[fields.size()]);
-	}
 
 	// separate fields connected with AND operator. The full string is NOT STORED.
 	private Map<String, String> fields = new LinkedHashMap<String, String>();
@@ -82,9 +72,9 @@ public class FilterUtil {
 			else {
 				// fallback for old files that don't have runName yet
 				setField(FIELD_FILENAME, file.getFilePath());
-				String runNumber = run.getAttribute(RunAttribute.RUNNUMBER);
+				String runNumber = run.getAttribute(RUNNUMBER);
 				if (runNumber != null)
-					setField(RunAttribute.RUNNUMBER, runNumber);
+					setField(RUNNUMBER, runNumber);
 			}
 		}
 		else {
@@ -102,20 +92,8 @@ public class FilterUtil {
 		setField(FIELD_DATANAME, item.getName());
 	}
 
-	public static String[] getFieldNames() {
-		return fieldNames;
-	}
-
 	public static String getDefaultField() {
 		return FIELD_DATANAME;
-	}
-
-	public static boolean isFieldName(String name) {
-		if (name != null)
-			for (String fieldName : fieldNames)
-				if (name.equals(fieldName))
-					return true;
-		return false;
 	}
 
 	public String getFilterPattern() {
@@ -234,21 +212,5 @@ public class FilterUtil {
 
 	public String toString() {
 		return getFilterPattern();
-	}
-	
-	public static String getFieldValue(ResultItem item, String field) {
-		if (item != null && field != null) {
-			if (FIELD_FILENAME.equals(field))
-				return item.getFileRun().getFile().getFilePath();
-			else if (FIELD_RUNNAME.equals(field))
-				return item.getFileRun().getRun().getRunName();
-			else if (FIELD_MODULENAME.equals(field))
-				return item.getModuleName();
-			else if (FIELD_DATANAME.equals(field))
-				return item.getName();
-			else if (RunAttribute.isRunAttribute(field))
-				return item.getFileRun().getRun().getAttribute(field);
-		}
-		return null;
 	}
 }
