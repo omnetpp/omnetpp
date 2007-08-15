@@ -12,12 +12,13 @@ import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
- * Figure to represent top level components like SimpleModule, Channel,
- * Channel Interface and Module Interface.
+ * Figure to represent top level components like simple modules, channels,
+ * channel interfaces and module interfaces; EXCEPT compound modules which
+ * have their own figure class.
  *
  * @author rhornig
  */
-public class TopLevelFigure extends Label implements IDirectEditSupport {
+public class NedTypeFigure extends Label implements IDirectEditSupport {
 
     private String tmpName;
     private TooltipFigure tooltipFigure;

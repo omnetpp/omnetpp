@@ -29,7 +29,7 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
@@ -722,7 +722,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     		return true;
  
         // if we have changed a toplevel element's name we should rehash
-        if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
+        if (event.getSource() instanceof INedTypeNode && event instanceof NEDAttributeChangeEvent
                 && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
             return true;
 
@@ -754,7 +754,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     		return true;
 
         // if we have changed a toplevel element's name we should rehash
-        if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
+        if (event.getSource() instanceof INedTypeNode && event instanceof NEDAttributeChangeEvent
                 && IDisplayString.ATT_DISPLAYSTRING.equals(((NEDAttributeChangeEvent) event).getAttribute()))
             return true;
         return false;

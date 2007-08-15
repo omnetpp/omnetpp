@@ -8,7 +8,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 
 /**
  * Allows the creation of new top level model element like, channels, simple modules
@@ -32,7 +32,7 @@ public class CreateToplevelComponentCommand extends Command {
     public boolean canExecute() {
         return child != null && parent != null &&
         		parent instanceof NedFileNodeEx &&
-        		child instanceof ITopLevelElement;
+        		child instanceof INedTypeNode;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CreateToplevelComponentCommand extends Command {
     @Override
     public void redo() {
 
-        if ((child instanceof IHasName) && (child instanceof ITopLevelElement)) {
+        if ((child instanceof IHasName) && (child instanceof INedTypeNode)) {
             IHasName namedChild = (IHasName)child;
             // if no name is present set to default
             if (namedChild.getName() == null || "".equals(namedChild.getName()))

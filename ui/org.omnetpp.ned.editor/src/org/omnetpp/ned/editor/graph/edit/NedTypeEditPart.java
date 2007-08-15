@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.TopLevelFigure;
+import org.omnetpp.figures.NedTypeFigure;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -14,24 +14,26 @@ import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 
 /**
- * Controller object for toplevel elements in the ned file like:
- * SimpleModule, Channel, CHannelInterface and interface.
- * (NOTE: compound module has it's own controller)
+ * Controller object for toplevel elements in the NED file, like:
+ * simple module, module interface, channel, channel interface,
+ * EXCEPT compound modules. Compound modules are handled specially,
+ * and they rather share a base class with submodules (this makes
+ * connection handling easier).
  *
  * @author rhornig
  */
-public class TopLevelEditPart extends BaseEditPart {
+public class NedTypeEditPart extends NedEditPart {
 
     /**
      * Returns the model associated with this as a INEDElement.
      */
     @Override
 	protected IFigure createFigure() {
-		return new TopLevelFigure();
+		return new NedTypeFigure();
 	}
 
-    public TopLevelFigure getTopLevelFigure() {
-        return (TopLevelFigure)getFigure();
+    public NedTypeFigure getNedTypeFigure() {
+        return (NedTypeFigure)getFigure();
     }
 
 	@Override
@@ -49,7 +51,7 @@ public class TopLevelEditPart extends BaseEditPart {
             else if (getModel() instanceof ModuleInterfaceNode)
                 nameToDisplay = "Interface: " + nameToDisplay;
 
-            getTopLevelFigure().setText(nameToDisplay);
+            getNedTypeFigure().setText(nameToDisplay);
     	}
 
     	// parse a display string, so it's easier to get values from it.
@@ -57,7 +59,7 @@ public class TopLevelEditPart extends BaseEditPart {
     	if (getModel() instanceof IHasDisplayString) {
     		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
 
-    		getTopLevelFigure().setDisplayString(dps);
+    		getNedTypeFigure().setDisplayString(dps);
 
             // set icon names for the channel and module/channel interface figures
             // we use special icons for these types
@@ -70,15 +72,15 @@ public class TopLevelEditPart extends BaseEditPart {
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
 
             if (image != null)
-                getTopLevelFigure().setIcon(image);
+                getNedTypeFigure().setIcon(image);
     	}
     	// indicate the error
-        ((TopLevelFigure)getFigure()).setErrorDecoration(getNEDModel().hasErrorMarkers());
+        ((NedTypeFigure)getFigure()).setErrorDecoration(getNEDModel().hasErrorMarkers());
 
 	}
 
     /* (non-Javadoc)
-     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
+     * @see org.omnetpp.ned.editor.graph.edit.NedEditPart#getTypeNameForDblClickOpen()
      * open the first base component for double click
      */
     @Override

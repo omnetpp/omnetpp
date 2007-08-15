@@ -597,4 +597,14 @@ public class GraphicalNedEditor
 	public void markSaved() {
 		getCommandStack().markSaveLocation();
 	}
+
+	/**
+     * For debugging
+     */
+    public static void dumpEditPartHierarchy(EditPart editPart, String indent) {
+    	System.out.println(indent + editPart.toString());
+    	for (Object child : editPart.getChildren())
+    		dumpEditPartHierarchy((EditPart)child, indent+"  ");
+    }
 }
+

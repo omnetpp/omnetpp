@@ -186,7 +186,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     /* (non-Javadoc)
-     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
+     * @see org.omnetpp.ned.editor.graph.edit.NedEditPart#getTypeNameForDblClickOpen()
      * open the first base component for double click
      */
     @Override

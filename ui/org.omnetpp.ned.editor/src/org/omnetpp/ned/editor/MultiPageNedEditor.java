@@ -40,7 +40,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -426,7 +426,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
     public void showInEditor(INEDElement model, Mode mode) {
         if (mode == Mode.AUTOMATIC) {
-            mode = model instanceof ITopLevelElement || model instanceof SubmoduleNode ? Mode.GRAPHICAL : Mode.TEXT;
+            mode = model instanceof INedTypeNode || model instanceof SubmoduleNode ? Mode.GRAPHICAL : Mode.TEXT;
         }
 
         if (mode == Mode.GRAPHICAL) {

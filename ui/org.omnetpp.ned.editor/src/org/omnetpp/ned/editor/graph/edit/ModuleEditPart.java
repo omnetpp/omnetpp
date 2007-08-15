@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.ex.ConnectionNodeEx;
  *
  * @author rhornig
  */
-abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPart {
+abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart {
 
     @Override
 	protected void createEditPolicies() {

@@ -22,7 +22,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  *
  * @author rhornig
  */
-abstract public class BaseEditPart
+abstract public class NedEditPart
                            extends AbstractGraphicalEditPart
                            implements IReadOnlySupport,
                                       IPropertySourceSupport, IModelProvider {
@@ -75,8 +75,8 @@ abstract public class BaseEditPart
         refresh();
         // delegate to all children and refresh all their appearance
         for (Object child : getChildren())
-            if (child instanceof BaseEditPart)
-                ((BaseEditPart)child).totalRefresh();
+            if (child instanceof NedEditPart)
+                ((NedEditPart)child).totalRefresh();
             else
                 ((AbstractGraphicalEditPart)child).refresh();
 

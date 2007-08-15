@@ -14,13 +14,11 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 
 /**
- * Holds all other NedEditParts under this. It is activated by
- * LogicEditorPart, to hold the entire model. It is sort of a blank board where
- * all other EditParts get added.
+ * Represents the NED file in the graphical editor.
  *
  * @author rhornig
  */
-public class NedFileEditPart extends BaseEditPart {
+public class NedFileEditPart extends NedEditPart {
 
     /**
      * Installs EditPolicies specific to this.
@@ -29,7 +27,7 @@ public class NedFileEditPart extends BaseEditPart {
     protected void createEditPolicies() {
         super.createEditPolicies();
 
-        // NedFile cannot be connectoed to anything via connections
+        // NedFile cannot be connected to anything via connections
         installEditPolicy(EditPolicy.NODE_ROLE, null);
         //
         installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
@@ -79,7 +77,7 @@ public class NedFileEditPart extends BaseEditPart {
     }
 
     /* (non-Javadoc)
-     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
+     * @see org.omnetpp.ned.editor.graph.edit.NedEditPart#getTypeNameForDblClickOpen()
      * do not open anything on double click
      */
     @Override

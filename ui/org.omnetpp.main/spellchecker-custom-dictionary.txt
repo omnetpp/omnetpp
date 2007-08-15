@@ -182,3 +182,6 @@ embedder
 greyscale
 resampling
 colorizer
+editpart
+editparts
+init

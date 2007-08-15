@@ -29,7 +29,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.NedFileNode;
 
 /**
- * EditPart for for the NED outline view.
+ * EditPart for the NED Outline view.
  *
  * @author rhornig
  */
