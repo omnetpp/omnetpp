@@ -195,10 +195,11 @@ public class DataTable extends Table {
 
 	public void setIDList(IDList idlist) {
 		this.idlist = idlist;
+		restoreSortOrder();
 		refresh();
 		fireContentChangedEvent();
 	}
-
+	
 	public IDList getIDList() {
 		return idlist;
 	}
@@ -306,12 +307,24 @@ public class DataTable extends Table {
 					setSortColumn(tableColumn);
 					setSortDirection(sortDirection);
 					sortBy(column, sortDirection);
+					refresh();
+					fireContentChangedEvent();
 				}
 			}
 		});
 	}
 	
-	public void sortBy(Column column, int direction) {
+	private void restoreSortOrder() {
+		TableColumn sortColumn = getSortColumn();
+		int sortDirection = getSortDirection();
+		if (sortColumn != null && sortDirection != SWT.NONE) {
+			Column column = (Column)sortColumn.getData(COLUMN_KEY);
+			if (column != null)
+				sortBy(column, sortDirection);
+		}
+	}
+	
+	private void sortBy(Column column, int direction) {
 		if (manager == null)
 			return;
 		
@@ -349,7 +362,6 @@ public class DataTable extends Table {
 		else if (COL_REPLICATION.equals(column))
 			idlist.sortByRunAttribute(manager, RunAttribute.REPLICATION, ascending);
 		// TODO: min,max,mean,count,stddev
-		setIDList(idlist);
 	}
 
 	protected void layoutColumns() {
