@@ -563,4 +563,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     }
 
+	public void markSaved() {
+		getCommandStack().markSaveLocation();
+	}
 }

@@ -1,6 +1,5 @@
 package org.omnetpp.ned.model.notification;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
@@ -8,23 +7,22 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
-public abstract class NEDModelEvent {
+public class NEDModelEvent {
     private static long staticSerial = 0;
     protected long serial;
     protected INEDElement source;
 
     /**
-     * @param source The NED model element generating the event
+     * @param source The NED model element generating the event or null if unknown.
      */
-    protected NEDModelEvent(INEDElement source) {
-        super();
-        Assert.isNotNull(source);
+    public NEDModelEvent(INEDElement source) {
         this.source = source;
         serial = ++staticSerial;
     }
-
+    
     /**
-     * Returns which element caused the change notification
+     * Returns which element caused the change notification.
+     * Null means the source is unknown and cannot be relied on.
      */
     public INEDElement getSource() {
         return source;
@@ -32,10 +30,7 @@ public abstract class NEDModelEvent {
 
     @Override
     public String toString() {
-        String sourceString = source.getAttribute("name");
-
-        return "EVENT: "+serial+" FROM: "+source.getTagName() +
-                ((sourceString != null) ? " "+sourceString : "");
+        return "EVENT: " + serial + " FROM: " + source;
     }
 
     /**

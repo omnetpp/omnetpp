@@ -13,12 +13,12 @@ import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.Ran
 import org.omnetpp.common.util.StringUtils;
 
 public class TextDifferenceUtils {
-	public interface IDifferenceApplier {
+	public interface ITextDifferenceApplier {
 		void replace(int start, int end, String replacement);
 	}
 
 	public static void modifyTextEditorContentByApplyingDifferences(final IDocument document, String newText) {
-		modifyOriginalTextByApplyingDifferences(document.get(), newText, new IDifferenceApplier() {
+		applyTextDifferences(document.get(), newText, new ITextDifferenceApplier() {
 			public void replace(int start, int end, String replacement) {
 				try {
 					int startOffset = document.getLineOffset(start);
@@ -30,13 +30,14 @@ public class TextDifferenceUtils {
 				}
 			}
 		});
+
 		Assert.isTrue(document.get().equals(newText));
 	}
 
-	public static void modifyOriginalTextByApplyingDifferences(String original, String modified, IDifferenceApplier applier) {
+	public static void applyTextDifferences(String original, String target, ITextDifferenceApplier applier) {
 		LineRangeComparator comparatorOriginal = new LineRangeComparator(original);
-		LineRangeComparator comparatorModified = new LineRangeComparator(modified);
-		RangeDifference[] differences = RangeDifferencer.findDifferences(comparatorOriginal, comparatorModified);
+		LineRangeComparator comparatorTarget = new LineRangeComparator(target);
+		RangeDifference[] differences = RangeDifferencer.findDifferences(comparatorOriginal, comparatorTarget);
 
 		Arrays.sort(differences, 0, differences.length, new Comparator<RangeDifference>() {
 			public int compare(RangeDifference o1, RangeDifference o2) {
@@ -54,7 +55,7 @@ public class TextDifferenceUtils {
 			int rightStart = difference.rightStart();
 			int rightEnd = difference.rightEnd();
 
-			String replacement = comparatorModified.getLineRange(rightStart, rightEnd);
+			String replacement = comparatorTarget.getLineRange(rightStart, rightEnd);
 			applier.replace(offset + leftStart, offset + leftEnd, replacement);
 			offset += difference.rightLength() - difference.leftLength();
 		}
@@ -96,7 +97,7 @@ class LineRangeComparator implements IRangeComparator {
 	}	
 }
 
-class StringDifferenceApplier implements TextDifferenceUtils.IDifferenceApplier {
+class StringDifferenceApplier implements TextDifferenceUtils.ITextDifferenceApplier {
 	private String text;
 	
 	public StringDifferenceApplier(String text) {

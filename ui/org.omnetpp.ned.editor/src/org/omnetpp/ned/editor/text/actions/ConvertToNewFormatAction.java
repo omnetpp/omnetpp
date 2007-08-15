@@ -35,7 +35,7 @@ public class ConvertToNewFormatAction extends TextEditorAction {
     public void run() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
-        ((TextualNedEditor)getTextEditor()).setText(NEDTreeUtil.generateNedSource(model, false));
+        ((TextualNedEditor)getTextEditor()).setText(NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(model, false));
     }
 
 }

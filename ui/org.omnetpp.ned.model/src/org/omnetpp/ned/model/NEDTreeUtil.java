@@ -29,6 +29,15 @@ public class NEDTreeUtil {
     private static ILabelProvider nedModelLabelProvider = new NedModelLabelProvider();
 
     /**
+     * Cleanup should be probably called somewhere near load and save, store but clearly not near generate.
+     */
+    @Deprecated
+    public static String cleanupPojoTreeAndGenerateNedSource(INEDElement treeRoot, boolean keepSyntax) {
+		cleanupPojoTree(treeRoot);
+		return generateNedSource(treeRoot, keepSyntax);
+	}
+
+    /**
 	 * Generate NED code from the given NEDElement tree. The root node
 	 * does not have to be NedFileNode, any subtree can be converted
 	 * to source form.
@@ -41,7 +50,6 @@ public class NEDTreeUtil {
 
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false); //XXX just for debugging
-		filterPojoTree(treeRoot);
 		if (keepSyntax && treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
             return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!!
@@ -50,7 +58,7 @@ public class NEDTreeUtil {
 			NED2Generator ng = new NED2Generator(errors);
 			return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for errors!!
 		}
-	}
+    }
 
 	/**
 	 * Parse NED source and return it as a NEDElement tree. The parser implements recovery, and
@@ -126,6 +134,8 @@ public class NEDTreeUtil {
 			return pojoTree;
 		}
 		catch (RuntimeException e) {
+			// TODO: this error should not be handled here but the caller should do
+			// since we are returning nulls the caller must check it anyway
 			errors.add("", NEDErrorCategory.ERRCAT_ERROR.ordinal(), "internal error: "+e);
             NEDModelPlugin.log(e);
 			return null;
@@ -211,10 +221,10 @@ public class NEDTreeUtil {
      * (ie. empty channelSpec objects etc.)
      * @param pojoNode Node to be filtered
      */
-    protected static void filterPojoTree(INEDElement pojoNode) {
+    public static void cleanupPojoTree(INEDElement pojoNode) {
         // filter the child nodes first
         for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling()) {
-            filterPojoTree(child);
+            cleanupPojoTree(child);
         }
 
         // see if the current node can be filtered out
@@ -264,14 +274,14 @@ public class NEDTreeUtil {
 		return result;
 	}
 
-	public static String generateXmlFromPojoElementTree(INEDElement pojoNode, String indent) {
+	public static String generateXmlFromPojoElementTree(INEDElement pojoNode, String indent, boolean printDebugString) {
 		String result = indent;
 		result += "<" + pojoNode.getTagName();
 		for (int i = 0; i < pojoNode.getNumAttributes(); ++i)
 			result += " " + pojoNode.getAttributeName(i) + "=\""
 					+ pojoNode.getAttribute(i) + "\"";
 
-        String debugString = pojoNode.debugString();
+        String debugString = !printDebugString ? "" : pojoNode.debugString();
         if (!"".equals(debugString))
                 debugString = "<!-- "+debugString + " -->";
 
@@ -281,7 +291,7 @@ public class NEDTreeUtil {
 		else {
 			result += "> " +  debugString + "\n";
 			for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling())
-				result += generateXmlFromPojoElementTree(child, indent + "  ");
+				result += generateXmlFromPojoElementTree(child, indent + "  ", printDebugString);
 
 			result += indent + "</" + pojoNode.getTagName() + ">\n";
 		}
@@ -297,8 +307,8 @@ public class NEDTreeUtil {
             return true;
         if (tree1==null || tree2==null)
             return false;
-        String code1 = generateNedSource(tree1, true);
-        String code2 = generateNedSource(tree2, true);
+        String code1 = cleanupPojoTreeAndGenerateNedSource(tree1, true);
+        String code2 = cleanupPojoTreeAndGenerateNedSource(tree2, true);
         return code1.equals(code2);
     }
 

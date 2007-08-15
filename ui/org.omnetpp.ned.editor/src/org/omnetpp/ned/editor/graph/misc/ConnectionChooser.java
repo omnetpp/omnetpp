@@ -214,7 +214,7 @@ public class ConnectionChooser {
         MenuItem mi = menu.addMenuItem(SWT.PUSH);
         // store the connection template in the widget's extra data
         mi.setData(conn);
-        String label = NEDTreeUtil.generateNedSource(conn, false).trim();
+        String label = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(conn, false).trim();
         mi.setText(label);
         // enable the menuitem only if the used gates are unconnected;
         mi.setEnabled(isConnectionValid(connCommand, conn, srcGate, destGate));

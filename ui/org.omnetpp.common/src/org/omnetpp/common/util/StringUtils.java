@@ -40,6 +40,17 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		return result.toArray(new String[0]);
 	}
 
+
+	public static String getLines(String text, int start, int end) {
+		StringBuffer result = new StringBuffer();
+		String[] lines = splitToLines(text);
+		
+		for (int i = start; i < end; i++)
+			result.append(lines[i]);
+
+		return result.toString();
+	}
+
 	public static List<String> splitCamelCaseString(String str, char separator)
 	{
 		List<String> result = new ArrayList<String>();

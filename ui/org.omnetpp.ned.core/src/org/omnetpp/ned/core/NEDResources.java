@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
@@ -36,7 +35,18 @@ import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.*;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -389,6 +399,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * NED editors should call this when they get opened.
      */
     public synchronized void connect(IFile file) {
+        readNEDFile(file);
         if (connectCount.containsKey(file))
             connectCount.put(file, connectCount.get(file) + 1);
         else {
@@ -405,15 +416,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // there's no open editor -- remove counter and re-read last saved
             // state from disk
             connectCount.remove(file);
-            NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
-            readNEDFile(file, sync);
-            sync.runAsWorkspaceJob();
+            readNEDFile(file);
         }
         else {
             connectCount.put(file, count - 1);
         }
     }
 
+    public synchronized void readNEDFile(IFile file) {
+        NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
+        readNEDFile(file, sync);
+        sync.runAsWorkspaceJob();
+    }
 
     /**
      * Gets called from incremental builder.
@@ -450,7 +464,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             needsRehash = true;
         }
     }
-
+    
     private synchronized void storeNEDFileModel(IFile file, INEDElement tree) {
         // store NED file contents
         Assert.isTrue(tree != null);
@@ -637,6 +651,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         } finally {
             nedModelChangeNotificationDisabled=false;
             Assert.isTrue(debugRehashCounter <= 1,"Too many rehash operation in readAllNedFilesInWorkspace()");
+            nedModelChanged(new NEDModelEvent(null));
         }
     }
 
@@ -701,6 +716,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * (name, extends, adding and removing top level nodes).
      */
     protected static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
+    	if (event.getSource() == null)
+    		return true;
+ 
         // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
                 && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
@@ -730,6 +748,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * Returns whether the display string has changed in the event.
      */
     protected static boolean displayMayHaveChanged(NEDModelEvent event) {
+    	if (event.getSource() == null)
+    		return true;
+
         // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
                 && IDisplayString.ATT_DISPLAYSTRING.equals(((NEDAttributeChangeEvent) event).getAttribute()))

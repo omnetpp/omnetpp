@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -28,6 +29,7 @@ import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -39,6 +41,9 @@ import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 //FIXME why doesn't this comment go into the normal class comment? --Andras
@@ -67,6 +72,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
 
+	private DelayedJob textEditorContentUpdater;
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -74,13 +80,50 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	@Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
+		if (!(editorInput instanceof IFileEditorInput))
+            throw new PartInitException("Invalid input type (only workspace files can be opened): " + editorInput);
+		
 		super.init(site, editorInput);
-        if (!(editorInput instanceof IFileEditorInput))
-            throw new PartInitException("Invalid input type!");
-        setInput(editorInput);
 
-        ((IFileEditorInput)getEditorInput()).getFile()
-            .getWorkspace().addResourceChangeListener(resourceListener);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
+        
+        textEditorContentUpdater = new DelayedJob(500) {
+    		public synchronized void run() {
+    			if (Display.getCurrent() == null)
+    				// delay update to avoid concurrent access to document
+    				Display.getDefault().syncExec(new Runnable() {
+    					public void run() {
+    						reallyRun();
+    					}
+    				});
+    			else
+    				reallyRun();
+    		}
+    		
+    		private void reallyRun() {
+    			Assert.isTrue(Display.getCurrent() != null);
+    			// TODO: unfortunately this always generates a new source which is already done when switching to the text editor
+    			// but not done when editing in the graph editor
+                String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(graphEditor.getModel(), true);
+    			TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(textEditor.getDocument(), source);
+    		}
+        };
+
+        // register listener to update text editor content
+        final IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+	    NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(new INEDChangeListener() {
+			public void modelChanged(NEDModelEvent event) {
+				if (getActivePage() == graphPageIndex) {
+					INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
+
+					// TODO: this causes the reconciler to parse the string and replace the NED tree in the resources plugin
+					// and thus detaching the graph editor from the tree stored in the resources plugin
+					if (nedFileElement == null || nedFileElement == NEDResourcesPlugin.getNEDResources().getNEDFileModel(file))
+						textEditorContentUpdater.restartTimer();
+				}
+			}
+	    });
+
 	}
 
     @Override
@@ -90,6 +133,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 .getWorkspace().removeResourceChangeListener(resourceListener);
         // disconnect the editor from the ned resources plugin
         setInput(null);
+        if (textEditorContentUpdater != null)
+        	textEditorContentUpdater.cancel();
         super.dispose();
     }
 
@@ -111,6 +156,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         }
 
         super.setInput(input);
+
         // set the input on the embedded editors
         if (graphEditor != null)
             graphEditor.setInput(input);
@@ -120,8 +166,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // add listeners to the new file in workspace and in the ned resource manager
         if (getEditorInput() != null) {
             IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            NEDResourcesPlugin.getNEDResources().connect(file);
-            setPartName(file.getName());
+    		NEDResourcesPlugin.getNEDResources().connect(file);
+		    setPartName(file.getName());
         }
     }
 
@@ -149,7 +195,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // switch to graphics mode initially if there's no error in the file
             if (!NEDResourcesPlugin.getNEDResources().hasError(file))
                 setActivePage(graphPageIndex);
-
 		} catch (PartInitException e) {
 		    NedEditorPlugin.logError(e);
 		}
@@ -164,7 +209,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	    super.setActivePage(pageIndex);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
 	 * Responsible of synchronizing the two editor's model with each other and the NEDResources plugin
@@ -208,7 +253,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         if (newPageIndex == textPageIndex) {
             if (graphEditor.hasContentChanged()) {
                 // TODO refresh the editor annotations to show the error marks
-                String source = NEDTreeUtil.generateNedSource(graphEditor.getModel(), true);
+                String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(graphEditor.getModel(), true);
                 // we try to reformat and re-parse the model so the element line number attributes will be correct
                 NEDErrorStore errors = new NEDErrorStore();
                 INEDElement reformattedModel = NEDTreeUtil.parseNedSource(source, errors, file.getLocation().toOSString());
@@ -220,10 +265,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                     res.setNEDFileModel(file, graphEditor.getModel());
 
                 // generate text representation from the model
-                TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(textEditor.getDocument(), source);
+                textEditorContentUpdater.runNow();
                 textEditor.markContent();
             }
-            //
+            
+            textEditorContentUpdater.cancel();
+
             // keep the current selection between the two editors
             INEDElement currentNEDElementSelection = null;
             Object object = ((IStructuredSelection)graphEditor.getSite()
@@ -235,15 +282,15 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
 		}
 		else if (newPageIndex==graphPageIndex) {
-
 		    if (textEditor.hasContentChanged()) {
     			// parse the text editor content if it has changed since the last editor switch
     		    res.setNEDFileText(file, textEditor.getText());
+
+    	    	// set the parsed ned model to the graphical editor
+    		    graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
+    		    graphEditor.markContent();
 		    }
-		    // set the parsed ned model to the graphical editor
-		    graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
-		    graphEditor.markContent();
-            //
+
             // keep the current selection between the two editors
 	        INEDElement currentNEDElementSelection = null;
 	        if (textEditor.getSite().getSelectionProvider().getSelection() instanceof IStructuredSelection) {
@@ -275,20 +322,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	}
 
     /**
-     * Prepares the content of the text editor before save
-     * if we are in a graphical mode it generate the text version and puts it into the
-     * text editor
+     * Prepares the content of the text editor before save.
+     * If we are in a graphical mode it generates the text version and puts it into the text editor.
      */
     private void prepareForSave() {
         if (getActivePage() == graphPageIndex) {
-			// switch from graphics to text:
-			// generate text representation from the model
-            IFile file = ((FileEditorInput)getEditorInput()).getFile();
-
-            // put the actual model state back to the incremental builder
-    		NEDResourcesPlugin.getNEDResources().setNEDFileModel(file, graphEditor.getModel());
-            // put it into the text editor
-            textEditor.setText(NEDResourcesPlugin.getNEDResources().getNEDFileText(file));
+            textEditorContentUpdater.runNow();
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
     }
@@ -298,12 +337,14 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         prepareForSave();
         // delegate the save task to the TextEditor's save method
         textEditor.doSave(monitor);
+        graphEditor.markSaved();
     }
 
     @Override
     public void doSaveAs() {
         prepareForSave();
         textEditor.doSaveAs();
+        graphEditor.markSaved();
         setInput(textEditor.getEditorInput());
     }
 

@@ -217,7 +217,7 @@ public abstract class NEDElement extends PlatformObject
     public INEDElement getChild(int index) {
         int i = 0;
         for (INEDElement elem : this) {
-            if (i >= index)
+            if (i++ == index)
                 return elem;
         }
         return null;
@@ -519,7 +519,7 @@ public abstract class NEDElement extends PlatformObject
     }
 
     public String getSource() {
-        return NEDTreeUtil.generateNedSource(this, true);
+        return NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(this, true);
     }
 
     public List<Integer> getErrorMarkerIds() {
