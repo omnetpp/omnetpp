@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
-import org.omnetpp.scave.charting.dataset.ScatterPlotDataset2;
+import org.omnetpp.scave.charting.dataset.ScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
@@ -222,11 +222,11 @@ public class DatasetManager {
 				new VectorDataset(idlist, lineNameFormat, manager);
 	}
 	
-	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		return createScatterPlotDataset(chart, null, manager, monitor);
 	}
 	
-	public static ScatterPlotDataset2 createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
+	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
 		Assert.isLegal(chart.getXDataModule() != null, "Module name is not set");
 		Assert.isLegal(chart.getXDataName() != null, "Data name is not set");
 		
@@ -235,7 +235,7 @@ public class DatasetManager {
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-			return new ScatterPlotDataset2(idlist, chart.getXDataModule(), chart.getXDataName(),
+			return new ScatterPlotDataset(idlist, chart.getXDataModule(), chart.getXDataName(),
 												chart.isAverageReplications(), manager);
 		}
 		return null;

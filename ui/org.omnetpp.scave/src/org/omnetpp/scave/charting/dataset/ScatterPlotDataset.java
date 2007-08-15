@@ -9,13 +9,18 @@ import org.omnetpp.scave.engine.XYDataset;
 
 import static org.omnetpp.scave.engine.ScalarFields.*;
 
-public class ScatterPlotDataset2 implements IXYDataset {
+/**
+ * IXYDataset implementation for a scatter plot computed from a list of scalars.
+ *
+ * @author tomi
+ */
+public class ScatterPlotDataset implements IXYDataset {
 	
 	private XYDataset data; // first row contains X values,
 	                        // other rows contain Y values (NaN if missing)
 	private String[] dataNames;
 	
-	public ScatterPlotDataset2(IDList idlist, String moduleName, String scalarName, boolean averageReplications, ResultFileManager manager) {
+	public ScatterPlotDataset(IDList idlist, String moduleName, String scalarName, boolean averageReplications, ResultFileManager manager) {
 		ScalarDataSorter sorter = new ScalarDataSorter(manager);
 		ScalarFields rowFields = new ScalarFields(ScalarFields.MODULE | ScalarFields.NAME);
 		ScalarFields columnFields = averageReplications ? new ScalarFields(EXPERIMENT | MEASUREMENT) :
