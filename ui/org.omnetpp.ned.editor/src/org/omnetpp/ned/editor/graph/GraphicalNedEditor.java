@@ -45,6 +45,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -59,13 +60,13 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
@@ -85,6 +86,8 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 
 /**
@@ -95,7 +98,10 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  *
  * @author rhornig
  */
-public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
+public class GraphicalNedEditor
+	extends GraphicalEditorWithFlyoutPalette 
+	implements INEDChangeListener
+{
 
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
     public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
@@ -215,7 +221,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     @Override
     public void dispose() {
-        NEDResourcesPlugin.getNEDResources().getNEDComponentChangeListenerList().remove(paletteManager);
+        NEDResources resources = NEDResourcesPlugin.getNEDResources();
+		resources.removeNEDComponentChangeListener(paletteManager);
+		resources.removeNEDModelChangeListener(this);
         super.dispose();
     }
 
@@ -232,7 +240,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             paletteManager = new PaletteManager(this);
             // attach the palette manager as a listener to the resource manager plugin
             // so it will be notified if the palette should be updated
-            NEDResourcesPlugin.getNEDResources().getNEDComponentChangeListenerList().add(paletteManager);
+            NEDResourcesPlugin.getNEDResources().addNEDComponentChangeListener(paletteManager);
         }
         return paletteManager.getRootPalette();
     }
@@ -249,7 +257,13 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
-        ScalableRootEditPart root = new ScalableRootEditPart();
+        ScalableRootEditPart root = new ScalableRootEditPart() {
+        	@Override
+        	protected void refreshChildren() {
+        		for (EditPart editPart : (List<EditPart>)getChildren())
+        			editPart.refresh();
+        	}
+        };
 
         List<String> zoomLevels = new ArrayList<String>(3);
         zoomLevels.add(ZoomManager.FIT_ALL);
@@ -379,6 +393,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     @Override
     protected void initializeGraphicalViewer() {
         super.initializeGraphicalViewer();
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         getGraphicalViewer().setContents(getModel());
     }
 
@@ -527,7 +542,24 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             updateActions(getSelectionActions());
     }
 
-    /**
+    public void modelChanged(NEDModelEvent event) {
+        // we do a full refresh in response of a change
+        // if we are in a background thread, refresh later when UI thread is active
+        if (Display.getCurrent() == null)
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    refreshRootEditPart();
+                }
+            });
+        else // refresh in the current UI thread
+        	refreshRootEditPart();
+    }
+
+    private void refreshRootEditPart() {
+    	getGraphicalViewer().getRootEditPart().refresh();
+	}
+
+	/**
      * Reveals a model element in the editor (or its nearest ancestor which
      * has an associated editPart)
      * @param model
@@ -560,7 +592,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      */
     public boolean hasContentChanged() {
         return !(lastUndoCommand == getCommandStack().getUndoCommand());
-
     }
 
 	public void markSaved() {

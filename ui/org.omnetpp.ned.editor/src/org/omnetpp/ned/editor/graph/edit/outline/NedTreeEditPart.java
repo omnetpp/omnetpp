@@ -51,13 +51,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     public void activate() {
         super.activate();
         if (getModel() instanceof NedFileNode)
-            NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(this);
+            NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
     }
 
     @Override
     public void deactivate() {
         if (getModel() instanceof NedFileNode)
-            NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(this);
+            NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         super.deactivate();
     }
 

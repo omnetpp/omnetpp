@@ -111,7 +111,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
         // register listener to update text editor content
         final IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-	    NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(new INEDChangeListener() {
+        // TODO: this has to be added by the TextualNedEditor
+	    NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(new INEDChangeListener() {
 			public void modelChanged(NEDModelEvent event) {
 				if (getActivePage() == graphPageIndex) {
 					INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);

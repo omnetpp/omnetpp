@@ -133,7 +133,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 				nedModelChanged();
 			}
 		};
-		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(nedChangeListener);
+		NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
 	}
 
 	protected void unhookListeners() {
@@ -144,7 +144,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		if (partListener != null)
 			getSite().getPage().removePartListener(partListener);
 		if (nedChangeListener != null)
-			NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(nedChangeListener);
+			NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
 	}
 
 	public void workbenchSelectionChanged() {

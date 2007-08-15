@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
@@ -428,12 +427,6 @@ public abstract class NEDElement extends PlatformObject
 		return getListeners().setEnabled(enabled);
 	}
 
-    public void fireModelChanged(NEDModelEvent event) {
-        if (listeners == null || !getListeners().isEnabled())
-            return;
-        listeners.fireModelChanged(event);
-    }
-
     /**
      * Implements IDisplayStringChangeListener.propertyChanged().
      *
@@ -454,20 +447,20 @@ public abstract class NEDElement extends PlatformObject
         fireAttributeChanged(propertyName, newValue, oldValue);
     }
 
+    public void fireModelChanged(NEDModelEvent event) {
+        if (listeners != null)
+        	listeners.fireModelChanged(event);
+
+        if (parent != null)
+        	parent.fireModelChanged(event);
+    }
+
     /**
      * Notifies the listeners of all parents up to the root that an attribute of
      * this element was changed.
      */
     protected void fireAttributeChanged(String attr, Object newValue, Object oldValue) {
-        if (listeners != null && !getListeners().isEnabled())
-            return;
-
-        NEDModelEvent event = new NEDAttributeChangeEvent(this, attr, newValue, oldValue);
-        INEDElement node = this;
-        while (node != null) {
-            node.fireModelChanged(event);
-            node = node.getParent();
-        }
+    	fireModelChanged(new NEDAttributeChangeEvent(this, attr, newValue, oldValue));
     }
 
     /**
@@ -475,16 +468,7 @@ public abstract class NEDElement extends PlatformObject
      * inserted into this element.
      */
     protected void fireChildInserted(INEDElement child, INEDElement where) {
-        if (listeners != null && !getListeners().isEnabled())
-            return;
-
-        NEDModelEvent event =
-            new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null);
-        INEDElement node = this;
-        while (node != null) {
-            node.fireModelChanged(event);
-            node = node.getParent();
-        }
+    	fireModelChanged(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null));
     }
 
     /**
@@ -492,16 +476,7 @@ public abstract class NEDElement extends PlatformObject
      * removed from this element.
      */
     protected void fireChildRemoved(INEDElement child) {
-        if (listeners != null && !getListeners().isEnabled())
-            return;
-
-        NEDModelEvent event =
-            new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling());
-        INEDElement node = this;
-        while (node != null) {
-            node.fireModelChanged(event);
-            node = node.getParent();
-        }
+    	fireModelChanged(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling()));
     }
 
     /* (non-Javadoc)

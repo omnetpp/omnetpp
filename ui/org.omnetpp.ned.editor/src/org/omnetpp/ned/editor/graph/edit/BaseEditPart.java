@@ -47,10 +47,9 @@ abstract public class BaseEditPart
         return (INEDElement) getModel();
     }
 
-    /**
-     * Refreshes all visuals and connection models for ALL children (delegates to the children)
-     */
-    protected void refreshChildrenVisuals() {
+    @Override
+    public void refresh() {
+    	super.refresh();
     	for (Object child : getChildren())
     		((AbstractGraphicalEditPart)child).refresh();
     }
@@ -70,6 +69,7 @@ abstract public class BaseEditPart
      * Refreshes everything in this controller. Visual appearance, children and connection list
      * and children and connection appearance too.
      */
+    // TODO: is this the same as refresh in base classes? what does it do in extra? and why does it call refresh connections on the children
     public void totalRefresh() {
         // refresh ourselves
         refresh();

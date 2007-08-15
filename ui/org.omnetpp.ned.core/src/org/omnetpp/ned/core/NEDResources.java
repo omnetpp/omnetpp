@@ -657,24 +657,26 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // ******************* notification helpers ************************************
 
-    /**
-     * Returns the listener list attached to the plugin which is notified about
-     * TOP LEVEL COMPONENT changes (name, inheritance and visual appearance changes)
-     */
-    public NEDChangeListenerList getNEDComponentChangeListenerList() {
+    public void addNEDComponentChangeListener(INEDChangeListener listener) {
         if (nedComponentChangeListenerList == null)
             nedComponentChangeListenerList = new NEDChangeListenerList();
-        return nedComponentChangeListenerList;
+        nedComponentChangeListenerList.add(listener);
     }
 
-    /**
-     * Returns the listener list attached to the plugin which is notified about
-     * ANY change in the NED model (i.e. any change in any file)
-     */
-    public NEDChangeListenerList getNEDModelChangeListenerList() {
+    public void removeNEDComponentChangeListener(INEDChangeListener listener) {
+        if (nedComponentChangeListenerList != null)
+        	nedComponentChangeListenerList.remove(listener);
+    }
+
+    public void addNEDModelChangeListener(INEDChangeListener listener) {
         if (nedModelChangeListenerList == null)
             nedModelChangeListenerList = new NEDChangeListenerList();
-        return nedModelChangeListenerList;
+        nedModelChangeListenerList.add(listener);
+    }
+
+    public void removeNEDModelChangeListener(INEDChangeListener listener) {
+        if (nedModelChangeListenerList != null)
+            nedModelChangeListenerList.remove(listener);
     }
 
     /**
@@ -696,7 +698,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (inheritanceChanged || displayMayHaveChanged(event)) {
             // notify component listeners (ie. palette manager, where only the component name and
             // icon matters)
-            if (nedComponentChangeListenerList != null && getNEDComponentChangeListenerList().isEnabled())
+            if (nedComponentChangeListenerList != null)
                 nedComponentChangeListenerList.fireModelChanged(event);
         }
 
@@ -704,7 +706,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // in response to this notification)
         // long startMillis = System.currentTimeMillis();
 
-        if (nedModelChangeListenerList != null && getNEDModelChangeListenerList().isEnabled())
+        if (nedModelChangeListenerList != null)
             nedModelChangeListenerList.fireModelChanged(event);
 
         // long dt = System.currentTimeMillis() - startMillis;

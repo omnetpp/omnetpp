@@ -326,12 +326,13 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public boolean isNotificationEnabled();
 
 	/**
-	 * Enable/disable NED change notifications.
+	 * Enable/disable NED change notifications on this element. However, parent will still be notified.
 	 */
 	public boolean setNotificationEnabled(boolean enabled);
 	
 	/**
 	 * Fires a model change element (forwards it to the listener list if any)
+	 * and propagates it up to the parent.
 	 */
 	public void fireModelChanged(NEDModelEvent event);
 

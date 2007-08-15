@@ -155,7 +155,7 @@ public class InifileDocument implements IInifileDocument {
 				markAsChanged();
 			}
 		};
-		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(nedChangeListener);
+		NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
 	}
 
 	public synchronized void markAsChanged() {
@@ -173,7 +173,7 @@ public class InifileDocument implements IInifileDocument {
 	protected void unhookListeners() {
 		document.removeDocumentListener(documentListener);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(nedChangeListener);
+		NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedChangeListener);
 	}
 
 	synchronized public void parseIfChanged() {
