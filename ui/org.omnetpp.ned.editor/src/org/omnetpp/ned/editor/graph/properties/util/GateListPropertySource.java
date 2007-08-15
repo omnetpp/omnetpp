@@ -37,9 +37,9 @@ public class GateListPropertySource extends NotifiedPropertySource {
             GateNodeEx gateDefNode = (GateNodeEx)gateElement;
             String typeString = gateDefNode.getAttribute(GateNodeEx.ATT_TYPE);
             String definedIn = "";
-            if (gateDefNode.getContainingTopLevelElement() != model) {
+            if (gateDefNode.getContainingNedTypeNode() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((IHasName)gateDefNode.getContainingTopLevelElement()).getName()+")";
+                definedIn= " (inherited from "+((IHasName)gateDefNode.getContainingNedTypeNode()).getName()+")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(gateDefNode, typeString );
             pdesc[totalParamCount].setCategory(CATEGORY);

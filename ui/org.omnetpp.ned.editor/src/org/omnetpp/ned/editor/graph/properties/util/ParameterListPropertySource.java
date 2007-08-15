@@ -66,9 +66,9 @@ public class ParameterListPropertySource extends NotifiedPropertySource
             ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
             String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
             String definedIn = "";
-            if (paramDefNode.getContainingTopLevelElement() != model) {
+            if (paramDefNode.getContainingNedTypeNode() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((IHasName)paramDefNode.getContainingTopLevelElement()).getName()+")";
+                definedIn= " (inherited from "+((IHasName)paramDefNode.getContainingNedTypeNode()).getName()+")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
             pdesc[totalParamCount].setCategory(CATEGORY);
