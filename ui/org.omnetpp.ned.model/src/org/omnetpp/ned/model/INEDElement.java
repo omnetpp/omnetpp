@@ -305,6 +305,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	/**
 	 * Sets the component type info data. Should be used by the incremental builder ONLY.
 	 */
+	//XXX move this into INedTypeNode? --Andras
 	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
 
 	/**

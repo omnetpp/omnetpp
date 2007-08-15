@@ -72,6 +72,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
     // all types which extends this component
     protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
+    
     // all types that contain instances (submodule, connection) of this type
     protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
 
@@ -88,7 +89,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         // register the created component in the INEDElement so we will have access to it
         // directly from the model
         node.setNEDTypeInfo(this);
-		// the inherited and own members will be collected on demeand
+		// the inherited and own members will be collected on demand
         needsOwnUpdate = true;
 		needsUpdate = true;
 	}
@@ -124,8 +125,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	}
 
     /**
-     * Collects all typenames that are used in this module (submodule and connection types)
-     * @param result sorage for the used types
+     * Collects all type names that are used in this module (submodule and connection types)
+     * @param result storage for the used types
      */
     protected void collectTypesInCompoundModule(Set<String> result) {
         // this is only meaningful for CompoundModules so skip the others
