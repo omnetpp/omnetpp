@@ -26,6 +26,7 @@ import org.omnetpp.scave.model2.RunAttribute;
  *
  * @author tomi
  */
+// TODO check dependencies between result item fields
 public class ScalarDataset implements IScalarDataset {
 	
 	private static ScalarFields defaultGrouping = new ScalarFields(ALL, MODULE);
