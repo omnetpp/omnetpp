@@ -62,7 +62,7 @@ public class CloneSubmoduleCommand extends Command {
         if (parent instanceof CompoundModuleNodeEx)
             connectionParent = parent.getFirstConnectionsChild();
         
-        ConnectionNodeEx newConn = (ConnectionNodeEx)oldConn.deepDup(null);
+        ConnectionNodeEx newConn = (ConnectionNodeEx)oldConn.deepDup();
             
         connectionParent.appendChild(newConn);
         newConn.setSrcModuleRef(srcModuleRef);
@@ -77,7 +77,7 @@ public class CloneSubmoduleCommand extends Command {
     	SubmoduleNodeEx newModule = null;
 
         // duplicate the subtree but do not add to the new parent yet
-        newModule = (SubmoduleNodeEx)oldModule.deepDup(null);
+        newModule = (SubmoduleNodeEx)oldModule.deepDup();
 
         newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
 

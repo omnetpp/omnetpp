@@ -49,8 +49,8 @@ public class ConnectionCommand extends Command {
         this.destEditPart = targetEditPart;
         this.oldSrcModule = connModel.getSrcModuleRef();
         this.oldDestModule = connModel.getDestModuleRef();
-        this.oldConn = (ConnectionNode)connModel.dup(null);
-        this.newConn = (ConnectionNode)connModel.dup(null);
+        this.oldConn = (ConnectionNode)connModel.dup();
+        this.newConn = (ConnectionNode)connModel.dup();
     }
 
     /**

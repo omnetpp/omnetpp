@@ -285,14 +285,14 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public String debugString();
 
 	/**
-	 * Creates a shallow copy of the tree, but removes it from the tree hierarchy and throws away all children
+	 * Creates a shallow copy of the node.
 	 */
-	public INEDElement dup(INEDElement parent);
+	public INEDElement dup();
 
 	/**
-	 * Creates a deep copy of the tree, optionally providing the new node's parent too
+	 * Creates a deep copy of the tree.
 	 */
-	public INEDElement deepDup(INEDElement parent);
+	public INEDElement deepDup();
 
 	/**
 	 * Returns the TypeInfo belonging to the containing (toplevel) component

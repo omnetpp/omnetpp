@@ -440,8 +440,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * Forget a file, and throws out all cached info.
-     * @param file
+     * Forget a NED file, and throws out all cached info.
      */
     public synchronized void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
@@ -655,7 +654,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * Returns the listener list attached to the plugin which is notified about
-     * ANY change in the NED model (ie. any change in any file)
+     * ANY change in the NED model (i.e. any change in any file)
      */
     public NEDChangeListenerList getNEDModelChangeListenerList() {
         if (nedModelChangeListenerList == null)
@@ -665,7 +664,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * Respond to model changes
-     * @param event
      */
     protected void nedModelChanged(NEDModelEvent event) {
         if (nedModelChangeNotificationDisabled)

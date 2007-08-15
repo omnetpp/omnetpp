@@ -39,7 +39,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
 	}
 
 	/**
-	 * This command can be executed ONLY on submodules who has fixed location
+	 * This command can be executed ONLY on submodules that have fixed location
 	 */
 	@Override
     protected boolean calculateEnabled() {

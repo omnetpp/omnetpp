@@ -12,6 +12,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -367,15 +368,11 @@ public abstract class NEDElement extends PlatformObject
     }
 
     public String debugString() {
-        return getTagName() + " " + getAttribute("name") + getSourceLocation();
+        return getTagName() + " " + StringUtils.defaultIfEmpty(getAttribute("name"), "") + " from " + getSourceLocation();
     }
 
-    public INEDElement dup(INEDElement parent) {
+    public INEDElement dup() {
         INEDElement cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
-
-        // FIXME maybe we should add to the parent at the end, so there would be less notifications
-        if (parent != null)
-            parent.appendChild(cloned);
 
         for (int i = 0; i < getNumAttributes(); ++i)
         	cloned.setAttribute(i, getAttribute(i));
@@ -383,11 +380,11 @@ public abstract class NEDElement extends PlatformObject
         return cloned;
     }
 
-    public INEDElement deepDup(INEDElement parent) {
-        INEDElement result = dup(parent);
+    public INEDElement deepDup() {
+        INEDElement result = dup();
 
         for (INEDElement child : this)
-            child.deepDup(result);
+            result.appendChild(child.deepDup());
 
         return result;
     }

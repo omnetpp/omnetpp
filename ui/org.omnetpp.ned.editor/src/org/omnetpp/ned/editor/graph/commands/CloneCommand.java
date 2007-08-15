@@ -53,10 +53,10 @@ public class CloneCommand extends Command {
     	return parent != null && nodes.size() > 0;
     }
 
-    // clone just a single node and insert it into the correct posistion
+    // clone just a single node and insert it into the correct position
     protected INEDElement clonePart(INEDElement oldNode ) {
         // duplicate the subtree but do not add to the new parent yet
-    	INEDElement newNode = oldNode.deepDup(null);
+    	INEDElement newNode = oldNode.deepDup();
         // set a unique name is this is a named toplevel element
         if ((newNode instanceof IHasName) && (newNode instanceof ITopLevelElement)) {
             Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();

@@ -171,7 +171,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 return null;
 
             if (param != null)
-                result =  (ParamNodeEx)param.deepDup(null);
+                result =  (ParamNodeEx)param.deepDup();
             else
                 result = (ParamNodeEx)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_PARAM);
 
@@ -452,7 +452,7 @@ public class ParametersDialog extends TitleAreaDialog {
     @Override
 	protected void okPressed() {
        INEDElement paramsNode = module.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
-       ParametersNode newParamsNode = paramsNode != null ? (ParametersNode)paramsNode.deepDup(null) :
+       ParametersNode newParamsNode = paramsNode != null ? (ParametersNode)paramsNode.deepDup() :
                                    (ParametersNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);
 
        for (INEDElement paramNode : newParamsNode)

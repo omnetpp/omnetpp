@@ -22,7 +22,7 @@ public class DeleteCommand extends Command {
     // an inner class to store data to be able to undo a connection deletion
     private static class ConnectionUndoItem {
         public ConnectionNodeEx node;            // the NODE that was deleted
-        public ConnectionsNode parent;           // the parent of the deletednode
+        public ConnectionsNode parent;           // the parent of the deleted node
         public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
         public IHasConnections srcModule;             // the src module the connection was originally attached to
         public IHasConnections destModule;            // the dest module the connection was originally attached to

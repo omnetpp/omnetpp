@@ -106,7 +106,7 @@ public class NedModelLabelProvider extends LabelProvider {
 	}
 
     private static String getSourceWithoutComments(INEDElement element) {
-        INEDElement node = element.deepDup(null);
+        INEDElement node = element.deepDup();
         // remove all comment nodes
         while(node.getFirstChildWithTag(NEDElementTags.NED_COMMENT) != null)
             node.getFirstChildWithTag(NEDElementTags.NED_COMMENT).removeFromParent();
