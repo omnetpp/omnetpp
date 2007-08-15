@@ -55,9 +55,17 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	}
 	
 	protected void updateLineNames(String formatString) {
-		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-		IXYDataset xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
 		lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
+		IXYDataset xydataset;
+		
+		try {
+			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
+			xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
+		}
+		catch (Exception e) {
+			xydataset = null;
+		}
+
 		if (xydataset != null) {
 			lineNames = new String[xydataset.getSeriesCount()];
 			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
