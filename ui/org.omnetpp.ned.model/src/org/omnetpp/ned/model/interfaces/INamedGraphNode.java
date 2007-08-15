@@ -7,6 +7,6 @@ import org.omnetpp.common.displaymodel.IHasDisplayString;
  *
  * @author rhornig
  */
-public interface INamedGraphNode extends IHasDisplayString, IHasConnections, IHasParent, IHasName  {
+public interface INamedGraphNode extends IHasDisplayString, IHasConnections, IHasName  {
 
 }

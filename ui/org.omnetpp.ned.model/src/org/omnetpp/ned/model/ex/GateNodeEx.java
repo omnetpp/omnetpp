@@ -3,7 +3,6 @@ package org.omnetpp.ned.model.ex;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IHasParent;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.GateNode;
 
@@ -12,7 +11,7 @@ import org.omnetpp.ned.model.pojo.GateNode;
  *
  * @author rhornig
  */
-public final class GateNodeEx extends GateNode implements IHasIndex, IHasName, IHasParent {
+public final class GateNodeEx extends GateNode implements IHasIndex, IHasName {
 
     protected GateNodeEx() {
         super();

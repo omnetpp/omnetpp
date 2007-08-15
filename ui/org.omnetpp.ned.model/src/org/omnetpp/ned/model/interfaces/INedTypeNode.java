@@ -9,7 +9,6 @@ import org.omnetpp.ned.model.INEDElement;
  * @author rhornig
  */
 //XXX extend IHasDisplayString and IHasParameters too?
-public interface INedTypeNode extends INEDElement, 
-	IHasParent, IHasName, IHasAncestors {
+public interface INedTypeNode extends INEDElement, IHasName, IHasAncestors {
 
 }
