@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasParent;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
@@ -23,7 +23,7 @@ import org.omnetpp.ned.model.pojo.ExtendsNode;
  */
 public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
 		implements IHasDisplayString, IHasAncestors, IHasParent,
-                   IHasName, ITopLevelElement, IHasParameters {
+                   IHasName, INedTypeNode, IHasParameters {
 
 	protected DisplayString displayString = null;
 

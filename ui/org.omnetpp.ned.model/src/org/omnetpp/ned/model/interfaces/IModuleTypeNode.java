@@ -7,7 +7,7 @@ import org.omnetpp.common.displaymodel.IHasDisplayString;
  * 
  * @author Andras
  */
-public interface IModuleTypeNode extends ITopLevelElement, 
+public interface IModuleTypeNode extends INedTypeNode, 
 	IHasAncestors, IHasInterfaces, IHasParameters, IHasGates,
 	IHasDisplayString, IHasParent, IHasName {
 }

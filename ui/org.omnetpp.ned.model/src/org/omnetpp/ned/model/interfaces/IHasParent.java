@@ -7,6 +7,7 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
+//XXX redundant??? INEDElement already contains these methods --Andras 
 public interface IHasParent extends INEDElement {
 
 	/**

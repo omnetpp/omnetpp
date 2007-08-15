@@ -13,7 +13,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasParent;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 
@@ -24,7 +24,7 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
  */
 public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
 		implements IHasDisplayString, IHasParent,
-                   IHasAncestors, IHasName, ITopLevelElement,
+                   IHasAncestors, IHasName, INedTypeNode,
                    IHasParameters, IHasGates {
 
 	protected DisplayString displayString = null;

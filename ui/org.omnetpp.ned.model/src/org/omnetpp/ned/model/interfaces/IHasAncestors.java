@@ -10,6 +10,7 @@ import org.omnetpp.ned.model.pojo.ExtendsNode;
  *
  * @author rhornig
  */
+//XXX merge into INedTypeNode? --Andras
 public interface IHasAncestors extends INEDElement {
 
     /**

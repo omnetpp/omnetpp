@@ -347,8 +347,8 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public String getSource();
 
 	/**
-	 * Returns a collection that contains the error marker ids attached to this ned element
-	 * if the size is > 0 the element has an error
+	 * Returns a collection that contains the error marker ids attached to this element.
+	 * If the size is > 0 the element has an error.
 	 */
 	public List<Integer> getErrorMarkerIds();
 
