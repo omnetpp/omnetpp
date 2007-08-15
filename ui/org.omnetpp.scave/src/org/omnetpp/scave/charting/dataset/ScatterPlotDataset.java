@@ -11,14 +11,22 @@ import static org.omnetpp.scave.engine.ScalarFields.*;
 
 /**
  * IXYDataset implementation for a scatter plot computed from a list of scalars.
- *
+ * <p>
+ * One of the scalars gives the X coordinates (selected by module/data name),
+ * others gives the Y coordinates. There are as many series as many different
+ * module/data names except the selected one.
+ * <p>
+ * Each series contains as many data points as many scalars are with the
+ * module/data name, scalars differing only in their replications may optionally
+ * be averaged.
+ * 
  * @author tomi
  */
 public class ScatterPlotDataset implements IXYDataset {
 	
 	private XYDataset data; // first row contains X values,
 	                        // other rows contain Y values (NaN if missing)
-	private String[] dataNames;
+	private String[] keys;
 	
 	public ScatterPlotDataset(IDList idlist, String moduleName, String scalarName, boolean averageReplications, ResultFileManager manager) {
 		ScalarDataSorter sorter = new ScalarDataSorter(manager);
@@ -26,7 +34,7 @@ public class ScatterPlotDataset implements IXYDataset {
 		ScalarFields columnFields = averageReplications ? new ScalarFields(EXPERIMENT | MEASUREMENT) :
 			                                              new ScalarFields(EXPERIMENT | MEASUREMENT | REPLICATION);
 		this.data = sorter.prepareScatterPlot2(idlist, moduleName, scalarName, rowFields, columnFields);
-		computeNames();
+		this.keys = computeKeys(this.data);
 	}
 	
 	public int getSeriesCount() {
@@ -34,7 +42,7 @@ public class ScatterPlotDataset implements IXYDataset {
 	}
 
 	public String getSeriesKey(int series) {
-		return dataNames[series];
+		return keys[series];
 	}
 
 	public int getItemCount(int series) {
@@ -57,13 +65,14 @@ public class ScatterPlotDataset implements IXYDataset {
 		return new BigDecimal(getY(series, item));
 	}
 	
-	private void computeNames() {
+	private static String[] computeKeys(XYDataset data) {
 		// first row contains the common X coordinates
 		// name the lines after their Y data
-		dataNames = new String[data.getRowCount()-1];
-		for (int i=0; i<dataNames.length; ++i) {
-			dataNames[i] = data.getRowField(i+1, ScalarFields.MODULE) + " " +
+		String[] keys = new String[data.getRowCount()-1];
+		for (int i=0; i<keys.length; ++i) {
+			keys[i] = data.getRowField(i+1, ScalarFields.MODULE) + " " +
 					   data.getRowField(i+1, ScalarFields.NAME);
 		}
+		return keys;
 	}
 }

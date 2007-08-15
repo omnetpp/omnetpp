@@ -106,21 +106,19 @@ bool ScalarFields::less(ID id1, ID id2, ResultFileManager *manager)
 
 bool ScalarFields::less(const ScalarResult &d1, const ScalarResult &d2) const
 {
-    if (hasField(FILE) && strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str()) < 0)
-        return true;
-    if (hasField(RUN) && strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str()) < 0) 
-        return true;
-    if (hasField(MODULE) && strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0)
-        return true;
-    if (hasField(NAME) && strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0)
-        return true;
-    if (hasField(EXPERIMENT) && strcmp_safe(getAttribute(d1, "experiment"), getAttribute(d2, "experiment")) < 0)
-        return true;
-    if (hasField(MEASUREMENT) && strcmp_safe(getAttribute(d1, "measurement"), getAttribute(d2, "measurement")) < 0)
-        return true;
-    if (hasField(REPLICATION) && strcmp_safe(getAttribute(d1, "replication"), getAttribute(d2, "replication")) < 0)
-        return true;
-    return false;
+    int cmp;
+
+#define CMP(field,cmp_fun, f1,f2)   if (hasField(field)) { cmp = cmp_fun(f1,f2); if (cmp) return cmp < 0; }
+
+    CMP(FILE, strdictcmp, d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
+    CMP(RUN, strdictcmp, d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
+    CMP(MODULE, strdictcmp, d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str());
+    CMP(NAME, strdictcmp, d1.nameRef->c_str(), d2.nameRef->c_str());
+    CMP(EXPERIMENT, strcmp_safe, getAttribute(d1, "experiment"), getAttribute(d2, "experiment"));
+    CMP(MEASUREMENT, strcmp_safe, getAttribute(d1, "measurement"), getAttribute(d2, "measurement"));
+    CMP(REPLICATION, strcmp_safe, getAttribute(d1, "replication"), getAttribute(d2, "replication"));
+
+    return false; // ==
 }
 
 string ScalarFields::getField(const ScalarResult& d)
@@ -159,7 +157,7 @@ void XYDataset::add(const ScalarResult &d)
     KeyToIndexMap::iterator rowRef = rowKeyToIndexMap.find(d);
     if (rowRef != rowKeyToIndexMap.end())
     {
-        row = rowRef->second;
+        row = rowOrder[rowRef->second];
     }
     else // add new row
     {
@@ -167,12 +165,13 @@ void XYDataset::add(const ScalarResult &d)
         values.push_back(vector<Mean>(columnKeys.size(), Mean()));
         rowKeyToIndexMap[d] = row;
         rowKeys.push_back(d);
+        rowOrder.push_back(row);
     }
 
     KeyToIndexMap::iterator columnRef = columnKeyToIndexMap.find(d);
     if (columnRef != columnKeyToIndexMap.end())
     {
-        column = columnRef->second;
+        column = columnOrder[columnRef->second];
     }
     else // add new column
     {
@@ -189,12 +188,26 @@ void XYDataset::add(const ScalarResult &d)
 
 void XYDataset::swapRows(int row1, int row2)
 {
-    const ScalarResult &rowKey1 = rowKeys[row1];
-    const ScalarResult &rowKey2 = rowKeys[row2];
-    rowKeyToIndexMap[rowKey1] = row2;
-    rowKeyToIndexMap[rowKey2] = row1;
-    swap(rowKeys[row1], rowKeys[row2]);
-    swap(values[row1], values[row2]);
+    int temp = rowOrder[row1];
+    rowOrder[row1] = rowOrder[row2];
+    rowOrder[row2] = temp;
+}
+
+void XYDataset::sortRows()
+{
+    vector<int> rowOrder;
+    for (KeyToIndexMap::iterator it = rowKeyToIndexMap.begin(); it != rowKeyToIndexMap.end(); ++it)
+        rowOrder.push_back(this->rowOrder[it->second]);
+
+    this->rowOrder = rowOrder;
+}
+
+void XYDataset::sortColumns()
+{
+    vector<int> columnOrder;
+    for (KeyToIndexMap::iterator it = columnKeyToIndexMap.begin(); it != columnKeyToIndexMap.end(); ++it)
+        columnOrder.push_back(this->columnOrder[it->second]);
+    this->columnOrder = columnOrder;
 }
 
 struct ValueAndIndex
@@ -202,14 +215,10 @@ struct ValueAndIndex
     double value;
     int index;
     ValueAndIndex(double value, int index) : value(value), index(index) {}
+    bool operator<(const ValueAndIndex& other) { return this->value < other.value; }
 };
 
-bool operator<(ValueAndIndex &val1, ValueAndIndex &val2)
-{
-    return val1.value < val2.value;
-}
-
-void XYDataset::sortColumns()
+void XYDataset::sortColumnsAccordingToFirstRow()
 {
     if (values.size() > 0)
     {
@@ -574,7 +583,7 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
         throw opp_runtime_error("Data for X axis not found.");
     
     // sort columns so that X values are in ascending order
-    dataset.sortColumns();
+    dataset.sortColumnsAccordingToFirstRow();
 
     return dataset;
 }

@@ -103,7 +103,8 @@ class XYDataset
         std::vector<Key> rowKeys;
         std::vector<Key> columnKeys;
         std::vector<Row> values; // index by row/column
-        std::vector<int> columnOrder;      // a permutation of a subset of columns
+        std::vector<int> rowOrder;         // permutation of a subset of rows
+        std::vector<int> columnOrder;      // permutation of a subset of columns
     public:
         XYDataset(ScalarFields rowFields, ScalarFields columnFields)
             : rowFields(rowFields), columnFields(columnFields),
@@ -111,9 +112,11 @@ class XYDataset
             columnKeyToIndexMap(ScalarFieldsLess(columnFields)) {};
         void add(const ScalarResult &d);
         void swapRows(int row1, int row2);
+        void sortColumnsAccordingToFirstRow();
+        void sortRows();
         void sortColumns();
 
-        int getRowCount() { return rowKeys.size(); }
+        int getRowCount() { return rowOrder.size(); }
         int getColumnCount() { return columnOrder.size(); }
         ScalarFields getRowFields() { return rowFields; }
         ScalarFields getColumnFields() { return columnFields; }
@@ -126,12 +129,12 @@ inline std::string XYDataset::getRowField(int row, int fieldID)
 {
     if (row < 0 || row >= getRowCount() || !rowFields.hasField(fieldID))
         return "";
-    return ScalarFields(fieldID).getField(rowKeys[row]);
+    return ScalarFields(fieldID).getField(rowKeys[rowOrder[row]]);
 }
 
 inline std::string XYDataset::getColumnField(int column, int fieldID)
 {
-    if (column < 0 || column >= getColumnCount() || !rowFields.hasField(fieldID))
+    if (column < 0 || column >= getColumnCount() || !columnFields.hasField(fieldID))
         return "";
     return ScalarFields(fieldID).getField(columnKeys[columnOrder[column]]);
 }
@@ -140,7 +143,7 @@ inline double XYDataset::getValue(int row, int column)
 {
     if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
         return dblNaN;
-    return values.at(row).at(columnOrder[column]).value(); 
+    return values.at(rowOrder[row]).at(columnOrder[column]).value(); 
 }
 
 /**

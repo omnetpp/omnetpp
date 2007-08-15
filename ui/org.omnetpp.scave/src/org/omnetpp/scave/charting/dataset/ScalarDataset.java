@@ -19,6 +19,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.XYDataset;
 import org.omnetpp.scave.model2.RunAttribute;
 
 /**
@@ -37,37 +38,41 @@ public class ScalarDataset implements IScalarDataset {
     /** The column keys. */
     private List<String> columnKeys;
 
-    /** The row data. */
-    private List<List<Double>> rows;
+    /** The data, each row is a group. */
+    private XYDataset data;
 
     /**
-     * Creates an empty dataset.
-     */
-    public ScalarDataset() {
-        this.rowKeys = new ArrayList<String>();
-        this.columnKeys = new ArrayList<String>();
-        this.rows = new ArrayList<List<Double>>();
-    }
-    
-    /**
      * Creates a dataset from the given scalars.
-     * The 
-     * @param idlist   the scalars contained by this dataset
-     * @param manager
+     * The columns are the different module names found.
+     * Each different value of the other fields gives a row.  
      */
     public ScalarDataset(IDList idlist, ResultFileManager manager) {
     	this(idlist, defaultGrouping, manager);
     }
     
+    /**
+     * Creates a dataset from the given scalars.
+     * Groups are formed by {@code groupingFields}, other fields
+     * determines the columns. 
+     */
     public ScalarDataset(IDList idlist, int groupingFields, ResultFileManager manager) {
     	this(idlist, new ScalarFields(groupingFields), manager);
     }
     
+    /**
+     * Creates a dataset from the given scalars.
+     * Groups are formed by {@code groupingFields}, other fields
+     * determines the columns. 
+     */
     public ScalarDataset(IDList idlist, ScalarFields groupingFields, ResultFileManager manager) {
-    	this();
     	if (groupingFields == null)
     		groupingFields = defaultGrouping;
-    	addScalars(idlist, groupingFields, manager);
+    	ScalarDataSorter sorter = new ScalarDataSorter(manager);
+    	this.data = sorter.groupAndAggregate(idlist, groupingFields, groupingFields.complement());
+    	this.data.sortRows();
+    	this.data.sortColumns();
+    	this.rowKeys = computeRowKeys(this.data);
+    	this.columnKeys = computeColumnKeys(this.data);
     }
 
     /**
@@ -120,73 +125,42 @@ public class ScalarDataset implements IScalarDataset {
      * @return The value.
      */
     public double getValue(int row, int column) {
-        double result = Double.NaN;
-        if (row >= 0 && row < rows.size()) {
-            List<Double> rowData = this.rows.get(row);
-            if (column >= 0 && column < rowData.size())
-        	result = rowData.get(column);
-        }
-        return result;
+       	return data.getValue(row, column);
     }
     
-    private void addScalars(IDList idlist, ScalarFields groupingFields, ResultFileManager manager) {
-    	ScalarFields nongroupingFields = groupingFields.complement();
-    	ScalarDataSorter sorter = new ScalarDataSorter(manager);
-    	IDVectorVector groups = sorter.groupByFields(idlist, groupingFields);
-    	
-    	for (int rowIndex=0; rowIndex < groups.size(); ++rowIndex) {
-    		IDVector group = groups.get(rowIndex);
-    		String rowKey = null;
-    		List<Double> row = new ArrayList<Double>((int)group.size());
-    		for (int colIndex = 0; colIndex < group.size(); ++colIndex) {
-    			// add place for key for the column if this is the first row 
-    			// (each group has the same number of ids)
-    			if (rowIndex == 0)
-        			columnKeys.add(null);
-
-        		long id = group.get(colIndex);
-    			if (id != -1) {
-    				ScalarResult scalar = manager.getScalar(id);
-    				if (rowKey == null)
-    					rowKey = keyFor(scalar, groupingFields);
-    				if (columnKeys.get(colIndex) == null)
-    					columnKeys.set(colIndex, keyFor(scalar, nongroupingFields));
-    				row.add(scalar.getValue());
-    			}
-    			else {
-    				row.add(Double.NaN);
-    			}
-    		}
-    		
-    		// add non-empty rows
-    		if (rowKey != null) {
-    			rowKeys.add(rowKey);
-    			rows.add(row);
-    		}
+    private static final int[] allFields = new int[] {FILE, RUN, MODULE, NAME, EXPERIMENT, MEASUREMENT, REPLICATION };
+    private static final char separator = ';';
+    
+    private static List<String> computeRowKeys(XYDataset data) {
+    	List<String> keys = new ArrayList<String>(data.getRowCount());
+    	ScalarFields fields = data.getRowFields();
+    	for (int i = 0; i < data.getRowCount(); ++i) {
+        	StringBuffer sb = new StringBuffer();
+        	for (int field : allFields) {
+        		if (fields.hasField(field))
+        			sb.append(data.getRowField(i, field)).append(separator);
+        	}
+        	if (sb.length() > 0)  // delete last separator
+        		sb.deleteCharAt(sb.length()-1);
+        	keys.add(sb.toString());
     	}
-    	
-    	// remove empty columns
-    	int colIndex;
-    	while ((colIndex=columnKeys.indexOf(null)) >= 0) {
-    		columnKeys.remove(colIndex);
-    		for (List<Double> row : rows) {
-    			if (colIndex < row.size())
-    				row.remove(colIndex);
-    		}
-    	}
+    	return keys;
     }
     
-    private String keyFor(ScalarResult scalar, ScalarFields fields) {
-    	StringBuffer sb = new StringBuffer();
-    	char sep = ';';
-    	if (fields.hasField(FILE)) sb.append(scalar.getFileRun().getFile().getFileName()).append(sep);
-    	if (fields.hasField(RUN)) sb.append(scalar.getFileRun().getRun().getRunName()).append(sep);
-    	if (fields.hasField(MODULE)) sb.append(scalar.getModuleName()).append(sep);
-    	if (fields.hasField(NAME)) sb.append(scalar.getName()).append(sep);
-    	if (fields.hasField(EXPERIMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.EXPERIMENT)).append(sep);
-    	if (fields.hasField(MEASUREMENT)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.MEASUREMENT)).append(sep);
-    	if (fields.hasField(REPLICATION)) sb.append(RunAttribute.getRunAttribute(scalar.getFileRun().getRun(), RunAttribute.REPLICATION)).append(sep);
-    	if (sb.length() > 0) sb.deleteCharAt(sb.length()-1); // delete last ','
-    	return sb.toString();
+    private static List<String> computeColumnKeys(XYDataset data) {
+    	int count = data.getColumnCount();
+    	List<String> keys = new ArrayList<String>(count);
+    	ScalarFields fields = data.getColumnFields();
+    	for (int i = 0; i < count; ++i) {
+        	StringBuffer sb = new StringBuffer();
+        	for (int field : allFields) {
+        		if (fields.hasField(field))
+        			sb.append(data.getColumnField(i, field)).append(separator);
+        	}
+        	if (sb.length() > 0)  // delete last separator
+        		sb.deleteCharAt(sb.length()-1);
+        	keys.add(sb.toString());
+    	}
+    	return keys;
     }
 }
