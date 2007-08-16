@@ -15,9 +15,12 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -35,7 +38,6 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -80,6 +82,27 @@ public class MultiPageNedEditor
 		super.init(site, editorInput);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
+
+		getSite().getPage().addPartListener(new IPartListener() {
+			public void partOpened(IWorkbenchPart part) {
+			}
+
+			public void partClosed(IWorkbenchPart part) {
+			}
+
+			public void partActivated(IWorkbenchPart part) {
+				if (getActivePage() == textPageIndex)
+					textEditor.pullChangesFromNEDResources();
+			}
+
+			public void partDeactivated(IWorkbenchPart part) {
+				if (getActivePage() == textPageIndex && textEditor.hasContentChanged())
+					textEditor.pushChangesIntoNEDResources();
+			}
+
+			public void partBroughtToTop(IWorkbenchPart part) {
+			}
+		});
 	}
 
     @Override
@@ -419,5 +442,9 @@ public class MultiPageNedEditor
 
     public TextualNedEditor getTextEditor() {
         return textEditor;
+    }
+    
+    public boolean isActiveEditor(IEditorPart editorPart) {
+    	return getActiveEditor() == editorPart;
     }
 }

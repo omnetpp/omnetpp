@@ -20,6 +20,7 @@ import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
@@ -33,6 +34,7 @@ import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
@@ -264,7 +266,7 @@ public class TextualNedEditor
 
 		return super.getAdapter(required);
 	}
-
+	
 	/* (non-Javadoc)
 	 * Method declared on AbstractTextEditor
 	 */
@@ -302,7 +304,7 @@ public class TextualNedEditor
 		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning");
 		fProjectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
-        // we should set the selection provider as late as possible because the outer multipage esitor overrides it
+        // we should set the selection provider as late as possible because the outer multipage editor overrides it
         // during editor initialization
         // install a selection provider that provides StructuredSelection of NEDModel elements in getSelection
         // instead of ITestSelection
@@ -342,6 +344,12 @@ public class TextualNedEditor
         return !(getText().equals(lastContent));
     }
 
+	public boolean isActive() {
+		IEditorPart activeEditorPart = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+		return activeEditorPart == this ||
+			(activeEditorPart instanceof MultiPageNedEditor && ((MultiPageNedEditor)activeEditorPart).isActiveEditor(this));
+	}
+
     public void modelChanged(NEDModelEvent event) {
     	if (!pushingChanges) {
 			INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
@@ -351,22 +359,28 @@ public class TextualNedEditor
     	}
     }
 
+	public synchronized void pushChangesIntoNEDResources() {
+		pushChangesIntoNEDResources(true);
+	}
+    
 	/**
 	 * Pushes down text changes from document into NEDResources.
 	 */
-	public synchronized void pushChangesIntoNEDResources() {
-		Assert.isTrue(!pushingChanges);
+	public synchronized void pushChangesIntoNEDResources(final boolean ignoreIfInactive) {
 		DisplayUtils.runAsyncInUIThread(new Runnable() {
-			public void run() {
-				try {
-					// this must be static to be able to access it from the text editor
-					// being static causes no problems with multiple reconcilers because the access is serialized through asyncExec
-					pushingChanges = true;
-					// perform parsing (of full text, we ignore the changed region)
-					NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());
-				}
-				finally {
-					pushingChanges = false;
+			public synchronized void run() {
+				Assert.isTrue(!pushingChanges);
+				if (ignoreIfInactive || isActive()) {
+					try {
+						// this must be static to be able to access it from the text editor
+						// being static causes no problems with multiple reconcilers because the access is serialized through asyncExec
+						pushingChanges = true;
+						// perform parsing (of full text, we ignore the changed region)
+						NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());
+					}
+					finally {
+						pushingChanges = false;
+					}
 				}
 			}
 		});
@@ -376,8 +390,9 @@ public class TextualNedEditor
 	 * Pulls changes from NEDResources and applies to document as text changes.
 	 */
 	public synchronized void pullChangesFromNEDResources() {
-		DisplayUtils.runSyncInUIThread(new Runnable() {
-			public void run() {
+		pullChangesJob.cancel();
+		DisplayUtils.runAsyncInUIThread(new Runnable() {
+			public synchronized void run() {
 				Assert.isTrue(Display.getCurrent() != null);
 		        String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(getNEDFileModelFromNEDResourcesPlugin(), true);
 				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(getDocument(), source);

@@ -31,6 +31,6 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 
 	public void reconcile(IRegion partition) {
 		// System.out.println("reconcile(IRegion) called");
-		editor.pushChangesIntoNEDResources();
+		editor.pushChangesIntoNEDResources(false);
 	}
 }
