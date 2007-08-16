@@ -65,6 +65,7 @@ import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
@@ -552,19 +553,12 @@ public class GraphicalNedEditor
 
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
-        if (Display.getCurrent() == null)
-            Display.getDefault().asyncExec(new Runnable() {
-                public void run() {
-                    refreshRootEditPart();
-                }
-            });
-        else // refresh in the current UI thread
-        	refreshRootEditPart();
+    	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            public void run() {
+            	getGraphicalViewer().getRootEditPart().refresh();
+            }
+        });
     }
-
-    protected void refreshRootEditPart() {
-    	getGraphicalViewer().getRootEditPart().refresh();
-	}
 
 	/**
      * Reveals a model element in the editor (or its nearest ancestor which

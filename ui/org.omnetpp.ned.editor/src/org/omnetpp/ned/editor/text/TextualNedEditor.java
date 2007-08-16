@@ -367,7 +367,7 @@ public class TextualNedEditor
 	 * Pushes down text changes from document into NEDResources.
 	 */
 	public synchronized void pushChangesIntoNEDResources(final boolean ignoreIfInactive) {
-		DisplayUtils.runAsyncInUIThread(new Runnable() {
+		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public synchronized void run() {
 				Assert.isTrue(!pushingChanges);
 				if (ignoreIfInactive || isActive()) {
@@ -391,7 +391,7 @@ public class TextualNedEditor
 	 */
 	public synchronized void pullChangesFromNEDResources() {
 		pullChangesJob.cancel();
-		DisplayUtils.runAsyncInUIThread(new Runnable() {
+		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public synchronized void run() {
 				Assert.isTrue(Display.getCurrent() != null);
 		        String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(getNEDFileModelFromNEDResourcesPlugin(), true);
