@@ -8,13 +8,13 @@ import org.omnetpp.ned.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
 /**
- * Property source to display whis components are implemented
+ * Property source to display the interface list of a component
  *
  * @author rhornig
  */
 public class InterfacesListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "like";
-    public final static String DESCRIPTION = "List of componets this component implements - (read only)";
+    public final static String DESCRIPTION = "List of components this component implements - (read only)";
     protected IHasInterfaces model;
     protected PropertyDescriptor[] pdesc;
 

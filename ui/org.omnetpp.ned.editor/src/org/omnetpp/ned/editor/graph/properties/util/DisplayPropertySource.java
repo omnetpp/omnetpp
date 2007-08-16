@@ -27,8 +27,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     // property descriptor for the sheet (could be static if pushed upper)
     protected IPropertyDescriptor[] propertyDescArray = null;
     // by default supports all possible properties defined in DisplayString
-    protected EnumSet<DisplayString.Prop> supportedProperties
-                  = EnumSet.noneOf(DisplayString.Prop.class);
+    protected EnumSet<DisplayString.Prop> supportedProperties = EnumSet.noneOf(DisplayString.Prop.class);
     // the model that we are attached to
     private final IHasDisplayString model;
 
@@ -121,7 +120,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         String tagVal = displayString.getAsStringLocal(prop);
         // if the property does not exists yet, return default empty value
         if (tagVal == null)
-            tagVal = DisplayString.TagInstance.EMPTY_VALUE;
+            tagVal = DisplayString.EMPTY_TAG_VALUE;
 
         return tagVal;
     }
