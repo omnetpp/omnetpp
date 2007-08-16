@@ -7,7 +7,6 @@ import org.omnetpp.scave.engine.Run;
 public class RunAttribute {
 	
 	// Note: these field names must be kept consistent with resultfilemanager.cc
-	// XXX and with FilterUtil
 	// XXX or: merge all these into one place? 
 	public static final String EXPERIMENT = "experiment";
 	public static final String MEASUREMENT = "measurement";
