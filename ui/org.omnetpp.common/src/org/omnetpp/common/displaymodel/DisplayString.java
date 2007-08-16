@@ -158,7 +158,7 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * @return The currently set fallback display string
+     * Returns the currently set fallback display string
      */
     public DisplayString getFallbackDisplayString() {
         if (fallbackDisplayStringRef != null)
@@ -168,8 +168,7 @@ public class DisplayString implements IDisplayString {
 
     /**
      * Sets the fallback display string used if the current object has empty or null value for a
-     * requested property (points to the type or ancestor display string)
-     * @param defaults
+     * requested property (points to the type or ancestor display string).
      */
     public void setFallbackDisplayString(DisplayString defaults) {
         this.fallbackDisplayStringRef = new WeakReference<DisplayString>(defaults);

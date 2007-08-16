@@ -173,7 +173,7 @@ public class TextualNedEditor
 
 	/**
 	 * The TextualNedEditor implementation of this AbstractTextEditor
-	 * method performs any extra behaviour needed by the NED editor.
+	 * method performs any extra behavior needed by the NED editor.
 	 */
 	@Override
     public void doSaveAs() {
@@ -238,8 +238,8 @@ public class TextualNedEditor
 
 	/**
 	 * The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method performs gets
-	 * the ned content outline page if request is for a an
+	 * <code>AbstractTextEditor</code> method gets
+	 * the ned content outline page if request is for an
 	 * outline page.
 	 *
 	 * @param required the required type

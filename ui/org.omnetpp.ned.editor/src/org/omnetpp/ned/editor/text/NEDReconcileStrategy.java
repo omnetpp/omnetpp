@@ -22,6 +22,9 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
+		// this method is not called, because reconciler is configured 
+		// to be a non-incremental reconciler in NedSourceViewerConfiguration
+
 		// System.out.println("reconcile(DirtyRegion,IRegion) called");
 		reconcile(subRegion);
 	}
