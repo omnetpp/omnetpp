@@ -23,6 +23,7 @@ import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.NEDTreeDifferenceUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
@@ -199,8 +200,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized INEDElement getNEDFileModel(IFile file) {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return nedFiles.get(file);
     }
 
@@ -213,8 +213,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      */
     public synchronized void setNEDFileModel(IFile file, INEDElement tree) {
         if (tree == null)
-            forgetNEDFile(file); // XXX rather: it should never be called
-                                    // with tree==null!
+            forgetNEDFile(file); // XXX rather: it should never be called with tree==null!
         else
             storeNEDFileModel(file, tree);
         rehashIfNeeded();
@@ -235,15 +234,22 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * @param text - the textual content of the ned file
      */
     public synchronized void setNEDFileText(IFile file, String text) {
-        // parse the NED text and put it into the hash table
+        INEDElement currentTree = getNEDFileModel(file);
+
         NEDErrorStore errors = new NEDErrorStore();
         errors.setPrintToStderr(false);
+        INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
+        
+        NEDTreeDifferenceUtils.NEDTreeDifferenceApplier treeDifferenceApplier = new NEDTreeDifferenceUtils.NEDTreeDifferenceApplier();
+        NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
+		// TODO: source locations must be copied from parsed tree during the merge
+        treeDifferenceApplier.apply();
 
-        INEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
-        setNEDFileModel(file, tree);
+		invalidate();
+
         NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);
         markerSync.registerFile(file);
-        markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
+        markerSync.addMarkersToFileFromErrorStore(file, currentTree, errors);
         // we should defer the synchronization to a different job, so no deadlock can occur
         markerSync.runAsWorkspaceJob();
     }
@@ -261,8 +267,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 
     public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         for (INEDTypeInfo component : components.values()) {
             if (file.equals(component.getNEDFile())) {
                 NEDSourceRegion region = component.getNEDElement().getSourceRegion();
@@ -287,8 +292,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized Collection<INEDTypeInfo> getAllComponents() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return components.values();
     }
 
@@ -309,8 +313,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized Collection<INEDTypeInfo> getModules() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return modules.values();
     }
 
@@ -319,38 +322,32 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized Collection<INEDTypeInfo> getChannels() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return channels.values();
     }
 
     public synchronized Collection<INEDTypeInfo> getModuleInterfaces() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return moduleInterfaces.values();
     }
 
     public synchronized Collection<INEDTypeInfo> getChannelInterfaces() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return channelInterfaces.values();
     }
 
     public synchronized Set<String> getAllComponentNames() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return components.keySet();
     }
 
     public synchronized Set<String> getReservedComponentNames() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return reservedNames;
     }
 
     public synchronized Set<String> getModuleNames() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return modules.keySet();
     }
 
@@ -359,26 +356,22 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized Set<String> getChannelNames() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return channels.keySet();
     }
 
     public synchronized Set<String> getModuleInterfaceNames() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return moduleInterfaces.keySet();
     }
 
     public synchronized Set<String> getChannelInterfaceNames() {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return channelInterfaces.keySet();
     }
 
     public synchronized INEDTypeInfo getComponent(String name) {
-        if (needsRehash)
-            rehash();
+		rehashIfNeeded();
         return components.get(name);
     }
 
@@ -461,7 +454,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // remove our model change from the file
             nedFiles.get(file).removeNEDChangeListener(nedModelChangeListener);
             nedFiles.remove(file);
-            needsRehash = true;
+            invalidate();
         }
     }
     
@@ -472,7 +465,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         INEDElement oldTree = nedFiles.get(file);
         // if the new tree has changed, we have to rehash everything
         if (oldTree == null || !NEDTreeUtil.isNEDTreeEqual(oldTree, tree)) {
-            needsRehash = true;
+            invalidate();
             nedFiles.put(file, tree);
             // add ourselves to the tree root as a listener
             tree.addNEDChangeListener(nedModelChangeListener);
@@ -480,28 +473,20 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             if (oldTree != null)
                 oldTree.removeNEDChangeListener(nedModelChangeListener);
             // fire a ned change notification (new tree added)
-            nedModelChanged(new NEDStructuralChangeEvent(tree, tree, NEDStructuralChangeEvent.Type.INSERTION,tree,tree));
+            nedModelChanged(new NEDStructuralChangeEvent(tree, tree, NEDStructuralChangeEvent.Type.INSERTION, tree, tree));
         }
-    }
-
-    /**
-     * Calls rehash() if internal tables are out of date.
-     */
-    public synchronized void rehashIfNeeded() {
-        if (needsRehash)
-            rehash();
     }
 
     /**
      * Rebuild hash tables after NED resource change. Note: some errors such as
      * duplicate names only get detected when this gets run!
      */
-    private synchronized void rehash() {
+    public synchronized void rehashIfNeeded() {
         // long startMillis = System.currentTimeMillis();
 
         if (!needsRehash)
             return;
-        // rehash done!
+
         needsRehash = false;
         debugRehashCounter++;
 
@@ -616,14 +601,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         markerSync.runAsWorkspaceJob();
 
         // long dt = System.currentTimeMillis() - startMillis;
-        // System.out.println("rehash() took " + dt + "ms");
+        // System.out.println("rehashIfNeeded() took " + dt + "ms");
     }
 
     public synchronized void invalidate() {
-        if (!needsRehash) {
-            // System.out.println("NEDResources invalidated");
-            needsRehash = true;
-        }
+		needsRehash = true;
     }
 
     /**
@@ -821,5 +803,4 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 " isContent:"+((delta.getFlags() & IResourceDelta.CONTENT) != 0)+
                 " isMarkerChange:"+((delta.getFlags() & IResourceDelta.MARKERS) != 0));
     }
-
 }

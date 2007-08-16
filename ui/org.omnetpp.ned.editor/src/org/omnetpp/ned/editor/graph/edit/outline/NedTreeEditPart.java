@@ -95,7 +95,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
      * Returns the children of the model element of this editpart.
      */
     @Override
-    protected List getModelChildren() {
+    protected List<Object> getModelChildren() {
         return Arrays.asList(NEDTreeUtil.getNedModelContentProvider().getChildren(getModel()));
     }
 
@@ -125,10 +125,11 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     /**
      * Fully refresh ourselves an all of our children (recursively) visually
      */
+    // TODO: shouldn't it override refresh instead?
     protected void totalRefresh() {
         // refresh ourselves
         refresh();
-        // delegate to all children and refresh all their appearence
+        // delegate to all children and refresh all their appearance
         for (Object child : getChildren())
             ((NedTreeEditPart)child).totalRefresh();
 

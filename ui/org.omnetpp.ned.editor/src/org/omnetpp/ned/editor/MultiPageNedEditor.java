@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -28,8 +27,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.common.editor.text.TextDifferenceUtils;
-import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -41,9 +38,6 @@ import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 //FIXME why doesn't this comment go into the normal class comment? --Andras
@@ -65,14 +59,14 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author rhornig
  */
-public class MultiPageNedEditor extends MultiPageEditorPart implements
-		IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource {
-
+public class MultiPageNedEditor
+	extends MultiPageEditorPart
+	implements IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource
+{
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
 
-	private DelayedJob textEditorContentUpdater;
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -86,45 +80,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		super.init(site, editorInput);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
-        
-        textEditorContentUpdater = new DelayedJob(500) {
-    		public synchronized void run() {
-    			if (Display.getCurrent() == null)
-    				// delay update to avoid concurrent access to document
-    				Display.getDefault().syncExec(new Runnable() {
-    					public void run() {
-    						reallyRun();
-    					}
-    				});
-    			else
-    				reallyRun();
-    		}
-    		
-    		private void reallyRun() {
-    			Assert.isTrue(Display.getCurrent() != null);
-    			// TODO: unfortunately this always generates a new source which is already done when switching to the text editor
-    			// but not done when editing in the graph editor
-                String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(graphEditor.getModel(), true);
-    			TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(textEditor.getDocument(), source);
-    		}
-        };
-
-        // register listener to update text editor content
-        final IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-        // TODO: this has to be added by the TextualNedEditor
-	    NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(new INEDChangeListener() {
-			public void modelChanged(NEDModelEvent event) {
-				if (getActivePage() == graphPageIndex) {
-					INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
-
-					// TODO: this causes the reconciler to parse the string and replace the NED tree in the resources plugin
-					// and thus detaching the graph editor from the tree stored in the resources plugin
-					if (nedFileElement == null || nedFileElement == NEDResourcesPlugin.getNEDResources().getNEDFileModel(file))
-						textEditorContentUpdater.restartTimer();
-				}
-			}
-	    });
-
 	}
 
     @Override
@@ -134,8 +89,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 .getWorkspace().removeResourceChangeListener(resourceListener);
         // disconnect the editor from the ned resources plugin
         setInput(null);
-        if (textEditorContentUpdater != null)
-        	textEditorContentUpdater.cancel();
         super.dispose();
     }
 
@@ -266,11 +219,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                     res.setNEDFileModel(file, graphEditor.getModel());
 
                 // generate text representation from the model
-                textEditorContentUpdater.runNow();
+                textEditor.pullChangesFromNEDResources();
                 textEditor.markContent();
             }
-            
-            textEditorContentUpdater.cancel();
 
             // keep the current selection between the two editors
             INEDElement currentNEDElementSelection = null;
@@ -282,13 +233,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             if (currentNEDElementSelection != null)
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
 		}
-		else if (newPageIndex==graphPageIndex) {
+		else if (newPageIndex == graphPageIndex) {
 		    if (textEditor.hasContentChanged()) {
-    			// parse the text editor content if it has changed since the last editor switch
-    		    res.setNEDFileText(file, textEditor.getText());
-
-    	    	// set the parsed ned model to the graphical editor
-    		    graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
+		    	textEditor.pushChangesIntoNEDResources();
     		    graphEditor.markContent();
 		    }
 
@@ -318,7 +265,10 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	            }
 			}
 		}
-		insidePageChange = false;
+		else
+			throw new RuntimeException("Unknown page index");
+
+        insidePageChange = false;
         initPhase = false;
 	}
 
@@ -328,7 +278,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
      */
     private void prepareForSave() {
         if (getActivePage() == graphPageIndex) {
-            textEditorContentUpdater.runNow();
+            textEditor.pullChangesFromNEDResources();
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
     }
@@ -362,19 +312,20 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         getSite().getPage().closeEditor(this, save);
     }
 
-    // resource management open, close the editor depending on workspace notification
-    // This class listens to changes to the file system in the workspace, and
-    // makes changes accordingly.
-    // 1) An open, saved file gets deleted -> close the editor
-    // 2) An open file gets renamed or moved -> change the editor's input
-    // accordingly
+    /**
+     * This class listens to changes to the file system in the workspace, and
+     * makes changes accordingly.
+     * 1) An open, saved file gets deleted -> close the editor
+     * 2) An open file gets renamed or moved -> change the editor's input accordingly
+     */
     class ResourceTracker implements IResourceChangeListener, IResourceDeltaVisitor {
         public void resourceChanged(IResourceChangeEvent event) {
             IResourceDelta delta = event.getDelta();
             try {
                 if (delta != null) delta.accept(this);
-            } catch (CoreException exception) {
-                // What should be done here?
+            }
+            catch (CoreException e) {
+            	throw new RuntimeException(e);
             }
         }
 
@@ -393,8 +344,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                     });
                 }
                 else { // else if it was moved or renamed
-                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
-                            delta.getMovedToPath());
+                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(delta.getMovedToPath());
                     display.asyncExec(new Runnable() {
                         public void run() {
                             setInput(new FileEditorInput(newFile));

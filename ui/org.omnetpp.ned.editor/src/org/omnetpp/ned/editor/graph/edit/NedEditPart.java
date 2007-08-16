@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -23,10 +24,9 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * @author rhornig
  */
 abstract public class NedEditPart
-                           extends AbstractGraphicalEditPart
-                           implements IReadOnlySupport,
-                                      IPropertySourceSupport, IModelProvider {
-
+	extends AbstractGraphicalEditPart
+	implements IReadOnlySupport, IPropertySourceSupport, IModelProvider
+{
     private boolean editable = true;
     private IPropertySource propertySource;
     protected DirectEditManager manager;
@@ -52,36 +52,6 @@ abstract public class NedEditPart
     	super.refresh();
     	for (Object child : getChildren())
     		((AbstractGraphicalEditPart)child).refresh();
-    }
-
-
-    protected void refreshChildrenConnections() {
-        for (Object child : getChildren()) {
-            for (Object conn : ((AbstractGraphicalEditPart)child).getSourceConnections())
-                ((AbstractGraphicalEditPart)conn).refresh();
-
-            for (Object conn : ((AbstractGraphicalEditPart)child).getTargetConnections())
-                ((AbstractGraphicalEditPart)conn).refresh();
-        }
-    }
-
-    /**
-     * Refreshes everything in this controller. Visual appearance, children and connection list
-     * and children and connection appearance too.
-     */
-    // TODO: is this the same as refresh in base classes? what does it do in extra? and why does it call refresh connections on the children
-    public void totalRefresh() {
-        // refresh ourselves
-        refresh();
-        // delegate to all children and refresh all their appearance
-        for (Object child : getChildren())
-            if (child instanceof NedEditPart)
-                ((NedEditPart)child).totalRefresh();
-            else
-                ((AbstractGraphicalEditPart)child).refresh();
-
-        // refresh connections
-        refreshChildrenConnections();
     }
 
     public void setEditable(boolean editable) {

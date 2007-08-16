@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.text;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
@@ -17,6 +18,7 @@ import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -27,11 +29,19 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.TextDifferenceUtils;
+import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
+import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 
 /**
@@ -39,24 +49,41 @@ import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
  *
  * @author rhornig
  */
-public class TextualNedEditor extends TextEditor {
+public class TextualNedEditor
+	extends TextEditor
+	implements INEDChangeListener
+{
+    private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
+
+	private static boolean pushingChanges;
 
 	private static TemplateStore fStore;
-    private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
+    
     /** The context type registry. */
     private static ContributionContextTypeRegistry fRegistry;
 
     /** The outline page */
 	private NedContentOutlinePage fOutlinePage;
+	
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
-    private String lastContent;
+    
+	private String lastContent;
+
+	private DelayedJob pullChangesJob;
 
 	/**
 	 * Default constructor.
 	 */
 	public TextualNedEditor() {
 		super();
+		
+		// delay update to avoid concurrent access to document
+		pullChangesJob = new DelayedJob(500) {
+    		public void run() {
+				pullChangesFromNEDResources();
+    		}
+        };
 	}
 
     /**
@@ -64,8 +91,8 @@ public class TextualNedEditor extends TextEditor {
      */
     public static TemplateStore getTemplateStore() {
         if (fStore == null) {
-            fStore= new ContributionTemplateStore(getContextTypeRegistry(),
-                                 NedEditorPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
+            fStore = new ContributionTemplateStore(getContextTypeRegistry(),
+            		NedEditorPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
             try {
                 fStore.load();
             } catch (IOException e) {
@@ -114,6 +141,9 @@ public class TextualNedEditor extends TextEditor {
     public void dispose() {
 		if (fOutlinePage != null)
 			fOutlinePage.setInput(null);
+        if (pullChangesJob != null)
+        	pullChangesJob.cancel();
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
 		super.dispose();
 	}
 
@@ -163,8 +193,7 @@ public class TextualNedEditor extends TextEditor {
 		if (fOutlinePage != null)
 			fOutlinePage.setInput(input);
 		// parse the text so we will get updated error information/markers
-        IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-        NEDResourcesPlugin.getNEDResources().setNEDFileText(file, getText());
+        NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());
 	}
 
 	/**
@@ -187,6 +216,14 @@ public class TextualNedEditor extends TextEditor {
     public IDocument getDocument() {
         return getDocumentProvider().getDocument(getEditorInput());
     }
+
+	protected IFile getFile() {
+		return ((IFileEditorInput)getEditorInput()).getFile();
+	}
+
+	protected INEDElement getNEDFileModelFromNEDResourcesPlugin() {
+		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+	}
 
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
@@ -234,6 +271,7 @@ public class TextualNedEditor extends TextEditor {
 	@Override
     protected void initializeEditor() {
 		super.initializeEditor();
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
 		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
 	}
 
@@ -242,7 +280,6 @@ public class TextualNedEditor extends TextEditor {
 	 */
 	@Override
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-
 		fAnnotationAccess= createAnnotationAccess();
 		fOverviewRuler= createOverviewRuler(getSharedColors());
 
@@ -304,4 +341,47 @@ public class TextualNedEditor extends TextEditor {
 
         return !(getText().equals(lastContent));
     }
+
+    public void modelChanged(NEDModelEvent event) {
+    	if (!pushingChanges) {
+			INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
+	
+			if (nedFileElement == null || nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
+				pullChangesJob.restartTimer();
+    	}
+    }
+
+	/**
+	 * Pushes down text changes from document into NEDResources.
+	 */
+	public synchronized void pushChangesIntoNEDResources() {
+		Assert.isTrue(!pushingChanges);
+		DisplayUtils.runAsyncInUIThread(new Runnable() {
+			public void run() {
+				try {
+					// this must be static to be able to access it from the text editor
+					// being static causes no problems with multiple reconcilers because the access is serialized through asyncExec
+					pushingChanges = true;
+					// perform parsing (of full text, we ignore the changed region)
+					NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());
+				}
+				finally {
+					pushingChanges = false;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Pulls changes from NEDResources and applies to document as text changes.
+	 */
+	public synchronized void pullChangesFromNEDResources() {
+		DisplayUtils.runSyncInUIThread(new Runnable() {
+			public void run() {
+				Assert.isTrue(Display.getCurrent() != null);
+		        String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(getNEDFileModelFromNEDResourcesPlugin(), true);
+				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(getDocument(), source);
+			}
+		});
+	}
 }

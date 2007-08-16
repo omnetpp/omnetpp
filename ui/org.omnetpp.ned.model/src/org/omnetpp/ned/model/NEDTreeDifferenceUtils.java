@@ -70,6 +70,37 @@ public class NEDTreeDifferenceUtils {
 		}
 	}
 
+	public static class NEDTreeDifferenceApplier implements NEDTreeDifferenceUtils.INEDTreeDifferenceApplier {
+		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
+		
+		public void replaceAttribute(final INEDElement element, final String name, final String value) {
+			runnables.add(new Runnable() {
+				public void run() {
+					element.setAttribute(name, value);
+				}
+			});
+		}
+
+		public void replaceElements(final INEDElement parent, final int start, final int end, final int offset, final INEDElement[] replacement) {
+			runnables.add(new Runnable() {
+				public void run() {
+					for (int i = start; i < end; i++)
+						parent.getChild(offset + start).removeFromParent();
+
+					INEDElement startChild = parent.getChild(offset + start);
+
+					for (INEDElement element : replacement)
+						parent.insertChildBefore(startChild, element);
+				}
+			});
+		}
+		
+		public void apply() {
+			for (Runnable runnable : runnables)
+				runnable.run();
+		}
+	}
+
 	public static void main(String[] args) {
 		new NEDTreeDifferenceTest().run();
 	}
@@ -131,37 +162,6 @@ class NEDElementChildrenComparator implements IRangeComparator {
 	}
 }
 
-class NEDTreeDifferenceApplier implements NEDTreeDifferenceUtils.INEDTreeDifferenceApplier {
-	final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
-	
-	public void replaceAttribute(final INEDElement element, final String name, final String value) {
-		runnables.add(new Runnable() {
-			public void run() {
-				element.setAttribute(name, value);
-			}
-		});
-	}
-
-	public void replaceElements(final INEDElement parent, final int start, final int end, final int offset, final INEDElement[] replacement) {
-		runnables.add(new Runnable() {
-			public void run() {
-				for (int i = start; i < end; i++)
-					parent.getChild(offset + start).removeFromParent();
-
-				INEDElement startChild = parent.getChild(offset + start);
-
-				for (INEDElement element : replacement)
-					parent.insertChildBefore(startChild, element);
-			}
-		});
-	}
-	
-	public void apply() {
-		for (Runnable runnable : runnables)
-			runnable.run();
-	}
-}
-
 class NEDTreeDifferenceTest {
 	private static Random random = new Random(1);
 	
@@ -181,7 +181,7 @@ class NEDTreeDifferenceTest {
 		String targetNED = NEDTreeUtil.generateNedSource(target, false);
 		String targetXML = NEDTreeUtil.generateXmlFromPojoElementTree(target, "", false);
 
-		NEDTreeDifferenceApplier applier = new NEDTreeDifferenceApplier();
+		NEDTreeDifferenceUtils.NEDTreeDifferenceApplier applier = new NEDTreeDifferenceUtils.NEDTreeDifferenceApplier();
 		NEDTreeDifferenceUtils.applyTreeDifferences(original, target, applier);
 		applier.apply();
 		

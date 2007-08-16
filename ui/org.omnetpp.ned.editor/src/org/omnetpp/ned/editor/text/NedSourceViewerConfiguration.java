@@ -19,7 +19,6 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.ui.IEditorPart;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlinkDetector;
 import org.omnetpp.ned.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
@@ -41,9 +40,9 @@ import org.omnetpp.ned.editor.text.util.NedTextHover;
  */
 public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
-	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
+	private TextualNedEditor editor = null; // because NEDReconcileStrategy will need IFile from editorInput
 
-	public NedSourceViewerConfiguration(IEditorPart editor) {
+	public NedSourceViewerConfiguration(TextualNedEditor editor) {
 		this.editor = editor;
 	}
 	

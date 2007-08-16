@@ -14,6 +14,7 @@ import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -55,17 +56,22 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     @Override
     public void setName(String val) {
         if (getCompoundModule() != null) {
-        // if a submodule name has changed we must change all the connections in the same compound module
-        // that is attached to this module (so the model will remain consistent)
+        	// if a submodule name has changed we must change all the connections in the same compound module
+        	// that is attached to this module (so the model will remain consistent)
             for (ConnectionNodeEx conn : getCompoundModule().getSrcConnectionsFor(getName()))
                 conn.setSrcModule(val);
             for (ConnectionNodeEx conn : getCompoundModule().getDestConnectionsFor(getName()))
                 conn.setDestModule(val);
         }
-        // now we can change the name
         super.setName(val);
     }
-
+    
+    @Override
+    public void fireModelChanged(NEDModelEvent event) {
+    	// TODO: invalidate or recompute cached display string because NED tree may be changed outside of the DisplayString class
+   		displayString = null;
+    	super.fireModelChanged(event);
+    }
 
 	public DisplayString getDisplayString() {
 		if (displayString == null) {

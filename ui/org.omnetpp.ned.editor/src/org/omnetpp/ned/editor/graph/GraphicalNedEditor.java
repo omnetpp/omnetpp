@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureCanvas;
@@ -102,7 +103,6 @@ public class GraphicalNedEditor
 	extends GraphicalEditorWithFlyoutPalette 
 	implements INEDChangeListener
 {
-
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
     public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
 
@@ -483,6 +483,14 @@ public class GraphicalNedEditor
         return (FigureCanvas) getGraphicalViewer().getControl();
     }
 
+	protected IFile getFile() {
+		return ((FileEditorInput)getEditorInput()).getFile();
+	}
+
+	protected NedFileNodeEx getNEDFileModelFromResourcesPlugin() {
+		return (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+	}
+
     protected void loadProperties() {
         // Scroll-wheel Zoom support
         getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
@@ -498,10 +506,7 @@ public class GraphicalNedEditor
         }
 
         Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
-        NedFileNodeEx newModel = (NedFileNodeEx)NEDResourcesPlugin.getNEDResources()
-                                    .getNEDFileModel(((FileEditorInput)getEditorInput()).getFile());
-
-        setModel(newModel);
+        setModel(getNEDFileModelFromResourcesPlugin());
     }
 
     public NedFileNodeEx getModel() {
@@ -543,7 +548,9 @@ public class GraphicalNedEditor
     }
 
     public void modelChanged(NEDModelEvent event) {
-        // we do a full refresh in response of a change
+    	Assert.isTrue(getModel() == getNEDFileModelFromResourcesPlugin());
+
+    	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
         if (Display.getCurrent() == null)
             Display.getDefault().asyncExec(new Runnable() {
@@ -555,7 +562,7 @@ public class GraphicalNedEditor
         	refreshRootEditPart();
     }
 
-    private void refreshRootEditPart() {
+    protected void refreshRootEditPart() {
     	getGraphicalViewer().getRootEditPart().refresh();
 	}
 
