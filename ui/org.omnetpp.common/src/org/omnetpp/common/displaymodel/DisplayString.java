@@ -25,6 +25,9 @@ public class DisplayString implements IDisplayString {
     // contains the default fallback values for the different tags if it is empty
     public static final DisplayString EMPTY_DEFAULTS = new DisplayString(EMPTY_DEFAULTS_STR);
 
+    public static final String EMPTY_TAG_VALUE = "";
+    public static final String NONE_TAG_VALUE = "-";
+
     // use only a weak reference, so if the referenced fallback display string is deleted
     // along with the containing model element, it will not be held in memory
     protected WeakReference<DisplayString> fallbackDisplayStringRef = null;
@@ -35,13 +38,16 @@ public class DisplayString implements IDisplayString {
     // the owner of the display string
     protected IHasDisplayString owner = null;
 
+    // cached return value of toString(); null means not calculated.
+    // Every public method that modifies the object's contents must call invalidate() 
+    // to null out this field.  
+    protected String cachedDisplayString = null; 
+    
     // map that stores the currently available tag instances
     private final Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
 
-    public class TagInstance {
-        public final static String EMPTY_VALUE = "";
-        public final static String NONE_VALUE = "-";
-        private String name = EMPTY_VALUE;
+    private static class TagInstance {
+        private String name = "";
         private Vector<String> args = new Vector<String>(1);
 
         /**
@@ -63,11 +69,11 @@ public class DisplayString implements IDisplayString {
         /**
          * Returns a tag argument at the given position
          * @param pos
-         * @return The value of that position or <code>EMPTY_VALUE</code> if does not exist
+         * @return The value of that position or <code>EMPTY_TAG_VALUE</code> if does not exist
          */
         public String getArg(int pos) {
             if (pos < 0 || pos >= args.size() || args.get(pos) == null)
-                return EMPTY_VALUE;
+                return EMPTY_TAG_VALUE;
             return args.get(pos);
         }
 
@@ -88,7 +94,7 @@ public class DisplayString implements IDisplayString {
          */
         public boolean isEmpty() {
             for (String val : args)
-                if (val != null && !EMPTY_VALUE.equals(val)) return false;
+                if (val != null && !EMPTY_TAG_VALUE.equals(val)) return false;
             return true;
         }
 
@@ -100,7 +106,7 @@ public class DisplayString implements IDisplayString {
             // check for the last non default value
             int endPos;
             for (endPos = args.size() - 1; endPos>0; endPos--)
-                if (args.get(endPos) != null && !EMPTY_VALUE.equals(args.get(endPos))) break;
+                if (args.get(endPos) != null && !EMPTY_TAG_VALUE.equals(args.get(endPos))) break;
             // if there are unnecessary default values at the end, throw them away
             if (endPos < args.size() - 1) args.setSize(endPos + 1);
 
@@ -115,13 +121,13 @@ public class DisplayString implements IDisplayString {
         }
 
         /**
-         * @return the string representation of the tag or <code>EMPTY_VALUE</code>
+         * @return the string representation of the tag or <code>EMPTY_TAG_VALUE</code>
          * if all the args are default
          */
         @Override
         public String toString() {
             // return an empty string if all the values are default
-            if (isEmpty()) return EMPTY_VALUE;
+            if (isEmpty()) return EMPTY_TAG_VALUE;
             return getName()+"="+getArgString();
         }
 
@@ -143,7 +149,7 @@ public class DisplayString implements IDisplayString {
 
     /**
      * Create a display string tokenizer class only derived classes allowed to be created
-     * @param owner owner of the display string object (who has this display string) owner
+     * @param owner owner of the display string object (who has this display string).Owner
      * 		  will be notified about changes
      * @param value The string to be parsed
      */
@@ -153,8 +159,10 @@ public class DisplayString implements IDisplayString {
     }
 
     public DisplayString(String value) {
-    	if (value != null)
+    	if (value != null) {
     		set(value);
+    		cachedDisplayString = value;
+    	}
     }
 
     /**
@@ -178,7 +186,7 @@ public class DisplayString implements IDisplayString {
      * Returns the value of the given tag on the given position
      * @param tag TagInstance to be checked
      * @param pos Position (0 based)
-     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty
+     * @return TagInstance arg's value or <code>EMPTY_TAG_VALUE</code> if empty
      * or <code>null</code> if tag does not exist at all
      */
     protected String getTagArg(Tag tag, int pos) {
@@ -187,12 +195,12 @@ public class DisplayString implements IDisplayString {
         if (tagInst == null) return null;
         // check for the value itself
         String val = tagInst.getArg(pos);
-        if (val == null) val = TagInstance.EMPTY_VALUE;
+        if (val == null) val = EMPTY_TAG_VALUE;
         return val;
     }
 
     /**
-     * Returns TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined
+     * Returns TagInstance arg's value or <code>EMPTY_TAG_VALUE</code> if empty and no default is defined
      * or <code>null</code> if tag does not exist at all. If a default display string was
      * provided with <code>setFallbackDisplayString</code> it tries to look up the property from there
      */
@@ -231,6 +239,7 @@ public class DisplayString implements IDisplayString {
         else
             return false;
     }
+    
     /**
      * Sets the value of a tag at a given position. Extends the tag vector if necessary
      * @param tag Name of the tag
@@ -240,7 +249,7 @@ public class DisplayString implements IDisplayString {
     protected void setTagArg(Tag tag, int pos, String newValue) {
         TagInstance tagInstance = getTag(tag);
         // if the value is empty or null and the tag does not exist, do nothing
-        if (tagInstance == null && (newValue == null || TagInstance.EMPTY_VALUE.equals(newValue)))
+        if (tagInstance == null && (newValue == null || EMPTY_TAG_VALUE.equals(newValue)))
         	return;
         // if the tag does not exist add it to the map
         if (tagInstance == null) {
@@ -263,46 +272,48 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Set the displayString and parse it from the given string
-     * @param newValue Display string to be parsed
+     * Parse the given string and store its contents.
      */
     public void set(String newValue) {
         String oldValue = toString();
     	tagMap.clear();
     	if (newValue != null) {
-    	    // parse the display string into tags along ;
+    	    // parse the display string into tags along ";"
     		Scanner scr = new Scanner(newValue);
     		scr.useDelimiter(";");
     		while (scr.hasNext()) {
     			TagInstance parsedTag = new TagInstance(scr.next().trim());
-    			tagMap.put(parsedTag.getName(), parsedTag);
+    			tagMap.put(parsedTag.getName(), parsedTag);  //FIXME must resolve escaped ";" and "," ??? --Andras
     		}
     	}
+        cachedDisplayString = newValue;
     	fireDisplayStringChanged(null, newValue, oldValue);
     }
 
     /**
-     * @return the full display string
+     * Returns the full display string.
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(50);
-        boolean firstTag = true;
-        for (TagInstance tag : tagMap.values()) {
-            String tagVal = tag.toString();
-            if (!tagVal.equals("")) {
-                if (firstTag) firstTag = false;
-                    else sb.append(';');
+    	if (cachedDisplayString == null) {
+    		StringBuffer sb = new StringBuffer(50);
+    		boolean firstTag = true;
+    		for (TagInstance tag : tagMap.values()) {
+    			String tagVal = tag.toString();
+    			if (!tagVal.equals("")) {
+    				if (firstTag) firstTag = false;
+    				else sb.append(';');
 
-                sb.append(tagVal);
-            }
-        }
-
-        return sb.toString();
+    				sb.append(tagVal); //FIXME quoting??? string may contain ";" or ","  --Andras
+    			}
+    		}
+            cachedDisplayString = sb.toString();
+    	}
+        return cachedDisplayString;
     }
 
     /**
-     * The property value. NULL if tag does not exist, TagInstance.EMPTY_VALUE if the value
+     * The property value. NULL if tag does not exist, TagInstance.EMPTY_TAG_VALUE if the value
      * is empty.
      */
     public String getAsStringLocal(Prop property) {
@@ -338,8 +349,13 @@ public class DisplayString implements IDisplayString {
     public void set(Prop property, String newValue) {
         String oldValue = getAsStringLocal(property);
         setTagArg(property.getTag(), property.getPos(), newValue);
+        invalidate();
         fireDisplayStringChanged(property, newValue, oldValue);
     }
+
+	protected void invalidate() {
+		cachedDisplayString = null;
+	}
 
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
@@ -518,7 +534,7 @@ public class DisplayString implements IDisplayString {
      * @param value
      * @return The converted floating pint number (with removed .0 at the end)
      */
-    private String floatToString(float value) {
+    private static String floatToString(float value) {
         return StringUtils.chomp(String.valueOf(value), ".0");
     }
 
