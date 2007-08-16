@@ -610,8 +610,10 @@ public class ScalarChart extends ChartCanvas {
 				for (int row = 0; row < cRows; ++row) {
 					int left = plot.getBarRectangle(row, 0).x;
 					int right = plot.getBarRectangle(row, cColumns - 1).right();
-					int width = right - left;
-					layoutData[row] = layoutGroupLabel(dataset.getRowKey(row), labelsFont, rotation, gc, width, 0);
+					int maxWidth = Math.max(right - left, 10);
+					int maxHeight = Math.max(rect.height / 2, 10);
+					layoutData[row] = layoutGroupLabel(dataset.getRowKey(row),
+											labelsFont, rotation, gc, maxWidth, maxHeight);
 					labelsHeight = Math.max(labelsHeight, layoutData[row].rotatedSize.height);
 					//System.out.println("labelsheight: "+labelsHeight);
 				}
@@ -630,14 +632,14 @@ public class ScalarChart extends ChartCanvas {
 			data.textLayout.setText(label);
 			data.textLayout.setFont(font);
 			data.textLayout.setAlignment(SWT.CENTER);
-			data.textLayout.setWidth(Math.max(maxWidth, 10));
-			System.out.format("width=%s%n", maxWidth);
+			data.textLayout.setWidth(maxWidth);
+			//System.out.format("width=%s%n", maxWidth);
 			if (data.textLayout.getLineCount() > 1) {
 				// TODO soft hyphens are visible even when no break at them 
 				data.textLayout.setText(label.replace(';', '\u00ad'));
 			}
 			org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds(); 
-			data.size = new Dimension(bounds.width, bounds.height); //new Dimension(gc.textExtent(data.label));
+			data.size = new Dimension(bounds.width, Math.min(bounds.height, maxHeight)); //new Dimension(gc.textExtent(data.label));
 			data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
 			return data;
 		}
