@@ -25,17 +25,15 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -43,9 +41,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.ScavePlugin;
@@ -712,40 +714,32 @@ public class ScalarChart extends ChartCanvas {
 	 * @author Andras
 	 */
 	class Tooltip {
-		private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
-		
 		public Tooltip() {
-			addMouseTrackListener(new MouseTrackAdapter() {
-				public void mouseHover(MouseEvent e) {
-					showTooltip(e.x, e.y);
-				}
-			});
-			addMouseMoveListener(new MouseMoveListener() {
-				public void mouseMove(MouseEvent e) {
-					if (tooltipWidget != null) {
-						tooltipWidget.dispose();
-						tooltipWidget = null;
-					}
+			HoverSupport hoverSupport = new HoverSupport();
+			hoverSupport.setHoverSizeConstaints(new Point(600, 400));
+			hoverSupport.adapt(ScalarChart.this, new IHoverTextProvider() {
+				public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+					return getHoverText(x, y, outSizeConstraint);
 				}
 			});
 		}
 		
-		private void showTooltip(int x, int y) {
+		private String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
 			int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
 			if (rowColumn != -1) {
 				int numColumns = dataset.getColumnCount();
 				int row = rowColumn / numColumns;
 				int column = rowColumn % numColumns;
-				ScalarDataset dataset = getDataset();
+				String key = (String) dataset.getColumnKey(column);
 
-				String tooltipText = (String) dataset.getColumnKey(column) + "\nvalue: " + dataset.getValue(row, column);
-				tooltipWidget = new DefaultInformationControl(getShell());
-				tooltipWidget.setInformation(tooltipText);
-				tooltipWidget.setLocation(toDisplay(x,y+20));
-				Point size = tooltipWidget.computeSizeHint();
-				tooltipWidget.setSize(size.x, size.y);
-				tooltipWidget.setVisible(true);
+				String line1 = StringEscapeUtils.escapeHtml(key);
+				String line2 = "value: " + dataset.getValue(row, column);
+				int maxLength = Math.max(line1.length(), line2.length());
+				outSizeConstraint.preferredWidth = 20 + maxLength * 7;
+				outSizeConstraint.preferredHeight = 25 + 2 * 12;
+				return HoverSupport.addHTMLStyleSheet(line1 + "<br>" + line2);
 			}
+			return null;
 		}
 	}
 }
