@@ -45,7 +45,7 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
         		dps.getAsString(IDisplayString.Prop.IMAGE),
         		imgSize,
         		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPCT,0));
+        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
 
         // set the figure properties
         setShape(img,
@@ -103,7 +103,7 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
      */
     public void setProblemDecoration(int severity) {
     	Image image = ModuleFigure.getProblemImageFor(severity); //TODO subclass this AND ModuleFigure from a common NedFigure!
-    	// TODO implement error decoration
+//TODO implement problem decoration    	
 //    	if (image != null)
 //    		problemMarkerFigure.setImage(image);
 //    	problemMarkerFigure.setVisible(image==null);

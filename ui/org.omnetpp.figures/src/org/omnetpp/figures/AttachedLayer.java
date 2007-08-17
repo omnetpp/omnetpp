@@ -34,13 +34,13 @@ public class AttachedLayer extends Layer implements AncestorListener {
         // XXX NOTE that it would be much better to register ourselves in addNotify
         // and deregister  in removeNotify, however this causes a weird bug, that prevents
         // sending a notification to the next ancestor listener. Seems that we SHOULD NOT
-        // modify (add/remove) to a listener list when directly in a notication processing.
+        // modify (add/remove) to a listener list when directly in a notification processing.
         // This MAY cause that this object is still kept in memory even after removing it from
         // its parent because the referenceFigure still keep a a reference to it in the ancestorListener list
         // general problem: is it possible to manipulate a listenerList while processing an event fired for
         // this listener?
         // FIXME should be fixed once the issue is resolved in draw2d
-        // (should provide a way of firing to all listener, even if the listener list is beeing modified)
+        // (should provide a way of firing to all listener, even if the listener list is being modified)
         refFigure.addAncestorListener(this);
     }
 
@@ -67,7 +67,7 @@ public class AttachedLayer extends Layer implements AncestorListener {
      * @param refLoc Reference point locator on the figure attach to
      * @param attachedFig The figure to be attached
      * @param attachedLoc Reference point locator for the attached figure
-     * @param parentFig A figure to be used as a parent fo the newly created wrapper figure
+     * @param parentFig A figure to be used as a parent of the newly created wrapper figure
      * @return the wrapper figure used the attach the two figures
      */
     public AttachedLayer(IFigure refFig, int refLoc,

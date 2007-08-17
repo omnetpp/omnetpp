@@ -50,7 +50,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private ScrollPane scrollpane;
     private LayeredPane layeredPane;
     private Image backgroundImage;
-    private String backgroundImageArr = "fix";
+    private String backgroundImageArrangement = "fix";
     private int gridTickDistance;
     private int gridNoOfMinorTics;
     private Color gridColor;
@@ -59,6 +59,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private ConnectionLayer connectionLayer;
     private FreeformLayer messageLayer;
     private SpringEmbedderLayout layouter;
+   
     // TODO implement ruler
     @SuppressWarnings("unused")
     private float scale = 1.0f;
@@ -95,13 +96,13 @@ public class CompoundModuleFigure extends ModuleFigure
 	        graphics.clipRect(viewportRect);
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
-	            if (backgroundImageArr.toLowerCase().startsWith("t"))
+	            if (backgroundImageArrangement.toLowerCase().startsWith("t"))
 					for (int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
 						for (int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
 							graphics.drawImage(backgroundImage, x, y);
-	            else if (backgroundImageArr.toLowerCase().startsWith("s"))
+	            else if (backgroundImageArrangement.toLowerCase().startsWith("s"))
 	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
-	            else if (backgroundImageArr.toLowerCase().startsWith("c")) {
+	            else if (backgroundImageArrangement.toLowerCase().startsWith("c")) {
 	            	Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
 	            	graphics.drawImage(backgroundImage, centerPoint);
 	            } else
@@ -271,11 +272,12 @@ public class CompoundModuleFigure extends ModuleFigure
 		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;
-		backgroundImageArr = arrange != null ? arrange : "";
+		backgroundImageArrangement = arrange != null ? arrange : "";
 		invalidate();
 	}
 
 	/**
+	 * Adjusts grid parameters.
 	 * @param tickDistance Maximum distance between two ticks measured in pixels
 	 * @param noOfTics Number of minor ticks between two major one
 	 * @param gridColor Grid color
@@ -324,7 +326,7 @@ public class CompoundModuleFigure extends ModuleFigure
         		dps.getAsString(IDisplayString.Prop.IMAGE),
         		dps.getAsString(IDisplayString.Prop.IMAGESIZE),
         		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPCT,0));
+        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
         setDefaultShape(img,
         		dps.getAsString(IDisplayString.Prop.SHAPE),
         		dps.getAsInt(IDisplayString.Prop.WIDTH, -1),
@@ -457,7 +459,7 @@ public class CompoundModuleFigure extends ModuleFigure
      */
     public void setProblemDecoration(int severity) {
     	Image image = getProblemImageFor(severity);
-    	// TODO implement error decoration
+//TODO implement problem decoration    	
 //    	if (image != null)
 //    		problemMarkerFigure.setImage(image);
 //    	problemMarkerFigure.setVisible(image==null);

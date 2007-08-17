@@ -1,7 +1,6 @@
 package org.omnetpp.figures;
 
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Graphics;
@@ -384,7 +383,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         		dps.getAsString(IDisplayString.Prop.IMAGE),
         		imgSize,
         		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPCT,0));
+        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
 
         // rectangle ("b" tag)
         Dimension size = dps.getSize(scale);  // falls back to size in EMPTY_DEFAULTS

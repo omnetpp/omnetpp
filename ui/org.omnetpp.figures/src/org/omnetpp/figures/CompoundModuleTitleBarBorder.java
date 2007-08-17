@@ -133,7 +133,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 		if (getImage() != null)
 			g.drawImage(getImage(), imgx, imgy);
 
-        // store the label bounds (in absolute coordinates )so cell editors
+        // store the label bounds (in absolute coordinates) so cell editors
         // will be able to place the editor over it
         hostFigure = figure;
         labelLoc = new Point(lx, ly);
