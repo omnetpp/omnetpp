@@ -34,6 +34,7 @@ std::string opp_parsequotedstr(const char *txt);
 std::string opp_quotestr(const char *txt);
 bool opp_needsquotes(const char *txt);
 std::string opp_quotestr_ifneeded(const char *txt);
+int strdictcmp(const char *s1, const char *s2);
 
 %ignore UnitConversion::parseQuantity(const char *, std::string&);
 

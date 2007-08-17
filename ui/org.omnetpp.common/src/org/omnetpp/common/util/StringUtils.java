@@ -2,10 +2,12 @@ package org.omnetpp.common.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.engine.Common;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
 
@@ -379,4 +381,31 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 		return result;
 	}
+    
+    /**
+     * Dictionary-compare two strings, the main difference from String.compare()
+     * being that integers embedded in the strings are compared in
+     * numerical order. {@code null} values are ordered after other values.
+     */
+    public static int dictionaryCompare(String first, String second) {
+    	if (first == second)
+    		return 0;
+    	if (first == null)
+    		return 1;
+    	if (second == null)
+    		return -1;
+    	
+    	return Common.strdictcmp(first, second);
+    }
+    
+    /**
+     * Comparator for sorting lists with {@link dictionaryCompare()}.
+     */
+    public static final Comparator<String> dictionaryComparator = new DictionaryComparator();
+    
+    private static final class DictionaryComparator implements Comparator<String> {
+		public int compare(String first, String second) {
+			return dictionaryCompare(first, second);
+		}
+    }
 }
