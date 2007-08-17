@@ -62,7 +62,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
      * Returns the id of the selected image
      */
     protected String openDialogBox(String initialValue) {
-        ImageSelectionDialog dialog =
+        ImageSelectionDialog dialog =    //FIXME this is always called with initialValue==null!! --Andras
             new ImageSelectionDialog(Display.getDefault().getActiveShell(), initialValue);
 
         if (dialog.open() == Dialog.OK)

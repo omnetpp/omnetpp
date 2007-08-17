@@ -27,12 +27,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
 
 /**
- * Dialog for selecting an icon.
+ * Dialog for selecting an icon. To ensure responsiveness, dialog get filled 
+ * asynchronously if it would take too long.
  * 
  * @author Andras
  */
@@ -40,6 +42,8 @@ public class ImageSelectionDialog extends Dialog {
 	private static final int HEIGHT = 350;
 	private static final int WIDTH = 500;
 	private static final int RIGHT_MARGIN = 30;
+	
+	private static final long TIMEOUT_MILLIS = 500;
 
 	// widgets
 	private Combo filterCombo;
@@ -51,6 +55,7 @@ public class ImageSelectionDialog extends Dialog {
 
 	// state
 	private List<String> imageNames;
+	private int currentPopulationNumber = 0;
 
 	// result
 	private String initialSelection = null;
@@ -121,19 +126,18 @@ public class ImageSelectionDialog extends Dialog {
 		if (initialSelection != null)
 			filterCombo.setText(initialSelection.replaceFirst("/.*", "/"));
 
-		// add the images, and make initial icon one selected
-		populate();
-		imageSelected(initialSelection);
-		
 		// set up validation on content changes
 		filterCombo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				populate();
+				populate(null);
 			}
 		});
 
 		// focus on first field
 		filterCombo.setFocus();
+
+		// add the images, and make initial icon one selected
+		populate(initialSelection);
 
 		return dialogArea;
 	}
@@ -163,8 +167,8 @@ public class ImageSelectionDialog extends Dialog {
 		return result.toArray(new String[]{});
 	}
 
-	protected void populate() {
-		// regex-ify the filter string
+	protected void populate(String imageToSelect) {
+		// regex'ify the filter string
 		String filter = filterCombo.getText().trim();
 		filter = filter.replace("\\", "\\\\");
 		filter = filter.replace(".", "\\.");
@@ -193,44 +197,34 @@ public class ImageSelectionDialog extends Dialog {
 
 		// add new images
 		int count = 0;
-		String theImage = null;
+		String oneImage = null;
+		long startTime = System.currentTimeMillis();
+		currentPopulationNumber++; 
+		final int schedulePopulationNumber = currentPopulationNumber;
 		for (final String imageName : imageNames) {
 			if (pattern.matcher(imageName).matches() || imageName.equals("")) {
-  			    Button button = new Button(imageCanvas, SWT.PUSH);
-				
-				if (imageName.equals("")) {
-				    button.setText("NONE");
-				    button.setLayoutData(new RowData(50,50));
-				    button.setToolTipText("Clear existing image");
-				} 
-				else {
-	                count++;
-	                theImage = imageName;
-				    // produce image and tooltip
-				    Image image = ImageFactory.getImage(imageName);
-				    Rectangle bounds = image.getBounds();
-				    String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
-				    if (bounds.width > 64 || bounds.height > 64) {
-				        image = ImageConverter.getResampledImage(image, 64, 64);  //XXX will have to be disposed!!!!
-				        tooltip += " [scaled back for display]";
-				    }
-
-				    button.setImage(image);
-				    button.setToolTipText(tooltip);
-                }
-                
-				button.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						imageSelected(imageName);
-					}
-				});
-				// unfortunately, widgetDefaultSelected() does not work for a button, so:
-				button.addMouseListener(new MouseAdapter() {
-					public void mouseDoubleClick(MouseEvent e) {
-						imageSelected(imageName);
-						okPressed();
-					}
-				});
+  			    if (!imageName.equals("")) {
+  			    	count++;
+  			    	oneImage = imageName; 
+  			    }
+  			    
+  			    // add image to canvas: either directly, or if we're taking too much time already,
+  			    // defer it using Display.asyncExec(). NOTE: we use "population number" to ensure
+  			    // that a populate() call cancels stale asyncExec()'s still pending from the
+  			    // previous populate()
+  			    if (System.currentTimeMillis() - startTime <= TIMEOUT_MILLIS) {
+  			    	addImageToCanvas(imageName);
+  			    }
+  			    else {
+  			    	Display.getCurrent().asyncExec(new Runnable() {
+  			    		public void run() {
+  			    			if (!imageCanvas.isDisposed() && currentPopulationNumber==schedulePopulationNumber) {
+  			    				addImageToCanvas(imageName);
+  			    				layoutForm();
+  			    			}
+  			    		}
+  			    	});
+  			    }
 			}
 		}
 
@@ -241,10 +235,56 @@ public class ImageSelectionDialog extends Dialog {
 
 		// if selection got narrowed down to one image: make that the user's choice;
 		// otherwise invalidate user's previous selection
-		imageSelected(count==1 ? theImage : null);
+		final String finalImageToSelect = (count==1) ? oneImage : imageToSelect;
+
+		if (finalImageToSelect != null) {
+			Display.getCurrent().asyncExec(new Runnable() {
+				public void run() {
+					if (!imageCanvas.isDisposed() && currentPopulationNumber==schedulePopulationNumber) {
+						selectImage(finalImageToSelect);
+					}
+				}
+			});
+		}
 	}
 
-	protected void imageSelected(String imageName) {
+	protected void addImageToCanvas(final String imageName) {
+		Button button = new Button(imageCanvas, SWT.PUSH);
+		
+		if (imageName.equals("")) {
+		    button.setText("NONE");
+		    button.setLayoutData(new RowData(50,50));
+		    button.setToolTipText("Clear existing image");
+		} 
+		else {
+		    // produce image and tooltip
+		    Image image = ImageFactory.getImage(imageName);
+		    Rectangle bounds = image.getBounds();
+		    String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
+		    if (bounds.width > 64 || bounds.height > 64) {
+		        image = ImageConverter.getResampledImage(image, 64, 64);  //FIXME will have to be disposed!!!! cache it!!!
+		        tooltip += " [scaled back for display]";
+		    }
+
+		    button.setImage(image);
+		    button.setToolTipText(tooltip);
+		}
+		
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				selectImage(imageName);
+			}
+		});
+		// unfortunately, widgetDefaultSelected() does not work for a button, so:
+		button.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(MouseEvent e) {
+				selectImage(imageName);
+				okPressed();
+			}
+		});
+	}
+
+	protected void selectImage(String imageName) {
 		selection = imageName;
 		selectionStatusLabel.setText("Current selection: "+(selection==null ? "--" : selection));
 		if (okButton != null)  // it is null initially
