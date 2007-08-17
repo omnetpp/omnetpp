@@ -25,7 +25,13 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
 
     private String tmpName;
     private TooltipFigure tooltipFigure;
+    private ImageFigure problemMarkerFigure = new ImageFigure();
 
+    public NedTypeFigure() {
+        setLayoutManager(new XYLayout());
+        add(problemMarkerFigure, new Rectangle(0,0,16,16)); //XXX hardcoded image size; need better positioning!
+    }
+    
     protected void setShape(Image img,
             String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
@@ -59,9 +65,6 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
         		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
-        setLayoutManager(new XYLayout());
-        add(new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_PIN)), new Rectangle(0,0,16,16));
-        
         invalidate();
 	}
 
@@ -109,11 +112,10 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
      */
     public void setProblemDecoration(int severity) {
     	Image image = ModuleFigure.getProblemImageFor(severity); //TODO subclass this AND ModuleFigure from a common NedFigure!
-//TODO implement problem decoration    	
-//    	if (image != null)
-//    		problemMarkerFigure.setImage(image);
-//    	problemMarkerFigure.setVisible(image==null);
-//    	invalidate(); //XXX needed?
+    	if (image != null)
+    		problemMarkerFigure.setImage(image);
+    	problemMarkerFigure.setVisible(image != null);
+    	invalidate(); //XXX needed?
     }
 
 }

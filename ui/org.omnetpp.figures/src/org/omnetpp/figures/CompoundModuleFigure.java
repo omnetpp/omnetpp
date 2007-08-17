@@ -459,11 +459,8 @@ public class CompoundModuleFigure extends ModuleFigure
      */
     public void setProblemDecoration(int severity) {
     	Image image = getProblemImageFor(severity);
-//TODO implement problem decoration    	
-//    	if (image != null)
-//    		problemMarkerFigure.setImage(image);
-//    	problemMarkerFigure.setVisible(image==null);
-//    	invalidate(); //XXX needed?
+		getCompoundModuleBorder().setProblemDecorationImage(image);
+    	invalidate(); //XXX needed?
     }
 
 }

@@ -32,15 +32,17 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 	private Insets padding = new Insets(1, 3, 2, 2);
 	private Color fillColor = defaultColor;
 
-	private Insets imgInsets;
+	private Insets imageInsets;
 	private Image image;
 	private Dimension imageSize;
 	private boolean titleVisible = true;
+	private Image problemDecorationImage;
 
     // cached values to support the cell edit locator for DirectEdit support
     private IFigure hostFigure;
     private Point labelLoc;
     private Font labelFont;
+
 
 	public CompoundModuleTitleBarBorder() {
     }
@@ -110,8 +112,8 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 		if (image != null) {
 			imgx += padding.left;
 			imgy += padding.top;
-			lx = imgx + image.getImageData().width;
-			titleBarHeight = Math.max(titleBarHeight, image.getImageData().height + padding.getHeight());
+			lx = imgx + image.getBounds().width;
+			titleBarHeight = Math.max(titleBarHeight, image.getBounds().height + padding.getHeight());
 		}
 
 		// compute label position
@@ -132,6 +134,8 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
             g.drawString(getLabel(), lx, ly);
 		if (getImage() != null)
 			g.drawImage(getImage(), imgx, imgy);
+		if (problemDecorationImage != null)
+			g.drawImage(problemDecorationImage, imgx, imgy);  //FIXME better positioning, even if there's no icon!
 
         // store the label bounds (in absolute coordinates) so cell editors
         // will be able to place the editor over it
@@ -183,8 +187,12 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 			return;
 
 		imageSize = new Dimension(image);
-		imgInsets = new Insets();
-		imgInsets.left = imageSize.width;
+		imageInsets = new Insets();
+		imageInsets.left = imageSize.width;
+	}
+
+	public void setProblemDecorationImage(Image image) {
+		problemDecorationImage = image;
 	}
 
     public CellEditorLocator getDirectEditCellEditorLocator() {

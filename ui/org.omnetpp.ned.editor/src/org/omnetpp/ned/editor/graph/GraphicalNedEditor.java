@@ -654,7 +654,6 @@ public class GraphicalNedEditor
 
     	outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
 
-		System.out.println(hoverText);
 		return HoverSupport.addHTMLStyleSheet(hoverText);
 	}
 

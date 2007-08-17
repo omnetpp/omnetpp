@@ -90,4 +90,8 @@ public class CompoundModuleBorder extends CompoundBorder implements LabeledBorde
 		getTitleBorder().setImage(img);
 	}
 
+	public void setProblemDecorationImage(Image image) {
+		getTitleBorder().setProblemDecorationImage(image);
+	}
+
 }
