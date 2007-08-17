@@ -16,12 +16,11 @@ public class InputsRunFileViewContentProvider extends CachedTreeContentProvider 
 		// Manager/Run/ResultFile
 		ResultFileManagerEx manager = (ResultFileManagerEx)element;
 		GenericTreeNode root = new GenericTreeNode(manager);
-		for (Run run : manager.getRuns().toArray()) {
+		for (Run run : Sorter.sort(manager.getRuns())) {
 			GenericTreeNode runNode = new GenericTreeNode(run);
 			root.addChild(runNode);
 			ResultFileList filelist = manager.getFilesForRun(run);
-			for (int i = 0; i < filelist.size(); ++i) {
-				ResultFile file = filelist.get(i);
+			for (ResultFile file : Sorter.sort(filelist)) {
 				GenericTreeNode fileNode = new GenericTreeNode(file);
 				runNode.addChild(fileNode);
 			}

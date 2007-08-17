@@ -2,31 +2,32 @@ package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 
 /**
- * This class has been created with the Visual Editor. DO NOT HAND-EDIT!
+ * Bottom part of the InputsPage.
  * 
  * @author Andras
  */
-public class DataPanel extends SashForm {
+public class DataPanel extends Composite {
 
-	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
+	private FormToolkit formToolkit = null;
 	private TreeViewer fileRunView;
 	private TreeViewer runFileView;
 	private TreeViewer logicalView;
 
 	public DataPanel(Composite parent, int style) {
-		super(parent, style | SWT.SMOOTH);
+		super(parent, style | SWT.NONE);
 		getFormToolkit().adapt(this);
 		initialize();
 	}
@@ -44,26 +45,25 @@ public class DataPanel extends SashForm {
 	}
 
 	private void initialize() {
-		this.setBounds(new Rectangle(0, 0, 500, 200));
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
-		gridLayout.makeColumnsEqualWidth = true;
-		gridLayout.horizontalSpacing = 10;
-		this.setLayout(gridLayout);
+		this.setLayout(new FillLayout());
+		
+		CTabFolder tabfolder = new CTabFolder(this, SWT.TOP | SWT.BORDER);
+		getFormToolkit().adapt(tabfolder);
 
-		fileRunView = createLabelAndTree(this, "Physical: by file and run");
-		runFileView = createLabelAndTree(this, "Physical: by run and file");
-		logicalView = createLabelAndTree(this, "Logical: by experiment, measurement, replication");
+		fileRunView = createLabelAndTree(tabfolder, "Physical: by file and run");
+		runFileView = createLabelAndTree(tabfolder, "Physical: by run and file");
+		logicalView = createLabelAndTree(tabfolder, "Logical: by experiment, measurement, replication");
+		
+		tabfolder.setSelection(0);
 	}
 
-	private TreeViewer createLabelAndTree(Composite parent, String text) {
-		Composite composite = new Composite(parent, SWT.BACKGROUND);
-		composite.setLayout(new GridLayout(1, false));
-
-		Label label = getFormToolkit().createLabel(composite, text);
-		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
-		Tree tree = getFormToolkit().createTree(composite, SWT.BORDER);
-		tree.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+	private TreeViewer createLabelAndTree(CTabFolder parent, String text) {
+		Tree tree = getFormToolkit().createTree(parent, SWT.NONE);
+		
+		CTabItem tabitem = new CTabItem(parent, SWT.NONE);
+		tabitem.setText(text);
+		tabitem.setControl(tree);
+		
 		return new TreeViewer(tree);
 	}
 	
