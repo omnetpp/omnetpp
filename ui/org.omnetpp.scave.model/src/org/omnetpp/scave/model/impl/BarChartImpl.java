@@ -31,6 +31,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getGroupBy <em>Group By</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getGroupNameFormat <em>Group Name Format</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getBarNameFormat <em>Bar Name Format</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getBarFields <em>Bar Fields</em>}</li>
  * </ul>
  * </p>
  *
@@ -86,6 +87,16 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * @ordered
 	 */
 	protected String barNameFormat = BAR_NAME_FORMAT_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getBarFields() <em>Bar Fields</em>}' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBarFields()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<String> barFields;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -165,6 +176,18 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<String> getBarFields() {
+		if (barFields == null) {
+			barFields = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.BAR_CHART__BAR_FIELDS);
+		}
+		return barFields;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -174,6 +197,8 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 				return getGroupNameFormat();
 			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 				return getBarNameFormat();
+			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+				return getBarFields();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -197,6 +222,10 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 				setBarNameFormat((String)newValue);
 				return;
+			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+				getBarFields().clear();
+				getBarFields().addAll((Collection<? extends String>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -218,6 +247,9 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 				setBarNameFormat(BAR_NAME_FORMAT_EDEFAULT);
 				return;
+			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+				getBarFields().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -236,6 +268,8 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 				return GROUP_NAME_FORMAT_EDEFAULT == null ? groupNameFormat != null : !GROUP_NAME_FORMAT_EDEFAULT.equals(groupNameFormat);
 			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 				return BAR_NAME_FORMAT_EDEFAULT == null ? barNameFormat != null : !BAR_NAME_FORMAT_EDEFAULT.equals(barNameFormat);
+			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+				return barFields != null && !barFields.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -256,6 +290,8 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 		result.append(groupNameFormat);
 		result.append(", barNameFormat: ");
 		result.append(barNameFormat);
+		result.append(", barFields: ");
+		result.append(barFields);
 		result.append(')');
 		return result.toString();
 	}

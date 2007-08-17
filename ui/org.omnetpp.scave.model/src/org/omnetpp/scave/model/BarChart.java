@@ -20,6 +20,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupBy <em>Group By</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getBarNameFormat <em>Bar Name Format</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.BarChart#getBarFields <em>Bar Fields</em>}</li>
  * </ul>
  * </p>
  *
@@ -95,5 +96,21 @@ public interface BarChart extends Chart {
 	 * @generated
 	 */
 	void setBarNameFormat(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Bar Fields</b></em>' attribute list.
+	 * The list contents are of type {@link java.lang.String}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Bar Fields</em>' attribute list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Bar Fields</em>' attribute list.
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_BarFields()
+	 * @model
+	 * @generated
+	 */
+	EList<String> getBarFields();
 
 } // BarChart

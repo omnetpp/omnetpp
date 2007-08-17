@@ -13,21 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.IDVector;
-import org.omnetpp.scave.engine.IDVectorVector;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarFields;
-import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.XYDataset;
-import org.omnetpp.scave.model2.RunAttribute;
 
 /**
  * Class storing the dataset of a scalar chart.
  *
  * @author tomi
  */
-// TODO check dependencies between result item fields
 public class ScalarDataset implements IScalarDataset {
 	
 	private static ScalarFields defaultGrouping = new ScalarFields(ALL, MODULE);
@@ -47,7 +42,7 @@ public class ScalarDataset implements IScalarDataset {
      * Each different value of the other fields gives a row.  
      */
     public ScalarDataset(IDList idlist, ResultFileManager manager) {
-    	this(idlist, defaultGrouping, manager);
+    	this(idlist, defaultGrouping, null, manager);
     }
     
     /**
@@ -56,7 +51,7 @@ public class ScalarDataset implements IScalarDataset {
      * determines the columns. 
      */
     public ScalarDataset(IDList idlist, int groupingFields, ResultFileManager manager) {
-    	this(idlist, new ScalarFields(groupingFields), manager);
+    	this(idlist, new ScalarFields(groupingFields), null, manager);
     }
     
     /**
@@ -64,15 +59,18 @@ public class ScalarDataset implements IScalarDataset {
      * Groups are formed by {@code groupingFields}, other fields
      * determines the columns. 
      */
-    public ScalarDataset(IDList idlist, ScalarFields groupingFields, ResultFileManager manager) {
-    	if (groupingFields == null)
-    		groupingFields = defaultGrouping;
+    public ScalarDataset(IDList idlist, ScalarFields rowFields, ScalarFields columnFields, ResultFileManager manager) {
+    	if (rowFields == null)
+    		rowFields = defaultGrouping;
+    	if (columnFields == null)
+    		columnFields = rowFields.complement();
+    	//ScalarFields groupingFields = addDependentFields(rowFields, idlist, manager);
     	ScalarDataSorter sorter = new ScalarDataSorter(manager);
-    	this.data = sorter.groupAndAggregate(idlist, groupingFields, groupingFields.complement());
+    	this.data = sorter.groupAndAggregate(idlist, rowFields, columnFields);
     	this.data.sortRows();
     	this.data.sortColumns();
-    	this.rowKeys = computeRowKeys(this.data);
-    	this.columnKeys = computeColumnKeys(this.data);
+    	this.rowKeys = computeRowKeys(this.data, rowFields);
+    	this.columnKeys = computeColumnKeys(this.data, columnFields);
     }
 
     /**
@@ -131,13 +129,12 @@ public class ScalarDataset implements IScalarDataset {
     private static final int[] allFields = new int[] {FILE, RUN, MODULE, NAME, EXPERIMENT, MEASUREMENT, REPLICATION };
     private static final char separator = ';';
     
-    private static List<String> computeRowKeys(XYDataset data) {
+    private static List<String> computeRowKeys(XYDataset data, ScalarFields rowFields) {
     	List<String> keys = new ArrayList<String>(data.getRowCount());
-    	ScalarFields fields = data.getRowFields();
     	for (int i = 0; i < data.getRowCount(); ++i) {
         	StringBuffer sb = new StringBuffer();
         	for (int field : allFields) {
-        		if (fields.hasField(field))
+        		if (rowFields.hasField(field))
         			sb.append(data.getRowField(i, field)).append(separator);
         	}
         	if (sb.length() > 0)  // delete last separator
@@ -147,14 +144,13 @@ public class ScalarDataset implements IScalarDataset {
     	return keys;
     }
     
-    private static List<String> computeColumnKeys(XYDataset data) {
+    private static List<String> computeColumnKeys(XYDataset data, ScalarFields columnFields) {
     	int count = data.getColumnCount();
     	List<String> keys = new ArrayList<String>(count);
-    	ScalarFields fields = data.getColumnFields();
     	for (int i = 0; i < count; ++i) {
         	StringBuffer sb = new StringBuffer();
         	for (int field : allFields) {
-        		if (fields.hasField(field))
+        		if (columnFields.hasField(field))
         			sb.append(data.getColumnField(i, field)).append(separator);
         	}
         	if (sb.length() > 0)  // delete last separator

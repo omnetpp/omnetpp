@@ -191,9 +191,15 @@ public class DatasetManager {
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-		List<String> fieldNames = (List<String>)chart.getGroupBy();
-		ScalarFields fields = fieldNames != null ?  new ScalarFields(StringVector.fromArray(fieldNames.toArray(new String[fieldNames.size()]))) : null;
- 		return new ScalarDataset(idlist, fields, manager);
+		List<String> rowFieldNames = (List<String>)chart.getGroupBy();
+		List<String> columnFieldNames = (List<String>)chart.getBarFields();
+		ScalarFields rowFields = rowFieldNames == null || rowFieldNames.isEmpty() ? null :
+									new ScalarFields(StringVector.fromArray(
+											rowFieldNames.toArray(new String[rowFieldNames.size()])));
+		ScalarFields columnFields = columnFieldNames == null || columnFieldNames.isEmpty() ? null :
+										new ScalarFields(StringVector.fromArray(
+											columnFieldNames.toArray(new String[columnFieldNames.size()])));
+ 		return new ScalarDataset(idlist, rowFields, columnFields, manager);
 	}
 	
 	public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {

@@ -1067,13 +1067,22 @@ public interface ScaveModelPackage extends EPackage {
 	int BAR_CHART__BAR_NAME_FORMAT = CHART_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Bar Fields</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__BAR_FIELDS = CHART_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Bar Chart</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 3;
+	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.
@@ -1886,6 +1895,17 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getBarChart_BarNameFormat();
 
 	/**
+	 * Returns the meta object for the attribute list '{@link org.omnetpp.scave.model.BarChart#getBarFields <em>Bar Fields</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Bar Fields</em>'.
+	 * @see org.omnetpp.scave.model.BarChart#getBarFields()
+	 * @see #getBarChart()
+	 * @generated
+	 */
+	EAttribute getBarChart_BarFields();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2510,6 +2530,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute BAR_CHART__BAR_NAME_FORMAT = eINSTANCE.getBarChart_BarNameFormat();
+
+		/**
+		 * The meta object literal for the '<em><b>Bar Fields</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BAR_CHART__BAR_FIELDS = eINSTANCE.getBarChart_BarFields();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.

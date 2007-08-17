@@ -68,6 +68,7 @@ public class BarChartItemProvider
 			addGroupByPropertyDescriptor(object);
 			addGroupNameFormatPropertyDescriptor(object);
 			addBarNameFormatPropertyDescriptor(object);
+			addBarFieldsPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -139,6 +140,28 @@ public class BarChartItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Bar Fields feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addBarFieldsPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_BarChart_barFields_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_barFields_feature", "_UI_BarChart_type"),
+				 ScaveModelPackage.Literals.BAR_CHART__BAR_FIELDS,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This returns BarChart.gif.
 	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -178,6 +201,7 @@ public class BarChartItemProvider
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
 			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
 			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
+			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}
