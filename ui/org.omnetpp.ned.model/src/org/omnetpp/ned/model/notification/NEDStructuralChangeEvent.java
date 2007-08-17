@@ -17,10 +17,12 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
     protected INEDElement newLocation;
 
     /**
-     * @param source The model element causing the event
+     * Constructor.
+     * 
+     * @param source It is the parent of the new location or the old location for insert and delete respectively.
      * @param child The new child node currently inserted/removed
      * @param type The type of the event
-     * @param newLocation The (child) node BEFORE the newly inseted/moved node
+     * @param newLocation The (child) node BEFORE the newly inserted/moved node
      *        (NULL means appended at the end)
      * @param oldLocation The (child) node BEFORE the old removed/moved node
      *        (NULL means removed at the end)

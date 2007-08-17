@@ -34,6 +34,8 @@ import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
+import org.omnetpp.ned.model.notification.NEDModelChangeBeginEvent;
+import org.omnetpp.ned.model.notification.NEDModelChangeEndEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
@@ -243,7 +245,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDTreeDifferenceUtils.NEDTreeDifferenceApplier treeDifferenceApplier = new NEDTreeDifferenceUtils.NEDTreeDifferenceApplier();
         NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
 		// TODO: source locations must be copied from parsed tree during the merge
-        treeDifferenceApplier.apply();
+        if (treeDifferenceApplier.hasDifferences()) {
+	        currentTree.fireModelChanged(new NEDModelChangeBeginEvent(currentTree));
+	        treeDifferenceApplier.apply();
+	        currentTree.fireModelChanged(new NEDModelChangeEndEvent(currentTree));
+        }
 
 		invalidate();
 

@@ -46,7 +46,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -70,6 +69,7 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
@@ -78,6 +78,7 @@ import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
+import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
@@ -89,6 +90,8 @@ import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelChangeBeginEvent;
+import org.omnetpp.ned.model.notification.NEDModelChangeEndEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 
@@ -215,6 +218,7 @@ public class GraphicalNedEditor
     // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
 
+    private ExternalChangeCommand externalChangeCommand;
 
     public GraphicalNedEditor() {
         setEditDomain(new DefaultEditDomain(this));
@@ -548,15 +552,37 @@ public class GraphicalNedEditor
             updateActions(getSelectionActions());
     }
 
-    public void modelChanged(NEDModelEvent event) {
+    public void modelChanged(final NEDModelEvent event) {
     	Assert.isTrue(getModel() == getNEDFileModelFromResourcesPlugin());
-
+    	
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-            public void run() {
+			public void run() {
+            	// check if we are the originator of this event and ignore if so
+            	if (!isActive() && event.getSource() != null)
+                	recordExternalChangeCommand(event);
+
             	getGraphicalViewer().getRootEditPart().refresh();
             }
+
+			private void recordExternalChangeCommand(NEDModelEvent event) {
+				if (event instanceof NEDModelChangeBeginEvent) {
+					Assert.isTrue(externalChangeCommand == null);
+					externalChangeCommand = new ExternalChangeCommand();
+				}
+				else if (event instanceof NEDModelChangeEndEvent) {
+					getCommandStack().execute(externalChangeCommand);
+					externalChangeCommand = null;
+				}
+				else if (externalChangeCommand == null) {
+					ExternalChangeCommand command = new ExternalChangeCommand();
+					command.addEvent(event);
+					getCommandStack().execute(command);
+				}
+				else
+					externalChangeCommand.addEvent(event);
+			}
         });
     }
 
@@ -594,6 +620,12 @@ public class GraphicalNedEditor
     public boolean hasContentChanged() {
         return !(lastUndoCommand == getCommandStack().getUndoCommand());
     }
+
+    public boolean isActive() {
+		IEditorPart activeEditorPart = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+		return activeEditorPart == this ||
+			(activeEditorPart instanceof MultiPageNedEditor && ((MultiPageNedEditor)activeEditorPart).isActiveEditor(this));
+	}
 
 	public void markSaved() {
 		getCommandStack().markSaveLocation();

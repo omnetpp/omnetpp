@@ -28,14 +28,7 @@ public class NEDTreeDifferenceUtils {
 
 	@SuppressWarnings("unchecked")
 	public static void applyTreeDifferences(INEDElement original, INEDElement target, INEDTreeDifferenceApplier applier) {
-		int num = original.getNumAttributes();
-		for (int j = 0; j < num; j++) {
-			String originalAttribute = original.getAttribute(j);
-			String targetAttribute = target.getAttribute(j);
-
-			if (!StringUtils.equals(originalAttribute, targetAttribute))
-				applier.replaceAttribute(original, target.getAttributeName(j), targetAttribute);
-		}
+		applyAttributeDifferences(original, target, applier);
 
 		NEDElementChildrenComparator comparatorOriginal = new NEDElementChildrenComparator(original);
 		NEDElementChildrenComparator comparatorTarget = new NEDElementChildrenComparator(target);
@@ -70,6 +63,17 @@ public class NEDTreeDifferenceUtils {
 		}
 	}
 
+	private static void applyAttributeDifferences(INEDElement original, INEDElement target, INEDTreeDifferenceApplier applier) {
+		int num = original.getNumAttributes();
+		for (int j = 0; j < num; j++) {
+			String originalAttribute = original.getAttribute(j);
+			String targetAttribute = target.getAttribute(j);
+
+			if (!StringUtils.equals(originalAttribute, targetAttribute))
+				applier.replaceAttribute(original, target.getAttributeName(j), targetAttribute);
+		}
+	}
+
 	public static class NEDTreeDifferenceApplier implements NEDTreeDifferenceUtils.INEDTreeDifferenceApplier {
 		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
 		
@@ -98,6 +102,10 @@ public class NEDTreeDifferenceUtils {
 		public void apply() {
 			for (Runnable runnable : runnables)
 				runnable.run();
+		}
+
+		public boolean hasDifferences() {
+			return !runnables.isEmpty();
 		}
 	}
 

@@ -250,7 +250,7 @@ public abstract class NEDElement extends PlatformObject
 		else
 			firstchild = node;
 		lastchild = node;
-		fireChildInserted(node,null);
+		fireChildInsertedBefore(node,null);
 	}
 
 	public void insertChildBefore(INEDElement iwhere, INEDElement inode) {
@@ -270,7 +270,7 @@ public abstract class NEDElement extends PlatformObject
 			node.prevsibling.nextsibling = node;
 		else
 			firstchild = node;
-		fireChildInserted(node, where);
+		fireChildInsertedBefore(node, where);
 	}
 
 	public INEDElement removeChild(INEDElement inode) {
@@ -467,7 +467,7 @@ public abstract class NEDElement extends PlatformObject
      * Notifies the listeners of all parents up to the root that the child was
      * inserted into this element.
      */
-    protected void fireChildInserted(INEDElement child, INEDElement where) {
+    protected void fireChildInsertedBefore(INEDElement child, INEDElement where) {
     	fireModelChanged(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null));
     }
 

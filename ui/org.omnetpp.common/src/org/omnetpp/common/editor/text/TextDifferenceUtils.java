@@ -21,8 +21,10 @@ public class TextDifferenceUtils {
 		applyTextDifferences(document.get(), newText, new ITextDifferenceApplier() {
 			public void replace(int start, int end, String replacement) {
 				try {
+					int numberOfLines = document.getNumberOfLines();
 					int startOffset = document.getLineOffset(start);
-					int endOffset = document.getLineOffset(end);
+					int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
+					
 					document.replace(startOffset, endOffset - startOffset, replacement);
 				}
 				catch (BadLocationException e) {
