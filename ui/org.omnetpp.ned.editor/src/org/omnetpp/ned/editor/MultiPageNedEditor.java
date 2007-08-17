@@ -362,8 +362,8 @@ public class MultiPageNedEditor
             if (delta == null || !delta.getResource().equals(((IFileEditorInput) getEditorInput()).getFile()))
                 return true;
 
+            Display display = getSite().getShell().getDisplay();
             if (delta.getKind() == IResourceDelta.REMOVED) {
-                Display display = getSite().getShell().getDisplay();
                 if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) {
                     // if the file was deleted
                     display.asyncExec(new Runnable() {
@@ -383,7 +383,11 @@ public class MultiPageNedEditor
                 }
             }
             else if (delta.getKind() == IResourceDelta.CHANGED) {
-            	inputFileModifiedOnDisk();
+                display.asyncExec(new Runnable() {
+                    public void run() {
+                    	inputFileModifiedOnDisk();
+                    }
+                });
             }
             return false;
         }
@@ -401,14 +405,9 @@ public class MultiPageNedEditor
 	}
 
 	protected void inputFileModifiedOnDisk() {
-        // guard that we should not reload while save is in progress
-//      if (!editorSaving) {
-
         // the file was overwritten somehow (could have been
         // replaced by another version in the repository)
         // TODO ask the user and reload the file
-
-//      }
 	}
 	
     public void gotoMarker(IMarker marker) {

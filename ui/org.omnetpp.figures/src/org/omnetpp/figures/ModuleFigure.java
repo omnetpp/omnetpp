@@ -4,8 +4,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.image.ImageFactory;
 
 /**
  * It is a generic 'Module' (anything that can have a display string and a connection)
@@ -13,9 +14,9 @@ import org.omnetpp.common.image.ImageFactory;
  * @author rhornig
  */
 abstract public class ModuleFigure extends Figure {
-	protected static final Image ICON_ERROR = ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
-	protected static final Image ICON_WARNING = ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
-	protected static final Image ICON_INFO = null;
+	protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
+	protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
+	protected static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
 
     protected String figureName = "";
 	protected IDisplayString lastDisplayString;

@@ -9,7 +9,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.eclipse.gef,
  org.omnetpp.common,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.ui
 Export-Package: org.omnetpp.figures,
  org.omnetpp.figures.layout,
  org.omnetpp.figures.misc
