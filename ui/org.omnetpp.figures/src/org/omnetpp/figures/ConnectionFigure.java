@@ -7,9 +7,7 @@ import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.misc.ConnectionLabelLocator;
 
@@ -118,9 +116,9 @@ public class ConnectionFigure extends PolylineConnection {
 	public void setDisplayString(IDisplayString dps) {
 		lastDisplayString = dps;
 
-        setStyle(ColorFactory.asColor(dps.getAsString(DisplayString.Prop.CONNECTION_COL)),
-				dps.getAsInt(DisplayString.Prop.CONNECTION_WIDTH, 1),
-				dps.getAsString(DisplayString.Prop.CONNECTION_STYLE));
+        setStyle(ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.CONNECTION_COL)),
+				dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1),
+				dps.getAsString(IDisplayString.Prop.CONNECTION_STYLE));
         // tooltip support
         setTooltipText(dps.getAsString(IDisplayString.Prop.TOOLTIP));
         // additional text support

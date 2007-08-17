@@ -3,15 +3,15 @@ package org.omnetpp.ned.model.ui;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.pojo.*;
 
 /**
@@ -110,7 +110,7 @@ public class NedModelLabelProvider extends LabelProvider {
         // remove all comment nodes
         while(node.getFirstChildWithTag(NEDElementTags.NED_COMMENT) != null)
             node.getFirstChildWithTag(NEDElementTags.NED_COMMENT).removeFromParent();
-        return StringUtils.stripToEmpty(StringUtils.substringBefore(node.getSource(), "\n"));
+        return StringUtils.stripToEmpty(StringUtils.substringBefore(node.getNEDSource(), "\n"));
     }
 
     @Override

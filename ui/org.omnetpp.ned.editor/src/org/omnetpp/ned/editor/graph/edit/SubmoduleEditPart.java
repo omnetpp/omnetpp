@@ -6,10 +6,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 

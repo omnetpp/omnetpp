@@ -6,7 +6,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
 /**
- * Objects that can extend other objects, ie they are derived objects.
+ * Objects that can extend other objects, i.e. they are derived objects.
  *
  * @author rhornig
  */

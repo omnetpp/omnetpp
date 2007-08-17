@@ -322,16 +322,6 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public void removeNEDChangeListener(INEDChangeListener listener);
 
 	/**
-	 * Returns true if NED change notifications are enabled.
-	 */
-	public boolean isNotificationEnabled();
-
-	/**
-	 * Enable/disable NED change notifications on this element. However, parent will still be notified.
-	 */
-	public boolean setNotificationEnabled(boolean enabled);
-	
-	/**
 	 * Fires a model change element (forwards it to the listener list if any)
 	 * and propagates it up to the parent.
 	 */
@@ -345,7 +335,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	/**
 	 * Returns the re-generated source (text form) of this element
 	 */
-	public String getSource();
+	public String getNEDSource();
 
 	/**
 	 * Returns a collection that contains the error marker ids attached to this element.

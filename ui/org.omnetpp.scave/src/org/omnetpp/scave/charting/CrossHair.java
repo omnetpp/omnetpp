@@ -166,7 +166,7 @@ class CrossHair {
 			}
 		});
 		HoverSupport hoverSupport = new HoverSupport();
-		hoverSupport.setHoverSizeConstaints(new Point(500, 400));
+		hoverSupport.setHoverSizeConstaints(500, 400);
 		hoverSupport.adapt(chart, new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				return getHoverText(x, y, outSizeConstraint);

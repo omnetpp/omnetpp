@@ -11,7 +11,6 @@ import org.omnetpp.common.util.StringUtils;
  * @author rhornig
  */
 public interface IDisplayString {
-	String ATT_DISPLAYSTRING = "DisplayString"; // end of TagArg enum definition
 
 	/**
      *	Property types used in the display string
@@ -176,7 +175,7 @@ public interface IDisplayString {
         }
 
         public String getVisibleDesc() {
-            String defaultValue = getTag() != null ? DisplayString.EMPTY_DEFAULTS.getAsStringLocal(this) : null;
+            String defaultValue = "FIXME todo"; //FIXME TODO put back: getTag() != null ? DisplayString.EMPTY_DEFAULTS.getAsStringLocal(this) : null;
             return visibleDesc + (StringUtils.isNotEmpty(defaultValue) ? " Default: "+defaultValue : "");
         }
     }

@@ -19,13 +19,13 @@ public interface IHasType extends INEDElement {
     public String getLikeType();
 
     /**
-     * Setes the like type
+     * Sets the like type
      * @param type
      */
     public void setLikeType(String type);
 
     /**
-     * Returns the like-param of the implemented if
+     * Returns the like-param of the implemented interface
      */
     public String getLikeParam();
 
@@ -54,5 +54,5 @@ public interface IHasType extends INEDElement {
     /**
      * Returns the model element that represents the type of this element
      */
-    public INEDElement getEffectiveTypeRef();
+    public INedTypeNode getEffectiveTypeRef();
 }

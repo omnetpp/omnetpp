@@ -4,26 +4,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementException;
 import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.LiteralNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.PropertyKeyNode;
 import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * TODO add documentation
@@ -67,20 +59,11 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	 * Sets the display property of a given node.
 	 * PATH: PARAMETERS -> PROPERTY -> PROPERTYKEY -> LITERAL.VALUE
 	 * @param node Component node that can have display string
-	 * @param dspString
+	 * @param displayString
 	 */
-	public static void setDisplayString(INEDElement node, String dspString) {
-		// check if it's a supported node type
-		if (!(node instanceof CompoundModuleNode) &&
-			!(node instanceof SubmoduleNode) &&
-			!(node instanceof SimpleModuleNode) &&
-            !(node instanceof ModuleInterfaceNode) &&
-            !(node instanceof ConnectionNode) &&
-            !(node instanceof ChannelNode) &&
-			!(node instanceof ChannelInterfaceNode) &&
-			!(node instanceof ChannelSpecNode))
-				throw new NEDElementException(node, "Node does not support display property");
-
+	public static LiteralNode setDisplayString(IHasDisplayString node1, String displayString) {
+		INEDElement node = node1;
+		
 		// the connection node is special because the display string is stored inside its
         // channel spec node, so we must create that too
         if (node instanceof ConnectionNode) {
@@ -93,8 +76,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
             node = channelSpecNode;
         }
 
-
-		// look for the parameters block (in theory it must be present)
+		// look for the "parameters" block
 		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 		if (paramsNode == null) {
 			paramsNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PARAMETERS);
@@ -102,7 +84,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 			node.appendChild(paramsNode);
 		}
 
-		// look for the first property parameter, named as display
+		// look for the first property parameter named "display"
 		INEDElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyNode.ATT_NAME, DISPLAY_PROPERTY);
 		if (displayPropertyNode == null) {
 			displayPropertyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY);
@@ -110,10 +92,10 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 			paramsNode.appendChild(displayPropertyNode);
 		}
 
-        // if displayString was set to "" (empty) we want to delete the whole display property node
-        if ("".equals(dspString)){
+        // if displayString was set to "" (empty), we want to delete the whole display property node
+        if ("".equals(displayString)){
             paramsNode.removeChild(displayPropertyNode);
-            return;
+            return null;
         }
 
 		// look for the property key
@@ -123,24 +105,24 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 			displayPropertyNode.appendChild(propertyKeyNode);
 		}
 
-		// look for literal
+		// look up or create the LiteralNode
 		LiteralNode literalNode = (LiteralNode)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
-		if (literalNode == null) {
+		if (literalNode == null)
 			literalNode = (LiteralNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_LITERAL);
-	        literalNode.setType(NED_CONST_STRING);
-			propertyKeyNode.appendChild(literalNode);
-		}
 
-		boolean isNotifyEnabled = literalNode.isNotificationEnabled();
-		literalNode.setNotificationEnabled(false);
-		// finally set the value of display string
-		literalNode.setType(NED_CONST_STRING);
-		literalNode.setValue(dspString);
-		// invalidate the text representation so next time the code will
-		// be generated from VALUE not from the text attribute
-		literalNode.setText(null);
-		// set notification back to the original state
-		literalNode.setNotificationEnabled(isNotifyEnabled);
+		// fill in the LiteralNode. if()'s are there to minimize the number of notifications
+		if (literalNode.getType() != NED_CONST_STRING)
+			literalNode.setType(NED_CONST_STRING);
+		if (!displayString.equals(literalNode.getValue()))
+			literalNode.setValue(displayString);
+		// invalidate the text representation, so that next time the code will
+		// be generated from VALUE, not from the text attribute
+		if (literalNode.getText() != null)
+			literalNode.setText(null);
+		// if new, add it only here (also to minimize notifications)
+		if (literalNode.getParent() == null)
+			propertyKeyNode.appendChild(literalNode);
+		return literalNode; 
 	}
 
     /**

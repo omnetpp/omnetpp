@@ -86,9 +86,11 @@ import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelChangeBeginEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEndEvent;
@@ -293,11 +295,12 @@ public class GraphicalNedEditor
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
         // add tooltip support
-        new HoverSupport().adapt(getEditor(), new IHoverTextProvider() {
+        HoverSupport hoverSupport = new HoverSupport();
+        hoverSupport.setHoverSizeConstaints(600, 200);
+		hoverSupport.adapt(getEditor(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
-            	outPreferredSize.minimumWidth = 300;
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
-                return getHTMLHoverTextFor(ep);
+                return getHTMLHoverTextFor(ep, outPreferredSize);
             }
         });
 
@@ -477,8 +480,8 @@ public class GraphicalNedEditor
 
     @Override
     public void setInput(IEditorInput input) {
-    	System.out.println("graphical editor: setInput "+input);
         super.setInput(input);
+
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
 
         if (input == null) {
@@ -608,42 +611,51 @@ public class GraphicalNedEditor
 		getCommandStack().markSaveLocation();
 	}
 
-	protected String getHTMLHoverTextFor(EditPart ep) {
+	protected String getHTMLHoverTextFor(EditPart ep, SizeConstraint outPreferredSize) {
 		if (!(ep instanceof IModelProvider))
 			return null;
 
 		INEDElement element = ((IModelProvider)ep).getNEDModel();
-		String comment = StringUtils.trimToEmpty(element.getComment());
+		String hoverText = "";
+		
+		// brief 
+		hoverText += "<b>" + NEDTreeUtil.getNedModelLabelProvider().getText(element) + "</b>\n";
 
-		// add a comment from the type (if any)
+		//debug code:
+		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
+		//DisplayString ds = ((IHasDisplayString)element).getDisplayString();
+		//String displayStringOwnerSource = "<pre>" + ds.getOwner().getSource() + "</pre>";
+		//String xml = "<pre>" + StringUtils.quoteForHtml(NEDTreeUtil.generateXmlFromPojoElementTree(element, "", false)) + "</pre>";
+		//hoverText += displayStringOwnerSource;
+		//hoverText += xml;
+
+		// comment
+		String comment = StringUtils.trimToEmpty(element.getComment());
+		
+		// comment from the submodule's or connection channel's type
 		String typeComment = "";
 		if (element instanceof IHasType) {
-			INEDElement typeElement = ((IHasType)element).getEffectiveTypeRef();
-			if (typeElement != null) {
-				typeComment = typeElement.getComment();
-				if (!StringUtils.isEmpty(typeComment))
-					typeComment = "<b>Type documentation:</b><br/>\n"+typeComment;
-				typeComment = StringUtils.trimToEmpty(typeComment);
-			}
+			INedTypeNode typeElement = ((IHasType)element).getEffectiveTypeRef();
+			if (typeElement != null)
+				typeComment = StringUtils.trimToEmpty(typeElement.getComment());
 		}
 
-		String hoverText = "";
-		String nedSource = "<pre>" + element.getSource() + "</pre>";
+		if (!StringUtils.isEmpty(comment)) {
+			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(comment);
+		}
 
-//		if (StringUtils.isEmpty(typeComment) && StringUtils.isEmpty(comment))
-//			return null;
+		if (!StringUtils.isEmpty(typeComment)) {
+			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
+			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(typeComment);
+		}
 
-		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
-		hoverText += nedSource;
+		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
+		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + nedCode + "</pre>";
 
-		if (!StringUtils.isEmpty(comment))
-			hoverText += comment;
-		if (!StringUtils.isEmpty(comment) && !StringUtils.isEmpty(typeComment))
-			hoverText += "<br/><br/>";
-		if (!StringUtils.isEmpty(typeComment))
-			hoverText += typeComment;
+    	outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
 
-		return HoverSupport.addHTMLStyleSheet(StringUtils.makeHtmlDocu(hoverText));
+		System.out.println(hoverText);
+		return HoverSupport.addHTMLStyleSheet(hoverText);
 	}
 
 	/**

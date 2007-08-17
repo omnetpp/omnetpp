@@ -144,7 +144,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
                     decoratorImageFigure, new PrecisionPoint(0.75, 0.25), null));
             // problem marker image
             foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
-            		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));  //XXX position
+            		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
             // "pin" image
             foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0),
             		pinFigure, new PrecisionPoint(0.5, 0.5), null));

@@ -1,6 +1,5 @@
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.INEDElement;
 
 /**

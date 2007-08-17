@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;

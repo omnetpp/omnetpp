@@ -494,7 +494,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		
 		public LegendTooltip() {
 			HoverSupport hoverSupport = new HoverSupport();
-			hoverSupport.setHoverSizeConstaints(new Point(320,400));
+			hoverSupport.setHoverSizeConstaints(320,400);
 			hoverSupport.adapt(ChartCanvas.this, new IHoverTextProvider() {
 				public String getHoverTextFor(Control control, int x, int y, SizeConstraint preferredSize) {
 					return getTooltipText(x, y, preferredSize);

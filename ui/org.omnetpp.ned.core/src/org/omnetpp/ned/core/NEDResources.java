@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
@@ -139,7 +138,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         nullChannel.setIsWithcppclass(true);
         nullChannelType = new NEDComponent(nullChannel, null, this);
 
-        // create built-in channel ctype BasicChannel
+        // create built-in channel type cBasicChannel
         ChannelNode basicChannel = (ChannelNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
         basicChannel.setName("cBasicChannel");
         basicChannel.setIsWithcppclass(true);
@@ -683,8 +682,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         	rehash();
         }
         // a top level component has changed (name, inheritance, display string)
-        if (inheritanceChanged || displayMayHaveChanged(event)) {
-            // notify component listeners (ie. palette manager, where only the component name and
+        if (inheritanceChanged || displayStringMayHaveChanged(event)) {
+            // notify component listeners (i.e. palette manager, where only the component name and
             // icon matters)
             if (nedComponentChangeListenerList != null)
                 nedComponentChangeListenerList.fireModelChanged(event);
@@ -737,15 +736,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Returns whether the display string has changed in the event.
      */
-    protected static boolean displayMayHaveChanged(NEDModelEvent event) {
-    	if (event.getSource() == null)
-    		return true;
-
-        // if we have changed a toplevel element's name we should rehash
-        if (event.getSource() instanceof INedTypeNode && event instanceof NEDAttributeChangeEvent
-                && IDisplayString.ATT_DISPLAYSTRING.equals(((NEDAttributeChangeEvent) event).getAttribute()))
-            return true;
-        return false;
+    protected static boolean displayStringMayHaveChanged(NEDModelEvent event) {
+    	return true; //TODO for now; then we can optimize later
+//    	// overly cautious check: if anything within a "parameters" section 
+//    	// was affected, or the removed subtree contains a "parameters" section,
+//    	// we assume it was a display string change 
+//		if (event.getSource().getParentWithTag(NEDElementTags.NED_PARAMETERS) != null)
+//    		return true;
+//		if (event instanceof NEDStructuralChangeEvent) {
+//			NEDStructuralChangeEvent structuralChangeEvent = (NEDStructuralChangeEvent) event;
+//			if (structuralChangeEvent.getChild().getParentWithTag(NEDElementTags.NED_PARAMETERS) != null)
+//				return true;
+//		}
+//        return false;
     }
 
     /**

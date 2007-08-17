@@ -178,7 +178,7 @@ public class VirtualTable<T>
 		});
 
     	hoverSupport = new HoverSupport();
-    	hoverSupport.setHoverSizeConstaints(new Point(700, 200));
+    	hoverSupport.setHoverSizeConstaints(700, 200);
     	hoverSupport.adapt(canvas, new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());

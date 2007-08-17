@@ -1,6 +1,9 @@
 package org.omnetpp.figures;
 
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -56,6 +59,9 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
         		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
+        setLayoutManager(new XYLayout());
+        add(new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_PIN)), new Rectangle(0,0,16,16));
+        
         invalidate();
 	}
 

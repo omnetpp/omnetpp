@@ -1,4 +1,4 @@
-package org.omnetpp.common.displaymodel;
+package org.omnetpp.ned.model;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
@@ -8,15 +8,24 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
+
 
 /**
- * This class is responsible for parsing and creating display strings in the correct format.
- * Defines all possible properties that can be used and also adds meta information to the
- * properties
+ * The default implementation of IDisplayString. It is strongly tied to the NEDElement
+ * model tree, and keeps its contents in sync with the LiteralNode in a display property.
  *
+ * IMPORTANT: DisplayString doesn't support a listener list, and please do NOT add one!
+ * If you want to get notified about display string changes, listen on the IHasDisplayString
+ * NED element. This is the only way to get notified about changes that were made
+ * directly on the tree, bypassing the DisplayString object.
+ * 
  * @author rhornig
  */
+//XXX use of the Point and Dimension classes force this plugin to depend on draw2d!
 public class DisplayString implements IDisplayString {
 
     // contains the default fallback values for the different tags if a variable is used in that position
@@ -31,9 +40,6 @@ public class DisplayString implements IDisplayString {
     // use only a weak reference, so if the referenced fallback display string is deleted
     // along with the containing model element, it will not be held in memory
     protected WeakReference<DisplayString> fallbackDisplayStringRef = null;
-
-    // whether notification is enabled or not
-    protected boolean notifyEnabled = true;
 
     // the owner of the display string
     protected IHasDisplayString owner = null;
@@ -149,8 +155,7 @@ public class DisplayString implements IDisplayString {
 
     /**
      * Create a display string tokenizer class only derived classes allowed to be created
-     * @param owner owner of the display string object (who has this display string).Owner
-     * 		  will be notified about changes
+     * @param owner owner of the display string object; its "@display" property will be kept up-to-date
      * @param value The string to be parsed
      */
     public DisplayString(IHasDisplayString owner, String value) {
@@ -165,6 +170,13 @@ public class DisplayString implements IDisplayString {
     	}
     }
 
+    /**
+     * Owner of this this display string, or null if it does not have one.
+     */
+    public IHasDisplayString getOwner() {
+		return owner;
+	}
+    
     /**
      * Returns the currently set fallback display string
      */
@@ -275,7 +287,6 @@ public class DisplayString implements IDisplayString {
      * Parse the given string and store its contents.
      */
     public void set(String newValue) {
-        String oldValue = toString();
     	tagMap.clear();
     	if (newValue != null) {
     	    // parse the display string into tags along ";"
@@ -287,8 +298,17 @@ public class DisplayString implements IDisplayString {
     		}
     	}
         cachedDisplayString = newValue;
-    	fireDisplayStringChanged(null, newValue, oldValue);
+        updateNedElement();
     }
+
+	protected void updateNedElement() {
+		if (owner != null) {
+			// Change the underlying NEDElement tree. 
+			// This could be optimized somewhat by remembering the LiteralNode, and quickly 
+			// checking here if that's still where we have to change the display string
+			NEDElementUtilEx.setDisplayString(owner, toString());
+		}
+	}
 
     /**
      * Returns the full display string.
@@ -347,15 +367,10 @@ public class DisplayString implements IDisplayString {
      * Sets the specified property to the given value in the display string
      */
     public void set(Prop property, String newValue) {
-        String oldValue = getAsStringLocal(property);
         setTagArg(property.getTag(), property.getPos(), newValue);
-        invalidate();
-        fireDisplayStringChanged(property, newValue, oldValue);
+        cachedDisplayString = null;
+        updateNedElement();
     }
-
-	protected void invalidate() {
-		cachedDisplayString = null;
-	}
 
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
@@ -402,10 +417,6 @@ public class DisplayString implements IDisplayString {
      * It fires a single property change notification for Prop.X
      */
     public void setLocation(Point location, Float scale) {
-    	// disable the notification so we will not send two notify for the two coordinate change
-    	boolean tempNotifyState = notifyEnabled;
-    	// disable the notification so we will not send two notify for the two coordinate change
-    	notifyEnabled = false;
         // if location is not specified, remove the constraint from the display string
         if (location == null) {
             set(Prop.X, null);
@@ -415,12 +426,6 @@ public class DisplayString implements IDisplayString {
             set(Prop.X, floatToString(pixel2unit(location.x, scale)));
             set(Prop.Y, floatToString(pixel2unit(location.y, scale)));
         }
-        // restore original notify state
-    	notifyEnabled = tempNotifyState;
-    	// we have explicitly disabled the notification, so we have to send it now manually
-    	// be aware that location change always generates an X pos change notification regardless
-    	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.X, null, null);
     }
 
     public Dimension getSize(Float scale) {
@@ -437,9 +442,6 @@ public class DisplayString implements IDisplayString {
      * It fires property change notification for Prop.WIDTH
      */
     public void setSize(Dimension size, Float scale) {
-    	// disable the notification so we will not send two notify for the two coordinate change
-    	boolean tempNotifyState = notifyEnabled;
-    	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 )
             set(Prop.WIDTH, null);
@@ -451,13 +453,6 @@ public class DisplayString implements IDisplayString {
             set(Prop.HEIGHT, null);
         else
             set(Prop.HEIGHT, floatToString(pixel2unit(size.height, scale)));
-
-        // restore original notify state
-    	notifyEnabled = tempNotifyState;
-    	// we have explicitly disabled the notification, so we have to send it now manually
-    	// be aware that size change always generates an width change notification regardless
-    	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.WIDTH, null, null);
     }
 
     public Dimension getCompoundSize(Float scale) {
@@ -476,9 +471,6 @@ public class DisplayString implements IDisplayString {
      * It fires property change notification for Prop.MODULE_WIDTH
      */
     public void setCompoundSize(Dimension size, Float scale) {
-    	// disable the notification so we will not send two notify for the two coordinate change
-    	boolean tempNotifyState = notifyEnabled;
-    	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 )
             set(Prop.MODULE_WIDTH, null);
@@ -490,13 +482,6 @@ public class DisplayString implements IDisplayString {
             set(Prop.MODULE_HEIGHT, null);
         else
             set(Prop.MODULE_HEIGHT, floatToString(pixel2unit(size.height, scale)));
-
-        // restore original notify state
-    	notifyEnabled = tempNotifyState;
-    	// we have explicitly disabled the notification, so we have to send it now manually
-    	// be aware that size change always generates an width change notification regardless
-    	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.MODULE_WIDTH, null, null);
     }
 
     /**
@@ -504,35 +489,13 @@ public class DisplayString implements IDisplayString {
      * It fires property change notification for Prop.X
      */
     public void setConstraint(Point loc, Dimension size, Float scale) {
-    	// disable the notification so we will not send two notify for the two coordinate change
-    	boolean tempNotifyState = notifyEnabled;
-    	notifyEnabled = false;
     	setLocation(loc, scale);
     	setSize(size, scale);
-
-        // restore original notify state
-    	notifyEnabled = tempNotifyState;
-    	// we have explicitly disabled the notification, so we have to send it now manually
-    	// be aware that size change always generates an width change notification regardless
-    	// which coordinate has changed
-
-    	// if the layout constraint has changed we send out an X coordinate changed event
-    	fireDisplayStringChanged(Prop.X, null, null);
-    }
-
-    /**
-     * Fire a property change notification
-     * @param changedProperty The changed property or NULL if it cannot be identified
-     */
-    private void fireDisplayStringChanged(Prop changedProperty, Object newValue, Object oldValue) {
-    	// notify the owner node (if set)
-    	if (owner != null && notifyEnabled)
-    		owner.propertyChanged(this, changedProperty, newValue, oldValue);
     }
 
     /**
      * @param value
-     * @return The converted floating pint number (with removed .0 at the end)
+     * @return The converted floating point number (with removed .0 at the end)
      */
     private static String floatToString(float value) {
         return StringUtils.chomp(String.valueOf(value), ".0");
@@ -547,9 +510,5 @@ public class DisplayString implements IDisplayString {
                     +": "+p.getVisibleDesc());
         }
     }
-
-//    static {
-//        dumpSupportedTags();
-//    }
 }
 

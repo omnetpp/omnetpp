@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 
 /**
  * This command changes a property in a display string

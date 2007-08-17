@@ -391,7 +391,7 @@ public class TextualNedEditor
 			public synchronized void run() {
 				Assert.isTrue(Display.getCurrent() != null);
 				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
-						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getSource());
+						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getNEDSource());
 			}
 		});
 	}

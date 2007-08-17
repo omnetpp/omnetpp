@@ -55,7 +55,7 @@ public class HoverSupport {
         "h4     { margin-top: 2em; margin-bottom: 0.3em; }\n" +
         "h5     { margin-top: 0px; margin-bottom: 0px; }\n" +
         "p      { margin-top: 1em; margin-bottom: 1em; }\n" +
-        "pre    { margin-left: 0.6em; }\n" +
+        "pre    { margin-left: 0.6em; margin-top: 0.3em }\n" +
         "ul     { margin-top: 0px; margin-bottom: 1em; }\n" +
         "li     { margin-top: 0px; margin-bottom: 0px; }\n" +
         "li p   { margin-top: 0px; margin-bottom: 0px; }\n" +
@@ -301,8 +301,8 @@ public class HoverSupport {
 	/**
 	 * Sets the maximum size for the hover widget.
 	 */
-	public void setHoverSizeConstaints(Point hoverSizeConstaints) {
-		this.hoverSizeConstraints = hoverSizeConstaints;
+	public void setHoverSizeConstaints(int width, int height) {
+		this.hoverSizeConstraints = new Point(width, height);
 	}
 
 	/**

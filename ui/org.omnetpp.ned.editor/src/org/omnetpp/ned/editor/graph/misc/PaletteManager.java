@@ -10,7 +10,6 @@ import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
@@ -25,6 +24,7 @@ import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;

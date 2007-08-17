@@ -1,4 +1,7 @@
-package org.omnetpp.common.displaymodel;
+package org.omnetpp.ned.model.interfaces;
+
+import org.omnetpp.ned.model.DisplayString;
+import org.omnetpp.ned.model.INEDElement;
 
 
 /**
@@ -6,7 +9,7 @@ package org.omnetpp.common.displaymodel;
  * 
  * @author rhornig
  */
-public interface IHasDisplayString extends IDisplayStringChangeListener {
+public interface IHasDisplayString extends INEDElement {
     /**
 	 * Returns the display string object. The display string object can be modified 
 	 * by clients, and it is automatically kept consistent both ways with the underlying

@@ -1,6 +1,5 @@
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 
 /**
  * An element that has name, display string, can be connected (submodule and compound module)

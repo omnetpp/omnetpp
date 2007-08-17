@@ -305,7 +305,7 @@ public class NEDTreeUtil {
             return true;
         if (tree1==null || tree2==null)
             return false;
-        return tree1.getSource().equals(tree2.getSource());
+        return tree1.getNEDSource().equals(tree2.getNEDSource());
     }
 
     /**

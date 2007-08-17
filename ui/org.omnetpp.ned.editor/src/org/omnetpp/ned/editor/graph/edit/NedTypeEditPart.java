@@ -2,12 +2,12 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.NedTypeFigure;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;

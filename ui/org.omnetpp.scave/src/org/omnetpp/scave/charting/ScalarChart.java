@@ -716,7 +716,7 @@ public class ScalarChart extends ChartCanvas {
 	class Tooltip {
 		public Tooltip() {
 			HoverSupport hoverSupport = new HoverSupport();
-			hoverSupport.setHoverSizeConstaints(new Point(600, 400));
+			hoverSupport.setHoverSizeConstaints(600, 400);
 			hoverSupport.adapt(ScalarChart.this, new IHoverTextProvider() {
 				public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 					return getHoverText(x, y, outSizeConstraint);

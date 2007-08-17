@@ -8,13 +8,8 @@ import java.util.List;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
-import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
@@ -34,8 +29,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  *
  * @author andras, rhornig
  */
-public abstract class NEDElement extends PlatformObject
-            implements INEDElement, IDisplayStringChangeListener, IModelProvider
+public abstract class NEDElement extends PlatformObject implements INEDElement, IModelProvider
 {
 	private String source;
 	private long id;
@@ -423,36 +417,8 @@ public abstract class NEDElement extends PlatformObject
 		getListeners().remove(listener);
 	}
 
-	public boolean isNotificationEnabled() {
-		return getListeners().isEnabled();
-	}
-
-	public boolean setNotificationEnabled(boolean enabled) {
-		return getListeners().setEnabled(enabled);
-	}
-
-    /**
-     * Implements IDisplayStringChangeListener.propertyChanged().
-     *
-     * This method passes back the modified display string to the model, but it
-     * should only be called if the element really supports the additional
-     * display string property (i.e. this element implements IHasDisplayString).
-     *
-     * Also fires a model attribute change event, by converting the property
-     * change event to a model attribute change event.
-     */
-    public void propertyChanged(IDisplayString source, Prop changedProp, Object newValue, Object oldValue) {
-        Assert.isTrue(this instanceof IHasDisplayString, "propertyChanged should be called only as a result of notificaton from an attached DisplayString");
-
-        // synchronize it to the underlying model
-        NEDElementUtilEx.setDisplayString(this, source.toString());
-        String propertyName =
-            IDisplayString.ATT_DISPLAYSTRING + (changedProp != null ? "."+changedProp : "");
-        fireAttributeChanged(propertyName, newValue, oldValue);
-    }
-
     public void fireModelChanged(NEDModelEvent event) {
-    	source = null;
+    	source = null; // invalidate cached NED source code 
 
         if (listeners != null)
         	listeners.fireModelChanged(event);
@@ -499,7 +465,7 @@ public abstract class NEDElement extends PlatformObject
         return cn == null ? null : cn.getContent().trim();
     }
 
-    public String getSource() {
+    public String getNEDSource() {
 		if (source == null)
 			source = NEDTreeUtil.generateNedSource(this, true);
 		

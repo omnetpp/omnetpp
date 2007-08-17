@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
@@ -19,6 +18,7 @@ import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleListPropertySource;
+import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 /**
