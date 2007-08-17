@@ -43,6 +43,10 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	}
 
 
+	/**
+	 * Return a line range from the text, from start (inclusive) to end (exclusive).
+	 * Line numbers are 0-based.
+	 */
 	public static String getLines(String text, int start, int end) {
 		StringBuffer result = new StringBuffer();
 		String[] lines = splitToLines(text);
@@ -125,9 +129,17 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	}
 
 	/**
-     *
-	 * @param text
-	 * @return The number of new line chars in the text
+	 * Returns the number of newline characters in the text
+	 */
+	public static int getMaximumLineLength(String text) {
+		int max = 0;
+		for (String line : splitToLines(text))
+			max = Math.max(max, line.length());
+		return max;
+	}
+	
+	/**
+	 * Returns the number of newline characters in the text
 	 */
 	public static int countNewLines(String text) {
 		int newlineCount = 0;
@@ -137,6 +149,22 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 			pos = text.indexOf('\n', pos+1);
 		}
 		return newlineCount;
+	}
+	
+	/**
+	 * Interprets the text as multi-line string, and discards all leading lines
+	 * that start with (whitespace plus) the given comment marker.
+	 */
+	public static String stripLeadingCommentLines(String text, String commentMarker) {
+		StringBuilder result = new StringBuilder();
+		boolean atStart = true;
+		for (String line : splitToLines(text)) {
+			if (!atStart || !line.trim().startsWith(commentMarker)) {
+				result.append(line);
+				atStart = false;
+			}
+		}
+		return result.toString();
 	}
 
 	/**
@@ -158,7 +186,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         // BEWARE: Java's multiline regexp mode "(?m)" seems to be broken:
         // negative sets "[^...]", "\s" etc may consume newlines, so substitutions
         // may change the number of lines in the string! This corresponds to the
-        // documentation, but inconsistent with Perl!
+        // documentation, but is inconsistent with Perl!
 
         comment = comment.replaceAll("(?m)^\\s*//#.*$", "");      // remove '//#' lines
         comment = comment.replaceAll("(?m)^\\s*//", "");          // remove "//"'s
@@ -176,7 +204,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      * any removes explicit HTML formatting from the string.
      */
     public static String makeTextDocu(String comment) {
-        if (comment==null)
+        if (comment == null)
             return null;
 
         // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
@@ -288,6 +316,14 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         comment = comment.replaceAll("(?s)\\\\(.)", "$1");;
 
     return comment;
+    }
+
+    /**
+     * Prepares plain text for inclusion into HTML "pre" tag: replaces "<", ">" 
+     * with "&lt;", "&gt;", etc.
+     */
+    public static String quoteForHtml(String text) {
+    	return text.replace("<", "&lt;").replace(">", "&gt;");
     }
 
     /**
