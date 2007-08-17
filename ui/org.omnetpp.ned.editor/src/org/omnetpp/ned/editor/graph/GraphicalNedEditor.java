@@ -60,8 +60,6 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -88,7 +86,6 @@ import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -631,11 +628,12 @@ public class GraphicalNedEditor
 		}
 
 		String hoverText = "";
-		String nedSource = "<pre>"+NEDTreeUtil.generateNedSource(element, true)+"</pre>";
+		String nedSource = "<pre>" + element.getSource() + "</pre>";
 
 //		if (StringUtils.isEmpty(typeComment) && StringUtils.isEmpty(comment))
 //			return null;
 
+		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
 		hoverText += nedSource;
 
 		if (!StringUtils.isEmpty(comment))

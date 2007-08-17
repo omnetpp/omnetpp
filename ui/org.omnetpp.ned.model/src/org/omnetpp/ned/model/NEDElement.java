@@ -37,6 +37,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 public abstract class NEDElement extends PlatformObject
             implements INEDElement, IDisplayStringChangeListener, IModelProvider
 {
+	private String source;
 	private long id;
 	private String srcloc;
 	private NEDSourceRegion srcregion;
@@ -451,6 +452,8 @@ public abstract class NEDElement extends PlatformObject
     }
 
     public void fireModelChanged(NEDModelEvent event) {
+    	source = null;
+
         if (listeners != null)
         	listeners.fireModelChanged(event);
 
@@ -497,7 +500,10 @@ public abstract class NEDElement extends PlatformObject
     }
 
     public String getSource() {
-        return NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(this, true);
+		if (source == null)
+			source = NEDTreeUtil.generateNedSource(this, true);
+		
+		return source;
     }
 
     public List<Integer> getErrorMarkerIds() {

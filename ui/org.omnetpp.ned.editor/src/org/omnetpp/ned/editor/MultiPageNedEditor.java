@@ -237,7 +237,7 @@ public class MultiPageNedEditor
         if (newPageIndex == textPageIndex) {
             if (graphEditor.hasContentChanged()) {
                 // TODO refresh the editor annotations to show the error marks
-                String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(graphEditor.getModel(), true);
+                String source = graphEditor.getModel().getSource();
                 // we try to reformat and re-parse the model so the element line number attributes will be correct
                 NEDErrorStore errors = new NEDErrorStore();
                 INEDElement reformattedModel = NEDTreeUtil.parseNedSource(source, errors, file.getLocation().toOSString());

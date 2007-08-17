@@ -27,7 +27,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";
 
-    // TODO implement popupmenu if only one of the srcModule or destModule is present
+    // TODO implement popup menu if only one of the srcModule or destModule is present
     // only one side of the connection should be selected
     // TODO show which gates are already connected (do not offer those gates)
     /**
@@ -214,9 +214,9 @@ public class ConnectionChooser {
         MenuItem mi = menu.addMenuItem(SWT.PUSH);
         // store the connection template in the widget's extra data
         mi.setData(conn);
-        String label = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(conn, false).trim();
+        String label = NEDTreeUtil.generateNedSource(conn, false).trim();
         mi.setText(label);
-        // enable the menuitem only if the used gates are unconnected;
+        // enable the menu item only if the used gates are unconnected;
         mi.setEnabled(isConnectionValid(connCommand, conn, srcGate, destGate));
     }
 

@@ -3,10 +3,17 @@ package org.omnetpp.ned.model;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-
-import org.omnetpp.ned.engine.*;
+import org.omnetpp.ned.engine.NED1Generator;
+import org.omnetpp.ned.engine.NED2Generator;
+import org.omnetpp.ned.engine.NEDBasicValidator;
+import org.omnetpp.ned.engine.NEDDTDValidator;
 import org.omnetpp.ned.engine.NEDElement;
+import org.omnetpp.ned.engine.NEDElementCode;
+import org.omnetpp.ned.engine.NEDErrorCategory;
+import org.omnetpp.ned.engine.NEDErrorStore;
+import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
+import org.omnetpp.ned.engine.NEDTools;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
@@ -27,15 +34,6 @@ public class NEDTreeUtil {
 
 	private static ITreeContentProvider nedModelContentProvider = new NedModelContentProvider();
     private static ILabelProvider nedModelLabelProvider = new NedModelLabelProvider();
-
-    /**
-     * Cleanup should be probably called somewhere near load and save, store but clearly not near generate.
-     */
-    @Deprecated
-    public static String cleanupPojoTreeAndGenerateNedSource(INEDElement treeRoot, boolean keepSyntax) {
-		cleanupPojoTree(treeRoot);
-		return generateNedSource(treeRoot, keepSyntax);
-	}
 
     /**
 	 * Generate NED code from the given NEDElement tree. The root node
@@ -307,9 +305,7 @@ public class NEDTreeUtil {
             return true;
         if (tree1==null || tree2==null)
             return false;
-        String code1 = cleanupPojoTreeAndGenerateNedSource(tree1, true);
-        String code2 = cleanupPojoTreeAndGenerateNedSource(tree2, true);
-        return code1.equals(code2);
+        return tree1.getSource().equals(tree2.getSource());
     }
 
     /**

@@ -21,6 +21,8 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 public class NEDTreeDifferenceUtils {
 	public interface INEDTreeDifferenceApplier {
+		public void replaceSourceLocation(INEDElement element, String sourceLocation, NEDSourceRegion sourceRegion);
+
 		public void replaceElements(INEDElement parent, int start, int end, int offset, INEDElement[] replacement);
 
 		public void replaceAttribute(INEDElement element, String name, String value);
@@ -29,6 +31,7 @@ public class NEDTreeDifferenceUtils {
 	@SuppressWarnings("unchecked")
 	public static void applyTreeDifferences(INEDElement original, INEDElement target, INEDTreeDifferenceApplier applier) {
 		applyAttributeDifferences(original, target, applier);
+		applier.replaceSourceLocation(original, target.getSourceLocation(), target.getSourceRegion());
 
 		NEDElementChildrenComparator comparatorOriginal = new NEDElementChildrenComparator(original);
 		NEDElementChildrenComparator comparatorTarget = new NEDElementChildrenComparator(target);
@@ -76,6 +79,15 @@ public class NEDTreeDifferenceUtils {
 
 	public static class NEDTreeDifferenceApplier implements NEDTreeDifferenceUtils.INEDTreeDifferenceApplier {
 		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
+
+		public void replaceSourceLocation(final INEDElement element, final String sourceLocation, final NEDSourceRegion sourceRegion) {
+			runnables.add(new Runnable() {
+				public void run() {
+					element.setSourceLocation(sourceLocation);
+					element.setSourceRegion(sourceRegion);
+				}
+			});
+		}
 		
 		public void replaceAttribute(final INEDElement element, final String name, final String value) {
 			runnables.add(new Runnable() {

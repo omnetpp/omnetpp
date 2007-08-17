@@ -40,7 +40,7 @@ import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -219,8 +219,8 @@ public class TextualNedEditor
 		return ((IFileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected INEDElement getNEDFileModelFromNEDResourcesPlugin() {
-		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+	protected NedFileNodeEx getNEDFileModelFromNEDResourcesPlugin() {
+		return (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
 	}
 
 	/*
@@ -243,7 +243,7 @@ public class TextualNedEditor
 	 * @param required the required type
 	 * @return an adapter for the required type or <code>null</code>
 	 */
-	@Override
+	@SuppressWarnings("unchecked") @Override
     public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null) {
@@ -390,8 +390,8 @@ public class TextualNedEditor
 		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public synchronized void run() {
 				Assert.isTrue(Display.getCurrent() != null);
-		        String source = NEDTreeUtil.cleanupPojoTreeAndGenerateNedSource(getNEDFileModelFromNEDResourcesPlugin(), true);
-				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(getDocument(), source);
+				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
+						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getSource());
 			}
 		});
 	}
