@@ -240,14 +240,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         
         NEDTreeDifferenceUtils.NEDTreeDifferenceApplier treeDifferenceApplier = new NEDTreeDifferenceUtils.NEDTreeDifferenceApplier();
         NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
-		// TODO: source locations must be copied from parsed tree during the merge
+
         if (treeDifferenceApplier.hasDifferences()) {
 	        currentTree.fireModelChanged(new NEDModelChangeBeginEvent(currentTree));
 	        treeDifferenceApplier.apply();
 	        currentTree.fireModelChanged(new NEDModelChangeEndEvent(currentTree));
         }
 
-		invalidate();
+		rehash();
 
         NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);
         markerSync.registerFile(file);
@@ -479,6 +479,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
+	private void rehash() {
+		invalidate();
+		rehashIfNeeded();
+	}
+
     /**
      * Rebuild hash tables after NED resource change. Note: some errors such as
      * duplicate names only get detected when this gets run!
@@ -675,8 +680,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         boolean inheritanceChanged = inheritanceMayHaveChanged(event);
         if (inheritanceChanged) {
             // System.out.println("Invalidating because of: " + event);
-            invalidate();
-            rehashIfNeeded();
+        	rehash();
         }
         // a top level component has changed (name, inheritance, display string)
         if (inheritanceChanged || displayMayHaveChanged(event)) {
