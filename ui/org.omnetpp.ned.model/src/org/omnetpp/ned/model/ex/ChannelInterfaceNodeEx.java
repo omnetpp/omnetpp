@@ -12,6 +12,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
@@ -34,15 +35,19 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
 		super(parent);
 	}
 
-	public DisplayString getDisplayString() {
-		if (displayString == null) {
-			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
-		}
-		return displayString;
-	}
+    @Override
+    public void fireModelChanged(NEDModelEvent event) {
+    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
+    	if (!NEDElementUtilEx.isDisplayStringUpToDate(this))
+    		displayString = null;
+    	super.fireModelChanged(event);
+    }
 
-    public DisplayString getEffectiveDisplayString() {
-        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    public DisplayString getDisplayString() {
+    	if (displayString == null)
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getFirstExtendsRef()));
+    	return displayString;
     }
 
     // EXTENDS SUPPORT
@@ -63,9 +68,9 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
         return typeInfo.getResolver().getComponent(extendsName);
     }
 
-    public INEDElement getFirstExtendsRef() {
+    public INedTypeNode getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        return it == null ? null : (INedTypeNode) it.getNEDElement();
     }
 
     public List<ExtendsNode> getAllExtends() {

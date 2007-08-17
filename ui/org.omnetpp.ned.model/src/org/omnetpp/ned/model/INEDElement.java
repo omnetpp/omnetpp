@@ -356,5 +356,5 @@ public interface INEDElement extends Iterable<INEDElement> {
 	/**
 	 * Returns the true if the element has attached errors/markers
 	 */
-	public boolean hasErrorMarkers();
+	public int getMaxProblemSeverity();
 }

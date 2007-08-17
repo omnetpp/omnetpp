@@ -97,9 +97,17 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
 	    return getClass().getSimpleName()+" "+getText();
 	}
 
-    // TODO implement error decoration
-    public void setErrorDecoration(boolean markError) {
-        // setForegroundColor(markError ? ColorFactory.RED : null);
+    /**
+     * Display a "problem" image decoration on the submodule.
+     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
+     */
+    public void setProblemDecoration(int severity) {
+    	Image image = ModuleFigure.getProblemImageFor(severity); //TODO subclass this AND ModuleFigure from a common NedFigure!
+    	// TODO implement error decoration
+//    	if (image != null)
+//    		problemMarkerFigure.setImage(image);
+//    	problemMarkerFigure.setVisible(image==null);
+//    	invalidate(); //XXX needed?
     }
 
 }

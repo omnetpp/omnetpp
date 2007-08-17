@@ -60,6 +60,8 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -86,6 +88,7 @@ import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -295,39 +298,11 @@ public class GraphicalNedEditor
         // add tooltip support
         new HoverSupport().adapt(getEditor(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
+            	outPreferredSize.minimumWidth = 300;
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
-                if (ep instanceof IModelProvider) {
-                    INEDElement element = ((IModelProvider)ep).getNEDModel();
-                    String comment = StringUtils.trimToEmpty(element.getComment());
-
-                    // add a comment from the type (if any)
-                    String typeComment = "";
-                    if (element instanceof IHasType) {
-                        INEDElement typeElement = ((IHasType)element).getEffectiveTypeRef();
-                        if (typeElement != null) {
-                            typeComment = typeElement.getComment();
-                            if (!StringUtils.isEmpty(typeComment))
-                                typeComment = "<b>"+"Type documentation:</b><br/>\n"+typeComment;
-                            typeComment = StringUtils.trimToEmpty(typeComment);
-                        }
-                    }
-                    if (StringUtils.isEmpty(typeComment) && StringUtils.isEmpty(comment))
-                        return null;
-
-                    String fullComment = "";
-                    if (!StringUtils.isEmpty(comment))
-                        fullComment += comment;
-                    if (!StringUtils.isEmpty(comment) && !StringUtils.isEmpty(typeComment))
-                        fullComment += "<br/><br/>";
-                    if (!StringUtils.isEmpty(typeComment))
-                        fullComment += typeComment;
-
-                    return HoverSupport.addHTMLStyleSheet(StringUtils.makeHtmlDocu(fullComment));
-                }
-                return null;
+                return getHTMLHoverTextFor(ep);
             }
         });
-
 
         loadProperties();
 
@@ -489,6 +464,7 @@ public class GraphicalNedEditor
     }
 
 	protected IFile getFile() {
+		Assert.isTrue(getEditorInput() != null);
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
 
@@ -504,14 +480,19 @@ public class GraphicalNedEditor
 
     @Override
     public void setInput(IEditorInput input) {
+    	System.out.println("graphical editor: setInput "+input);
         super.setInput(input);
-        if (input == null) {
-            setModel(null);
-            return;
-        }
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
 
-        Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
-        setModel(getNEDFileModelFromResourcesPlugin());
+        if (input == null) {
+        	setModel(null);
+        }
+        else {
+        	Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
+        	Assert.isTrue(NEDResourcesPlugin.getNEDResources().getConnectCount(getFile())>0);  // must be already connected
+        	NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        	setModel(getNEDFileModelFromResourcesPlugin());
+        }
     }
 
     public NedFileNodeEx getModel() {
@@ -589,7 +570,6 @@ public class GraphicalNedEditor
 	/**
      * Reveals a model element in the editor (or its nearest ancestor which
      * has an associated editPart)
-     * @param model
      */
     public void reveal(INEDElement model) {
         EditPart editPart = null;
@@ -629,6 +609,50 @@ public class GraphicalNedEditor
 
 	public void markSaved() {
 		getCommandStack().markSaveLocation();
+	}
+
+	protected String getHTMLHoverTextFor(EditPart ep) {
+		if (!(ep instanceof IModelProvider))
+			return null;
+
+		INEDElement element = ((IModelProvider)ep).getNEDModel();
+		String comment = StringUtils.trimToEmpty(element.getComment());
+
+		// add a comment from the type (if any)
+		String typeComment = "";
+		if (element instanceof IHasType) {
+			INEDElement typeElement = ((IHasType)element).getEffectiveTypeRef();
+			if (typeElement != null) {
+				typeComment = typeElement.getComment();
+				if (!StringUtils.isEmpty(typeComment))
+					typeComment = "<b>Type documentation:</b><br/>\n"+typeComment;
+				typeComment = StringUtils.trimToEmpty(typeComment);
+			}
+		}
+
+		String hoverText = "";
+
+		String nedSource = "<pre>"+NEDTreeUtil.generateNedSource(element, true)+"</pre>";
+		DisplayString displayString = element instanceof IHasDisplayString ? ((IHasDisplayString)element).getDisplayString() : null;
+
+//		if (StringUtils.isEmpty(typeComment) && StringUtils.isEmpty(comment))
+//			return null;
+
+		hoverText += nedSource;
+
+		if (displayString != null) {
+			displayString.invalidate();
+			hoverText += "display string: " + displayString.toString() + "<br/>";
+		}
+		
+		if (!StringUtils.isEmpty(comment))
+			hoverText += comment;
+		if (!StringUtils.isEmpty(comment) && !StringUtils.isEmpty(typeComment))
+			hoverText += "<br/><br/>";
+		if (!StringUtils.isEmpty(typeComment))
+			hoverText += typeComment;
+
+		return HoverSupport.addHTMLStyleSheet(StringUtils.makeHtmlDocu(hoverText));
 	}
 
 	/**

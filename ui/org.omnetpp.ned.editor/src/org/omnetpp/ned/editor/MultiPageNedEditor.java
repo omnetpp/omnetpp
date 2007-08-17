@@ -108,48 +108,51 @@ public class MultiPageNedEditor
     @Override
     public void dispose() {
         // detach the editor file from the core plugin and do not set a new file
-        ((IFileEditorInput)getEditorInput()).getFile()
-                .getWorkspace().removeResourceChangeListener(resourceListener);
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
+        
         // disconnect the editor from the ned resources plugin
         setInput(null);
         super.dispose();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
-     * Add remove listeners on input change. Additionally connect/disconnect to/from the provided
-     * file in NEDResources. Setting to NULL disconnects the editor from the current input file.
-     * On editor close setInput(null) should be called to disconnect the file from NEDResources
-     */
     @Override
-    protected void setInput(IEditorInput input) {
-        // do nothing if no change has occurred
-        if (ObjectUtils.equals(getEditorInput(), input))
-            return;
-        // remove the listeners from the old file
-        if (getEditorInput() != null) {
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            NEDResourcesPlugin.getNEDResources().disconnect(file);
+    protected void setInput(IEditorInput newInput) {
+		System.out.println("setInput()");
+
+		IEditorInput oldInput = getEditorInput();
+		if (ObjectUtils.equals(oldInput, newInput))
+            return; // no change 
+
+        if (oldInput != null) {
+        	// disconnect() must be *after* setInput(null)
+            super.setInput(null);
+            if (graphEditor != null)
+                graphEditor.setInput(null);
+            if (textEditor != null)
+                textEditor.setInput(null);
+            
+            IFile oldFile = ((IFileEditorInput) oldInput).getFile();
+            NEDResourcesPlugin.getNEDResources().disconnect(oldFile);
         }
 
-        super.setInput(input);
+        if (newInput != null) {
+        	// connect() must take place *before* setInput()
+        	IFile newFile = ((IFileEditorInput) newInput).getFile();
+        	NEDResourcesPlugin.getNEDResources().connect(newFile);
 
-        // set the input on the embedded editors
-        if (graphEditor != null)
-            graphEditor.setInput(input);
-        if (textEditor != null)
-            textEditor.setInput(input);
-
-        // add listeners to the new file in workspace and in the ned resource manager
-        if (getEditorInput() != null) {
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-    		NEDResourcesPlugin.getNEDResources().connect(file);
-		    setPartName(file.getName());
+        	super.setInput(newInput);
+        	if (graphEditor != null)
+        		graphEditor.setInput(newInput);
+        	if (textEditor != null)
+        		textEditor.setInput(newInput);
+        	setPartName(newFile.getName());
         }
     }
 
 	@Override
 	protected void createPages() {
+		System.out.println("createPages()");
+
 		graphEditor = new GraphicalNedEditor();
 		textEditor = new TextualNedEditor();
 
@@ -169,10 +172,14 @@ public class MultiPageNedEditor
             setPageText(textPageIndex,"Text");
             // remember the initial content so we can detect any change later
 
+    		//XXX force parsing this file now -- needed???
+            //NEDResourcesPlugin.getNEDResources().setNEDFileText(file, textEditor.getText());
+
             // switch to graphics mode initially if there's no error in the file
             if (!NEDResourcesPlugin.getNEDResources().hasError(file))
                 setActivePage(graphPageIndex);
-		} catch (PartInitException e) {
+		} 
+		catch (PartInitException e) {
 		    NedEditorPlugin.logError(e);
 		}
 
@@ -274,7 +281,7 @@ public class MultiPageNedEditor
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
 
             // only start in graphics mode if there's no error in the file
-            // CHECKME sometimes the editor goes into graphical mode even if the file has errors
+            // FIXME sometimes the editor goes into graphical mode even if the file has errors
             // could it be because the error store is synchronized in the background???
             if (res.hasError(file)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
@@ -328,8 +335,7 @@ public class MultiPageNedEditor
 	}
 
     /**
-     * closes the editor and optionally saves it.
-     * @param save
+     * Closes the editor and optionally saves it.
      */
     protected void closeEditor(boolean save) {
         getSite().getPage().closeEditor(this, save);
@@ -362,33 +368,49 @@ public class MultiPageNedEditor
                     // if the file was deleted
                     display.asyncExec(new Runnable() {
                         public void run() {
-                            if (!isDirty()) closeEditor(false);
+                            inputFileDeletedFromDisk();
                         }
                     });
                 }
-                else { // else if it was moved or renamed
+                else { 
+                	// else if it was moved or renamed
                     final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(delta.getMovedToPath());
                     display.asyncExec(new Runnable() {
                         public void run() {
-                            setInput(new FileEditorInput(newFile));
+                            inputFileMovedOrRenamedOnDisk(newFile);
                         }
                     });
                 }
             }
             else if (delta.getKind() == IResourceDelta.CHANGED) {
-                // guard that we should not reload while save is in progress
-//                if (!editorSaving) {
-
-                  // the file was overwritten somehow (could have been
-                  // replaced by another version in the repository)
-                  // TODO ask the user and reload the file
-
-//                }
+            	inputFileModifiedOnDisk();
             }
             return false;
         }
     }
 
+	protected void inputFileDeletedFromDisk() {
+		if (!isDirty()) 
+			closeEditor(false);
+		else
+			; //TODO ask user?
+	}
+
+	protected void inputFileMovedOrRenamedOnDisk(IFile newFile) {
+		setInput(new FileEditorInput(newFile));
+	}
+
+	protected void inputFileModifiedOnDisk() {
+        // guard that we should not reload while save is in progress
+//      if (!editorSaving) {
+
+        // the file was overwritten somehow (could have been
+        // replaced by another version in the repository)
+        // TODO ask the user and reload the file
+
+//      }
+	}
+	
     public void gotoMarker(IMarker marker) {
         // switch to text page and delegate to it
         setActivePage(textPageIndex);

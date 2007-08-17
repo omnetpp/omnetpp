@@ -3,23 +3,17 @@ package org.omnetpp.common.displaymodel;
 
 /**
  * Interface for NED model objects that provide a display string (i.e. have a visual appearance).
+ * 
  * @author rhornig
  */
 public interface IHasDisplayString extends IDisplayStringChangeListener {
-
     /**
-	 * Returns a display string object, which can be used to manipulate the
-	 * properties. Any change in the returned DisplayString object (e.g. calling
-	 * a set(...) method) causes displayStringChanged() notification.
+	 * Returns the display string object. The display string object can be modified 
+	 * by clients, and it is automatically kept consistent both ways with the underlying
+	 * NEDElement (a LiteralNode) that stores the value for the "@display()" NED property.
+	 * The fallback chain for the display string is automatically kept up to date as well.
+	 * Any change in the returned DisplayString object (e.g. calling a set(...) method) 
+	 * will trigger a displayStringChanged() notification.
 	 */
     public DisplayString getDisplayString();
-    
-    /**
-	 * Returns the display string object, but sets its default handling in a way
-	 * that the base object's display properties are used as defaults. That is,
-	 * display properties are inherited, either from the base object (extends)
-	 * or the type (for submodules and connections).
-	 */
-    public DisplayString getEffectiveDisplayString();
-
 }

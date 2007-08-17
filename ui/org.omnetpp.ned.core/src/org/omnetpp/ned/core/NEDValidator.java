@@ -203,9 +203,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
-			// FIXME check if it is a param. We should cast only after this check
-			decl = (ParamNode) submoduleType.getMembers().get(parname);
-			if (decl==null || decl.getTagCode()!=NED_PARAM) {
+			decl = (ParamNode) submoduleType.getParams().get(parname);
+			if (decl==null) {
 				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
 				return;
 			}
@@ -216,8 +215,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
-			decl = (ParamNode) channelSpecType.getMembers().get(parname);
-			if (decl==null || decl.getTagCode()!=NED_PARAM) {
+			decl = (ParamNode) channelSpecType.getParams().get(parname);
+			if (decl==null) {
 				errors.add(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
 			}
@@ -283,8 +282,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot configure gates of a submodule of unknown type");
 				return;
 			}
-			decl = (GateNode) submoduleType.getMembers().get(gatename);
-			if (decl==null || decl.getTagCode()!=NED_GATE) {
+			decl = (GateNode) submoduleType.getGates().get(gatename);
+			if (decl==null) {
 				errors.add(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
 				return;
 			}

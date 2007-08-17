@@ -21,7 +21,8 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-
+import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
@@ -37,7 +38,7 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
  * @author rhornig
  */
 public class CompoundModuleEditPart extends ModuleEditPart {
-
+	
     // stores  the connection model - connection controller mapping for the compound module
     private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
 
@@ -133,9 +134,9 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         // define the properties that determine the visual appearance
         getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
-    	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getEffectiveDisplayString());
+    	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getDisplayString());
         // mark if the model is invalid
-        getCompoundModuleFigure().setErrorDecoration(getCompoundModuleModel().hasErrorMarkers());
+        getCompoundModuleFigure().setProblemDecoration(getCompoundModuleModel().getMaxProblemSeverity());
     }
 
 	/**

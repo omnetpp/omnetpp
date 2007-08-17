@@ -1,5 +1,6 @@
 package org.omnetpp.ned.model.interfaces;
 
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
@@ -8,7 +9,6 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
-//XXX extend IHasDisplayString and IHasParameters too?
-public interface INedTypeNode extends INEDElement, IHasName, IHasAncestors {
+public interface INedTypeNode extends INEDElement, IHasName, IHasAncestors, IHasDisplayString, IHasParameters {
 
 }

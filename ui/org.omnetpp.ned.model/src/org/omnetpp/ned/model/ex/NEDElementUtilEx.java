@@ -4,16 +4,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementException;
 import org.omnetpp.ned.model.NEDElementUtil;
-import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
@@ -38,8 +34,16 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	public static final String DISPLAY_PROPERTY = "display";
 
 	/**
+	 * Returns the display string of the given node (node.getDisplayString()),
+	 * or null if node==null.
+	 */
+	public static DisplayString displayStringOf(IHasDisplayString node) {
+		return node == null ? null : node.getDisplayString();
+	}
+	
+	/**
 	 * Returns the display string of the given element (submodule, connection or
-	 * toplevel type) in an unparsed form, by looking up the "display" property
+	 * toplevel type) in an unparsed form, by looking up the "@display" property
 	 * in the "parameters:" section.
 	 */
 	public static String getDisplayString(IHasDisplayString node) {
@@ -58,54 +62,6 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         		}
         return null;
 	}
-
-    /**
-     * Gets the effective display string (parsed )belonging to a node. It uses
-     * the node's type or the base node (extends) as a fallback display string.
-     * BEWARE that this method adjusts the display string's 'Default' property,
-     * i.e. sets it to an other displayString object which represents the type
-     * or base type's display string.
-     */
-    public static DisplayString getEffectiveDisplayString(IHasDisplayString node) {
-        DisplayString result = node.getDisplayString();
-        INEDElement defaultNode = null;
-        // if node supports typing use the type's display property
-        if (node instanceof IHasType)
-            defaultNode = ((IHasType)node).getEffectiveTypeRef();
-        else if (node instanceof IHasAncestors)
-            defaultNode = ((IHasAncestors)node).getFirstExtendsRef();
-        // if we do not have type or do not extend anybody we return the same display string
-        if (defaultNode == null) {
-            // if no type info present or it has no ancestors, delete the display string default
-            // ie. no inheritance from other display string
-            result.setFallbackDisplayString(null);
-            return result;
-        }
-
-        Assert.isTrue(defaultNode instanceof IHasDisplayString);
-        // otherwise set the default display string
-        result.setFallbackDisplayString(((IHasDisplayString)defaultNode).getEffectiveDisplayString());
-        return result;
-    }
-
-    /**
-     * Returns the effective display string for this submodule, assuming
-     * that the submodule's actual type is the compound or simple module type
-     * passed in the <code>submoduleType</code> parameter. This is useful
-     * when the submodule is a "like" submodule, whose the actual submodule
-     * type (not the <code>likeType</code>) is known. The latter usually
-     * comes from an ini file or some other source outside the INEDElement tree.
-     * Used within the inifile editor.
-     *
-     * @param submoduleNode  the submodule
-     * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
-     */
-    public static DisplayString getEffectiveDisplayString(SubmoduleNodeEx submoduleNode, IModuleTypeNode submoduleType) {
-        DisplayString result = submoduleNode.getDisplayString();
-        Assert.isTrue(submoduleType instanceof SimpleModuleNodeEx || submoduleType instanceof CompoundModuleNodeEx);
-        result.setFallbackDisplayString(submoduleType.getEffectiveDisplayString());
-        return result;
-    }
 
 	/**
 	 * Sets the display property of a given node.
@@ -188,7 +144,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	}
 
     /**
-     * Returns the name of the first extends nod (or null if none present)
+     * Returns the name of the first "extends" node (or null if none present)
      */
     public static String getFirstExtends(INEDElement node) {
         ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
@@ -288,4 +244,8 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     	return node.getTagName().replace('-', ' ');
     }
 
+	public static boolean isDisplayStringUpToDate(IHasDisplayString node) {
+		String displayString = getDisplayString(node);
+		return node.getDisplayString().toString().equals(displayString);
+	}
 }

@@ -57,7 +57,7 @@ public class NedTypeEditPart extends NedEditPart {
     	// parse a display string, so it's easier to get values from it.
     	// for other visual properties
     	if (getModel() instanceof IHasDisplayString) {
-    		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
+    		DisplayString dps = ((IHasDisplayString)getModel()).getDisplayString();
 
     		getNedTypeFigure().setDisplayString(dps);
 
@@ -74,8 +74,9 @@ public class NedTypeEditPart extends NedEditPart {
             if (image != null)
                 getNedTypeFigure().setIcon(image);
     	}
+    	
     	// indicate the error
-        ((NedTypeFigure)getFigure()).setErrorDecoration(getNEDModel().hasErrorMarkers());
+        getNedTypeFigure().setProblemDecoration(getNEDModel().getMaxProblemSeverity());
 
 	}
 

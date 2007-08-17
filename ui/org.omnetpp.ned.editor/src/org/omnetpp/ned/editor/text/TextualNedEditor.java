@@ -145,7 +145,7 @@ public class TextualNedEditor
 			fOutlinePage.setInput(null);
         if (pullChangesJob != null)
         	pullChangesJob.cancel();
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
+        //XXX NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
 		super.dispose();
 	}
 
@@ -184,18 +184,14 @@ public class TextualNedEditor
 			fOutlinePage.update();
 	}
 
-	/**
-	 * The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method performs sets the
-	 * input of the outline page after AbstractTextEditor has set input.
-	 */
 	@Override
     public void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
 		if (fOutlinePage != null)
 			fOutlinePage.setInput(input);
-		// parse the text so we will get updated error information/markers
-        NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());
+		NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
+		if (input != null)
+			NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
 	}
 
 	/**
@@ -273,7 +269,7 @@ public class TextualNedEditor
 	@Override
     protected void initializeEditor() {
 		super.initializeEditor();
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        //XXX for now NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
 		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
 	}
 

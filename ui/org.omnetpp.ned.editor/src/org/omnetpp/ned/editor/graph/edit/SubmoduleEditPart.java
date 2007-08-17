@@ -6,13 +6,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 
@@ -108,7 +106,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     	// parse a display string, so it's easier to get values from it.
     	// for other visual properties
-        DisplayString dps = submNode.getEffectiveDisplayString();
+        DisplayString dps = submNode.getDisplayString();
 
         // get the scale factor for this submodule (coming from the containing compound module's display string)
         float scale = getScale();
@@ -122,7 +120,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         getSubmoduleFigure().setPinDecoration(dps.getLocation(scale) != null);
 
         // mark if the model is invalid
-        getSubmoduleFigure().setErrorDecoration(getSubmoduleModel().hasErrorMarkers());
+        getSubmoduleFigure().setProblemDecoration(getSubmoduleModel().getMaxProblemSeverity());
 
         // set layout constraints
         SubmoduleConstraint constraint = new SubmoduleConstraint();

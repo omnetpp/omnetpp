@@ -1,8 +1,19 @@
 package org.omnetpp.figures;
 
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.RectangleFigure;
+import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.Shape;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
@@ -14,7 +25,6 @@ import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -52,6 +62,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
 
     protected ImageFigure imageFigure = new ImageFigure();
     protected ImageFigure decoratorImageFigure = new ImageFigure();
+    protected ImageFigure pinFigure = new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
+    protected ImageFigure problemMarkerFigure = new ImageFigure();
     protected Label nameFigure = new Label();
     protected AttachedLayer textAttachLayer;
 	private AttachedLayer rangeAttachLayer;
@@ -131,7 +143,13 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
             // image decoration
             foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0),
                     decoratorImageFigure, new PrecisionPoint(0.75, 0.25), null));
-            //name decoration
+            // problem marker image
+            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
+            		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));  //XXX position
+            // "pin" image
+            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0),
+            		pinFigure, new PrecisionPoint(0.5, 0.5), null));
+            // name decoration
             foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH,
                                         nameFigure, PositionConstants.NORTH));
             // text comment decoration
@@ -316,10 +334,9 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     }
 
     /**
-     * Sets the external image decoration (for pins)
-     * @param img
+     * Sets the external image decoration ("i2" tag)
      */
-    protected void setImageDecoration(Image img) {
+    protected void setDecorationImage(Image img) {
         if (img != decoratorImageFigure.getImage())
             decoratorImageFigure.setImage(img);
 
@@ -392,7 +409,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
         // set the decoration image properties
-        setImageDecoration(
+        setDecorationImage(
         		        ImageFactory.getImage(
         				dps.getAsString(IDisplayString.Prop.OVIMAGE),
         				null,
@@ -462,19 +479,23 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     }
 
     /**
-     * TODO implement error decoration. NOT yet implemented.
+     * Display a "problem" image decoration on the submodule.
+     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
      */
-    public void setErrorDecoration(boolean markError) {
-        // nameFigure.setForegroundColor(markError ? ColorFactory.RED : null);
+    public void setProblemDecoration(int severity) {
+    	Image image = getProblemImageFor(severity);
+    	if (image != null)
+    		problemMarkerFigure.setImage(image);
+    	problemMarkerFigure.setVisible(image != null);
+    	invalidate(); //XXX needed?
     }
 
     /**
-     * Draws a pin on the module to show whether it can be freely movable
+     * Turns the "pin" icon (which shows whether the submodule has a 
+     * user-specified position) on/off
      */
-    public void setPinDecoration(boolean pinned) {
-        // TODO implement a better image which does not hide the secondary icon decoration
-        // this must be called after setDisplayString
-        if (pinned)
-            setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
+    public void setPinDecoration(boolean enabled) {
+        pinFigure.setVisible(enabled);
+        invalidate(); //XXX needed?
     }
 }

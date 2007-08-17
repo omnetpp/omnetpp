@@ -8,7 +8,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
  org.eclipse.draw2d,
  org.eclipse.gef,
- org.omnetpp.common
+ org.omnetpp.common,
+ org.eclipse.core.resources
 Export-Package: org.omnetpp.figures,
  org.omnetpp.figures.layout,
  org.omnetpp.figures.misc

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -395,11 +396,13 @@ public abstract class NEDElement extends PlatformObject
 
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         Assert.isNotNull(typeInfo);
-        Assert.isTrue(this instanceof INedTypeNode, "TypeInfo should be set only on a TopLevelElement");
+        Assert.isTrue(this instanceof INedTypeNode, "TypeInfo should be set only on a TopLevelElement"); //FIXME move to toplevel classes
         // remove the old type info and add the new one as a listener
-        getListeners().remove(this.typeInfo);
-        getListeners().add(typeInfo);
+        if (this.typeInfo != null)
+        	removeNEDChangeListener(this.typeInfo);
         this.typeInfo = typeInfo;
+        if (this.typeInfo != null)
+        	addNEDChangeListener(typeInfo);
     }
 
     /**
@@ -501,8 +504,8 @@ public abstract class NEDElement extends PlatformObject
         return errorMarkerIds;
     }
 
-    public boolean hasErrorMarkers() {
-        return errorMarkerIds.size() > 0;
+    public int getMaxProblemSeverity() {
+        return IMarker.SEVERITY_WARNING; //XXX errorMarkerIds.size() > 0;
     }
 
     // For debugging purposes only

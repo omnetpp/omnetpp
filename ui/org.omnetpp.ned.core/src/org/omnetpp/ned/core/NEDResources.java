@@ -56,13 +56,7 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
  * plugins for consistency checks among NED files etc.
  *
  * It listens to workspace resource changes and modifies it content based on
- * change notifications
- *
- * XXX should do full rebuild when Eclipse starts up!!! XXX default installation
- * should have "workspace auto refresh" enabled, and "Problems view" shown!!!
- * XXX when something changes, we always rebuild INEDComponents. This is not
- * needed -- rather, we should just call NEDComponent.componentsChanged()!
- * (PERFORMANCE)
+ * change notifications.
  *
  * @author andras
  */
@@ -87,15 +81,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     };
 
     private static final String NED_EXTENSION = "ned";
+
     // listener list that listeners on all NED changes
-    private transient NEDChangeListenerList nedComponentChangeListenerList = null;
-    private transient NEDChangeListenerList nedModelChangeListenerList = null;
+    private NEDChangeListenerList nedComponentChangeListenerList = null;
+    private NEDChangeListenerList nedModelChangeListenerList = null;
     private final INEDChangeListener nedModelChangeListener =
                         new INEDChangeListener() {
                             public void modelChanged(NEDModelEvent event) {
                                 nedModelChanged(event);
                             }
                         };
+                        
     // stores parsed contents of NED files
     private final HashMap<IFile, INEDElement> nedFiles = new HashMap<IFile, INEDElement>();
 
@@ -809,4 +805,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 " isContent:"+((delta.getFlags() & IResourceDelta.CONTENT) != 0)+
                 " isMarkerChange:"+((delta.getFlags() & IResourceDelta.MARKERS) != 0));
     }
+
+	public int getConnectCount(IFile file) {
+		return connectCount.containsKey(file) ? connectCount.get(file) : 0;
+	}
 }

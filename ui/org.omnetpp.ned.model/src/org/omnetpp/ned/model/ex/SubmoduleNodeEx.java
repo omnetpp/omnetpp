@@ -14,6 +14,7 @@ import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
@@ -68,24 +69,21 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     
     @Override
     public void fireModelChanged(NEDModelEvent event) {
-    	// TODO: invalidate or recompute cached display string because NED tree may be changed outside of the DisplayString class
-   		displayString = null;
+    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
+    	if (!NEDElementUtilEx.isDisplayStringUpToDate(this))
+    		displayString = null;
     	super.fireModelChanged(event);
     }
 
-	public DisplayString getDisplayString() {
-		if (displayString == null) {
-			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
-		}
-		return displayString;
-	}
-
-    public DisplayString getEffectiveDisplayString() {
-        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    public DisplayString getDisplayString() {
+    	if (displayString == null)
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getEffectiveTypeRef()));
+    	return displayString;
     }
 
     /**
-     * Returns the effective display string for this submodule, assuming
+     * Returns the display string for this submodule, assuming
      * that the submodule's actual type is the compound or simple module type
      * passed in the <code>submoduleType</code> parameter. This is useful
      * when the submodule is a "like" submodule, whose the actual submodule
@@ -95,8 +93,11 @@ public final class SubmoduleNodeEx extends SubmoduleNode
      *
      * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
      */
-    public DisplayString getEffectiveDisplayString(IModuleTypeNode submoduleType) {
-        return NEDElementUtilEx.getEffectiveDisplayString(this, submoduleType);
+    public DisplayString getDisplayString(IModuleTypeNode submoduleType) {
+    	if (displayString == null)
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    	displayString.setFallbackDisplayString(submoduleType.getDisplayString());
+    	return displayString;
     }
 
 	/**
@@ -138,15 +139,15 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getEffectiveType();
         INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
-        if ( typeName == null || "".equals(typeName) || typeInfo == null)
+        if (typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
 
         return typeInfo.getResolver().getComponent(typeName);
     }
 
-    public INEDElement getEffectiveTypeRef() {
+    public INedTypeNode getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        return it == null ? null : (INedTypeNode) it.getNEDElement(); //FIXME change getNEDElement return type!!!
     }
 
     public String getEffectiveType() {

@@ -52,6 +52,10 @@ abstract public class NedEditPart
     	super.refresh();
     	for (Object child : getChildren())
     		((AbstractGraphicalEditPart)child).refresh();
+    	for (Object child : getSourceConnections())
+    		((AbstractGraphicalEditPart)child).refresh();
+    	for (Object child : getTargetConnections())
+    		((AbstractGraphicalEditPart)child).refresh();
     }
 
     public void setEditable(boolean editable) {

@@ -106,7 +106,7 @@ public class MergedPropertySource implements IPropertySource2 {
 //    }
 
     /**
-     * @param readOnly Sets the property source read only state
+     * Sets the property source's read only state
      */
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;

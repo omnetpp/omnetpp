@@ -12,6 +12,8 @@ import org.omnetpp.ned.model.interfaces.IHasConnections;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
@@ -156,14 +158,19 @@ public final class ConnectionNodeEx extends ConnectionNode
 		return gate;
 	}
 
-	public DisplayString getDisplayString() {
-		if (displayString == null)
-			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
-		return displayString;
-	}
+    @Override
+    public void fireModelChanged(NEDModelEvent event) {
+    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
+    	if (!NEDElementUtilEx.isDisplayStringUpToDate(this))
+    		displayString = null;
+    	super.fireModelChanged(event);
+    }
 
-    public DisplayString getEffectiveDisplayString() {
-        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    public DisplayString getDisplayString() {
+    	if (displayString == null)
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getEffectiveTypeRef()));
+    	return displayString;
     }
 
     /**
@@ -256,9 +263,9 @@ public final class ConnectionNodeEx extends ConnectionNode
         return typeInfo.getResolver().getComponent(typeName);
     }
 
-    public INEDElement getEffectiveTypeRef() {
+    public INedTypeNode getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        return it == null ? null : (INedTypeNode) it.getNEDElement();
     }
 
 
@@ -266,7 +273,6 @@ public final class ConnectionNodeEx extends ConnectionNode
      * Returns a list of all parameters assigned in this module (inside the channel spec element)
      */
     public List<ParamNodeEx> getOwnParams() {
-        // FIXME does not include parameters in param groups !!!
         List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
 
         ChannelSpecNode channelSpecNode = getFirstChannelSpecChild();;

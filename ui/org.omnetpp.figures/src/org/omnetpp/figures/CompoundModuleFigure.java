@@ -1,6 +1,19 @@
 package org.omnetpp.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.FanRouter;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.FreeformLayeredPane;
+import org.eclipse.draw2d.FreeformViewport;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayeredPane;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
@@ -11,7 +24,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
-
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -439,9 +451,17 @@ public class CompoundModuleFigure extends ModuleFigure
         getCompoundModuleBorder().getTitleBorder().setDirectEditTextVisible(visible);
     }
 
-    // TODO implement error decoration
-    public void setErrorDecoration(boolean markError) {
-        // getCompoundModuleBorder().getTitleBorder().setTextColor(markError ? ColorFactory.RED : ColorFactory.BLACK);
+    /**
+     * Display a "problem" image decoration on the submodule.
+     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
+     */
+    public void setProblemDecoration(int severity) {
+    	Image image = getProblemImageFor(severity);
+    	// TODO implement error decoration
+//    	if (image != null)
+//    		problemMarkerFigure.setImage(image);
+//    	problemMarkerFigure.setVisible(image==null);
+//    	invalidate(); //XXX needed?
     }
 
 }

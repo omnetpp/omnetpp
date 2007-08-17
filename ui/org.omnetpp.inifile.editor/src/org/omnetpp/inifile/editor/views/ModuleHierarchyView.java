@@ -162,7 +162,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					if (mn.submoduleType == null)
 						return NEDTreeUtil.getNedModelLabelProvider().getImage(mn.submoduleNode);
 					// for a "like" submodule, use icon of the concrete module type
-		            DisplayString dps = mn.submoduleNode.getEffectiveDisplayString(mn.submoduleType);
+		            DisplayString dps = mn.submoduleNode.getDisplayString(mn.submoduleType);
 		            Image image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
 					return image!=null ? image : NEDTreeUtil.getNedModelLabelProvider().getImage(mn.submoduleNode);
 				}

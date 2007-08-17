@@ -187,3 +187,5 @@ editparts
 init
 colorizers
 reconcilers
+spec
+conceptionally
