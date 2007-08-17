@@ -1,3 +1,33 @@
+2007-08-17
+----------
+
+Additions:
+
+   + Bar charts: fields that labels the bars can be given in the Properties dialog.
+     Fields that are not selected for group labels or bar labels are averaged.
+
+   + Names of the lines can be specified by a format string in the Properties dialog
+     of LineCharts:
+
+       "{field}" is substituted by the value of the field
+       valid fields are: file, run, module, name + any run attribute
+       use "\{" to quote a "{"
+
+Fixes:
+
+   + Usability of the Inputs page: 
+        the 3 tree view is displayed on a single tabbed panel
+        the tree nodes are ordered (dictionary sort) 
+        logical view: display files too
+
+   + Bar charts: limit height of domain labels to 50% of the bar chart max.
+
+   + Bar chart: tooltip has "F2 to focus" now
+
+   + "Add Selected To Dataset" action offers to add the items by the filter
+      when all is selected 
+
+
 2007-08-03
 ----------
 
