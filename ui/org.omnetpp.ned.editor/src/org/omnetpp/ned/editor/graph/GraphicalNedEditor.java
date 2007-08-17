@@ -631,20 +631,13 @@ public class GraphicalNedEditor
 		}
 
 		String hoverText = "";
-
 		String nedSource = "<pre>"+NEDTreeUtil.generateNedSource(element, true)+"</pre>";
-		DisplayString displayString = element instanceof IHasDisplayString ? ((IHasDisplayString)element).getDisplayString() : null;
 
 //		if (StringUtils.isEmpty(typeComment) && StringUtils.isEmpty(comment))
 //			return null;
 
 		hoverText += nedSource;
 
-		if (displayString != null) {
-			displayString.invalidate();
-			hoverText += "display string: " + displayString.toString() + "<br/>";
-		}
-		
 		if (!StringUtils.isEmpty(comment))
 			hoverText += comment;
 		if (!StringUtils.isEmpty(comment) && !StringUtils.isEmpty(typeComment))

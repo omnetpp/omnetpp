@@ -40,8 +40,7 @@ public class ExternalChangeCommand extends Command {
 			NEDStructuralChangeEvent structuralChangeEvent = (NEDStructuralChangeEvent)event;
 			switch (structuralChangeEvent.getType()) {
 				case INSERTION:
-					INEDElement element = structuralChangeEvent.getNewLocation();
-					element.getParent().insertChildBefore(element, structuralChangeEvent.getChild());
+					structuralChangeEvent.getSource().insertChildBefore(structuralChangeEvent.getNewLocation(), structuralChangeEvent.getChild());
 					break;
 				case REMOVAL:
 					structuralChangeEvent.getChild().removeFromParent();
