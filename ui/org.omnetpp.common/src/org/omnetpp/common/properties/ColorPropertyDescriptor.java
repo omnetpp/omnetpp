@@ -7,8 +7,8 @@ import org.omnetpp.common.color.ColorFactory;
 
 /**
  * Descriptor for a property that has a color value which should be edited
- * with a color cell editor. This is a modified version of the platform's class
- * profiding specialized text editor
+ * with a color cell editor. This is a modified version of the platform's class,
+ * providing a specialized text editor
  */
 public class ColorPropertyDescriptor extends PropertyDescriptor {
     /**
