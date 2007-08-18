@@ -196,3 +196,5 @@ src
 attr
 polymorphic
 sashform
+subclassing
+inout

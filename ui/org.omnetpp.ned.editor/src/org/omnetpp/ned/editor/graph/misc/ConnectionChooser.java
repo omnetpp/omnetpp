@@ -8,7 +8,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
@@ -51,10 +50,12 @@ public class ConnectionChooser {
 
         BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 
+        // unidirectional connections
         for (GateNode srcOut : srcOutModuleGates)
             for (GateNode destIn : destInModuleGates)
                 addConnectionPairsToMenu(connCommand, menu, srcOut, destIn);
 
+        // bidirectional connections
         for (GateNode srcInOut : srcInOutModuleGates)
             for (GateNode destInOut : destInOutModuleGates)
                 addConnectionPairsToMenu(connCommand, menu, srcInOut, destInOut);
@@ -67,42 +68,27 @@ public class ConnectionChooser {
     }
 
     /**
-     * @param module The queried module
-     * @param gateType The type of the gate we are looking for
-     * @param nameFilter name filter, or NULL if no filtering is needed
-     * @return All gates from the module matching the type and name
+     * Returns gates with the given type (in, out, inout) of the given compound module 
+     * or submodule. If nameFilter is present (not null), the gate with that name is returned.
      */
     private static List<GateNode> getModuleGates(IHasConnections module, int gateType, String nameFilter) {
         List<GateNode> result = new ArrayList<GateNode>();
 
-        INEDTypeInfo comp = null;
-
         if (module instanceof CompoundModuleNodeEx) {
-            comp = ((CompoundModuleNodeEx)module).getContainerNEDTypeInfo();
-
-            // if we connect a compound module swap the gate type (in<>out) submodule.out -> out
+            // if we connect a compound module, swap the gate type (in<>out) submodule.out -> out
             if (gateType == GateNode.NED_GATETYPE_INPUT)
                 gateType = GateNode.NED_GATETYPE_OUTPUT;
             else if (gateType == GateNode.NED_GATETYPE_OUTPUT)
                 gateType = GateNode.NED_GATETYPE_INPUT;
-            else
-                gateType = GateNode.NED_GATETYPE_INOUT;
         }
 
-        if (module instanceof SubmoduleNodeEx) {
-            comp = ((SubmoduleNodeEx)module).getTypeNEDTypeInfo();
-        }
+        INEDTypeInfo typeInfo = module.getContainerNEDTypeInfo();
+        Assert.isTrue(typeInfo != null);
 
-        if (comp == null)
-            return result;
-
-        for (INEDElement elem: comp.getGates().values()) {
-            GateNode currGate = (GateNode)elem;
-            if (currGate.getType() == gateType)
-                if (nameFilter == null || nameFilter.equals(currGate.getName()))
-                        result.add(currGate);
-        }
-
+        for (GateNode gate: typeInfo.getGates().values())
+            if (gate.getType() == gateType)
+                if (nameFilter == null || nameFilter.equals(gate.getName()))
+                	result.add(gate);
         return result;
     }
 
@@ -222,7 +208,7 @@ public class ConnectionChooser {
 
     /**
      * Returns whether the connection is valid, that is, the gates we want to connect
-     * are unconnected currently)
+     * are unconnected currently
      */
     private static boolean isConnectionValid(ConnectionCommand connCommand, ConnectionNode conn, GateNode srcGate, GateNode destGate) {
         CompoundModuleNodeEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();

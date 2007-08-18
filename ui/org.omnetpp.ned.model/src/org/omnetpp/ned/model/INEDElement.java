@@ -303,12 +303,6 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDTypeInfo getContainerNEDTypeInfo();
 
 	/**
-	 * Sets the component type info data. Should be used by the incremental builder ONLY.
-	 */
-	//XXX move this into INedTypeNode? --Andras
-	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
-
-	/**
 	 * Adds a new NED change listener to the element. The
 	 * listener will receive notifications from the whole
 	 * NEDElement subtree (i.e. this element and all elements 

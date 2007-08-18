@@ -49,6 +49,7 @@ import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.pojo.CommentNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 
 
@@ -224,9 +225,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
     protected void buildTable() {
         // build ParamLine list (value objects) for dialog editing
-        for (INEDElement element : module.getParams().values()) {
-            // the param declaration of the node
-            ParamNodeEx paramDecl = (ParamNodeEx)element;
+        for (ParamNode paramDecl : module.getParams().values()) {
             // get the the value of the parameter
             ParamNodeEx paramValue = (ParamNodeEx)module.getParamValues().get(paramDecl.getName());
             ParamLine paramLine = new ParamLine(paramValue);

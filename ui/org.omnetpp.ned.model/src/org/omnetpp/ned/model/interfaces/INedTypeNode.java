@@ -1,6 +1,5 @@
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.ned.model.INEDElement;
 
 /**
  * A marker interface for elements that can be used as toplevel elements
@@ -8,6 +7,11 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
-public interface INedTypeNode extends INEDElement, IHasName, IHasAncestors, IHasDisplayString, IHasParameters {
+public interface INedTypeNode extends IHasName, IHasAncestors, IHasDisplayString, IHasParameters {
+	/**
+	 * Sets the associated component type info. To be called from the NED type 
+	 * resolver (NEDResources) only.
+	 */
+	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
 
 }

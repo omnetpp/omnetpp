@@ -140,7 +140,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     // type support
     public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getEffectiveType();
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); //XXX how can this be null?? should always exist!
         if (typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
 

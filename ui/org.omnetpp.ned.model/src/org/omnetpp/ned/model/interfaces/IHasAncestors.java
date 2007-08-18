@@ -11,7 +11,7 @@ import org.omnetpp.ned.model.pojo.ExtendsNode;
  * @author rhornig
  */
 //XXX merge into INedTypeNode? --Andras
-public interface IHasAncestors extends INEDElement {
+public interface IHasAncestors extends IHasName {
 
     /**
      * Returns the base object's name (ONLY the first extends node name returned)
@@ -24,7 +24,7 @@ public interface IHasAncestors extends INEDElement {
     public void setFirstExtends(String ext);
 
     /**
-     * Returns the TTypeInfo object of the base object of this component. ie this method checks the base type
+     * Returns the TypeInfo object of the base object of this component. ie this method checks the base type
      * of this element and looks up the typeinfo object to that. NOTE that this check only the
      * FIRST extends node, so it returns the first extends child for ModuleInterface and ChannelInterface
      * (Special handling is needed for these types)

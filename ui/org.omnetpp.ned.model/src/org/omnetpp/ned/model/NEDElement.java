@@ -389,9 +389,11 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     	return typeInfo != null || getParent() == null ? typeInfo : getParent().getContainerNEDTypeInfo();
     }
 
+    // part of INedTypeNode, defined here to avoid copy/paste
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         Assert.isNotNull(typeInfo);
-        Assert.isTrue(this instanceof INedTypeNode, "TypeInfo should be set only on a TopLevelElement"); //FIXME move to toplevel classes
+        Assert.isTrue(this instanceof INedTypeNode);
+        
         // remove the old type info and add the new one as a listener
         if (this.typeInfo != null)
         	removeNEDChangeListener(this.typeInfo);
