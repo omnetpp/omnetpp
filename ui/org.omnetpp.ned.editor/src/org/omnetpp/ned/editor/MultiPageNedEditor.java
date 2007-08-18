@@ -117,7 +117,7 @@ public class MultiPageNedEditor
 
     @Override
     protected void setInput(IEditorInput newInput) {
-		System.out.println("setInput()");
+		//System.out.println("setInput()");
 
 		IEditorInput oldInput = getEditorInput();
 		if (ObjectUtils.equals(oldInput, newInput))
@@ -151,7 +151,7 @@ public class MultiPageNedEditor
 
 	@Override
 	protected void createPages() {
-		System.out.println("createPages()");
+		//System.out.println("createPages()");
 
 		graphEditor = new GraphicalNedEditor();
 		textEditor = new TextualNedEditor();
@@ -162,7 +162,7 @@ public class MultiPageNedEditor
             // setup graphical editor
             graphPageIndex = addPage(graphEditor, getEditorInput());
             graphEditor.markContent();
-            setPageText(graphPageIndex,"Graphical");
+            setPageText(graphPageIndex, "Graphical");
 
             // setup text editor
             // we don't have to set the content because it's set

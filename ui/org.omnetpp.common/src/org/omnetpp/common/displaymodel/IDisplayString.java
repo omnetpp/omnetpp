@@ -1,5 +1,6 @@
 package org.omnetpp.common.displaymodel;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -74,6 +75,8 @@ public interface IDisplayString {
         		spec.name = StringUtils.substringBefore(specText, "=").trim();
         		spec.shorthandRegex = StringUtils.substringBetween(specText, "=", ",").trim();
         		spec.shorthand = StringUtils.substringAfter(specText, ",").trim();
+        		Assert.isTrue(spec.name.matches(spec.shorthandRegex), "enum name must match its own regex");
+        		Assert.isTrue(spec.shorthand.matches(spec.shorthandRegex), "enum shorthand must match its own regex");
         		specs.put(spec.name, spec);
         	}
         	specsReversed = specs.values().toArray(new Item[]{});
@@ -88,23 +91,47 @@ public interface IDisplayString {
     	}
 
     	/**
-    	 * Return the first name whose shorthandRegex matches the given string,
-    	 * or null if none matches.
+		 * Returns the list of all shorthands (standard abbreviations)
+		 */
+    	public String[] getShorthands() {
+			ArrayList<String> result = new ArrayList<String>();
+			for (Item spec : specs.values())
+				result.add(spec.shorthand);
+			return result.toArray(new String[]{});
+		}
+
+    	/**
+    	 * Return the name whose shorthandRegex matches the given string,
+    	 * or null if none matches. Note: matching is done in reverse order.
     	 */
-    	public String getNameFor(String shorthand) {
+    	public String getNameFor(String text) {
     		for (Item spec : specsReversed)
-    			if (shorthand.matches(spec.shorthandRegex))
+    			if (text.matches(spec.shorthandRegex))
     				return spec.name;
     		return null;
     	}
-    	
+
     	/**
-    	 * Returns a shorthand for the given name, like "da" for "dashed".
+    	 * Return the shorthand (standard abbreviation) whose shorthandRegex 
+    	 * matches the given string, or null if none matches. Note: matching 
+    	 * is done in reverse order.
     	 */
-    	public String getShorthandFor(String name) {
+    	public String getShorthandFor(String text) {
+    		for (Item spec : specsReversed)
+    			if (text.matches(spec.shorthandRegex))
+    				return spec.shorthand;
+    		return null;
+    	}
+
+    	/**
+    	 * Returns the shorthand (standard abbreviation) for the given name, 
+    	 * e.g. returns "da" for "dashed". It is an error if the name does not exist.
+    	 */
+    	public String getShorthandForName(String name) {
     		Assert.isTrue(specs.containsKey(name), "invalid enum value");
     		return specs.get(name).shorthand;
     	}
+
     }
     
     /**
@@ -259,7 +286,7 @@ public interface IDisplayString {
         	String enumDesc = "";
         	if (getEnumSpec() != null)
         		for (String name : getEnumSpec().getNames())
-        			enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandFor(name) + ")"; 
+        			enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandForName(name) + ")"; 
             String defaultValue = getTag()==null ? null : getTagArgDefault(getTagName(), getPos());
             return visibleDesc + 
             (enumDesc.equals("") ? "" : ". Values: " + enumDesc) + 

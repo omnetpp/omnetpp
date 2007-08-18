@@ -6,6 +6,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
+import org.omnetpp.common.properties.EnumComboboxPropertyDescriptor;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
@@ -18,7 +19,6 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  *
  * @author rhornig
  */
-//TODO Some property needs a combo box cell editor
 //TODO implement number cell editor
 abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
@@ -45,12 +45,13 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     }
 
     /**
-     * @param prop The property we want a descriptor for
-     * @return The property descriptor used for the property
+     * Creates and returns a property descriptor for the given display string property.
      */
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         PropertyDescriptor pdesc;
-        if (prop.getType() == DisplayString.PropType.STRING)
+        if (prop.getEnumSpec() != null)
+        	pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getVisibleName(), prop.getEnumSpec());
+        else if (prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
         else if (prop.getType() == DisplayString.PropType.UNIT)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
@@ -61,7 +62,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         else if (prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getVisibleName());
         else
-            pdesc = new PropertyDescriptor(prop, prop.getVisibleName());  // read only editor
+            pdesc = new PropertyDescriptor(prop, prop.getVisibleName());  // read-only editor
 
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());

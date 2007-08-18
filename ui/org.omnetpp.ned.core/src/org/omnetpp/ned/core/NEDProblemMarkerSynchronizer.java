@@ -49,9 +49,7 @@ public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
     }
 
     /**
-     * Adds all markers found in the error store to the file for later synchronization;
-     * @param file
-     * @param errors
+     * Adds all markers found in the error store to the file for later synchronization.
      */
     public void addMarkersToFileFromErrorStore(IFile file, INEDElement context, NEDErrorStore errors) {
         registerFile(file);

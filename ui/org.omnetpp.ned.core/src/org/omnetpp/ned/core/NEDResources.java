@@ -488,10 +488,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * duplicate names only get detected when this gets run!
      */
     public synchronized void rehashIfNeeded() {
-        // long startMillis = System.currentTimeMillis();
 
         if (!needsRehash)
             return;
+
+        long startMillis = System.currentTimeMillis();
 
         needsRehash = false;
         debugRehashCounter++;
@@ -603,11 +604,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             validator.validate(tree);
         }
 
+        long dt = System.currentTimeMillis() - startMillis;
+        System.out.println("rehashIfNeeded(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers");
+
         // we should defer the synchronization to a different job, so no deadlock can occur
         markerSync.runAsWorkspaceJob();
 
-        // long dt = System.currentTimeMillis() - startMillis;
-        // System.out.println("rehashIfNeeded() took " + dt + "ms");
     }
 
     public synchronized void invalidate() {
@@ -637,7 +639,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         } catch (CoreException e) {
             NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
-            nedModelChangeNotificationDisabled=false;
+            nedModelChangeNotificationDisabled = false;
             Assert.isTrue(debugRehashCounter <= 1,"Too many rehash operation in readAllNedFilesInWorkspace()");
             nedModelChanged(new NEDModelEvent(null));
         }

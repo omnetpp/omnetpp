@@ -83,7 +83,7 @@ public class ProblemMarkerSynchronizer {
 	/**
 	 * @return The number of markers registered in this synchronizer
 	 */
-	public int getNoOfMarkers() {
+	public int getNumberOfMarkers() {
 	    return markerTable.size();
 	}
 	/**
