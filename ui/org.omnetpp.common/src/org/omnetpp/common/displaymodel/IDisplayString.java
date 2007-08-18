@@ -11,10 +11,12 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * FIXME undocumented class
+ * Declares the supported display string tags, with types, descriptions, 
+ * categorization, default values, and so on.
  *
  * @author rhornig
  */
+//TODO figures and Tkenv should use EnumSpec as well!
 public interface IDisplayString {
 
 	/**
@@ -75,12 +77,16 @@ public interface IDisplayString {
         		spec.name = StringUtils.substringBefore(specText, "=").trim();
         		spec.shorthandRegex = StringUtils.substringBetween(specText, "=", ",").trim();
         		spec.shorthand = StringUtils.substringAfter(specText, ",").trim();
-        		Assert.isTrue(spec.name.matches(spec.shorthandRegex), "enum name must match its own regex");
-        		Assert.isTrue(spec.shorthand.matches(spec.shorthandRegex), "enum shorthand must match its own regex");
         		specs.put(spec.name, spec);
         	}
         	specsReversed = specs.values().toArray(new Item[]{});
         	ArrayUtils.reverse(specsReversed);
+        	
+        	// sanity checks
+        	for (Item spec : specs.values()) {
+        		Assert.isTrue(spec.name.equals(getNameFor(spec.name)), "enum name must map to itself");
+        		Assert.isTrue(spec.name.equals(getNameFor(spec.shorthand)), "enum shorthand must map to itself");
+        	}
     	}
     	
     	/**
@@ -166,7 +172,7 @@ public interface IDisplayString {
         IMAGECOLOR(Tag.i, 1, PropType.COLOR, PropGroup.Icon, "icon color", "A color to colorize the icon (colorname or #RRGGBB or @HHSSBB)", null),
         IMAGECOLORPERCENTAGE(Tag.i, 2, PropType.INTEGER, PropGroup.Icon, "icon colorization %", "Amount of colorization in percent", null),
         // IS tag
-        IMAGESIZE(Tag.is, 0, PropType.STRING, PropGroup.Icon, "icon size", "The size of the image", "very small=v.*s.*,vs; small=s.*,s; normal=n.*,n; large=l.*,l; very large=v.*l.*,vl"),
+        IMAGESIZE(Tag.is, 0, PropType.STRING, PropGroup.Icon, "icon size", "The size of the image", "very small=v.*s.*,vs; small=s.*,s; normal=n.*,n; large=l.*,l; very large=v[^s]*l.*,vl"),
         // I2 tag
         OVIMAGE(Tag.i2, 0, PropType.IMAGE, PropGroup.Icon, "overlay icon", "An icon added to the upper right corner of the original image", null),
         OVIMAGECOLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon color", "A color to colorize the overlay icon (colorname or #RRGGBB or @HHSSBB)", null),
