@@ -38,6 +38,7 @@ import org.omnetpp.common.CommonPlugin;
  * 
  * @author Andras
  */
+//FIXME selection==null/"" is totally confused. OK button should be disabled until user makes a choice!!!! this used to work. --Andras
 public class ImageSelectionDialog extends Dialog {
 	private static final int HEIGHT = 350;
 	private static final int WIDTH = 500;

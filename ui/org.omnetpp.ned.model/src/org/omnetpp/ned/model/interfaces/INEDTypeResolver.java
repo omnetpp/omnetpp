@@ -164,6 +164,7 @@ public interface INEDTypeResolver {
 	 * a module type, channel type, etc. The component will NOT be registered
 	 * in the resolver. This method was created for handling inner types.
 	 */
-	public INEDTypeInfo wrapNEDElement(INEDElement componentNode);
+	//XXX probably to be revised... --Andras
+	public INEDTypeInfo wrapNEDElement(INedTypeNode componentNode);
 
 }

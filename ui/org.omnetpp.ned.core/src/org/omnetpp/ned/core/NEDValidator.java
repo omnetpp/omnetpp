@@ -3,12 +3,62 @@ package org.omnetpp.ned.core;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.pojo.*;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.pojo.AbstractNEDValidator;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.ChannelSpecNode;
+import org.omnetpp.ned.model.pojo.ClassDeclNode;
+import org.omnetpp.ned.model.pojo.ClassNode;
+import org.omnetpp.ned.model.pojo.CommentNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ConditionNode;
+import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
+import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.pojo.CplusplusNode;
+import org.omnetpp.ned.model.pojo.EnumDeclNode;
+import org.omnetpp.ned.model.pojo.EnumFieldNode;
+import org.omnetpp.ned.model.pojo.EnumFieldsNode;
+import org.omnetpp.ned.model.pojo.EnumNode;
+import org.omnetpp.ned.model.pojo.ExpressionNode;
+import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.FieldNode;
+import org.omnetpp.ned.model.pojo.FieldsNode;
+import org.omnetpp.ned.model.pojo.FilesNode;
+import org.omnetpp.ned.model.pojo.FunctionNode;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.pojo.IdentNode;
+import org.omnetpp.ned.model.pojo.ImportNode;
+import org.omnetpp.ned.model.pojo.InterfaceNameNode;
+import org.omnetpp.ned.model.pojo.LiteralNode;
+import org.omnetpp.ned.model.pojo.LoopNode;
+import org.omnetpp.ned.model.pojo.MessageDeclNode;
+import org.omnetpp.ned.model.pojo.MessageNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.MsgFileNode;
+import org.omnetpp.ned.model.pojo.MsgpropertyNode;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.OperatorNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.PatternNode;
+import org.omnetpp.ned.model.pojo.PropertiesNode;
+import org.omnetpp.ned.model.pojo.PropertyDeclNode;
+import org.omnetpp.ned.model.pojo.PropertyKeyNode;
+import org.omnetpp.ned.model.pojo.PropertyNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.pojo.StructDeclNode;
+import org.omnetpp.ned.model.pojo.StructNode;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmodulesNode;
+import org.omnetpp.ned.model.pojo.TypesNode;
+import org.omnetpp.ned.model.pojo.UnknownNode;
 
 /**
  * Validates consistency of NED files.
@@ -323,7 +373,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				case NED_CHANNEL:
 					validator.validate(child);
 					String name = child.getAttribute("name");
-					innerTypes.put(name, resolver.wrapNEDElement(child));
+					innerTypes.put(name, resolver.wrapNEDElement((INedTypeNode)child));
 					members.put(name, child);
 					break;
 				default:

@@ -107,7 +107,7 @@ public class ConnectionChooser {
     }
 
     /**
-     * @param connCommand The commend used to specify which module and gates are to be used
+     * @param connCommand The command used to specify which module and gates are to be used
      * @param menu The popup menu where the connection menu items should be added
      * @param srcGate The source gate used to create the connections
      * @param destGate The source gate used to create the connections

@@ -24,7 +24,9 @@ import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeDifferenceUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.ChannelNodeEx;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -133,13 +135,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // FIXME should use built-in NED text from nedxml lib!!!
     protected void createBuiltInNEDTypes() {
         // create built-in channel type cIdealChannel
-        ChannelNode nullChannel = (ChannelNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
+        ChannelNodeEx nullChannel = (ChannelNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
         nullChannel.setName("cIdealChannel");
         nullChannel.setIsWithcppclass(true);
         nullChannelType = new NEDComponent(nullChannel, null, this);
 
         // create built-in channel type cBasicChannel
-        ChannelNode basicChannel = (ChannelNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
+        ChannelNodeEx basicChannel = (ChannelNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
         basicChannel.setName("cBasicChannel");
         basicChannel.setIsWithcppclass(true);
         ParametersNode params = (ParametersNode) NEDElementFactoryEx.getInstance().createNodeWithTag(
@@ -154,7 +156,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // interface IBidirectionalChannel { gates: inout a; inout b; }
         // interface IUnidirectionalChannel {gates: input i; output o; }
         //
-        ModuleInterfaceNode bidirChannel = (ModuleInterfaceNode) NEDElementFactoryEx.getInstance().createNodeWithTag(
+        ModuleInterfaceNodeEx bidirChannel = (ModuleInterfaceNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(
                 NEDElementTags.NED_MODULE_INTERFACE);
         bidirChannel.setName("IBidirectionalChannel");
         GatesNode gates = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES, bidirChannel);
@@ -162,7 +164,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         gates.appendChild(createGate("b", NEDElementUtil.NED_GATETYPE_INOUT));
         bidirChannelType = new NEDComponent(bidirChannel, null, this);
 
-        ModuleInterfaceNode unidirChannel = (ModuleInterfaceNode) NEDElementFactoryEx.getInstance().createNodeWithTag(
+        ModuleInterfaceNodeEx unidirChannel = (ModuleInterfaceNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(
                 NEDElementTags.NED_MODULE_INTERFACE);
         unidirChannel.setName("IUnidirectionalChannel");
         GatesNode gates2 = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES,
@@ -376,7 +378,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return components.get(name);
     }
 
-    public synchronized INEDTypeInfo wrapNEDElement(INEDElement componentNode) {
+    public synchronized INEDTypeInfo wrapNEDElement(INedTypeNode componentNode) {
         return new NEDComponent(componentNode, null, this);
     }
 
@@ -573,7 +575,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                       }
                     }
                     else {
-                        INEDTypeInfo component = new NEDComponent(node, file, this);
+                        INEDTypeInfo component = new NEDComponent((INedTypeNode)node, file, this);
                         map.put(name, component);
                         components.put(name, component);
                     }

@@ -40,6 +40,7 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
  *
  * @author rhornig
  */
+//FIXME change this so that figures are created on demand.
 public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDirectEditSupport {
 	// parent figures for attached figures
     protected Layer foregroundLayer;

@@ -7,13 +7,17 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.PropertyNode;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode,
  * CompoundModuleNode or ModuleInterfaceNode subtree; provides easy lookup
  * of its gates, parameters, properties, submodules, inner types.
  * Enables the model element so have some additional cross-model info like a
- * list of names in the inheritence chain, the containing workspace file
+ * list of names in the inheritance chain, the containing workspace file
  * inherited parameter, gate, connection and submodule lists
  *
  * XXX: stuff like getType(), getDocu(), getValue() etc should be declared on the Ex classes!
@@ -24,7 +28,7 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
  *       - methods returning the INEDElement list instead of simple name list (for all methods)
  *       - access to toplevel components via this interface ???
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public interface INEDTypeInfo extends INEDChangeListener {
 	/**
@@ -48,9 +52,10 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public IFile getNEDFile();
 
     /**
-     * SIgnals that the info has been invalidated and must be rebuilt next time accessed.
+     * Signals that the info has been invalidated and must be rebuilt next time accessed.
      */
     public void invalidate();
+    
 	/**
 	 * Returns the list of nesting NED elements that extend over the given line:column
 	 * in the source file. The list contains the component's root node as well.
@@ -59,18 +64,27 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	 */
 	public INEDElement[] getNEDElementsAt(int line, int column);
 
+	/**
+	 * Returns the inheritance chain, starting with this NED type, and ending with the root.
+	 */
+	public List<INEDTypeInfo> getExtendsChain();
+
+	/**
+	 * Returns the inheritance chain, starting with the root, and ending with this NED type.
+	 */
+	public List<INEDTypeInfo> getForwardExtendsChain();
+
 	// TODO comment!
-	// these methods are for members declared on this component (ie exluding inherited ones)
+	// these methods are for members declared on this component (i.e. excluding inherited ones)
 	// member: gate/param/property/submod/innertype
-	//XXX why not typed where possible? (ie getParams(): ParamNode instead of INEDElement)
     public Map<String, INEDElement> getOwnMembers();
-    public Map<String, INEDElement> getOwnParams();
-    public Map<String, INEDElement> getOwnParamValues();
-    public Map<String, INEDElement> getOwnProperties();
-    public Map<String, INEDElement> getOwnGates();
-    public Map<String, INEDElement> getOwnGateSizes();
-    public Map<String, INEDElement> getOwnInnerTypes();
-    public Map<String, INEDElement> getOwnSubmods();
+    public Map<String, ParamNode> getOwnParams();
+    public Map<String, ParamNode> getOwnParamValues();
+    public Map<String, PropertyNode> getOwnProperties();
+    public Map<String, GateNode> getOwnGates();
+    public Map<String, GateNode> getOwnGateSizes();
+    public Map<String, INedTypeNode> getOwnInnerTypes();
+    public Map<String, SubmoduleNode> getOwnSubmods();
     public Set<String> getOwnUsedTypes();
 
 	// same as above, for inherited members as well
@@ -82,6 +96,10 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, INEDElement> getGateSizes();
     public Map<String, INEDElement> getInnerTypes();
     public Map<String, INEDElement> getSubmods();
+
+	public List<ParamNode> getParameterInheritanceChain(String parameterName);
+	public List<GateNode> getGateInheritanceChain(String gateName);
+	public List<PropertyNode> getPropertyInheritanceChain(String propertyName);
 
     /**
      * Returns the list of all types derived from this type
