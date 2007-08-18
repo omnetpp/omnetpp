@@ -28,9 +28,9 @@ public class EditableComboBoxCellEditor extends ComboBoxCellEditor {
 
     @Override
     protected void doSetValue(Object value) {
-        String newVal = (value == null) ? "" : value.toString();
+        String newValue = (value == null) ? "" : value.toString();
         if (getControl() != null)
-            ((CCombo)getControl()).setText(newVal);
+            ((CCombo)getControl()).setText(newValue);
     }
 
 }
