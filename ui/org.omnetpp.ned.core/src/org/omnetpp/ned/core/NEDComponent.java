@@ -10,11 +10,14 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
@@ -103,30 +106,33 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     /**
 	 * Collect parameter declarations, gate declarations, inner types, etc into a hash table
 	 * @param map  			stores result
-	 * @param tagCode			types of elements to collect (NED_xxx constant)
-	 * @param sectionTagCode	tag code of section to search within component node
-	 * @param nameAttr			name of "name" attr of given node; this will be the key in the hashmap
-	 * @param typeAttr			name of "type" attr, or null if none. If given, the INEDElement must
+     * @param sectionTagCode	tag code of section to search within component node
+     * @param tagCode			types of elements to collect (NED_xxx constant)
+     * @param nameAttr			name of "name" attr of given node; this will be the key in the hashmap
+     * @param typeAttr			name of "type" attr, or null if none. If given, the INEDElement must
 	 * 							have this attribute non-empty to be collected (this is how we collect
 	 * 							parameter declarations, and ignore parameter assignments/refinements)
 	 */
 	@SuppressWarnings("unchecked")
-	protected void collect(Map<String,? extends INEDElement> map, int tagCode,
-							int sectionTagCode,	String nameAttr, String typeAttr) {  //FIXME use predicate
-		INEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
-		if (section!=null) {
-			// search nodes within section ("gates:", "parameters:", etc)
-			for (INEDElement node : section) {
-				if (tagCode==-1 || node.getTagCode()==tagCode) {
-					if (typeAttr==null || !(node.getAttribute(typeAttr)==null || "".equals(node.getAttribute(typeAttr)))) {
-						String name = node.getAttribute(nameAttr);
-						((Map)map).put(name, node);
-					}
-				}
+	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode,
+							final int tagCode, final String nameAttr, final String typeAttr) {
+		collect(map, sectionTagCode, new IPredicate<IHasName>() {
+			public boolean matches(IHasName node) {
+				return (tagCode==-1 || node.getTagCode()==tagCode) &&
+					 (typeAttr==null || StringUtils.isNotEmpty(node.getAttribute(typeAttr)));
 			}
-		}
+		});
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate<IHasName> predicate) { 
+		INEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
+		if (section != null)
+			for (INEDElement node : section) 
+				if (node instanceof IHasName && predicate.matches((IHasName)node))
+					((Map)map).put(((IHasName)node).getName(), node);
+	}
+	
     /**
      * Collects all type names that are used in this module (submodule and connection types)
      * @param result storage for the used types
@@ -240,19 +246,19 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         ownUsedTypes.clear();
 
         // collect stuff from component declaration
-        collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
-        collect(ownParams, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
-        collect(ownParamValues, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, null);
-        collect(ownGates, NED_GATE, NED_GATES, GateNode.ATT_NAME, GateNode.ATT_TYPE);
-        collect(ownGateSizes, NED_GATE, NED_GATES, GateNode.ATT_NAME, null); //FIXME and: gatesize attribute is not empty!
-        collect(ownSubmodules, NED_SUBMODULE, NED_SUBMODULES, SubmoduleNode.ATT_NAME, null);
+        collect(ownProperties, NED_PARAMETERS, NED_PROPERTY, PropertyNode.ATT_NAME, null);
+        collect(ownParams, NED_PARAMETERS, NED_PARAM, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
+        collect(ownParamValues, NED_PARAMETERS, NED_PARAM, ParamNode.ATT_NAME, null);
+        collect(ownGates, NED_GATES, NED_GATE, GateNode.ATT_NAME, GateNode.ATT_TYPE);
+        collect(ownGateSizes, NED_GATES, NED_GATE, GateNode.ATT_NAME, null); //FIXME and: gatesize attribute is not empty!
+        collect(ownSubmodules, NED_SUBMODULES, NED_SUBMODULE, SubmoduleNode.ATT_NAME, null);
 
         // XXX would be more efficient to collect the following in one pass:
-        collect(ownInnerTypes, NED_SIMPLE_MODULE, NED_TYPES, SimpleModuleNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_COMPOUND_MODULE, NED_TYPES, CompoundModuleNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_CHANNEL, NED_TYPES, ChannelNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_MODULE_INTERFACE, NED_TYPES, ModuleInterfaceNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_CHANNEL_INTERFACE, NED_TYPES, ChannelInterfaceNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_TYPES, NED_SIMPLE_MODULE, SimpleModuleNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_TYPES, NED_COMPOUND_MODULE, CompoundModuleNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_TYPES, NED_CHANNEL, ChannelNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_TYPES, NED_MODULE_INTERFACE, ModuleInterfaceNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_TYPES, NED_CHANNEL_INTERFACE, ChannelInterfaceNode.ATT_NAME, null);
 
         // collect them in one common hash table as well (we assume there's no name clash --
         // that should be checked beforehand by validation!)

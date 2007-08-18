@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.ned.model.INEDElement;
 
 /*
@@ -12,16 +13,6 @@ import org.omnetpp.ned.model.INEDElement;
  * @author Andras
  */
 public interface INEDTypeResolver {
-    /**
-     * Interface for filtering methods like getAllComponentNamesFilteredBy().
-     */
-    interface IPredicate {
-        /**
-         * Returns true if the component should be included in the resulting collection
-         */
-        boolean filter(INEDTypeInfo component);
-    };
-
     /**
      * Mark the whole resolver invalid
      */
@@ -87,7 +78,7 @@ public interface INEDTypeResolver {
     /**
      * Returns the components in the NED files that are matched by the predicate
      */
-    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate predicate);
+    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate<INEDTypeInfo> predicate);
 
 	/**
 	 * Returns all simple and compound modules in the NED files.
@@ -122,7 +113,7 @@ public interface INEDTypeResolver {
     /**
      * Returns all VALID component names in the NED files where the predicate matches
      */
-    public Set<String> getAllComponentNamesFilteredBy(IPredicate predicate);
+    public Set<String> getAllComponentNamesFilteredBy(IPredicate<INEDTypeInfo> predicate);
 
     /**
      * Returns ALL component names in the NED files, including duplicates.

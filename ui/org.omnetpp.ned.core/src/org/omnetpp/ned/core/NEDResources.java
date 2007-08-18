@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
@@ -64,18 +65,18 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // filters for component access with getAllComponentsFilteredBy
-    public static final IPredicate SIMPLE_MODULE_FILTER = new IPredicate() {
-        public boolean filter(INEDTypeInfo component) {
+    public static final IPredicate<INEDTypeInfo> SIMPLE_MODULE_FILTER = new IPredicate<INEDTypeInfo>() {
+        public boolean matches(INEDTypeInfo component) {
             return component.getNEDElement() instanceof SimpleModuleNode;
         }
     };
-    public static final IPredicate COMPOUND_MODULE_FILTER = new IPredicate() {
-        public boolean filter(INEDTypeInfo component) {
+    public static final IPredicate<INEDTypeInfo> COMPOUND_MODULE_FILTER = new IPredicate<INEDTypeInfo>() {
+        public boolean matches(INEDTypeInfo component) {
             return component.getNEDElement() instanceof CompoundModuleNode;
         }
     };
-    public static final IPredicate NETWORK_FILTER = new IPredicate() {
-        public boolean filter(INEDTypeInfo component) {
+    public static final IPredicate<INEDTypeInfo> NETWORK_FILTER = new IPredicate<INEDTypeInfo>() {
+        public boolean matches(INEDTypeInfo component) {
             return component.getNEDElement() instanceof CompoundModuleNodeEx &&
                    ((CompoundModuleNodeEx)component.getNEDElement()).getIsNetwork();
         }
@@ -299,18 +300,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return components.values();
     }
 
-    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate f) {
+    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate<INEDTypeInfo> f) {
         List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
         for (INEDTypeInfo comp : getAllComponents())
-            if (f.filter(comp))
+            if (f.matches(comp))
                 result.add(comp);
         return result;
     }
 
-    public Set<String> getAllComponentNamesFilteredBy(IPredicate f) {
+    public Set<String> getAllComponentNamesFilteredBy(IPredicate<INEDTypeInfo> f) {
         Set<String> result = new HashSet<String>();
         for (INEDTypeInfo comp : getAllComponents())
-            if (f.filter(comp))
+            if (f.matches(comp))
                 result.add(comp.getName());
         return result;
     }

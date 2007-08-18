@@ -2,6 +2,7 @@ package org.omnetpp.test.gui.access;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.InUIThread;
 
 public class TableAccess extends ControlAccess<Table>

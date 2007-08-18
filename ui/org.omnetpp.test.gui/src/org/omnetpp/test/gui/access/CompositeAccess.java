@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.InUIThread;
 
 public class CompositeAccess<T extends Composite> extends ControlAccess<T>
