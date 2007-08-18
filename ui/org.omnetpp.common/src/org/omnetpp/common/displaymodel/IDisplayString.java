@@ -1,5 +1,6 @@
 package org.omnetpp.common.displaymodel;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 
@@ -162,6 +163,10 @@ public interface IDisplayString {
             return tag;
         }
 
+        public String getTagName() {
+            return tag == null ? null : tag.toString();
+        }
+
         public PropGroup getGroup() {
             return group;
         }
@@ -175,8 +180,20 @@ public interface IDisplayString {
         }
 
         public String getVisibleDesc() {
-            String defaultValue = "FIXME todo"; //FIXME TODO put back: getTag() != null ? DisplayString.EMPTY_DEFAULTS.getAsStringLocal(this) : null;
+            String defaultValue = getTag()==null ? null : getTagArgDefault(getTagName(), getPos());
             return visibleDesc + (StringUtils.isNotEmpty(defaultValue) ? " Default: "+defaultValue : "");
+        }
+        
+        private String getTagArgDefault(String tagName, int tagIndex) {
+        	String displayString = IDisplayString.EMPTY_DEFAULTS_STR;
+        	Assert.isTrue(StringUtils.containsNone(displayString, " \t\\"), 
+        			"display string defaults cannot contain backslash or whitespace"); // to simplify parsing
+        	for (String tag : displayString.split(";"))
+        		if (tag.startsWith(tagName+"=")) {
+        			String[] elems = StringUtils.removeStart(tag, tagName+"=").split(",");
+        			return tagIndex >= elems.length ? null : elems[tagIndex]; 
+        		}
+        	return null;
         }
     }
 
