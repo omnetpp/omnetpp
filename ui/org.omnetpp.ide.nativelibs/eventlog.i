@@ -175,7 +175,7 @@ namespace std {
    {
       JNIEnv *jenv = progressDelegateJenv;
       jobject object = (jobject)data;
-      jclass clazz = jenv->GetObjectClass(object); 
+      jclass clazz = jenv->GetObjectClass(object);
       jmethodID progressMethod = jenv->GetMethodID(clazz, "progress", "()V");
       jenv->ExceptionClear();
       jenv->CallVoidMethod(object, progressMethod);
@@ -218,6 +218,8 @@ import java.lang.reflect.Constructor;
 %}
 
 %typemap(javacode) EventLogEntry %{
+
+   @SuppressWarnings("unchecked")
    private static Constructor[] eventLogEntryConstructors = new Constructor[100];
 
    public boolean equals(Object obj) {
@@ -228,6 +230,7 @@ import java.lang.reflect.Constructor;
       return (int)getCPtr(this);
    }
 
+   @SuppressWarnings("unchecked")
    public static EventLogEntry newEventLogEntry(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)
@@ -261,6 +264,8 @@ import java.lang.reflect.Constructor;
 %}
 
 %typemap(javacode) IMessageDependency %{
+
+   @SuppressWarnings("unchecked")
    private static Constructor[] messageDependencyConstructors = new Constructor[100];
 
    public long getCPtr() {
@@ -275,6 +280,7 @@ import java.lang.reflect.Constructor;
       return (int)getCPtr(this);
    }
 
+   @SuppressWarnings("unchecked")
    public static IMessageDependency newIMessageDependency(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)

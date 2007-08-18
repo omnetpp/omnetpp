@@ -44,7 +44,7 @@ class SCAVE_API EnumType
     /**
      * Copy constructor.
      */
-    EnumType(const EnumType& EnumType);
+    EnumType(const EnumType& list);
 
     /**
      * Destructor.

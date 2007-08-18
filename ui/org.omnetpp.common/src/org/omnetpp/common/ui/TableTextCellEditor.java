@@ -80,7 +80,7 @@ public class TableTextCellEditor extends CellEditor {
 	private final ColumnViewer fTableViewer; // a TableViewer or a TreeViewer
 	private final int fColumn;
     private boolean commitOnFocusLost = false;
-	private final String fProperty;
+	//[Andras] private final String fProperty;
 	/**
 	 * The editor's value on activation. This value is reset to the
 	 * cell when the editor is left via ESC key.
@@ -102,7 +102,7 @@ public class TableTextCellEditor extends CellEditor {
 		super((Composite)tableViewer.getControl(), defaultStyle);
 		fTableViewer= tableViewer;
 		fColumn= column;
-		fProperty= (String) tableViewer.getColumnProperties()[column];
+		//[Andras] fProperty= (String) tableViewer.getColumnProperties()[column];
 	}
 
 	public TableTextCellEditor(ColumnViewer tableViewer, int column, boolean commitOnFocusLost) {
@@ -118,11 +118,12 @@ public class TableTextCellEditor extends CellEditor {
 		fOriginalValue= text.getText();
 	}
 
-	private void fireModifyEvent(Object newValue) {
-		fTableViewer.getCellModifier().modify(
-				((IStructuredSelection) fTableViewer.getSelection()).getFirstElement(),
-				fProperty, newValue);
-	}
+//[Andras]
+//	private void fireModifyEvent(Object newValue) {
+//		fTableViewer.getCellModifier().modify(
+//				((IStructuredSelection) fTableViewer.getSelection()).getFirstElement(),
+//				fProperty, newValue);
+//	}
 
 	@Override
     protected void focusLost() {

@@ -80,8 +80,10 @@ import java.lang.reflect.Constructor;
       return this;
    }
 
+   @SuppressWarnings("unchecked")
    private static java.util.ArrayList<Constructor> bodyConstructors = new java.util.ArrayList<Constructor>();
 
+   @SuppressWarnings("unchecked")
    public static IBody newIBody(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)
@@ -125,8 +127,10 @@ import java.lang.reflect.Constructor;
       return this;
    }
 
+   @SuppressWarnings("unchecked")
    private static java.util.ArrayList<Constructor> forceProviderConstructors = new java.util.ArrayList<Constructor>();
 
+   @SuppressWarnings("unchecked")
    public static IForceProvider newIForceProvider(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)

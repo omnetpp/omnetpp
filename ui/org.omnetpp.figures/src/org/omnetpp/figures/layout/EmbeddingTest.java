@@ -1,5 +1,6 @@
 package org.omnetpp.figures.layout;
 
+/*
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Frame;
@@ -13,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.List;
 import java.util.Random;
+*/
 
 /**
  * TODO add documentation

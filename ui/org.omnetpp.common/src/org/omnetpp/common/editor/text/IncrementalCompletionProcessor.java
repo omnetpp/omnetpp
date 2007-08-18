@@ -44,7 +44,8 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
     /**
      * Helper comparator class to compare CompletionProposals using relevance and the the display name 
      */
-    protected static class CompletionProposalComparator implements Comparator {
+    @SuppressWarnings("unchecked")
+	protected static class CompletionProposalComparator implements Comparator {
         private static CompletionProposalComparator instance = null;
         
         public static CompletionProposalComparator getInstance() {
