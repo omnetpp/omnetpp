@@ -20,7 +20,7 @@ import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
- * Helper class that allows to choose a connection for a module pair (src , dest)
+ * Helper class that allows to choose a connection for a module pair (src, dest)
  *
  * @author rhornig
  */
@@ -35,9 +35,9 @@ public class ConnectionChooser {
      * destination module.
      *
      * @param srcModule the source module we are connecting to, should not be NULL
-     * @param srcGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
+     * @param srcGate which dest module gate should be offered. if NULL, all module gates will be enumerated
      * @param destModule the destination module we are connecting to, should not be NULL
-     * @param destGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
+     * @param destGate which dest module gate should be offered. if NULL, all module gates will be enumerated
      * @return TODO what does it return?
      */
     public static ConnectionNode open(ConnectionCommand connCommand) {
@@ -68,7 +68,7 @@ public class ConnectionChooser {
 
     /**
      * @param module The queried module
-     * @param gateType The type of the gate we are lookin for
+     * @param gateType The type of the gate we are looking for
      * @param nameFilter name filter, or NULL if no filtering is needed
      * @return All gates from the module matching the type and name
      */
@@ -108,7 +108,7 @@ public class ConnectionChooser {
 
     /**
      * @param connCommand The commend used to specify which module and gates are to be used
-     * @param menu The popup menu where the connection menuitems should be added
+     * @param menu The popup menu where the connection menu items should be added
      * @param srcGate The source gate used to create the connections
      * @param destGate The source gate used to create the connections
      */
@@ -141,10 +141,10 @@ public class ConnectionChooser {
 	 *
 	 * @param srcMod
 	 * @param srcGate
-     * @param srcGatePP    if set to <code>true</code> creates gatename++ (only for vectore gates)
+     * @param srcGatePP    if set to <code>true</code> creates gatename++ (only for vector gates)
 	 * @param destMod
 	 * @param destGate
-	 * @param destGatePP 	if set to <code>true</code> creates gatename++ (only for vectore gates)
+	 * @param destGatePP 	if set to <code>true</code> creates gatename++ (only for vector gates)
 	 * @return The template connection or <code>null</code> if connection cannot be created
 	 */
 	private static ConnectionNode createTemplateConnection(
@@ -160,7 +160,7 @@ public class ConnectionChooser {
 		ConnectionNode conn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 		// set the source and dest module names.
 		// if compound module, name must be empty
-		// for Submodules name must be the submodulename
+		// for Submodules name must be the submodule name
 		if (srcMod instanceof SubmoduleNodeEx) {
 			SubmoduleNodeEx smodNode = (SubmoduleNodeEx)srcMod;
 			conn.setSrcModule(smodNode.getName());
@@ -180,7 +180,7 @@ public class ConnectionChooser {
 		// set the possible gates
 		conn.setSrcGate(srcGate.getName());
 		conn.setDestGate(destGate.getName());
-		// if both side is bidirectional gate, use a bidir connection
+		// if both side is bidirectional gate, use a bidirectional connection
 		if (srcGate.getType() == GateNode.NED_GATETYPE_INOUT && destGate.getType() == GateNode.NED_GATETYPE_INOUT)
 			conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_BIDIR);
 		else

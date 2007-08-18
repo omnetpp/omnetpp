@@ -10,7 +10,7 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 
 /**
- * Generally this contains only the delet command for the connections
+ * Generally this contains only the delete command for the connections
  *
  * @author rhornig
  */

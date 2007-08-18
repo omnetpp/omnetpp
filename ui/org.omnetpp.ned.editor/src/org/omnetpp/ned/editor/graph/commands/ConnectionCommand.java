@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
- * model (to the compound module's connectios section) (or removes it if both the new source and destination is NULL)
+ * model (to the compound module's connections section) (or removes it if both the new source and destination is NULL)
  *
  * @author rhornig
  */
