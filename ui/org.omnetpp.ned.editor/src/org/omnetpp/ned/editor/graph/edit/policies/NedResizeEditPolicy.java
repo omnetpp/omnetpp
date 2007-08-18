@@ -35,7 +35,8 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
         return figure;
     }
 
-    protected IFigure createFigure(GraphicalEditPart part, IFigure parent) {
+    @SuppressWarnings("unchecked")
+	protected IFigure createFigure(GraphicalEditPart part, IFigure parent) {
         IFigure child = getCustomFeedbackFigure(part, part.getModel());
 
         if (parent != null) parent.add(child);

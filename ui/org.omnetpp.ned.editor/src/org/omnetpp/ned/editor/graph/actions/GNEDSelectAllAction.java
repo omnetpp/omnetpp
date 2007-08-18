@@ -23,7 +23,8 @@ public class GNEDSelectAllAction extends SelectAllAction {
         wbp = part;
     }
 
-    @Override
+	@Override
+	@SuppressWarnings("unchecked")
     public void run() {
         GraphicalViewer viewer = (GraphicalViewer)wbp.getAdapter(GraphicalViewer.class);
         if (viewer != null) {

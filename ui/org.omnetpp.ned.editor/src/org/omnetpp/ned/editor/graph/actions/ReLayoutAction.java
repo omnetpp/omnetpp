@@ -55,8 +55,9 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	/**
 	 * Created and returns a command for the request from the containing compound module
 	 */
+	@SuppressWarnings("unchecked")
 	private Command getCommand() {
-		List<Object> selEditParts = getSelectedObjects();
+		List selEditParts = getSelectedObjects();
 
 		if (!calculateEnabled())
 			return null;

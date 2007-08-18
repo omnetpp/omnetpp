@@ -42,6 +42,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	 * @param nodeParent The Parent figure of the nodes
 	 * @param edgeParent The parent figure of the connections (usually the ConnectionLayer)
 	 */
+	@SuppressWarnings("unchecked")
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter(IFigure nodeParent, IFigure edgeParent) {
         BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
@@ -108,7 +109,8 @@ public class SpringEmbedderLayout extends XYLayout {
      *
      * @see LayoutManager#layout(IFigure)
      */
-    @Override
+	@Override
+    @SuppressWarnings("unchecked")
     public void layout(IFigure parent) {
         AbstractGraphLayoutAlgorithm alg = null;
         // find the place of movable nodes if auto-layout requested

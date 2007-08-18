@@ -28,10 +28,10 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 // TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 public class NedTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
 
-	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
+	//private IEditorPart editor = null;
 	
 	public NedTextHover(IEditorPart editor) {
-		this.editor = editor;
+		//this.editor = editor;
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {

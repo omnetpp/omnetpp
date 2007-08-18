@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.edit;
 import java.util.Map;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -208,7 +209,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
      */
     @Override
     protected void unregisterModel() {
-        Map registry = getCompoundModulePart().getModelToConnectionPartsRegistry();
+        Map<Object,ConnectionEditPart> registry = getCompoundModulePart().getModelToConnectionPartsRegistry();
         if (registry.get(getModel()) == this)
             registry.remove(getModel());
     }

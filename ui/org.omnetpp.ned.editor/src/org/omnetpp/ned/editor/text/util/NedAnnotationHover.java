@@ -19,6 +19,7 @@ public class NedAnnotationHover implements IAnnotationHover {
     /* (non-Javadoc)
 	 * Method declared on IAnnotationHover
 	 */
+	@SuppressWarnings("unchecked")
 	public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
         Iterator annIter = sourceViewer.getAnnotationModel().getAnnotationIterator();
 		try {
