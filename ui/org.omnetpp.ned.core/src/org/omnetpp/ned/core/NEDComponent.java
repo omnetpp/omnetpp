@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
@@ -81,6 +80,10 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     // all types that contain instances (submodule, connection) of this type
     protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
 
+	interface IPredicate {
+		public boolean matches(IHasName node);
+	}
+
 	/**
 	 * Constructor
 	 * @param node INEDElement tree to be wrapped
@@ -116,7 +119,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	@SuppressWarnings("unchecked")
 	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode,
 							final int tagCode, final String nameAttr, final String typeAttr) {
-		collect(map, sectionTagCode, new IPredicate<IHasName>() {
+		collect(map, sectionTagCode, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return (tagCode==-1 || node.getTagCode()==tagCode) &&
 					 (typeAttr==null || StringUtils.isNotEmpty(node.getAttribute(typeAttr)));
@@ -125,7 +128,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate<IHasName> predicate) { 
+	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate predicate) { 
 		INEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
 		if (section != null)
 			for (INEDElement node : section) 

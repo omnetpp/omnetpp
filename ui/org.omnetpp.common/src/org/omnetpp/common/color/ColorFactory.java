@@ -721,7 +721,8 @@ public class ColorFactory {
     /**
      * @return All registered color names
      */
-    public static String[] getColorNames() {
+    @SuppressWarnings("unchecked")
+	public static String[] getColorNames() {
         return (String[])str2rgbRegistry.getKeySet().toArray(new String[] {});
     }
 
