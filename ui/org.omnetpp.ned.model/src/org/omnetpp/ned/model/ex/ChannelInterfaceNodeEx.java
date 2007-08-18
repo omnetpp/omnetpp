@@ -15,6 +15,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
 
 /**
  * TODO add documentation
@@ -84,11 +85,11 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
     }
 
     // parameter list support
-    public Map<String, INEDElement> getParamValues() {
+    public Map<String, ParamNode> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, INEDElement> getParams() {
+    public Map<String, ParamNode> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 

@@ -11,7 +11,9 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
 /**
@@ -89,20 +91,20 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
     }
 
     // parameter query support
-    public Map<String, INEDElement> getParamValues() {
+    public Map<String, ParamNode> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, INEDElement> getParams() {
+    public Map<String, ParamNode> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 
     // gate support
-    public Map<String, INEDElement> getGateSizes() {
+    public Map<String, GateNode> getGateSizes() {
         return getContainerNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, INEDElement> getGates() {
+    public Map<String, GateNode> getGates() {
         return getContainerNEDTypeInfo().getGates();
     }
 

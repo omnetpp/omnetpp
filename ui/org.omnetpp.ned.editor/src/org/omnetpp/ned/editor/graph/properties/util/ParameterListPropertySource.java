@@ -9,13 +9,12 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
+import org.omnetpp.ned.model.pojo.ParamNode;
 
 /**
  * Property source to display all parameters for a given component
@@ -58,11 +57,11 @@ public class ParameterListPropertySource extends NotifiedPropertySource
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, INEDElement> params = model.getParams();
+        Map<String, ParamNode> params = model.getParams();
 
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
-        for (INEDElement paramElement : params.values()) {
+        for (ParamNode paramElement : params.values()) {
             ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
             String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
             String definedIn = "";
@@ -96,7 +95,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource
     public Object getPropertyValue(Object id) {
         if (!(id instanceof ParamNodeEx))
             return getEditableValue();
-        Map<String, INEDElement> paramValues = model.getParamValues();
+        Map<String, ParamNode> paramValues = model.getParamValues();
         ParamNodeEx paramDefNode = (ParamNodeEx)id;
         ParamNodeEx paramValueNode = (ParamNodeEx)paramValues.get(paramDefNode.getName());
         String valueString = paramValueNode== null ? "" :paramValueNode.getValue();

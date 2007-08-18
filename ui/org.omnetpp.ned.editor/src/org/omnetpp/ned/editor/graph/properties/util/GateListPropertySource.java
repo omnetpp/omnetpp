@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.GateNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.pojo.GateNode;
 
 /**
  * Property source to display all submodules for a given compound module
@@ -29,11 +29,11 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, INEDElement> gates = model.getGates();
+        Map<String, GateNode> gates = model.getGates();
 
         pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;
-        for (INEDElement gateElement : gates.values()) {
+        for (GateNode gateElement : gates.values()) {
             GateNodeEx gateDefNode = (GateNodeEx)gateElement;
             String typeString = gateDefNode.getAttribute(GateNodeEx.ATT_TYPE);
             String definedIn = "";
@@ -67,7 +67,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
     public Object getPropertyValue(Object id) {
         if (!(id instanceof GateNodeEx))
             return getEditableValue();
-        Map<String, INEDElement> gateSizes = model.getGateSizes();
+        Map<String, GateNode> gateSizes = model.getGateSizes();
         GateNodeEx gateDefNode = (GateNodeEx)id;
         GateNodeEx gateSizeNode = ((GateNodeEx)gateSizes.get(gateDefNode.getName()));
         String valueString = gateSizeNode== null ? "" :gateSizeNode.getNameWithIndex();

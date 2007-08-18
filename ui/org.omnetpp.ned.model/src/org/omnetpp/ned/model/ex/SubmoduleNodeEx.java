@@ -16,7 +16,9 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -175,22 +177,22 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     }
 
     // parameter query support
-    public Map<String, INEDElement> getParamValues() {
+    public Map<String, ParamNode> getParamValues() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, INEDElement> result =
-            (info == null) ? new HashMap<String, INEDElement>() : new HashMap<String, INEDElement>(info.getParamValues());
+        Map<String, ParamNode> result =
+            (info == null) ? new HashMap<String, ParamNode>() : new HashMap<String, ParamNode>(info.getParamValues());
 
         // add our own assigned parameters
-        for (ParamNodeEx ownParam : getOwnParams())
+        for (ParamNodeEx ownParam : getOwnParams())   //FIXME what are we doing here???
             result.put(ownParam.getName(), ownParam);
 
         return result;
     }
 
-    public Map<String, INEDElement> getParams() {
+    public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, INEDElement>();
+            return new HashMap<String, ParamNode>(); //FIXME why lie???
         return info.getParams();
     }
 
@@ -210,22 +212,22 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         return result;
     }
 
-    public Map<String, INEDElement> getGateSizes() {
+    public Map<String, GateNode> getGateSizes() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, INEDElement> result =
-            (info == null) ? new HashMap<String, INEDElement>() : new HashMap<String, INEDElement>(info.getGateSizes());
+        Map<String, GateNode> result =
+            (info == null) ? new HashMap<String, GateNode>() : new HashMap<String, GateNode>(info.getGateSizes());
 
         // add our own assigned parameters
-        for (GateNodeEx ownGate : getOwnGates())
+        for (GateNodeEx ownGate : getOwnGates()) //FIXME WTF is this???? why not from typeINfo???? Andras
             result.put(ownGate.getName(), ownGate);
 
         return result;
     }
 
-    public Map<String, INEDElement> getGates() {
+    public Map<String, GateNode> getGates() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, INEDElement>();
+            return new HashMap<String, GateNode>(); //FIXME this check MUST BE THROWN OUT!!! WE SHOULS RATHER ASSERT THAT THE TYPE INFO EXISTS!!!!!
         return info.getGates();
     }
 

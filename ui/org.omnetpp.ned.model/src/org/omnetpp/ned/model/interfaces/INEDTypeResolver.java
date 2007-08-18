@@ -15,7 +15,7 @@ public interface INEDTypeResolver {
 	/**
 	 * Interface used by filtering methods.
 	 */
-	interface IPredicate {
+	public interface IPredicate {
 		public boolean matches(INEDTypeInfo node);
 	}
 	

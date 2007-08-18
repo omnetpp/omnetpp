@@ -3,6 +3,7 @@ package org.omnetpp.ned.model.interfaces;
 import java.util.Map;
 
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.pojo.GateNode;
 
 /**
  * Elements that may contain gates
@@ -14,11 +15,11 @@ public interface IHasGates extends INEDElement {
     /**
      * Returns the list of all gate elements
      */
-    Map<String, INEDElement> getGates();
+    Map<String, GateNode> getGates();
 
     /**
      * Returns the list of all gate elements where size is specified
      */
-    Map<String, INEDElement> getGateSizes();
+    Map<String, GateNode> getGateSizes();
 
 }

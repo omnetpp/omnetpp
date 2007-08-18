@@ -16,6 +16,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 
 /**
@@ -291,22 +292,22 @@ public final class ConnectionNodeEx extends ConnectionNode
     }
 
     // parameter query support
-    public Map<String, INEDElement> getParamValues() {
+    public Map<String, ParamNode> getParamValues() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, INEDElement> result =
-            (info == null) ? new HashMap<String, INEDElement>() : new HashMap<String, INEDElement>(info.getParamValues());
+        Map<String, ParamNode> result =
+            (info == null) ? new HashMap<String, ParamNode>() : new HashMap<String, ParamNode>(info.getParamValues());
 
         // add our own assigned parameters
-        for (ParamNodeEx ownParam : getOwnParams())
+        for (ParamNodeEx ownParam : getOwnParams())  //FIXME WTF is this??? --Andras
             result.put(ownParam.getName(), ownParam);
 
         return result;
     }
 
-    public Map<String, INEDElement> getParams() {
+    public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, INEDElement>();
+            return new HashMap<String, ParamNode>();  //FIXME why lie???? --Andras
         return info.getParams();
     }
 

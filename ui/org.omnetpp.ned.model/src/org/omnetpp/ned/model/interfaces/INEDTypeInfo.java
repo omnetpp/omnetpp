@@ -89,13 +89,13 @@ public interface INEDTypeInfo extends INEDChangeListener {
 
 	// same as above, for inherited members as well
     public Map<String, INEDElement> getMembers();
-    public Map<String, INEDElement> getParams();
-    public Map<String, INEDElement> getParamValues();
-    public Map<String, INEDElement> getProperties();
-    public Map<String, INEDElement> getGates();
-    public Map<String, INEDElement> getGateSizes();
-    public Map<String, INEDElement> getInnerTypes();
-    public Map<String, INEDElement> getSubmods();
+    public Map<String, ParamNode> getParams();
+    public Map<String, ParamNode> getParamValues();
+    public Map<String, PropertyNode> getProperties();
+    public Map<String, GateNode> getGates();
+    public Map<String, GateNode> getGateSizes();
+    public Map<String, INedTypeNode> getInnerTypes();
+    public Map<String, SubmoduleNode> getSubmods();
 
 	public List<ParamNode> getParameterInheritanceChain(String parameterName);
 	public List<GateNode> getGateInheritanceChain(String gateName);

@@ -21,16 +21,11 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
@@ -49,30 +44,30 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
 	// own stuff
     boolean needsOwnUpdate;
-	protected LinkedHashMap<String,PropertyNode> ownProperties = new LinkedHashMap<String, PropertyNode>();
-    protected LinkedHashMap<String,ParamNode> ownParams = new LinkedHashMap<String, ParamNode>();
-    protected LinkedHashMap<String,ParamNode> ownParamValues = new LinkedHashMap<String, ParamNode>();
-	protected LinkedHashMap<String,GateNode> ownGates = new LinkedHashMap<String, GateNode>();
-    protected LinkedHashMap<String,GateNode> ownGateSizes = new LinkedHashMap<String, GateNode>();
-	protected LinkedHashMap<String,INedTypeNode> ownInnerTypes = new LinkedHashMap<String, INedTypeNode>();
-	protected LinkedHashMap<String,SubmoduleNode> ownSubmodules = new LinkedHashMap<String, SubmoduleNode>();
+	protected Map<String,PropertyNode> ownProperties = new LinkedHashMap<String, PropertyNode>();
+    protected Map<String,ParamNode> ownParams = new LinkedHashMap<String, ParamNode>();
+    protected Map<String,ParamNode> ownParamValues = new LinkedHashMap<String, ParamNode>();
+	protected Map<String,GateNode> ownGates = new LinkedHashMap<String, GateNode>();
+    protected Map<String,GateNode> ownGateSizes = new LinkedHashMap<String, GateNode>();
+	protected Map<String,INedTypeNode> ownInnerTypes = new LinkedHashMap<String, INedTypeNode>();
+	protected Map<String,SubmoduleNode> ownSubmodules = new LinkedHashMap<String, SubmoduleNode>();
     protected HashSet<String> ownUsedTypes = new HashSet<String>();
 
 	// sum of all "own" stuff
-	protected LinkedHashMap<String, INEDElement> ownMembers = new LinkedHashMap<String, INEDElement>();
+	protected Map<String, INEDElement> ownMembers = new LinkedHashMap<String, INEDElement>();
 
 	// own plus inherited
 	boolean needsUpdate;
-	protected LinkedHashMap<String, INEDElement> allProperties = new LinkedHashMap<String, INEDElement>();
-    protected LinkedHashMap<String, INEDElement> allParams = new LinkedHashMap<String, INEDElement>();
-    protected LinkedHashMap<String, INEDElement> allParamValues = new LinkedHashMap<String, INEDElement>();
-    protected LinkedHashMap<String, INEDElement> allGates = new LinkedHashMap<String, INEDElement>();
-    protected LinkedHashMap<String, INEDElement> allGateSizes = new LinkedHashMap<String, INEDElement>();
-	protected LinkedHashMap<String, INEDElement> allInnerTypes = new LinkedHashMap<String, INEDElement>();
-	protected LinkedHashMap<String, INEDElement> allSubmodules = new LinkedHashMap<String, INEDElement>();
+	protected Map<String, PropertyNode> allProperties = new LinkedHashMap<String, PropertyNode>();
+    protected Map<String, ParamNode> allParams = new LinkedHashMap<String, ParamNode>();
+    protected Map<String, ParamNode> allParamValues = new LinkedHashMap<String, ParamNode>();
+    protected Map<String, GateNode> allGates = new LinkedHashMap<String, GateNode>();
+    protected Map<String, GateNode> allGateSizes = new LinkedHashMap<String, GateNode>();
+	protected Map<String, INedTypeNode> allInnerTypes = new LinkedHashMap<String, INedTypeNode>();
+	protected Map<String, SubmoduleNode> allSubmodules = new LinkedHashMap<String, SubmoduleNode>();
 
 	// sum of all own+inherited stuff
-	protected LinkedHashMap<String, INEDElement> allMembers = new LinkedHashMap<String, INEDElement>();
+	protected Map<String, INEDElement> allMembers = new LinkedHashMap<String, INEDElement>();
 
     // all types which extends this component
     protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
@@ -80,7 +75,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     // all types that contain instances (submodule, connection) of this type
     protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
 
-	interface IPredicate {
+	// for local use
+    interface IPredicate {
 		public boolean matches(IHasName node);
 	}
 
@@ -107,26 +103,21 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     }
 
     /**
-	 * Collect parameter declarations, gate declarations, inner types, etc into a hash table
-	 * @param map  			stores result
-     * @param sectionTagCode	tag code of section to search within component node
-     * @param tagCode			types of elements to collect (NED_xxx constant)
-     * @param nameAttr			name of "name" attr of given node; this will be the key in the hashmap
-     * @param typeAttr			name of "type" attr, or null if none. If given, the INEDElement must
-	 * 							have this attribute non-empty to be collected (this is how we collect
-	 * 							parameter declarations, and ignore parameter assignments/refinements)
+	 * Collect elements (gates, params, etc) with the given tag code (NED_PARAM, etc) 
+	 * from the given section into the map.
 	 */
-	@SuppressWarnings("unchecked")
-	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode,
-							final int tagCode, final String nameAttr, final String typeAttr) {
+	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, final int tagCode) {
 		collect(map, sectionTagCode, new IPredicate() {
 			public boolean matches(IHasName node) {
-				return (tagCode==-1 || node.getTagCode()==tagCode) &&
-					 (typeAttr==null || StringUtils.isNotEmpty(node.getAttribute(typeAttr)));
+				return node.getTagCode() == tagCode;
 			}
 		});
 	}
 
+    /**
+	 * Collect elements (gates, params, etc) that match the predicate from the given section 
+	 * (NED_PARAMETERS, NED_GATES, etc) into the map.
+	 */
 	@SuppressWarnings("unchecked")
 	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate predicate) { 
 		INEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
@@ -249,19 +240,26 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         ownUsedTypes.clear();
 
         // collect stuff from component declaration
-        collect(ownProperties, NED_PARAMETERS, NED_PROPERTY, PropertyNode.ATT_NAME, null);
-        collect(ownParams, NED_PARAMETERS, NED_PARAM, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
-        collect(ownParamValues, NED_PARAMETERS, NED_PARAM, ParamNode.ATT_NAME, null);
-        collect(ownGates, NED_GATES, NED_GATE, GateNode.ATT_NAME, GateNode.ATT_TYPE);
-        collect(ownGateSizes, NED_GATES, NED_GATE, GateNode.ATT_NAME, null); //FIXME and: gatesize attribute is not empty!
-        collect(ownSubmodules, NED_SUBMODULES, NED_SUBMODULE, SubmoduleNode.ATT_NAME, null);
+        collect(ownProperties, NED_PARAMETERS, NED_PROPERTY);
+        collect(ownParams, NED_PARAMETERS, NED_PARAM);
+        collect(ownGates, NED_GATES, NED_GATE);
+        collect(ownSubmodules, NED_SUBMODULES, NED_SUBMODULE);
 
-        // XXX would be more efficient to collect the following in one pass:
-        collect(ownInnerTypes, NED_TYPES, NED_SIMPLE_MODULE, SimpleModuleNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_TYPES, NED_COMPOUND_MODULE, CompoundModuleNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_TYPES, NED_CHANNEL, ChannelNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_TYPES, NED_MODULE_INTERFACE, ModuleInterfaceNode.ATT_NAME, null);
-        collect(ownInnerTypes, NED_TYPES, NED_CHANNEL_INTERFACE, ChannelInterfaceNode.ATT_NAME, null);
+        collect(ownParamValues, NED_PARAMETERS, new IPredicate() {
+			public boolean matches(IHasName node) {
+				return node.getTagCode()==NED_PARAM && StringUtils.isNotEmpty(((ParamNode)node).getValue());
+			}
+        });
+        collect(ownGateSizes, NED_GATES, new IPredicate() {
+			public boolean matches(IHasName node) {
+				return node.getTagCode()==NED_GATE && StringUtils.isNotEmpty(((GateNode)node).getVectorSize());
+			}
+        });
+        collect(ownInnerTypes, NED_TYPES, new IPredicate() {
+			public boolean matches(IHasName node) {
+				return node instanceof INedTypeNode;
+			}
+        });
 
         // collect them in one common hash table as well (we assume there's no name clash --
         // that should be checked beforehand by validation!)
@@ -436,43 +434,43 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         return ownUsedTypes;
     }
 
-    public Map<String, INEDElement> getParams() {
+    public Map<String, ParamNode> getParams() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allParams;
     }
 
-    public Map<String, INEDElement> getParamValues() {
+    public Map<String, ParamNode> getParamValues() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allParamValues;
     }
 
-    public Map<String, INEDElement> getProperties() {
+    public Map<String, PropertyNode> getProperties() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allProperties;
     }
 
-    public Map<String, INEDElement> getGates() {
+    public Map<String, GateNode> getGates() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allGates;
     }
 
-    public Map<String, INEDElement> getGateSizes() {
+    public Map<String, GateNode> getGateSizes() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allGateSizes;
     }
 
-    public Map<String, INEDElement> getInnerTypes() {
+    public Map<String, INedTypeNode> getInnerTypes() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allInnerTypes;
     }
 
-    public Map<String, INEDElement> getSubmods() {
+    public Map<String, SubmoduleNode> getSubmods() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allSubmodules;

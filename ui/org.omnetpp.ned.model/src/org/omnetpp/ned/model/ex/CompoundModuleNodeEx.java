@@ -15,7 +15,9 @@ import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.model.pojo.SubmodulesNode;
 
@@ -348,20 +350,20 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
         return result;
     }
     // parameter query support
-    public Map<String, INEDElement> getParamValues() {
+    public Map<String, ParamNode> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, INEDElement> getParams() {
+    public Map<String, ParamNode> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 
     // gate support
-    public Map<String, INEDElement> getGateSizes() {
+    public Map<String, GateNode> getGateSizes() {
         return getContainerNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, INEDElement> getGates() {
+    public Map<String, GateNode> getGates() {
         return getContainerNEDTypeInfo().getGates();
     }
 
