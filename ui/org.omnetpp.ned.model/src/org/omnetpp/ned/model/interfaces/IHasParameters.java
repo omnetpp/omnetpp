@@ -12,15 +12,20 @@ import org.omnetpp.ned.model.pojo.ParamNode;
  */
 public interface IHasParameters extends INEDElement {
 
-    /**
-     * Returns the name / parameter node association. You SHOULD NOT modify the returned
-     * map.
+	/**
+     * Returns the name - parameter node association. The returned map must not be modified.
+     * 
+     * "Best-Effort": This method never returns null, but the returned list
+     * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
     public Map<String, ParamNode> getParams();
 
     /**
-     * Returns the name / parameter node association where the last parameter - value
-     * assignment was done. You SHOULD NOT modify the returned map.
+     * Returns the name - parameter node association where the last parameter - value
+     * assignment was done. The returned map must not be modified.
+     * 
+     * "Best-Effort": This method never returns null, but the returned list
+     * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
     public Map<String, ParamNode> getParamValues();
 

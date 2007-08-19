@@ -9,12 +9,6 @@ package org.omnetpp.ned.model.interfaces;
  */
 public interface INedTypeNode extends IHasName, IHasAncestors, IHasDisplayString, IHasParameters {
 	/**
-	 * Returns the associated NED type info object. Never null (provided this node 
-	 * is part of a tree in NEDResources, and not a detached tree).
-	 */
-	public INEDTypeInfo getNEDTypeInfo();
-
-	/**
 	 * Sets the associated component type info. To be called from the NED type 
 	 * resolver (NEDResources) only.
 	 */

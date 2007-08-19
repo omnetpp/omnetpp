@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
@@ -69,23 +70,27 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
     }
 
     // submodule related methods
+    
     /**
      * Returns all submodules contained in THIS module.
      */
 	protected List<SubmoduleNodeEx> getOwnSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
+		
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
-		if (submodulesNode == null)
-			return result;
-		for (INEDElement currChild : submodulesNode)
-			if (currChild instanceof SubmoduleNodeEx)
-				result.add((SubmoduleNodeEx)currChild);
+		if (submodulesNode != null)
+			for (INEDElement currChild : submodulesNode)
+				if (currChild instanceof SubmoduleNodeEx)
+					result.add((SubmoduleNodeEx)currChild);
 
 		return result;
 	}
 
     /**
      * Returns the list of all direct and inherited submodules
+     * 
+     * "Best-Effort": This method never returns null, but the returned list
+     * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
     public List<SubmoduleNodeEx> getSubmodules() {
         List<SubmoduleNodeEx> result = getOwnSubmodules();
@@ -100,14 +105,12 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 
 	/**
 	 * Returns the submodule with the provided name, excluding inherited submodules.
+	 * Returns null if not found.
 	 */
 	protected SubmoduleNodeEx getOwnSubmoduleByName(String submoduleName) {
-	    if (submoduleName == null)
-	        return null;
-
         SubmodulesNode submodulesNode = getFirstSubmodulesChild();
-		return (SubmoduleNodeEx)submodulesNode
-					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
+        return submodulesNode==null ? null : (SubmoduleNodeEx)submodulesNode.getFirstChildWithAttribute(
+        		NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
 
     /**
@@ -115,12 +118,15 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
      * or null if not found.
      */
     public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
+    	Assert.isTrue(submoduleName != null);
+    	
         // first look in the current module
         SubmoduleNodeEx submoduleNode = getOwnSubmoduleByName(submoduleName);
         if (submoduleNode != null)
             return submoduleNode;
+        
         // then look in ancestors
-        // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chain
+        // FIXME beware this can lead to an infinite recursion if we have a circle in the extends chain
         INEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             return ((CompoundModuleNodeEx)extendsElem).getSubmoduleByName(submoduleName);
@@ -181,7 +187,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 		snode.insertChildBefore(insertBefore, child);
 	}
 
-    ////////////////////////////////////////////////////////////////////////////////////////
     // connection related methods
 
     /**
@@ -322,8 +327,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 			snode.removeFromParent();
 	}
 
-    ///////////////////////////////////////////////////////////////////////
     // extends support
+	
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -358,13 +363,14 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 
         return result;
     }
+    
     // parameter query support
     public Map<String, ParamNode> getParamValues() {
-        return getNEDTypeInfo().getParamValues();
+        return getNEDTypeInfo().getParamValues();  //XXX NPE? check all such places...
     }
 
     public Map<String, ParamNode> getParams() {
-        return getNEDTypeInfo().getParams();
+        return getNEDTypeInfo().getParams(); //XXX NPE?
     }
 
     // gate support

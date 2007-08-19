@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasConnections;
@@ -37,61 +38,48 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
-    // helper functions to set the module names using references
     public IHasConnections getSrcModuleRef() {
-        if (getSrcModule() == null)
-            return null;
-        CompoundModuleNodeEx cm = getCompoundModule();
-        // if the source is empty return the containing compound module
-        if ("".equals(getSrcModule()))
-            return cm;
-        if (cm != null)
-            return cm.getSubmoduleByName(getSrcModule());
-
-        return null;
-    }
-
-    /**
-     * Sets the source side module using reference instead of using name
-     * @param srcModule
-     */
-    public void setSrcModuleRef(IHasConnections srcModule) {
-        if (srcModule == null) {
-            setSrcModule(null);
-            return;
-        }
-        String newModule = (srcModule instanceof CompoundModuleNodeEx) ? "" : srcModule.getName();
-        setSrcModule(newModule);
+    	return resolveConnectedModule(getSrcModule());
     }
 
     public IHasConnections getDestModuleRef() {
-        if (getDestModule() == null)
-            return null;
-        CompoundModuleNodeEx cm = getCompoundModule();
-        // if the source is empty return the containing compound module
-        if ("".equals(getDestModule()))
-            return cm;
-        if (cm != null)
-            return cm.getSubmoduleByName(getDestModule());
-        return null;
+    	return resolveConnectedModule(getDestModule());
     }
 
     /**
-     * Sets the source side module using reference instead of using name
-     * @param srcModule
+     * Sets the source module of the connection
      */
-    public void setDestModuleRef(IHasConnections destModule) {
-        if (destModule == null) {
-            setDestModule(null);
-            return;
-        }
-        String newModule = (destModule instanceof CompoundModuleNodeEx) ? "" : destModule.getName();
-        setDestModule(newModule);
+    public void setSrcModuleRef(IHasConnections srcModule) {
+    	setSrcModule(connectedModuleName(srcModule));
     }
 
-	/**
+    /**
+     * Sets the destination module of the connection
+     */
+    public void setDestModuleRef(IHasConnections destModule) {
+    	setDestModule(connectedModuleName(destModule));
+    }
+
+    protected String connectedModuleName(IHasConnections module) {
+        return module == null ? null : (module instanceof CompoundModuleNodeEx) ? "" : module.getName();
+    }
+
+    // helper functions to set the module names using references
+    protected IHasConnections resolveConnectedModule(String moduleName) {
+        if (moduleName == null)
+            return null; // not connected
+
+        CompoundModuleNodeEx compoundModule = getCompoundModule();
+        if (compoundModule == null)
+        	return null; // this is a detached connection
+        else
+        	return moduleName.equals("") ? compoundModule : compoundModule.getSubmoduleByName(moduleName);
+    }
+
+    /**
 	 * Returns the identifier of the source module instance the connection connected to
 	 */
+	//FIXME factor out common part with next one
 	public String getSrcModuleWithIndex() {
 		String module = getSrcModule();
 		if (getSrcModuleIndex() != null && !"".equals(getSrcModuleIndex()))
@@ -133,6 +121,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 	/**
 	 * Returns the identifier of the source gate instance the connection connected to
 	 */
+	//FIXME factor out common part with next one
 	public String getSrcGateWithIndex() {
 		String gate = getSrcGate();
 		if (getSrcGatePlusplus())
@@ -175,7 +164,8 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     /**
-     * Returns the compound module containing the definition of this connection
+     * Returns the compound module containing this connection, or null if the
+     * connection is not part of the model (i.e. has no compound module parent).
      */
     public CompoundModuleNodeEx getCompoundModule() {
         INEDElement parent = getParent();
@@ -185,7 +175,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     /**
-     * Checks if the current connection is valid (has valid submodules at both end)
+     * Checks whether the current connection is valid (has valid submodules at both end)
      */
     public boolean isValid() {
         return getSrcModuleRef() != null && getDestModuleRef() != null;
@@ -195,10 +185,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     public String getType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecNode == null)
-            return null;
-
-        return channelSpecNode.getType();
+        return channelSpecNode == null ? null : channelSpecNode.getType();
     }
 
     public void setType(String type) {
@@ -212,10 +199,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     public String getLikeType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecNode == null)
-            return null;
-
-        return channelSpecNode.getLikeType();
+        return channelSpecNode == null ? null : channelSpecNode.getLikeType();
     }
 
     public void setLikeType(String type) {
@@ -230,10 +214,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     public String getLikeParam() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecNode == null)
-            return null;
-
-        return channelSpecNode.getLikeParam();
+        return channelSpecNode == null ? null : channelSpecNode.getLikeParam();
     }
 
     public void setLikeParam(String param) {
@@ -247,12 +228,8 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     public String getEffectiveType() {
-        String type = getLikeType();
-        // if it's not specified use the likeType instead
-        if (type == null || "".equals(type))
-            type = getType();
-
-        return type;
+        String likeType = getLikeType();
+        return StringUtils.isEmpty(likeType) ? getType() : likeType;
     }
 
     public INEDTypeInfo getTypeNEDTypeInfo() {
@@ -260,10 +237,9 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     public INedTypeNode getEffectiveTypeRef() {
-        INEDTypeInfo it = getTypeNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        return info == null ? null : info.getNEDElement();
     }
-
 
     /**
      * Returns a list of all parameters assigned in this module (inside the channel spec element)
@@ -276,24 +252,25 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
             return result;
 
         ParametersNode parametersNode = channelSpecNode.getFirstParametersChild();
-        if (parametersNode == null)
-            return result;
-
-        for (INEDElement currChild : parametersNode)
-            if (currChild instanceof ParamNodeEx)
-                result.add((ParamNodeEx)currChild);
+        if (parametersNode != null)
+        	for (INEDElement currChild : parametersNode)
+        		if (currChild instanceof ParamNodeEx)
+        			result.add((ParamNodeEx)currChild);
 
         return result;
     }
 
     // parameter query support
+    
     public Map<String, ParamNode> getParamValues() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, ParamNode> result =
-            (info == null) ? new HashMap<String, ParamNode>() : new HashMap<String, ParamNode>(info.getParamValues());
+    	Map<String, ParamNode> result = new HashMap<String, ParamNode>();
+
+    	INEDTypeInfo info = getTypeNEDTypeInfo();
+    	if (info != null) 
+    		result.putAll(info.getParamValues());
 
         // add our own assigned parameters
-        for (ParamNodeEx ownParam : getOwnParams())  //FIXME WTF is this??? --Andras
+        for (ParamNodeEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
 
         return result;
@@ -301,9 +278,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        if (info == null)
-            return new HashMap<String, ParamNode>(); //FIXME ???
-        return info.getParams();
+        return info == null ? new HashMap<String, ParamNode>() : info.getParams();
     }
 
 }

@@ -198,3 +198,4 @@ polymorphic
 sashform
 subclassing
 inout
+gatesizes

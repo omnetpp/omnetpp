@@ -52,7 +52,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getEditableValue() {
-        // yust a little summary - show the number of submodules
+        // just a little summary - show the number of submodules
         String summary = "";
         // if the property descriptor is not yet build, build it now
         if (pdesc == null)

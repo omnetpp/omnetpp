@@ -295,10 +295,11 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDElement deepDup();
 
 	/**
-	 * Returns the typeInfo belonging to the containing NED type (INedTypeNode),
-	 * or null if none was found.
+	 * Returns the typeInfo belonging to this NED type (if this node is a INedTypeNode)
+	 * or the enclosing NED type.
 	 * 
-	 * Returns null if the containing NED type is duplicated or invalid.
+	 * Returns null if the NED type is duplicated or invalid.
+	 * FIXME it may still have an INedTypeInfo, only not available via the resolver, or??  
 	 */
 	public INEDTypeInfo getNEDTypeInfo();
 

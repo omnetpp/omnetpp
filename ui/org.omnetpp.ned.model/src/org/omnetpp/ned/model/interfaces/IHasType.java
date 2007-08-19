@@ -14,45 +14,48 @@ public interface IHasType extends INEDElement {
     public String getType();
 
     /**
-     * Returns the type info after the like keyword
+     * Sets the type attribute
+     */
+    public void setType(String type);
+
+    /**
+     * Returns the type info after the "like" keyword
      */
     public String getLikeType();
 
     /**
-     * Sets the like type
-     * @param type
+     * Sets the like-type
      */
     public void setLikeType(String type);
 
     /**
-     * Returns the like-param of the implemented interface
+     * Returns the like parameter
      */
     public String getLikeParam();
 
     /**
      * Sets the like parameter
-     * @param type
      */
     public void setLikeParam(String type);
+    
     /**
-     * Returns the type or the likeType if type was not specified
+     * Returns the type, or the likeType if type was not specified
      */
     public String getEffectiveType();
 
     /**
-     * @param type
-     */
-    public void setType(String type);
-
-    /**
      * Returns the typeinfo object of the TYPE of this component. That is, 
-     * this method checks the typename of this element, and looks up the 
+     * this method checks the type name of this element, and looks up the 
      * typeinfo object from that.
+     * 
+     * Returns null if the type is not filled in, or is not a valid NED type. 
      */
     public INEDTypeInfo getTypeNEDTypeInfo();
 
     /**
-     * Returns the model element that represents the type of this element
+     * Returns the model element that represents the type of this element.
+     * 
+     * Returns null if the type is not filled in, or is not a valid NED type. 
      */
     public INedTypeNode getEffectiveTypeRef();
 }

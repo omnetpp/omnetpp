@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
@@ -116,7 +117,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
 	/**
 	 * Returns the list of all source connections that connect to this node and defined
-	 * in the parent compound module. connections defined in derived modules
+	 * in the parent compound module. Connections defined in derived modules
 	 * are NOT included here
 	 */
 	public List<ConnectionNodeEx> getSrcConnections() {
@@ -125,7 +126,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     /**
      * Returns the list of all connections that connect to this node and defined in the
-     * parent compound module. connections defined in derived modules are
+     * parent compound module. Connections defined in derived modules are
      * NOT included here
      */
 	public List<ConnectionNodeEx> getDestConnections() {
@@ -143,17 +144,13 @@ public class SubmoduleNodeEx extends SubmoduleNode
     }
 
     public INedTypeNode getEffectiveTypeRef() {
-        INEDTypeInfo it = getTypeNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        return info == null ? null : info.getNEDElement();
     }
 
     public String getEffectiveType() {
-        String type = getLikeType();
-        // if it's not specified use the likeType instead
-        if (type == null || "".equals(type))
-            type = getType();
-
-        return type;
+        String likeType = getLikeType();
+        return StringUtils.isEmpty(likeType) ? getType() : likeType;
     }
 
     /**
@@ -161,24 +158,27 @@ public class SubmoduleNodeEx extends SubmoduleNode
      */
     public List<ParamNodeEx> getOwnParams() {
         List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
+
         ParametersNode parametersNode = getFirstParametersChild();
-        if (parametersNode == null)
-            return result;
-        for (INEDElement currChild : parametersNode)
-            if (currChild instanceof ParamNodeEx)
-                result.add((ParamNodeEx)currChild);
+        if (parametersNode != null)
+        	for (INEDElement currChild : parametersNode)
+        		if (currChild instanceof ParamNodeEx)
+        			result.add((ParamNodeEx)currChild);
 
         return result;
     }
 
     // parameter query support
+    
     public Map<String, ParamNode> getParamValues() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, ParamNode> result =
-            (info == null) ? new HashMap<String, ParamNode>() : new HashMap<String, ParamNode>(info.getParamValues());
+        Map<String, ParamNode> result = new HashMap<String, ParamNode>();
 
-        // add our own assigned parameters
-        for (ParamNodeEx ownParam : getOwnParams())   //FIXME what are we doing here???
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        if (info != null)
+        	result.putAll(info.getParamValues());
+    	
+        // add local parameter assignments
+        for (ParamNodeEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
 
         return result;
@@ -186,34 +186,35 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        if (info == null)
-            return new HashMap<String, ParamNode>(); //FIXME why lie???
-        return info.getParams();
+        return info == null ? new HashMap<String, ParamNode>() : info.getParams();
     }
 
     // gate support
+    
     /**
      * Returns the list of all gates assigned in this submodule's body
      */
     public List<GateNodeEx> getOwnGates() {
         List<GateNodeEx> result = new ArrayList<GateNodeEx>();
-        GatesNode gatesNode = getFirstGatesChild();
-        if (gatesNode == null)
-            return result;
-        for (INEDElement currChild : gatesNode)
-            if (currChild instanceof GateNodeEx)
-                result.add((GateNodeEx)currChild);
 
+        GatesNode gatesNode = getFirstGatesChild();
+        if (gatesNode != null)
+        	for (INEDElement currChild : gatesNode)
+        		if (currChild instanceof GateNodeEx)
+        			result.add((GateNodeEx)currChild);
+        
         return result;
     }
 
     public Map<String, GateNode> getGateSizes() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, GateNode> result =
-            (info == null) ? new HashMap<String, GateNode>() : new HashMap<String, GateNode>(info.getGateSizes());
+        Map<String, GateNode> result = new HashMap<String, GateNode>();
 
-        // add our own assigned parameters
-        for (GateNodeEx ownGate : getOwnGates()) //FIXME WTF is this???? why not from typeINfo???? Andras
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        if (info != null)
+        	result.putAll(info.getGateSizes());
+
+        // add local gatesizes
+        for (GateNodeEx ownGate : getOwnGates())
             result.put(ownGate.getName(), ownGate);
 
         return result;
@@ -221,9 +222,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     public Map<String, GateNode> getGates() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        if (info == null)
-            return new HashMap<String, GateNode>(); //FIXME this check MUST BE THROWN OUT!!! WE SHOULS RATHER ASSERT THAT THE TYPE INFO EXISTS!!!!!
-        return info.getGates();
+        return info == null ? null : new HashMap<String, GateNode>();
     }
 
 }

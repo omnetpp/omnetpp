@@ -119,6 +119,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	 */
 	public static void setDefaultTypeResolver(INEDTypeResolver typeResolver) {
 		Assert.isTrue(defaultTypeResolver == null);
+		defaultTypeResolver = typeResolver;
 	}
 
 	/**
