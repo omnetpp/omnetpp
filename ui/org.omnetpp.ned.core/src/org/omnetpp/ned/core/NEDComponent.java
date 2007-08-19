@@ -166,11 +166,12 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 
 	/**
 	 * Produce a list that starts with this type, and ends with the root.
+	 * Cycles in the "extends" chain are handled gracefully.
 	 */
-	protected List<INEDTypeInfo> computeExtendsChain() {
+	protected List<INEDTypeInfo> resolveExtendsChain() {
 	    List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
 	    INEDTypeInfo currentComponent = this;
-	    while (currentComponent != null) {
+	    while (currentComponent != null && !result.contains(currentComponent)) {
 	    	result.add(currentComponent);
 	    	currentComponent = currentComponent.getNEDElement().getFirstExtendsNEDTypeInfo();
 	    }
@@ -260,7 +261,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
             refreshLocalMembersIfNeeded();
 
         // determine extends chain
-        extendsChain = computeExtendsChain();
+        extendsChain = resolveExtendsChain();
 
         allInterfaces.clear();
 		allProperties.clear();

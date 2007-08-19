@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
@@ -227,14 +226,10 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
      * @return ALL VALID!!! connections contained in / and inherited by this module
      */
     public List<ConnectionNodeEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
-        List<ConnectionNodeEx> result = getOwnConnections(srcName, srcGate, destName, destGate);
-
-        // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chain
-        //   --> use INedTypeInfo.getExtendsChain()
-        INEDElement extendsElem = getFirstExtendsRef();
-        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
-            result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, srcGate, destName, destGate));
-
+    	List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
+    	for (INEDTypeInfo typeInfo : getNEDTypeInfo().getExtendsChain())
+    		if (typeInfo.getNEDElement() instanceof CompoundModuleNodeEx)
+    			result.addAll(((CompoundModuleNodeEx)typeInfo.getNEDElement()).getOwnConnections(srcName, srcGate, destName, destGate));
         return result;
     }
 
@@ -278,9 +273,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 
     /**
      * Add this connection to the model (connections section)
-     * @param insertBefore The sibling connection before we want to insert our conn
-     * FIXME what if insertBefore==null ??? --Andras
-     * @param conn
+     * @param insertBefore The sibling connection we want to insert our connection 
+     *                     before, or null for append
      */
 	public void insertConnection(ConnectionNodeEx insertBefore, ConnectionNodeEx conn) {
 		// do nothing if it's already in the model
