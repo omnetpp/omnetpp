@@ -337,12 +337,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        String extendsName = getFirstExtends();
-        INEDTypeInfo typeInfo = getNEDTypeInfo();
-        if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
-            return null;
-
-        return typeInfo.getResolver().getComponent(extendsName);
+    	return resolveTypeName(getFirstExtends());
     }
 
     public INedTypeNode getFirstExtendsRef() {
