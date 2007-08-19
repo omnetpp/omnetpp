@@ -74,7 +74,7 @@ public class NedFileEditPart extends NedEditPart {
 
     @Override
     protected List<INedTypeNode> getModelChildren() {
-    	return ((NedFileNodeEx)getNEDModel()).getTopLevelElements();
+    	return ((NedFileNodeEx)getNEDModel()).getTopLevelTypeNodes();
     }
 
     /* (non-Javadoc)

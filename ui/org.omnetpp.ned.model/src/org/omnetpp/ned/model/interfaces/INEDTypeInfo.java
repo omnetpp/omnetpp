@@ -65,47 +65,74 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public INEDElement[] getNEDElementsAt(int line, int column);
 
 	/**
-	 * Returns the inheritance chain, starting with this NED type, and ending with the root.
+	 * Returns the inheritance chain, starting with this NED type, and 
+	 * ending with the root.
+	 * 
+	 * Only for non-interfaces (i.e. module or channel types): to get the 
+	 * inheritance of an interface, use getInterfaces instead.
 	 */
 	public List<INEDTypeInfo> getExtendsChain();
 
+    /**
+     * Returns the list of interfaces this type locally implements.
+     */
+	public Set<String> getOwnInterfaces();
+
 	/**
-	 * Returns the inheritance chain, starting with the root, and ending with this NED type.
-	 */
-	public List<INEDTypeInfo> getForwardExtendsChain();
+     * Returns the list of interfaces this type and its ancestor types and 
+     * ancestor interfaces implement.
+     */
+    public Set<String> getInterfaces();
 
 	// TODO comment!
 	// these methods are for members declared on this component (i.e. excluding inherited ones)
 	// member: gate/param/property/submod/innertype
+    /** */
     public Map<String, INEDElement> getOwnMembers();
+    /** */
     public Map<String, ParamNode> getOwnParams();
+
+    /** Parameter nodes within this type with the value attribute filled in */
     public Map<String, ParamNode> getOwnParamValues();
+    /** */
     public Map<String, PropertyNode> getOwnProperties();
+    /** */
     public Map<String, GateNode> getOwnGates();
+
+    /** Gate nodes within this type with the vector size attribute filled in */
     public Map<String, GateNode> getOwnGateSizes();
+
+    /** Inner types declared locally within this type */
     public Map<String, INedTypeNode> getOwnInnerTypes();
-    public Map<String, SubmoduleNode> getOwnSubmods();
+
+    /** Submodules declared locally within this (compound module) type */
+    public Map<String, SubmoduleNode> getOwnSubmodules();
+
+    /** Module and channel types used locally in this (compound module) type */
     public Set<String> getOwnUsedTypes();
 
 	// same as above, for inherited members as well
     public Map<String, INEDElement> getMembers();
     public Map<String, ParamNode> getParams();
+
+    /** Parameter nodes where the value attribute is filled in, including inherited ones */
     public Map<String, ParamNode> getParamValues();
     public Map<String, PropertyNode> getProperties();
     public Map<String, GateNode> getGates();
+
+    /** Gate nodes where the vector size attribute is filled in, including inherited ones */
     public Map<String, GateNode> getGateSizes();
+
+    /** All inner types in this type, including inherited ones */
     public Map<String, INedTypeNode> getInnerTypes();
-    public Map<String, SubmoduleNode> getSubmods();
+
+    /** All submodules in this (compound module) type, including inherited ones */
+    public Map<String, SubmoduleNode> getSubmodules();
 
 	public List<ParamNode> getParameterInheritanceChain(String parameterName);
 	public List<GateNode> getGateInheritanceChain(String gateName);
 	public List<PropertyNode> getPropertyInheritanceChain(String propertyName);
 
-    /**
-     * Returns the list of all types derived from this type
-     */
-    public List<INEDTypeInfo> getAllDerivedTypes();
-    
     /**
      * Returns the list of all types that are using internally this type (i.e. compound
      * modules that contain submodules or connections with this type)

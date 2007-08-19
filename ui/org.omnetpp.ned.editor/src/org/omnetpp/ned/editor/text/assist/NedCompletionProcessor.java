@@ -204,7 +204,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				if (parentComponent!=null) {
                     // FIXME add only vector submoduleas and vectors
 					addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
-					addProposals(viewer, documentOffset, result, parentComponent.getSubmods().keySet(), "submodule");
+					addProposals(viewer, documentOffset, result, parentComponent.getSubmodules().keySet(), "submodule");
 				}
 			}
 	    	else if (line.endsWith(".")) {
@@ -281,7 +281,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) {
 	    		// right at line start or after arrow: offer submodule names and parent module's gates
 	    		if (parentComponent!=null) {
-	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmods().keySet(), "submodule");
+	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmodules().keySet(), "submodule");
 	    			addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
 	    		}
 	    	}

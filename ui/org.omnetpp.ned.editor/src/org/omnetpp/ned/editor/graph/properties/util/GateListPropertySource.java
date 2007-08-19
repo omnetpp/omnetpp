@@ -6,7 +6,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.model.ex.GateNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.GateNode;
 
 /**
@@ -37,9 +36,9 @@ public class GateListPropertySource extends NotifiedPropertySource {
             GateNodeEx gateDefNode = (GateNodeEx)gateElement;
             String typeString = gateDefNode.getAttribute(GateNodeEx.ATT_TYPE);
             String definedIn = "";
-            if (gateDefNode.getContainingNedTypeNode() != model) {
+            if (gateDefNode.getEnclosingTypeNode() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((IHasName)gateDefNode.getContainingNedTypeNode()).getName()+")";
+                definedIn= " (inherited from " + gateDefNode.getEnclosingTypeNode().getName() + ")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(gateDefNode, typeString );
             pdesc[totalParamCount].setCategory(CATEGORY);

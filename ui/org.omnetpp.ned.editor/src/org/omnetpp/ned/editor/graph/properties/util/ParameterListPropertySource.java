@@ -12,7 +12,6 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.pojo.ParamNode;
 
@@ -65,9 +64,9 @@ public class ParameterListPropertySource extends NotifiedPropertySource
             ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
             String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
             String definedIn = "";
-            if (paramDefNode.getContainingNedTypeNode() != model) {
+            if (paramDefNode.getEnclosingTypeNode() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((IHasName)paramDefNode.getContainingNedTypeNode()).getName()+")";
+                definedIn= " (inherited from " + paramDefNode.getEnclosingTypeNode().getName() + ")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
             pdesc[totalParamCount].setCategory(CATEGORY);

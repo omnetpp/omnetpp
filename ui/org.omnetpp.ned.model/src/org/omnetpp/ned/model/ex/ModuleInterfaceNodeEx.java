@@ -7,6 +7,7 @@ import java.util.Map;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
+import org.omnetpp.ned.model.interfaces.IInterfaceTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -20,7 +21,7 @@ import org.omnetpp.ned.model.pojo.ParamNode;
  *
  * @author rhornig
  */
-public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements INedTypeNode, IHasGates {
+public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements IInterfaceTypeNode, IHasGates {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;

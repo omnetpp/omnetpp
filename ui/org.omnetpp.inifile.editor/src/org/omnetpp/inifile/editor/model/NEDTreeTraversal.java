@@ -64,7 +64,7 @@ public class NEDTreeTraversal {
 		visitor.enter(module, moduleType);
 
 		// traverse submodules
-		for (INEDElement node : moduleType.getSubmods().values()) {
+		for (INEDElement node : moduleType.getSubmodules().values()) {
 			// dig out type info (NED declaration)
 			SubmoduleNode submodule = (SubmoduleNode) node;
 			String submoduleTypeName = resolveTypeName(submodule);

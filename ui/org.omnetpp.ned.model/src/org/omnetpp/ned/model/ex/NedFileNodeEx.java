@@ -20,7 +20,7 @@ public class NedFileNodeEx extends NedFileNode {
 		super(parent);
 	}
 
-	public List<INedTypeNode> getTopLevelElements() {
+	public List<INedTypeNode> getTopLevelTypeNodes() {
 		List<INedTypeNode> result = new ArrayList<INedTypeNode>();
 		for (INEDElement currChild : this)
 			if (currChild instanceof INedTypeNode)
