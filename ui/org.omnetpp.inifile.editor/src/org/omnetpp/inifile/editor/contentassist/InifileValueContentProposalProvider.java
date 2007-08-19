@@ -26,7 +26,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ParamNode;
 
@@ -177,27 +177,27 @@ s	 * before getting presented to the user.
 		}
 		
 		switch (dataType) {
-		case NEDElementUtil.NED_PARTYPE_BOOL: 
+		case NEDElementConstants.NED_PARTYPE_BOOL: 
 			p.addAll(toProposals(new String[] {"true", "false"})); 
 			break;
-		case NEDElementUtil.NED_PARTYPE_INT: 
+		case NEDElementConstants.NED_PARTYPE_INT: 
 			p.addAll(toProposals(new String[] {"0"}, "or any integer value"));
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
 			break;
-		case NEDElementUtil.NED_PARTYPE_DOUBLE:
+		case NEDElementConstants.NED_PARTYPE_DOUBLE:
 			p.addAll(toProposals(new String[] {"0.0"}, "or any double value")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.")); 
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
 			break;
-		case NEDElementUtil.NED_PARTYPE_STRING: 
+		case NEDElementConstants.NED_PARTYPE_STRING: 
 			p.addAll(toProposals(new String[] {"\"\""}, "or any string value")); 
 			break;
-		case NEDElementUtil.NED_PARTYPE_XML: 
+		case NEDElementConstants.NED_PARTYPE_XML: 
 			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"})); 
 			break;
 		}

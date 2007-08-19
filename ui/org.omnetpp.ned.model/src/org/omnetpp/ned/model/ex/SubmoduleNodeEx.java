@@ -139,17 +139,12 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     // type support
     public INEDTypeInfo getTypeNEDTypeInfo() {
-        String typeName = getEffectiveType();
-        INEDTypeInfo typeInfo = getNEDTypeInfo(); //XXX how can this be null?? should always exist!
-        if (typeName == null || "".equals(typeName) || typeInfo == null)
-            return null;
-
-        return typeInfo.getResolver().getComponent(typeName);
+    	return resolveTypeName(getEffectiveType());
     }
 
     public INedTypeNode getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
-        return it == null ? null : (INedTypeNode) it.getNEDElement(); //FIXME change getNEDElement return type!!!
+        return it == null ? null : it.getNEDElement();
     }
 
     public String getEffectiveType() {

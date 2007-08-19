@@ -44,7 +44,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	/**
 	 * Returns underlying INEDElement subtree.
 	 */
-	public INEDElement getNEDElement();
+	public INedTypeNode getNEDElement();
 
 	/**
 	 * Returns NED file containing the definition.

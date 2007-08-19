@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeDifferenceUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -146,9 +146,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         basicChannel.setIsWithcppclass(true);
         ParametersNode params = (ParametersNode) NEDElementFactoryEx.getInstance().createNodeWithTag(
                 NEDElementTags.NED_PARAMETERS, basicChannel);
-        params.appendChild(createImplicitChannelParameter("delay", NEDElementUtil.NED_PARTYPE_DOUBLE));
-        params.appendChild(createImplicitChannelParameter("error", NEDElementUtil.NED_PARTYPE_DOUBLE));
-        params.appendChild(createImplicitChannelParameter("datarate", NEDElementUtil.NED_PARTYPE_DOUBLE));
+        params.appendChild(createImplicitChannelParameter("delay", NEDElementConstants.NED_PARTYPE_DOUBLE));
+        params.appendChild(createImplicitChannelParameter("error", NEDElementConstants.NED_PARTYPE_DOUBLE));
+        params.appendChild(createImplicitChannelParameter("datarate", NEDElementConstants.NED_PARTYPE_DOUBLE));
         basicChannelType = new NEDComponent(basicChannel, null, this);
 
         //
@@ -160,8 +160,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 NEDElementTags.NED_MODULE_INTERFACE);
         bidirChannel.setName("IBidirectionalChannel");
         GatesNode gates = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES, bidirChannel);
-        gates.appendChild(createGate("a", NEDElementUtil.NED_GATETYPE_INOUT));
-        gates.appendChild(createGate("b", NEDElementUtil.NED_GATETYPE_INOUT));
+        gates.appendChild(createGate("a", NEDElementConstants.NED_GATETYPE_INOUT));
+        gates.appendChild(createGate("b", NEDElementConstants.NED_GATETYPE_INOUT));
         bidirChannelType = new NEDComponent(bidirChannel, null, this);
 
         ModuleInterfaceNodeEx unidirChannel = (ModuleInterfaceNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(
@@ -169,8 +169,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         unidirChannel.setName("IUnidirectionalChannel");
         GatesNode gates2 = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES,
                 unidirChannel);
-        gates2.appendChild(createGate("i", NEDElementUtil.NED_GATETYPE_INPUT));
-        gates2.appendChild(createGate("o", NEDElementUtil.NED_GATETYPE_OUTPUT));
+        gates2.appendChild(createGate("i", NEDElementConstants.NED_GATETYPE_INPUT));
+        gates2.appendChild(createGate("o", NEDElementConstants.NED_GATETYPE_OUTPUT));
         unidirChannelType = new NEDComponent(unidirChannel, null, this);
     }
 

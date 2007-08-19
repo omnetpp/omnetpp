@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
@@ -68,7 +68,7 @@ import org.omnetpp.ned.model.pojo.UnknownNode;
 //
 // FIXME validation of embedded types!!!!
 //
-public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil {
+public class NEDValidator extends AbstractNEDValidator implements NEDElementConstants {
 
 	INEDTypeResolver resolver;
 

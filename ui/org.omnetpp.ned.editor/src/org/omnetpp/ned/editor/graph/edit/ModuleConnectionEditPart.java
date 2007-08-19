@@ -16,7 +16,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -154,7 +154,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     protected void refreshVisuals() {
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
         cfig.setDisplayString(getConnectionModel().getDisplayString());
-        cfig.setArrowHeadEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
+        cfig.setArrowHeadEnabled(getConnectionModel().getArrowDirection() != NEDElementConstants.NED_ARROWDIR_BIDIR);
     }
 
     public void setEditable(boolean editable) {

@@ -12,6 +12,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
@@ -45,7 +46,11 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     private transient List<Integer> errorMarkerIds = new ArrayList<Integer>();
 
     private transient NEDChangeListenerList listeners = null;
+    
+    // needed because we cannot write NEDResourcesPlugin.getNEDResources() (plug-in dependency cycle)
+    private static INEDTypeResolver defaultTypeResolver = null;
 
+    
 	public Iterator<INEDElement> iterator() {
 		final INEDElement e = this;
 		return new Iterator<INEDElement> () {
@@ -109,7 +114,29 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		throw new RuntimeException("invalid integer value "+b+" for enum attribute");
 	}
 
+	/**
+	 * Sets the default NED type resolver. May only be invoked once.
+	 */
+	public static void setDefaultTypeResolver(INEDTypeResolver typeResolver) {
+		Assert.isTrue(defaultTypeResolver == null);
+	}
 
+	/**
+	 * Returns the default NED type resolver. Guaranteed to be non-null.
+	 */
+	public static INEDTypeResolver getDefaultTypeResolver() {
+		Assert.isTrue(defaultTypeResolver != null); // must have been set previously
+		return defaultTypeResolver;
+	}
+
+	/**
+	 * Resolves the given type name using the default NED type resolver,
+	 * or returns null if the given string is null or "".
+	 */
+	public static INEDTypeInfo resolveTypeName(String typeName) {
+		return StringUtils.isEmpty(typeName) ? null : getDefaultTypeResolver().getComponent(typeName);
+	}
+	
 	/**
 	 * Constructor
 	 */

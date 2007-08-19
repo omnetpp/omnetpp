@@ -7,7 +7,7 @@ import java.util.Set;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
@@ -23,7 +23,7 @@ import org.omnetpp.ned.model.pojo.PropertyNode;
  *
  * @author rhornig
  */
-public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
+public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	public static final String DISPLAY_PROPERTY = "display";
 
 	//XXX move to NEDElement
@@ -140,10 +140,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
      */
     public static String getFirstExtends(INEDElement node) {
         ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
-        if (extendsNode == null)
-            return null;
-
-        return extendsNode.getName();
+        return extendsNode == null ? null : extendsNode.getName();
     }
 
     /**

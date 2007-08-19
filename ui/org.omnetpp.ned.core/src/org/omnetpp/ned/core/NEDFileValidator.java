@@ -2,7 +2,7 @@ package org.omnetpp.ned.core;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
@@ -27,7 +27,7 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
  *
  * @author rhornig
  */
-public class NEDFileValidator implements NEDElementUtil, NEDElementTags {
+public class NEDFileValidator implements NEDElementConstants, NEDElementTags {
 	INEDTypeResolver resolver;
 	INEDErrorStore errors;
 

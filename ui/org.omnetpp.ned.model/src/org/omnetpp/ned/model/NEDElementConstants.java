@@ -3,7 +3,7 @@ package org.omnetpp.ned.model;
 /**
  * Constants for INEDElement and subclasses
  */
-public interface NEDElementUtil
+public interface NEDElementConstants
 {
     public static final int  NED_GATETYPE_NONE = 100;
     public static final int  NED_GATETYPE_INPUT = 101;

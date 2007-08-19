@@ -256,17 +256,12 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     public INEDTypeInfo getTypeNEDTypeInfo() {
-        String typeName = getEffectiveType();
-        INEDTypeInfo typeInfo = getNEDTypeInfo();
-        if (typeName == null || "".equals(typeName) || typeInfo == null)  //XXX revise
-            return null;
-
-        return typeInfo.getResolver().getComponent(typeName); // we can use NEDResourcesPlugin.getNEDResources() here!
+        return resolveTypeName(getEffectiveType());
     }
 
     public INedTypeNode getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
-        return it == null ? null : (INedTypeNode) it.getNEDElement();
+        return it == null ? null : it.getNEDElement();
     }
 
 
@@ -307,7 +302,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, ParamNode>();
+            return new HashMap<String, ParamNode>(); //FIXME ???
         return info.getParams();
     }
 

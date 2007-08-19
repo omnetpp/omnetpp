@@ -67,17 +67,12 @@ public class ChannelNodeEx extends ChannelNode implements INedTypeNode, IHasInte
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        String extendsName = getFirstExtends();
-        INEDTypeInfo typeInfo = getNEDTypeInfo();
-        if (extendsName == null || "".equals(extendsName) || typeInfo == null)
-            return null;
-
-        return typeInfo.getResolver().getComponent(extendsName);
+        return resolveTypeName(getFirstExtends());
     }
 
     public INedTypeNode getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
-        return it == null ? null : (INedTypeNode) it.getNEDElement();
+        return it == null ? null : it.getNEDElement();
     }
 
     public List<ExtendsNode> getAllExtends() {

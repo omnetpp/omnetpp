@@ -7,11 +7,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
-import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_BOOL;
-import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_DOUBLE;
-import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_INT;
-import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_STRING;
-import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_XML;
+import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_BOOL;
+import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_DOUBLE;
+import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
+import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_STRING;
+import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_XML;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +36,10 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -343,7 +343,7 @@ public class InifileAnalyzer {
 				addError(section, key, "No such NED network: "+value);
 				return;
 			}
-			INEDElement node = network.getNEDElement();
+			INedTypeNode node = network.getNEDElement();
 			if (!(node instanceof CompoundModuleNode) || ((CompoundModuleNode)node).getIsNetwork()==false) {
 				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
 				return;

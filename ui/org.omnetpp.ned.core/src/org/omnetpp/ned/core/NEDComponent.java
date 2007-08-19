@@ -188,7 +188,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     	tmp.add(this);
 	    INEDTypeInfo currentComponent = this;
 	    while (true) {
-		    INEDElement currentComponentNode = currentComponent.getNEDElement();
+	    	//FIXME INedTypeNode already contains a getFirstExtendsType() method!!! use that!
+	    	INedTypeNode currentComponentNode = currentComponent.getNEDElement();
 	    	INEDElement extendsNode = currentComponentNode.getFirstChildWithTag(NED_EXTENDS);
 	    	if (extendsNode==null)
 	    		break;
@@ -358,7 +359,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 		return componentNode.getAttribute("name");
 	}
 
-	public INEDElement getNEDElement() {
+	public INedTypeNode getNEDElement() {
 		return componentNode;
 	}
 

@@ -15,11 +15,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
-
 import org.omnetpp.common.editor.EditorUtil;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -30,17 +30,19 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
     public static String PLUGIN_ID;
 
-	//The shared instance.
+	// The shared instance.
 	private static NEDResourcesPlugin plugin;
 
-	// The actual NED cache
-	private NEDResources resources = new NEDResources();
+	// The actual NED type resolver
+	private NEDResources resources;
 
 	/**
 	 * The constructor.
 	 */
 	public NEDResourcesPlugin() {
 		plugin = this;
+		resources = new NEDResources();
+		NEDElement.setDefaultTypeResolver(resources);
 	}
 
 	/**

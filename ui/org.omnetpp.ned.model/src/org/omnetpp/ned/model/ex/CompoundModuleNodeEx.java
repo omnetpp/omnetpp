@@ -90,7 +90,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
     public List<SubmoduleNodeEx> getSubmodules() {
         List<SubmoduleNodeEx> result = getOwnSubmodules();
 
-        // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
+        // FIXME beware this can lead to an infinite recursion if we have a circle in the extends chain
         INEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             result.addAll(((CompoundModuleNodeEx)extendsElem).getSubmodules());
@@ -120,7 +120,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
         if (submoduleNode != null)
             return submoduleNode;
         // then look in ancestors
-        // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chanin
+        // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chain
         INEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             return ((CompoundModuleNodeEx)extendsElem).getSubmoduleByName(submoduleName);
@@ -141,7 +141,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 	}
 
     /**
-     * Remove a specfic child from this module.
+     * Remove a specific child from this module.
      */
 	public void removeSubmodule(SubmoduleNodeEx child) {
         child.removeFromParent();
@@ -156,7 +156,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
      * @param insertBefore Sibling element where the child will be inserted
      */
 	public void insertSubmodule(int index, SubmoduleNodeEx child) {
-		// check wheter Submodules node exists and create one if doesn't
+		// check whether Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null)
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
@@ -246,7 +246,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
     public List<ConnectionNodeEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
         List<ConnectionNodeEx> result = getOwnConnections(srcName, srcGate, destName, destGate);
 
-        // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
+        // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chain
         INEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, srcGate, destName, destGate));
@@ -278,7 +278,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 
     /**
      * Returns ALL VALID connections contained in / and inherited by the provided module
-     * where this module is the destinaion
+     * where this module is the destination
      */
     public List<ConnectionNodeEx> getDestConnectionsFor(String submoduleName) {
         return getConnections(null, null, submoduleName, null);
@@ -302,17 +302,17 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 		// do nothing if it's already in the model
 		if (conn.getParent() != null)
 			return;
-		// check wheter Submodules node exists and create one if doesn't
+		// check whether Submodules node exists and create one if doesn't
 		ConnectionsNode snode = getFirstConnectionsChild();
 		if (snode == null)
 			snode = (ConnectionsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_CONNECTIONS, this);
 
-		// add it to the connections subnode
+		// add it to the connections node
 		snode.insertChildBefore(insertBefore, conn);
 	}
 
     /**
-     * Removes the connecion from the model
+     * Removes the connection from the model
      */
 	public void removeConnection(ConnectionNodeEx conn) {
 		conn.removeFromParent();
@@ -343,7 +343,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 
     public INedTypeNode getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
-        return it == null ? null : (INedTypeNode) it.getNEDElement();
+        return it == null ? null : it.getNEDElement();
     }
 
     public List<ExtendsNode> getAllExtends() {
