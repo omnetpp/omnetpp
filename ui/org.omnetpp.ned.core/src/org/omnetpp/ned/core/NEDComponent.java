@@ -45,24 +45,24 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 	private int debugId = lastDebugId++;
 	private static int lastDebugId = 0;
 	private static int debugRefreshInheritedCount = 0;
-	private static int debugRefreshOwnCount = 0;
+	private static int debugRefreshLocalCount = 0;
 
-	// own stuff
-    protected boolean needsOwnUpdate;
-	protected Set<String> ownInterfaces = new HashSet<String>();
-	protected Map<String, PropertyNode> ownProperties = new LinkedHashMap<String, PropertyNode>();
-    protected Map<String, ParamNode> ownParamDecls = new LinkedHashMap<String, ParamNode>();
-    protected Map<String, ParamNode> ownParamValues = new LinkedHashMap<String, ParamNode>();
-	protected Map<String, GateNode> ownGateDecls = new LinkedHashMap<String, GateNode>();
-    protected Map<String, GateNode> ownGateSizes = new LinkedHashMap<String, GateNode>();
-	protected Map<String, INedTypeNode> ownInnerTypes = new LinkedHashMap<String, INedTypeNode>();
-	protected Map<String, SubmoduleNode> ownSubmodules = new LinkedHashMap<String, SubmoduleNode>();
-    protected HashSet<String> ownUsedTypes = new HashSet<String>();
+	// local stuff
+    protected boolean needsLocalUpdate;
+	protected Set<String> localInterfaces = new HashSet<String>();
+	protected Map<String, PropertyNode> localProperties = new LinkedHashMap<String, PropertyNode>();
+    protected Map<String, ParamNode> localParamDecls = new LinkedHashMap<String, ParamNode>();
+    protected Map<String, ParamNode> localParamValues = new LinkedHashMap<String, ParamNode>();
+	protected Map<String, GateNode> localGateDecls = new LinkedHashMap<String, GateNode>();
+    protected Map<String, GateNode> localGateSizes = new LinkedHashMap<String, GateNode>();
+	protected Map<String, INedTypeNode> localInnerTypes = new LinkedHashMap<String, INedTypeNode>();
+	protected Map<String, SubmoduleNode> localSubmodules = new LinkedHashMap<String, SubmoduleNode>();
+    protected HashSet<String> localUsedTypes = new HashSet<String>();
 
-	// sum of all "own" stuff
-	protected Map<String, INEDElement> ownMembers = new LinkedHashMap<String, INEDElement>();
+	// sum of all "local" stuff
+	protected Map<String, INEDElement> localMembers = new LinkedHashMap<String, INEDElement>();
 
-	// own plus inherited
+	// local plus inherited
 	protected boolean needsUpdate;
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<String> allInterfaces = new HashSet<String>();
@@ -75,7 +75,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 	protected Map<String, SubmoduleNode> allSubmodules = new LinkedHashMap<String, SubmoduleNode>();
     protected HashSet<String> allUsedTypes = new HashSet<String>();
 
-	// sum of all own+inherited stuff
+	// sum of all local+inherited stuff
 	protected Map<String, INEDElement> allMembers = new LinkedHashMap<String, INEDElement>();
 
 //    // all types which extends this component
@@ -101,7 +101,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 		componentNode = node;
 
 		// register the created component in the INEDElement, so we will have access to it
-        // directly from the model. We also want to listen on it, and invalidate ownMembers etc
+        // directly from the model. We also want to listen on it, and invalidate localMembers etc
 		// if anything changes.
 		INEDTypeInfo oldTypeInfo = node.getNEDTypeInfo();
 		if (oldTypeInfo != null)
@@ -109,8 +109,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 		node.addNEDChangeListener(this);
         node.setNEDTypeInfo(this);
 
-        // the inherited and own members will be collected on demand
-        needsOwnUpdate = true;
+        // the inherited and local members will be collected on demand
+        needsLocalUpdate = true;
 		needsUpdate = true;
 	}
 
@@ -178,71 +178,71 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 	}
 
     /**
-     * Refreshes tables of own (local) members
+     * Refresh tables of local members
      */
-    protected void refreshOwnMembersIfNeeded() {
-    	if (!needsOwnUpdate)
+    protected void refreshLocalMembersIfNeeded() {
+    	if (!needsLocalUpdate)
     		return;
     	
-        ++debugRefreshOwnCount;
-        // System.out.println("NEDComponent for "+getName()+" ownRefresh: " + refreshOwnCount);
+        ++debugRefreshLocalCount;
+        // System.out.println("NEDComponent for "+getName()+" localRefresh: " + refreshLocalCount);
 
-        ownInterfaces.clear();
-        ownProperties.clear();
-        ownParamDecls.clear();
-        ownParamValues.clear();
-        ownGateDecls.clear();
-        ownGateSizes.clear();
-        ownSubmodules.clear();
-        ownInnerTypes.clear();
-        ownMembers.clear();
-        ownUsedTypes.clear();
+        localInterfaces.clear();
+        localProperties.clear();
+        localParamDecls.clear();
+        localParamValues.clear();
+        localGateDecls.clear();
+        localGateSizes.clear();
+        localSubmodules.clear();
+        localInnerTypes.clear();
+        localMembers.clear();
+        localUsedTypes.clear();
 
         // collect base types: interfaces extend other interfaces, modules implement interfaces
-        collectInheritance(ownInterfaces, getNEDElement() instanceof IInterfaceTypeNode ? NED_EXTENDS : NED_INTERFACE_NAME);
+        collectInheritance(localInterfaces, getNEDElement() instanceof IInterfaceTypeNode ? NED_EXTENDS : NED_INTERFACE_NAME);
        
         // collect members from component declaration
-        collect(ownProperties, NED_PARAMETERS, new IPredicate() {
+        collect(localProperties, NED_PARAMETERS, new IPredicate() {
         	public boolean matches(IHasName node) {
         		return node.getTagCode()==NED_PROPERTY;
         	}});
-        collect(ownParamDecls, NED_PARAMETERS, new IPredicate() {
+        collect(localParamDecls, NED_PARAMETERS, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return node.getTagCode()==NED_PARAM && ((ParamNode)node).getType() != NED_PARTYPE_NONE;
 			}});
-        collect(ownParamValues, NED_PARAMETERS, new IPredicate() {
+        collect(localParamValues, NED_PARAMETERS, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return node.getTagCode()==NED_PARAM && StringUtils.isNotEmpty(((ParamNode)node).getValue());
 			}});
-        collect(ownGateDecls, NED_GATES, new IPredicate() {
+        collect(localGateDecls, NED_GATES, new IPredicate() {
         	public boolean matches(IHasName node) {
         		return node.getTagCode()==NED_GATE && ((GateNode)node).getType() != NED_GATETYPE_NONE;
         	}});
-        collect(ownGateSizes, NED_GATES, new IPredicate() {
+        collect(localGateSizes, NED_GATES, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return node.getTagCode()==NED_GATE && StringUtils.isNotEmpty(((GateNode)node).getVectorSize());
 			}});
-        collect(ownInnerTypes, NED_TYPES, new IPredicate() {
+        collect(localInnerTypes, NED_TYPES, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return node instanceof INedTypeNode;
 			}});
-        collect(ownSubmodules, NED_SUBMODULES, new IPredicate() {
+        collect(localSubmodules, NED_SUBMODULES, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return node.getTagCode()==NED_SUBMODULE;
 			}});
 
         // collect them in one common hash table as well (we assume there's no name clash --
         // that should be checked beforehand by validation!)
-        ownMembers.putAll(ownProperties);
-        ownMembers.putAll(ownParamDecls);
-        ownMembers.putAll(ownGateDecls);
-        ownMembers.putAll(ownSubmodules);
-        ownMembers.putAll(ownInnerTypes);
+        localMembers.putAll(localProperties);
+        localMembers.putAll(localParamDecls);
+        localMembers.putAll(localGateDecls);
+        localMembers.putAll(localSubmodules);
+        localMembers.putAll(localInnerTypes);
 
         // collect the types that were used in this module (meaningful only for compound modules)
-        collectTypesInCompoundModule(ownUsedTypes);
+        collectTypesInCompoundModule(localUsedTypes);
 
-        needsOwnUpdate = false;
+        needsLocalUpdate = false;
     }
 
 	/**
@@ -255,9 +255,9 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
         ++debugRefreshInheritedCount;
         // System.out.println("NEDComponent for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
 
-        // first wee need our own members updated
-        if (needsOwnUpdate)
-            refreshOwnMembersIfNeeded();
+        // first wee need our local members updated
+        if (needsLocalUpdate)
+            refreshLocalMembersIfNeeded();
 
         // determine extends chain
         extendsChain = computeExtendsChain();
@@ -280,8 +280,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 			if (directBaseType != null)
 				allInterfaces.addAll(directBaseType.getInterfaces());
 		}
-		allInterfaces.addAll(ownInterfaces);
-		for (String interfaceName : ownInterfaces) {
+		allInterfaces.addAll(localInterfaces);
+		for (String interfaceName : localInterfaces) {
 			INEDTypeInfo typeInfo = resolver.getComponent(interfaceName);
 			if (typeInfo != null)
 				allInterfaces.addAll(typeInfo.getInterfaces());
@@ -293,15 +293,15 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 		for (INEDTypeInfo typeInfo : forwardExtendsChain) {
 			Assert.isTrue(typeInfo instanceof NEDComponent);
 			NEDComponent component = (NEDComponent)typeInfo;
-			allProperties.putAll(component.getOwnProperties());
-			allParams.putAll(component.getOwnParams());
-            allParamValues.putAll(component.getOwnParamValues());
-			allGates.putAll(component.getOwnGates());
-            allGateSizes.putAll(component.getOwnGateSizes());
-			allInnerTypes.putAll(component.getOwnInnerTypes());
-			allSubmodules.putAll(component.getOwnSubmodules());
-			allMembers.putAll(component.getOwnMembers());
-			allUsedTypes.addAll(component.getOwnUsedTypes());
+			allProperties.putAll(component.getLocalProperties());
+			allParams.putAll(component.getLocalParamDeclarations());
+            allParamValues.putAll(component.getLocalParamAssignments());
+			allGates.putAll(component.getLocalGateDeclarations());
+            allGateSizes.putAll(component.getLocalGateSizes());
+			allInnerTypes.putAll(component.getLocalInnerTypes());
+			allSubmodules.putAll(component.getLocalSubmodules());
+			allMembers.putAll(component.getLocalMembers());
+			allUsedTypes.addAll(component.getLocalUsedTypes());
 		}
 
 // Not needed:
@@ -325,7 +325,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 //            }
 //
 //            // check for components that contain submodules, connections that use this type
-//            if (currentComp.getOwnUsedTypes().contains(getName())) {
+//            if (currentComp.getLocalUsedTypes().contains(getName())) {
 //                allUsingTypes.add(currentComp);
 //            }
 //        }
@@ -337,7 +337,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 	 * later re-built on demand.
 	 */
 	public void invalidate() {
-        needsOwnUpdate = true;
+        needsLocalUpdate = true;
 		needsUpdate = true;
 	}
 
@@ -379,54 +379,54 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 		return extendsChain;
 	}
 
-	public Set<String> getOwnInterfaces() {
-		refreshOwnMembersIfNeeded();
-        return ownInterfaces;
+	public Set<String> getLocalInterfaces() {
+		refreshLocalMembersIfNeeded();
+        return localInterfaces;
 	}
 
-    public Map<String,ParamNode> getOwnParams() {
-    	refreshOwnMembersIfNeeded();
-        return ownParamDecls;
+    public Map<String,ParamNode> getLocalParamDeclarations() {
+    	refreshLocalMembersIfNeeded();
+        return localParamDecls;
     }
 
-    public Map<String,ParamNode> getOwnParamValues() {
-    	refreshOwnMembersIfNeeded();
-        return ownParamValues;
+    public Map<String,ParamNode> getLocalParamAssignments() {
+    	refreshLocalMembersIfNeeded();
+        return localParamValues;
     }
 
-    public Map<String,PropertyNode> getOwnProperties() {
-    	refreshOwnMembersIfNeeded();
-        return ownProperties;
+    public Map<String,PropertyNode> getLocalProperties() {
+    	refreshLocalMembersIfNeeded();
+        return localProperties;
     }
 
-    public Map<String,GateNode> getOwnGates() {
-    	refreshOwnMembersIfNeeded();
-        return ownGateDecls;
+    public Map<String,GateNode> getLocalGateDeclarations() {
+    	refreshLocalMembersIfNeeded();
+        return localGateDecls;
     }
 
-    public Map<String,GateNode> getOwnGateSizes() {
-    	refreshOwnMembersIfNeeded();
-        return ownGateSizes;
+    public Map<String,GateNode> getLocalGateSizes() {
+    	refreshLocalMembersIfNeeded();
+        return localGateSizes;
     }
 
-    public Map<String,INedTypeNode> getOwnInnerTypes() {
-    	refreshOwnMembersIfNeeded();
-        return ownInnerTypes;
+    public Map<String,INedTypeNode> getLocalInnerTypes() {
+    	refreshLocalMembersIfNeeded();
+        return localInnerTypes;
     }
 
-    public Map<String,SubmoduleNode> getOwnSubmodules() {
-    	refreshOwnMembersIfNeeded();
-        return ownSubmodules;
+    public Map<String,SubmoduleNode> getLocalSubmodules() {
+    	refreshLocalMembersIfNeeded();
+        return localSubmodules;
     }
 
-    public Map<String,INEDElement> getOwnMembers() {
-    	refreshOwnMembersIfNeeded();
-        return ownMembers;
+    public Map<String,INEDElement> getLocalMembers() {
+    	refreshLocalMembersIfNeeded();
+        return localMembers;
     }
 
-    public Set<String> getOwnUsedTypes() {
-    	refreshOwnMembersIfNeeded();
-        return ownUsedTypes;
+    public Set<String> getLocalUsedTypes() {
+    	refreshLocalMembersIfNeeded();
+        return localUsedTypes;
     }
 
     public Set<String> getInterfaces() {
@@ -434,12 +434,12 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
         return allInterfaces;
     }
 
-    public Map<String, ParamNode> getParams() {
+    public Map<String, ParamNode> getParamDeclarations() {
     	refreshInheritedMembersIfNeeded();
         return allParams;
     }
 
-    public Map<String, ParamNode> getParamValues() {
+    public Map<String, ParamNode> getParamAssignments() {
     	refreshInheritedMembersIfNeeded();
         return allParamValues;
     }
@@ -449,7 +449,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
         return allProperties;
     }
 
-    public Map<String, GateNode> getGates() {
+    public Map<String, GateNode> getGateDeclarations() {
     	refreshInheritedMembersIfNeeded();
         return allGates;
     }
@@ -493,24 +493,24 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 	public List<ParamNode> getParameterInheritanceChain(String parameterName) {
 		List<ParamNode> result = new ArrayList<ParamNode>();
 		for (INEDTypeInfo type : getExtendsChain())
-			if (type.getOwnParams().containsKey(parameterName))
-				result.add((ParamNode) type.getOwnParams().get(parameterName));
+			if (type.getLocalParamDeclarations().containsKey(parameterName))
+				result.add((ParamNode) type.getLocalParamDeclarations().get(parameterName));
 		return result;
 	}
 
 	public List<GateNode> getGateInheritanceChain(String gateName) {
 		List<GateNode> result = new ArrayList<GateNode>();
 		for (INEDTypeInfo type : getExtendsChain())
-			if (type.getOwnGates().containsKey(gateName))
-				result.add(type.getOwnGates().get(gateName));
+			if (type.getLocalGateDeclarations().containsKey(gateName))
+				result.add(type.getLocalGateDeclarations().get(gateName));
 		return result;
 	}
 
 	public List<PropertyNode> getPropertyInheritanceChain(String propertyName) {
 		List<PropertyNode> result = new ArrayList<PropertyNode>();
 		for (INEDTypeInfo type : getExtendsChain())
-			if (type.getOwnProperties().containsKey(propertyName))
-				result.add((PropertyNode) type.getOwnProperties().get(propertyName));
+			if (type.getLocalProperties().containsKey(propertyName))
+				result.add((PropertyNode) type.getLocalProperties().get(propertyName));
 		return result;
 	}
 
@@ -529,18 +529,18 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 
     public void debugDump() {
     	System.out.println("NEDComponent: " + getNEDElement().toString() + " debugId=" + debugId);
-    	if (needsUpdate || needsOwnUpdate)
+    	if (needsUpdate || needsLocalUpdate)
     		System.out.println(" currently invalid (needs refresh)");
     	System.out.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));
-    	System.out.println("  own interfaces: " + StringUtils.join(ownInterfaces, ", "));
+    	System.out.println("  local interfaces: " + StringUtils.join(localInterfaces, ", "));
     	System.out.println("  all interfaces: " + StringUtils.join(allInterfaces, ", "));
-    	System.out.println("  own gates: " + StringUtils.join(ownGateDecls.keySet(), ", "));
+    	System.out.println("  local gates: " + StringUtils.join(localGateDecls.keySet(), ", "));
     	System.out.println("  all gates: " + StringUtils.join(allGates.keySet(), ", "));
-    	System.out.println("  own parameters: " + StringUtils.join(ownParamDecls.keySet(), ", "));
+    	System.out.println("  local parameters: " + StringUtils.join(localParamDecls.keySet(), ", "));
     	System.out.println("  all parameters: " + StringUtils.join(allParams.keySet(), ", "));
-    	System.out.println("  own properties: " + StringUtils.join(ownProperties.keySet(), ", "));
+    	System.out.println("  local properties: " + StringUtils.join(localProperties.keySet(), ", "));
     	System.out.println("  all properties: " + StringUtils.join(allProperties.keySet(), ", "));
-    	System.out.println("  own submodules: " + StringUtils.join(ownSubmodules.keySet(), ", "));
+    	System.out.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));
     	System.out.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
     }
 }

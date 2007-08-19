@@ -84,11 +84,11 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements IInt
 
     // parameter list support
     public Map<String, ParamNode> getParamValues() {
-        return getNEDTypeInfo().getParamValues();
+        return getNEDTypeInfo().getParamAssignments();
     }
 
     public Map<String, ParamNode> getParams() {
-        return getNEDTypeInfo().getParams();
+        return getNEDTypeInfo().getParamDeclarations();
     }
 
 }

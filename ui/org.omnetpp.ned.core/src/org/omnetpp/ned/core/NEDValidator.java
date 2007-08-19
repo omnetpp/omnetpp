@@ -253,7 +253,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 				errors.add(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
-			decl = (ParamNode) submoduleType.getParams().get(parname);
+			decl = (ParamNode) submoduleType.getParamDeclarations().get(parname);
 			if (decl==null) {
 				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
 				return;
@@ -265,7 +265,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 				errors.add(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
-			decl = (ParamNode) channelSpecType.getParams().get(parname);
+			decl = (ParamNode) channelSpecType.getParamDeclarations().get(parname);
 			if (decl==null) {
 				errors.add(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
@@ -332,7 +332,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 				errors.add(node, "cannot configure gates of a submodule of unknown type");
 				return;
 			}
-			decl = (GateNode) submoduleType.getGates().get(gatename);
+			decl = (GateNode) submoduleType.getGateDeclarations().get(gatename);
 			if (decl==null) {
 				errors.add(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
 				return;

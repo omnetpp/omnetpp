@@ -90,11 +90,11 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements IInter
 
     // parameter query support
     public Map<String, ParamNode> getParamValues() {
-        return getNEDTypeInfo().getParamValues();
+        return getNEDTypeInfo().getParamAssignments();
     }
 
     public Map<String, ParamNode> getParams() {
-        return getNEDTypeInfo().getParams();
+        return getNEDTypeInfo().getParamDeclarations();
     }
 
     // gate support
@@ -103,7 +103,7 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements IInter
     }
 
     public Map<String, GateNode> getGates() {
-        return getNEDTypeInfo().getGates();
+        return getNEDTypeInfo().getGateDeclarations();
     }
 
 }

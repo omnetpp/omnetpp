@@ -141,13 +141,13 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		if (line.equals("")) {
 			// offer param and gate names
 			if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
-				addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
+				addProposals(viewer, documentOffset, result, parentComponent.getParamDeclarations().keySet(), "parameter");
 			if (info.sectionType == SECT_GATES && parentComponent!=null)
-				addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
+				addProposals(viewer, documentOffset, result, parentComponent.getGateDeclarations().keySet(), "gate");
 			if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
-				addProposals(viewer, documentOffset, result, submoduleType.getParams().keySet(), "parameter");
+				addProposals(viewer, documentOffset, result, submoduleType.getParamDeclarations().keySet(), "parameter");
 			if (info.sectionType == SECT_SUBMODULE_GATES && submoduleType!=null)
-				addProposals(viewer, documentOffset, result, submoduleType.getGates().keySet(), "gate");
+				addProposals(viewer, documentOffset, result, submoduleType.getGateDeclarations().keySet(), "gate");
 
 			// offer param and gate type name keywords
 			if (info.sectionType == SECT_PARAMETERS)
@@ -198,12 +198,12 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			// offer parameter names, gate names, types,...
 			if (line.matches(".*\\bthis *\\.")) {
 				if (submoduleType!=null)
-					addProposals(viewer, documentOffset, result, submoduleType.getParams().keySet(), "parameter");
+					addProposals(viewer, documentOffset, result, submoduleType.getParamDeclarations().keySet(), "parameter");
 			}
 			else if (line.matches(".*\\bsizeof *\\(")) {
 				if (parentComponent!=null) {
                     // FIXME add only vector submoduleas and vectors
-					addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
+					addProposals(viewer, documentOffset, result, parentComponent.getGateDeclarations().keySet(), "gate");
 					addProposals(viewer, documentOffset, result, parentComponent.getSubmodules().keySet(), "submodule");
 				}
 			}
@@ -215,14 +215,14 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					INEDTypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
-							addProposals(viewer, documentOffset, result, submodType.getGates().keySet(), "gate");
-						addProposals(viewer, documentOffset, result, submodType.getParams().keySet(), "parameter");
+							addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
+						addProposals(viewer, documentOffset, result, submodType.getParamDeclarations().keySet(), "parameter");
 					}
 	    		}
 	    	}
 			else {
 				if (parentComponent!=null) {
-					addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
+					addProposals(viewer, documentOffset, result, parentComponent.getParamDeclarations().keySet(), "parameter");
 				}
 			}
 			addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedConstants, null);
@@ -261,7 +261,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			}
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (parentComponent!=null)
-					addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
+					addProposals(viewer, documentOffset, result, parentComponent.getParamDeclarations().keySet(), "parameter");
 			}
 			else if (line.matches(".*: *<.*>")) {   // "like" syntax, cont'd
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, "keyword");
@@ -282,7 +282,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		// right at line start or after arrow: offer submodule names and parent module's gates
 	    		if (parentComponent!=null) {
 	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmodules().keySet(), "submodule");
-	    			addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
+	    			addProposals(viewer, documentOffset, result, parentComponent.getGateDeclarations().keySet(), "gate");
 	    		}
 	    	}
 	    	else if (line.endsWith(".")) {
@@ -292,7 +292,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					// System.out.println(" offering gates of type "+submodTypeName);
 					INEDTypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null)
-						addProposals(viewer, documentOffset, result, submodType.getGates().keySet(), "gate");
+						addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
 	    		}
 	    	}
 

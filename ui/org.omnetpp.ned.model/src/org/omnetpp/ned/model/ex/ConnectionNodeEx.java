@@ -264,7 +264,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     	INEDTypeInfo info = getNEDTypeInfo();
     	if (info != null) 
-    		result.putAll(info.getParamValues());
+    		result.putAll(info.getParamAssignments());
 
         // add our own assigned parameters
         for (ParamNodeEx ownParam : getOwnParams())
@@ -275,7 +275,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamNode>() : info.getParams();
+        return info == null ? new HashMap<String, ParamNode>() : info.getParamDeclarations();
     }
 
 }

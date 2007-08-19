@@ -76,7 +76,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /**
      * Returns the list of interfaces this type locally implements.
      */
-	public Set<String> getOwnInterfaces();
+	public Set<String> getLocalInterfaces();
 
 	/**
      * Returns the list of interfaces this type and its ancestor types and 
@@ -84,52 +84,58 @@ public interface INEDTypeInfo extends INEDChangeListener {
      */
     public Set<String> getInterfaces();
 
-	// TODO comment!
-	// these methods are for members declared on this component (i.e. excluding inherited ones)
-	// member: gate/param/property/submod/innertype
-    /** */
-    public Map<String, INEDElement> getOwnMembers();
+    /** XXX ? */
+    public Map<String, INEDElement> getLocalMembers();
 
     /** Parameters declared locally within this type (i.e. where param type is not empty) */
-    public Map<String, ParamNode> getOwnParams();
+    public Map<String, ParamNode> getLocalParamDeclarations();
 
-    /** Parameter nodes within this type with the value attribute filled in */
-    public Map<String, ParamNode> getOwnParamValues();
+    /** Parameter nodes within this type where the "value" attribute is filled in */
+    public Map<String, ParamNode> getLocalParamAssignments();
 
     /** Properties from the local parameters section */
-    public Map<String, PropertyNode> getOwnProperties();
+    public Map<String, PropertyNode> getLocalProperties();
 
     /** Gates declared locally within this type (i.e. where gate type is not empty) */
-    public Map<String, GateNode> getOwnGates();
+    public Map<String, GateNode> getLocalGateDeclarations();
 
-    /** Gate nodes within this type with the vector size attribute filled in */
-    public Map<String, GateNode> getOwnGateSizes();
+    /** Gate nodes within this type where the "vector size" attribute filled in */
+    public Map<String, GateNode> getLocalGateSizes();
 
     /** Inner types declared locally within this type */
-    public Map<String, INedTypeNode> getOwnInnerTypes();
+    public Map<String, INedTypeNode> getLocalInnerTypes();
 
     /** Submodules declared locally within this (compound module) type */
-    public Map<String, SubmoduleNode> getOwnSubmodules();
+    public Map<String, SubmoduleNode> getLocalSubmodules();
 
     /** Module and channel types used locally in this (compound module) type */
-    public Set<String> getOwnUsedTypes();
+    public Set<String> getLocalUsedTypes();
 
 	// same as above, for inherited members as well
+    
+    /** XXX ? */
     public Map<String, INEDElement> getMembers();
 
     /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
-    public Map<String, ParamNode> getParams();
+    public Map<String, ParamNode> getParamDeclarations();
 
-    /** Parameter nodes where the value attribute is filled in, including inherited ones */
-    public Map<String, ParamNode> getParamValues();
+    /** Parameter nodes where the "value" attribute is filled in, including inherited ones; 
+     * the most recent one for each parameter 
+     */
+    public Map<String, ParamNode> getParamAssignments();
 
-    /** Property nodes, including inherited ones */
+    /** Property nodes, including inherited ones; the most recent one for each property. 
+     * (Given the special inheritance rules for properties, this may not be what you want; 
+     * see getPropertyInheritanceChain(). 
+     */
     public Map<String, PropertyNode> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
-    public Map<String, GateNode> getGates();
+    public Map<String, GateNode> getGateDeclarations();
 
-    /** Gate nodes where the vector size attribute is filled in, including inherited ones */
+    /** Gate nodes where the "vector size" attribute is filled in, including inherited ones; 
+     * the most recent one for each gate 
+     */
     public Map<String, GateNode> getGateSizes();
 
     /** All inner types in this type, including inherited ones */

@@ -95,11 +95,11 @@ public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeN
 
     // parameter query support
     public Map<String, ParamNode> getParamValues() {
-        return getNEDTypeInfo().getParamValues();
+        return getNEDTypeInfo().getParamAssignments();
     }
 
     public Map<String, ParamNode> getParams() {
-        return getNEDTypeInfo().getParams();
+        return getNEDTypeInfo().getParamDeclarations();
     }
 
     // gate support
@@ -108,7 +108,7 @@ public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeN
     }
 
     public Map<String, GateNode> getGates() {
-        return getNEDTypeInfo().getGates();
+        return getNEDTypeInfo().getGateDeclarations();
     }
 
     // interface implementation support
