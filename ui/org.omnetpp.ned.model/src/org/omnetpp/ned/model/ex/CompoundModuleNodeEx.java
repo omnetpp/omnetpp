@@ -1,6 +1,7 @@
 package org.omnetpp.ned.model.ex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -92,14 +93,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
     public List<SubmoduleNodeEx> getSubmodules() {
-        List<SubmoduleNodeEx> result = getOwnSubmodules();
-
-        // FIXME beware this can lead to an infinite recursion if we have a circle in the extends chain
-        INEDElement extendsElem = getFirstExtendsRef();
-        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
-            result.addAll(((CompoundModuleNodeEx)extendsElem).getSubmodules());
-
-        return result;
+    	//XXX remove cast
+    	return (List<SubmoduleNodeEx>)(List) Arrays.asList(getNEDTypeInfo().getSubmodules().values().toArray(new SubmoduleNode[]{}));
     }
 
 	/**
@@ -107,9 +102,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 	 * Returns null if not found.
 	 */
 	protected SubmoduleNodeEx getOwnSubmoduleByName(String submoduleName) {
-        SubmodulesNode submodulesNode = getFirstSubmodulesChild();
-        return submodulesNode==null ? null : (SubmoduleNodeEx)submodulesNode.getFirstChildWithAttribute(
-        		NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
+		return (SubmoduleNodeEx) getNEDTypeInfo().getLocalSubmodules().get(submoduleName);
 	}
 
     /**
@@ -117,21 +110,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
      * or null if not found.
      */
     public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
-    	Assert.isTrue(submoduleName != null);
-    	
-        // first look in the current module
-        SubmoduleNodeEx submoduleNode = getOwnSubmoduleByName(submoduleName);
-        if (submoduleNode != null)
-            return submoduleNode;
-        
-        // then look in ancestors
-        // FIXME beware this can lead to an infinite recursion if we have a circle in the extends chain
-        INEDElement extendsElem = getFirstExtendsRef();
-        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
-            return ((CompoundModuleNodeEx)extendsElem).getSubmoduleByName(submoduleName);
-
-        // not found
-        return null;
+		return (SubmoduleNodeEx) getNEDTypeInfo().getSubmodules().get(submoduleName);
     }
 
 	/**
@@ -251,6 +230,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
         List<ConnectionNodeEx> result = getOwnConnections(srcName, srcGate, destName, destGate);
 
         // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chain
+        //   --> use INedTypeInfo.getExtendsChain()
         INEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, srcGate, destName, destGate));

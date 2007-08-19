@@ -153,6 +153,9 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		id = ++lastid;
 	}
 
+	/**
+	 * Constructor. Takes parent element.
+	 */
 	public NEDElement(INEDElement parent) {
 		super();
 		if (parent != null)
