@@ -14,6 +14,7 @@ import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.CommentNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
@@ -138,6 +139,13 @@ class NEDElementChildrenComparator implements IRangeComparator {
 	}
 
 	public boolean rangesEqual(int thisIndex, IRangeComparator other, int otherIndex) {
+		// NOTE: In this tree diff algorithm, we return true iff two the nodes are 
+		// the same type AND we want to synchronize them by changing differing attributes 
+		// and recursively synchronizing child elements. I.e. this is the case when the
+		// two nodes are submodules of the same *name* but potentially different
+		// vector size etc and contents: we return true.  If we just want one to be thrown
+		// out and simply replaced by the other, we return false.
+		//
 		INEDElement thisElement = getElementAt(thisIndex);
 		INEDElement otherElement = ((NEDElementChildrenComparator)other).getElementAt(otherIndex);
 
@@ -153,11 +161,16 @@ class NEDElementChildrenComparator implements IRangeComparator {
 
 			return thisId.equals(otherId);
 		}
-		else {
-			String thisName = thisElement.getAttribute("name");
-			String otherName = otherElement.getAttribute("name");
+		else if (thisElement instanceof IHasName) {
+			// if they have the same name: synchronize (true), otherwise do remove+add (false)
+			String thisName = ((IHasName)thisElement).getName();
+			String otherName = ((IHasName)otherElement).getName();
 			
 			return StringUtils.equals(thisName, otherName);
+		}
+		else {
+			// we assume they correspond to each other
+			return true;
 		}
 	}
 
