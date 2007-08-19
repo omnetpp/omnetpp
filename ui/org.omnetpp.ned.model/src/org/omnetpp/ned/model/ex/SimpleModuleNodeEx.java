@@ -112,6 +112,7 @@ public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeN
     }
 
     // interface implementation support
+    //FIXME btw this is getOwnInterfaces()! getAllInterfaces() would include ancestor interfaces too!!! but get it from NEDComponent!!!! --Andras
     public List<InterfaceNameNode> getAllInterfaces() {
         List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
 
