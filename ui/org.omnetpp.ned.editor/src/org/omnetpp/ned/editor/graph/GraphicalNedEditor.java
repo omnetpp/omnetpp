@@ -87,14 +87,18 @@ import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeBeginEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEndEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 
 /**
@@ -544,15 +548,18 @@ public class GraphicalNedEditor
             	if (!isActive() && event.getSource() != null)
                 	recordExternalChangeCommand(event);
 
+            	reactToModelChanges(event);
+
             	getGraphicalViewer().getRootEditPart().refresh();
             }
 
 			private void recordExternalChangeCommand(NEDModelEvent event) {
+				// handle possible begin..end grouping
 				if (event instanceof NEDModelChangeBeginEvent) {
 					Assert.isTrue(externalChangeCommand == null);
 					externalChangeCommand = new ExternalChangeCommand();
 				}
-				else if (event instanceof NEDModelChangeEndEvent) {
+	 			else if (event instanceof NEDModelChangeEndEvent) {
 					getCommandStack().execute(externalChangeCommand);
 					externalChangeCommand = null;
 				}
@@ -566,6 +573,26 @@ public class GraphicalNedEditor
 			}
         });
     }
+
+    protected void reactToModelChanges(NEDModelEvent event) {
+    	// If a submodule name has changed, we must change all the connections in the same compound module
+    	// that is attached to this module, so the model will remain consistent.
+    	//
+    	// NOTE: corresponding code used to be in SubmoduleNodeEx.setName(), but that's
+    	// not the right place. This is more of a refactoring, e.g. ideally we'd have to
+    	// update all derived compound modules too, possibly after asking the user for 
+    	// confirmation -- which is more easily done here.
+    	//
+    	if (event instanceof NEDAttributeChangeEvent && event.getSource() instanceof SubmoduleNodeEx) {
+    		NEDAttributeChangeEvent e = (NEDAttributeChangeEvent) event;
+    		if (e.getAttribute().equals(SubmoduleNode.ATT_NAME))
+    			submoduleNameChanged((SubmoduleNodeEx)e.getSource(), (String)e.getOldValue(), (String)e.getNewValue());
+    	}
+    }
+
+    protected void submoduleNameChanged(SubmoduleNodeEx submodule, String oldName, String newName) {
+    	NEDElementUtilEx.renameSubmoduleInConnections(submodule.getCompoundModule(), oldName, newName);
+	}
 
 	/**
      * Reveals a model element in the editor (or its nearest ancestor which

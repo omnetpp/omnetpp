@@ -10,6 +10,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.LiteralNode;
@@ -232,4 +233,32 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     	// this is a simple solution, replace with more sophisticated code if needed
     	return node.getTagName().replace('-', ' ');
     }
+    
+    /**
+     * When the user renames a submodule, we need to update the connections in the 
+     * same compound module (and its subclasses) accordingly, so that the model 
+     * will remain consistent. This method performs this change, for one compound
+     * module.
+     */
+    public static void renameSubmoduleInConnections(CompoundModuleNodeEx compoundModule, String oldSubmoduleName, String newSubmoduleName) {
+		INEDElement connectionsNode = compoundModule.getFirstConnectionsChild();
+		if (connectionsNode != null)
+			doRenameSubmoduleInConnections(connectionsNode, oldSubmoduleName, newSubmoduleName);
+	}
+
+	protected static void doRenameSubmoduleInConnections(INEDElement parent, String oldName, String newName) {
+		for (INEDElement child : parent) {
+			if (child instanceof ConnectionNodeEx) {
+				ConnectionNodeEx conn = (ConnectionNodeEx) child;
+				if (conn.getSrcModule().equals(oldName))
+					conn.setSrcModule(newName);
+				if (conn.getDestModule().equals(oldName))
+					conn.setDestModule(newName);
+			}
+			else if (child instanceof ConnectionGroupNode) {
+				doRenameSubmoduleInConnections(child, oldName, newName);
+			}
+		}
+	}
+
 }

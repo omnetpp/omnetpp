@@ -31,10 +31,11 @@ import org.omnetpp.ned.model.pojo.PropertyNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
- * Default implementation of INEDComponent.
+ * Default implementation of INEDTypeInfo.
  *
  * @author rhornig, andras
  */
+//XXX rename to NEDTypeInfo? --Andras
 public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementConstants {
 
 	protected INEDTypeResolver resolver;

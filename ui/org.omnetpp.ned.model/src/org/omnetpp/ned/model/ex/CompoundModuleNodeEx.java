@@ -210,7 +210,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
                 result.add(connChild);
             }
             else if (currChild instanceof ConnectionGroupNode) {
-                // FIXME remove the comment is the layouter works without infite loops
+                // FIXME remove the comment is the layouter works without infinite loops
                 gatherConnections(currChild, srcName, srcGate, destName, destGate, result);
             }
         }

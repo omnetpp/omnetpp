@@ -575,6 +575,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                       }
                     }
                     else {
+System.out.println("FIXME add typeinfo for duplicates too!!!"); //FIXME
                         INEDTypeInfo component = new NEDComponent((INedTypeNode)node, file, this);
                         map.put(name, component);
                         components.put(name, component);
