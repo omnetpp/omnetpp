@@ -90,8 +90,6 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
 	public NEDComponent(INedTypeNode node, IFile nedfile, INEDTypeResolver res) {
-		System.out.println("**** NEDComponent ctor: " + node + "   id=" + debugId);
-		
 		resolver = res;
 		file = nedfile;
 		componentNode = node;

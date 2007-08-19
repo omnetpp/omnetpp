@@ -284,7 +284,7 @@ foreach $element (@elements)
     {
         print JAVA "            case $i: return $attnameconsts[$i];\n";
     }
-    print JAVA "            default: return null;\n";
+    print JAVA "            default: throw new IllegalArgumentException();\n";
     print JAVA "        }\n";
     print JAVA "    }\n\n";
     print JAVA "    public String getAttribute(int k) {\n";
@@ -304,7 +304,7 @@ foreach $element (@elements)
             die "invalid argtype '$argtypes[$i]'";
         }
     }
-    print JAVA "            default: return null;\n";
+    print JAVA "            default: throw new IllegalArgumentException();\n";
     print JAVA "        }\n";
     print JAVA "    }\n\n";
     print JAVA "    public void setAttribute(int k, String val) {\n";
@@ -324,7 +324,7 @@ foreach $element (@elements)
             die "invalid argtype '$argtypes[$i]'";
         }
     }
-    print JAVA "            default: ;\n";
+    print JAVA "            default: throw new IllegalArgumentException();\n";
     print JAVA "        }\n";
     print JAVA "    }\n\n";
     print JAVA "    public String getAttributeDefault(int k) {\n";
@@ -341,7 +341,7 @@ foreach $element (@elements)
             print JAVA "            case $i: return $attval;\n";
         }
     }
-    print JAVA "            default: return null;\n";
+    print JAVA "            default: throw new IllegalArgumentException();\n";
     print JAVA "        }\n";
     print JAVA "    }\n\n";
 
@@ -377,7 +377,7 @@ foreach $element (@elements)
         print JAVA "        return ($elementclass{$children[$i]})getFirstChildWithTag($enumname{$children[$i]});\n";
         print JAVA "    }\n\n";
     }
-    print JAVA "};\n\n";
+    print JAVA "}\n\n";
 }
 
 
@@ -404,7 +404,7 @@ foreach $element (@elements)
     $i++;
 }
 
-print JAVA "};\n\n";
+print JAVA "}\n\n";
 
 
 #------------------------------------------------------------------------
@@ -458,7 +458,7 @@ foreach $element (@elements)
 print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagcode \"+tagcode);\n";
 print JAVA "    }\n\n";
-print JAVA "};\n\n";
+print JAVA "}\n\n";
 
 #------------------------------------------------------------------------
 #
@@ -488,5 +488,5 @@ foreach $element (@elements)
 {
     print JAVA "    abstract protected void validateElement($elementclass{$element} node);\n";
 }
-print JAVA "};\n\n";
+print JAVA "}\n\n";
 

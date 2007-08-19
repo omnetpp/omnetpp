@@ -252,7 +252,7 @@ public class PaletteManager implements INEDChangeListener {
         drawer.add(combined);
 
         combined = new CombinedTemplateCreationEntry(
-        		"Interface",
+        		"Module Interface",
         		"Create a module interface type",
         		new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
@@ -261,7 +261,7 @@ public class PaletteManager implements INEDChangeListener {
         drawer.add(combined);
 
         combined = new CombinedTemplateCreationEntry(
-                "Channel interface",
+                "Channel Interface",
                 "Create a channel interface type",
                 new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
