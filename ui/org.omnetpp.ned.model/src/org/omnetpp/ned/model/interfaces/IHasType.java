@@ -3,7 +3,7 @@ package org.omnetpp.ned.model.interfaces;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * Elements that have type-like property
+ * Elements that are instance of a NED type: submodule and connection.
  *
  * @author rhornig
  */
@@ -44,18 +44,17 @@ public interface IHasType extends INEDElement {
     public String getEffectiveType();
 
     /**
-     * Returns the typeinfo object of the TYPE of this component. That is, 
-     * this method checks the type name of this element, and looks up the 
-     * typeinfo object from that.
+     * Returns the typeinfo for the effective type.
      * 
-     * Returns null if the type is not filled in, or is not a valid NED type. 
+     * Returns null if the effective type is not filled in, or is not a valid NED type. 
      */
-    public INEDTypeInfo getTypeNEDTypeInfo();
+    public INEDTypeInfo getNEDTypeInfo();
 
     /**
-     * Returns the model element that represents the type of this element.
+     * Returns the model element for the effective type. Equivalent to 
+     * getNEDTypeInfo().getNEDElement(), but handles nulls.
      * 
-     * Returns null if the type is not filled in, or is not a valid NED type. 
+     * Returns null if the effective type is not filled in, or is not a valid NED type. 
      */
     public INedTypeNode getEffectiveTypeRef();
 }

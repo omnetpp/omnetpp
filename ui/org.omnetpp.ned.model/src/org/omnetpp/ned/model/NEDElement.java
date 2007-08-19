@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
@@ -411,11 +412,19 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         return result;
     }
 
-    public INEDTypeInfo getNEDTypeInfo() {
-    	// delegate to parent; recursion stops at INedTypeNode classes which override this method.
-    	Assert.isTrue(getParent() != null);
-    	return getParent().getNEDTypeInfo();
-    }
+	public INedTypeNode getEnclosingTypeNode() {
+		INEDElement node = getParent();
+		while (node != null && !(node instanceof INedTypeNode))
+			node = node.getParent();
+		return (INedTypeNode) node;
+	}
+
+	public INedTypeNode getSelfOrEnclosingTypeNode() {
+		INEDElement node = this;
+		while (node != null && !(node instanceof INedTypeNode))
+			node = node.getParent();
+		return (INedTypeNode) node;
+	}
 
     /**
      * Returns the listener list attached to this element

@@ -139,12 +139,12 @@ public class SubmoduleNodeEx extends SubmoduleNode
     }
 
     // type support
-    public INEDTypeInfo getTypeNEDTypeInfo() {
+    public INEDTypeInfo getNEDTypeInfo() {
     	return resolveTypeName(getEffectiveType());
     }
 
     public INedTypeNode getEffectiveTypeRef() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? null : info.getNEDElement();
     }
 
@@ -173,7 +173,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
     public Map<String, ParamNode> getParamValues() {
         Map<String, ParamNode> result = new HashMap<String, ParamNode>();
 
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         if (info != null)
         	result.putAll(info.getParamValues());
     	
@@ -185,7 +185,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
     }
 
     public Map<String, ParamNode> getParams() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? new HashMap<String, ParamNode>() : info.getParams();
     }
 
@@ -209,7 +209,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
     public Map<String, GateNode> getGateSizes() {
         Map<String, GateNode> result = new HashMap<String, GateNode>();
 
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         if (info != null)
         	result.putAll(info.getGateSizes());
 
@@ -221,7 +221,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
     }
 
     public Map<String, GateNode> getGates() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? null : new HashMap<String, GateNode>();
     }
 

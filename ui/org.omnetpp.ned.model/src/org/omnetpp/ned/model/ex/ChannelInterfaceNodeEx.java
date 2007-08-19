@@ -34,7 +34,6 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements INed
     	this.typeInfo = typeInfo;
     }
 
-    @Override
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }

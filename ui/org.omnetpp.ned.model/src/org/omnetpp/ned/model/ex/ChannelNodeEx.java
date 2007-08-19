@@ -37,7 +37,6 @@ public class ChannelNodeEx extends ChannelNode implements INedTypeNode, IHasInte
     	this.typeInfo = typeInfo;
     }
 
-    @Override
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }

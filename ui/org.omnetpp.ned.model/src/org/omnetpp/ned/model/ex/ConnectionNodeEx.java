@@ -168,10 +168,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
      * connection is not part of the model (i.e. has no compound module parent).
      */
     public CompoundModuleNodeEx getCompoundModule() {
-        INEDElement parent = getParent();
-        while (parent != null && !(parent instanceof CompoundModuleNodeEx))
-            parent = parent.getParent();
-        return (CompoundModuleNodeEx)parent;
+    	return (CompoundModuleNodeEx)getEnclosingTypeNode();
     }
 
     /**
@@ -232,12 +229,12 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
         return StringUtils.isEmpty(likeType) ? getType() : likeType;
     }
 
-    public INEDTypeInfo getTypeNEDTypeInfo() {
+    public INEDTypeInfo getNEDTypeInfo() {
         return resolveTypeName(getEffectiveType());
     }
 
     public INedTypeNode getEffectiveTypeRef() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? null : info.getNEDElement();
     }
 
@@ -265,7 +262,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     public Map<String, ParamNode> getParamValues() {
     	Map<String, ParamNode> result = new HashMap<String, ParamNode>();
 
-    	INEDTypeInfo info = getTypeNEDTypeInfo();
+    	INEDTypeInfo info = getNEDTypeInfo();
     	if (info != null) 
     		result.putAll(info.getParamValues());
 
@@ -277,7 +274,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     public Map<String, ParamNode> getParams() {
-        INEDTypeInfo info = getTypeNEDTypeInfo();
+        INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? new HashMap<String, ParamNode>() : info.getParams();
     }
 

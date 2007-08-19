@@ -3,7 +3,7 @@ package org.omnetpp.ned.model;
 import java.util.Iterator;
 import java.util.List;
 
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
@@ -295,13 +295,17 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDElement deepDup();
 
 	/**
-	 * Returns the typeInfo belonging to this NED type (if this node is a INedTypeNode)
-	 * or the enclosing NED type.
-	 * 
-	 * Returns null if the NED type is duplicated or invalid.
-	 * FIXME it may still have an INedTypeInfo, only not available via the resolver, or??  
+	 * Returns the first parent which is an INedTypeNode, or null. For example, 
+	 * for a submodule node or a submodule display string it finds the 
+	 * compound module; for an inner type it returns the parent type; and for a 
+	 * toplevel type it returns null.
 	 */
-	public INEDTypeInfo getNEDTypeInfo();
+	public INedTypeNode getEnclosingTypeNode();
+
+	/**
+	 * Like getEnclosingTypeNode(), but for NED types (INedTypeNode) it returns itself.
+	 */
+	public INedTypeNode getSelfOrEnclosingTypeNode();
 
 	/**
 	 * Adds a new NED change listener to the element. The

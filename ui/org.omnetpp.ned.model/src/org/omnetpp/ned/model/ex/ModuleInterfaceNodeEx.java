@@ -37,7 +37,6 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements INedTy
     	this.typeInfo = typeInfo;
     }
 
-    @Override
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }

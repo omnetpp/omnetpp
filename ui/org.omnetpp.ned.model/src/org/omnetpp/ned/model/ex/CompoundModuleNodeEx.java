@@ -49,7 +49,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
     	this.typeInfo = typeInfo;
     }
 
-    @Override
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }

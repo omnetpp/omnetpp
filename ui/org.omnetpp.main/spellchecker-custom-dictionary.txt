@@ -199,3 +199,4 @@ sashform
 subclassing
 inout
 gatesizes
+typeinfo

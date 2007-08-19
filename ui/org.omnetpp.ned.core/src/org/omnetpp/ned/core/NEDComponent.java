@@ -39,8 +39,11 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
 	protected INedTypeNode componentNode;
 	protected IFile file;
-    static int refreshInheritedCount = 0;
-    static int refreshOwnCount = 0;
+	
+	private int debugId = lastDebugId++;
+	private static int lastDebugId = 0;
+	private static int debugRefreshInheritedCount = 0;
+	private static int debugRefreshOwnCount = 0;
 
 	// own stuff
     boolean needsOwnUpdate;
@@ -87,6 +90,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
 	public NEDComponent(INedTypeNode node, IFile nedfile, INEDTypeResolver res) {
+		System.out.println("**** NEDComponent ctor: " + node + "   id=" + debugId);
+		
 		resolver = res;
 		file = nedfile;
 		componentNode = node;
@@ -233,8 +238,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
      * Refreshes the own (local) members
      */
     protected void refreshOwnMembers() {
-        // XXX for debugging
-        ++refreshOwnCount;
+        ++debugRefreshOwnCount;
         // System.out.println("NEDComponent for "+getName()+" ownRefresh: " + refreshOwnCount);
 
         ownProperties.clear();
@@ -287,8 +291,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * Collect all inherited parameters, gates, properties, submodules, etc.
 	 */
 	protected void refreshInheritedMembers() {
-        ++refreshInheritedCount;
-        // System.out.println("NEDComponent for "+getName()+" inheritedRefersh: " + refreshInheritedCount);
+        ++debugRefreshInheritedCount;
+        // System.out.println("NEDComponent for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
 
         // first wee need our own members updated
         if (needsOwnUpdate)
@@ -320,7 +324,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
         // additional tables for derived types and types using this one
 		allDerivedTypes.clear();
-        // collect all types that are derived from this
+
+		// collect all types that are derived from this
         for (INEDTypeInfo currentComp : getResolver().getAllComponents()) {
             // never send notification to ourselves
             if (currentComp == this)
@@ -350,7 +355,6 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * later re-built on demand.
 	 */
 	public void invalidate() {
-        // System.out.println("NEDComponent invalidate");
         needsOwnUpdate = true;
 		needsUpdate = true;
 	}
@@ -515,4 +519,18 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         invalidate();
     }
 
+    public void debugDump() {
+    	System.out.println("NEDComponent: " + getNEDElement().toString() + " debugId=" + debugId);
+    	if (needsUpdate || needsOwnUpdate)
+    		System.out.println(" currently invalid (needs refresh)");
+    	System.out.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));
+    	System.out.println("  own gates: " + StringUtils.join(ownGates.keySet(), ", "));
+    	System.out.println("  all gates: " + StringUtils.join(allGates.keySet(), ", "));
+    	System.out.println("  own parameters: " + StringUtils.join(ownParams.keySet(), ", "));
+    	System.out.println("  all parameters: " + StringUtils.join(allParams.keySet(), ", "));
+    	System.out.println("  own properties: " + StringUtils.join(ownProperties.keySet(), ", "));
+    	System.out.println("  all properties: " + StringUtils.join(allProperties.keySet(), ", "));
+    	System.out.println("  own submodules: " + StringUtils.join(ownSubmodules.keySet(), ", "));
+    	System.out.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
+    }
 }

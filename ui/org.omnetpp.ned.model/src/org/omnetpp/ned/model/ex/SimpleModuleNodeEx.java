@@ -43,7 +43,6 @@ public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeN
     	this.typeInfo = typeInfo;
     }
 
-    @Override
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }
