@@ -90,10 +90,17 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 		resolver = res;
 		file = nedfile;
 		componentNode = node;
-        // register the created component in the INEDElement so we will have access to it
-        // directly from the model
+
+		// register the created component in the INEDElement, so we will have access to it
+        // directly from the model. We also want to listen on it, and invalidate ownMembers etc
+		// if anything changes.
+		INEDTypeInfo oldTypeInfo = node.getNEDTypeInfo();
+		if (oldTypeInfo != null)
+			node.removeNEDChangeListener(oldTypeInfo);
+		node.addNEDChangeListener(this);
         node.setNEDTypeInfo(this);
-		// the inherited and own members will be collected on demand
+
+        // the inherited and own members will be collected on demand
         needsOwnUpdate = true;
 		needsUpdate = true;
 	}

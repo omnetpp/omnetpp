@@ -82,7 +82,7 @@ public class ConnectionChooser {
                 gateType = GateNode.NED_GATETYPE_INPUT;
         }
 
-        INEDTypeInfo typeInfo = module.getContainerNEDTypeInfo();
+        INEDTypeInfo typeInfo = module.getNEDTypeInfo();
         Assert.isTrue(typeInfo != null);
 
         for (GateNode gate: typeInfo.getGates().values())

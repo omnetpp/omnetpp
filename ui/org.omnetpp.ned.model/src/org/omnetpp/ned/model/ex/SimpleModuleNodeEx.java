@@ -21,9 +21,9 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
  *
  * @author rhornig
  */
-public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeNode {
+public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeNode {
 
-
+	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
     protected SimpleModuleNodeEx() {
@@ -39,17 +39,26 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
         setName("Unnamed");
     }
 
+    public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
+    	this.typeInfo = typeInfo;
+    }
+
+    @Override
+    public INEDTypeInfo getNEDTypeInfo() {
+    	return typeInfo;
+    }
+    
     @Override
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NEDElementUtilEx.isDisplayStringUpToDate(this))
+    	if (!NEDElementUtilEx.isDisplayStringUpToDate(displayString, this))
     		displayString = null;
     	super.fireModelChanged(event);
     }
 
     public DisplayString getDisplayString() {
     	if (displayString == null)
-    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getFirstExtendsRef()));
     	return displayString;
     }
@@ -65,7 +74,7 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
         String extendsName = getFirstExtends();
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
+        INEDTypeInfo typeInfo = getNEDTypeInfo();
         if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
             return null;
 
@@ -92,20 +101,20 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
 
     // parameter query support
     public Map<String, ParamNode> getParamValues() {
-        return getContainerNEDTypeInfo().getParamValues();
+        return getNEDTypeInfo().getParamValues();
     }
 
     public Map<String, ParamNode> getParams() {
-        return getContainerNEDTypeInfo().getParams();
+        return getNEDTypeInfo().getParams();
     }
 
     // gate support
     public Map<String, GateNode> getGateSizes() {
-        return getContainerNEDTypeInfo().getGateSizes();
+        return getNEDTypeInfo().getGateSizes();
     }
 
     public Map<String, GateNode> getGates() {
-        return getContainerNEDTypeInfo().getGates();
+        return getNEDTypeInfo().getGates();
     }
 
     // interface implementation support

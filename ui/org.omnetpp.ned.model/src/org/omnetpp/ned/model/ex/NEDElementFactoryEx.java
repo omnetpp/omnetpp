@@ -8,7 +8,7 @@ import org.omnetpp.ned.model.pojo.NEDElementFactory;
  *
  * @author rhornig
  */
-public final class NEDElementFactoryEx extends NEDElementFactory {
+public class NEDElementFactoryEx extends NEDElementFactory {
 
 	public INEDElement createNodeWithTag(String tagname, INEDElement parent) {
         if (tagname.equals(NedFileNodeEx.getStaticTagName()))

@@ -344,7 +344,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			if (module instanceof SubmoduleNode)
 				pars = InifileAnalyzer.collectParameters((SubmoduleNode)module).toArray(new ParamResolution[]{});
 			else if (module instanceof INedTypeNode)
-				pars = InifileAnalyzer.collectParameters(((INedTypeNode)module).getContainerNEDTypeInfo()).toArray(new ParamResolution[]{});
+				pars = InifileAnalyzer.collectParameters(((INedTypeNode)module).getNEDTypeInfo()).toArray(new ParamResolution[]{});
 			if (pars == null) {
 				showMessage("NED element should be a module type or a submodule.");
 				return;

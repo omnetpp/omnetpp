@@ -11,7 +11,7 @@ import org.omnetpp.ned.model.pojo.GateNode;
  *
  * @author rhornig
  */
-public final class GateNodeEx extends GateNode implements IHasIndex, IHasName {
+public class GateNodeEx extends GateNode implements IHasIndex, IHasName {
 
     protected GateNodeEx() {
         super();

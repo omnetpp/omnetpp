@@ -27,7 +27,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author rhornig
  */
-public final class SubmoduleNodeEx extends SubmoduleNode
+public class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
     public static final String DEFAULT_TYPE = "Unknown";
@@ -72,14 +72,14 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     @Override
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NEDElementUtilEx.isDisplayStringUpToDate(this))
+    	if (!NEDElementUtilEx.isDisplayStringUpToDate(displayString, this))
     		displayString = null;
     	super.fireModelChanged(event);
     }
 
     public DisplayString getDisplayString() {
     	if (displayString == null)
-    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getEffectiveTypeRef()));
     	return displayString;
     }
@@ -97,7 +97,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
      */
     public DisplayString getDisplayString(IModuleTypeNode submoduleType) {
     	if (displayString == null)
-    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(submoduleType.getDisplayString());
     	return displayString;
     }
@@ -140,7 +140,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     // type support
     public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getEffectiveType();
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); //XXX how can this be null?? should always exist!
+        INEDTypeInfo typeInfo = getNEDTypeInfo(); //XXX how can this be null?? should always exist!
         if (typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
 

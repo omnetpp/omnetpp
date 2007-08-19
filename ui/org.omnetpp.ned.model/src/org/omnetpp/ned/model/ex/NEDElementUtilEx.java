@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
@@ -22,12 +23,19 @@ import org.omnetpp.ned.model.pojo.PropertyNode;
  *
  * @author rhornig
  */
-public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
+public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	public static final String DISPLAY_PROPERTY = "display";
 
+	//XXX move to NEDElement
+	public static boolean isDisplayStringUpToDate(DisplayString displayStringObject, IHasDisplayString owner) {
+		// Note: cannot call owner.getDisplayString() here, as it also wants to update the fallback, etc.
+		String displayStringLiteral = StringUtils.nullToEmpty(getDisplayStringLiteral(owner));
+		String cachedDisplayString = displayStringObject == null ? "" : displayStringObject.toString();
+		return displayStringLiteral.equals(cachedDisplayString);
+	}
+
 	/**
-	 * Returns the display string of the given node (node.getDisplayString()),
-	 * or null if node==null.
+	 * Convenience method: Returns node.getDisplayString(), or null if node==null.
 	 */
 	public static DisplayString displayStringOf(IHasDisplayString node) {
 		return node == null ? null : node.getDisplayString();
@@ -35,10 +43,11 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	
 	/**
 	 * Returns the display string of the given element (submodule, connection or
-	 * toplevel type) in an unparsed form, by looking up the "@display" property
-	 * in the "parameters:" section.
+	 * toplevel type) in an unparsed form, from the NED tree. 
+	 * 
+	 * Returns null if the NED tree doesn't contain a display string.
 	 */
-	public static String getDisplayString(IHasDisplayString node) {
+	public static String getDisplayStringLiteral(IHasDisplayString node) {
         // for connections, we need to look inside the channelSpec node for the display string
 		INEDElement parametersParent = (node instanceof ConnectionNode) ?
 				((ConnectionNode)node).getFirstChildWithTag(NED_CHANNEL_SPEC) : (INEDElement)node;
@@ -56,12 +65,13 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	}
 
 	/**
-	 * Sets the display property of a given node.
-	 * PATH: PARAMETERS -> PROPERTY -> PROPERTYKEY -> LITERAL.VALUE
-	 * @param node Component node that can have display string
-	 * @param displayString
+	 * Sets the display string of a given node in the NED tree,
+	 * by creating or updating the LiteralNode that contains the
+	 * "@display" property in the tree.
+	 * 
+	 * Returns the LiteralNode which was created/updated. 
 	 */
-	public static LiteralNode setDisplayString(IHasDisplayString node1, String displayString) {
+	public static LiteralNode setDisplayStringLiteral(IHasDisplayString node1, String displayString) {
 		INEDElement node = node1;
 		
 		// the connection node is special because the display string is stored inside its
@@ -225,9 +235,4 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     	// this is a simple solution, replace with more sophisticated code if needed
     	return node.getTagName().replace('-', ' ');
     }
-
-	public static boolean isDisplayStringUpToDate(IHasDisplayString node) {
-		String displayString = getDisplayString(node);
-		return node.getDisplayString().toString().equals(displayString);
-	}
 }

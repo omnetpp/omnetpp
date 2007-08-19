@@ -24,8 +24,8 @@ import org.omnetpp.ned.model.pojo.ParametersNode;
  *
  * @author rhornig
  */
-public final class ConnectionNodeEx extends ConnectionNode
-    implements IHasType, IHasDisplayString, IHasParameters {
+public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDisplayString, IHasParameters {
+	
 	private DisplayString displayString = null;
 
     protected ConnectionNodeEx() {
@@ -162,14 +162,14 @@ public final class ConnectionNodeEx extends ConnectionNode
     @Override
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NEDElementUtilEx.isDisplayStringUpToDate(this))
+    	if (!NEDElementUtilEx.isDisplayStringUpToDate(displayString, this))
     		displayString = null;
     	super.fireModelChanged(event);
     }
 
     public DisplayString getDisplayString() {
     	if (displayString == null)
-    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
+    		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getEffectiveTypeRef()));
     	return displayString;
     }
@@ -257,11 +257,11 @@ public final class ConnectionNodeEx extends ConnectionNode
 
     public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getEffectiveType();
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
-        if ( typeName == null || "".equals(typeName) || typeInfo == null)
+        INEDTypeInfo typeInfo = getNEDTypeInfo();
+        if (typeName == null || "".equals(typeName) || typeInfo == null)  //XXX revise
             return null;
 
-        return typeInfo.getResolver().getComponent(typeName);
+        return typeInfo.getResolver().getComponent(typeName); // we can use NEDResourcesPlugin.getNEDResources() here!
     }
 
     public INedTypeNode getEffectiveTypeRef() {
@@ -307,7 +307,7 @@ public final class ConnectionNodeEx extends ConnectionNode
     public Map<String, ParamNode> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, ParamNode>();  //FIXME why lie???? --Andras
+            return new HashMap<String, ParamNode>();
         return info.getParams();
     }
 

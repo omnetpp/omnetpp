@@ -11,6 +11,16 @@ import org.omnetpp.common.engine.Common;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
 
+    /**
+     * For null it returns "", otherwise it returns the passed string itself.
+     * 
+     * (Note: StringUtils.defaultString(string) does the same, but its name 
+     * is not too intuitive.)
+     */
+	public static String nullToEmpty(String str) {
+        return str == null ? EMPTY : str;
+    }
+
 	/**
 	 * Converts a java id string (camel case and '_' used as word separators)
 	 * to a display string (' ' used as word separator).

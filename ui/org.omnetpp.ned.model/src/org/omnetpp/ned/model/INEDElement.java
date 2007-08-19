@@ -295,12 +295,12 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDElement deepDup();
 
 	/**
-	 * Returns the TypeInfo belonging to the containing (toplevel) component
-	 * that was added by the incremental builder (type resolver). Or null if none was found.
-	 * Cross references and other supporting lists can be accessed via typeInfo.
-	 * The typeInfo can be NULL if this element is duplicated or invalid.
+	 * Returns the typeInfo belonging to the containing NED type (INedTypeNode),
+	 * or null if none was found.
+	 * 
+	 * Returns null if the containing NED type is duplicated or invalid.
 	 */
-	public INEDTypeInfo getContainerNEDTypeInfo();
+	public INEDTypeInfo getNEDTypeInfo();
 
 	/**
 	 * Adds a new NED change listener to the element. The

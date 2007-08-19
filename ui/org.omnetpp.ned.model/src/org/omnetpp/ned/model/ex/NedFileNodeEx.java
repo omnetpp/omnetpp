@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.pojo.NedFileNode;
  *
  * @author rhornig
  */
-public final class NedFileNodeEx extends NedFileNode {
+public class NedFileNodeEx extends NedFileNode {
     protected NedFileNodeEx() {
 	}
 

@@ -12,7 +12,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
@@ -40,9 +39,9 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	private NEDElement lastchild;
 	private NEDElement prevsibling;
 	private NEDElement nextsibling;
+	private HashMap<Object,Object> userData;
 	private static long lastid;
-    private HashMap<Object,Object> userData;
-    private INEDTypeInfo typeInfo;
+    
     private transient List<Integer> errorMarkerIds = new ArrayList<Integer>();
 
     private transient NEDChangeListenerList listeners = null;
@@ -384,22 +383,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         return result;
     }
 
-    public INEDTypeInfo getContainerNEDTypeInfo() {
-    	// if we don't have it, fetch it from the parent
-    	return typeInfo != null || getParent() == null ? typeInfo : getParent().getContainerNEDTypeInfo();
-    }
-
-    // part of INedTypeNode, defined here to avoid copy/paste
-    public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
-        Assert.isNotNull(typeInfo);
-        Assert.isTrue(this instanceof INedTypeNode);
-        
-        // remove the old type info and add the new one as a listener
-        if (this.typeInfo != null)
-        	removeNEDChangeListener(this.typeInfo);
-        this.typeInfo = typeInfo;
-        if (this.typeInfo != null)
-        	addNEDChangeListener(typeInfo);
+    public INEDTypeInfo getNEDTypeInfo() {
+    	// delegate to parent; recursion stops at INedTypeNode classes which override this method.
+    	Assert.isTrue(getParent() != null);
+    	return getParent().getNEDTypeInfo();
     }
 
     /**

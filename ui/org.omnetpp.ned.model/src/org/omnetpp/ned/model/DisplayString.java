@@ -306,12 +306,12 @@ public class DisplayString implements IDisplayString {
 			// Change the underlying NEDElement tree. 
 			// This could be optimized somewhat by remembering the LiteralNode, and quickly 
 			// checking here if that's still where we have to change the display string
-			NEDElementUtilEx.setDisplayString(owner, toString());
+			NEDElementUtilEx.setDisplayStringLiteral(owner, toString());
 		}
 	}
 
     /**
-     * Returns the full display string.
+     * Returns the local display string, i.e. without inherited tags.
      */
     @Override
     public String toString() {

@@ -10,7 +10,7 @@ import org.omnetpp.ned.model.pojo.ParamNode;
  *
  * @author rhornig
  */
-public final class ParamNodeEx extends ParamNode implements IHasName {
+public class ParamNodeEx extends ParamNode implements IHasName {
 
     protected ParamNodeEx() {
         super();
