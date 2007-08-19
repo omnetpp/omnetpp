@@ -89,14 +89,17 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	// member: gate/param/property/submod/innertype
     /** */
     public Map<String, INEDElement> getOwnMembers();
-    /** */
+
+    /** Parameters declared locally within this type (i.e. where param type is not empty) */
     public Map<String, ParamNode> getOwnParams();
 
     /** Parameter nodes within this type with the value attribute filled in */
     public Map<String, ParamNode> getOwnParamValues();
-    /** */
+
+    /** Properties from the local parameters section */
     public Map<String, PropertyNode> getOwnProperties();
-    /** */
+
+    /** Gates declared locally within this type (i.e. where gate type is not empty) */
     public Map<String, GateNode> getOwnGates();
 
     /** Gate nodes within this type with the vector size attribute filled in */
@@ -113,11 +116,17 @@ public interface INEDTypeInfo extends INEDChangeListener {
 
 	// same as above, for inherited members as well
     public Map<String, INEDElement> getMembers();
+
+    /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
     public Map<String, ParamNode> getParams();
 
     /** Parameter nodes where the value attribute is filled in, including inherited ones */
     public Map<String, ParamNode> getParamValues();
+
+    /** Property nodes, including inherited ones */
     public Map<String, PropertyNode> getProperties();
+
+    /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
     public Map<String, GateNode> getGates();
 
     /** Gate nodes where the vector size attribute is filled in, including inherited ones */
@@ -129,13 +138,8 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /** All submodules in this (compound module) type, including inherited ones */
     public Map<String, SubmoduleNode> getSubmodules();
 
+    
 	public List<ParamNode> getParameterInheritanceChain(String parameterName);
 	public List<GateNode> getGateInheritanceChain(String gateName);
 	public List<PropertyNode> getPropertyInheritanceChain(String propertyName);
-
-    /**
-     * Returns the list of all types that are using internally this type (i.e. compound
-     * modules that contain submodules or connections with this type)
-     */
-    public List<INEDTypeInfo> getAllUsingTypes();
 }
