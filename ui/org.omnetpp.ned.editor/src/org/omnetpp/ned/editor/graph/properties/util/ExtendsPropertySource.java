@@ -5,21 +5,21 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned.model.interfaces.IHasAncestors;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 
 /**
  * A property source for displaying Extends info (using an editable combobox). The content of the
- * dropdown combo should be provided by overriding the getPossibleValues mathod.
+ * dropdown combo should be provided by overriding the getPossibleValues method.
  *
  * @author rhornig
  */
 public abstract class ExtendsPropertySource implements IPropertySource2 {
         public enum Prop { Extends }
         protected IPropertyDescriptor[] descriptors;
-        protected IHasAncestors model;
+        protected INedTypeNode model;
         EditableComboBoxPropertyDescriptor extendsProp;
 
-        public ExtendsPropertySource(IHasAncestors nodeModel) {
+        public ExtendsPropertySource(INedTypeNode nodeModel) {
             model = nodeModel;
 
             // set up property descriptors

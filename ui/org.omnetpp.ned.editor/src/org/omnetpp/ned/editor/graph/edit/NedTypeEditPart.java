@@ -6,9 +6,9 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.NedTypeFigure;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
@@ -86,8 +86,8 @@ public class NedTypeEditPart extends NedEditPart {
      */
     @Override
     protected INEDElement getNEDElementToOpen() {
-        if (getModel() instanceof IHasAncestors)
-            return ((IHasAncestors)getNEDModel()).getFirstExtendsRef();
+        if (getModel() instanceof INedTypeNode)
+            return ((INedTypeNode)getNEDModel()).getFirstExtendsRef();
 
         return null;
     }
