@@ -226,15 +226,6 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     }
 
     /**
-     * Returns the element type as a lower case string suitable for displaying
-     * in the UI; e.g. for a SimpleModuleNode it returns "simple module".
-     */
-    public static String getReadableTagName(INEDElement node) {
-    	// this is a simple solution, replace with more sophisticated code if needed
-    	return node.getTagName().replace('-', ' ');
-    }
-    
-    /**
      * When the user renames a submodule, we need to update the connections in the 
      * same compound module (and its subclasses) accordingly, so that the model 
      * will remain consistent. This method performs this change, for one compound

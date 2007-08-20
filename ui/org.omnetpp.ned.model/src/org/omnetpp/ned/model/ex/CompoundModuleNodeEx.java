@@ -334,11 +334,11 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
     
     // parameter query support
     public Map<String, ParamNode> getParamValues() {
-        return getNEDTypeInfo().getParamAssignments();  //XXX NPE? check all such places...
+        return getNEDTypeInfo().getParamAssignments();
     }
 
     public Map<String, ParamNode> getParams() {
-        return getNEDTypeInfo().getParamDeclarations(); //XXX NPE?
+        return getNEDTypeInfo().getParamDeclarations();
     }
 
     // gate support

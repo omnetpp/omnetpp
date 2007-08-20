@@ -451,7 +451,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		String text = "";
 		if (module != null) {
 			if (module instanceof IHasName)
-				text = StringUtils.capitalize(NEDElementUtilEx.getReadableTagName(module)) + " " + ((IHasName)module).getName(); 
+				text = StringUtils.capitalize(module.getReadableTagName()) + " " + ((IHasName)module).getName(); 
 			if (module instanceof SubmoduleNodeEx)
 				text += " of module " + ((SubmoduleNodeEx)module).getCompoundModule().getName();
 			if (getPinnedToEditor() != null)

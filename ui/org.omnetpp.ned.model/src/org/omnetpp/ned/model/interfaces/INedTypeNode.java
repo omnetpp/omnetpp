@@ -10,10 +10,11 @@ package org.omnetpp.ned.model.interfaces;
 public interface INedTypeNode extends IHasName, IHasAncestors, IHasDisplayString, IHasParameters {
 	
 	/**
-	 * Returns the typeInfo belonging to this NED type.
+	 * Returns the typeinfo belonging to this NED type. This can be trusted
+	 * to be NOT null for all NED types, including duplicate and invalid ones.
 	 * 
-	 * Returns null if the NED type is duplicated or invalid.
-	 * FIXME it may still have an INedTypeInfo, only not available via the resolver, or??  
+	 * Only null for detached trees that haven't been seen at all by NEDResources 
+	 * (i.e. not part of any NED file).   
 	 */
 	public INEDTypeInfo getNEDTypeInfo();
 

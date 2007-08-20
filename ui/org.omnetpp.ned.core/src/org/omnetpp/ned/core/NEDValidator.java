@@ -146,7 +146,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 		int thisType = componentNode.getTagCode();
 		int extendsType = e.getNEDElement().getTagCode();
 		if (thisType != extendsType) {
-			errors.add(node, "'"+name+"' is not a "+componentNode.getTagName());
+			errors.add(node, "'"+name+"' is not a "+componentNode.getReadableTagName());
 			return;
 		}
 		//XXX enforce channel inheritance rules, wrt "withcppclass" keyword

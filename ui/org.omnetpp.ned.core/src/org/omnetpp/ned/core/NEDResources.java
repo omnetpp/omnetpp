@@ -514,48 +514,29 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         final NEDProblemMarkerSynchronizer markerSync
                 = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID);
+
         // find toplevel components in each file, and register them
         for (IFile file : nedFiles.keySet()) {
-
             markerSync.registerFile(file);
-            // iterate on NED file contents, and register each component in our
-            // hash tables
-            //XXX should be recursive, and collect inner types as well (store them as "TopleveTtype.InnerType) or something
+            
+            // iterate on NED file contents, and register each component in our hash tables
+            //XXX should be recursive, and collect inner types as well (store them as "ToplevelType.InnerType) or something
             INEDElement tree = nedFiles.get(file);
             for (INEDElement node : tree) {
-                // find node's name and where it should be inserted
-                String name = null;
-                HashMap<String, INEDTypeInfo> map = null;
-                if (node instanceof ChannelNode) {
-                    name = ((ChannelNode) node).getName();
-                    map = channels;
-                }
-                else if (node instanceof ChannelInterfaceNode) {
-                    name = ((ChannelInterfaceNode) node).getName();
-                    map = channelInterfaces;
-                }
-                else if (node instanceof SimpleModuleNode) {
-                    name = ((SimpleModuleNode) node).getName();
-                    map = modules;
-                }
-                else if (node instanceof CompoundModuleNode) {
-                    name = ((CompoundModuleNode) node).getName();
-                    map = modules;
-                }
-                else if (node instanceof ModuleInterfaceNode) {
-                    name = ((ModuleInterfaceNode) node).getName();
-                    map = moduleInterfaces;
-                }
+                if (node instanceof INedTypeNode) {
+                	// create type info object for EVERY type. We won't store them for duplicate types,
+                	// but they'll still be available via INedTypeInfo.getNedTypeInfo().
+                	INEDTypeInfo typeInfo = new NEDComponent((INedTypeNode)node, file, this);
 
-                // if node is a component (name!=null), check if duplicate and
-                // store it if not
-                if (name != null) {
+                    // if node is a component (name!=null), check if duplicate and store it if not
+                	String name = ((INedTypeNode)node).getName();
+                	
                     if (components.containsKey(name)) {
                         // it is a duplicate: issue warning
                         IFile otherFile = components.get(name).getNEDFile();
                         INEDElement otherElement = components.get(name).getNEDElement();
                         if (otherFile == null) {
-                            String message = node.getTagName() + " '" + name + "' is a built-in type and cannot be redefined";
+                            String message = node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined";
                             markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
                         }
@@ -563,28 +544,43 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             // add it to the duplicate set so we can remove them
                             // before the end
                             duplicates.add(name);
-                            String message = node.getTagName() + " '" + name + "' already defined in "
+                            String message = node.getReadableTagName() + " '" + name + "' already defined in "
                                     + otherFile.getFullPath().toString();
                             markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
                             // add the same error message to the other file too
-                            String otherMessage = node.getTagName() + " '" + name + "' already defined in "
+                            String otherMessage = node.getReadableTagName() + " '" + name + "' already defined in "
                                     + file.getFullPath().toString();
                             markerSync.addMarker(otherFile, otherElement, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                                     IMarker.SEVERITY_ERROR, otherMessage, components.get(name).getNEDElement().getSourceLocation());
                       }
                     }
                     else {
-System.out.println("FIXME add typeinfo for duplicates too!!!"); //FIXME
-                        INEDTypeInfo component = new NEDComponent((INedTypeNode)node, file, this);
-                        map.put(name, component);
-                        components.put(name, component);
+                    	// normal case: not duplicate. Add the type info to our tables.
+                    	HashMap<String, INEDTypeInfo> map;
+                    	if (node instanceof ChannelNode)
+                    		map = channels;
+                    	else if (node instanceof ChannelInterfaceNode)
+                    		map = channelInterfaces;
+                    	else if (node instanceof SimpleModuleNode)
+                    		map = modules;
+                    	else if (node instanceof CompoundModuleNode)
+                    		map = modules;
+                    	else if (node instanceof ModuleInterfaceNode)
+                    		map = moduleInterfaces;
+                    	else 
+                    		throw new RuntimeException("internal error: unrecognized NED type " + node);
+
+                        map.put(name, typeInfo);
+                        components.put(name, typeInfo);
                     }
+                    
                     // add to the name list even if it was duplicate
                     reservedNames.add(name);
                 }
             }
         }
+
         // now we should remove all types that were duplicates
         for (String dupName : duplicates) {
             channels.remove(dupName);
@@ -594,7 +590,7 @@ System.out.println("FIXME add typeinfo for duplicates too!!!"); //FIXME
             components.remove(dupName);
         }
 
-        // Semantic validation of ned elements
+        // validate the NED trees (check cross-references etc)
         for (final IFile file : nedFiles.keySet()) {
             INEDErrorStore errors = new INEDErrorStore() {
                 public void add(INEDElement context, String message) {

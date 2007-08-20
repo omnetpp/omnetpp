@@ -42,7 +42,7 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
             @Override
             public String getText(Object element) {
                 INEDTypeInfo nedType = (INEDTypeInfo) element;
-                String typeName = nedType.getNEDElement().getTagName().replace('-', ' ');
+                String typeName = nedType.getNEDElement().getReadableTagName();
                 return nedType.getName() + " -- " + typeName;
             }
             

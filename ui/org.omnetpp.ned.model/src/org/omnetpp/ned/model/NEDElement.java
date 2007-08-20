@@ -166,6 +166,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 
 	abstract public int getTagCode();
 
+    public String getReadableTagName() {
+    	return getTagName().replace('-', ' ');  // override if something more sophisticated is needed
+    }
+	
 	public long getId() {
 		return id;
 	}
@@ -394,7 +398,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     }
 
     public String debugString() {
-        return getTagName() + " " + StringUtils.defaultIfEmpty(getAttribute("name"), "") + " from " + getSourceLocation();
+        return NEDTreeUtil.getNedModelLabelProvider().getText(this) + " from " + getSourceLocation();
     }
 
     public INEDElement dup() {

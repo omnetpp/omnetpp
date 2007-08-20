@@ -95,7 +95,7 @@ public class NedModelLabelProvider extends LabelProvider {
             label = StringUtils.strip(getSourceWithoutComments(model), ";");
         }
         else if (model != null){
-            label = model.getTagName();
+            label = model.getReadableTagName();
         }
 
         return label;
