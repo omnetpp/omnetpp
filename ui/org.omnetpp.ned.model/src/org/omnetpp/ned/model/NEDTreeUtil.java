@@ -146,22 +146,17 @@ public class NEDTreeUtil {
 				pojoNode.setAttribute(i, swigNode.getAttribute(i));
 			}
 
-			// copy source location info
+			// copy source line number info
 			pojoNode.setSourceLocation(swigNode.getSourceLocation());
 			NEDSourceRegion swigRegion = swigNode.getSourceRegion();
-			if (swigRegion.getStartLine()!=0) {
-				org.omnetpp.ned.model.NEDSourceRegion pojoRegion = new org.omnetpp.ned.model.NEDSourceRegion();
-				pojoRegion.startLine = swigRegion.getStartLine();
-				pojoRegion.startColumn = swigRegion.getStartColumn();
-				pojoRegion.endLine = swigRegion.getEndLine();
-				pojoRegion.endColumn = swigRegion.getEndColumn();
-				pojoNode.setSourceRegion(pojoRegion);
-			}
+			if (swigRegion.getStartLine() != 0)
+				pojoNode.setSourceRegion(new org.omnetpp.ned.model.NEDSourceRegion(
+						swigRegion.getStartLine(), swigRegion.getStartColumn(),
+						swigRegion.getEndLine(), swigRegion.getEndColumn()));
 
 			// create child nodes
-			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling()) {
+			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
 				swig2pojo(child, pojoNode, errors);
-			}
 
 			return pojoNode;
 		}

@@ -9,8 +9,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.CommonPlugin;
 
 /**
@@ -19,7 +23,7 @@ import org.omnetpp.common.CommonPlugin;
  * errors/warnings into markers, a common problem is that most markers
  * get deleted and added back each time the analyzer runs. This
  * triggers excessive refreshes in the UI (in text editor margin
- * and the Problems view).\
+ * and the Problems view).
  *
  * This class collects would-be markers in a table, and then
  * synchronizes this table to the actual IFile markers. This way,
@@ -42,10 +46,18 @@ public class ProblemMarkerSynchronizer {
 	private int markersAdded = 0;
 	private int markersRemoved = 0;
 
+	/**
+     * Creates a new marker synchronizer which will synchronize problem markers 
+     * (IMarker.PROBLEM) and its subclasses. Other marker types will remain untouched.
+	 */
 	public ProblemMarkerSynchronizer() {
 		this(IMarker.PROBLEM);
 	}
 
+	/**
+     * Creates a new marker synchronizer which will synchronize the given marker type
+     * and its subclasses. Other marker types will remain untouched.
+	 */
 	public ProblemMarkerSynchronizer(String markerBaseType) {
 		this.markerBaseType = markerBaseType;
 	}
@@ -81,11 +93,22 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	/**
-	 * @return The number of markers registered in this synchronizer
+	 * Returns the number of markers registered in this synchronizer.
+	 */
+	public int getNumberOfFiles() {
+		return markerTable.size();
+	}
+
+	/**
+	 * Returns the number of markers registered in this synchronizer.
 	 */
 	public int getNumberOfMarkers() {
-	    return markerTable.size();
+		int count = 0;
+		for (IFile file : markerTable.keySet())
+			count += markerTable.get(file).size();
+	    return count;
 	}
+	
 	/**
 	 * Performs the marker synchronization.
 	 */
@@ -101,6 +124,29 @@ public class ProblemMarkerSynchronizer {
 		}
 	}
 
+    /**
+     * Defers the synchronization to a later time when the resource tree is no longer locked.
+     * You should use this method if the current thread locks the workspace resources
+     * (i.e. we are in a resource change notification).
+     */
+    public void runAsWorkspaceJob() {
+        if (!isEmpty()) {
+            WorkspaceJob job = new WorkspaceJob("Updating problem markers") {
+                @Override
+                public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+                    addRemoveMarkers();
+                    return Status.OK_STATUS;
+                }
+            };
+            job.setSystem(true);
+            
+            // the job should not run together with other jobs accessing the workspace resources
+            job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+            job.setPriority(Job.INTERACTIVE);
+            job.schedule();
+        }
+    }
+	
 	protected void addRemoveMarkers() throws CoreException {
 	    // process each file registered
 		for (IFile file : markerTable.keySet()) {
@@ -119,10 +165,10 @@ public class ProblemMarkerSynchronizer {
 		}
 
 		// debug
-//		if (markersAdded==0 && markersRemoved==0)
-//			System.out.println("markerSychronizer: no marker change");
-//		else
-//			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
+		if (markersAdded==0 && markersRemoved==0)
+			System.out.println("markerSychronizer: no marker change");
+		else
+			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
 	}
 
 	protected boolean fileContainsMarker(IFile file, MarkerData markerData) throws CoreException {

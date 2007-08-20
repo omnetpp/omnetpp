@@ -73,8 +73,8 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 			if (region!=null) {
 				IDocument docu = fDocumentProvider.getDocument(fInput);
 				try {
-					int startOffset = docu.getLineOffset(region.startLine-1)+region.startColumn;
-					int endOffset = docu.getLineOffset(region.endLine-1)+region.endColumn;
+					int startOffset = docu.getLineOffset(region.getStartLine()-1)+region.getStartColumn();
+					int endOffset = docu.getLineOffset(region.getEndLine()-1)+region.getEndColumn();
 					fTextEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
 				} catch (BadLocationException e) {
 				}

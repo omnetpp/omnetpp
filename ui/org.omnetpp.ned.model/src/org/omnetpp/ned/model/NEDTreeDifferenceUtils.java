@@ -87,8 +87,14 @@ public class NEDTreeDifferenceUtils {
 	 */
 	public static class Applier implements IApplier {
 		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
+		
+		// statistics, for debugging
+		private int numSourceLocationChanges = 0;
+		private int numAttributeChanges = 0;
+		private int numElementReplacements = 0;
 
 		public void replaceSourceLocation(final INEDElement element, final String sourceLocation, final NEDSourceRegion sourceRegion) {
+			numSourceLocationChanges++;
 			runnables.add(new Runnable() {
 				public void run() {
 					element.setSourceLocation(sourceLocation);
@@ -98,6 +104,7 @@ public class NEDTreeDifferenceUtils {
 		}
 		
 		public void replaceAttribute(final INEDElement element, final String name, final String value) {
+			numAttributeChanges++;
 			runnables.add(new Runnable() {
 				public void run() {
 					element.setAttribute(name, value);
@@ -106,6 +113,7 @@ public class NEDTreeDifferenceUtils {
 		}
 
 		public void replaceElements(final INEDElement parent, final int start, final int end, final int offset, final INEDElement[] replacement) {
+			numElementReplacements++;
 			runnables.add(new Runnable() {
 				public void run() {
 					for (int i = start; i < end; i++)
@@ -126,6 +134,12 @@ public class NEDTreeDifferenceUtils {
 
 		public boolean hasDifferences() {
 			return !runnables.isEmpty();
+		}
+		
+		public String toString() {
+			return "element replacements: " + numElementReplacements +
+				   ", attribute changes: " + numAttributeChanges +
+			       ", source location changes: " + numSourceLocationChanges; 
 		}
 	}
 

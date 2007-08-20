@@ -6,14 +6,6 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
@@ -38,6 +30,7 @@ public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
      * Generic constructor. Synchronizes ALL problem markers.
      */
     public NEDProblemMarkerSynchronizer() {
+    	//FIXME why not hardcode the NEDPROBLEM id? 
         super();
     }
 
@@ -110,41 +103,4 @@ public class NEDProblemMarkerSynchronizer extends ProblemMarkerSynchronizer {
         return line;
     }
 
-    /**
-     * Defers the synchronization to a later time when the resource tree is no longer locked.
-     * You should use this method, if the current thread locks the workspace resources
-     * (ie we are in a resource change notification)
-     */
-    public void runAsWorkspaceJob() {
-        if (!isEmpty()) {
-//            Job job = new Job("Updating problem markers") {
-//                @Override
-//                public IStatus run(IProgressMonitor monitor) {
-//                    try {
-//                        ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
-//                            public void run(IProgressMonitor monitor) throws CoreException {
-//                                //System.out.println("addRemoveMarkers()");
-//                                addRemoveMarkers();
-//                            }
-//                        }, null);
-//                    } catch (CoreException e) {
-//                        return Status.CANCEL_STATUS;
-//                    }
-//                    return Status.OK_STATUS;
-//                }
-//            };
-            WorkspaceJob job = new WorkspaceJob("Updating problem markers") {
-                @Override
-                public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                    addRemoveMarkers();
-                    return Status.OK_STATUS;
-                }
-            };
-            job.setSystem(true);
-            // the job should not run together with other jobs accessing the workspace resources
-            job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-            job.setPriority(Job.INTERACTIVE);
-            job.schedule();
-        }
-    }
 }

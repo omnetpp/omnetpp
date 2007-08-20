@@ -1,22 +1,32 @@
 package org.omnetpp.ned.model;
 
 /**
- * Value object, stores a line:col..line:col region in a source file. 
+ * Immutable value object, stores a line:col..line:col region in a source file. 
  * Used for relating NEDElements back to the source code.
  *
- * @author rhornig
+ * @author andras
  */
 public class NEDSourceRegion {
-    public int startLine;
-    public int startColumn;
-    public int endLine;
-    public int endColumn;
+    private int startLine;
+    private int startColumn;
+    private int endLine;
+    private int endColumn;
+
+    /**
+     * Constructor.
+     */
+	public NEDSourceRegion(int startLine, int startColumn, int endLine, int endColumn) {
+		this.startLine = startLine;
+		this.startColumn = startColumn;
+		this.endLine = endLine;
+		this.endColumn = endColumn;
+	}
 
 	/**
 	 * Returns true if the stored region intersects with the given line.
 	 */
     public boolean containsLine(int line) {
-		return startLine<=line && endLine>=line;
+		return getStartLine()<=line && getEndLine()>=line;
 	}
 
 	/**
@@ -24,14 +34,14 @@ public class NEDSourceRegion {
 	 * [start,end) range.
 	 */
 	public boolean contains(int line, int column) {
-		if (startLine>line || endLine<line)  // obvious non-match
+		if (getStartLine()>line || getEndLine()<line)  // obvious non-match
 			return false;  
-		return (line!=startLine || column>=startColumn) &&
-		       (line!=endLine || column<endColumn); 
+		return (line!=getStartLine() || column>=getStartColumn()) &&
+		       (line!=getEndLine() || column<getEndColumn()); 
 	}
 
 	public String toString() {
-		return ""+startLine+":"+startColumn+"-"+endLine+":"+endColumn;
+		return ""+getStartLine()+":"+getStartColumn()+"-"+getEndLine()+":"+getEndColumn();
 	}
     
     @Override
@@ -40,6 +50,22 @@ public class NEDSourceRegion {
             return false;
 
         NEDSourceRegion o = (NEDSourceRegion)obj;
-        return startLine==o.startLine && endLine==o.endLine && startColumn==o.startColumn && endColumn==o.endColumn;  
+        return getStartLine()==o.getStartLine() && getEndLine()==o.getEndLine() && getStartColumn()==o.getStartColumn() && getEndColumn()==o.getEndColumn();  
     }
+
+	public int getStartLine() {
+		return startLine;
+	}
+
+	public int getStartColumn() {
+		return startColumn;
+	}
+
+	public int getEndLine() {
+		return endLine;
+	}
+
+	public int getEndColumn() {
+		return endColumn;
+	}
 }

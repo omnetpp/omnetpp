@@ -207,22 +207,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * NED editors should call this when editor content changes.
-     *
-     * NOTE: If the provided tree would result the same NED code as the
-     * current model, the model will NOT be changed (the old tree
-     * will be kept).
-     */
-    //XXX verify really needed, revise comment etc. --Andras
-    public synchronized void setNEDFileModel(IFile file, INEDElement tree) {
-        if (tree == null)
-            forgetNEDFile(file); // XXX rather: it should never be called with tree==null!
-        else
-            storeNEDFileModel(file, tree);
-        rehashIfNeeded();
-    }
-
-    /**
      * Returns the textual (reformatted) content of the NED file, generated
      * from the model that belongs to the given file.
      */
@@ -247,6 +231,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
 
         if (treeDifferenceApplier.hasDifferences()) {
+        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
 	        currentTree.fireModelChanged(new NEDModelChangeBeginEvent(currentTree));
 	        treeDifferenceApplier.apply();
 	        currentTree.fireModelChanged(new NEDModelChangeEndEvent(currentTree));
@@ -433,12 +418,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * Gets called from incremental builder.
      */
     public synchronized void readNEDFile(IFile file, NEDProblemMarkerSynchronizer markerSync) {
-        // XXX for debugging
-        System.out.println("reading: " + file.toString());
-
         // if this file is currently loaded in an editor, we don't read it from disk
         if (connectCount.containsKey(file))
             return;
+
+        System.out.println("reading from disk: " + file.toString());
 
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
@@ -462,8 +446,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
     
+    // store NED file contents
     private synchronized void storeNEDFileModel(IFile file, INEDElement tree) {
-        // store NED file contents
+        Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
         Assert.isTrue(tree instanceof NedFileNodeEx);
 
         NedFileNodeEx oldTree = nedFiles.get(file);
@@ -593,17 +578,16 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 public void add(INEDElement context, String message) {
                     markerSync.addMarker(file, context, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
                             IMarker.SEVERITY_ERROR, message, context.getSourceLocation());
-                }
-            };
+                }};
             NEDFileValidator validator = new NEDFileValidator(this, errors);
             NedFileNode tree = (NedFileNode) nedFiles.get(file);
             validator.validate(tree);
         }
 
         long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("rehashIfNeeded(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers");
+        System.out.println("rehashIfNeeded(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
 
-        // we should defer the synchronization to a different job, so no deadlock can occur
+        // we need to do the synchronization in a background job, to avoid deadlocks 
         markerSync.runAsWorkspaceJob();
 
     }

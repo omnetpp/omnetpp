@@ -4,21 +4,23 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.ChannelNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.pojo.AbstractNEDValidator;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ClassDeclNode;
 import org.omnetpp.ned.model.pojo.ClassNode;
 import org.omnetpp.ned.model.pojo.CommentNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ConditionNode;
 import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.CplusplusNode;
 import org.omnetpp.ned.model.pojo.EnumDeclNode;
@@ -40,10 +42,8 @@ import org.omnetpp.ned.model.pojo.LiteralNode;
 import org.omnetpp.ned.model.pojo.LoopNode;
 import org.omnetpp.ned.model.pojo.MessageDeclNode;
 import org.omnetpp.ned.model.pojo.MessageNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.MsgFileNode;
 import org.omnetpp.ned.model.pojo.MsgpropertyNode;
-import org.omnetpp.ned.model.pojo.NedFileNode;
 import org.omnetpp.ned.model.pojo.OperatorNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
@@ -52,10 +52,8 @@ import org.omnetpp.ned.model.pojo.PropertiesNode;
 import org.omnetpp.ned.model.pojo.PropertyDeclNode;
 import org.omnetpp.ned.model.pojo.PropertyKeyNode;
 import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.StructDeclNode;
 import org.omnetpp.ned.model.pojo.StructNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.model.pojo.SubmodulesNode;
 import org.omnetpp.ned.model.pojo.TypesNode;
 import org.omnetpp.ned.model.pojo.UnknownNode;
@@ -65,20 +63,18 @@ import org.omnetpp.ned.model.pojo.UnknownNode;
  *
  * @author andras
  */
-//
-// FIXME validation of embedded types!!!!
-//
-public class NEDValidator extends AbstractNEDValidator implements NEDElementConstants {
+// FIXME todo: validation of embedded types!!!!
+public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;
 
 	INEDErrorStore errors;
 
 	// the component currently being validated
-	INEDElement componentNode;
+	INedTypeNode componentNode;
 
 	// non-null while we're validating a submodule
-	SubmoduleNode submoduleNode;
+	SubmoduleNodeEx submoduleNode;
 	INEDTypeInfo submoduleType; // null for the "like *" case(!); valid while submoduleNode!=null
 
 	// non-null while we're validating a channelspec of a connection
@@ -112,7 +108,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 	}
 
 	@Override
-    protected void validateElement(NedFileNode node) {
+    protected void validateElement(NedFileNodeEx node) {
 		validateChildren(node);
 	}
 
@@ -171,33 +167,33 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 	}
 
 	@Override
-    protected void validateElement(SimpleModuleNode node) {
+    protected void validateElement(SimpleModuleNodeEx node) {
 		doValidateComponent(node);
 	}
 
 	@Override
-    protected void validateElement(ModuleInterfaceNode node) {
+    protected void validateElement(ModuleInterfaceNodeEx node) {
 		doValidateComponent(node);
 	}
 
 	@Override
-    protected void validateElement(CompoundModuleNode node) {
+    protected void validateElement(CompoundModuleNodeEx node) {
 		doValidateComponent(node);
 	}
 
 	@Override
-    protected void validateElement(ChannelInterfaceNode node) {
+    protected void validateElement(ChannelInterfaceNodeEx node) {
 		doValidateComponent(node);
 	}
 
 	@Override
-    protected void validateElement(ChannelNode node) {
+    protected void validateElement(ChannelNodeEx node) {
 		//XXX check: exactly one of "extends" and "withcppclass" must be present!!!
 		doValidateComponent(node);
 	}
 
 	/* utility method */
-	protected void doValidateComponent(INEDElement node) {
+	protected void doValidateComponent(INedTypeNode node) {
         // init
 		componentNode = node;
 		Assert.isTrue(members.isEmpty());
@@ -388,7 +384,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 	}
 
 	@Override
-    protected void validateElement(SubmoduleNode node) {
+    protected void validateElement(SubmoduleNodeEx node) {
 		// find submodule type
 		String name = node.getName();
 		String typeName = node.getType();
@@ -448,7 +444,9 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementCons
 	}
 
 	@Override
-    protected void validateElement(ConnectionNode node) {
+    protected void validateElement(ConnectionNodeEx node) {
+		
+		
 		validateChildren(node);
 	}
 

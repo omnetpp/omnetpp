@@ -419,10 +419,10 @@ public class MultiPageNedEditor
             IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
             if (model.getSourceRegion() != null)
                 try {
-                    int startLine = model.getSourceRegion().startLine;
-                    int endLine = model.getSourceRegion().endLine;
-                    int startOffset = document.getLineOffset(startLine-1)+model.getSourceRegion().startColumn;
-                    int endOffset = document.getLineOffset(endLine-1)+model.getSourceRegion().endColumn;
+                    int startLine = model.getSourceRegion().getStartLine();
+                    int endLine = model.getSourceRegion().getEndLine();
+                    int startOffset = document.getLineOffset(startLine-1)+model.getSourceRegion().getStartColumn();
+                    int endOffset = document.getLineOffset(endLine-1)+model.getSourceRegion().getEndColumn();
                     textEditor.setHighlightRange(startOffset, endOffset - startOffset,
                                                  true);
 
