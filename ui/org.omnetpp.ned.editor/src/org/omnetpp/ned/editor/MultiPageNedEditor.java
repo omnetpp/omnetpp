@@ -197,7 +197,6 @@ public class MultiPageNedEditor
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
 	 * Responsible of synchronizing the two editor's model with each other and the NEDResources plugin
-	 *
 	 */
 	@Override
 	protected void pageChange(int newPageIndex) {
@@ -209,29 +208,31 @@ public class MultiPageNedEditor
 
         super.pageChange(newPageIndex);
 
-        // XXX this is a MEGA hack because currently the workbench do not send a partActivated, deactivated message
-        // for the embedded editors in a MultiPageEditorView (this is a missing unimplemented feature, it works with MultiEditor however)
-        // to make the ned editor outline page active we should send activate/deactivate directly
-        // we look for the outline view directly and send the notification by hand. once the MultiPageEditors are handled correctly
-        // this can be removed
-        // on each page change we emulate a close/open cycle of the multipage editor, this removed the associated
-        // outline page, so the outline view will re-request the multipageeditor for a ContentOutlinePage (via getAdapter)
-        // the current implementation of MultipageEditorPart.getAdapter delegates this request to the active
-        // embedded editor.
-        ContentOutline coutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
-        if (coutline != null) {
+        // XXX Kludge: currently the workbench do not send a partActivated/deactivated messages
+        // for embedded editors in a MultiPageEditorView. (This is a missing unimplemented feature, 
+        // it works with MultiEditor though).
+        // To make the NED editor Outline page active, we need to send activate/deactivate directly.
+        // We find the Outline View directly, and send the notification by hand. 
+        // Once the platform MultiPageEditor class handles this correctly, this code can be removed.
+        // On each page change we emulate a close/open cycle of the multi-page editor, this removes 
+        // the associated Outline page, so the Outline View will re-request the multi-page editor 
+        // for a ContentOutlinePage (via getAdapter). The current implementation of 
+        // MultipageEditorPart.getAdapter delegates this request to the active embedded editor.
+        //
+        ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
+        if (contentOutline != null) {
             // notify from the old closed editor
-            coutline.partClosed(this);
-            coutline.partActivated(this);
+            contentOutline.partClosed(this);
+            contentOutline.partActivated(this);
         }
-        // end of the hack
+        // end of kludge
 
         IFile file = ((FileEditorInput)getEditorInput()).getFile();
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
-        // XXX FIXME this may be a way too slow as invalidates everything
+
+		// XXX FIXME this may be a way too slow as invalidates everything
         // it is needed only to display consistency errors correctly during page switching
         // it would be OK to invalidate only the components inside this file
-
 
 		// switch from graphics to text:
         if (newPageIndex == textPageIndex) {

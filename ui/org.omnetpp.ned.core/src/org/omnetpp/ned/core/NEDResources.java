@@ -201,7 +201,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized NedFileNodeEx getNEDFileModel(IFile file) {
-    	Assert.isTrue(nedFiles.containsKey(file));
+    	Assert.isTrue(nedFiles.containsKey(file), "file is not a NED file, or not parsed yet");
 		rehashIfNeeded();
         return nedFiles.get(file);
     }
@@ -213,6 +213,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * current model, the model will NOT be changed (the old tree
      * will be kept).
      */
+    //XXX verify really needed, revise comment etc. --Andras
     public synchronized void setNEDFileModel(IFile file, INEDElement tree) {
         if (tree == null)
             forgetNEDFile(file); // XXX rather: it should never be called with tree==null!
@@ -231,7 +232,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * NED text editors should call this when editor content changes.
-     * Parses the given text and build a new NED model tree.
+     * Parses the given text, and synchronizes the stored NED model tree to it.
      * @param file - which file should be set
      * @param text - the textual content of the ned file
      */
@@ -443,15 +444,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         String fileName = file.getLocation().toOSString();
         NEDErrorStore errors = new NEDErrorStore();
         INEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
+        Assert.isNotNull(tree);
         markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
-
-        System.out.println(" -> " + tree);
         
-        // only store it if there were no errors
-        if (tree == null || !errors.empty())
-            forgetNEDFile(file);
-        else
-            storeNEDFileModel(file, tree);
+        storeNEDFileModel(file, tree);
     }
 
     /**

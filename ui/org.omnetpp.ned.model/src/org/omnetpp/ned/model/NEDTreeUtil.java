@@ -9,7 +9,6 @@ import org.omnetpp.ned.engine.NEDBasicValidator;
 import org.omnetpp.ned.engine.NEDDTDValidator;
 import org.omnetpp.ned.engine.NEDElement;
 import org.omnetpp.ned.engine.NEDElementCode;
-import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
@@ -18,6 +17,7 @@ import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.NedFileNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SubmodulesNode;
@@ -59,43 +59,50 @@ public class NEDTreeUtil {
     }
 
 	/**
-	 * Parse NED source and return it as a NEDElement tree. The parser implements recovery, and
-	 * a tree may be returned even if there were errors. Callers should check the
-	 * NEDErrorStore.
+	 * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
+	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
+	 * Callers should check NEDErrorStore to determine whether a parse error occurred.
+	 * The passed fileName will only be used to fill in the NedFileNode element.
 	 */
 	public static INEDElement parseNedSource(String source, NEDErrorStore errors, String fileName) {
         return parse(source, fileName, errors);
 	}
 
 	/**
-	 * Load and parse NED file to a NEDElement tree. The parser implements recovery, and
-	 * a tree may be returned even if there were errors. Callers should check the
-	 * NEDErrorStore.
+	 * Load and parse NED file to a NEDElement tree. Returns a non-null,
+	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
+ 	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
 	 */
 	public static INEDElement loadNedSource(String filename, NEDErrorStore errors) {
         return parse(null, filename, errors);
 	}
 
 	/**
-	 * Parse the given source or the given file. Try to return a non-null tree even in case
-	 * of parse errors. However, returned tree is always guaranteed to conform to the DTD.
+	 * Parse the given source (when source!=null) or the given file (when source==null).
+	 * Never returns null. 
 	 */
 	private static INEDElement parse(String source, String filename, NEDErrorStore errors) {
 		Assert.isTrue(filename != null);
+		NEDElement swigTree = null;
 		try {
 			// parse
 			NEDParser np = new NEDParser(errors);
 			np.setParseExpressions(false);
-			NEDElement swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
-			if (swigTree == null)
-				return null;
+			swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
+			if (swigTree == null) {
+				// return an empty NedFileNode if parsing totally failed
+				NedFileNode fileNode = (NedFileNode)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE, null);
+				fileNode.setFilename(filename);
+				return fileNode;
+			}
+
 			// set the file name property in the nedFileElement
             if (NEDElementCode.swigToEnum(swigTree.getTagCode()) == NEDElementCode.NED_NED_FILE)
                 swigTree.setAttribute("filename", filename);
 
 			if (!errors.empty()) {
 				// There were parse errors, and the tree built may not be entirely correct.
-				// Typical problems are "mandatory attribute missing" esp with connections,
+				// Typical problems are "mandatory attribute missing" especially with connections,
 				// due to parse errors before filling in the connection element was completed.
 				// Here we try to check and repair the tree by discarding elements that cause
 				// DTD validation error.
@@ -103,40 +110,25 @@ public class NEDTreeUtil {
 			}
 
 			// run DTD validation (once again)
+			int numMessages = errors.numMessages();
 			NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
-			int errs = errors.numMessages();
 			dtdvalidator.validate(swigTree);
-            // drop the tree if the validator added ANY new messages
-            // FIXME we should check only for new error messages
-            // currently validator do not add warning or info messages
-			if (errors.numMessages()!=errs) {
-				// DTD validation produced additional errors -- give up
-				swigTree.delete();
-				return null;
-			}
+			Assert.isTrue(errors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
+
 			NEDBasicValidator basicvalidator = new NEDBasicValidator(false, errors);
 			basicvalidator.validate(swigTree);
-            if (errors.numMessages()!=errs) {
-                // BASIC validation produced additional errors -- give up
-                swigTree.delete();
-                return null;
-            }
+			Assert.isTrue(errors.numMessages() == numMessages, "NED tree fails basic validation, even after repairs");
 
 			// convert tree to pure Java objects
 			INEDElement pojoTree = swig2pojo(swigTree, null, errors);
 
-			// XXX for debugging
 			// System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
 
-			swigTree.delete();
 			return pojoTree;
 		}
-		catch (RuntimeException e) {
-			// TODO: this error should not be handled here but the caller should do
-			// since we are returning nulls the caller must check it anyway
-			errors.add("", NEDErrorCategory.ERRCAT_ERROR.ordinal(), "internal error: "+e);
-            NEDModelPlugin.log(e);
-			return null;
+		finally {
+			if (swigTree != null)
+				swigTree.delete();
 		}
 	}
 

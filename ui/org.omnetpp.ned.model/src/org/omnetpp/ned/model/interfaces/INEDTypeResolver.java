@@ -38,7 +38,8 @@ public interface INEDTypeResolver {
 	/**
 	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree
 	 * if the file has parse errors; one can call containsNEDErrors() to find out
-	 * if that is the case.
+	 * if that is the case. Return value is never null. It is an error to invoke 
+	 * this method on a non-NED file.
 	 *
 	 * @param file - must not be null
 	 */

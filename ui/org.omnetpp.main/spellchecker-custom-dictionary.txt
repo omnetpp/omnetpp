@@ -201,3 +201,4 @@ inout
 gatesizes
 typeinfo
 iff
+deactivated
