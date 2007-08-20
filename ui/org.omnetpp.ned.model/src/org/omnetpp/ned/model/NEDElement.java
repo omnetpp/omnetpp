@@ -219,6 +219,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		return -1;
 	}
 
+	public boolean hasAttribute(String attr) {
+		return lookupAttribute(attr) != -1;
+	}
+
 	abstract public String getAttribute(int k);
 
 	public String getAttribute(String attr) {
@@ -516,7 +520,8 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     // For debugging purposes only
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " " + (getAttribute("name") != null ? getAttribute("name") : "");
+        //return NEDTreeUtil.getNedModelLabelProvider().getText(this) + " from " + getSourceLocation();
+        return getClass().getSimpleName() + " " + (hasAttribute("name") ? getAttribute("name") : "");
         //return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
     }
 };

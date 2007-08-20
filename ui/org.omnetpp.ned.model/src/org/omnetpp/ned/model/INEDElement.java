@@ -100,6 +100,11 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public int lookupAttribute(String attr);
 
 	/**
+	 * Returns true if the element supports the given attribute, whether currently set or not.
+	 */
+	public boolean hasAttribute(String attr);
+
+	/**
 	 * Returns the value of the kth attribute (i.e. the attribute with the name
 	 * getAttributeName(k)).
 	 *

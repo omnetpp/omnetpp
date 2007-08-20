@@ -220,7 +220,7 @@ public class TextualNedEditor
 	}
 
 	protected NedFileNodeEx getNEDFileModelFromNEDResourcesPlugin() {
-		return (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
 	}
 
 	/*

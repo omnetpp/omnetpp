@@ -3,7 +3,7 @@ package org.omnetpp.ned.model.interfaces;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * Elements that are instance of a NED type: submodule and connection.
+ * Elements that are instances of a NED type: submodule and connection.
  *
  * @author rhornig
  */

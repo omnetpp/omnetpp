@@ -5,6 +5,7 @@ package org.omnetpp.ned.model.interfaces;
  *
  * @author rhornig
  */
+//FIXME this is the same as INamedGraphNode -- eliminate one of them?
 public interface IHasConnections extends IHasName {
     /**
      * Returns the typeinfo for the effective type.

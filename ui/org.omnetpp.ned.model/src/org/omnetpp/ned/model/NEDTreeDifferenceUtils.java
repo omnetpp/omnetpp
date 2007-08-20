@@ -20,8 +20,12 @@ import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
+
 public class NEDTreeDifferenceUtils {
-	public interface INEDTreeDifferenceApplier {
+	/**
+	 * Applies changes identified by the tree diff algorithm to the tree. 
+	 */
+	public interface IApplier {
 		public void replaceSourceLocation(INEDElement element, String sourceLocation, NEDSourceRegion sourceRegion);
 
 		public void replaceElements(INEDElement parent, int start, int end, int offset, INEDElement[] replacement);
@@ -30,7 +34,7 @@ public class NEDTreeDifferenceUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void applyTreeDifferences(INEDElement original, INEDElement target, INEDTreeDifferenceApplier applier) {
+	public static void applyTreeDifferences(INEDElement original, INEDElement target, IApplier applier) {
 		applyAttributeDifferences(original, target, applier);
 		applier.replaceSourceLocation(original, target.getSourceLocation(), target.getSourceRegion());
 
@@ -67,7 +71,7 @@ public class NEDTreeDifferenceUtils {
 		}
 	}
 
-	private static void applyAttributeDifferences(INEDElement original, INEDElement target, INEDTreeDifferenceApplier applier) {
+	private static void applyAttributeDifferences(INEDElement original, INEDElement target, IApplier applier) {
 		int num = original.getNumAttributes();
 		for (int j = 0; j < num; j++) {
 			String originalAttribute = original.getAttribute(j);
@@ -78,7 +82,10 @@ public class NEDTreeDifferenceUtils {
 		}
 	}
 
-	public static class NEDTreeDifferenceApplier implements NEDTreeDifferenceUtils.INEDTreeDifferenceApplier {
+	/**
+	 * The default implementation of NEDTreeDifferenceUtils.IApplier.
+	 */
+	public static class Applier implements IApplier {
 		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
 
 		public void replaceSourceLocation(final INEDElement element, final String sourceLocation, final NEDSourceRegion sourceRegion) {
@@ -214,7 +221,7 @@ class NEDTreeDifferenceTest {
 		String targetNED = NEDTreeUtil.generateNedSource(target, false);
 		String targetXML = NEDTreeUtil.generateXmlFromPojoElementTree(target, "", false);
 
-		NEDTreeDifferenceUtils.NEDTreeDifferenceApplier applier = new NEDTreeDifferenceUtils.NEDTreeDifferenceApplier();
+		NEDTreeDifferenceUtils.Applier applier = new NEDTreeDifferenceUtils.Applier();
 		NEDTreeDifferenceUtils.applyTreeDifferences(original, target, applier);
 		applier.apply();
 		

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
 
 /*
  * For accessing NED types.
@@ -41,7 +42,7 @@ public interface INEDTypeResolver {
 	 *
 	 * @param file - must not be null
 	 */
-	public INEDElement getNEDFileModel(IFile file);
+	public NedFileNodeEx getNEDFileModel(IFile file);
 
     /**
      * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text
