@@ -392,6 +392,7 @@ public class TextualNedEditor
 				Assert.isTrue(Display.getCurrent() != null);
 				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
 						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getNEDSource());
+				//XXX then parse in again, and update line numbers with the resulting tree?
 			}
 		});
 	}

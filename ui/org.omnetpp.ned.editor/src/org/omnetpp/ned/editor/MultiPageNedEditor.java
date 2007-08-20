@@ -35,9 +35,7 @@ import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -237,19 +235,7 @@ public class MultiPageNedEditor
 		// switch from graphics to text:
         if (newPageIndex == textPageIndex) {
             if (graphEditor.hasContentChanged()) {
-                // TODO refresh the editor annotations to show the error marks
-                String source = graphEditor.getModel().getNEDSource();
-                // we try to reformat and re-parse the model so the element line number attributes will be correct
-                NEDErrorStore errors = new NEDErrorStore();
-                INEDElement reformattedModel = NEDTreeUtil.parseNedSource(source, errors, file.getLocation().toOSString());
-                // if the re parse was successful use the reformatted tree
-                if (!errors.containsError())
-                    res.setNEDFileModel(file, reformattedModel);
-                else
-                    // otherwise we use the original tree
-                    res.setNEDFileModel(file, graphEditor.getModel());
-
-                // generate text representation from the model
+                // generate text representation from the model NOW
                 textEditor.pullChangesFromNEDResources();
                 textEditor.markContent();
             }
