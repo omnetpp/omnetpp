@@ -62,7 +62,7 @@ public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeN
     	return displayString;
     }
 
-    // EXTENDS SUPPORT
+    // "extends" support
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -109,18 +109,6 @@ public class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeN
 
     public Map<String, GateNode> getGates() {
         return getNEDTypeInfo().getGateDeclarations();
-    }
-
-    // interface implementation support
-    //FIXME btw this is getOwnInterfaces()! getAllInterfaces() would include ancestor interfaces too!!! but get it from NEDComponent!!!! --Andras
-    public List<InterfaceNameNode> getAllInterfaces() {
-        List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
-
-        for (INEDElement currChild : this)
-            if (currChild instanceof InterfaceNameNode)
-                result.add((InterfaceNameNode)currChild);
-
-        return result;
     }
 
 }

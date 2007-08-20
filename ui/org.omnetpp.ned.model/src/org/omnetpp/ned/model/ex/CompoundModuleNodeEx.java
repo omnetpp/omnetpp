@@ -300,8 +300,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 			snode.removeFromParent();
 	}
 
-    // extends support
-	
+    // "extends" support
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -348,17 +347,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleT
 
     public Map<String, GateNode> getGates() {
         return getNEDTypeInfo().getGateDeclarations();
-    }
-
-    // interface implementation support
-    public List<InterfaceNameNode> getAllInterfaces() {
-        List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
-
-        for (INEDElement currChild : this)
-            if (currChild instanceof InterfaceNameNode)
-                result.add((InterfaceNameNode)currChild);
-
-        return result;
     }
 
 }

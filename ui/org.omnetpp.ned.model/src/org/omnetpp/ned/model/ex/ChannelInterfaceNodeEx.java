@@ -54,7 +54,7 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements IInt
     	return displayString;
     }
 
-    // EXTENDS SUPPORT
+    // "extends" support
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -82,7 +82,7 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements IInt
         return result;
     }
 
-    // parameter list support
+    // parameter support
     public Map<String, ParamNode> getParamValues() {
         return getNEDTypeInfo().getParamAssignments();
     }

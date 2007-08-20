@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -20,7 +19,7 @@ import org.omnetpp.ned.model.pojo.ParamNode;
  *
  * @author rhornig
  */
-public class ChannelNodeEx extends ChannelNode implements INedTypeNode, IHasInterfaces {
+public class ChannelNodeEx extends ChannelNode implements INedTypeNode {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
@@ -56,7 +55,7 @@ public class ChannelNodeEx extends ChannelNode implements INedTypeNode, IHasInte
     	return displayString;
     }
 
-    // EXTENDS support
+    // "extends" support
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -93,17 +92,6 @@ public class ChannelNodeEx extends ChannelNode implements INedTypeNode, IHasInte
 
     public Map<String, ParamNode> getParams() {
         return getNEDTypeInfo().getParamDeclarations();
-    }
-
-    // interface implementation support
-    public List<InterfaceNameNode> getAllInterfaces() {
-        List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
-
-        for (INEDElement currChild : this)
-            if (currChild instanceof InterfaceNameNode)
-                result.add((InterfaceNameNode)currChild);
-
-        return result;
     }
 
 }

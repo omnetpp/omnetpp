@@ -57,7 +57,7 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements IInter
     	return displayString;
     }
 
-    // EXTENDS SUPPORT
+    // "extends" support
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }

@@ -1,11 +1,11 @@
 package org.omnetpp.ned.editor.graph.properties.util;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.interfaces.IHasInterfaces;
-import org.omnetpp.ned.model.pojo.InterfaceNameNode;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.interfaces.INedTypeNode;
 
 /**
  * Property source to display the interface list of a component
@@ -14,25 +14,25 @@ import org.omnetpp.ned.model.pojo.InterfaceNameNode;
  */
 public class InterfacesListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "like";
-    public final static String DESCRIPTION = "List of components this component implements - (read only)";
-    protected IHasInterfaces model;
+    public final static String DESCRIPTION = "List of interfaces this component implements - (read only)";
+    protected INedTypeNode model;
     protected PropertyDescriptor[] pdesc;
 
-    public InterfacesListPropertySource(IHasInterfaces model) {
+    public InterfacesListPropertySource(INedTypeNode model) {
         super(model);
         this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<InterfaceNameNode> interfacesList = model.getAllInterfaces();
+        Set<String> interfacesList = model.getNEDTypeInfo().getInterfaces();
 
         pdesc = new PropertyDescriptor[interfacesList.size()];
         int totalCount = 0;
-        for (InterfaceNameNode interfaceElement : interfacesList) {
-            pdesc[totalCount] = new PropertyDescriptor(interfaceElement.getName(), interfaceElement.getName());
+        for (String interfaceName : interfacesList) {
+            pdesc[totalCount] = new PropertyDescriptor(interfaceName, interfaceName);
             pdesc[totalCount].setCategory(CATEGORY);
-            pdesc[totalCount].setDescription("Component "+interfaceElement.getName()+" - (read only)");
+            pdesc[totalCount].setDescription("Interface '" + interfaceName + "' - (read only)");
             totalCount++;
         }
 
@@ -41,15 +41,7 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getEditableValue() {
-        StringBuilder summary = new StringBuilder("");
-
-        for (InterfaceNameNode interfaceElement : model.getAllInterfaces())
-            summary.append(interfaceElement.getName()+",");
-
-        // strip the trailing ',' char
-        summary.setLength(Math.max(summary.length()-1, 0));
-
-        return summary;
+    	return StringUtils.join(model.getNEDTypeInfo().getInterfaces(), ",");
     }
 
     @Override
