@@ -209,7 +209,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     public Map<String, GateNode> getGates() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? null : new HashMap<String, GateNode>();
+        return info == null ? new HashMap<String, GateNode>() : info.getGateDeclarations();
     }
 
 }
