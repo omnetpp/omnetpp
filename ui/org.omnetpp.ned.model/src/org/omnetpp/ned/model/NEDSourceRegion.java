@@ -3,6 +3,10 @@ package org.omnetpp.ned.model;
 /**
  * Immutable value object, stores a line:col..line:col region in a source file. 
  * Used for relating NEDElements back to the source code.
+ * 
+ * NOTE: Needs to be immutable because the tree-diff algorithm copies 
+ * NEDSourceRegion *references* from one tree to another, WITHOUT copying\
+ * the objects themselves.
  *
  * @author andras
  */

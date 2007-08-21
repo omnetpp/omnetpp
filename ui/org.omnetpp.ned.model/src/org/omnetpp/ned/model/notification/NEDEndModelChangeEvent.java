@@ -2,9 +2,9 @@ package org.omnetpp.ned.model.notification;
 
 import org.omnetpp.ned.model.INEDElement;
 
-public class NEDModelChangeBeginEvent extends NEDModelEvent
+public class NEDEndModelChangeEvent extends NEDModelEvent
 {
-	public NEDModelChangeBeginEvent(INEDElement source) {
+	public NEDEndModelChangeEvent(INEDElement source) {
 		super(source);
 	}
 }

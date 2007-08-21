@@ -35,8 +35,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author rhornig, andras
  */
-//XXX rename to NEDTypeInfo? --Andras
-public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementConstants {
+public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementConstants {
 
 	protected INEDTypeResolver resolver;
 
@@ -96,7 +95,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 	 * @param nedfile file containing the definition
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
-	public NEDComponent(INedTypeNode node, IFile nedfile, INEDTypeResolver res) {
+	public NEDTypeInfo(INedTypeNode node, IFile nedfile, INEDTypeResolver res) {
 		resolver = res;
 		file = nedfile;
 		componentNode = node;
@@ -187,7 +186,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
     		return;
     	
         ++debugRefreshLocalCount;
-        // System.out.println("NEDComponent for "+getName()+" localRefresh: " + refreshLocalCount);
+        // System.out.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
         localInterfaces.clear();
         localProperties.clear();
@@ -255,7 +254,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 			return;
 		
         ++debugRefreshInheritedCount;
-        // System.out.println("NEDComponent for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
+        // System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
 
         // first wee need our local members updated
         if (needsLocalUpdate)
@@ -293,8 +292,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
 		INEDTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INEDTypeInfo[]{});
 		ArrayUtils.reverse(forwardExtendsChain);
 		for (INEDTypeInfo typeInfo : forwardExtendsChain) {
-			Assert.isTrue(typeInfo instanceof NEDComponent);
-			NEDComponent component = (NEDComponent)typeInfo;
+			Assert.isTrue(typeInfo instanceof NEDTypeInfo);
+			NEDTypeInfo component = (NEDTypeInfo)typeInfo;
 			allProperties.putAll(component.getLocalProperties());
 			allParams.putAll(component.getLocalParamDeclarations());
             allParamValues.putAll(component.getLocalParamAssignments());
@@ -522,7 +521,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
      */
     @Override
     public String toString() {
-        return "NEDComponent for "+getNEDElement();
+        return "NEDTypeInfo for "+getNEDElement();
     }
 
     public void modelChanged(NEDModelEvent event) {
@@ -530,7 +529,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags, NEDElementCon
     }
 
     public void debugDump() {
-    	System.out.println("NEDComponent: " + getNEDElement().toString() + " debugId=" + debugId);
+    	System.out.println("NEDTypeInfo: " + getNEDElement().toString() + " debugId=" + debugId);
     	if (needsUpdate || needsLocalUpdate)
     		System.out.println(" currently invalid (needs refresh)");
     	System.out.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));

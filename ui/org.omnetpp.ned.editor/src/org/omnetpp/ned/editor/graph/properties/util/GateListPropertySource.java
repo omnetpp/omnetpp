@@ -28,7 +28,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, GateNode> gates = model.getGates();
+        Map<String, GateNode> gates = model.getGateDeclarations();
 
         pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;

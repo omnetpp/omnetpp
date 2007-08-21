@@ -225,9 +225,9 @@ public class ParametersDialog extends TitleAreaDialog {
 
     protected void buildTable() {
         // build ParamLine list (value objects) for dialog editing
-        for (ParamNode paramDecl : module.getParams().values()) {
+        for (ParamNode paramDecl : module.getParamDeclarations().values()) {
             // get the the value of the parameter
-            ParamNodeEx paramValue = (ParamNodeEx)module.getParamValues().get(paramDecl.getName());
+            ParamNodeEx paramValue = (ParamNodeEx)module.getParamAssignments().get(paramDecl.getName());
             ParamLine paramLine = new ParamLine(paramValue);
             boolean isDeclLocal = paramDecl.getParent().getParent() == module;
             boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;

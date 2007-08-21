@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.omnetpp.ned.model;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-ClassPath: .
 Bundle-Vendor: OpenSim Ltd.
-Bundle-Localization: plugin
 Export-Package: org.omnetpp.ned.model,
  org.omnetpp.ned.model.ex,
  org.omnetpp.ned.model.interfaces,

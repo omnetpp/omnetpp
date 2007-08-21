@@ -13,6 +13,7 @@ import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
 import org.omnetpp.ned.engine.NEDTools;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
@@ -73,7 +74,7 @@ public class NEDTreeUtil {
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
  	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
 	 */
-	public static INEDElement loadNedSource(String filename, NEDErrorStore errors) {
+	public static NedFileNodeEx loadNedSource(String filename, NEDErrorStore errors) {
         return parse(null, filename, errors);
 	}
 
@@ -81,7 +82,7 @@ public class NEDTreeUtil {
 	 * Parse the given source (when source!=null) or the given file (when source==null).
 	 * Never returns null. 
 	 */
-	private static INEDElement parse(String source, String filename, NEDErrorStore errors) {
+	private static NedFileNodeEx parse(String source, String filename, NEDErrorStore errors) {
 		Assert.isTrue(filename != null);
 		NEDElement swigTree = null;
 		try {
@@ -91,7 +92,7 @@ public class NEDTreeUtil {
 			swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
 			if (swigTree == null) {
 				// return an empty NedFileNode if parsing totally failed
-				NedFileNode fileNode = (NedFileNode)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE, null);
+				NedFileNodeEx fileNode = (NedFileNodeEx)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE, null);
 				fileNode.setFilename(filename);
 				return fileNode;
 			}
@@ -124,7 +125,7 @@ public class NEDTreeUtil {
 
 			// System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
 
-			return pojoTree;
+			return (NedFileNodeEx)pojoTree;
 		}
 		finally {
 			if (swigTree != null)

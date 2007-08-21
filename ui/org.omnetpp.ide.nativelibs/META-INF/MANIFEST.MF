@@ -4,7 +4,6 @@ Bundle-Name: OMNEST/OMNeT++ Native library plug-in
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs
 Bundle-Version: 4.0.0
 Bundle-Vendor: OpenSim Ltd.
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.common.engine,

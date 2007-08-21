@@ -259,7 +259,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 
     // parameter query support
     
-    public Map<String, ParamNode> getParamValues() {
+    public Map<String, ParamNode> getParamAssignments() {
     	Map<String, ParamNode> result = new HashMap<String, ParamNode>();
 
     	INEDTypeInfo info = getNEDTypeInfo();
@@ -273,7 +273,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
         return result;
     }
 
-    public Map<String, ParamNode> getParams() {
+    public Map<String, ParamNode> getParamDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? new HashMap<String, ParamNode>() : info.getParamDeclarations();
     }

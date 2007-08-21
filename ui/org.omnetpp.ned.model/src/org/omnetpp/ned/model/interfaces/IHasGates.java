@@ -18,7 +18,7 @@ public interface IHasGates extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    Map<String, GateNode> getGates();
+    Map<String, GateNode> getGateDeclarations();
 
     /**
      * Returns the list of all gate elements where size is specified.

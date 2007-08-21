@@ -364,14 +364,17 @@ public class TextualNedEditor
 	/**
 	 * Pushes down text changes from document into NEDResources.
 	 */
-	public synchronized void pushChangesIntoNEDResources(final boolean ignoreIfInactive) {
+	public synchronized void pushChangesIntoNEDResources(final boolean evenIfEditorIsInactive) {
 		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public synchronized void run() {
 				Assert.isTrue(!pushingChanges);
-				if (ignoreIfInactive || isActive()) {
+				if (evenIfEditorIsInactive || isActive()) {
 					try {
-						// this must be static to be able to access it from the text editor
-						// being static causes no problems with multiple reconcilers because the access is serialized through asyncExec
+						// this must be static, because we may have several text editors open
+						// (via Window|New Editor) which are internally synced to each other 
+						// by the platform -- so we need to block *all* reconcilers from running.
+						// Being static causes no problems with multiple reconcilers, because 
+						// the access is serialized through asyncExec.
 						pushingChanges = true;
 						// perform parsing (of full text, we ignore the changed region)
 						NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());

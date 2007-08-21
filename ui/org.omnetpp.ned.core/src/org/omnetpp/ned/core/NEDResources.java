@@ -37,8 +37,8 @@ import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
-import org.omnetpp.ned.model.notification.NEDModelChangeBeginEvent;
-import org.omnetpp.ned.model.notification.NEDModelChangeEndEvent;
+import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
@@ -140,7 +140,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         ChannelNodeEx nullChannel = (ChannelNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
         nullChannel.setName("cIdealChannel");
         nullChannel.setIsWithcppclass(true);
-        nullChannelType = new NEDComponent(nullChannel, null, this);
+        nullChannelType = new NEDTypeInfo(nullChannel, null, this);
 
         // create built-in channel type cBasicChannel
         ChannelNodeEx basicChannel = (ChannelNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
@@ -151,7 +151,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         params.appendChild(createImplicitChannelParameter("delay", NEDElementConstants.NED_PARTYPE_DOUBLE));
         params.appendChild(createImplicitChannelParameter("error", NEDElementConstants.NED_PARTYPE_DOUBLE));
         params.appendChild(createImplicitChannelParameter("datarate", NEDElementConstants.NED_PARTYPE_DOUBLE));
-        basicChannelType = new NEDComponent(basicChannel, null, this);
+        basicChannelType = new NEDTypeInfo(basicChannel, null, this);
 
         //
         // create built-in interfaces that allow modules to be used as channels
@@ -164,7 +164,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         GatesNode gates = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES, bidirChannel);
         gates.appendChild(createGate("a", NEDElementConstants.NED_GATETYPE_INOUT));
         gates.appendChild(createGate("b", NEDElementConstants.NED_GATETYPE_INOUT));
-        bidirChannelType = new NEDComponent(bidirChannel, null, this);
+        bidirChannelType = new NEDTypeInfo(bidirChannel, null, this);
 
         ModuleInterfaceNodeEx unidirChannel = (ModuleInterfaceNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(
                 NEDElementTags.NED_MODULE_INTERFACE);
@@ -173,7 +173,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 unidirChannel);
         gates2.appendChild(createGate("i", NEDElementConstants.NED_GATETYPE_INPUT));
         gates2.appendChild(createGate("o", NEDElementConstants.NED_GATETYPE_OUTPUT));
-        unidirChannelType = new NEDComponent(unidirChannel, null, this);
+        unidirChannelType = new NEDTypeInfo(unidirChannel, null, this);
     }
 
     /* utility method */
@@ -232,9 +232,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         if (treeDifferenceApplier.hasDifferences()) {
         	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
-	        currentTree.fireModelChanged(new NEDModelChangeBeginEvent(currentTree));
+	        currentTree.fireModelChanged(new NEDBeginModelChangeEvent(currentTree));
 	        treeDifferenceApplier.apply();
-	        currentTree.fireModelChanged(new NEDModelChangeEndEvent(currentTree));
+	        currentTree.fireModelChanged(new NEDEndModelChangeEvent(currentTree));
         }
 
         // TODO the below lines should go to the above if statement ???
@@ -369,7 +369,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized INEDTypeInfo wrapNEDElement(INedTypeNode componentNode) {
-        return new NEDComponent(componentNode, null, this);
+        return new NEDTypeInfo(componentNode, null, this);
     }
 
     /**
@@ -428,7 +428,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
         NEDErrorStore errors = new NEDErrorStore();
-        INEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
+        NedFileNodeEx tree = NEDTreeUtil.loadNedSource(fileName, errors);
         Assert.isNotNull(tree);
         markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
         
@@ -448,15 +448,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
     
     // store NED file contents
-    private synchronized void storeNEDFileModel(IFile file, INEDElement tree) {
+    private synchronized void storeNEDFileModel(IFile file, NedFileNodeEx tree) {
         Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
-        Assert.isTrue(tree instanceof NedFileNodeEx);
 
         NedFileNodeEx oldTree = nedFiles.get(file);
         // if the new tree has changed, we have to rehash everything
         if (oldTree == null || !NEDTreeUtil.isNEDTreeEqual(oldTree, tree)) {
             invalidate();
-            nedFiles.put(file, (NedFileNodeEx)tree);
+            nedFiles.put(file, tree);
             // add ourselves to the tree root as a listener
             tree.addNEDChangeListener(nedModelChangeListener);
             // remove ourselves from the old tree which is no longer used
@@ -513,7 +512,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         		// create type info object for EVERY type. We won't store them for duplicate types,
         		// but they'll still be available via INedTypeInfo.getNedTypeInfo().
-        		INEDTypeInfo typeInfo = new NEDComponent(node, file, this);
+        		INEDTypeInfo typeInfo = new NEDTypeInfo(node, file, this);
 
         		if (components.containsKey(name)) {
         			// it is a duplicate: issue warning

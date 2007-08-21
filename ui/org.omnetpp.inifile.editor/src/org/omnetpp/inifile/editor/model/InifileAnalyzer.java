@@ -699,7 +699,7 @@ public class InifileAnalyzer {
 			ParamNode paramDeclNode = moduleType.getParamDeclarations().get(paramName);
 			ParamNode paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
-					submodule.getParamValues().get(paramName);
+					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
 			resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
@@ -774,7 +774,7 @@ public class InifileAnalyzer {
 			ParamNode paramDeclNode = (ParamNode)moduleType.getParamDeclarations().get(paramName);
 			ParamNode paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
-					submodule.getParamValues().get(paramName);
+					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
 			resultList.add(resolveParameter(moduleFullPath, null, paramDeclNode, paramValueNode, null, null));

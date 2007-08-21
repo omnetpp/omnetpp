@@ -157,7 +157,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     // parameter query support
     
-    public Map<String, ParamNode> getParamValues() {
+    public Map<String, ParamNode> getParamAssignments() {
         Map<String, ParamNode> result = new HashMap<String, ParamNode>();
 
         INEDTypeInfo info = getNEDTypeInfo();
@@ -171,7 +171,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
         return result;
     }
 
-    public Map<String, ParamNode> getParams() {
+    public Map<String, ParamNode> getParamDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? new HashMap<String, ParamNode>() : info.getParamDeclarations();
     }
@@ -207,7 +207,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
         return result;
     }
 
-    public Map<String, GateNode> getGates() {
+    public Map<String, GateNode> getGateDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? new HashMap<String, GateNode>() : info.getGateDeclarations();
     }

@@ -86,11 +86,11 @@ public class ChannelNodeEx extends ChannelNode implements INedTypeNode {
         return result;
     }
 
-    public Map<String, ParamNode> getParamValues() {
+    public Map<String, ParamNode> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamNode> getParams() {
+    public Map<String, ParamNode> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
     }
 

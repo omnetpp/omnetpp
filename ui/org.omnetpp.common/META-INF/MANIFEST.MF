@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNEST/OMNeT++ Common Resources
 Bundle-SymbolicName: org.omnetpp.common; singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.filesystem,
  org.eclipse.ui,
  org.eclipse.ui.views,

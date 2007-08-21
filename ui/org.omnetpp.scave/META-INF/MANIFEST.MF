@@ -4,7 +4,6 @@ Bundle-Name: OMNEST/OMNeT++ Scalar / Vector Chart
 Bundle-SymbolicName: org.omnetpp.scave;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.scave.ScavePlugin
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

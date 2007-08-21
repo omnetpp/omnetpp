@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.omnetpp.main;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.ide.Activator
 Bundle-Vendor: OpenSim Ltd.
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.runtime,

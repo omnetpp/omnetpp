@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNEST/OMNeT++ Figures
 Bundle-SymbolicName: org.omnetpp.figures
 Bundle-Version: 4.0.0
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
  org.eclipse.draw2d,

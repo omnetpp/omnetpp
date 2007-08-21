@@ -18,7 +18,7 @@ public interface IHasParameters extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    public Map<String, ParamNode> getParams();
+    public Map<String, ParamNode> getParamDeclarations();
 
     /**
      * Returns the name - parameter node association where the last parameter - value
@@ -27,6 +27,6 @@ public interface IHasParameters extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    public Map<String, ParamNode> getParamValues();
+    public Map<String, ParamNode> getParamAssignments();
 
 }

@@ -56,7 +56,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, ParamNode> params = model.getParams();
+        Map<String, ParamNode> params = model.getParamDeclarations();
 
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
@@ -94,7 +94,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource
     public Object getPropertyValue(Object id) {
         if (!(id instanceof ParamNodeEx))
             return getEditableValue();
-        Map<String, ParamNode> paramValues = model.getParamValues();
+        Map<String, ParamNode> paramValues = model.getParamAssignments();
         ParamNodeEx paramDefNode = (ParamNodeEx)id;
         ParamNodeEx paramValueNode = (ParamNodeEx)paramValues.get(paramDefNode.getName());
         String valueString = paramValueNode== null ? "" :paramValueNode.getValue();

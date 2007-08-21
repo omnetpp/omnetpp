@@ -63,7 +63,10 @@ import org.omnetpp.ned.model.pojo.UnknownNode;
  *
  * @author andras
  */
-// FIXME todo: validation of embedded types!!!!
+//FIXME this validates with UNPARSED expressions only!!!
+//FIXME todo: validation of embedded types!!!!
+//FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
+//FIXME asap: validate connection!
 public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;
@@ -443,10 +446,89 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		validateChildren(node);
 	}
 
+//	void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
+//	{
+//	    // FIXME revise
+//	    // check gate direction, check if vector
+//	    const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
+//	    if (hasGateIndex && !gate->getIsVector())
+//	        errors->add(conn, "%s: extra gate index or '++' ('%s' is not a vector gate)", q, gate->getName());
+//	    else if (!hasGateIndex && gate->getIsVector())
+//	        errors->add(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
+//
+//	    // check gate direction, check if vector
+//	    if (isInput && gate->getType()==NED_GATETYPE_OUTPUT)
+//	        errors->add(conn, "%s: input gate expected but '%s' is an output gate", q, gate->getName());
+//	    else if (!isInput && gate->getType()==NED_GATETYPE_INPUT)
+//	        errors->add(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
+//	}
+//
+//	void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
+//	                                            const char *gateName, bool hasGateIndex,
+//	                                            NEDElement *parent, NEDElement *conn, bool isSrc)
+//	{
+//	    // FIXME revise
+//	    const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
+//	    if (strnull(submodName))
+//	    {
+//	        // connected to parent module: check such gate is declared
+//	        NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
+//	        GateNode *gate;
+//	        if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+//	            errors->add(conn, "%s: compound module has no gate named '%s'", q, gateName);
+//	        else
+//	            checkGate(gate, hasGateIndex, isSrc, conn, isSrc);
+//	    }
+//	    else
+//	    {
+//	        // check such submodule is declared
+//	        NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
+//	        SubmoduleNode *submod = NULL;
+//	        if (!submods || (submod=(SubmoduleNode*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
+//	        {
+//	            errors->add(conn, "%s: compound module has no submodule named '%s'", q, submodName);
+//	        }
+//	        else
+//	        {
+//	            bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
+//	            if (hasSubmodIndex && !isSubmodVector)
+//	                errors->add(conn, "%s: extra submodule index ('%s' is not a vector submodule)", q, submodName);
+//	            else if (!hasSubmodIndex && isSubmodVector)
+//	                errors->add(conn, "%s: missing submodule index ('%s' is a vector submodule)", q, submodName);
+//
+//	            // check gate
+//	            NEDElement *submodType = getModuleDeclaration(submod->getType());
+//	            if (!submodType)
+//	                return; // we gave error earlier if submod type is not present
+//	            NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
+//	            GateNode *gate;
+//	            if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+//	                errors->add(conn, "%s: submodule '%s' has no gate named '%s'", q, submodName, gateName);
+//	            else
+//	                checkGate(gate, hasGateIndex, !isSrc, conn, isSrc);
+//	        }
+//	    }
+//	}
+//
+//	void NEDSemanticValidator::validateElement(ConnectionNode *node)
+//	{
+//	    // FIXME revise
+//	    // make sure submodule and gate names are valid, gate direction is OK
+//	    // and that gates & modules are really vector (or really not)
+//	    NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
+//	    if (!compound)
+//	        INTERNAL_ERROR0(node,"occurs outside a compound-module");
+//
+//	    bool srcModIx =   node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index")!=NULL;
+//	    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL || node->getSrcGatePlusplus();
+//	    bool destModIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index")!=NULL;
+//	    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL || node->getDestGatePlusplus();
+//	    validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, compound, node, true);
+//	    validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
+//	}
 	@Override
     protected void validateElement(ConnectionNodeEx node) {
-		
-		
+		INEDTypeInfo typeInfo = componentNode.getNEDTypeInfo();
 		validateChildren(node);
 	}
 

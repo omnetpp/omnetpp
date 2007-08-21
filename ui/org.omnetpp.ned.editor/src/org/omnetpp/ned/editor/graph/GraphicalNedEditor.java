@@ -95,8 +95,8 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelChangeBeginEvent;
-import org.omnetpp.ned.model.notification.NEDModelChangeEndEvent;
+import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -218,13 +218,13 @@ public class GraphicalNedEditor
     private NedOutlinePage outlinePage;
     private NedPropertySheetPage propertySheetPage;
     private boolean editorSaving = false;
-    private NedFileNodeEx nedFileModel;
+    private NedFileNodeEx nedFileModel;  //TODO can be eliminated
     private SelectionSynchronizer synchronizer;
 
     // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
 
-    private ExternalChangeCommand externalChangeCommand;
+    private ExternalChangeCommand pendingExternalChangeCommand;
 
     public GraphicalNedEditor() {
         setEditDomain(new DefaultEditDomain(this));
@@ -556,21 +556,24 @@ public class GraphicalNedEditor
 
 			private void recordExternalChangeCommand(NEDModelEvent event) {
 				// handle possible begin..end grouping
-				if (event instanceof NEDModelChangeBeginEvent) {
-					Assert.isTrue(externalChangeCommand == null);
-					externalChangeCommand = new ExternalChangeCommand();
+				if (event instanceof NEDBeginModelChangeEvent) {
+					Assert.isTrue(pendingExternalChangeCommand == null);
+					pendingExternalChangeCommand = new ExternalChangeCommand();
 				}
-	 			else if (event instanceof NEDModelChangeEndEvent) {
-					getCommandStack().execute(externalChangeCommand);
-					externalChangeCommand = null;
+	 			else if (event instanceof NEDEndModelChangeEvent) {
+					getCommandStack().execute(pendingExternalChangeCommand);
+					pendingExternalChangeCommand = null;
 				}
-				else if (externalChangeCommand == null) {
+				else if (pendingExternalChangeCommand == null) {
+					// no grouping
 					ExternalChangeCommand command = new ExternalChangeCommand();
 					command.addEvent(event);
 					getCommandStack().execute(command);
 				}
-				else
-					externalChangeCommand.addEvent(event);
+				else {
+					// add to group
+					pendingExternalChangeCommand.addEvent(event);
+				}
 			}
         });
     }
@@ -618,14 +621,14 @@ public class GraphicalNedEditor
      * Marks the current editor content state, so we will be able to detect any change in the editor
      * used for editor change optimization
      */
-    public void markContent() {
+    public void markContent() {   //TODO: still needed?
         lastUndoCommand = getCommandStack().getUndoCommand();
     }
 
     /**
      * Returns whether the content of the editor has changed since the last markContent call.
      */
-    public boolean hasContentChanged() {
+    public boolean hasContentChanged() {  //TODO: still needed?
         return !(lastUndoCommand == getCommandStack().getUndoCommand());
     }
 
