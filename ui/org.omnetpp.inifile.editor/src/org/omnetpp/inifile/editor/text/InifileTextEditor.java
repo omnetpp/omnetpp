@@ -44,6 +44,7 @@ public class InifileTextEditor extends TextEditor {
 	 * <code>AbstractTextEditor</code> method extend the 
 	 * actions to add those specific to the receiver
 	 */
+	@Override
 	protected void createActions() {
 		super.createActions();
 		
@@ -80,6 +81,7 @@ public class InifileTextEditor extends TextEditor {
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */
+	@Override
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
 		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); 
@@ -106,6 +108,7 @@ public class InifileTextEditor extends TextEditor {
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
+	@Override
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		
 		fAnnotationAccess = createAnnotationAccess();
@@ -121,6 +124,7 @@ public class InifileTextEditor extends TextEditor {
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
@@ -142,6 +146,7 @@ public class InifileTextEditor extends TextEditor {
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#handleCursorPositionChanged()
 	 */
+	@Override
 	protected void handleCursorPositionChanged() {
 		super.handleCursorPositionChanged();
 		if (cursorPositionChangedJob != null)
@@ -163,6 +168,7 @@ public class InifileTextEditor extends TextEditor {
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
 	 */
+	@Override
 	protected void adjustHighlightRange(int offset, int length) {
 		ISourceViewer viewer= getSourceViewer();
 		if (viewer instanceof ITextViewerExtension5) {

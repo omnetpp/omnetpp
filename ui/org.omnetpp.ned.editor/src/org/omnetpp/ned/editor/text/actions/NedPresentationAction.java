@@ -25,6 +25,7 @@ public class NedPresentationAction extends TextEditorAction {
 	/* (non-Javadoc)
 	 * Method declared on IAction
 	 */
+	@Override
 	public void run() {
 
 		ITextEditor editor= getTextEditor();
@@ -38,6 +39,7 @@ public class NedPresentationAction extends TextEditorAction {
 	/* (non-Javadoc)
 	 * Method declared on TextEditorAction
 	 */
+	@Override
 	public void update() {
 		setChecked(getTextEditor() != null && getTextEditor().showsHighlightRangeOnly());
 		setEnabled(true);

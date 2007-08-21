@@ -35,6 +35,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 
+	@Override
 	protected TableViewer createTableViewer(Composite parent) {
 		// add table
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);

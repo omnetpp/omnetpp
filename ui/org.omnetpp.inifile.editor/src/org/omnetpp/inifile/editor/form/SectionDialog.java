@@ -207,6 +207,7 @@ public class SectionDialog extends TitleAreaDialog {
 		return group;
 	}
 
+	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
         // create OK and Cancel buttons by default
         okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
@@ -265,7 +266,8 @@ public class SectionDialog extends TitleAreaDialog {
 		return configName.equals(GENERAL) ? GENERAL : CONFIG_+configName;
 	}
 	
-    @SuppressWarnings("unchecked")
+    @Override
+	@SuppressWarnings("unchecked")
 	protected void okPressed() {
     	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
         sectionName = assembleSectionName();

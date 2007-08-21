@@ -33,6 +33,7 @@ public class ExportImageAction extends org.eclipse.gef.ui.actions.SelectionActio
 		setHoverImageDescriptor(IMAGE);
 	}
 
+	@Override
 	protected boolean calculateEnabled() {
 	    if (getSelectedObjects().size() == 0)
 	        return false;
@@ -45,6 +46,7 @@ public class ExportImageAction extends org.eclipse.gef.ui.actions.SelectionActio
 	    return result;
 	}
 
+	@Override
 	public void run() {
 	    ExportImageOfCurrentDiagramWizard wizard = new ExportImageOfCurrentDiagramWizard();
         wizard.init(getWorkbenchPart().getSite().getWorkbenchWindow().getWorkbench(), (IStructuredSelection)getSelection());

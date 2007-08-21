@@ -111,6 +111,7 @@ public abstract class FormPage extends Composite {
 	/**
 	 * Set the focus to an appropriate control in the form page. 
 	 */
+	@Override
 	public abstract boolean setFocus();
 
 	/**

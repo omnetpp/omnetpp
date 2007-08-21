@@ -13,6 +13,7 @@ import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
  */
 public class NedSelectionTool extends PanningSelectionTool {
 
+	@Override
 	protected EditPartViewer.Conditional getTargetingConditional() {
 		
 		return new EditPartViewer.Conditional() {

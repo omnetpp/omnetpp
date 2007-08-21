@@ -76,6 +76,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	/**
 	 * This is the entry point for creating proposals. 
 	 */
+	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 
@@ -222,22 +223,27 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		result.addAll(createProposals(viewer, documentOffset, InifileTextEditorHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
+	@Override
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
 		return null;
 	}
 
+	@Override
 	public char[] getCompletionProposalAutoActivationCharacters() {
 		return new char[] { '.', '=' };
 	}
 
+	@Override
 	public char[] getContextInformationAutoActivationCharacters() {
 		return null;  //XXX new char[] { '(' };
 	}
 
+	@Override
 	public IContextInformationValidator getContextInformationValidator() {
 		return fValidator;
 	}
 
+	@Override
 	public String getErrorMessage() {
 		return null;
 	}

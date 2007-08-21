@@ -41,6 +41,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	/* (non-JavaDoc)
 	 * Method declared in AbstractMultiPageEditorActionBarContributor.
 	 */
+	@Override
 	public void setActivePage(IEditorPart part) {
 		if (activeEditorPart == part)
 			return;
@@ -103,11 +104,13 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		actionBars.updateActionBars();
 	}
 
+	@Override
 	public void contributeToMenu(IMenuManager manager) {
 		IMenuManager editMenu = manager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
 		editMenu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, addInifileKeysAction);
 	}
 
+	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
 

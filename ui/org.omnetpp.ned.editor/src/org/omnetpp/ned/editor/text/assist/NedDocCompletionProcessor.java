@@ -15,7 +15,8 @@ import org.omnetpp.common.editor.text.NedCompletionHelper;
  */
 public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
-    public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
+    @Override
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
             createProposals(viewer, documentOffset, NedCompletionHelper.nedAtWordDetector,
                     "@", NedCompletionHelper.proposedDocKeywords, " ", null);
@@ -29,7 +30,8 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
         return result.toArray(new ICompletionProposal[result.size()]);
     } 
 
-    public char[] getCompletionProposalAutoActivationCharacters() {
+    @Override
+	public char[] getCompletionProposalAutoActivationCharacters() {
         return new char[] { '@', '<' };
     }
     

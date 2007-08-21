@@ -227,7 +227,7 @@ public class ParametersDialog extends TitleAreaDialog {
         // build ParamLine list (value objects) for dialog editing
         for (ParamElement paramDecl : module.getParamDeclarations().values()) {
             // get the the value of the parameter
-            ParamElementEx paramValue = (ParamElementEx)module.getParamAssignments().get(paramDecl.getName());
+            ParamElementEx paramValue = module.getParamAssignments().get(paramDecl.getName());
             ParamLine paramLine = new ParamLine(paramValue);
             boolean isDeclLocal = paramDecl.getParent().getParent() == module;
             boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;

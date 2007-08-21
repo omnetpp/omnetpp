@@ -47,7 +47,8 @@ public final class NedConnectionEndHandle extends ConnectionHandle
     /**
      * Creates and returns a new {@link ConnectionEndpointTracker}.
      */
-    protected DragTracker createDragTracker() {
+    @Override
+	protected DragTracker createDragTracker() {
     	if (isFixed())
     		return null;
     	ConnectionEndpointTracker tracker;

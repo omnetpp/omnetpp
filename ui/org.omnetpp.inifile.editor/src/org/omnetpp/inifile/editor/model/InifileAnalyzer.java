@@ -771,7 +771,7 @@ public class InifileAnalyzer {
 	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleElementEx submodule, INEDTypeInfo moduleType) {
 		ArrayList<ParamResolution> resultList = new ArrayList<ParamResolution>();
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
-			ParamElement paramDeclNode = (ParamElement)moduleType.getParamDeclarations().get(paramName);
+			ParamElement paramDeclNode = moduleType.getParamDeclarations().get(paramName);
 			ParamElement paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
 					submodule.getParamAssignments().get(paramName);

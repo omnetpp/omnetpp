@@ -44,6 +44,7 @@ public class NEDSourceRegion {
 		       (line!=getEndLine() || column<getEndColumn()); 
 	}
 
+	@Override
 	public String toString() {
 		return ""+getStartLine()+":"+getStartColumn()+"-"+getEndLine()+":"+getEndColumn();
 	}

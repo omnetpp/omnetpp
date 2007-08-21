@@ -47,6 +47,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before getting presented to the user.
 	 */
+	@Override
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		// idea considered and discarded: don't propose those already there (would confuse user)

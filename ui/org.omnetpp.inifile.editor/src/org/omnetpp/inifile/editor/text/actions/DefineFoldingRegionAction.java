@@ -31,6 +31,7 @@ public class DefineFoldingRegionAction extends TextEditorAction {
 	/*
 	 * @see org.eclipse.jface.action.Action#run()
 	 */
+	@Override
 	public void run() {
 		ITextEditor editor= getTextEditor();
 		ISelection selection= editor.getSelectionProvider().getSelection();

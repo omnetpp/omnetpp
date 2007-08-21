@@ -580,7 +580,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             IMarker.SEVERITY_ERROR, message, context.getSourceLocation());
                 }};
             NEDFileValidator validator = new NEDFileValidator(this, errors);
-            NedFileElement tree = (NedFileElement) nedFiles.get(file);
+            NedFileElement tree = nedFiles.get(file);
             validator.validate(tree);
         }
 

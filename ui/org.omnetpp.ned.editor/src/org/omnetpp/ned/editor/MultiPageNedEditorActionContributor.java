@@ -44,7 +44,8 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
      * @see org.eclipse.ui.part.MultiPageEditorActionBarContributor#setActivePage(org.eclipse.ui.IEditorPart)
      * Respond to an editor change with reassigning the local and global actions
      */
-    public void setActivePage(IEditorPart part) {
+    @Override
+	public void setActivePage(IEditorPart part) {
         if (activeEditorPart == part)
             return;
 

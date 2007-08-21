@@ -39,6 +39,7 @@ public class RawConfigPage extends FormPage {
 		}
 	}
 
+	@Override
 	public String getPageCategory() {
 		return "(raw)";
 	}
@@ -56,6 +57,7 @@ public class RawConfigPage extends FormPage {
 				((FieldEditor) c).reread();
 	}
 	
+	@Override
 	public List<ConfigKey> getSupportedKeys() {
 		return new ArrayList<ConfigKey>(); // dummy impl.
 	}

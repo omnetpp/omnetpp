@@ -3,7 +3,6 @@ package org.omnetpp.ned.editor.graph.commands;
 import java.util.ArrayList;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;

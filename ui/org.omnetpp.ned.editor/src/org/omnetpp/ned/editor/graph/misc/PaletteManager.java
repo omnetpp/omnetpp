@@ -122,7 +122,7 @@ public class PaletteManager implements INEDChangeListener {
             }
 
             // determine which palette group it belongs to or put it to the default
-            PropertyElement property = (PropertyElement)comp.getProperties().get("group");
+            PropertyElement property = comp.getProperties().get("group");
             String group = property == null ? defaultGroupName
                             : NEDElementUtilEx.getPropertyValue(property);
 

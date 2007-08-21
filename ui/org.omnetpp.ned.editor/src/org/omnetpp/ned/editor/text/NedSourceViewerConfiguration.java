@@ -46,20 +46,24 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		this.editor = editor;
 	}
 	
+	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new NedAnnotationHover();
 	}
 
-    public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
+    @Override
+	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
         return new String[] { "    ", "" }; 
     }
 		
+	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new NedAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
 		return new IAutoEditStrategy[] { strategy };
 	}
 	
-    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+    @Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
 		ContentAssistant assistant= new ContentAssistant();
 		assistant.setDocumentPartitioning(NedContentAssistPartitionScanner.PARTITIONING_ID);
@@ -76,14 +80,17 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		return assistant;
 	}
 	
+	@Override
 	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
 		return new String[] {NedContentAssistPartitionScanner.NED_DOC.equals(contentType) ? "// " : null};
 	}
 	
+	@Override
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
 		return new NedDoubleClickSelector();
 	}
 	
+	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler= new PresentationReconciler();
         // syntax highlighting is using a separate partitioner
@@ -107,6 +114,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		return reconciler;
 	}
 	
+	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new NedTextHover(editor);
 	}

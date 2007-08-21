@@ -10,6 +10,7 @@ import org.omnetpp.ned.model.pojo.NEDElementFactory;
  */
 public class NEDElementFactoryEx extends NEDElementFactory {
 
+	@Override
 	public INEDElement createElement(String tagname, INEDElement parent) {
         if (tagname.equals(NedFileElementEx.getStaticTagName()))
             return new NedFileElementEx(parent);
@@ -35,6 +36,7 @@ public class NEDElementFactoryEx extends NEDElementFactory {
         return super.createElement(tagname, parent);
 	}
 
+	@Override
 	public INEDElement createElement(int tagcode, INEDElement parent) {
         if (tagcode==NED_NED_FILE)
             return new NedFileElementEx(parent);

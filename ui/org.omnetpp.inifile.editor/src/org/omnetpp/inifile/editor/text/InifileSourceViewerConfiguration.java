@@ -39,15 +39,18 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		this.editorData = editorData;
 	}
 	
+	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new InifileAnnotationHover();
 	}
 		
+	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		return null;
 	}
 	
-    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+    @Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
 		ContentAssistant assistant = new ContentAssistant();
 		//assistant.setDocumentPartitioning(...);
@@ -62,14 +65,17 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		return assistant;
 	}
 	
+	@Override
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
 		return new DefaultTextDoubleClickStrategy();
 	}
 	
+	@Override
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
 		return new String[] { "\t", "    " };
 	}
 	
+	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         
 		PresentationReconciler reconciler= new PresentationReconciler();
@@ -89,6 +95,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		return reconciler;
 	}
 	
+	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new InifileTextHover(editorData);
 	}

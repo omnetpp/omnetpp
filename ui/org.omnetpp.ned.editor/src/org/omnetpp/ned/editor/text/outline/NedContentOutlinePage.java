@@ -47,6 +47,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	/* (non-Javadoc)
 	 * Method declared on ContentOutlinePage
 	 */
+	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 
@@ -59,6 +60,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	/* (non-Javadoc)
 	 * Method declared on ContentOutlinePage; called back from treeviewer.
 	 */
+	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		super.selectionChanged(event);
 		//System.out.println(this+".selectionChanged( " + event + ") called");

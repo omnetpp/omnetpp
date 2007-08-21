@@ -15,11 +15,13 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  */
 public class NedTemplateCompletionProcessor extends IncrementalCompletionProcessor {
     
-    protected Template[] getTemplates(String contextTypeId) {
+    @Override
+	protected Template[] getTemplates(String contextTypeId) {
         return TextualNedEditor.getTemplateStore().getTemplates(contextTypeId);
     }
 
-    protected TemplateContextType getContextType(ITextViewer viewer, IRegion region) {
+    @Override
+	protected TemplateContextType getContextType(ITextViewer viewer, IRegion region) {
         return TextualNedEditor.getContextTypeRegistry().getContextType(NedCompletionHelper.DEFAULT_NED_CONTEXT_TYPE);
     }
 

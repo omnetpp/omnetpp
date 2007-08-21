@@ -38,6 +38,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 		this.addEqualSign = addEqualSign;
 	}
 
+	@Override
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		if (section != null && prefix.contains(".")) {

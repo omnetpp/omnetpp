@@ -494,7 +494,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		List<ParamElementEx> result = new ArrayList<ParamElementEx>();
 		for (INEDTypeInfo type : getExtendsChain())
 			if (type.getLocalParamDeclarations().containsKey(parameterName))
-				result.add((ParamElementEx) type.getLocalParamDeclarations().get(parameterName));
+				result.add(type.getLocalParamDeclarations().get(parameterName));
 		return result;
 	}
 
@@ -510,7 +510,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		List<PropertyElement> result = new ArrayList<PropertyElement>();
 		for (INEDTypeInfo type : getExtendsChain())
 			if (type.getLocalProperties().containsKey(propertyName))
-				result.add((PropertyElement) type.getLocalProperties().get(propertyName));
+				result.add(type.getLocalProperties().get(propertyName));
 		return result;
 	}
 

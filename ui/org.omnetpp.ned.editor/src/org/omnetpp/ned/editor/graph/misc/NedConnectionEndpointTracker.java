@@ -57,6 +57,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 		return true;
 	}
 
+	@Override
 	protected EditPartViewer.Conditional getTargetingConditional() {
 		return new EditPartViewer.Conditional() {
 			public boolean evaluate(EditPart editpart) {

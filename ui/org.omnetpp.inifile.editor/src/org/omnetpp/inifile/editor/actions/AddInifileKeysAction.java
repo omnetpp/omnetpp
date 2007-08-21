@@ -31,6 +31,7 @@ public class AddInifileKeysAction extends Action {
 		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/etool16/genkeys.png"));
 	}
 
+	@Override
 	public void run() {
 		// get active editor
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

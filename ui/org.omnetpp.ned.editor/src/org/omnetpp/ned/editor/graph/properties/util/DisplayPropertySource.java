@@ -32,7 +32,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     private final IHasDisplayString model;
 
     public DisplayPropertySource(IHasDisplayString model) {
-        super((INEDElement)model);
+        super(model);
         this.model = model;
         // by default we provide only  the single line display property editor
         supportedProperties.add(DisplayString.Prop.DISPLAY);

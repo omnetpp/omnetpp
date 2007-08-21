@@ -35,6 +35,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 	/*
 	 * @see IEditorActionBarContributor#init(IActionBars)
 	 */
+	@Override
 	public void init(IActionBars bars) {
 		super.init(bars);
 		
@@ -62,6 +63,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 	/*
 	 * @see IEditorActionBarContributor#setActiveEditor(IEditorPart)
 	 */
+	@Override
 	public void setActiveEditor(IEditorPart part) {
 		super.setActiveEditor(part);
 		doSetActiveEditor(part);
@@ -70,6 +72,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 	/*
 	 * @see IEditorActionBarContributor#dispose()
 	 */
+	@Override
 	public void dispose() {
 		doSetActiveEditor(null);
 		super.dispose();

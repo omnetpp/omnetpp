@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
