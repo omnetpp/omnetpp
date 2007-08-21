@@ -6,11 +6,11 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.GateElementEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Wraps a NED component: a ChannelElement, ChannelInterfaceElement, SimpleModuleElement,
@@ -88,25 +88,25 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, INEDElement> getLocalMembers();
 
     /** Parameters declared locally within this type (i.e. where param type is not empty) */
-    public Map<String, ParamElement> getLocalParamDeclarations();
+    public Map<String, ParamElementEx> getLocalParamDeclarations();
 
     /** Parameter nodes within this type where the "value" attribute is filled in */
-    public Map<String, ParamElement> getLocalParamAssignments();
+    public Map<String, ParamElementEx> getLocalParamAssignments();
 
     /** Properties from the local parameters section */
     public Map<String, PropertyElement> getLocalProperties();
 
     /** Gates declared locally within this type (i.e. where gate type is not empty) */
-    public Map<String, GateElement> getLocalGateDeclarations();
+    public Map<String, GateElementEx> getLocalGateDeclarations();
 
     /** Gate nodes within this type where the "vector size" attribute filled in */
-    public Map<String, GateElement> getLocalGateSizes();
+    public Map<String, GateElementEx> getLocalGateSizes();
 
     /** Inner types declared locally within this type */
     public Map<String, INedTypeElement> getLocalInnerTypes();
 
     /** Submodules declared locally within this (compound module) type */
-    public Map<String, SubmoduleElement> getLocalSubmodules();
+    public Map<String, SubmoduleElementEx> getLocalSubmodules();
 
     /** Module and channel types used locally in this (compound module) type */
     public Set<String> getLocalUsedTypes();
@@ -117,12 +117,12 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, INEDElement> getMembers();
 
     /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
-    public Map<String, ParamElement> getParamDeclarations();
+    public Map<String, ParamElementEx> getParamDeclarations();
 
     /** Parameter nodes where the "value" attribute is filled in, including inherited ones; 
      * the most recent one for each parameter 
      */
-    public Map<String, ParamElement> getParamAssignments();
+    public Map<String, ParamElementEx> getParamAssignments();
 
     /** Property nodes, including inherited ones; the most recent one for each property. 
      * (Given the special inheritance rules for properties, this may not be what you want; 
@@ -131,21 +131,21 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, PropertyElement> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
-    public Map<String, GateElement> getGateDeclarations();
+    public Map<String, GateElementEx> getGateDeclarations();
 
     /** Gate nodes where the "vector size" attribute is filled in, including inherited ones; 
      * the most recent one for each gate 
      */
-    public Map<String, GateElement> getGateSizes();
+    public Map<String, GateElementEx> getGateSizes();
 
     /** All inner types in this type, including inherited ones */
     public Map<String, INedTypeElement> getInnerTypes();
 
     /** All submodules in this (compound module) type, including inherited ones */
-    public Map<String, SubmoduleElement> getSubmodules();
+    public Map<String, SubmoduleElementEx> getSubmodules();
 
     
-	public List<ParamElement> getParameterInheritanceChain(String parameterName);
-	public List<GateElement> getGateInheritanceChain(String gateName);
+	public List<ParamElementEx> getParameterInheritanceChain(String parameterName);
+	public List<GateElementEx> getGateInheritanceChain(String gateName);
 	public List<PropertyElement> getPropertyInheritanceChain(String propertyName);
 }

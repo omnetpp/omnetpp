@@ -12,7 +12,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * TODO add documentation
@@ -83,11 +82,11 @@ public class ChannelInterfaceElementEx extends ChannelInterfaceElement implement
     }
 
     // parameter support
-    public Map<String, ParamElement> getParamAssignments() {
+    public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamElement> getParamDeclarations() {
+    public Map<String, ParamElementEx> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
     }
 

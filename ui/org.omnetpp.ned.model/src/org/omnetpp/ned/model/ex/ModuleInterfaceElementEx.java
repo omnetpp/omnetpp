@@ -12,9 +12,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * TODO add documentation
@@ -89,20 +87,20 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
     }
 
     // parameter query support
-    public Map<String, ParamElement> getParamAssignments() {
+    public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamElement> getParamDeclarations() {
+    public Map<String, ParamElementEx> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
     }
 
     // gate support
-    public Map<String, GateElement> getGateSizes() {
+    public Map<String, GateElementEx> getGateSizes() {
         return getNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, GateElement> getGateDeclarations() {
+    public Map<String, GateElementEx> getGateDeclarations() {
         return getNEDTypeInfo().getGateDeclarations();
     }
 

@@ -16,9 +16,6 @@ import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 import org.omnetpp.ned.model.pojo.SubmodulesElement;
 
 /**
@@ -91,8 +88,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
     public List<SubmoduleElementEx> getSubmodules() {
-    	//XXX remove cast
-    	return (List<SubmoduleElementEx>)(List) Arrays.asList(getNEDTypeInfo().getSubmodules().values().toArray(new SubmoduleElement[]{}));
+    	return Arrays.asList(getNEDTypeInfo().getSubmodules().values().toArray(new SubmoduleElementEx[]{}));
     }
 
 	/**
@@ -100,7 +96,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 	 * Returns null if not found.
 	 */
 	protected SubmoduleElementEx getOwnSubmoduleByName(String submoduleName) {
-		return (SubmoduleElementEx) getNEDTypeInfo().getLocalSubmodules().get(submoduleName);
+		return getNEDTypeInfo().getLocalSubmodules().get(submoduleName);
 	}
 
     /**
@@ -108,7 +104,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      * or null if not found.
      */
     public SubmoduleElementEx getSubmoduleByName(String submoduleName) {
-		return (SubmoduleElementEx) getNEDTypeInfo().getSubmodules().get(submoduleName);
+		return getNEDTypeInfo().getSubmodules().get(submoduleName);
     }
 
 	/**
@@ -251,7 +247,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      * where this module is the source
      */
     public List<ConnectionElementEx> getSrcConnectionsFor(String submoduleName) {
-        return getConnections(submoduleName,null, null, null);
+        return getConnections(submoduleName, null, null, null);
     }
 
     /**
@@ -331,20 +327,20 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
     
     // parameter query support
-    public Map<String, ParamElement> getParamAssignments() {
+    public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamElement> getParamDeclarations() {
+    public Map<String, ParamElementEx> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
     }
 
     // gate support
-    public Map<String, GateElement> getGateSizes() {
+    public Map<String, GateElementEx> getGateSizes() {
         return getNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, GateElement> getGateDeclarations() {
+    public Map<String, GateElementEx> getGateDeclarations() {
         return getNEDTypeInfo().getGateDeclarations();
     }
 

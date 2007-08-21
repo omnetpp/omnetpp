@@ -17,7 +17,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 
 /**
@@ -259,8 +258,8 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
 
     // parameter query support
     
-    public Map<String, ParamElement> getParamAssignments() {
-    	Map<String, ParamElement> result = new HashMap<String, ParamElement>();
+    public Map<String, ParamElementEx> getParamAssignments() {
+    	Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
 
     	INEDTypeInfo info = getNEDTypeInfo();
     	if (info != null) 
@@ -273,9 +272,9 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
         return result;
     }
 
-    public Map<String, ParamElement> getParamDeclarations() {
+    public Map<String, ParamElementEx> getParamDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamElement>() : info.getParamDeclarations();
+        return info == null ? new HashMap<String, ParamElementEx>() : info.getParamDeclarations();
     }
 
 }

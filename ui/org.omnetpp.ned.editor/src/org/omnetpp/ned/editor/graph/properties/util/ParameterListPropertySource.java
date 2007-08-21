@@ -13,7 +13,6 @@ import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * Property source to display all parameters for a given component
@@ -56,21 +55,20 @@ public class ParameterListPropertySource extends NotifiedPropertySource
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, ParamElement> params = model.getParamDeclarations();
+        Map<String, ParamElementEx> params = model.getParamDeclarations();
 
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
-        for (ParamElement paramElement : params.values()) {
-            ParamElementEx paramDefNode = (ParamElementEx)paramElement;
-            String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamElementEx.ATT_TYPE);
+        for (ParamElementEx paramDecl : params.values()) {
+            String typeString = (paramDecl.getIsVolatile() ? "volatile " : "") + paramDecl.getAttribute(ParamElementEx.ATT_TYPE);
             String definedIn = "";
-            if (paramDefNode.getEnclosingTypeNode() != model) {
+            if (paramDecl.getEnclosingTypeNode() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from " + paramDefNode.getEnclosingTypeNode().getName() + ")";
+                definedIn= " (inherited from " + paramDecl.getEnclosingTypeNode().getName() + ")";
             }
-            pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
+            pdesc[totalParamCount] = new PropertyDescriptor(paramDecl, typeString +" "+paramDecl.getName());
             pdesc[totalParamCount].setCategory(CATEGORY);
-            pdesc[totalParamCount].setDescription("Parameter "+paramDefNode.getName()+" with type "+typeString+definedIn+" - (read only)");
+            pdesc[totalParamCount].setDescription("Parameter "+paramDecl.getName()+" with type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
         }
 
@@ -94,10 +92,10 @@ public class ParameterListPropertySource extends NotifiedPropertySource
     public Object getPropertyValue(Object id) {
         if (!(id instanceof ParamElementEx))
             return getEditableValue();
-        Map<String, ParamElement> paramValues = model.getParamAssignments();
+        Map<String, ParamElementEx> paramValues = model.getParamAssignments();
         ParamElementEx paramDefNode = (ParamElementEx)id;
-        ParamElementEx paramValueNode = (ParamElementEx)paramValues.get(paramDefNode.getName());
-        String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
+        ParamElementEx paramValueNode = paramValues.get(paramDefNode.getName());
+        String valueString = paramValueNode== null ? "" : paramValueNode.getValue();
         return valueString;
     }
 

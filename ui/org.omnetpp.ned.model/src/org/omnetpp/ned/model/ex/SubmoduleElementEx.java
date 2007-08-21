@@ -17,9 +17,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
@@ -157,8 +155,8 @@ public class SubmoduleElementEx extends SubmoduleElement
 
     // parameter query support
     
-    public Map<String, ParamElement> getParamAssignments() {
-        Map<String, ParamElement> result = new HashMap<String, ParamElement>();
+    public Map<String, ParamElementEx> getParamAssignments() {
+        Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
 
         INEDTypeInfo info = getNEDTypeInfo();
         if (info != null)
@@ -171,9 +169,9 @@ public class SubmoduleElementEx extends SubmoduleElement
         return result;
     }
 
-    public Map<String, ParamElement> getParamDeclarations() {
+    public Map<String, ParamElementEx> getParamDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamElement>() : info.getParamDeclarations();
+        return info == null ? new HashMap<String, ParamElementEx>() : info.getParamDeclarations();
     }
 
     // gate support
@@ -193,8 +191,8 @@ public class SubmoduleElementEx extends SubmoduleElement
         return result;
     }
 
-    public Map<String, GateElement> getGateSizes() {
-        Map<String, GateElement> result = new HashMap<String, GateElement>();
+    public Map<String, GateElementEx> getGateSizes() {
+        Map<String, GateElementEx> result = new HashMap<String, GateElementEx>();
 
         INEDTypeInfo info = getNEDTypeInfo();
         if (info != null)
@@ -207,9 +205,9 @@ public class SubmoduleElementEx extends SubmoduleElement
         return result;
     }
 
-    public Map<String, GateElement> getGateDeclarations() {
+    public Map<String, GateElementEx> getGateDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, GateElement>() : info.getGateDeclarations();
+        return info == null ? new HashMap<String, GateElementEx>() : info.getGateDeclarations();
     }
 
 }

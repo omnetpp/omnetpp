@@ -6,7 +6,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
-import org.omnetpp.ned.model.pojo.GateElement;
 
 /**
  * Property source to display all submodules for a given compound module
@@ -28,21 +27,20 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, GateElement> gates = model.getGateDeclarations();
+        Map<String, GateElementEx> gates = model.getGateDeclarations();
 
         pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;
-        for (GateElement gateElement : gates.values()) {
-            GateElementEx gateDefNode = (GateElementEx)gateElement;
-            String typeString = gateDefNode.getAttribute(GateElementEx.ATT_TYPE);
+        for (GateElementEx gateDecl : gates.values()) {
+            String typeString = gateDecl.getAttribute(GateElementEx.ATT_TYPE);
             String definedIn = "";
-            if (gateDefNode.getEnclosingTypeNode() != model) {
+            if (gateDecl.getEnclosingTypeNode() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from " + gateDefNode.getEnclosingTypeNode().getName() + ")";
+                definedIn= " (inherited from " + gateDecl.getEnclosingTypeNode().getName() + ")";
             }
-            pdesc[totalParamCount] = new PropertyDescriptor(gateDefNode, typeString );
+            pdesc[totalParamCount] = new PropertyDescriptor(gateDecl, typeString );
             pdesc[totalParamCount].setCategory(CATEGORY);
-            pdesc[totalParamCount].setDescription("Gate "+gateDefNode.getNameWithIndex()+" of type "+typeString+definedIn+" - (read only)");
+            pdesc[totalParamCount].setDescription("Gate "+gateDecl.getNameWithIndex()+" of type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
         }
 
@@ -66,10 +64,10 @@ public class GateListPropertySource extends NotifiedPropertySource {
     public Object getPropertyValue(Object id) {
         if (!(id instanceof GateElementEx))
             return getEditableValue();
-        Map<String, GateElement> gateSizes = model.getGateSizes();
+        Map<String, GateElementEx> gateSizes = model.getGateSizes();
         GateElementEx gateDefNode = (GateElementEx)id;
-        GateElementEx gateSizeNode = ((GateElementEx)gateSizes.get(gateDefNode.getName()));
-        String valueString = gateSizeNode== null ? "" :gateSizeNode.getNameWithIndex();
+        GateElementEx gateSizeNode = gateSizes.get(gateDefNode.getName());
+        String valueString = gateSizeNode== null ? "" : gateSizeNode.getNameWithIndex();
         return valueString;
     }
 
