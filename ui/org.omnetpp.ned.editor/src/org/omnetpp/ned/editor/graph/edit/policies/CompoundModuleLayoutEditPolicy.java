@@ -27,8 +27,8 @@ import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
@@ -55,11 +55,11 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 	@Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CloneSubmoduleCommand cloneCmd
-            = new CloneSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(),
+            = new CloneSubmoduleCommand((CompoundModuleElementEx) getHost().getModel(),
                                         ((ModuleEditPart)getHost()).getScale());
 
         for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
-            cloneCmd.addModule((SubmoduleNodeEx)currPart.getModel(),
+            cloneCmd.addModule((SubmoduleElementEx)currPart.getModel(),
             					(Rectangle) getConstraintForClone(currPart, request));
         }
         return cloneCmd;
@@ -68,12 +68,12 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     @Override
     protected Command getCreateCommand(CreateRequest request) {
     	// only create a command if we want to create a submodule
-    	if (!(request.getNewObject() instanceof SubmoduleNodeEx))
+    	if (!(request.getNewObject() instanceof SubmoduleElementEx))
     		return null;
 
         CreateSubmoduleCommand create
-        		= new CreateSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(),
-        									 (SubmoduleNodeEx) request.getNewObject());
+        		= new CreateSubmoduleCommand((CompoundModuleElementEx) getHost().getModel(),
+        									 (SubmoduleElementEx) request.getNewObject());
         create.setLocation((Rectangle)getConstraintFor(request));
         create.setLabel("Add");
 

@@ -11,9 +11,9 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
-import org.omnetpp.ned.model.ex.ParamNodeEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * Property source to display all parameters for a given component
@@ -56,13 +56,13 @@ public class ParameterListPropertySource extends NotifiedPropertySource
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, ParamNode> params = model.getParamDeclarations();
+        Map<String, ParamElement> params = model.getParamDeclarations();
 
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
-        for (ParamNode paramElement : params.values()) {
-            ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
-            String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
+        for (ParamElement paramElement : params.values()) {
+            ParamElementEx paramDefNode = (ParamElementEx)paramElement;
+            String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamElementEx.ATT_TYPE);
             String definedIn = "";
             if (paramDefNode.getEnclosingTypeNode() != model) {
                 inheritedParamCount++;
@@ -92,11 +92,11 @@ public class ParameterListPropertySource extends NotifiedPropertySource
 
     @Override
     public Object getPropertyValue(Object id) {
-        if (!(id instanceof ParamNodeEx))
+        if (!(id instanceof ParamElementEx))
             return getEditableValue();
-        Map<String, ParamNode> paramValues = model.getParamAssignments();
-        ParamNodeEx paramDefNode = (ParamNodeEx)id;
-        ParamNodeEx paramValueNode = (ParamNodeEx)paramValues.get(paramDefNode.getName());
+        Map<String, ParamElement> paramValues = model.getParamAssignments();
+        ParamElementEx paramDefNode = (ParamElementEx)id;
+        ParamElementEx paramValueNode = (ParamElementEx)paramValues.get(paramDefNode.getName());
         String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
         return valueString;
     }

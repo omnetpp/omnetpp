@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
  * TODO add documentation
@@ -25,9 +25,9 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
 	// submodule specific display property desc
     protected static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
-        protected SubmoduleNodeEx model;
+        protected SubmoduleElementEx model;
 
-        public SubmoduleDisplayPropertySource(SubmoduleNodeEx model) {
+        public SubmoduleDisplayPropertySource(SubmoduleElementEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
@@ -37,7 +37,7 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
     }
 
-    public SubmodulePropertySource(SubmoduleNodeEx submoduleNodeModel) {
+    public SubmodulePropertySource(SubmoduleElementEx submoduleNodeModel) {
         super(submoduleNodeModel);
         // create a nested displayPropertySource
         // name

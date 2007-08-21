@@ -2,7 +2,7 @@ package org.omnetpp.ned.model.interfaces;
 
 
 /**
- * Common marker interface for ModuleInterfaceNodeEx and ChannelInterfaceNodeEx.
+ * Common marker interface for ModuleInterfaceElementEx and ChannelInterfaceElementEx.
  * 
  * @author Andras
  */

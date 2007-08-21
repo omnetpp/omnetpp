@@ -15,8 +15,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.CommentNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.CommentElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
@@ -174,8 +174,8 @@ class NEDElementChildrenComparator implements IRangeComparator {
 			return false;
 		
 		if (thisElement.getTagCode() == NEDElementTags.NED_CONNECTION) {
-			ConnectionNode thisConnection = (ConnectionNode)thisElement;
-			ConnectionNode otherConnection = (ConnectionNode)otherElement;
+			ConnectionElement thisConnection = (ConnectionElement)thisElement;
+			ConnectionElement otherConnection = (ConnectionElement)otherElement;
 			
 			String thisId = getConnectionId(thisConnection);
 			String otherId = getConnectionId(otherConnection);
@@ -195,7 +195,7 @@ class NEDElementChildrenComparator implements IRangeComparator {
 		}
 	}
 
-	private String getConnectionId(ConnectionNode connection) {
+	private String getConnectionId(ConnectionElement connection) {
 		return connection.getSrcModule() + connection.getSrcGate() + connection.getSrcGateIndex() +
 			connection.getDestModule() + connection.getDestGate() + connection.getDestGateIndex();
 	}
@@ -283,9 +283,9 @@ class NEDTreeDifferenceTest {
 	}
 
 	private void insertRandomCommentNodes(INEDElement element) {
-		if (!(element instanceof CommentNode)) {
+		if (!(element instanceof CommentElement)) {
 			for (int i = 0; i < random.nextInt(3); i++) {
-				CommentNode comment = (CommentNode)NEDElementFactory.getInstance().createNodeWithTag("comment");
+				CommentElement comment = (CommentElement)NEDElementFactory.getInstance().createElement("comment");
 				comment.setLocid("banner");
 				comment.setContent("// Comment: " + String.valueOf(random.nextInt(10000)));
 				element.insertChildBefore(element.getChild(random.nextInt(element.getNumChildren() + 1)), comment);

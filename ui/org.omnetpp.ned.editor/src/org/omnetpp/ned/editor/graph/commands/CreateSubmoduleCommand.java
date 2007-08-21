@@ -1,9 +1,9 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
  * Adds a newly created Submodule element to a compound module.
@@ -12,14 +12,14 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
  */
 public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
-    private SubmoduleNodeEx child;
+    private SubmoduleElementEx child;
     private Rectangle rect;
-    private CompoundModuleNodeEx parent;
+    private CompoundModuleElementEx parent;
     // TODO substitute index based positioning with sibling based one
     private int index = -1;
 
 
-    public CreateSubmoduleCommand(CompoundModuleNodeEx parent, SubmoduleNodeEx child) {
+    public CreateSubmoduleCommand(CompoundModuleElementEx parent, SubmoduleElementEx child) {
     	this.child = child;
     	this.parent = parent;
     }
@@ -27,8 +27,8 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     @Override
     public boolean canExecute() {
         return child != null && parent != null &&
-        		child instanceof SubmoduleNodeEx &&
-        		parent instanceof CompoundModuleNodeEx;
+        		child instanceof SubmoduleElementEx &&
+        		parent instanceof CompoundModuleElementEx;
     }
 
     @Override

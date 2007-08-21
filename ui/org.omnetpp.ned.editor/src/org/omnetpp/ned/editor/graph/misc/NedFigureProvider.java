@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.NedFileEditPart;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 import de.unikassel.imageexport.providers.AbstractFigureProvider;
 
@@ -47,13 +47,13 @@ public class NedFigureProvider extends AbstractFigureProvider {
         // otherwise filename_modulename is the syntax
         int numberOfCompoundModules = 0;
         for (INEDElement c : modelRoot) {
-            if (c instanceof CompoundModuleNodeEx) 
+            if (c instanceof CompoundModuleElementEx) 
                 numberOfCompoundModules++;
         }
         
         for (INEDElement child : modelRoot) {
-            if (child instanceof CompoundModuleNodeEx) {
-                CompoundModuleNodeEx cmodule = (CompoundModuleNodeEx)child;
+            if (child instanceof CompoundModuleElementEx) {
+                CompoundModuleElementEx cmodule = (CompoundModuleElementEx)child;
                 CompoundModuleEditPart cmep = (CompoundModuleEditPart)viewer.getEditPartRegistry().get(cmodule);
                 String filebasename = StringUtils.chomp(diagramFile.getName(), "."+diagramFile.getFileExtension());
                 String imageName = numberOfCompoundModules == 1 && cmodule.getName().endsWith(filebasename) ?

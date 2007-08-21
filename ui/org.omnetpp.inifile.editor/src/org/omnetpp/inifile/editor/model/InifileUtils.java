@@ -22,7 +22,7 @@ import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Various lookups in inifiles, making use of NED declarations as well.
@@ -95,7 +95,7 @@ public class InifileUtils {
 	/**
 	 * Returns the submodule name. If vector, appends [*].
 	 */
-	public static String getSubmoduleFullName(SubmoduleNode submodule) {
+	public static String getSubmoduleFullName(SubmoduleElement submodule) {
 		String submoduleName = submodule.getName();
 		if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
 			submoduleName += "[*]"; //XXX
@@ -113,7 +113,7 @@ public class InifileUtils {
 	 * Resolves the run-time NED type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
-	public static String resolveLikeParam(String moduleFullPath, SubmoduleNode submodule, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
+	public static String resolveLikeParam(String moduleFullPath, SubmoduleElement submodule, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
 		// get like parameter name
 		String likeParamName = submodule.getLikeParam();
 		if (!likeParamName.matches("[A-Za-z0-9_]+"))
@@ -137,7 +137,7 @@ public class InifileUtils {
 	/**
 	 * Returns the submodule type name. If it uses "like", returns the "like" name.
 	 */
-	public static String getSubmoduleType(SubmoduleNode submodule) {
+	public static String getSubmoduleType(SubmoduleElement submodule) {
 		//XXX should try to evaluate "like" expression and use result as type (if possible)
 		String submoduleType = submodule.getType();
 		if (StringUtils.isEmpty(submoduleType))

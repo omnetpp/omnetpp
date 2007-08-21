@@ -6,7 +6,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 
 /**
@@ -48,7 +48,7 @@ public class NEDTreeTraversal {
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
-	public void traverse(SubmoduleNode submodule) {
+	public void traverse(SubmoduleElement submodule) {
 		visitedTypes.clear();
 		String submoduleTypeName = resolveTypeName(submodule);
 		INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.getComponent(submoduleTypeName);
@@ -58,7 +58,7 @@ public class NEDTreeTraversal {
 			doTraverse(submodule, submoduleType);
 	}
 
-	protected void doTraverse(SubmoduleNode module, INEDTypeInfo moduleType) {
+	protected void doTraverse(SubmoduleElement module, INEDTypeInfo moduleType) {
 		// enter module
 		visitedTypes.push(moduleType);
 		visitor.enter(module, moduleType);
@@ -66,7 +66,7 @@ public class NEDTreeTraversal {
 		// traverse submodules
 		for (INEDElement node : moduleType.getSubmodules().values()) {
 			// dig out type info (NED declaration)
-			SubmoduleNode submodule = (SubmoduleNode) node;
+			SubmoduleElement submodule = (SubmoduleElement) node;
 			String submoduleTypeName = resolveTypeName(submodule);
 			INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.getComponent(submoduleTypeName);
 
@@ -84,7 +84,7 @@ public class NEDTreeTraversal {
 		visitedTypes.pop();
 	}
 
-	protected String resolveTypeName(SubmoduleNode submodule) {
+	protected String resolveTypeName(SubmoduleElement submodule) {
 		String submoduleTypeName = submodule.getType();
 		if (StringUtils.isEmpty(submoduleTypeName)) {
 			submoduleTypeName = visitor.resolveLikeType(submodule);

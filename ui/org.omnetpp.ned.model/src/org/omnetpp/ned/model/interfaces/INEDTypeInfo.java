@@ -7,14 +7,14 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.PropertyElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
- * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode,
- * CompoundModuleNode or ModuleInterfaceNode subtree; provides easy lookup
+ * Wraps a NED component: a ChannelElement, ChannelInterfaceElement, SimpleModuleElement,
+ * CompoundModuleElement or ModuleInterfaceElement subtree; provides easy lookup
  * of its gates, parameters, properties, submodules, inner types.
  * Enables the model element so have some additional cross-model info like a
  * list of names in the inheritance chain, the containing workspace file
@@ -88,25 +88,25 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, INEDElement> getLocalMembers();
 
     /** Parameters declared locally within this type (i.e. where param type is not empty) */
-    public Map<String, ParamNode> getLocalParamDeclarations();
+    public Map<String, ParamElement> getLocalParamDeclarations();
 
     /** Parameter nodes within this type where the "value" attribute is filled in */
-    public Map<String, ParamNode> getLocalParamAssignments();
+    public Map<String, ParamElement> getLocalParamAssignments();
 
     /** Properties from the local parameters section */
-    public Map<String, PropertyNode> getLocalProperties();
+    public Map<String, PropertyElement> getLocalProperties();
 
     /** Gates declared locally within this type (i.e. where gate type is not empty) */
-    public Map<String, GateNode> getLocalGateDeclarations();
+    public Map<String, GateElement> getLocalGateDeclarations();
 
     /** Gate nodes within this type where the "vector size" attribute filled in */
-    public Map<String, GateNode> getLocalGateSizes();
+    public Map<String, GateElement> getLocalGateSizes();
 
     /** Inner types declared locally within this type */
     public Map<String, INedTypeNode> getLocalInnerTypes();
 
     /** Submodules declared locally within this (compound module) type */
-    public Map<String, SubmoduleNode> getLocalSubmodules();
+    public Map<String, SubmoduleElement> getLocalSubmodules();
 
     /** Module and channel types used locally in this (compound module) type */
     public Set<String> getLocalUsedTypes();
@@ -117,35 +117,35 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, INEDElement> getMembers();
 
     /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
-    public Map<String, ParamNode> getParamDeclarations();
+    public Map<String, ParamElement> getParamDeclarations();
 
     /** Parameter nodes where the "value" attribute is filled in, including inherited ones; 
      * the most recent one for each parameter 
      */
-    public Map<String, ParamNode> getParamAssignments();
+    public Map<String, ParamElement> getParamAssignments();
 
     /** Property nodes, including inherited ones; the most recent one for each property. 
      * (Given the special inheritance rules for properties, this may not be what you want; 
      * see getPropertyInheritanceChain(). 
      */
-    public Map<String, PropertyNode> getProperties();
+    public Map<String, PropertyElement> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
-    public Map<String, GateNode> getGateDeclarations();
+    public Map<String, GateElement> getGateDeclarations();
 
     /** Gate nodes where the "vector size" attribute is filled in, including inherited ones; 
      * the most recent one for each gate 
      */
-    public Map<String, GateNode> getGateSizes();
+    public Map<String, GateElement> getGateSizes();
 
     /** All inner types in this type, including inherited ones */
     public Map<String, INedTypeNode> getInnerTypes();
 
     /** All submodules in this (compound module) type, including inherited ones */
-    public Map<String, SubmoduleNode> getSubmodules();
+    public Map<String, SubmoduleElement> getSubmodules();
 
     
-	public List<ParamNode> getParameterInheritanceChain(String parameterName);
-	public List<GateNode> getGateInheritanceChain(String gateName);
-	public List<PropertyNode> getPropertyInheritanceChain(String propertyName);
+	public List<ParamElement> getParameterInheritanceChain(String parameterName);
+	public List<GateElement> getGateInheritanceChain(String gateName);
+	public List<PropertyElement> getPropertyInheritanceChain(String propertyName);
 }

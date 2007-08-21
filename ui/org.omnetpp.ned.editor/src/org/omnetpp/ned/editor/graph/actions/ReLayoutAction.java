@@ -12,7 +12,7 @@ import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**
  * TODO add documentation
@@ -63,10 +63,10 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 			return null;
 
 		// get the parent of the currently selected
-		CompoundModuleNodeEx compoundModuleNodeEx
+		CompoundModuleElementEx compoundModuleElementEx
 			= ((ModuleEditPart)selEditParts.get(0)).getCompoundModulePart().getCompoundModuleModel();
 		// create command that changes the compound modules layout seed
-		return new ChangeLayoutSeedCommand(compoundModuleNodeEx);
+		return new ChangeLayoutSeedCommand(compoundModuleElementEx);
 	}
 
 	@Override

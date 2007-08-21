@@ -19,7 +19,7 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleListPropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**
  * TODO add documentation
@@ -29,9 +29,9 @@ import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 public class CompoundModulePropertySource extends MergedPropertySource {
     // compound module display properties
     protected static class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
-        protected CompoundModuleNodeEx model;
+        protected CompoundModuleElementEx model;
 
-        public CompoundModuleDisplayPropertySource(CompoundModuleNodeEx model) {
+        public CompoundModuleDisplayPropertySource(CompoundModuleElementEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
@@ -50,10 +50,10 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         public static final String BASE_CATEGORY = "Base";
         public enum Prop { Network }
         protected IPropertyDescriptor[] descriptors;
-        protected CompoundModuleNodeEx model;
+        protected CompoundModuleElementEx model;
         CheckboxPropertyDescriptor networkProp;
 
-        public BasePropertySource(CompoundModuleNodeEx connectionNodeModel) {
+        public BasePropertySource(CompoundModuleElementEx connectionNodeModel) {
             model = connectionNodeModel;
 
             // set up property descriptors
@@ -97,7 +97,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
     }
 
     // constructor
-    public CompoundModulePropertySource(CompoundModuleNodeEx nodeModel) {
+    public CompoundModulePropertySource(CompoundModuleElementEx nodeModel) {
         super(nodeModel);
         // create a nested displayPropertySource
         mergePropertySource(new NamePropertySource(nodeModel));

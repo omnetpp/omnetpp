@@ -11,7 +11,7 @@ import org.eclipse.gef.SnapToHelper;
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 
 /**
@@ -74,7 +74,7 @@ public class NedFileEditPart extends NedEditPart {
 
     @Override
     protected List<INedTypeNode> getModelChildren() {
-    	return ((NedFileNodeEx)getNEDModel()).getTopLevelTypeNodes();
+    	return ((NedFileElementEx)getNEDModel()).getTopLevelTypeNodes();
     }
 
     /* (non-Javadoc)

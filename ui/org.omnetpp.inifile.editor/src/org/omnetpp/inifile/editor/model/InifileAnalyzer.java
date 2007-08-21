@@ -36,13 +36,13 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * This is a layer above IInifileDocument, and contains info about the
@@ -344,7 +344,7 @@ public class InifileAnalyzer {
 				return;
 			}
 			INedTypeNode node = network.getNEDElement();
-			if (!(node instanceof CompoundModuleNode) || ((CompoundModuleNode)node).getIsNetwork()==false) {
+			if (!(node instanceof CompoundModuleElement) || ((CompoundModuleElement)node).getIsNetwork()==false) {
 				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
 				return;
 			}
@@ -464,7 +464,7 @@ public class InifileAnalyzer {
 				dataType = NED_PARTYPE_DOUBLE;
 
 			if (valueType!=-1 && valueType!=dataType) {
-				String typeName = resList[0].paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+				String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 				addError(section, key, "Wrong data type: "+typeName+" expected");
 			}
 		}
@@ -634,7 +634,7 @@ public class InifileAnalyzer {
 	/**
 	 * Collects parameters of a submodule subtree, *without* an inifile present.  
 	 */
-	public static List<ParamResolution> collectParameters(SubmoduleNode submodule) {
+	public static List<ParamResolution> collectParameters(SubmoduleElement submodule) {
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
@@ -644,14 +644,14 @@ public class InifileAnalyzer {
 
 	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final ArrayList<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
 		return new IModuleTreeVisitor() {
-			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>();
+			Stack<SubmoduleElement> pathModules = new Stack<SubmoduleElement>();
 			Stack<String> fullPathStack = new Stack<String>();
 
-			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
+			public void enter(SubmoduleElement submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);
 				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
 				String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
-				SubmoduleNode[] pathModulesArray = pathModules.toArray(new SubmoduleNode[]{});
+				SubmoduleElement[] pathModulesArray = pathModules.toArray(new SubmoduleElement[]{});
 				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, doc);
 			}
 			public void leave() {
@@ -659,11 +659,11 @@ public class InifileAnalyzer {
 				pathModules.pop();
 			}
 
-			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
+			public void unresolvedType(SubmoduleElement submodule, String submoduleTypeName) {}
 
-			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
+			public void recursiveType(SubmoduleElement submodule, INEDTypeInfo submoduleType) {}
 
-			public String resolveLikeType(SubmoduleNode submodule) {
+			public String resolveLikeType(SubmoduleElement submodule) {
 				// Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
 				// resolveLikeParam() relies on the data structure we are currently building
 
@@ -693,11 +693,11 @@ public class InifileAnalyzer {
 		};
 	}
 
-	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleNode[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
-		SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
+	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleElement[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+		SubmoduleElementEx submodule = (SubmoduleElementEx) pathModules[pathModules.length-1];
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
-			ParamNode paramDeclNode = moduleType.getParamDeclarations().get(paramName);
-			ParamNode paramValueNode = submodule==null ?
+			ParamElement paramDeclNode = moduleType.getParamDeclarations().get(paramName);
+			ParamElement paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
 					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
@@ -714,7 +714,7 @@ public class InifileAnalyzer {
 	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl?
 	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
 	 */
-	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
+	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
 		String nedValue = paramValueNode==null ? null : paramValueNode.getValue();
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
@@ -768,11 +768,11 @@ public class InifileAnalyzer {
 	/**
 	 * Resolve parameters of a module type or submodule, based solely on NED information.
 	 */
-	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleNodeEx submodule, INEDTypeInfo moduleType) {
+	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleElementEx submodule, INEDTypeInfo moduleType) {
 		ArrayList<ParamResolution> resultList = new ArrayList<ParamResolution>();
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
-			ParamNode paramDeclNode = (ParamNode)moduleType.getParamDeclarations().get(paramName);
-			ParamNode paramValueNode = submodule==null ?
+			ParamElement paramDeclNode = (ParamElement)moduleType.getParamDeclarations().get(paramName);
+			ParamElement paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
 					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))

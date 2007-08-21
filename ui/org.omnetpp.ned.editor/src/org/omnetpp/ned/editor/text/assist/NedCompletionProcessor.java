@@ -22,7 +22,7 @@ import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 // TODO a better structure is needed for storing the completion proposals
 // TODO context help can be supported, to show the documentation of the proposed keyword
@@ -321,8 +321,8 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
 			INEDElement submodNode = parentComponent.getMembers().get(submoduleName);
-			if (submodNode instanceof SubmoduleNode) {
-				SubmoduleNode submod = (SubmoduleNode) submodNode;
+			if (submodNode instanceof SubmoduleElement) {
+				SubmoduleElement submod = (SubmoduleElement) submodNode;
 				String submodTypeName = submod.getType();
 				if (submodTypeName==null || submodTypeName.equals(""))
 					submodTypeName = submod.getLikeType();

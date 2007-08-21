@@ -15,7 +15,7 @@ import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
  * TODO add documentation
@@ -27,9 +27,9 @@ public class ConnectionPropertySource extends MergedPropertySource {
     // Display property source
     protected static class ConnectionDisplayPropertySource extends DisplayPropertySource {
         protected static IPropertyDescriptor[] propertyDescArray;
-        protected ConnectionNodeEx model;
+        protected ConnectionElementEx model;
 
-        public ConnectionDisplayPropertySource(ConnectionNodeEx model) {
+        public ConnectionDisplayPropertySource(ConnectionElementEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
@@ -48,9 +48,9 @@ public class ConnectionPropertySource extends MergedPropertySource {
     protected static class BasePropertySource implements IPropertySource2 {
         public enum Prop { SrcGate, DestGate }
         protected IPropertyDescriptor[] descriptors;
-        protected ConnectionNodeEx model;
+        protected ConnectionElementEx model;
 
-        public BasePropertySource(ConnectionNodeEx connectionNodeModel) {
+        public BasePropertySource(ConnectionElementEx connectionNodeModel) {
             model = connectionNodeModel;
 
             // set up property descriptors
@@ -99,7 +99,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
     }
 
     // constructor
-    public ConnectionPropertySource(ConnectionNodeEx connectionNodeModel) {
+    public ConnectionPropertySource(ConnectionElementEx connectionNodeModel) {
         super(connectionNodeModel);
         // create a nested displayPropertySources
         mergePropertySource(new BasePropertySource(connectionNodeModel));

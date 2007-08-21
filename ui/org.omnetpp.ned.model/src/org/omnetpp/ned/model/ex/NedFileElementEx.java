@@ -5,18 +5,18 @@ import java.util.List;
 
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-public class NedFileNodeEx extends NedFileNode {
-    protected NedFileNodeEx() {
+public class NedFileElementEx extends NedFileElement {
+    protected NedFileElementEx() {
 	}
 
-    protected NedFileNodeEx(INEDElement parent) {
+    protected NedFileElementEx(INEDElement parent) {
 		super(parent);
 	}
 

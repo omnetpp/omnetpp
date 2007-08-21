@@ -13,16 +13,16 @@ import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
 import org.omnetpp.ned.engine.NEDTools;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned.model.pojo.ConnectionsNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.pojo.ConnectionsElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.NedFileNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.SubmodulesNode;
-import org.omnetpp.ned.model.pojo.TypesNode;
+import org.omnetpp.ned.model.pojo.NedFileElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.SubmodulesElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 import org.omnetpp.ned.model.ui.NedModelContentProvider;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
@@ -38,7 +38,7 @@ public class NEDTreeUtil {
 
     /**
 	 * Generate NED code from the given NEDElement tree. The root node
-	 * does not have to be NedFileNode, any subtree can be converted
+	 * does not have to be NedFileElement, any subtree can be converted
 	 * to source form.
 	 *
 	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well
@@ -49,7 +49,7 @@ public class NEDTreeUtil {
 
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false); //XXX just for debugging
-		if (keepSyntax && treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
+		if (keepSyntax && treeRoot instanceof NedFileElement && "1".equals(((NedFileElement)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
             return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!!
 		}
@@ -63,7 +63,7 @@ public class NEDTreeUtil {
 	 * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
 	 * Callers should check NEDErrorStore to determine whether a parse error occurred.
-	 * The passed fileName will only be used to fill in the NedFileNode element.
+	 * The passed fileName will only be used to fill in the NedFileElement element.
 	 */
 	public static INEDElement parseNedSource(String source, NEDErrorStore errors, String fileName) {
         return parse(source, fileName, errors);
@@ -74,7 +74,7 @@ public class NEDTreeUtil {
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
  	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
 	 */
-	public static NedFileNodeEx loadNedSource(String filename, NEDErrorStore errors) {
+	public static NedFileElementEx loadNedSource(String filename, NEDErrorStore errors) {
         return parse(null, filename, errors);
 	}
 
@@ -82,7 +82,7 @@ public class NEDTreeUtil {
 	 * Parse the given source (when source!=null) or the given file (when source==null).
 	 * Never returns null. 
 	 */
-	private static NedFileNodeEx parse(String source, String filename, NEDErrorStore errors) {
+	private static NedFileElementEx parse(String source, String filename, NEDErrorStore errors) {
 		Assert.isTrue(filename != null);
 		NEDElement swigTree = null;
 		try {
@@ -91,8 +91,8 @@ public class NEDTreeUtil {
 			np.setParseExpressions(false);
 			swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
 			if (swigTree == null) {
-				// return an empty NedFileNode if parsing totally failed
-				NedFileNodeEx fileNode = (NedFileNodeEx)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE, null);
+				// return an empty NedFileElement if parsing totally failed
+				NedFileElementEx fileNode = (NedFileElementEx)NEDElementFactory.getInstance().createElement(NEDElementTags.NED_NED_FILE, null);
 				fileNode.setFilename(filename);
 				return fileNode;
 			}
@@ -125,7 +125,7 @@ public class NEDTreeUtil {
 
 			// System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
 
-			return (NedFileNodeEx)pojoTree;
+			return (NedFileElementEx)pojoTree;
 		}
 		finally {
 			if (swigTree != null)
@@ -140,7 +140,7 @@ public class NEDTreeUtil {
 	public static INEDElement swig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore errors) {
 		INEDElement pojoNode = null;
 		try {
-			pojoNode = NEDElementFactory.getInstance().createNodeWithTag(swigNode.getTagCode(), parent);
+			pojoNode = NEDElementFactory.getInstance().createElement(swigNode.getTagCode(), parent);
 
 			// set the attributes
 			for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
@@ -163,7 +163,7 @@ public class NEDTreeUtil {
 		}
 		catch (NEDElementException e) {
 			// prepare for errors during tree building, most notably
-			// "Nonexistent submodule" thrown from ConnectionNodeEx.
+			// "Nonexistent submodule" thrown from ConnectionElementEx.
 			errors.add(swigNode, e.getMessage()); // error message
 			if (pojoNode!=null) {
 				// throw out element that caused the error.
@@ -216,8 +216,8 @@ public class NEDTreeUtil {
         // see if the current node can be filtered out
 
         // skip a channel spec if it does not contain any meaningful information
-        if (pojoNode instanceof ChannelSpecNode) {
-            ChannelSpecNode cpn = (ChannelSpecNode) pojoNode;
+        if (pojoNode instanceof ChannelSpecElement) {
+            ChannelSpecElement cpn = (ChannelSpecElement) pojoNode;
             if ((cpn.getType() == null || "".equals(cpn.getType()))
                 && (cpn.getLikeType() == null || "".equals(cpn.getLikeType()))
                 && !cpn.hasChildren()) {
@@ -227,11 +227,11 @@ public class NEDTreeUtil {
             }
         }
         // check for empty types, parameters, gates, submodules, connections node
-        if ((pojoNode instanceof TypesNode
-                || pojoNode instanceof ParametersNode
-                || pojoNode instanceof GatesNode
-                || pojoNode instanceof SubmodulesNode
-                || pojoNode instanceof ConnectionsNode && !((ConnectionsNode)pojoNode).getAllowUnconnected())
+        if ((pojoNode instanceof TypesElement
+                || pojoNode instanceof ParametersElement
+                || pojoNode instanceof GatesElement
+                || pojoNode instanceof SubmodulesElement
+                || pojoNode instanceof ConnectionsElement && !((ConnectionsElement)pojoNode).getAllowUnconnected())
                                 && !pojoNode.hasChildren()) {
             pojoNode.removeFromParent();
         }

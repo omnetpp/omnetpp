@@ -19,7 +19,7 @@ import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.CommentNode;
+import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
@@ -406,7 +406,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     }
 
     public INEDElement dup() {
-        INEDElement cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
+        INEDElement cloned = NEDElementFactoryEx.getInstance().createElement(getTagCode());
 
         for (int i = 0; i < getNumAttributes(); ++i)
         	cloned.setAttribute(i, getAttribute(i));
@@ -496,9 +496,9 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     }
 
     public String getComment() {
-        CommentNode cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "banner");
+        CommentElement cn = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
         if (cn == null)
-        	cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+        	cn = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
         return cn == null ? null : cn.getContent().trim();
     }
 

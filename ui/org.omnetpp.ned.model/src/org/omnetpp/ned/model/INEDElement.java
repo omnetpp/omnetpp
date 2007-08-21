@@ -28,7 +28,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 
     /**
      * Returns the element type as a lower case string suitable for displaying
-     * in the UI; e.g. for a SimpleModuleNode it returns "simple module".
+     * in the UI; e.g. for a SimpleModuleElement it returns "simple module".
      * Usually derived from getTagName().
      */
     public String getReadableTagName();

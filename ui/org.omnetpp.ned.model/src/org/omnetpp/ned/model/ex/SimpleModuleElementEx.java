@@ -6,31 +6,39 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IInterfaceTypeNode;
+import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.InterfaceNameElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements IInterfaceTypeNode {
+public class SimpleModuleElementEx extends SimpleModuleElement implements IModuleTypeNode {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
-	protected ChannelInterfaceNodeEx() {
-		super();
+    protected SimpleModuleElementEx() {
+        init();
 	}
 
-    protected ChannelInterfaceNodeEx(INEDElement parent) {
+    protected SimpleModuleElementEx(INEDElement parent) {
 		super(parent);
+        init();
 	}
+
+    private void init() {
+        setName("Unnamed");
+    }
+
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
     	this.typeInfo = typeInfo;
     }
@@ -38,7 +46,7 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements IInt
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }
-
+    
     @Override
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
@@ -72,23 +80,35 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode implements IInt
         return it == null ? null : it.getNEDElement();
     }
 
-    public List<ExtendsNode> getAllExtends() {
-        List<ExtendsNode> result = new ArrayList<ExtendsNode>();
+    public List<ExtendsElement> getAllExtends() {
+        List<ExtendsElement> result = new ArrayList<ExtendsElement>();
+        ExtendsElement extendsElement = getFirstExtendsChild();
+        if (extendsElement == null)
+            return result;
 
-        for (INEDElement currChild : this)
-            if (currChild instanceof ExtendsNode)
-                result.add((ExtendsNode)currChild);
+        for (INEDElement currChild : extendsElement)
+            if (currChild instanceof ExtendsElement)
+                result.add(extendsElement);
 
         return result;
     }
 
-    // parameter support
-    public Map<String, ParamNode> getParamAssignments() {
+    // parameter query support
+    public Map<String, ParamElement> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamNode> getParamDeclarations() {
+    public Map<String, ParamElement> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
+    }
+
+    // gate support
+    public Map<String, GateElement> getGateSizes() {
+        return getNEDTypeInfo().getGateSizes();
+    }
+
+    public Map<String, GateElement> getGateDeclarations() {
+        return getNEDTypeInfo().getGateDeclarations();
     }
 
 }

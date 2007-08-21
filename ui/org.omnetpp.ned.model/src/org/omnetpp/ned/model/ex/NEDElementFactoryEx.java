@@ -4,59 +4,59 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 
 /**
- * Create model elements based on string or numeric id
+ * Create model elements based on string or numeric tag code
  *
  * @author rhornig
  */
 public class NEDElementFactoryEx extends NEDElementFactory {
 
-	public INEDElement createNodeWithTag(String tagname, INEDElement parent) {
-        if (tagname.equals(NedFileNodeEx.getStaticTagName()))
-            return new NedFileNodeEx(parent);
-        if (tagname.equals(CompoundModuleNodeEx.getStaticTagName()))
-            return new CompoundModuleNodeEx(parent);
-        if (tagname.equals(SubmoduleNodeEx.getStaticTagName()))
-            return new SubmoduleNodeEx(parent);
-        if (tagname.equals(SimpleModuleNodeEx.getStaticTagName()))
-            return new SimpleModuleNodeEx(parent);
-        if (tagname.equals(ConnectionNodeEx.getStaticTagName()))
-            return new ConnectionNodeEx(parent);
-        if (tagname.equals(ChannelNodeEx.getStaticTagName()))
-            return new ChannelNodeEx(parent);
-        if (tagname.equals(ChannelInterfaceNodeEx.getStaticTagName()))
-            return new ChannelInterfaceNodeEx(parent);
-        if (tagname.equals(ModuleInterfaceNodeEx.getStaticTagName()))
-            return new ModuleInterfaceNodeEx(parent);
-        if (tagname.equals(GateNodeEx.getStaticTagName()))
-            return new GateNodeEx(parent);
-        if (tagname.equals(ParamNodeEx.getStaticTagName()))
-            return new ParamNodeEx(parent);
+	public INEDElement createElement(String tagname, INEDElement parent) {
+        if (tagname.equals(NedFileElementEx.getStaticTagName()))
+            return new NedFileElementEx(parent);
+        if (tagname.equals(CompoundModuleElementEx.getStaticTagName()))
+            return new CompoundModuleElementEx(parent);
+        if (tagname.equals(SubmoduleElementEx.getStaticTagName()))
+            return new SubmoduleElementEx(parent);
+        if (tagname.equals(SimpleModuleElementEx.getStaticTagName()))
+            return new SimpleModuleElementEx(parent);
+        if (tagname.equals(ConnectionElementEx.getStaticTagName()))
+            return new ConnectionElementEx(parent);
+        if (tagname.equals(ChannelElementEx.getStaticTagName()))
+            return new ChannelElementEx(parent);
+        if (tagname.equals(ChannelInterfaceElementEx.getStaticTagName()))
+            return new ChannelInterfaceElementEx(parent);
+        if (tagname.equals(ModuleInterfaceElementEx.getStaticTagName()))
+            return new ModuleInterfaceElementEx(parent);
+        if (tagname.equals(GateElementEx.getStaticTagName()))
+            return new GateElementEx(parent);
+        if (tagname.equals(ParamElementEx.getStaticTagName()))
+            return new ParamElementEx(parent);
 
-        return super.createNodeWithTag(tagname, parent);
+        return super.createElement(tagname, parent);
 	}
 
-	public INEDElement createNodeWithTag(int tagcode, INEDElement parent) {
+	public INEDElement createElement(int tagcode, INEDElement parent) {
         if (tagcode==NED_NED_FILE)
-            return new NedFileNodeEx(parent);
+            return new NedFileElementEx(parent);
         if (tagcode==NED_COMPOUND_MODULE)
-            return new CompoundModuleNodeEx(parent);
+            return new CompoundModuleElementEx(parent);
         if (tagcode==NED_SUBMODULE)
-            return new SubmoduleNodeEx(parent);
+            return new SubmoduleElementEx(parent);
         if (tagcode==NED_SIMPLE_MODULE)
-            return new SimpleModuleNodeEx(parent);
+            return new SimpleModuleElementEx(parent);
         if (tagcode==NED_CONNECTION)
-            return new ConnectionNodeEx(parent);
+            return new ConnectionElementEx(parent);
         if (tagcode==NED_CHANNEL)
-            return new ChannelNodeEx(parent);
+            return new ChannelElementEx(parent);
         if (tagcode==NED_CHANNEL_INTERFACE)
-            return new ChannelInterfaceNodeEx(parent);
+            return new ChannelInterfaceElementEx(parent);
         if (tagcode==NED_MODULE_INTERFACE)
-            return new ModuleInterfaceNodeEx(parent);
+            return new ModuleInterfaceElementEx(parent);
         if (tagcode==NED_GATE)
-            return new GateNodeEx(parent);
+            return new GateElementEx(parent);
         if (tagcode==NED_PARAM)
-            return new ParamNodeEx(parent);
+            return new ParamElementEx(parent);
 
-		return super.createNodeWithTag(tagcode, parent);
+		return super.createElement(tagcode, parent);
 	}
 }

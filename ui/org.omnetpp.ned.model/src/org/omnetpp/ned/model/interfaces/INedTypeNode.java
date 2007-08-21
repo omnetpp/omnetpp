@@ -2,7 +2,7 @@ package org.omnetpp.ned.model.interfaces;
 
 import java.util.List;
 
-import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
 
 
 /**
@@ -59,5 +59,5 @@ public interface INedTypeNode extends IHasName, IHasDisplayString, IHasParameter
      * but can be more than that)
      */
     //FIXME needed? get it from typeInfo --Andras
-    public List<ExtendsNode> getAllExtends();
+    public List<ExtendsElement> getAllExtends();
 }

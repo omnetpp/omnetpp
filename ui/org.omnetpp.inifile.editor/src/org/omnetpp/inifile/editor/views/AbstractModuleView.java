@@ -29,10 +29,10 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Abstract base class for views that display information based on a single NED
@@ -241,8 +241,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
      */
     private INEDElement findFirstModuleOrSubmodule(INEDElement element) {
         while (element != null) {
-            if (element instanceof CompoundModuleNode || element instanceof SimpleModuleNode ||
-                    element instanceof SubmoduleNode || element instanceof ModuleInterfaceNode)
+            if (element instanceof CompoundModuleElement || element instanceof SimpleModuleElement ||
+                    element instanceof SubmoduleElement || element instanceof ModuleInterfaceElement)
                 return element;
             element = element.getParent();
         }

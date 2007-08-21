@@ -6,7 +6,7 @@ import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
-import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 
 /**
  * TODO add documentation
@@ -15,7 +15,7 @@ import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
  */
 public class ModuleInterfacePropertySource extends MergedPropertySource {
 
-    public ModuleInterfacePropertySource(ModuleInterfaceNodeEx nodeModel) {
+    public ModuleInterfacePropertySource(ModuleInterfaceElementEx nodeModel) {
     	super(nodeModel);
         mergePropertySource(new NamePropertySource(nodeModel));
         mergePropertySource(new DelegatingPropertySource(

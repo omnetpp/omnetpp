@@ -8,9 +8,9 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.pojo.*;
 
@@ -26,19 +26,19 @@ public class NedModelLabelProvider extends LabelProvider {
         INEDElement model = (INEDElement)obj;
         String label = "???";
 
-        if (model instanceof ImportNode) {
-            ImportNode node = (ImportNode)model;
+        if (model instanceof ImportElement) {
+            ImportElement node = (ImportElement)model;
             label = "import \""+node.getFilename()+"\"";
         }
-        else if (model instanceof ConnectionGroupNode) {
+        else if (model instanceof ConnectionGroupElement) {
             label = StringUtils.substringBefore(getSourceWithoutComments(model), " {");;
         }
-        else if (model instanceof PropertyNode) {
+        else if (model instanceof PropertyElement) {
             label = StringUtils.strip(getSourceWithoutComments(model), "@;");
         }
-        else if (model instanceof ParamNode) {
-            ParamNode node = (ParamNode)model;
-            String attType = node.getAttribute(ParamNode.ATT_TYPE);
+        else if (model instanceof ParamElement) {
+            ParamElement node = (ParamElement)model;
+            String attType = node.getAttribute(ParamElement.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
             label += node.getName();
 
@@ -50,16 +50,16 @@ public class NedModelLabelProvider extends LabelProvider {
             }
 
         }
-        else if (model instanceof SimpleModuleNode) {
-            SimpleModuleNode node = (SimpleModuleNode)model;
+        else if (model instanceof SimpleModuleElement) {
+            SimpleModuleElement node = (SimpleModuleElement)model;
             label = "simple "+node.getName();
         }
-        else if (model instanceof CompoundModuleNodeEx) {
-            CompoundModuleNodeEx node = (CompoundModuleNodeEx)model;
+        else if (model instanceof CompoundModuleElementEx) {
+            CompoundModuleElementEx node = (CompoundModuleElementEx)model;
             label = (node.getIsNetwork() ? "network " : "module ")+node.getName();
         }
-        else if (model instanceof SubmoduleNodeEx) {
-            SubmoduleNodeEx node = (SubmoduleNodeEx)model;
+        else if (model instanceof SubmoduleElementEx) {
+            SubmoduleElementEx node = (SubmoduleElementEx)model;
             label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : ";
             String likeType = node.getLikeType();
             if (likeType == null || "".equals(likeType))
@@ -67,31 +67,31 @@ public class NedModelLabelProvider extends LabelProvider {
             else
                 label += "like "+node.getLikeType();
         }
-        else if (model instanceof ModuleInterfaceNode) {
-            ModuleInterfaceNode node = (ModuleInterfaceNode)model;
+        else if (model instanceof ModuleInterfaceElement) {
+            ModuleInterfaceElement node = (ModuleInterfaceElement)model;
             label = "interface " + node.getName();
         }
-        else if (model instanceof ChannelInterfaceNode) {
-            ChannelInterfaceNode node = (ChannelInterfaceNode)model;
+        else if (model instanceof ChannelInterfaceElement) {
+            ChannelInterfaceElement node = (ChannelInterfaceElement)model;
             label = "channelinterface "+node.getName();
         }
-        else if (model instanceof ChannelSpecNode) {
-            ChannelSpecNode node = (ChannelSpecNode)model;
+        else if (model instanceof ChannelSpecElement) {
+            ChannelSpecElement node = (ChannelSpecElement)model;
             label = "channel "+node.getType();
         }
-        else if (model instanceof ChannelNode) {
-            ChannelNode node = (ChannelNode)model;
+        else if (model instanceof ChannelElement) {
+            ChannelElement node = (ChannelElement)model;
             label = "channel "+node.getName();
         }
-        else if (model instanceof GateNode) {
-            GateNode node = (GateNode)model;
-            String attType = node.getAttribute(ParamNode.ATT_TYPE);
+        else if (model instanceof GateElement) {
+            GateElement node = (GateElement)model;
+            String attType = node.getAttribute(ParamElement.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
             label += node.getName();
             String vectorSizeInBrackets = bracketizeIfNotEmpty(node.getVectorSize());
             label += vectorSizeInBrackets.equals("") ? (node.getIsVector() ? "[]" : "") : vectorSizeInBrackets;
         }
-        else if (model instanceof ConnectionNodeEx) {
+        else if (model instanceof ConnectionElementEx) {
             label = StringUtils.strip(getSourceWithoutComments(model), ";");
         }
         else if (model != null){
@@ -124,33 +124,33 @@ public class NedModelLabelProvider extends LabelProvider {
 
         if (image != null)
             return image;
-        else if (model instanceof ImportNode) {
+        else if (model instanceof ImportElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_IMPORT);
-        } else if (model instanceof PropertyNode) {
+        } else if (model instanceof PropertyElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PROPERTY);
-        } else if (model instanceof ParamNode) {
+        } else if (model instanceof ParamElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PARAM);
-        } else if (model instanceof SimpleModuleNode) {
+        } else if (model instanceof SimpleModuleElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
-        } else if (model instanceof CompoundModuleNodeEx) {
+        } else if (model instanceof CompoundModuleElementEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE);
-        } else if (model instanceof SubmoduleNodeEx) {
+        } else if (model instanceof SubmoduleElementEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_SUBMODULE);
-        } else if (model instanceof ModuleInterfaceNode) {
+        } else if (model instanceof ModuleInterfaceElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
-        } else if (model instanceof ChannelInterfaceNode) {
+        } else if (model instanceof ChannelInterfaceElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
-        } else if (model instanceof ChannelSpecNode) {
+        } else if (model instanceof ChannelSpecElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-        } else if (model instanceof ChannelNode) {
+        } else if (model instanceof ChannelElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-        } else if (model instanceof GateNode) {
+        } else if (model instanceof GateElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_GATE);
-        } else if (model instanceof ConnectionNodeEx) {
+        } else if (model instanceof ConnectionElementEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CONNECTION);
-        } else if (model instanceof TypesNode || model instanceof ParametersNode ||
-                   model instanceof GatesNode || model instanceof SubmodulesNode ||
-                   model instanceof ConnectionsNode || model instanceof ConnectionGroupNode) {
+        } else if (model instanceof TypesElement || model instanceof ParametersElement ||
+                   model instanceof GatesElement || model instanceof SubmodulesElement ||
+                   model instanceof ConnectionsElement || model instanceof ConnectionGroupElement) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
         }
 

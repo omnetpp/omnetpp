@@ -25,7 +25,7 @@ import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**
  * Layout policy used in the top level NedFile element allowing a vertical, toolbar like
@@ -138,8 +138,8 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
 
         // create the constraint change command
-        if (child.getModel() instanceof CompoundModuleNodeEx) {
-            CompoundModuleNodeEx module = (CompoundModuleNodeEx) child.getModel();
+        if (child.getModel() instanceof CompoundModuleElementEx) {
+            CompoundModuleElementEx module = (CompoundModuleElementEx) child.getModel();
             CompoundModuleFigure cfigure = (CompoundModuleFigure)((GraphicalEditPart)child).getFigure();
             SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
             // shrink the size with the border insets (we want to store ONLY the inside dimensions, not the

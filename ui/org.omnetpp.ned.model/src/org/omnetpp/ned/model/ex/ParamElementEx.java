@@ -2,20 +2,20 @@ package org.omnetpp.ned.model.ex;
 
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * Extended parameter node
  *
  * @author rhornig
  */
-public class ParamNodeEx extends ParamNode implements IHasName {
+public class ParamElementEx extends ParamElement implements IHasName {
 
-    protected ParamNodeEx() {
+    protected ParamElementEx() {
         super();
     }
 
-    protected ParamNodeEx(INEDElement parent) {
+    protected ParamElementEx(INEDElement parent) {
         super(parent);
     }
 }

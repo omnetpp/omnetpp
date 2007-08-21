@@ -3,20 +3,20 @@ package org.omnetpp.ned.model.ex;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GateElement;
 
 /**
- * Extended GateNode
+ * Extended GateElement
  *
  * @author rhornig
  */
-public class GateNodeEx extends GateNode implements IHasIndex, IHasName {
+public class GateElementEx extends GateElement implements IHasIndex, IHasName {
 
-    protected GateNodeEx() {
+    protected GateElementEx() {
         super();
     }
 
-    protected GateNodeEx(INEDElement parent) {
+    protected GateElementEx(INEDElement parent) {
         super(parent);
     }
 

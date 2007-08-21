@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
-import org.omnetpp.ned.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.pojo.ConnectionsElement;
 
 /**
  * Clones a set of submodules (copy operation)
@@ -21,33 +21,33 @@ import org.omnetpp.ned.model.pojo.ConnectionsNode;
  */
 public class CloneSubmoduleCommand extends Command {
 
-    private List<SubmoduleNodeEx> modules, newModules;
-    private List<ConnectionNodeEx> newConnections;
-    private CompoundModuleNodeEx parent;
-    private Map<SubmoduleNodeEx, Rectangle> bounds;
-    private Map<SubmoduleNodeEx, Integer> indices;
-    private Map<SubmoduleNodeEx, SubmoduleNodeEx> old2newMapping;
+    private List<SubmoduleElementEx> modules, newModules;
+    private List<ConnectionElementEx> newConnections;
+    private CompoundModuleElementEx parent;
+    private Map<SubmoduleElementEx, Rectangle> bounds;
+    private Map<SubmoduleElementEx, Integer> indices;
+    private Map<SubmoduleElementEx, SubmoduleElementEx> old2newMapping;
     private float scale = 1.0f;
 
-    public CloneSubmoduleCommand(CompoundModuleNodeEx parent, float scale) {
+    public CloneSubmoduleCommand(CompoundModuleElementEx parent, float scale) {
         super("Clone");
         this.scale = scale;
         this.parent = parent;
-        modules = new LinkedList<SubmoduleNodeEx> ();
+        modules = new LinkedList<SubmoduleElementEx> ();
     }
 
-    public void addModule(SubmoduleNodeEx mod, Rectangle newBounds) {
+    public void addModule(SubmoduleElementEx mod, Rectangle newBounds) {
         modules.add(mod);
         if (bounds == null) {
-            bounds = new HashMap<SubmoduleNodeEx, Rectangle>();
+            bounds = new HashMap<SubmoduleElementEx, Rectangle>();
         }
         bounds.put(mod, newBounds);
     }
 
-    public void addModule(SubmoduleNodeEx mod, int index) {
+    public void addModule(SubmoduleElementEx mod, int index) {
         modules.add(mod);
         if (indices == null) {
-            indices = new HashMap<SubmoduleNodeEx, Integer>();
+            indices = new HashMap<SubmoduleElementEx, Integer>();
         }
         indices.put(mod, index);
     }
@@ -56,13 +56,13 @@ public class CloneSubmoduleCommand extends Command {
      * Clone the provided connection
      * @param oldConn
      */
-    protected ConnectionNodeEx cloneConnection(ConnectionNodeEx oldConn, SubmoduleNodeEx srcModuleRef, SubmoduleNodeEx destModuleRef) {
+    protected ConnectionElementEx cloneConnection(ConnectionElementEx oldConn, SubmoduleElementEx srcModuleRef, SubmoduleElementEx destModuleRef) {
             
-        ConnectionsNode connectionParent = null;
-        if (parent instanceof CompoundModuleNodeEx)
+        ConnectionsElement connectionParent = null;
+        if (parent instanceof CompoundModuleElementEx)
             connectionParent = parent.getFirstConnectionsChild();
         
-        ConnectionNodeEx newConn = (ConnectionNodeEx)oldConn.deepDup();
+        ConnectionElementEx newConn = (ConnectionElementEx)oldConn.deepDup();
             
         connectionParent.appendChild(newConn);
         newConn.setSrcModuleRef(srcModuleRef);
@@ -73,11 +73,11 @@ public class CloneSubmoduleCommand extends Command {
         return newConn;
     }
     
-    protected SubmoduleNodeEx cloneModule(SubmoduleNodeEx oldModule, Rectangle newBounds, int index) {
-    	SubmoduleNodeEx newModule = null;
+    protected SubmoduleElementEx cloneModule(SubmoduleElementEx oldModule, Rectangle newBounds, int index) {
+    	SubmoduleElementEx newModule = null;
 
         // duplicate the subtree but do not add to the new parent yet
-        newModule = (SubmoduleNodeEx)oldModule.deepDup();
+        newModule = (SubmoduleElementEx)oldModule.deepDup();
 
         newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
 
@@ -109,11 +109,11 @@ public class CloneSubmoduleCommand extends Command {
 
     @Override
     public void redo() {
-        old2newMapping = new HashMap<SubmoduleNodeEx, SubmoduleNodeEx>();
-        newConnections = new LinkedList<ConnectionNodeEx>();
-        newModules = new LinkedList<SubmoduleNodeEx>();
+        old2newMapping = new HashMap<SubmoduleElementEx, SubmoduleElementEx>();
+        newConnections = new LinkedList<ConnectionElementEx>();
+        newModules = new LinkedList<SubmoduleElementEx>();
 
-        for (SubmoduleNodeEx mod : modules){
+        for (SubmoduleElementEx mod : modules){
             if (bounds != null && bounds.containsKey(mod)) {
                 cloneModule(mod, bounds.get(mod), -1);
             }
@@ -126,14 +126,14 @@ public class CloneSubmoduleCommand extends Command {
         }
 
         // go through all modules that were previously cloned and check all the source connections
-        for (SubmoduleNodeEx oldSrcMod : modules)
-            for (ConnectionNodeEx oldConn : oldSrcMod.getSrcConnections()) {
+        for (SubmoduleElementEx oldSrcMod : modules)
+            for (ConnectionElementEx oldConn : oldSrcMod.getSrcConnections()) {
             	IConnectableNode oldDestMod = oldConn.getDestModuleRef();
                 // if the destination side was also selected clone this connection connection too 
                 // TODO future: clone the connections ONLY if they are selected too
                 if (old2newMapping.containsKey(oldDestMod)) {
-                    SubmoduleNodeEx newSrcMod = old2newMapping.get(oldSrcMod);
-                    SubmoduleNodeEx newDestMod = old2newMapping.get(oldDestMod);
+                    SubmoduleElementEx newSrcMod = old2newMapping.get(oldSrcMod);
+                    SubmoduleElementEx newDestMod = old2newMapping.get(oldDestMod);
                     cloneConnection(oldConn, newSrcMod, newDestMod);
                 }
             }
@@ -141,10 +141,10 @@ public class CloneSubmoduleCommand extends Command {
 
     @Override
     public void undo() {
-        for (SubmoduleNodeEx mod : newModules)
+        for (SubmoduleElementEx mod : newModules)
             mod.removeFromParent();
         
-        for (ConnectionNodeEx conn : newConnections)
+        for (ConnectionElementEx conn : newConnections)
             conn.removeFromParent();
     }
 

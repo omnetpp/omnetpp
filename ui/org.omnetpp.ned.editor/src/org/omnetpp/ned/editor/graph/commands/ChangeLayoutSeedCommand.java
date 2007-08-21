@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
@@ -14,7 +14,7 @@ public class ChangeLayoutSeedCommand extends Command {
 	private int oldSeed = 1;
     private IConnectableNode module;
 
-    public ChangeLayoutSeedCommand(CompoundModuleNodeEx newModule) {
+    public ChangeLayoutSeedCommand(CompoundModuleElementEx newModule) {
     	super();
         module = newModule;
     }

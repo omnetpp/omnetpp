@@ -6,31 +6,29 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IHasGates;
-import org.omnetpp.ned.model.interfaces.IInterfaceTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.InterfaceNameElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements IInterfaceTypeNode, IHasGates {
+public class ChannelElementEx extends ChannelElement implements INedTypeNode {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
-    protected ModuleInterfaceNodeEx() {
+    protected ChannelElementEx() {
 		super();
 	}
 
-    protected ModuleInterfaceNodeEx(INEDElement parent) {
+    protected ChannelElementEx(INEDElement parent) {
 		super(parent);
 	}
 
@@ -75,35 +73,25 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode implements IInter
         return it == null ? null : it.getNEDElement();
     }
 
-    public List<ExtendsNode> getAllExtends() {
-        List<ExtendsNode> result = new ArrayList<ExtendsNode>();
-        ExtendsNode extendsNode = getFirstExtendsChild();
-        if (extendsNode == null)
+    public List<ExtendsElement> getAllExtends() {
+        List<ExtendsElement> result = new ArrayList<ExtendsElement>();
+        ExtendsElement extendsElement = getFirstExtendsChild();
+        if (extendsElement == null)
             return result;
 
-        for (INEDElement currChild : extendsNode)
-            if (currChild instanceof ExtendsNode)
-                result.add(extendsNode);
+        for (INEDElement currChild : extendsElement)
+            if (currChild instanceof ExtendsElement)
+                result.add(extendsElement);
 
         return result;
     }
 
-    // parameter query support
-    public Map<String, ParamNode> getParamAssignments() {
+    public Map<String, ParamElement> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamNode> getParamDeclarations() {
+    public Map<String, ParamElement> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
-    }
-
-    // gate support
-    public Map<String, GateNode> getGateSizes() {
-        return getNEDTypeInfo().getGateSizes();
-    }
-
-    public Map<String, GateNode> getGateDeclarations() {
-        return getNEDTypeInfo().getGateDeclarations();
     }
 
 }

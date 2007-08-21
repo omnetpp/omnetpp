@@ -26,11 +26,11 @@ import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeDifferenceUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.ex.ChannelNodeEx;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
@@ -41,18 +41,18 @@ import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.NedFileNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.pojo.NedFileElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -68,18 +68,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // filters for component access with getAllComponentsFilteredBy
     public static final IPredicate SIMPLE_MODULE_FILTER = new IPredicate() {
         public boolean matches(INEDTypeInfo component) {
-            return component.getNEDElement() instanceof SimpleModuleNode;
+            return component.getNEDElement() instanceof SimpleModuleElement;
         }
     };
     public static final IPredicate COMPOUND_MODULE_FILTER = new IPredicate() {
         public boolean matches(INEDTypeInfo component) {
-            return component.getNEDElement() instanceof CompoundModuleNode;
+            return component.getNEDElement() instanceof CompoundModuleElement;
         }
     };
     public static final IPredicate NETWORK_FILTER = new IPredicate() {
         public boolean matches(INEDTypeInfo component) {
-            return component.getNEDElement() instanceof CompoundModuleNodeEx &&
-                   ((CompoundModuleNodeEx)component.getNEDElement()).getIsNetwork();
+            return component.getNEDElement() instanceof CompoundModuleElementEx &&
+                   ((CompoundModuleElementEx)component.getNEDElement()).getIsNetwork();
         }
     };
 
@@ -96,7 +96,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                         };
                         
     // stores parsed contents of NED files
-    private final HashMap<IFile, NedFileNodeEx> nedFiles = new HashMap<IFile, NedFileNodeEx>();
+    private final HashMap<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
 
     private final HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 
@@ -137,16 +137,16 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // FIXME should use built-in NED text from nedxml lib!!!
     protected void createBuiltInNEDTypes() {
         // create built-in channel type cIdealChannel
-        ChannelNodeEx nullChannel = (ChannelNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
+        ChannelElementEx nullChannel = (ChannelElementEx) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CHANNEL);
         nullChannel.setName("cIdealChannel");
         nullChannel.setIsWithcppclass(true);
         nullChannelType = new NEDTypeInfo(nullChannel, null, this);
 
         // create built-in channel type cBasicChannel
-        ChannelNodeEx basicChannel = (ChannelNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
+        ChannelElementEx basicChannel = (ChannelElementEx) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CHANNEL);
         basicChannel.setName("cBasicChannel");
         basicChannel.setIsWithcppclass(true);
-        ParametersNode params = (ParametersNode) NEDElementFactoryEx.getInstance().createNodeWithTag(
+        ParametersElement params = (ParametersElement) NEDElementFactoryEx.getInstance().createElement(
                 NEDElementTags.NED_PARAMETERS, basicChannel);
         params.appendChild(createImplicitChannelParameter("delay", NEDElementConstants.NED_PARTYPE_DOUBLE));
         params.appendChild(createImplicitChannelParameter("error", NEDElementConstants.NED_PARTYPE_DOUBLE));
@@ -158,18 +158,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // interface IBidirectionalChannel { gates: inout a; inout b; }
         // interface IUnidirectionalChannel {gates: input i; output o; }
         //
-        ModuleInterfaceNodeEx bidirChannel = (ModuleInterfaceNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(
+        ModuleInterfaceElementEx bidirChannel = (ModuleInterfaceElementEx) NEDElementFactoryEx.getInstance().createElement(
                 NEDElementTags.NED_MODULE_INTERFACE);
         bidirChannel.setName("IBidirectionalChannel");
-        GatesNode gates = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES, bidirChannel);
+        GatesElement gates = (GatesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_GATES, bidirChannel);
         gates.appendChild(createGate("a", NEDElementConstants.NED_GATETYPE_INOUT));
         gates.appendChild(createGate("b", NEDElementConstants.NED_GATETYPE_INOUT));
         bidirChannelType = new NEDTypeInfo(bidirChannel, null, this);
 
-        ModuleInterfaceNodeEx unidirChannel = (ModuleInterfaceNodeEx) NEDElementFactoryEx.getInstance().createNodeWithTag(
+        ModuleInterfaceElementEx unidirChannel = (ModuleInterfaceElementEx) NEDElementFactoryEx.getInstance().createElement(
                 NEDElementTags.NED_MODULE_INTERFACE);
         unidirChannel.setName("IUnidirectionalChannel");
-        GatesNode gates2 = (GatesNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATES,
+        GatesElement gates2 = (GatesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_GATES,
                 unidirChannel);
         gates2.appendChild(createGate("i", NEDElementConstants.NED_GATETYPE_INPUT));
         gates2.appendChild(createGate("o", NEDElementConstants.NED_GATETYPE_OUTPUT));
@@ -178,7 +178,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /* utility method */
     protected INEDElement createGate(String name, int type) {
-        GateNode g = (GateNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATE);
+        GateElement g = (GateElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_GATE);
         g.setName(name);
         g.setType(type);
         return g;
@@ -186,7 +186,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /* utility method */
     protected INEDElement createImplicitChannelParameter(String name, int type) {
-        ParamNode param = (ParamNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_PARAM);
+        ParamElement param = (ParamElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PARAM);
         param.setName(name);
         param.setType(type);
         param.setIsVolatile(false);
@@ -200,7 +200,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedFiles.keySet();
     }
 
-    public synchronized NedFileNodeEx getNEDFileModel(IFile file) {
+    public synchronized NedFileElementEx getNEDFileModel(IFile file) {
     	Assert.isTrue(nedFiles.containsKey(file), "file is not a NED file, or not parsed yet");
 		rehashIfNeeded();
         return nedFiles.get(file);
@@ -428,7 +428,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
         NEDErrorStore errors = new NEDErrorStore();
-        NedFileNodeEx tree = NEDTreeUtil.loadNedSource(fileName, errors);
+        NedFileElementEx tree = NEDTreeUtil.loadNedSource(fileName, errors);
         Assert.isNotNull(tree);
         markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
         
@@ -448,10 +448,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
     
     // store NED file contents
-    private synchronized void storeNEDFileModel(IFile file, NedFileNodeEx tree) {
+    private synchronized void storeNEDFileModel(IFile file, NedFileElementEx tree) {
         Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
 
-        NedFileNodeEx oldTree = nedFiles.get(file);
+        NedFileElementEx oldTree = nedFiles.get(file);
         // if the new tree has changed, we have to rehash everything
         if (oldTree == null || !NEDTreeUtil.isNEDTreeEqual(oldTree, tree)) {
             invalidate();
@@ -541,15 +541,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         		else {
         			// normal case: not duplicate. Add the type info to our tables.
         			HashMap<String, INEDTypeInfo> map;
-        			if (node instanceof ChannelNode)
+        			if (node instanceof ChannelElement)
         				map = channels;
-        			else if (node instanceof ChannelInterfaceNode)
+        			else if (node instanceof ChannelInterfaceElement)
         				map = channelInterfaces;
-        			else if (node instanceof SimpleModuleNode)
+        			else if (node instanceof SimpleModuleElement)
         				map = modules;
-        			else if (node instanceof CompoundModuleNode)
+        			else if (node instanceof CompoundModuleElement)
         				map = modules;
-        			else if (node instanceof ModuleInterfaceNode)
+        			else if (node instanceof ModuleInterfaceElement)
         				map = moduleInterfaces;
         			else 
         				throw new RuntimeException("internal error: unrecognized NED type " + node);
@@ -580,7 +580,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             IMarker.SEVERITY_ERROR, message, context.getSourceLocation());
                 }};
             NEDFileValidator validator = new NEDFileValidator(this, errors);
-            NedFileNode tree = (NedFileNode) nedFiles.get(file);
+            NedFileElement tree = (NedFileElement) nedFiles.get(file);
             validator.validate(tree);
         }
 
@@ -713,19 +713,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
  
         // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof INedTypeNode && event instanceof NEDAttributeChangeEvent
-                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
+                && SimpleModuleElement.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
             return true;
 
         // check for removal or insertion of top level nodes
-        if (event.getSource() instanceof NedFileNodeEx && event instanceof NEDStructuralChangeEvent)
+        if (event.getSource() instanceof NedFileElementEx && event instanceof NEDStructuralChangeEvent)
             return true;
 
         // check for extends name change
-        if (event.getSource() instanceof ExtendsNode && event instanceof NEDAttributeChangeEvent
-                && ExtendsNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
+        if (event.getSource() instanceof ExtendsElement && event instanceof NEDAttributeChangeEvent
+                && ExtendsElement.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
             return true;
         // refresh if we have removed an extend node
-        if (event instanceof NEDStructuralChangeEvent && ((NEDStructuralChangeEvent) event).getChild() instanceof ExtendsNode
+        if (event instanceof NEDStructuralChangeEvent && ((NEDStructuralChangeEvent) event).getChild() instanceof ExtendsElement
                 && ((NEDStructuralChangeEvent) event).getType() == NEDStructuralChangeEvent.Type.REMOVAL)
             return true;
 

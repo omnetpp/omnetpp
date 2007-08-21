@@ -18,15 +18,15 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
-import org.omnetpp.ned.model.ex.ChannelNodeEx;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
+import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
  * EditPart for the NED Outline view.
@@ -50,13 +50,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     @Override
     public void activate() {
         super.activate();
-        if (getModel() instanceof NedFileNode)
+        if (getModel() instanceof NedFileElement)
             NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
     }
 
     @Override
     public void deactivate() {
-        if (getModel() instanceof NedFileNode)
+        if (getModel() instanceof NedFileElement)
             NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         super.deactivate();
     }
@@ -74,11 +74,11 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     	installEditPolicy(EditPolicy.TREE_CONTAINER_ROLE, new NedTreeContainerEditPolicy());
 
         // we do not allow the reordering of the content (children) of the following node types
-    	if (getModel() instanceof SubmoduleNodeEx ||
-        	getModel() instanceof CompoundModuleNodeEx ||
-            getModel() instanceof ChannelNodeEx ||
-            getModel() instanceof ChannelInterfaceNodeEx ||
-            getModel() instanceof ModuleInterfaceNodeEx) {
+    	if (getModel() instanceof SubmoduleElementEx ||
+        	getModel() instanceof CompoundModuleElementEx ||
+            getModel() instanceof ChannelElementEx ||
+            getModel() instanceof ChannelInterfaceElementEx ||
+            getModel() instanceof ModuleInterfaceElementEx) {
         	removeEditPolicy(EditPolicy.TREE_CONTAINER_ROLE);
         }
 

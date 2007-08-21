@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 
 /**
  * This command converts the ned model to new format (if it is in old format currently)
@@ -12,13 +12,13 @@ import org.omnetpp.ned.model.ex.NedFileNodeEx;
 public class ConvertNedVersionCommand extends Command {
     protected String originalVersion;
     protected String newVersion = "2";
-    protected NedFileNodeEx fileElement;
+    protected NedFileElementEx fileElement;
 
     public ConvertNedVersionCommand(INEDElement element) {
-        while (element != null && !(element instanceof NedFileNodeEx)) {
+        while (element != null && !(element instanceof NedFileElementEx)) {
             element = element.getParent();
         }
-        fileElement = (NedFileNodeEx)element;
+        fileElement = (NedFileElementEx)element;
         if (fileElement == null)
             return;
 

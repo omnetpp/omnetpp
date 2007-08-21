@@ -15,27 +15,27 @@ import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDisplayString, IHasParameters {
+public class ConnectionElementEx extends ConnectionElement implements IHasType, IHasDisplayString, IHasParameters {
 	
 	private DisplayString displayString = null;
 
-    protected ConnectionNodeEx() {
-		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
+    protected ConnectionElementEx() {
+		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
 
-    protected ConnectionNodeEx(INEDElement parent) {
+    protected ConnectionElementEx(INEDElement parent) {
 		super(parent);
-		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
+		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
 
     public IConnectableNode getSrcModuleRef() {
@@ -61,7 +61,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     }
 
     protected String connectedModuleName(IConnectableNode module) {
-        return module == null ? null : (module instanceof CompoundModuleNodeEx) ? "" : module.getName();
+        return module == null ? null : (module instanceof CompoundModuleElementEx) ? "" : module.getName();
     }
 
     // helper functions to set the module names using references
@@ -69,7 +69,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
         if (moduleName == null)
             return null; // not connected
 
-        CompoundModuleNodeEx compoundModule = getCompoundModule();
+        CompoundModuleElementEx compoundModule = getCompoundModule();
         if (compoundModule == null)
         	return null; // this is a detached connection
         else
@@ -167,8 +167,8 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
      * Returns the compound module containing this connection, or null if the
      * connection is not part of the model (i.e. has no compound module parent).
      */
-    public CompoundModuleNodeEx getCompoundModule() {
-    	return (CompoundModuleNodeEx)getEnclosingTypeNode();
+    public CompoundModuleElementEx getCompoundModule() {
+    	return (CompoundModuleElementEx)getEnclosingTypeNode();
     }
 
     /**
@@ -181,47 +181,47 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     // type management
 
     public String getType() {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        return channelSpecNode == null ? null : channelSpecNode.getType();
+        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        return channelSpecElement == null ? null : channelSpecElement.getType();
     }
 
     public void setType(String type) {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecNode == null) {
-            channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
-            appendChild(channelSpecNode);
+        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if (channelSpecElement == null) {
+            channelSpecElement = (ChannelSpecElement)NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
+            appendChild(channelSpecElement);
         }
-        channelSpecNode.setType(type);
+        channelSpecElement.setType(type);
     }
 
     public String getLikeType() {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        return channelSpecNode == null ? null : channelSpecNode.getLikeType();
+        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        return channelSpecElement == null ? null : channelSpecElement.getLikeType();
     }
 
     public void setLikeType(String type) {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
 
-        if (channelSpecNode == null) {
-            channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
-            appendChild(channelSpecNode);
+        if (channelSpecElement == null) {
+            channelSpecElement = (ChannelSpecElement)NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
+            appendChild(channelSpecElement);
         }
-        channelSpecNode.setLikeType(type);
+        channelSpecElement.setLikeType(type);
     }
 
     public String getLikeParam() {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        return channelSpecNode == null ? null : channelSpecNode.getLikeParam();
+        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        return channelSpecElement == null ? null : channelSpecElement.getLikeParam();
     }
 
     public void setLikeParam(String param) {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
 
-        if (channelSpecNode == null) {
-            channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
-            appendChild(channelSpecNode);
+        if (channelSpecElement == null) {
+            channelSpecElement = (ChannelSpecElement)NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
+            appendChild(channelSpecElement);
         }
-        channelSpecNode.setLikeParam(param);
+        channelSpecElement.setLikeParam(param);
     }
 
     public String getEffectiveType() {
@@ -241,41 +241,41 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
     /**
      * Returns a list of all parameters assigned in this module (inside the channel spec element)
      */
-    public List<ParamNodeEx> getOwnParams() {
-        List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
+    public List<ParamElementEx> getOwnParams() {
+        List<ParamElementEx> result = new ArrayList<ParamElementEx>();
 
-        ChannelSpecNode channelSpecNode = getFirstChannelSpecChild();;
-        if (channelSpecNode == null)
+        ChannelSpecElement channelSpecElement = getFirstChannelSpecChild();;
+        if (channelSpecElement == null)
             return result;
 
-        ParametersNode parametersNode = channelSpecNode.getFirstParametersChild();
-        if (parametersNode != null)
-        	for (INEDElement currChild : parametersNode)
-        		if (currChild instanceof ParamNodeEx)
-        			result.add((ParamNodeEx)currChild);
+        ParametersElement parametersElement = channelSpecElement.getFirstParametersChild();
+        if (parametersElement != null)
+        	for (INEDElement currChild : parametersElement)
+        		if (currChild instanceof ParamElementEx)
+        			result.add((ParamElementEx)currChild);
 
         return result;
     }
 
     // parameter query support
     
-    public Map<String, ParamNode> getParamAssignments() {
-    	Map<String, ParamNode> result = new HashMap<String, ParamNode>();
+    public Map<String, ParamElement> getParamAssignments() {
+    	Map<String, ParamElement> result = new HashMap<String, ParamElement>();
 
     	INEDTypeInfo info = getNEDTypeInfo();
     	if (info != null) 
     		result.putAll(info.getParamAssignments());
 
         // add our own assigned parameters
-        for (ParamNodeEx ownParam : getOwnParams())
+        for (ParamElementEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
 
         return result;
     }
 
-    public Map<String, ParamNode> getParamDeclarations() {
+    public Map<String, ParamElement> getParamDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamNode>() : info.getParamDeclarations();
+        return info == null ? new HashMap<String, ParamElement>() : info.getParamDeclarations();
     }
 
 }

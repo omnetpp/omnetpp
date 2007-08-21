@@ -6,7 +6,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 
@@ -31,7 +31,7 @@ public class CreateToplevelComponentCommand extends Command {
     @Override
     public boolean canExecute() {
         return child != null && parent != null &&
-        		parent instanceof NedFileNodeEx &&
+        		parent instanceof NedFileElementEx &&
         		child instanceof INedTypeNode;
     }
 

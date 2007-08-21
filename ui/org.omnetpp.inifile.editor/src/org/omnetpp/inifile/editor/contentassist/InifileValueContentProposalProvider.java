@@ -28,7 +28,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * Generate proposals for config values, parameter values, per-object config values etc.
@@ -152,13 +152,13 @@ s	 * before getting presented to the user.
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 
 		// collect unique param nodes
-		Set<ParamNode> paramSet = new HashSet<ParamNode>();
+		Set<ParamElement> paramSet = new HashSet<ParamElement>();
 		for (ParamResolution res : resList)
 			paramSet.add(res.paramDeclNode);
 
 		// determine param type (all params matched must have the same type)
 		int dataType = -1;
-		for (ParamNode par : paramSet) {
+		for (ParamElement par : paramSet) {
 			if (dataType == -1)
 				dataType = par.getType();
 			else if (dataType != par.getType())

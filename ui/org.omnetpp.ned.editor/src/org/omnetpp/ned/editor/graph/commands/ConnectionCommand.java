@@ -3,11 +3,11 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
@@ -21,15 +21,15 @@ public class ConnectionCommand extends Command {
 
 	protected IConnectableNode oldSrcModule;
 	protected IConnectableNode oldDestModule;
-	protected ConnectionNode oldConn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
+	protected ConnectionElement oldConn = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 
     protected IConnectableNode srcModule;
     protected IConnectableNode destModule;
-	protected ConnectionNode newConn =(ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
+	protected ConnectionElement newConn =(ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
-    protected ConnectionNodeEx connModel;
-    protected ConnectionNodeEx connNodeNextSibling;
-    protected CompoundModuleNodeEx parent;
+    protected ConnectionElementEx connModel;
+    protected ConnectionElementEx connNodeNextSibling;
+    protected CompoundModuleElementEx parent;
     private CompoundModuleEditPart parentEditPart;
     private ModuleEditPart srcEditPart;
     private ModuleEditPart destEditPart;
@@ -41,7 +41,7 @@ public class ConnectionCommand extends Command {
      * @param sourceEditPart
      * @param targetEditPart
      */
-    public ConnectionCommand(ConnectionNodeEx conn, CompoundModuleEditPart compoundEditPart,
+    public ConnectionCommand(ConnectionElementEx conn, CompoundModuleEditPart compoundEditPart,
                                 ModuleEditPart sourceEditPart, ModuleEditPart targetEditPart) {
         this.connModel = conn;
         this.parentEditPart = compoundEditPart;
@@ -49,8 +49,8 @@ public class ConnectionCommand extends Command {
         this.destEditPart = targetEditPart;
         this.oldSrcModule = connModel.getSrcModuleRef();
         this.oldDestModule = connModel.getDestModuleRef();
-        this.oldConn = (ConnectionNode)connModel.dup();
-        this.newConn = (ConnectionNode)connModel.dup();
+        this.oldConn = (ConnectionElement)connModel.dup();
+        this.newConn = (ConnectionElement)connModel.dup();
     }
 
     /**
@@ -111,10 +111,10 @@ public class ConnectionCommand extends Command {
         // from the model totally (ie delete it)
         if (srcModule == null && destModule == null) {
             // just store the NEXT sibling so we can put it back during undo to the right place
-            connNodeNextSibling = (ConnectionNodeEx)connModel.getNextConnectionNodeSibling();
+            connNodeNextSibling = (ConnectionElementEx)connModel.getNextConnectionElementSibling();
             // store the parent too so we now where to put it back during undo
             // FIXME this does not work if connections are placed in connection groups
-            parent = (CompoundModuleNodeEx)connModel.getParent().getParent();
+            parent = (CompoundModuleElementEx)connModel.getParent().getParent();
             // and remove from the parent too
             parentEditPart.getCompoundModuleModel().removeConnection(connModel);
             return;
@@ -158,7 +158,7 @@ public class ConnectionCommand extends Command {
 	 * @param from
 	 * @param to
 	 */
-	public static void copyConn(ConnectionNode from, ConnectionNode to) {
+	public static void copyConn(ConnectionElement from, ConnectionElement to) {
 		to.setSrcModuleIndex(from.getSrcModuleIndex());
         to.setSrcGate(from.getSrcGate());
         to.setSrcGateIndex(from.getSrcGateIndex());
@@ -210,7 +210,7 @@ public class ConnectionCommand extends Command {
      * Returns the connection node used as a template, for the command. If the command is executed
      * the model will have the same content as the template connection.
      */
-    public ConnectionNode getConnectionTemplate() {
+    public ConnectionElement getConnectionTemplate() {
     	return newConn;
     }
 

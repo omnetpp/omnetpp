@@ -1,23 +1,23 @@
 package org.omnetpp.ned.core;
 
 import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
-import org.omnetpp.ned.model.ex.ChannelNodeEx;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
+import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.pojo.AbstractNEDValidator;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned.model.pojo.NedFileNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
+import org.omnetpp.ned.model.pojo.NedFileElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Validation using the extended ("Ex") classes
@@ -25,53 +25,53 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * @author andras
  */
 public abstract class AbstractNEDValidatorEx extends AbstractNEDValidator implements NEDElementConstants {
-    protected abstract void validateElement(NedFileNodeEx node);
-    protected abstract void validateElement(SimpleModuleNodeEx node);
-    protected abstract void validateElement(ModuleInterfaceNodeEx node);
-    protected abstract void validateElement(CompoundModuleNodeEx node);
-    protected abstract void validateElement(ChannelInterfaceNodeEx node);
-    protected abstract void validateElement(ChannelNodeEx node);
-    protected abstract void validateElement(SubmoduleNodeEx node);
-    protected abstract void validateElement(ConnectionNodeEx node);
+    protected abstract void validateElement(NedFileElementEx node);
+    protected abstract void validateElement(SimpleModuleElementEx node);
+    protected abstract void validateElement(ModuleInterfaceElementEx node);
+    protected abstract void validateElement(CompoundModuleElementEx node);
+    protected abstract void validateElement(ChannelInterfaceElementEx node);
+    protected abstract void validateElement(ChannelElementEx node);
+    protected abstract void validateElement(SubmoduleElementEx node);
+    protected abstract void validateElement(ConnectionElementEx node);
 
 	@Override
-    final protected void validateElement(NedFileNode node) {
-		validateElement((NedFileNodeEx)node);
+    final protected void validateElement(NedFileElement node) {
+		validateElement((NedFileElementEx)node);
 	}
 
 	@Override
-	final protected void validateElement(ModuleInterfaceNode node) {
-		validateElement((ModuleInterfaceNodeEx)node);
+	final protected void validateElement(ModuleInterfaceElement node) {
+		validateElement((ModuleInterfaceElementEx)node);
 	}
 
 	@Override
-	final protected void validateElement(SimpleModuleNode node) {
-		validateElement((SimpleModuleNodeEx)node);
+	final protected void validateElement(SimpleModuleElement node) {
+		validateElement((SimpleModuleElementEx)node);
 	}
 
 	@Override
-	final protected void validateElement(CompoundModuleNode node) {
-		validateElement((CompoundModuleNodeEx)node);
+	final protected void validateElement(CompoundModuleElement node) {
+		validateElement((CompoundModuleElementEx)node);
 	}
 
 	@Override
-	final protected void validateElement(ChannelInterfaceNode node) {
-		validateElement((ChannelInterfaceNodeEx)node);
+	final protected void validateElement(ChannelInterfaceElement node) {
+		validateElement((ChannelInterfaceElementEx)node);
 	}
 
 	@Override
-	final protected void validateElement(ChannelNode node) {
-		validateElement((ChannelNodeEx)node);
+	final protected void validateElement(ChannelElement node) {
+		validateElement((ChannelElementEx)node);
 	}
 
 	@Override
-	final protected void validateElement(SubmoduleNode node) {
-		validateElement((SubmoduleNodeEx)node);
+	final protected void validateElement(SubmoduleElement node) {
+		validateElement((SubmoduleElementEx)node);
 	}
 	
 	@Override
-	final protected void validateElement(ConnectionNode node) {
-		validateElement((ConnectionNode)node);
+	final protected void validateElement(ConnectionElement node) {
+		validateElement((ConnectionElementEx)node);
 	}
 
 }

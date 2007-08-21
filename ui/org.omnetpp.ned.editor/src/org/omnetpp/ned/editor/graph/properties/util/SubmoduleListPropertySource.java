@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
  * Property source to display all submodules for a given compound module
@@ -15,23 +15,23 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 public class SubmoduleListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "submodules";
     public final static String DESCRIPTION = "List of submodules (direct and inherited)";
-    protected CompoundModuleNodeEx model;
+    protected CompoundModuleElementEx model;
     protected PropertyDescriptor[] pdesc;
     protected int totalSubmoduleCount;
     protected int inheritedSubmoduleCount;
 
-    public SubmoduleListPropertySource(CompoundModuleNodeEx model) {
+    public SubmoduleListPropertySource(CompoundModuleElementEx model) {
         super(model);
         this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<SubmoduleNodeEx> submodules = model.getSubmodules();
+        List<SubmoduleElementEx> submodules = model.getSubmodules();
 
         pdesc = new PropertyDescriptor[submodules.size()];
         totalSubmoduleCount = inheritedSubmoduleCount = 0;
-        for (SubmoduleNodeEx smodule : submodules) {
+        for (SubmoduleElementEx smodule : submodules) {
             String definedIn = "";
             if (smodule.getCompoundModule() != model) {
                 inheritedSubmoduleCount++;
@@ -64,10 +64,10 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getPropertyValue(Object id) {
-        if (!(id instanceof SubmoduleNodeEx))
+        if (!(id instanceof SubmoduleElementEx))
             return getEditableValue();
 
-        return ((SubmoduleNodeEx)id).getNameWithIndex();
+        return ((SubmoduleElementEx)id).getNameWithIndex();
     }
 
     @Override

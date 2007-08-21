@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.ChannelNodeEx;
+import org.omnetpp.ned.model.ex.ChannelElementEx;
 
 /**
  * Property source for channels
@@ -24,9 +24,9 @@ import org.omnetpp.ned.model.ex.ChannelNodeEx;
 public class ChannelPropertySource extends MergedPropertySource {
 
     protected static class ChannelDisplayPropertySource extends DisplayPropertySource {
-        protected ChannelNodeEx model;
+        protected ChannelElementEx model;
 
-        public ChannelDisplayPropertySource(ChannelNodeEx model) {
+        public ChannelDisplayPropertySource(ChannelElementEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
@@ -44,7 +44,7 @@ public class ChannelPropertySource extends MergedPropertySource {
      * Constructor
      * @param nodeModel
      */
-    public ChannelPropertySource(ChannelNodeEx nodeModel) {
+    public ChannelPropertySource(ChannelElementEx nodeModel) {
     	super(nodeModel);
         mergePropertySource(new NamePropertySource(nodeModel));
         // extends

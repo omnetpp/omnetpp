@@ -88,8 +88,8 @@ import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSo
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
@@ -98,7 +98,7 @@ import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 
 /**
@@ -218,7 +218,7 @@ public class GraphicalNedEditor
     private NedOutlinePage outlinePage;
     private NedPropertySheetPage propertySheetPage;
     private boolean editorSaving = false;
-    private NedFileNodeEx nedFileModel;  //TODO can be eliminated
+    private NedFileElementEx nedFileModel;  //TODO can be eliminated
     private SelectionSynchronizer synchronizer;
 
     // last state of the command stack (used to detect changes since last page switch)
@@ -473,8 +473,8 @@ public class GraphicalNedEditor
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileNodeEx getNEDFileModelFromResourcesPlugin() {
-		return (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+	protected NedFileElementEx getNEDFileModelFromResourcesPlugin() {
+		return (NedFileElementEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
 	}
 
     protected void loadProperties() {
@@ -500,11 +500,11 @@ public class GraphicalNedEditor
         }
     }
 
-    public NedFileNodeEx getModel() {
+    public NedFileElementEx getModel() {
         return nedFileModel;
     }
 
-    public void setModel(NedFileNodeEx nedModel) {
+    public void setModel(NedFileElementEx nedModel) {
         if (nedFileModel == nedModel)
             return;
 
@@ -582,19 +582,19 @@ public class GraphicalNedEditor
     	// If a submodule name has changed, we must change all the connections in the same compound module
     	// that is attached to this module, so the model will remain consistent.
     	//
-    	// NOTE: corresponding code used to be in SubmoduleNodeEx.setName(), but that's
+    	// NOTE: corresponding code used to be in SubmoduleElementEx.setName(), but that's
     	// not the right place. This is more of a refactoring, e.g. ideally we'd have to
     	// update all derived compound modules too, possibly after asking the user for 
     	// confirmation -- which is more easily done here.
     	//
-    	if (event instanceof NEDAttributeChangeEvent && event.getSource() instanceof SubmoduleNodeEx) {
+    	if (event instanceof NEDAttributeChangeEvent && event.getSource() instanceof SubmoduleElementEx) {
     		NEDAttributeChangeEvent e = (NEDAttributeChangeEvent) event;
-    		if (e.getAttribute().equals(SubmoduleNode.ATT_NAME))
-    			submoduleNameChanged((SubmoduleNodeEx)e.getSource(), (String)e.getOldValue(), (String)e.getNewValue());
+    		if (e.getAttribute().equals(SubmoduleElement.ATT_NAME))
+    			submoduleNameChanged((SubmoduleElementEx)e.getSource(), (String)e.getOldValue(), (String)e.getNewValue());
     	}
     }
 
-    protected void submoduleNameChanged(SubmoduleNodeEx submodule, String oldName, String newName) {
+    protected void submoduleNameChanged(SubmoduleElementEx submodule, String oldName, String newName) {
     	NEDElementUtilEx.renameSubmoduleInConnections(submodule.getCompoundModule(), oldName, newName);
 	}
 

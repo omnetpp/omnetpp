@@ -14,7 +14,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.PolicyUtil;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
@@ -103,8 +103,8 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
      * @return The created ConstraintCommand
      */
     protected SetConstraintCommand createTogglePinCommand(GraphicalEditPart child) {
-        if (child.getModel() instanceof SubmoduleNodeEx && PolicyUtil.isEditable(child)) {
-            SubmoduleNodeEx smodule = (SubmoduleNodeEx) child.getModel();
+        if (child.getModel() instanceof SubmoduleElementEx && PolicyUtil.isEditable(child)) {
+            SubmoduleElementEx smodule = (SubmoduleElementEx) child.getModel();
             // get the compound module scaling factor
             float scale = ((ModuleEditPart)child).getScale();
             // otherwise create a command that deletes the location from the display string

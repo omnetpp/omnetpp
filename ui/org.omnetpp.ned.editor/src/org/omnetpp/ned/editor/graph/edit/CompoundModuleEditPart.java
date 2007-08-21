@@ -26,9 +26,9 @@ import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
  * TODO add documentation
@@ -70,8 +70,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     /**
      * Convenience method to return the model object with the correct type
      */
-    public CompoundModuleNodeEx getCompoundModuleModel() {
-        return (CompoundModuleNodeEx)getModel();
+    public CompoundModuleElementEx getCompoundModuleModel() {
+        return (CompoundModuleElementEx)getModel();
     }
 
     @Override
@@ -104,7 +104,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     @Override
-    protected List<SubmoduleNodeEx> getModelChildren() {
+    protected List<SubmoduleElementEx> getModelChildren() {
         // return all submodule including inherited ones
     	return getCompoundModuleModel().getSubmodules();
     }
@@ -113,7 +113,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      * Returns a list of connections for which this is the srcModule.
      */
     @Override
-    protected List<ConnectionNodeEx> getModelSourceConnections() {
+    protected List<ConnectionElementEx> getModelSourceConnections() {
         return getCompoundModuleModel().getSrcConnections();
     }
 
@@ -121,7 +121,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      * Returns a list of connections for which this is the destModule.
      */
     @Override
-    protected List<ConnectionNodeEx> getModelTargetConnections() {
+    protected List<ConnectionElementEx> getModelTargetConnections() {
         return getCompoundModuleModel().getDestConnections();
     }
 
@@ -169,7 +169,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     public float getScale() {
-        return ((CompoundModuleNodeEx)getModel()).getDisplayString().getScale();
+        return ((CompoundModuleElementEx)getModel()).getDisplayString().getScale();
     }
 
     @Override

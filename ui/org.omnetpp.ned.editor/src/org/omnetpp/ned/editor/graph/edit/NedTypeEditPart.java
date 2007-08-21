@@ -9,9 +9,9 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 
 /**
  * Controller object for toplevel elements in the NED file, like:
@@ -44,11 +44,11 @@ public class NedTypeEditPart extends NedEditPart {
     		// set module name and vector size
     		String nameToDisplay = ((IHasName)getModel()).getName();
 
-            if (getModel() instanceof ChannelInterfaceNode)
+            if (getModel() instanceof ChannelInterfaceElement)
                 nameToDisplay = "Channel interface: " + nameToDisplay;
-            else if (getModel() instanceof ChannelNode)
+            else if (getModel() instanceof ChannelElement)
                 nameToDisplay = "Channel: " + nameToDisplay;
-            else if (getModel() instanceof ModuleInterfaceNode)
+            else if (getModel() instanceof ModuleInterfaceElement)
                 nameToDisplay = "Interface: " + nameToDisplay;
 
             getNedTypeFigure().setText(nameToDisplay);
@@ -64,11 +64,11 @@ public class NedTypeEditPart extends NedEditPart {
             // set icon names for the channel and module/channel interface figures
             // we use special icons for these types
             Image image = null;
-            if (getModel() instanceof ChannelInterfaceNode)
+            if (getModel() instanceof ChannelInterfaceElement)
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
-            else if (getModel() instanceof ChannelNode)
+            else if (getModel() instanceof ChannelElement)
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-            else if (getModel() instanceof ModuleInterfaceNode)
+            else if (getModel() instanceof ModuleInterfaceElement)
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
 
             if (image != null)

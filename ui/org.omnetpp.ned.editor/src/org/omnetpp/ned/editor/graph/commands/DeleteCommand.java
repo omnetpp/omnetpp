@@ -5,15 +5,15 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.pojo.ConnectionsElement;
 
 /**
  * Deletes an object from the model and as a special case also removes all
- * associated connections if the object was a SubmoduleNode
+ * associated connections if the object was a SubmoduleElement
  *
  * @author rhornig
  */
@@ -21,9 +21,9 @@ public class DeleteCommand extends Command {
 
     // an inner class to store data to be able to undo a connection deletion
     private static class ConnectionUndoItem {
-        public ConnectionNodeEx node;            // the NODE that was deleted
-        public ConnectionsNode parent;           // the parent of the deleted node
-        public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
+        public ConnectionElementEx node;            // the NODE that was deleted
+        public ConnectionsElement parent;           // the parent of the deleted node
+        public ConnectionElementEx nextSibling;     // the next sibling to be able to insert it back into the correct position
         public IConnectableNode srcModule;             // the src module the connection was originally attached to
         public IConnectableNode destModule;            // the dest module the connection was originally attached to
     }
@@ -65,15 +65,15 @@ public class DeleteCommand extends Command {
         restoreConnections();
     }
 
-    private void deleteConnections(SubmoduleNodeEx module) {
+    private void deleteConnections(SubmoduleElementEx module) {
         // TODO maybe it would be enough to iterate through ALL connections one time
         // no need to separate src and dest connections
-        for (ConnectionNodeEx wire : module.getSrcConnections()) {
+        for (ConnectionElementEx wire : module.getSrcConnections()) {
             // store all data required to undo the operation
             ConnectionUndoItem uitem = new ConnectionUndoItem();
             uitem.node = wire;
-            uitem.parent = (ConnectionsNode)wire.getParent();
-            uitem.nextSibling = (ConnectionNodeEx)wire.getNextConnectionNodeSibling();
+            uitem.parent = (ConnectionsElement)wire.getParent();
+            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionElementSibling();
             uitem.srcModule = wire.getSrcModuleRef();
             uitem.destModule = wire.getDestModuleRef();
             connectionUndoItems.add(uitem);
@@ -82,12 +82,12 @@ public class DeleteCommand extends Command {
            	wire.removeFromParent();
         }
 
-        for (ConnectionNodeEx wire : module.getDestConnections()) {
+        for (ConnectionElementEx wire : module.getDestConnections()) {
             // store all data required to undo the operation
             ConnectionUndoItem uitem = new ConnectionUndoItem();
             uitem.node = wire;
-            uitem.parent = (ConnectionsNode)wire.getParent();
-            uitem.nextSibling = (ConnectionNodeEx)wire.getNextConnectionNodeSibling();
+            uitem.parent = (ConnectionsElement)wire.getParent();
+            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionElementSibling();
             uitem.srcModule = wire.getSrcModuleRef();
             uitem.destModule = wire.getDestModuleRef();
             connectionUndoItems.add(uitem);
@@ -100,8 +100,8 @@ public class DeleteCommand extends Command {
 
     protected void primExecute() {
     	// check if the element is a submodule, because its connections should be deleted too
-    	if (elementUndoItem.node instanceof SubmoduleNodeEx)
-    		deleteConnections((SubmoduleNodeEx)elementUndoItem.node);
+    	if (elementUndoItem.node instanceof SubmoduleElementEx)
+    		deleteConnections((SubmoduleElementEx)elementUndoItem.node);
 
         elementUndoItem.node.removeFromParent();
     }

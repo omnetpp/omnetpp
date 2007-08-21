@@ -38,7 +38,7 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 //FIXME why doesn't this comment go into the normal class comment? --Andras
 // MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
@@ -407,7 +407,7 @@ public class MultiPageNedEditor
 
     public void showInEditor(INEDElement model, Mode mode) {
         if (mode == Mode.AUTOMATIC) {
-            mode = model instanceof INedTypeNode || model instanceof SubmoduleNode ? Mode.GRAPHICAL : Mode.TEXT;
+            mode = model instanceof INedTypeNode || model instanceof SubmoduleElement ? Mode.GRAPHICAL : Mode.TEXT;
         }
 
         if (mode == Mode.GRAPHICAL) {

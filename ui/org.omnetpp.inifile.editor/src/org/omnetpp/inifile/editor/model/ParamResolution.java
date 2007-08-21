@@ -1,7 +1,7 @@
 package org.omnetpp.inifile.editor.model;
 
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Value object, stores the result of a parameter resolution.
@@ -20,14 +20,14 @@ public class ParamResolution {
 	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter. 
 	// For vector submodules, moduleFullPath contains "[*]".
 	// pathModules[] relates moduleFullPath to NEDElements. The network is pathModules[1]'s
-	// parent CompoundModuleNode, or paramDeclNode's parent Compound/SimpleModuleNode if 
+	// parent CompoundModuleElement, or paramDeclNode's parent Compound/SimpleModuleElement if 
 	// pathModules[] is empty. After that, the type of pathModules[i] is the parent 
-	// Compound/SimpleModuleNode of the next pathModule (or finally, the paramDeclNode).
+	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclNode).
 	// pathModules[0] may be null.
 	public String moduleFullPath;
-	public SubmoduleNode[] pathModules;
-	public ParamNode paramDeclNode;  // node where param was declared; not null
-	public ParamNode paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
+	public SubmoduleElement[] pathModules;
+	public ParamElement paramDeclNode;  // node where param was declared; not null
+	public ParamElement paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
 	public ParamResolutionType type;
@@ -42,8 +42,8 @@ public class ParamResolution {
 	public String key;
 	
 	// for convenience
-	public ParamResolution(String moduleFullPath, SubmoduleNode[] pathModules, 
-			               ParamNode paramDeclNode, ParamNode paramValueNode, ParamResolutionType type, 
+	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules, 
+			               ParamElement paramDeclNode, ParamElement paramValueNode, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
 		this.pathModules = pathModules;

@@ -117,7 +117,7 @@ foreach $element (@elements)
     $childcount = $#children+1;
 
     # element class
-    $elementclass = $element."Node";
+    $elementclass = $element."Element";
     $elementclass =~ s/-(.)/-uc($1)/eg;
     $elementclass =~ s/[^a-zA-Z0-9_]//g;
     $elementclass =~ s/(.)(.*)/uc($1).$2/e;

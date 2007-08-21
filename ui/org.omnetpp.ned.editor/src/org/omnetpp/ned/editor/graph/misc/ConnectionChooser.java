@@ -9,13 +9,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
-import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
@@ -39,53 +39,53 @@ public class ConnectionChooser {
      * @param destGate which dest module gate should be offered. if NULL, all module gates will be enumerated
      * @return TODO what does it return?
      */
-    public static ConnectionNode open(ConnectionCommand connCommand) {
+    public static ConnectionElement open(ConnectionCommand connCommand) {
         Assert.isNotNull(connCommand.getSrcModule());
         Assert.isNotNull(connCommand.getDestModule());
 
-        List<GateNode> srcOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateNode.NED_GATETYPE_OUTPUT, connCommand.getSrcGate());
-        List<GateNode> srcInOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateNode.NED_GATETYPE_INOUT, connCommand.getSrcGate());
-        List<GateNode> destInModuleGates = getModuleGates(connCommand.getDestModule(), GateNode.NED_GATETYPE_INPUT, connCommand.getDestGate());
-        List<GateNode> destInOutModuleGates = getModuleGates(connCommand.getDestModule(), GateNode.NED_GATETYPE_INOUT, connCommand.getDestGate());
+        List<GateElement> srcOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateElement.NED_GATETYPE_OUTPUT, connCommand.getSrcGate());
+        List<GateElement> srcInOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateElement.NED_GATETYPE_INOUT, connCommand.getSrcGate());
+        List<GateElement> destInModuleGates = getModuleGates(connCommand.getDestModule(), GateElement.NED_GATETYPE_INPUT, connCommand.getDestGate());
+        List<GateElement> destInOutModuleGates = getModuleGates(connCommand.getDestModule(), GateElement.NED_GATETYPE_INOUT, connCommand.getDestGate());
 
         BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 
         // unidirectional connections
-        for (GateNode srcOut : srcOutModuleGates)
-            for (GateNode destIn : destInModuleGates)
+        for (GateElement srcOut : srcOutModuleGates)
+            for (GateElement destIn : destInModuleGates)
                 addConnectionPairsToMenu(connCommand, menu, srcOut, destIn);
 
         // bidirectional connections
-        for (GateNode srcInOut : srcInOutModuleGates)
-            for (GateNode destInOut : destInOutModuleGates)
+        for (GateElement srcInOut : srcInOutModuleGates)
+            for (GateElement destInOut : destInOutModuleGates)
                 addConnectionPairsToMenu(connCommand, menu, srcInOut, destInOut);
 
         MenuItem selection = menu.open();
         if (selection == null)
             return null;
 
-        return (ConnectionNode)selection.getData();
+        return (ConnectionElement)selection.getData();
     }
 
     /**
      * Returns gates with the given type (in, out, inout) of the given compound module 
      * or submodule. If nameFilter is present (not null), the gate with that name is returned.
      */
-    private static List<GateNode> getModuleGates(IConnectableNode module, int gateType, String nameFilter) {
-        List<GateNode> result = new ArrayList<GateNode>();
+    private static List<GateElement> getModuleGates(IConnectableNode module, int gateType, String nameFilter) {
+        List<GateElement> result = new ArrayList<GateElement>();
 
-        if (module instanceof CompoundModuleNodeEx) {
+        if (module instanceof CompoundModuleElementEx) {
             // if we connect a compound module, swap the gate type (in<>out) submodule.out -> out
-            if (gateType == GateNode.NED_GATETYPE_INPUT)
-                gateType = GateNode.NED_GATETYPE_OUTPUT;
-            else if (gateType == GateNode.NED_GATETYPE_OUTPUT)
-                gateType = GateNode.NED_GATETYPE_INPUT;
+            if (gateType == GateElement.NED_GATETYPE_INPUT)
+                gateType = GateElement.NED_GATETYPE_OUTPUT;
+            else if (gateType == GateElement.NED_GATETYPE_OUTPUT)
+                gateType = GateElement.NED_GATETYPE_INPUT;
         }
 
         INEDTypeInfo typeInfo = module.getNEDTypeInfo();
         Assert.isTrue(typeInfo != null);
 
-        for (GateNode gate: typeInfo.getGateDeclarations().values())
+        for (GateElement gate: typeInfo.getGateDeclarations().values())
             if (gate.getType() == gateType)
                 if (nameFilter == null || nameFilter.equals(gate.getName()))
                 	result.add(gate);
@@ -98,7 +98,7 @@ public class ConnectionChooser {
      * @param srcGate The source gate used to create the connections
      * @param destGate The source gate used to create the connections
      */
-    private static void addConnectionPairsToMenu(ConnectionCommand connCommand, BlockingMenu menu, GateNode srcGate, GateNode destGate) {
+    private static void addConnectionPairsToMenu(ConnectionCommand connCommand, BlockingMenu menu, GateElement srcGate, GateElement destGate) {
         int srcGatePPStart, srcGatePPEnd, destGatePPStart, destGatePPEnd;
         srcGatePPStart = destGatePPStart = 0;
         srcGatePPEnd = destGatePPEnd = 1;
@@ -110,7 +110,7 @@ public class ConnectionChooser {
             destGatePPStart = destGatePPEnd = (connCommand.getConnectionTemplate().getDestGatePlusplus() ? 1 : 0);
 
         // add the gate names to the menu item as additional widget data
-        ConnectionNode conn;
+        ConnectionElement conn;
         for (int srcGatePP = srcGatePPStart; srcGatePP<=srcGatePPEnd; srcGatePP++)
             for (int destGatePP = destGatePPStart; destGatePP<=destGatePPEnd; destGatePP++) {
                 conn =  createTemplateConnection(connCommand.getSrcModule(), srcGate, srcGatePP==1,
@@ -133,9 +133,9 @@ public class ConnectionChooser {
 	 * @param destGatePP 	if set to <code>true</code> creates gatename++ (only for vector gates)
 	 * @return The template connection or <code>null</code> if connection cannot be created
 	 */
-	private static ConnectionNode createTemplateConnection(
-						IConnectableNode srcMod, GateNode srcGate, boolean srcGatePP,
-						IConnectableNode destMod, GateNode destGate, boolean destGatePP) {
+	private static ConnectionElement createTemplateConnection(
+						IConnectableNode srcMod, GateElement srcGate, boolean srcGatePP,
+						IConnectableNode destMod, GateElement destGate, boolean destGatePP) {
 
 		// check if at least one of the gates are vector if gatePP (gate++) syntax requested
         if (srcGatePP && !srcGate.getIsVector())
@@ -143,20 +143,20 @@ public class ConnectionChooser {
 		if (destGatePP && !destGate.getIsVector())
 			return null;
 
-		ConnectionNode conn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
+		ConnectionElement conn = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodule name
-		if (srcMod instanceof SubmoduleNodeEx) {
-			SubmoduleNodeEx smodNode = (SubmoduleNodeEx)srcMod;
+		if (srcMod instanceof SubmoduleElementEx) {
+			SubmoduleElementEx smodNode = (SubmoduleElementEx)srcMod;
 			conn.setSrcModule(smodNode.getName());
 			if (smodNode.getVectorSize()!= null && !"".equals(smodNode.getVectorSize()))
 					conn.setSrcModuleIndex(DEFAULT_INDEX);
 		} else
 			conn.setSrcModule(null);
 
-		if (destMod instanceof SubmoduleNodeEx) {
-			SubmoduleNodeEx dmodNode = (SubmoduleNodeEx)destMod;
+		if (destMod instanceof SubmoduleElementEx) {
+			SubmoduleElementEx dmodNode = (SubmoduleElementEx)destMod;
 			conn.setDestModule(dmodNode.getName());
 			if (dmodNode.getVectorSize()!= null && !"".equals(dmodNode.getVectorSize()))
 					conn.setDestModuleIndex(DEFAULT_INDEX);
@@ -167,10 +167,10 @@ public class ConnectionChooser {
 		conn.setSrcGate(srcGate.getName());
 		conn.setDestGate(destGate.getName());
 		// if both side is bidirectional gate, use a bidirectional connection
-		if (srcGate.getType() == GateNode.NED_GATETYPE_INOUT && destGate.getType() == GateNode.NED_GATETYPE_INOUT)
-			conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_BIDIR);
+		if (srcGate.getType() == GateElement.NED_GATETYPE_INOUT && destGate.getType() == GateElement.NED_GATETYPE_INOUT)
+			conn.setArrowDirection(ConnectionElement.NED_ARROWDIR_BIDIR);
 		else
-			conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_L2R);
+			conn.setArrowDirection(ConnectionElement.NED_ARROWDIR_L2R);
 
 		// check if we have a module vector and add an index to it.
 		if (srcGate.getIsVector())
@@ -196,7 +196,7 @@ public class ConnectionChooser {
      * @param srcGate The source gate we are connecting/connected to
      * @param destGate The dest gate we are connecting/connected to
      */
-    private static void addConnectionToMenu(ConnectionCommand connCommand, BlockingMenu menu, ConnectionNode conn, GateNode srcGate, GateNode destGate) {
+    private static void addConnectionToMenu(ConnectionCommand connCommand, BlockingMenu menu, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
         MenuItem mi = menu.addMenuItem(SWT.PUSH);
         // store the connection template in the widget's extra data
         mi.setData(conn);
@@ -210,16 +210,16 @@ public class ConnectionChooser {
      * Returns whether the connection is valid, that is, the gates we want to connect
      * are unconnected currently
      */
-    private static boolean isConnectionValid(ConnectionCommand connCommand, ConnectionNode conn, GateNode srcGate, GateNode destGate) {
-        CompoundModuleNodeEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();
+    private static boolean isConnectionValid(ConnectionCommand connCommand, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
+        CompoundModuleElementEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();
         // note that vector gates or any gate on a submodule vector should be treated always unconnected
         // because the user can connect the connection to different instances/indexes of the gate/submodule
         boolean isSrcSideAVector = srcGate.getIsVector() ||
-            (srcGate.getParent().getParent() instanceof SubmoduleNodeEx &&
-                    !"".equals(((SubmoduleNodeEx)srcGate.getParent().getParent()).getVectorSize()));
+            (srcGate.getParent().getParent() instanceof SubmoduleElementEx &&
+                    !"".equals(((SubmoduleElementEx)srcGate.getParent().getParent()).getVectorSize()));
         boolean isDestSideAVector = destGate.getIsVector() ||
-        (destGate.getParent().getParent() instanceof SubmoduleNodeEx &&
-                !"".equals(((SubmoduleNodeEx)destGate.getParent().getParent()).getVectorSize()));
+        (destGate.getParent().getParent() instanceof SubmoduleElementEx &&
+                !"".equals(((SubmoduleElementEx)destGate.getParent().getParent()).getVectorSize()));
 
         // if we are inserting a new connection
         if (connCommand.isCreating()) {

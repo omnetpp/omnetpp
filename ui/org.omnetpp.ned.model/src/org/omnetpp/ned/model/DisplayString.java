@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 
 /**
  * The default implementation of IDisplayString. It is strongly tied to the NEDElement
- * model tree, and keeps its contents in sync with the LiteralNode in a display property.
+ * model tree, and keeps its contents in sync with the LiteralElement in a display property.
  *
  * IMPORTANT: DisplayString doesn't support a listener list, and please do NOT add one!
  * If you want to get notified about display string changes, listen on the IHasDisplayString
@@ -304,7 +304,7 @@ public class DisplayString implements IDisplayString {
 	protected void updateNedElement() {
 		if (owner != null) {
 			// Change the underlying NEDElement tree. 
-			// This could be optimized somewhat by remembering the LiteralNode, and quickly 
+			// This could be optimized somewhat by remembering the LiteralElement, and quickly 
 			// checking here if that's still where we have to change the display string
 			NEDElementUtilEx.setDisplayStringLiteral(owner, toString());
 		}

@@ -13,7 +13,7 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
@@ -34,7 +34,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 	// called during connection creation on the first click
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
-        ConnectionNodeEx conn = (ConnectionNodeEx)request.getNewObject();
+        ConnectionElementEx conn = (ConnectionElementEx)request.getNewObject();
         ModuleEditPart srcEP = (ModuleEditPart)request.getTargetEditPart();
         ConnectionCommand command = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(), srcEP, null);
         command.setSrcModule(getGraphNodeModel());
@@ -61,7 +61,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     @Override
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
-    	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
+    	ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
         ModuleEditPart srcEP = (ModuleEditPart)request.getConnectionEditPart().getSource();
         ModuleEditPart targetEP = (ModuleEditPart)request.getTarget();
         ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(),
@@ -78,7 +78,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
-    	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
+    	ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
         ModuleEditPart targetEP = (ModuleEditPart)request.getConnectionEditPart().getTarget();
         ModuleEditPart srcEP = (ModuleEditPart)request.getTarget();
         ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(),

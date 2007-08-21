@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.ex.GateNodeEx;
+import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
-import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GateElement;
 
 /**
  * Property source to display all submodules for a given compound module
@@ -28,13 +28,13 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, GateNode> gates = model.getGateDeclarations();
+        Map<String, GateElement> gates = model.getGateDeclarations();
 
         pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;
-        for (GateNode gateElement : gates.values()) {
-            GateNodeEx gateDefNode = (GateNodeEx)gateElement;
-            String typeString = gateDefNode.getAttribute(GateNodeEx.ATT_TYPE);
+        for (GateElement gateElement : gates.values()) {
+            GateElementEx gateDefNode = (GateElementEx)gateElement;
+            String typeString = gateDefNode.getAttribute(GateElementEx.ATT_TYPE);
             String definedIn = "";
             if (gateDefNode.getEnclosingTypeNode() != model) {
                 inheritedParamCount++;
@@ -64,11 +64,11 @@ public class GateListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getPropertyValue(Object id) {
-        if (!(id instanceof GateNodeEx))
+        if (!(id instanceof GateElementEx))
             return getEditableValue();
-        Map<String, GateNode> gateSizes = model.getGateSizes();
-        GateNodeEx gateDefNode = (GateNodeEx)id;
-        GateNodeEx gateSizeNode = ((GateNodeEx)gateSizes.get(gateDefNode.getName()));
+        Map<String, GateElement> gateSizes = model.getGateSizes();
+        GateElementEx gateDefNode = (GateElementEx)id;
+        GateElementEx gateSizeNode = ((GateElementEx)gateSizes.get(gateDefNode.getName()));
         String valueString = gateSizeNode== null ? "" :gateSizeNode.getNameWithIndex();
         return valueString;
     }

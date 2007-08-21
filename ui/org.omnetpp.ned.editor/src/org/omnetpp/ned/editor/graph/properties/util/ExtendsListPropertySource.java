@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
 
 /**
  * Property source to display all submodules for a given compound module
@@ -25,11 +25,11 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<ExtendsNode> extendsList = model.getAllExtends();
+        List<ExtendsElement> extendsList = model.getAllExtends();
 
         pdesc = new PropertyDescriptor[extendsList.size()];
         int totalCount = 0;
-        for (ExtendsNode extendsElement : extendsList) {
+        for (ExtendsElement extendsElement : extendsList) {
             pdesc[totalCount] = new PropertyDescriptor(extendsElement.getName(), extendsElement.getName());
             pdesc[totalCount].setCategory(CATEGORY);
             pdesc[totalCount].setDescription("Component "+extendsElement.getName()+" - (read only)");
@@ -43,7 +43,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
     public Object getEditableValue() {
         StringBuilder summary = new StringBuilder("");
 
-        for (ExtendsNode extendsElement : model.getAllExtends())
+        for (ExtendsElement extendsElement : model.getAllExtends())
             summary.append(extendsElement.getName()+",");
 
         // strip the trailing ',' char

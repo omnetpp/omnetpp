@@ -9,7 +9,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for
@@ -40,7 +40,7 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
 	public abstract GateAnchor getConnectionAnchor(String gate);
 
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-		ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
+		ConnectionElementEx conn = (ConnectionElementEx) connEditPart.getModel();
 		return getConnectionAnchor(conn.getSrcGateWithIndex());
 	}
 
@@ -50,7 +50,7 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
 	}
 
 	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-		ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
+		ConnectionElementEx conn = (ConnectionElementEx) connEditPart.getModel();
 		return getConnectionAnchor(conn.getDestGateWithIndex());
 	}
 

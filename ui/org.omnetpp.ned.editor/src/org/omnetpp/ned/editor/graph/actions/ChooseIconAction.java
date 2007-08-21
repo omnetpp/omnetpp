@@ -11,9 +11,9 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.ImageSelectionDialog;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -81,8 +81,8 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
                 INEDElement element = ((IModelProvider)obj).getNEDModel();
                 // return command only for those elements which support the icon property
                 if (element instanceof IHasDisplayString &&
-                        (element instanceof SubmoduleNodeEx || element instanceof SimpleModuleNodeEx
-                                || element instanceof CompoundModuleNodeEx))
+                        (element instanceof SubmoduleElementEx || element instanceof SimpleModuleElementEx
+                                || element instanceof CompoundModuleElementEx))
                     return new ChangeDisplayPropertyCommand((IHasDisplayString)element,IDisplayString.Prop.IMAGE);
             }
         }

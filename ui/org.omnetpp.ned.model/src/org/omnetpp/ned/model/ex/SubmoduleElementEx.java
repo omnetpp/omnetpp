@@ -17,18 +17,18 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-public class SubmoduleNodeEx extends SubmoduleNode
+public class SubmoduleElementEx extends SubmoduleElement
                             implements IConnectableNode, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
     public static final String DEFAULT_TYPE = "Unknown";
@@ -36,11 +36,11 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     protected DisplayString displayString = null;
 
-    protected SubmoduleNodeEx() {
+    protected SubmoduleElementEx() {
         init();
 	}
 
-    protected SubmoduleNodeEx(INEDElement parent) {
+    protected SubmoduleElementEx(INEDElement parent) {
 		super(parent);
         init();
 	}
@@ -81,7 +81,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
      * comes from an ini file or some other source outside the INEDElement tree.
      * Used within the inifile editor.
      *
-     * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
+     * @param submoduleType  a CompoundModuleElementEx or a SimpleModuleElementEx
      */
     public DisplayString getDisplayString(IModuleTypeNode submoduleType) {
     	if (displayString == null)
@@ -93,11 +93,11 @@ public class SubmoduleNodeEx extends SubmoduleNode
 	/**
 	 * Returns the compound module containing the definition of this connection
 	 */
-	public CompoundModuleNodeEx getCompoundModule() {
+	public CompoundModuleElementEx getCompoundModule() {
         INEDElement parent = getParent();
-        while (parent != null && !(parent instanceof CompoundModuleNodeEx))
+        while (parent != null && !(parent instanceof CompoundModuleElementEx))
             parent = parent.getParent();
-        return (CompoundModuleNodeEx)parent;
+        return (CompoundModuleElementEx)parent;
 	}
 
 	// connection related methods
@@ -107,7 +107,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 	 * in the parent compound module. Connections defined in derived modules
 	 * are NOT included here
 	 */
-	public List<ConnectionNodeEx> getSrcConnections() {
+	public List<ConnectionElementEx> getSrcConnections() {
 		return getCompoundModule().getSrcConnectionsFor(getName());
 	}
 
@@ -116,7 +116,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
      * parent compound module. Connections defined in derived modules are
      * NOT included here
      */
-	public List<ConnectionNodeEx> getDestConnections() {
+	public List<ConnectionElementEx> getDestConnections() {
 		return getCompoundModule().getDestConnectionsFor(getName());
 	}
 
@@ -143,37 +143,37 @@ public class SubmoduleNodeEx extends SubmoduleNode
     /**
      * Returns the list of all parameters assigned in this submodule's body
      */
-    public List<ParamNodeEx> getOwnParams() {
-        List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
+    public List<ParamElementEx> getOwnParams() {
+        List<ParamElementEx> result = new ArrayList<ParamElementEx>();
 
-        ParametersNode parametersNode = getFirstParametersChild();
-        if (parametersNode != null)
-        	for (INEDElement currChild : parametersNode)
-        		if (currChild instanceof ParamNodeEx)
-        			result.add((ParamNodeEx)currChild);
+        ParametersElement parametersElement = getFirstParametersChild();
+        if (parametersElement != null)
+        	for (INEDElement currChild : parametersElement)
+        		if (currChild instanceof ParamElementEx)
+        			result.add((ParamElementEx)currChild);
 
         return result;
     }
 
     // parameter query support
     
-    public Map<String, ParamNode> getParamAssignments() {
-        Map<String, ParamNode> result = new HashMap<String, ParamNode>();
+    public Map<String, ParamElement> getParamAssignments() {
+        Map<String, ParamElement> result = new HashMap<String, ParamElement>();
 
         INEDTypeInfo info = getNEDTypeInfo();
         if (info != null)
         	result.putAll(info.getParamAssignments());
     	
         // add local parameter assignments
-        for (ParamNodeEx ownParam : getOwnParams())
+        for (ParamElementEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
 
         return result;
     }
 
-    public Map<String, ParamNode> getParamDeclarations() {
+    public Map<String, ParamElement> getParamDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamNode>() : info.getParamDeclarations();
+        return info == null ? new HashMap<String, ParamElement>() : info.getParamDeclarations();
     }
 
     // gate support
@@ -181,35 +181,35 @@ public class SubmoduleNodeEx extends SubmoduleNode
     /**
      * Returns the list of all gates assigned in this submodule's body
      */
-    public List<GateNodeEx> getOwnGates() {
-        List<GateNodeEx> result = new ArrayList<GateNodeEx>();
+    public List<GateElementEx> getOwnGates() {
+        List<GateElementEx> result = new ArrayList<GateElementEx>();
 
-        GatesNode gatesNode = getFirstGatesChild();
-        if (gatesNode != null)
-        	for (INEDElement currChild : gatesNode)
-        		if (currChild instanceof GateNodeEx)
-        			result.add((GateNodeEx)currChild);
+        GatesElement gatesElement = getFirstGatesChild();
+        if (gatesElement != null)
+        	for (INEDElement currChild : gatesElement)
+        		if (currChild instanceof GateElementEx)
+        			result.add((GateElementEx)currChild);
         
         return result;
     }
 
-    public Map<String, GateNode> getGateSizes() {
-        Map<String, GateNode> result = new HashMap<String, GateNode>();
+    public Map<String, GateElement> getGateSizes() {
+        Map<String, GateElement> result = new HashMap<String, GateElement>();
 
         INEDTypeInfo info = getNEDTypeInfo();
         if (info != null)
         	result.putAll(info.getGateSizes());
 
         // add local gatesizes
-        for (GateNodeEx ownGate : getOwnGates())
+        for (GateElementEx ownGate : getOwnGates())
             result.put(ownGate.getName(), ownGate);
 
         return result;
     }
 
-    public Map<String, GateNode> getGateDeclarations() {
+    public Map<String, GateElement> getGateDeclarations() {
         INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, GateNode>() : info.getGateDeclarations();
+        return info == null ? new HashMap<String, GateElement>() : info.getGateDeclarations();
     }
 
 }

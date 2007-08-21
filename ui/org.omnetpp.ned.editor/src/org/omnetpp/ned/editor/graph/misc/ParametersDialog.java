@@ -45,12 +45,12 @@ import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.ParamNodeEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.pojo.CommentNode;
+import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
 
 
 /**
@@ -139,13 +139,13 @@ public class ParametersDialog extends TitleAreaDialog {
                 return !ObjectUtils.equals(value, originalValue);
             }
         }
-        protected ParamNodeEx param;
+        protected ParamElementEx param;
         protected Cell type = new Cell();
         protected Cell name = new Cell();
         protected Cell value = new Cell();
         protected Cell comment = new Cell();
 
-        public ParamLine(ParamNodeEx paramNode) {
+        public ParamLine(ParamElementEx paramNode) {
             param = paramNode;
             if (paramNode == null) {
                 type.value = "int";
@@ -156,15 +156,15 @@ public class ParametersDialog extends TitleAreaDialog {
             }
         }
 
-        public ParamNodeEx getOriginalParamNode() {
+        public ParamElementEx getOriginalParamNode() {
             return param;
         }
 
         /**
          * Returns the original node if no change occurred, or a new one with modified attributes
          */
-        public ParamNodeEx getChangedParamNode() {
-            ParamNodeEx result = null;
+        public ParamElementEx getChangedParamNode() {
+            ParamElementEx result = null;
 
             // do not include a value assignment for this node if no value or comment was given
             if (StringUtils.isEmpty(value.value) && StringUtils.isEmpty(comment.value) && !type.isEditable ||
@@ -172,9 +172,9 @@ public class ParametersDialog extends TitleAreaDialog {
                 return null;
 
             if (param != null)
-                result =  (ParamNodeEx)param.deepDup();
+                result =  (ParamElementEx)param.deepDup();
             else
-                result = (ParamNodeEx)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_PARAM);
+                result = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
 
             // set the attributes here
 
@@ -183,22 +183,22 @@ public class ParametersDialog extends TitleAreaDialog {
             setComment(result, comment.value);
             if (type.isEditable) {
                 String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type.value), VOLATILE));
-                result.setAttribute(ParamNodeEx.ATT_TYPE, baseType);
+                result.setAttribute(ParamElementEx.ATT_TYPE, baseType);
                 result.setIsVolatile(StringUtils.strip(type.value).startsWith(VOLATILE));
             }
             else {
-                result.setAttribute(ParamNodeEx.ATT_TYPE, "");
+                result.setAttribute(ParamElementEx.ATT_TYPE, "");
                 result.setIsVolatile(false);
             }
             return result;
         }
 
-        protected void setComment(ParamNodeEx paramNode, String comment) {
+        protected void setComment(ParamElementEx paramNode, String comment) {
             // TODO support multi line comments and correct indentation
             String commentPadding = " // ";
-            CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+            CommentElement cn = (CommentElement)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
             if (cn == null) {
-                cn = (CommentNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_COMMENT, paramNode);
+                cn = (CommentElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_COMMENT, paramNode);
                 cn.setLocid("right");
             }
             else {
@@ -225,9 +225,9 @@ public class ParametersDialog extends TitleAreaDialog {
 
     protected void buildTable() {
         // build ParamLine list (value objects) for dialog editing
-        for (ParamNode paramDecl : module.getParamDeclarations().values()) {
+        for (ParamElement paramDecl : module.getParamDeclarations().values()) {
             // get the the value of the parameter
-            ParamNodeEx paramValue = (ParamNodeEx)module.getParamAssignments().get(paramDecl.getName());
+            ParamElementEx paramValue = (ParamElementEx)module.getParamAssignments().get(paramDecl.getName());
             ParamLine paramLine = new ParamLine(paramValue);
             boolean isDeclLocal = paramDecl.getParent().getParent() == module;
             boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;
@@ -241,7 +241,7 @@ public class ParametersDialog extends TitleAreaDialog {
             // fill the values
             paramLine.type.value = paramLine.type.originalValue =
                                         (paramDecl.getIsVolatile() ? VOLATILE+" " : "")
-                                        + paramDecl.getAttribute(ParamNodeEx.ATT_TYPE);
+                                        + paramDecl.getAttribute(ParamElementEx.ATT_TYPE);
             paramLine.name.value = paramLine.name.originalValue = paramDecl.getName();
             paramLine.value.value = paramLine.value.originalValue = paramValue.getValue();
             // FIXME remove // from each line
@@ -255,8 +255,8 @@ public class ParametersDialog extends TitleAreaDialog {
     /**
      * Returns the comment of the parameter; the "right-comment" is used.
      */
-    protected static String getComment(ParamNodeEx paramNode) {
-        CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+    protected static String getComment(ParamElementEx paramNode) {
+        CommentElement cn = (CommentElement)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
         return cn == null ? "" : cn.getContent().trim();
     }
 
@@ -451,16 +451,16 @@ public class ParametersDialog extends TitleAreaDialog {
     @Override
 	protected void okPressed() {
        INEDElement paramsNode = module.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
-       ParametersNode newParamsNode = paramsNode != null ? (ParametersNode)paramsNode.deepDup() :
-                                   (ParametersNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);
+       ParametersElement newParamsNode = paramsNode != null ? (ParametersElement)paramsNode.deepDup() :
+                                   (ParametersElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PARAMETERS);
 
        for (INEDElement paramNode : newParamsNode)
-           if (paramNode instanceof ParamNodeEx)
+           if (paramNode instanceof ParamElementEx)
                paramNode.removeFromParent();
 
        // add the new nodes
        for (ParametersDialog.ParamLine paramLine : paramLines) {
-           ParamNodeEx param = paramLine.getChangedParamNode();
+           ParamElementEx param = paramLine.getChangedParamNode();
            if (param != null)
                newParamsNode.appendChild(param);
        }

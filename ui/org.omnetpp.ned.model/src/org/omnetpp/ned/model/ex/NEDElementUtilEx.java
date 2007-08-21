@@ -10,14 +10,14 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.LiteralNode;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.PropertyKeyNode;
-import org.omnetpp.ned.model.pojo.PropertyNode;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.PropertyKeyElement;
+import org.omnetpp.ned.model.pojo.PropertyElement;
 
 /**
  * TODO add documentation
@@ -50,15 +50,15 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	 */
 	public static String getDisplayStringLiteral(IHasDisplayString node) {
         // for connections, we need to look inside the channelSpec node for the display string
-		INEDElement parametersParent = (node instanceof ConnectionNode) ?
-				((ConnectionNode)node).getFirstChildWithTag(NED_CHANNEL_SPEC) : (INEDElement)node;
+		INEDElement parametersParent = (node instanceof ConnectionElement) ?
+				((ConnectionElement)node).getFirstChildWithTag(NED_CHANNEL_SPEC) : (INEDElement)node;
 
 		// look for the "display" property inside the parameters section (if it exists)
         INEDElement parametersNode = parametersParent == null ? null : parametersParent.getFirstChildWithTag(NED_PARAMETERS);
         if (parametersNode != null)
         	for (INEDElement currElement : parametersNode)
-        		if (currElement instanceof PropertyNode) {
-        			PropertyNode currProp = (PropertyNode)currElement;
+        		if (currElement instanceof PropertyElement) {
+        			PropertyElement currProp = (PropertyElement)currElement;
         			if (DISPLAY_PROPERTY.equals(currProp.getName()))
         				return getPropertyValue(currProp);
         		}
@@ -67,20 +67,20 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 
 	/**
 	 * Sets the display string of a given node in the NED tree,
-	 * by creating or updating the LiteralNode that contains the
+	 * by creating or updating the LiteralElement that contains the
 	 * "@display" property in the tree.
 	 * 
-	 * Returns the LiteralNode which was created/updated. 
+	 * Returns the LiteralElement which was created/updated. 
 	 */
-	public static LiteralNode setDisplayStringLiteral(IHasDisplayString node1, String displayString) {
+	public static LiteralElement setDisplayStringLiteral(IHasDisplayString node1, String displayString) {
 		INEDElement node = node1;
 		
 		// the connection node is special because the display string is stored inside its
         // channel spec node, so we must create that too
-        if (node instanceof ConnectionNode) {
+        if (node instanceof ConnectionElement) {
             INEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
             if (channelSpecNode == null) {
-                channelSpecNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+                channelSpecNode = NEDElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
                 node.appendChild(channelSpecNode);
             }
             // use the new channel spec node as the container of display string
@@ -90,16 +90,16 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		// look for the "parameters" block
 		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 		if (paramsNode == null) {
-			paramsNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PARAMETERS);
-            ((ParametersNode)paramsNode).setIsImplicit(true);
+			paramsNode = NEDElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
+            ((ParametersElement)paramsNode).setIsImplicit(true);
 			node.appendChild(paramsNode);
 		}
 
 		// look for the first property parameter named "display"
-		INEDElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyNode.ATT_NAME, DISPLAY_PROPERTY);
+		INEDElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, DISPLAY_PROPERTY);
 		if (displayPropertyNode == null) {
-			displayPropertyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY);
-			((PropertyNode)displayPropertyNode).setName(DISPLAY_PROPERTY);
+			displayPropertyNode = NEDElementFactoryEx.getInstance().createElement(NED_PROPERTY);
+			((PropertyElement)displayPropertyNode).setName(DISPLAY_PROPERTY);
 			paramsNode.appendChild(displayPropertyNode);
 		}
 
@@ -110,38 +110,38 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
         }
 
 		// look for the property key
-		INEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_NAME, "");
+		INEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyElement.ATT_NAME, "");
 		if (propertyKeyNode == null) {
-			propertyKeyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY_KEY);
+			propertyKeyNode = NEDElementFactoryEx.getInstance().createElement(NED_PROPERTY_KEY);
 			displayPropertyNode.appendChild(propertyKeyNode);
 		}
 
-		// look up or create the LiteralNode
-		LiteralNode literalNode = (LiteralNode)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
-		if (literalNode == null)
-			literalNode = (LiteralNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_LITERAL);
+		// look up or create the LiteralElement
+		LiteralElement literalElement = (LiteralElement)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
+		if (literalElement == null)
+			literalElement = (LiteralElement)NEDElementFactoryEx.getInstance().createElement(NED_LITERAL);
 
-		// fill in the LiteralNode. if()'s are there to minimize the number of notifications
-		if (literalNode.getType() != NED_CONST_STRING)
-			literalNode.setType(NED_CONST_STRING);
-		if (!displayString.equals(literalNode.getValue()))
-			literalNode.setValue(displayString);
+		// fill in the LiteralElement. if()'s are there to minimize the number of notifications
+		if (literalElement.getType() != NED_CONST_STRING)
+			literalElement.setType(NED_CONST_STRING);
+		if (!displayString.equals(literalElement.getValue()))
+			literalElement.setValue(displayString);
 		// invalidate the text representation, so that next time the code will
 		// be generated from VALUE, not from the text attribute
-		if (literalNode.getText() != null)
-			literalNode.setText(null);
+		if (literalElement.getText() != null)
+			literalElement.setText(null);
 		// if new, add it only here (also to minimize notifications)
-		if (literalNode.getParent() == null)
-			propertyKeyNode.appendChild(literalNode);
-		return literalNode; 
+		if (literalElement.getParent() == null)
+			propertyKeyNode.appendChild(literalElement);
+		return literalElement; 
 	}
 
     /**
      * Returns the name of the first "extends" node (or null if none present)
      */
     public static String getFirstExtends(INEDElement node) {
-        ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
-        return extendsNode == null ? null : extendsNode.getName();
+        ExtendsElement extendsElement = (ExtendsElement)node.getFirstChildWithTag(NED_EXTENDS);
+        return extendsElement == null ? null : extendsElement.getName();
     }
 
     /**
@@ -150,28 +150,28 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      * @param ext The name of the type that is extended
      */
     public static void setFirstExtends(INEDElement node, String ext) {
-        ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
-            if (extendsNode == null && ext != null && !"".equals(ext)) {
-                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
-                node.appendChild(extendsNode);
+        ExtendsElement extendsElement = (ExtendsElement)node.getFirstChildWithTag(NED_EXTENDS);
+            if (extendsElement == null && ext != null && !"".equals(ext)) {
+                extendsElement = (ExtendsElement)NEDElementFactoryEx.getInstance().createElement(NED_EXTENDS);
+                node.appendChild(extendsElement);
             }
-            else if (extendsNode != null && (ext == null || "".equals(ext))) {
+            else if (extendsElement != null && (ext == null || "".equals(ext))) {
                 // first set the name to "" so we will generate an attribute change event
-                extendsNode.setName("");
+                extendsElement.setName("");
                 // remove the node if we would set the name to null or empty string
-                node.removeChild(extendsNode);
+                node.removeChild(extendsElement);
             }
-            if (extendsNode != null)
-                extendsNode.setName(ext);
+            if (extendsElement != null)
+                extendsElement.setName(ext);
     }
 
 	/**
 	 * Returns the value of the given property (assigned to the first key (default value))
 	 */
-	public static String getPropertyValue(PropertyNode prop) {
-		PropertyKeyNode pkn = prop.getFirstPropertyKeyChild();
+	public static String getPropertyValue(PropertyElement prop) {
+		PropertyKeyElement pkn = prop.getFirstPropertyKeyChild();
 		if (pkn == null ) return null;
-		LiteralNode ln = pkn.getFirstLiteralChild();
+		LiteralElement ln = pkn.getFirstLiteralChild();
 		if (ln == null ) return null;
 
 		return ln.getValue();
@@ -231,7 +231,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      * will remain consistent. This method performs this change, for one compound
      * module.
      */
-    public static void renameSubmoduleInConnections(CompoundModuleNodeEx compoundModule, String oldSubmoduleName, String newSubmoduleName) {
+    public static void renameSubmoduleInConnections(CompoundModuleElementEx compoundModule, String oldSubmoduleName, String newSubmoduleName) {
 		INEDElement connectionsNode = compoundModule.getFirstConnectionsChild();
 		if (connectionsNode != null)
 			doRenameSubmoduleInConnections(connectionsNode, oldSubmoduleName, newSubmoduleName);
@@ -239,14 +239,14 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 
 	protected static void doRenameSubmoduleInConnections(INEDElement parent, String oldName, String newName) {
 		for (INEDElement child : parent) {
-			if (child instanceof ConnectionNodeEx) {
-				ConnectionNodeEx conn = (ConnectionNodeEx) child;
+			if (child instanceof ConnectionElementEx) {
+				ConnectionElementEx conn = (ConnectionElementEx) child;
 				if (conn.getSrcModule().equals(oldName))
 					conn.setSrcModule(newName);
 				if (conn.getDestModule().equals(oldName))
 					conn.setDestModule(newName);
 			}
-			else if (child instanceof ConnectionGroupNode) {
+			else if (child instanceof ConnectionGroupElement) {
 				doRenameSubmoduleInConnections(child, oldName, newName);
 			}
 		}

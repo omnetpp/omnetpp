@@ -15,9 +15,9 @@ import org.eclipse.core.resources.IMarker;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.model.ex.ParamNodeEx;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Produces hover information for various Inifile parts.
@@ -177,14 +177,14 @@ public class InifileHoverUtils {
 		}
 
 		// merge similar entries
-		Set<ParamNode> paramDeclNodes = new LinkedHashSet<ParamNode>();
+		Set<ParamElement> paramDeclNodes = new LinkedHashSet<ParamElement>();
 		for (ParamResolution res : resList)
 			paramDeclNodes.add(res.paramDeclNode);
 
 		text += "Applies to the following module parameters: <br>\n";
-		for (ParamNode paramDeclNode : paramDeclNodes) {
+		for (ParamElement paramDeclNode : paramDeclNodes) {
 			String paramName = paramDeclNode.getName();
-			String paramType = paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+			String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 			String paramDeclaredOn = paramDeclNode.getEnclosingTypeNode().getName();
 			String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
 			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
@@ -220,10 +220,10 @@ public class InifileHoverUtils {
 	/**
 	 * Generate tooltip for a NED parameter
 	 */
-	public static String getParamHoverText(SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode) {
+	public static String getParamHoverText(SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode) {
 		String paramName = paramDeclNode.getName();
 		
-		String paramType = paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeNode().getName();
 		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
 		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");

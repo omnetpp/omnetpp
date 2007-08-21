@@ -7,7 +7,7 @@ import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 
 /**
  * Special connection tool that requests additional information regarding gate association at the
@@ -53,7 +53,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
         endCommand.setDestGate(null);
         endCommand.setSrcGate(null);
     	// ask the user about which gates should be connected, ask for both source and destination gates
-		ConnectionNode selectedConn = ConnectionChooser.open(endCommand);
+		ConnectionElement selectedConn = ConnectionChooser.open(endCommand);
 
     	eraseSourceFeedback();
 
@@ -64,7 +64,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		}
 
 		// copy the selected connection attributes to the command
-    	ConnectionNode templateConn = endCommand.getConnectionTemplate();
+    	ConnectionElement templateConn = endCommand.getConnectionTemplate();
 		ConnectionCommand.copyConn(selectedConn, templateConn);
 		// execute the command
     	executeCurrentCommand();

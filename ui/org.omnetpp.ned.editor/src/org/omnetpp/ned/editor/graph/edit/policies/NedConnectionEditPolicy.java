@@ -7,7 +7,7 @@ import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
  * Generally this contains only the delete command for the connections
@@ -27,7 +27,7 @@ public class NedConnectionEditPolicy extends ConnectionEditPolicy {
         CompoundModuleEditPart parentEP = (CompoundModuleEditPart)getHost().getParent();
         // do not set any src/destModule / Gate for the connection command. This command
         // will delete the whole connection and remove it from the model
-        return new ConnectionCommand((ConnectionNodeEx) getHost().getModel(), parentEP, srcEP, targetEP);
+        return new ConnectionCommand((ConnectionElementEx) getHost().getModel(), parentEP, srcEP, targetEP);
     }
 
 }

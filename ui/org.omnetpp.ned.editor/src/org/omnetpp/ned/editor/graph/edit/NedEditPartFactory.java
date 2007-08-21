@@ -3,10 +3,10 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 
 /**
@@ -23,13 +23,13 @@ public class NedEditPartFactory implements EditPartFactory {
 
         EditPart child = null;
 
-        if (model instanceof NedFileNodeEx)
+        if (model instanceof NedFileElementEx)
         	child = new NedFileEditPart();
-        else if (model instanceof CompoundModuleNodeEx)
+        else if (model instanceof CompoundModuleElementEx)
             child = new CompoundModuleEditPart();
-        else if (model instanceof SubmoduleNodeEx)
+        else if (model instanceof SubmoduleElementEx)
             child = new SubmoduleEditPart();
-        else if (model instanceof ConnectionNodeEx)
+        else if (model instanceof ConnectionElementEx)
             child = new ModuleConnectionEditPart();
         else if (model instanceof INedTypeNode)
             child = new NedTypeEditPart();

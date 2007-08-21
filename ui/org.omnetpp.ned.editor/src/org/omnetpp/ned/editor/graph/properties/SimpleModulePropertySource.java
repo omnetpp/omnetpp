@@ -18,7 +18,7 @@ import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
+import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 
 /**
  * TODO add documentation
@@ -28,9 +28,9 @@ import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
 public class SimpleModulePropertySource extends MergedPropertySource {
 
     protected static class SimpleModuleDisplayPropertySource extends DisplayPropertySource {
-        protected SimpleModuleNodeEx model;
+        protected SimpleModuleElementEx model;
 
-        public SimpleModuleDisplayPropertySource(SimpleModuleNodeEx model) {
+        public SimpleModuleDisplayPropertySource(SimpleModuleElementEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
@@ -45,10 +45,10 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         public static final String BASE_CATEGORY = "Base";
         public enum Prop { Network }
         protected IPropertyDescriptor[] descriptors;
-        protected SimpleModuleNodeEx model;
+        protected SimpleModuleElementEx model;
         CheckboxPropertyDescriptor networkProp;
 
-        public BasePropertySource(SimpleModuleNodeEx connectionNodeModel) {
+        public BasePropertySource(SimpleModuleElementEx connectionNodeModel) {
             model = connectionNodeModel;
             
             // set up property descriptors
@@ -91,7 +91,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         }
     }
 
-    public SimpleModulePropertySource(SimpleModuleNodeEx nodeModel) {
+    public SimpleModulePropertySource(SimpleModuleElementEx nodeModel) {
         super(nodeModel);
         //create name
         mergePropertySource(new NamePropertySource(nodeModel));

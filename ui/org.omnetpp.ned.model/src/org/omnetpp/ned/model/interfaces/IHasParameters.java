@@ -3,7 +3,7 @@ package org.omnetpp.ned.model.interfaces;
 import java.util.Map;
 
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * Interface for acquiring parameter lists for the object
@@ -18,7 +18,7 @@ public interface IHasParameters extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    public Map<String, ParamNode> getParamDeclarations();
+    public Map<String, ParamElement> getParamDeclarations();
 
     /**
      * Returns the name - parameter node association where the last parameter - value
@@ -27,6 +27,6 @@ public interface IHasParameters extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    public Map<String, ParamNode> getParamAssignments();
+    public Map<String, ParamElement> getParamAssignments();
 
 }

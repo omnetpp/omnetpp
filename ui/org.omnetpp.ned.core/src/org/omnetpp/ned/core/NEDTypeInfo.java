@@ -14,21 +14,21 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.PropertyElement;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Default implementation of INEDTypeInfo.
@@ -50,13 +50,13 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	// local stuff
     protected boolean needsLocalUpdate;
 	protected Set<String> localInterfaces = new HashSet<String>();
-	protected Map<String, PropertyNode> localProperties = new LinkedHashMap<String, PropertyNode>();
-    protected Map<String, ParamNode> localParamDecls = new LinkedHashMap<String, ParamNode>();
-    protected Map<String, ParamNode> localParamValues = new LinkedHashMap<String, ParamNode>();
-	protected Map<String, GateNode> localGateDecls = new LinkedHashMap<String, GateNode>();
-    protected Map<String, GateNode> localGateSizes = new LinkedHashMap<String, GateNode>();
+	protected Map<String, PropertyElement> localProperties = new LinkedHashMap<String, PropertyElement>();
+    protected Map<String, ParamElement> localParamDecls = new LinkedHashMap<String, ParamElement>();
+    protected Map<String, ParamElement> localParamValues = new LinkedHashMap<String, ParamElement>();
+	protected Map<String, GateElement> localGateDecls = new LinkedHashMap<String, GateElement>();
+    protected Map<String, GateElement> localGateSizes = new LinkedHashMap<String, GateElement>();
 	protected Map<String, INedTypeNode> localInnerTypes = new LinkedHashMap<String, INedTypeNode>();
-	protected Map<String, SubmoduleNode> localSubmodules = new LinkedHashMap<String, SubmoduleNode>();
+	protected Map<String, SubmoduleElement> localSubmodules = new LinkedHashMap<String, SubmoduleElement>();
     protected HashSet<String> localUsedTypes = new HashSet<String>();
 
 	// sum of all "local" stuff
@@ -66,13 +66,13 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected boolean needsUpdate;
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<String> allInterfaces = new HashSet<String>();
-	protected Map<String, PropertyNode> allProperties = new LinkedHashMap<String, PropertyNode>();
-    protected Map<String, ParamNode> allParams = new LinkedHashMap<String, ParamNode>();
-    protected Map<String, ParamNode> allParamValues = new LinkedHashMap<String, ParamNode>();
-    protected Map<String, GateNode> allGates = new LinkedHashMap<String, GateNode>();
-    protected Map<String, GateNode> allGateSizes = new LinkedHashMap<String, GateNode>();
+	protected Map<String, PropertyElement> allProperties = new LinkedHashMap<String, PropertyElement>();
+    protected Map<String, ParamElement> allParams = new LinkedHashMap<String, ParamElement>();
+    protected Map<String, ParamElement> allParamValues = new LinkedHashMap<String, ParamElement>();
+    protected Map<String, GateElement> allGates = new LinkedHashMap<String, GateElement>();
+    protected Map<String, GateElement> allGateSizes = new LinkedHashMap<String, GateElement>();
 	protected Map<String, INedTypeNode> allInnerTypes = new LinkedHashMap<String, INedTypeNode>();
-	protected Map<String, SubmoduleNode> allSubmodules = new LinkedHashMap<String, SubmoduleNode>();
+	protected Map<String, SubmoduleElement> allSubmodules = new LinkedHashMap<String, SubmoduleElement>();
     protected HashSet<String> allUsedTypes = new HashSet<String>();
 
 	// sum of all local+inherited stuff
@@ -138,7 +138,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		Assert.isTrue(tagCode==NED_INTERFACE_NAME || tagCode==NED_EXTENDS);
 		for (INEDElement child : getNEDElement())
 			if (child.getTagCode()==tagCode)
-				set.add(child.getAttribute(ExtendsNode.ATT_NAME));
+				set.add(child.getAttribute(ExtendsElement.ATT_NAME));
 	}
 
 	/**
@@ -147,20 +147,20 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
      */
     protected void collectTypesInCompoundModule(Set<String> result) {
         // this is only meaningful for CompoundModules so skip the others
-        if (componentNode instanceof CompoundModuleNodeEx) {
+        if (componentNode instanceof CompoundModuleElementEx) {
         	// look for submodule types
         	INEDElement submodules = componentNode.getFirstChildWithTag(NED_SUBMODULES);
         	if (submodules != null)
         		for (INEDElement node : submodules)
-        			if (node instanceof SubmoduleNodeEx)
-        				result.add(((SubmoduleNodeEx)node).getEffectiveType());
+        			if (node instanceof SubmoduleElementEx)
+        				result.add(((SubmoduleElementEx)node).getEffectiveType());
 
         	// look for connection types
         	INEDElement connections = componentNode.getFirstChildWithTag(NED_CONNECTIONS);
         	if (connections != null)
         		for (INEDElement node : connections)
-        			if (node instanceof ConnectionNodeEx)
-        				result.add(((ConnectionNodeEx)node).getEffectiveType());
+        			if (node instanceof ConnectionElementEx)
+        				result.add(((ConnectionElementEx)node).getEffectiveType());
         }
     }
 
@@ -209,19 +209,19 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         	}});
         collect(localParamDecls, NED_PARAMETERS, new IPredicate() {
 			public boolean matches(IHasName node) {
-				return node.getTagCode()==NED_PARAM && ((ParamNode)node).getType() != NED_PARTYPE_NONE;
+				return node.getTagCode()==NED_PARAM && ((ParamElement)node).getType() != NED_PARTYPE_NONE;
 			}});
         collect(localParamValues, NED_PARAMETERS, new IPredicate() {
 			public boolean matches(IHasName node) {
-				return node.getTagCode()==NED_PARAM && StringUtils.isNotEmpty(((ParamNode)node).getValue());
+				return node.getTagCode()==NED_PARAM && StringUtils.isNotEmpty(((ParamElement)node).getValue());
 			}});
         collect(localGateDecls, NED_GATES, new IPredicate() {
         	public boolean matches(IHasName node) {
-        		return node.getTagCode()==NED_GATE && ((GateNode)node).getType() != NED_GATETYPE_NONE;
+        		return node.getTagCode()==NED_GATE && ((GateElement)node).getType() != NED_GATETYPE_NONE;
         	}});
         collect(localGateSizes, NED_GATES, new IPredicate() {
 			public boolean matches(IHasName node) {
-				return node.getTagCode()==NED_GATE && StringUtils.isNotEmpty(((GateNode)node).getVectorSize());
+				return node.getTagCode()==NED_GATE && StringUtils.isNotEmpty(((GateElement)node).getVectorSize());
 			}});
         collect(localInnerTypes, NED_TYPES, new IPredicate() {
 			public boolean matches(IHasName node) {
@@ -317,8 +317,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 //            // check for components the are extending us (directly or indirectly)
 //            INEDElement element = currentComp.getNEDElement();
 //            for (INEDElement child : element) {
-//                if (child instanceof ExtendsNode) {
-//                    String extendsName = ((ExtendsNode)child).getName();
+//                if (child instanceof ExtendsElement) {
+//                    String extendsName = ((ExtendsElement)child).getName();
 //                    if (getName().equals(extendsName)) {
 //                        allDerivedTypes.add(currentComp);
 //                    }
@@ -385,27 +385,27 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localInterfaces;
 	}
 
-    public Map<String,ParamNode> getLocalParamDeclarations() {
+    public Map<String,ParamElement> getLocalParamDeclarations() {
     	refreshLocalMembersIfNeeded();
         return localParamDecls;
     }
 
-    public Map<String,ParamNode> getLocalParamAssignments() {
+    public Map<String,ParamElement> getLocalParamAssignments() {
     	refreshLocalMembersIfNeeded();
         return localParamValues;
     }
 
-    public Map<String,PropertyNode> getLocalProperties() {
+    public Map<String,PropertyElement> getLocalProperties() {
     	refreshLocalMembersIfNeeded();
         return localProperties;
     }
 
-    public Map<String,GateNode> getLocalGateDeclarations() {
+    public Map<String,GateElement> getLocalGateDeclarations() {
     	refreshLocalMembersIfNeeded();
         return localGateDecls;
     }
 
-    public Map<String,GateNode> getLocalGateSizes() {
+    public Map<String,GateElement> getLocalGateSizes() {
     	refreshLocalMembersIfNeeded();
         return localGateSizes;
     }
@@ -415,7 +415,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localInnerTypes;
     }
 
-    public Map<String,SubmoduleNode> getLocalSubmodules() {
+    public Map<String,SubmoduleElement> getLocalSubmodules() {
     	refreshLocalMembersIfNeeded();
         return localSubmodules;
     }
@@ -435,27 +435,27 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return allInterfaces;
     }
 
-    public Map<String, ParamNode> getParamDeclarations() {
+    public Map<String, ParamElement> getParamDeclarations() {
     	refreshInheritedMembersIfNeeded();
         return allParams;
     }
 
-    public Map<String, ParamNode> getParamAssignments() {
+    public Map<String, ParamElement> getParamAssignments() {
     	refreshInheritedMembersIfNeeded();
         return allParamValues;
     }
 
-    public Map<String, PropertyNode> getProperties() {
+    public Map<String, PropertyElement> getProperties() {
     	refreshInheritedMembersIfNeeded();
         return allProperties;
     }
 
-    public Map<String, GateNode> getGateDeclarations() {
+    public Map<String, GateElement> getGateDeclarations() {
     	refreshInheritedMembersIfNeeded();
         return allGates;
     }
 
-    public Map<String, GateNode> getGateSizes() {
+    public Map<String, GateElement> getGateSizes() {
     	refreshInheritedMembersIfNeeded();
         return allGateSizes;
     }
@@ -465,7 +465,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return allInnerTypes;
     }
 
-    public Map<String, SubmoduleNode> getSubmodules() {
+    public Map<String, SubmoduleElement> getSubmodules() {
     	refreshInheritedMembersIfNeeded();
         return allSubmodules;
     }
@@ -491,27 +491,27 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 //        return allUsingTypes;
 //    }
 
-	public List<ParamNode> getParameterInheritanceChain(String parameterName) {
-		List<ParamNode> result = new ArrayList<ParamNode>();
+	public List<ParamElement> getParameterInheritanceChain(String parameterName) {
+		List<ParamElement> result = new ArrayList<ParamElement>();
 		for (INEDTypeInfo type : getExtendsChain())
 			if (type.getLocalParamDeclarations().containsKey(parameterName))
-				result.add((ParamNode) type.getLocalParamDeclarations().get(parameterName));
+				result.add((ParamElement) type.getLocalParamDeclarations().get(parameterName));
 		return result;
 	}
 
-	public List<GateNode> getGateInheritanceChain(String gateName) {
-		List<GateNode> result = new ArrayList<GateNode>();
+	public List<GateElement> getGateInheritanceChain(String gateName) {
+		List<GateElement> result = new ArrayList<GateElement>();
 		for (INEDTypeInfo type : getExtendsChain())
 			if (type.getLocalGateDeclarations().containsKey(gateName))
 				result.add(type.getLocalGateDeclarations().get(gateName));
 		return result;
 	}
 
-	public List<PropertyNode> getPropertyInheritanceChain(String propertyName) {
-		List<PropertyNode> result = new ArrayList<PropertyNode>();
+	public List<PropertyElement> getPropertyInheritanceChain(String propertyName) {
+		List<PropertyElement> result = new ArrayList<PropertyElement>();
 		for (INEDTypeInfo type : getExtendsChain())
 			if (type.getLocalProperties().containsKey(propertyName))
-				result.add((PropertyNode) type.getLocalProperties().get(propertyName));
+				result.add((PropertyElement) type.getLocalProperties().get(propertyName));
 		return result;
 	}
 

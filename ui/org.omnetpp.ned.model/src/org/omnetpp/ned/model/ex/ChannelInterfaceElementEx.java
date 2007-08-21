@@ -6,32 +6,31 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.interfaces.IInterfaceTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.InterfaceNameNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-public class ChannelNodeEx extends ChannelNode implements INedTypeNode {
+public class ChannelInterfaceElementEx extends ChannelInterfaceElement implements IInterfaceTypeNode {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
-    protected ChannelNodeEx() {
+	protected ChannelInterfaceElementEx() {
 		super();
 	}
 
-    protected ChannelNodeEx(INEDElement parent) {
+    protected ChannelInterfaceElementEx(INEDElement parent) {
 		super(parent);
 	}
-
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
     	this.typeInfo = typeInfo;
     }
@@ -73,24 +72,22 @@ public class ChannelNodeEx extends ChannelNode implements INedTypeNode {
         return it == null ? null : it.getNEDElement();
     }
 
-    public List<ExtendsNode> getAllExtends() {
-        List<ExtendsNode> result = new ArrayList<ExtendsNode>();
-        ExtendsNode extendsNode = getFirstExtendsChild();
-        if (extendsNode == null)
-            return result;
+    public List<ExtendsElement> getAllExtends() {
+        List<ExtendsElement> result = new ArrayList<ExtendsElement>();
 
-        for (INEDElement currChild : extendsNode)
-            if (currChild instanceof ExtendsNode)
-                result.add(extendsNode);
+        for (INEDElement currChild : this)
+            if (currChild instanceof ExtendsElement)
+                result.add((ExtendsElement)currChild);
 
         return result;
     }
 
-    public Map<String, ParamNode> getParamAssignments() {
+    // parameter support
+    public Map<String, ParamElement> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }
 
-    public Map<String, ParamNode> getParamDeclarations() {
+    public Map<String, ParamElement> getParamDeclarations() {
         return getNEDTypeInfo().getParamDeclarations();
     }
 

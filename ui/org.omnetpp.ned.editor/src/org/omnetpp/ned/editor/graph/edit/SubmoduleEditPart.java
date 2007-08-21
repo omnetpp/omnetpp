@@ -11,7 +11,7 @@ import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 
 /**
@@ -46,8 +46,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
     /**
      * Helper function to return the model object with correct type
      */
-    public SubmoduleNodeEx getSubmoduleModel() {
-        return (SubmoduleNodeEx)getModel();
+    public SubmoduleElementEx getSubmoduleModel() {
+        return (SubmoduleElementEx)getModel();
     }
 
 	/**
@@ -95,7 +95,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected void refreshVisuals() {
         // define the properties that determine the visual appearance
-    	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
+    	SubmoduleElementEx submNode = (SubmoduleElementEx)getModel();
 
     	// set module name and vector size
     	String nameToDisplay = submNode.getName();
@@ -141,7 +141,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public boolean isEditable() {
         // editable only if the parent controllers model is the same as the model's parent
         // i.e. the submodule is defined in this compound module (not inherited)
-        return super.isEditable() && getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
+        return super.isEditable() && getParent().getModel() == ((SubmoduleElementEx)getModel()).getCompoundModule();
     }
 
     @Override

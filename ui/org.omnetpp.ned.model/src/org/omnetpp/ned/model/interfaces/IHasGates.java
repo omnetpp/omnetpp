@@ -3,7 +3,7 @@ package org.omnetpp.ned.model.interfaces;
 import java.util.Map;
 
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GateElement;
 
 /**
  * Elements that may contain gates
@@ -18,7 +18,7 @@ public interface IHasGates extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    Map<String, GateNode> getGateDeclarations();
+    Map<String, GateElement> getGateDeclarations();
 
     /**
      * Returns the list of all gate elements where size is specified.
@@ -26,6 +26,6 @@ public interface IHasGates extends INEDElement {
      * "Best-Effort": This method never returns null, but the returned list
      * may be incomplete if some NED type is incorrect, missing, or duplicate. 
      */
-    Map<String, GateNode> getGateSizes();
+    Map<String, GateElement> getGateSizes();
 
 }

@@ -43,7 +43,7 @@ public class ModelFactory implements CreationFactory {
 	}
 
 	public Object getNewObject() {
-		INEDElement element = NEDElementFactoryEx.getInstance().createNodeWithTag(objectType);
+		INEDElement element = NEDElementFactoryEx.getInstance().createElement(objectType);
         if (element instanceof IHasName)
             ((IHasName)element).setName(name);
 

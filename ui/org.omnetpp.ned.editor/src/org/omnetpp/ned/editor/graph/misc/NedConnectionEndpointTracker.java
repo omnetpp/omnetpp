@@ -8,7 +8,7 @@ import org.eclipse.gef.tools.ConnectionEndpointTracker;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 
 /**
  * Special drag tracker for connection handles that requests gate names if the source or
@@ -34,7 +34,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
                 connCommand.setSrcGate(null);
             
 	    	// ask the user about which gates should be connected
-			ConnectionNode selectedConn 
+			ConnectionElement selectedConn 
 				= ConnectionChooser.open(connCommand);
 			
 			eraseSourceFeedback();
@@ -47,7 +47,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 			}
 	    	
 			// copy the selected connection attributes to the command
-	    	ConnectionNode templateConn = connCommand.getConnectionTemplate();
+	    	ConnectionElement templateConn = connCommand.getConnectionTemplate();
 			ConnectionCommand.copyConn(selectedConn, templateConn);
 
 			// execute the command

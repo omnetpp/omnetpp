@@ -9,7 +9,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 
 /**
  * Converts the editors content to new NED version
@@ -24,7 +24,7 @@ public class ConvertToNewFormatAction extends TextEditorAction {
     @Override
     public void update() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        NedFileNodeEx nedFileNode = (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
+        NedFileElementEx nedFileNode = (NedFileElementEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
         // enable only if the model does not have a syntax error and in V1 format
         setEnabled(nedFileNode != null
                    && !NEDResourcesPlugin.getNEDResources().hasError(ifile)

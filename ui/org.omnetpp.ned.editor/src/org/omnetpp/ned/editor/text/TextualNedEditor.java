@@ -40,7 +40,7 @@ import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -219,7 +219,7 @@ public class TextualNedEditor
 		return ((IFileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileNodeEx getNEDFileModelFromNEDResourcesPlugin() {
+	protected NedFileElementEx getNEDFileModelFromNEDResourcesPlugin() {
 		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
 	}
 

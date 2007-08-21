@@ -17,7 +17,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolic
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 
@@ -139,10 +139,10 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     }
 
     /**
-     * Returns the model associated to this editpart as a ConnectionNodeEx
+     * Returns the model associated to this editpart as a ConnectionElementEx
      */
-    protected ConnectionNodeEx getConnectionModel() {
-        return (ConnectionNodeEx) getModel();
+    protected ConnectionElementEx getConnectionModel() {
+        return (ConnectionElementEx) getModel();
     }
 
     /**
@@ -163,7 +163,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
     public boolean isEditable() {
         boolean isEditable
-            = editable && getParent().getModel() == ((ConnectionNodeEx)getModel()).getCompoundModule();
+            = editable && getParent().getModel() == ((ConnectionElementEx)getModel()).getCompoundModule();
         if (!isEditable)
             return false;
         // otherwise check what about the parent. if parent is read only we should return its state
