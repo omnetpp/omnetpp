@@ -5,7 +5,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
  * Change the size and location of the submodule
@@ -20,10 +20,10 @@ public class SetConstraintCommand extends Command {
     private Point newPos;
     private Dimension newSize;
     private boolean pinOperation = false;
-    private final INamedGraphNode module;
+    private final IConnectableNode module;
     private float scale = 1.0f;
 
-    public SetConstraintCommand(INamedGraphNode newModule, float scale, Rectangle oldBounds) {
+    public SetConstraintCommand(IConnectableNode newModule, float scale, Rectangle oldBounds) {
     	super();
         this.scale = scale;
         this.oldBounds = oldBounds;

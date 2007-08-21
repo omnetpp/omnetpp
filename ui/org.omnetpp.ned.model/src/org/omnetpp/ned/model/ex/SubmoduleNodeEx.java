@@ -8,13 +8,13 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.GateNode;
@@ -29,7 +29,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * @author rhornig
  */
 public class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IHasIndex, IHasType,
+                            implements IConnectableNode, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
     public static final String DEFAULT_TYPE = "Unknown";
     public static final String DEFAULT_NAME = "unnamed";

@@ -29,7 +29,7 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
  * Layout policy used in compound modules. Handles cloning, creation, resizing of submodules
@@ -95,7 +95,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // check if we have a shape in the figure. If not, the resize command should change the icon size
         // property not the shape size
-        INamedGraphNode submodule = (INamedGraphNode) child.getModel();
+        IConnectableNode submodule = (IConnectableNode) child.getModel();
         IFigure childFigure = ((GraphicalEditPart)child).getFigure();
         Rectangle oldBounds = (Rectangle)childFigure.getParent().getLayoutManager().getConstraint(childFigure);
         boolean widthChanged = modelConstraint.width != oldBounds.width;

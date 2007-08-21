@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.GateNode;
@@ -71,7 +71,7 @@ public class ConnectionChooser {
      * Returns gates with the given type (in, out, inout) of the given compound module 
      * or submodule. If nameFilter is present (not null), the gate with that name is returned.
      */
-    private static List<GateNode> getModuleGates(IHasConnections module, int gateType, String nameFilter) {
+    private static List<GateNode> getModuleGates(IConnectableNode module, int gateType, String nameFilter) {
         List<GateNode> result = new ArrayList<GateNode>();
 
         if (module instanceof CompoundModuleNodeEx) {
@@ -134,8 +134,8 @@ public class ConnectionChooser {
 	 * @return The template connection or <code>null</code> if connection cannot be created
 	 */
 	private static ConnectionNode createTemplateConnection(
-						IHasConnections srcMod, GateNode srcGate, boolean srcGatePP,
-						IHasConnections destMod, GateNode destGate, boolean destGatePP) {
+						IConnectableNode srcMod, GateNode srcGate, boolean srcGatePP,
+						IConnectableNode destMod, GateNode destGate, boolean destGatePP) {
 
 		// check if at least one of the gates are vector if gatePP (gate++) syntax requested
         if (srcGatePP && !srcGate.getIsVector())

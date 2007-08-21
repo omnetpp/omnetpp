@@ -7,7 +7,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 
@@ -24,8 +24,8 @@ public class DeleteCommand extends Command {
         public ConnectionNodeEx node;            // the NODE that was deleted
         public ConnectionsNode parent;           // the parent of the deleted node
         public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
-        public IHasConnections srcModule;             // the src module the connection was originally attached to
-        public IHasConnections destModule;            // the dest module the connection was originally attached to
+        public IConnectableNode srcModule;             // the src module the connection was originally attached to
+        public IConnectableNode destModule;            // the dest module the connection was originally attached to
     }
 
     private static class ElementUndoItem {

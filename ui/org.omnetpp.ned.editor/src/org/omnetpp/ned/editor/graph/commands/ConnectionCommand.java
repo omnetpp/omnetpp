@@ -6,7 +6,7 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
@@ -19,12 +19,12 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 // TODO handling of subgates $i and $o is missing
 public class ConnectionCommand extends Command {
 
-	protected IHasConnections oldSrcModule;
-	protected IHasConnections oldDestModule;
+	protected IConnectableNode oldSrcModule;
+	protected IConnectableNode oldDestModule;
 	protected ConnectionNode oldConn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 
-    protected IHasConnections srcModule;
-    protected IHasConnections destModule;
+    protected IConnectableNode srcModule;
+    protected IConnectableNode destModule;
 	protected ConnectionNode newConn =(ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
     protected ConnectionNodeEx connModel;
@@ -174,11 +174,11 @@ public class ConnectionCommand extends Command {
         to.setArrowDirection(from.getArrowDirection());
 	}
 
-    public void setSrcModule(IHasConnections newSrcModule) {
+    public void setSrcModule(IConnectableNode newSrcModule) {
         srcModule = newSrcModule;
     }
 
-    public void setDestModule(IHasConnections newDestModule) {
+    public void setDestModule(IConnectableNode newDestModule) {
         destModule = newDestModule;
     }
 
@@ -198,11 +198,11 @@ public class ConnectionCommand extends Command {
         newConn.setDestGate(newDestGate);
     }
 
-	public IHasConnections getDestModule() {
+	public IConnectableNode getDestModule() {
 		return destModule;
 	}
 
-	public IHasConnections getSrcModule() {
+	public IConnectableNode getSrcModule() {
 		return srcModule;
 	}
 

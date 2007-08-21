@@ -15,7 +15,7 @@ import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.PolicyUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
  * TODO add documentation
@@ -59,8 +59,8 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
             Point loc = null;
             if (primarySelection instanceof GraphicalEditPart) {
                 Object model = ((GraphicalEditPart)primarySelection).getModel();
-                if (model instanceof INamedGraphNode)
-                    loc = ((INamedGraphNode)model).getDisplayString().getLocation(null);
+                if (model instanceof IConnectableNode)
+                    loc = ((IConnectableNode)model).getDisplayString().getLocation(null);
             }
 	        setChecked(loc != null);
 	    }

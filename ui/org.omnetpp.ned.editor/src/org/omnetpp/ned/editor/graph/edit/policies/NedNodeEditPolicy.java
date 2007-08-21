@@ -14,7 +14,7 @@ import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 
 /**
  * Handle all connection related requests for graphically represented nodes (compound and submodules)
@@ -107,8 +107,8 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return (ModuleEditPart) getHost();
     }
 
-    protected INamedGraphNode getGraphNodeModel() {
-        return (INamedGraphNode) getHost().getModel();
+    protected IConnectableNode getGraphNodeModel() {
+        return (IConnectableNode) getHost().getModel();
     }
 
 }

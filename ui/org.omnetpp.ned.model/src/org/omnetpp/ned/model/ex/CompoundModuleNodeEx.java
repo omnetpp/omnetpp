@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 import org.omnetpp.ned.model.interfaces.INedTypeNode;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -17,7 +17,6 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.model.pojo.SubmodulesNode;
@@ -27,7 +26,7 @@ import org.omnetpp.ned.model.pojo.SubmodulesNode;
  *
  * @author rhornig
  */
-public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleTypeNode, INamedGraphNode {
+public class CompoundModuleNodeEx extends CompoundModuleNode implements IModuleTypeNode, IConnectableNode {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.interfaces.IConnectableNode;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
@@ -38,34 +38,34 @@ public class ConnectionNodeEx extends ConnectionNode implements IHasType, IHasDi
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
-    public IHasConnections getSrcModuleRef() {
+    public IConnectableNode getSrcModuleRef() {
     	return resolveConnectedModule(getSrcModule());
     }
 
-    public IHasConnections getDestModuleRef() {
+    public IConnectableNode getDestModuleRef() {
     	return resolveConnectedModule(getDestModule());
     }
 
     /**
      * Sets the source module of the connection
      */
-    public void setSrcModuleRef(IHasConnections srcModule) {
+    public void setSrcModuleRef(IConnectableNode srcModule) {
     	setSrcModule(connectedModuleName(srcModule));
     }
 
     /**
      * Sets the destination module of the connection
      */
-    public void setDestModuleRef(IHasConnections destModule) {
+    public void setDestModuleRef(IConnectableNode destModule) {
     	setDestModule(connectedModuleName(destModule));
     }
 
-    protected String connectedModuleName(IHasConnections module) {
+    protected String connectedModuleName(IConnectableNode module) {
         return module == null ? null : (module instanceof CompoundModuleNodeEx) ? "" : module.getName();
     }
 
     // helper functions to set the module names using references
-    protected IHasConnections resolveConnectedModule(String moduleName) {
+    protected IConnectableNode resolveConnectedModule(String moduleName) {
         if (moduleName == null)
             return null; // not connected
 
