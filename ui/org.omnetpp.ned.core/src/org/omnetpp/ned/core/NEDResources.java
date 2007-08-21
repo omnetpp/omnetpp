@@ -237,6 +237,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	        currentTree.fireModelChanged(new NEDModelChangeEndEvent(currentTree));
         }
 
+        // TODO the below lines should go to the above if statement ???
 		rehash();
 
         NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);

@@ -319,6 +319,7 @@ public class TextualNedEditor
 		}
 	}
 
+     // TODO: revise do we need it now ???
     /**
      * Marks the current editor content state, so we will be able to detect 
      * changes in the editor.
@@ -329,6 +330,7 @@ public class TextualNedEditor
         lastContent = getText();
     }
 
+     // TODO: revise do we need it now ???
     /**
      * Returns whether the content of the editor has changed since the last 
      * markContent() call.

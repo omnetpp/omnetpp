@@ -377,6 +377,7 @@ public class GraphicalNedEditor
     @Override
     protected void initializeGraphicalViewer() {
         super.initializeGraphicalViewer();
+        // TODO revise: is this needed (setInput does this)
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         getGraphicalViewer().setContents(getModel());
     }
