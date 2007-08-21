@@ -110,7 +110,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author rhornig
  */
 public class GraphicalNedEditor
-	extends GraphicalEditorWithFlyoutPalette 
+	extends GraphicalEditorWithFlyoutPalette
 	implements INEDChangeListener
 {
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
@@ -474,7 +474,7 @@ public class GraphicalNedEditor
 	}
 
 	protected NedFileElementEx getNEDFileModelFromResourcesPlugin() {
-		return (NedFileElementEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
 	}
 
     protected void loadProperties() {
@@ -540,7 +540,7 @@ public class GraphicalNedEditor
 
     public void modelChanged(final NEDModelEvent event) {
     	Assert.isTrue(getModel() == getNEDFileModelFromResourcesPlugin());
-    	
+
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
@@ -584,7 +584,7 @@ public class GraphicalNedEditor
     	//
     	// NOTE: corresponding code used to be in SubmoduleElementEx.setName(), but that's
     	// not the right place. This is more of a refactoring, e.g. ideally we'd have to
-    	// update all derived compound modules too, possibly after asking the user for 
+    	// update all derived compound modules too, possibly after asking the user for
     	// confirmation -- which is more easily done here.
     	//
     	if (event instanceof NEDAttributeChangeEvent && event.getSource() instanceof SubmoduleElementEx) {
@@ -648,8 +648,8 @@ public class GraphicalNedEditor
 
 		INEDElement element = ((IModelProvider)ep).getNEDModel();
 		String hoverText = "";
-		
-		// brief 
+
+		// brief
 		hoverText += "<b>" + NEDTreeUtil.getNedModelLabelProvider().getText(element) + "</b>\n";
 
 		//debug code:
@@ -662,7 +662,7 @@ public class GraphicalNedEditor
 
 		// comment
 		String comment = StringUtils.trimToEmpty(element.getComment());
-		
+
 		// comment from the submodule's or connection channel's type
 		String typeComment = "";
 		if (element instanceof IHasType) {
