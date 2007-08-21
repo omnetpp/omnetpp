@@ -8,12 +8,12 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
@@ -38,34 +38,34 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
 		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
 
-    public IConnectableNode getSrcModuleRef() {
+    public IConnectableElement getSrcModuleRef() {
     	return resolveConnectedModule(getSrcModule());
     }
 
-    public IConnectableNode getDestModuleRef() {
+    public IConnectableElement getDestModuleRef() {
     	return resolveConnectedModule(getDestModule());
     }
 
     /**
      * Sets the source module of the connection
      */
-    public void setSrcModuleRef(IConnectableNode srcModule) {
+    public void setSrcModuleRef(IConnectableElement srcModule) {
     	setSrcModule(connectedModuleName(srcModule));
     }
 
     /**
      * Sets the destination module of the connection
      */
-    public void setDestModuleRef(IConnectableNode destModule) {
+    public void setDestModuleRef(IConnectableElement destModule) {
     	setDestModule(connectedModuleName(destModule));
     }
 
-    protected String connectedModuleName(IConnectableNode module) {
+    protected String connectedModuleName(IConnectableElement module) {
         return module == null ? null : (module instanceof CompoundModuleElementEx) ? "" : module.getName();
     }
 
     // helper functions to set the module names using references
-    protected IConnectableNode resolveConnectedModule(String moduleName) {
+    protected IConnectableElement resolveConnectedModule(String moduleName) {
         if (moduleName == null)
             return null; // not connected
 
@@ -233,7 +233,7 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
         return resolveTypeName(getEffectiveType());
     }
 
-    public INedTypeNode getEffectiveTypeRef() {
+    public INedTypeElement getEffectiveTypeRef() {
         INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? null : info.getNEDElement();
     }

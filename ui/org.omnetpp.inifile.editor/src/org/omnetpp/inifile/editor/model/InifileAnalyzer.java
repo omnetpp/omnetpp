@@ -39,7 +39,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
@@ -343,7 +343,7 @@ public class InifileAnalyzer {
 				addError(section, key, "No such NED network: "+value);
 				return;
 			}
-			INedTypeNode node = network.getNEDElement();
+			INedTypeElement node = network.getNEDElement();
 			if (!(node instanceof CompoundModuleElement) || ((CompoundModuleElement)node).getIsNetwork()==false) {
 				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
 				return;

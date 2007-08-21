@@ -6,7 +6,7 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
@@ -19,12 +19,12 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 // TODO handling of subgates $i and $o is missing
 public class ConnectionCommand extends Command {
 
-	protected IConnectableNode oldSrcModule;
-	protected IConnectableNode oldDestModule;
+	protected IConnectableElement oldSrcModule;
+	protected IConnectableElement oldDestModule;
 	protected ConnectionElement oldConn = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 
-    protected IConnectableNode srcModule;
-    protected IConnectableNode destModule;
+    protected IConnectableElement srcModule;
+    protected IConnectableElement destModule;
 	protected ConnectionElement newConn =(ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
     protected ConnectionElementEx connModel;
@@ -108,10 +108,10 @@ public class ConnectionCommand extends Command {
     @Override
     public void redo() {
         // if both src and dest module should be detached then remove it
-        // from the model totally (ie delete it)
+        // from the model totally (i.e. delete it)
         if (srcModule == null && destModule == null) {
             // just store the NEXT sibling so we can put it back during undo to the right place
-            connNodeNextSibling = (ConnectionElementEx)connModel.getNextConnectionElementSibling();
+            connNodeNextSibling = (ConnectionElementEx)connModel.getNextConnectionSibling();
             // store the parent too so we now where to put it back during undo
             // FIXME this does not work if connections are placed in connection groups
             parent = (CompoundModuleElementEx)connModel.getParent().getParent();
@@ -174,11 +174,11 @@ public class ConnectionCommand extends Command {
         to.setArrowDirection(from.getArrowDirection());
 	}
 
-    public void setSrcModule(IConnectableNode newSrcModule) {
+    public void setSrcModule(IConnectableElement newSrcModule) {
         srcModule = newSrcModule;
     }
 
-    public void setDestModule(IConnectableNode newDestModule) {
+    public void setDestModule(IConnectableElement newDestModule) {
         destModule = newDestModule;
     }
 
@@ -198,11 +198,11 @@ public class ConnectionCommand extends Command {
         newConn.setDestGate(newDestGate);
     }
 
-	public IConnectableNode getDestModule() {
+	public IConnectableElement getDestModule() {
 		return destModule;
 	}
 
-	public IConnectableNode getSrcModule() {
+	public IConnectableElement getSrcModule() {
 		return srcModule;
 	}
 

@@ -92,7 +92,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
@@ -666,7 +666,7 @@ public class GraphicalNedEditor
 		// comment from the submodule's or connection channel's type
 		String typeComment = "";
 		if (element instanceof IHasType) {
-			INedTypeNode typeElement = ((IHasType)element).getEffectiveTypeRef();
+			INedTypeElement typeElement = ((IHasType)element).getEffectiveTypeRef();
 			if (typeElement != null)
 				typeComment = StringUtils.trimToEmpty(typeElement.getComment());
 		}

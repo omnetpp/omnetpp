@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
-import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
@@ -26,7 +26,7 @@ import org.omnetpp.ned.model.pojo.SubmodulesElement;
  *
  * @author rhornig
  */
-public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeNode, IConnectableNode {
+public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeElement, IConnectableElement {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
@@ -312,7 +312,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     	return resolveTypeName(getFirstExtends());
     }
 
-    public INedTypeNode getFirstExtendsRef() {
+    public INedTypeElement getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }

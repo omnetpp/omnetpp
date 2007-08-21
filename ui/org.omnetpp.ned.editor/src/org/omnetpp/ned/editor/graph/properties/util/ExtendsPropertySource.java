@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * A property source for displaying Extends info (using an editable combobox). The content of the
@@ -16,10 +16,10 @@ import org.omnetpp.ned.model.interfaces.INedTypeNode;
 public abstract class ExtendsPropertySource implements IPropertySource2 {
         public enum Prop { Extends }
         protected IPropertyDescriptor[] descriptors;
-        protected INedTypeNode model;
+        protected INedTypeElement model;
         EditableComboBoxPropertyDescriptor extendsProp;
 
-        public ExtendsPropertySource(INedTypeNode nodeModel) {
+        public ExtendsPropertySource(INedTypeElement nodeModel) {
             model = nodeModel;
 
             // set up property descriptors

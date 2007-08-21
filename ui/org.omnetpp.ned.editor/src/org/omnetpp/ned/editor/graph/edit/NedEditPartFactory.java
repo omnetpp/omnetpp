@@ -7,7 +7,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Factory to create corresponding controller objects for the modell objects.
@@ -31,7 +31,7 @@ public class NedEditPartFactory implements EditPartFactory {
             child = new SubmoduleEditPart();
         else if (model instanceof ConnectionElementEx)
             child = new ModuleConnectionEditPart();
-        else if (model instanceof INedTypeNode)
+        else if (model instanceof INedTypeElement)
             child = new NedTypeEditPart();
         else {
             Assert.isTrue(false,"Unknown model element: "+model.getClass().getName());

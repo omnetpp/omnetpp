@@ -44,7 +44,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	/**
 	 * Returns underlying INEDElement subtree.
 	 */
-	public INedTypeNode getNEDElement();
+	public INedTypeElement getNEDElement();
 
 	/**
 	 * Returns NED file containing the definition.
@@ -103,7 +103,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, GateElement> getLocalGateSizes();
 
     /** Inner types declared locally within this type */
-    public Map<String, INedTypeNode> getLocalInnerTypes();
+    public Map<String, INedTypeElement> getLocalInnerTypes();
 
     /** Submodules declared locally within this (compound module) type */
     public Map<String, SubmoduleElement> getLocalSubmodules();
@@ -139,7 +139,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, GateElement> getGateSizes();
 
     /** All inner types in this type, including inherited ones */
-    public Map<String, INedTypeNode> getInnerTypes();
+    public Map<String, INedTypeElement> getInnerTypes();
 
     /** All submodules in this (compound module) type, including inherited ones */
     public Map<String, SubmoduleElement> getSubmodules();

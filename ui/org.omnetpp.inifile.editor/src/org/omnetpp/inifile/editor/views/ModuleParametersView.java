@@ -49,7 +49,7 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 
@@ -343,8 +343,8 @@ public class ModuleParametersView extends AbstractModuleView {
 			ParamResolution[] pars = null;
 			if (module instanceof SubmoduleElement)
 				pars = InifileAnalyzer.collectParameters((SubmoduleElement)module).toArray(new ParamResolution[]{});
-			else if (module instanceof INedTypeNode)
-				pars = InifileAnalyzer.collectParameters(((INedTypeNode)module).getNEDTypeInfo()).toArray(new ParamResolution[]{});
+			else if (module instanceof INedTypeElement)
+				pars = InifileAnalyzer.collectParameters(((INedTypeElement)module).getNEDTypeInfo()).toArray(new ParamResolution[]{});
 			if (pars == null) {
 				showMessage("NED element should be a module type or a submodule.");
 				return;

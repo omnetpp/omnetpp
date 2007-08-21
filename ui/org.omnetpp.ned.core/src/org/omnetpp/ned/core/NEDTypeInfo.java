@@ -18,10 +18,10 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IInterfaceTypeNode;
+import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -39,7 +39,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	protected INEDTypeResolver resolver;
 
-	protected INedTypeNode componentNode;
+	protected INedTypeElement componentNode;
 	protected IFile file;
 	
 	private int debugId = lastDebugId++;
@@ -55,7 +55,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     protected Map<String, ParamElement> localParamValues = new LinkedHashMap<String, ParamElement>();
 	protected Map<String, GateElement> localGateDecls = new LinkedHashMap<String, GateElement>();
     protected Map<String, GateElement> localGateSizes = new LinkedHashMap<String, GateElement>();
-	protected Map<String, INedTypeNode> localInnerTypes = new LinkedHashMap<String, INedTypeNode>();
+	protected Map<String, INedTypeElement> localInnerTypes = new LinkedHashMap<String, INedTypeElement>();
 	protected Map<String, SubmoduleElement> localSubmodules = new LinkedHashMap<String, SubmoduleElement>();
     protected HashSet<String> localUsedTypes = new HashSet<String>();
 
@@ -71,7 +71,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     protected Map<String, ParamElement> allParamValues = new LinkedHashMap<String, ParamElement>();
     protected Map<String, GateElement> allGates = new LinkedHashMap<String, GateElement>();
     protected Map<String, GateElement> allGateSizes = new LinkedHashMap<String, GateElement>();
-	protected Map<String, INedTypeNode> allInnerTypes = new LinkedHashMap<String, INedTypeNode>();
+	protected Map<String, INedTypeElement> allInnerTypes = new LinkedHashMap<String, INedTypeElement>();
 	protected Map<String, SubmoduleElement> allSubmodules = new LinkedHashMap<String, SubmoduleElement>();
     protected HashSet<String> allUsedTypes = new HashSet<String>();
 
@@ -95,7 +95,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	 * @param nedfile file containing the definition
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
-	public NEDTypeInfo(INedTypeNode node, IFile nedfile, INEDTypeResolver res) {
+	public NEDTypeInfo(INedTypeElement node, IFile nedfile, INEDTypeResolver res) {
 		resolver = res;
 		file = nedfile;
 		componentNode = node;
@@ -200,7 +200,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         localUsedTypes.clear();
 
         // collect base types: interfaces extend other interfaces, modules implement interfaces
-        collectInheritance(localInterfaces, getNEDElement() instanceof IInterfaceTypeNode ? NED_EXTENDS : NED_INTERFACE_NAME);
+        collectInheritance(localInterfaces, getNEDElement() instanceof IInterfaceTypeElement ? NED_EXTENDS : NED_INTERFACE_NAME);
        
         // collect members from component declaration
         collect(localProperties, NED_PARAMETERS, new IPredicate() {
@@ -225,7 +225,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			}});
         collect(localInnerTypes, NED_TYPES, new IPredicate() {
 			public boolean matches(IHasName node) {
-				return node instanceof INedTypeNode;
+				return node instanceof INedTypeElement;
 			}});
         collect(localSubmodules, NED_SUBMODULES, new IPredicate() {
 			public boolean matches(IHasName node) {
@@ -276,7 +276,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 		// collect interfaces: what our base class implements (directly or indirectly), 
 		// plus our interfaces and everything they extend (directly or indirectly)
-		if (!(getNEDElement() instanceof IInterfaceTypeNode)) {
+		if (!(getNEDElement() instanceof IInterfaceTypeElement)) {
 			INEDTypeInfo directBaseType = getNEDElement().getFirstExtendsNEDTypeInfo();
 			if (directBaseType != null)
 				allInterfaces.addAll(directBaseType.getInterfaces());
@@ -346,7 +346,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		return componentNode.getName();
 	}
 
-	public INedTypeNode getNEDElement() {
+	public INedTypeElement getNEDElement() {
 		return componentNode;
 	}
 
@@ -410,7 +410,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localGateSizes;
     }
 
-    public Map<String,INedTypeNode> getLocalInnerTypes() {
+    public Map<String,INedTypeElement> getLocalInnerTypes() {
     	refreshLocalMembersIfNeeded();
         return localInnerTypes;
     }
@@ -460,7 +460,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return allGateSizes;
     }
 
-    public Map<String, INedTypeNode> getInnerTypes() {
+    public Map<String, INedTypeElement> getInnerTypes() {
     	refreshInheritedMembersIfNeeded();
         return allInnerTypes;
     }

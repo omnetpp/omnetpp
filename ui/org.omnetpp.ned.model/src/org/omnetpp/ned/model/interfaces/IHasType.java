@@ -56,5 +56,5 @@ public interface IHasType extends INEDElement {
      * 
      * Returns null if the effective type is not filled in, or is not a valid NED type. 
      */
-    public INedTypeNode getEffectiveTypeRef();
+    public INedTypeElement getEffectiveTypeRef();
 }

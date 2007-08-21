@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ClassDeclElement;
 import org.omnetpp.ned.model.pojo.ClassElement;
@@ -74,7 +74,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	INEDErrorStore errors;
 
 	// the component currently being validated
-	INedTypeNode componentNode;
+	INedTypeElement componentNode;
 
 	// non-null while we're validating a submodule
 	SubmoduleElementEx submoduleNode;
@@ -196,7 +196,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	}
 
 	/* utility method */
-	protected void doValidateComponent(INedTypeNode node) {
+	protected void doValidateComponent(INedTypeElement node) {
         // init
 		componentNode = node;
 		Assert.isTrue(members.isEmpty());
@@ -372,7 +372,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				case NED_CHANNEL:
 					validator.validate(child);
 					String name = child.getAttribute("name");
-					innerTypes.put(name, resolver.wrapNEDElement((INedTypeNode)child));
+					innerTypes.put(name, resolver.wrapNEDElement((INedTypeElement)child));
 					members.put(name, child);
 					break;
 				default:

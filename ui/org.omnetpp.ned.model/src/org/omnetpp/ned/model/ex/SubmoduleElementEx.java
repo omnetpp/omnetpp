@@ -8,14 +8,14 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.GatesElement;
@@ -29,7 +29,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author rhornig
  */
 public class SubmoduleElementEx extends SubmoduleElement
-                            implements IConnectableNode, IHasIndex, IHasType,
+                            implements IConnectableElement, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
     public static final String DEFAULT_TYPE = "Unknown";
     public static final String DEFAULT_NAME = "unnamed";
@@ -83,7 +83,7 @@ public class SubmoduleElementEx extends SubmoduleElement
      *
      * @param submoduleType  a CompoundModuleElementEx or a SimpleModuleElementEx
      */
-    public DisplayString getDisplayString(IModuleTypeNode submoduleType) {
+    public DisplayString getDisplayString(IModuleTypeElement submoduleType) {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(submoduleType.getDisplayString());
@@ -130,7 +130,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     	return resolveTypeName(getEffectiveType());
     }
 
-    public INedTypeNode getEffectiveTypeRef() {
+    public INedTypeElement getEffectiveTypeRef() {
         INEDTypeInfo info = getNEDTypeInfo();
         return info == null ? null : info.getNEDElement();
     }

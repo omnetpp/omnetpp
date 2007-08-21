@@ -33,7 +33,7 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
@@ -368,7 +368,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return components.get(name);
     }
 
-    public synchronized INEDTypeInfo wrapNEDElement(INedTypeNode componentNode) {
+    public synchronized INEDTypeInfo wrapNEDElement(INedTypeElement componentNode) {
         return new NEDTypeInfo(componentNode, null, this);
     }
 
@@ -506,9 +506,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         	markerSync.registerFile(file);
 
         	// collect types (including inner types) from the NED file, and process them one by one
-        	Map<String, INedTypeNode> types = collectTypesFrom(nedFiles.get(file));
+        	Map<String, INedTypeElement> types = collectTypesFrom(nedFiles.get(file));
         	for (String name : types.keySet()) {
-        		INedTypeNode node = types.get(name);
+        		INedTypeElement node = types.get(name);
 
         		// create type info object for EVERY type. We won't store them for duplicate types,
         		// but they'll still be available via INedTypeInfo.getNedTypeInfo().
@@ -592,17 +592,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     }
 
-    protected static Map<String,INedTypeNode> collectTypesFrom(INEDElement tree) {
-    	Map<String,INedTypeNode> result = new LinkedHashMap<String,INedTypeNode>();
+    protected static Map<String,INedTypeElement> collectTypesFrom(INEDElement tree) {
+    	Map<String,INedTypeElement> result = new LinkedHashMap<String,INedTypeElement>();
     	doCollectTypes("", tree, result);
     	return result;
     }
 
-    protected static void doCollectTypes(String namePrefix, INEDElement parent, Map<String, INedTypeNode> result) {
+    protected static void doCollectTypes(String namePrefix, INEDElement parent, Map<String, INedTypeElement> result) {
         for (INEDElement node : parent) {
-            if (node instanceof INedTypeNode) {
+            if (node instanceof INedTypeElement) {
             	// collect this type
-            	INedTypeNode typeNode = (INedTypeNode)node;
+            	INedTypeElement typeNode = (INedTypeElement)node;
 				result.put(namePrefix + typeNode.getName(), typeNode);
 				
 				// collect its inner types
@@ -712,7 +712,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     		return true;
  
         // if we have changed a toplevel element's name we should rehash
-        if (event.getSource() instanceof INedTypeNode && event instanceof NEDAttributeChangeEvent
+        if (event.getSource() instanceof INedTypeElement && event instanceof NEDAttributeChangeEvent
                 && SimpleModuleElement.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
             return true;
 

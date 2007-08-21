@@ -6,5 +6,5 @@ package org.omnetpp.ned.model.interfaces;
  * 
  * @author Andras
  */
-public interface IInterfaceTypeNode extends INedTypeNode {
+public interface IInterfaceTypeElement extends INedTypeElement {
 }

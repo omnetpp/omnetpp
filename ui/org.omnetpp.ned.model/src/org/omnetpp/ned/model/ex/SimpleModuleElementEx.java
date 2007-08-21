@@ -6,9 +6,9 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -21,7 +21,7 @@ import org.omnetpp.ned.model.pojo.SimpleModuleElement;
  *
  * @author rhornig
  */
-public class SimpleModuleElementEx extends SimpleModuleElement implements IModuleTypeNode {
+public class SimpleModuleElementEx extends SimpleModuleElement implements IModuleTypeElement {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
@@ -75,7 +75,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
         return resolveTypeName(getFirstExtends());
     }
 
-    public INedTypeNode getFirstExtendsRef() {
+    public INedTypeElement getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }

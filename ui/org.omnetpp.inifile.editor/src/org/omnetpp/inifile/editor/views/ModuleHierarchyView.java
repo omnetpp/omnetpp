@@ -50,7 +50,7 @@ import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
@@ -112,10 +112,10 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private static class ModuleNode {
 		String moduleFullPath;
 		SubmoduleElementEx submoduleNode; // null at the root
-		IModuleTypeNode submoduleType; // CompoundModuleElement or SimpleModuleElement; null if type is unknown
+		IModuleTypeElement submoduleType; // CompoundModuleElement or SimpleModuleElement; null if type is unknown
 
 		/* for convenience */
-		public ModuleNode(String moduleFullPath, SubmoduleElementEx submoduleNode, IModuleTypeNode submoduleType) {
+		public ModuleNode(String moduleFullPath, SubmoduleElementEx submoduleNode, IModuleTypeElement submoduleType) {
 			this.moduleFullPath = moduleFullPath;
 			this.submoduleNode = submoduleNode;
 			this.submoduleType = submoduleType;
@@ -465,7 +465,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	 */
 	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, SubmoduleElement thisSubmodule, String activeSection, InifileAnalyzer analyzer) {
 		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
-		GenericTreeNode thisNode = new GenericTreeNode(new ModuleNode(moduleText, (SubmoduleElementEx)thisSubmodule, (IModuleTypeNode)moduleType.getNEDElement()));
+		GenericTreeNode thisNode = new GenericTreeNode(new ModuleNode(moduleText, (SubmoduleElementEx)thisSubmodule, (IModuleTypeElement)moduleType.getNEDElement()));
 		parent.addChild(thisNode);
 
 		if (analyzer == null) {

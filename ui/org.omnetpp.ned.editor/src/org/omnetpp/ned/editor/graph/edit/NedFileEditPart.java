@@ -12,7 +12,7 @@ import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Represents the NED file in the graphical editor.
@@ -73,7 +73,7 @@ public class NedFileEditPart extends NedEditPart {
     }
 
     @Override
-    protected List<INedTypeNode> getModelChildren() {
+    protected List<INedTypeElement> getModelChildren() {
     	return ((NedFileElementEx)getNEDModel()).getTopLevelTypeNodes();
     }
 

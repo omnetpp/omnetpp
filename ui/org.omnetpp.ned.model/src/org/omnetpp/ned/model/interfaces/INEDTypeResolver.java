@@ -164,6 +164,6 @@ public interface INEDTypeResolver {
 	 * in the resolver. This method was created for handling inner types.
 	 */
 	//XXX probably to be revised... --Andras
-	public INEDTypeInfo wrapNEDElement(INedTypeNode componentNode);
+	public INEDTypeInfo wrapNEDElement(INedTypeElement componentNode);
 
 }

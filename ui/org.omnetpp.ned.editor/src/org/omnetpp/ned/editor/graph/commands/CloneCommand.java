@@ -9,7 +9,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Clones a set of {@link INEDElement} (copy operation)
@@ -58,7 +58,7 @@ public class CloneCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
     	INEDElement newNode = oldNode.deepDup();
         // set a unique name is this is a named toplevel element
-        if ((newNode instanceof IHasName) && (newNode instanceof INedTypeNode)) {
+        if ((newNode instanceof IHasName) && (newNode instanceof INedTypeElement)) {
             Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();
             ((IHasName)newNode).setName(NEDElementUtilEx.getUniqueNameFor((IHasName)newNode, context));
         }

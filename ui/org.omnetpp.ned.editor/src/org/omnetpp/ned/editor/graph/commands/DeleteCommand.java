@@ -7,7 +7,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 
@@ -24,8 +24,8 @@ public class DeleteCommand extends Command {
         public ConnectionElementEx node;            // the NODE that was deleted
         public ConnectionsElement parent;           // the parent of the deleted node
         public ConnectionElementEx nextSibling;     // the next sibling to be able to insert it back into the correct position
-        public IConnectableNode srcModule;             // the src module the connection was originally attached to
-        public IConnectableNode destModule;            // the dest module the connection was originally attached to
+        public IConnectableElement srcModule;             // the src module the connection was originally attached to
+        public IConnectableElement destModule;            // the dest module the connection was originally attached to
     }
 
     private static class ElementUndoItem {
@@ -73,7 +73,7 @@ public class DeleteCommand extends Command {
             ConnectionUndoItem uitem = new ConnectionUndoItem();
             uitem.node = wire;
             uitem.parent = (ConnectionsElement)wire.getParent();
-            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionElementSibling();
+            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionSibling();
             uitem.srcModule = wire.getSrcModuleRef();
             uitem.destModule = wire.getDestModuleRef();
             connectionUndoItems.add(uitem);
@@ -87,7 +87,7 @@ public class DeleteCommand extends Command {
             ConnectionUndoItem uitem = new ConnectionUndoItem();
             uitem.node = wire;
             uitem.parent = (ConnectionsElement)wire.getParent();
-            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionElementSibling();
+            uitem.nextSibling = (ConnectionElementEx)wire.getNextConnectionSibling();
             uitem.srcModule = wire.getSrcModuleRef();
             uitem.destModule = wire.getDestModuleRef();
             connectionUndoItems.add(uitem);

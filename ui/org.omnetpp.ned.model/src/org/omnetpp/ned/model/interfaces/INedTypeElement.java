@@ -11,7 +11,7 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  *
  * @author rhornig
  */
-public interface INedTypeNode extends IHasName, IHasDisplayString, IHasParameters {
+public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParameters {
 	
 	/**
 	 * Returns the typeinfo belonging to this NED type. This can be trusted
@@ -52,7 +52,7 @@ public interface INedTypeNode extends IHasName, IHasDisplayString, IHasParameter
      * NOTE that this checks only the FIRST "extends" node, so it doesn't return full 
      * inheritance info for ModuleInterface and ChannelInterface. 
      */
-    public INedTypeNode getFirstExtendsRef();
+    public INedTypeElement getFirstExtendsRef();
 
     /**
      * Returns the list of all ned elements that used as base (usually only a single element,

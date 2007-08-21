@@ -5,7 +5,7 @@ import java.util.Set;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Property source to display the interface list of a component
@@ -15,10 +15,10 @@ import org.omnetpp.ned.model.interfaces.INedTypeNode;
 public class InterfacesListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "like";
     public final static String DESCRIPTION = "List of interfaces this component implements - (read only)";
-    protected INedTypeNode model;
+    protected INedTypeElement model;
     protected PropertyDescriptor[] pdesc;
 
-    public InterfacesListPropertySource(INedTypeNode model) {
+    public InterfacesListPropertySource(INedTypeElement model) {
         super(model);
         this.model = model;
     }

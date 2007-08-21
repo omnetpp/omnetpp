@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.INedTypeNode;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
@@ -20,11 +20,11 @@ public class NedFileElementEx extends NedFileElement {
 		super(parent);
 	}
 
-	public List<INedTypeNode> getTopLevelTypeNodes() {
-		List<INedTypeNode> result = new ArrayList<INedTypeNode>();
+	public List<INedTypeElement> getTopLevelTypeNodes() {
+		List<INedTypeElement> result = new ArrayList<INedTypeElement>();
 		for (INEDElement currChild : this)
-			if (currChild instanceof INedTypeNode)
-				result.add((INedTypeNode)currChild);
+			if (currChild instanceof INedTypeElement)
+				result.add((INedTypeElement)currChild);
 
 		return result;
 	}

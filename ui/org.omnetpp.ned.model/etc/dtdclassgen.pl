@@ -213,6 +213,9 @@ foreach $element (@elements)
 {
     $elementclass = $elementclass{$element};
 
+    $elementclassshort = $elementclass;
+    $elementclassshort =~ s/Element$//;
+
     $javafile = "$outdir/$elementclass.java";
     open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
 
@@ -367,7 +370,7 @@ foreach $element (@elements)
         }
 
     }
-    print JAVA "    public $elementclass getNext${elementclass}Sibling() {\n";
+    print JAVA "    public $elementclass getNext${elementclassshort}Sibling() {\n";
     print JAVA "        return ($elementclass)getNextSiblingWithTag($enumname{$element});\n";
     print JAVA "    }\n\n";
 
@@ -432,10 +435,10 @@ print JAVA "    public static void setInstance(NEDElementFactory inst) {\n";
 print JAVA "        instance = inst;\n";
 print JAVA "    }\n";
 print JAVA "\n";
-print JAVA "    public INEDElement createNodeWithTag(String tagname) {\n";
-print JAVA "        return createNodeWithTag(tagname, null);\n";
+print JAVA "    public INEDElement createElement(String tagname) {\n";
+print JAVA "        return createElement(tagname, null);\n";
 print JAVA "    }\n\n";
-print JAVA "    public INEDElement createNodeWithTag(String tagname, INEDElement parent) {\n";
+print JAVA "    public INEDElement createElement(String tagname, INEDElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagname.equals($elementclass{$element}.getStaticTagName()))\n";
@@ -445,11 +448,11 @@ print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public INEDElement createNodeWithTag(int tagcode) {\n";
-print JAVA "        return createNodeWithTag(tagcode, null);\n";
+print JAVA "    public INEDElement createElement(int tagcode) {\n";
+print JAVA "        return createElement(tagcode, null);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public INEDElement createNodeWithTag(int tagcode, INEDElement parent) {\n";
+print JAVA "    public INEDElement createElement(int tagcode, INEDElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagcode==$enumname{$element})\n";

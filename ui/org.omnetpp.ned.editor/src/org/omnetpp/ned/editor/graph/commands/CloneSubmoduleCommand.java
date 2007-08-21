@@ -11,7 +11,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 
 /**
@@ -128,7 +128,7 @@ public class CloneSubmoduleCommand extends Command {
         // go through all modules that were previously cloned and check all the source connections
         for (SubmoduleElementEx oldSrcMod : modules)
             for (ConnectionElementEx oldConn : oldSrcMod.getSrcConnections()) {
-            	IConnectableNode oldDestMod = oldConn.getDestModuleRef();
+            	IConnectableElement oldDestMod = oldConn.getDestModuleRef();
                 // if the destination side was also selected clone this connection connection too 
                 // TODO future: clone the connections ONLY if they are selected too
                 if (old2newMapping.containsKey(oldDestMod)) {

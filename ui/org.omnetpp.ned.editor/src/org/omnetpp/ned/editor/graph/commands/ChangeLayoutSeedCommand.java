@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.interfaces.IConnectableNode;
+import org.omnetpp.ned.model.interfaces.IConnectableElement;
 
 /**
  * Change the size and location of a compound module (location cannot be changed)
@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.interfaces.IConnectableNode;
  */
 public class ChangeLayoutSeedCommand extends Command {
 	private int oldSeed = 1;
-    private IConnectableNode module;
+    private IConnectableElement module;
 
     public ChangeLayoutSeedCommand(CompoundModuleElementEx newModule) {
     	super();

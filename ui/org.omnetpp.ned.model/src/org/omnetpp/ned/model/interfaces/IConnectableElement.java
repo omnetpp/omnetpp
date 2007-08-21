@@ -5,7 +5,7 @@ package org.omnetpp.ned.model.interfaces;
  *
  * @author rhornig
  */
-public interface IConnectableNode extends IHasName, IHasDisplayString {
+public interface IConnectableElement extends IHasName, IHasDisplayString {
     /**
      * Returns the typeinfo for the effective type.
      * 
