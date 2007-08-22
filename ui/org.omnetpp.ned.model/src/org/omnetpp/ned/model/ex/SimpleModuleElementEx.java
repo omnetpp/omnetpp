@@ -43,7 +43,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }
-    
+
     @Override
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class

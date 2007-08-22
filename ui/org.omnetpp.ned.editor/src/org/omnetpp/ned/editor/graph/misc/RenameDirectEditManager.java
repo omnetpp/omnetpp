@@ -2,6 +2,8 @@ package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -9,11 +11,13 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
+
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
- * DirectEditManager for renameable objects
+ * DirectEditManager for elements that can be renamed
  *
  * @author rhornig
  */
@@ -22,6 +26,7 @@ public class RenameDirectEditManager extends DirectEditManager {
     Font scaledFont;
     protected VerifyListener verifyListener;
     protected IDirectEditSupport directEditable;
+    protected ICellEditorValidator validator;
     protected GraphicalEditPart sourcePart;
 
     /**
@@ -35,10 +40,12 @@ public class RenameDirectEditManager extends DirectEditManager {
      *            the CellEditorLocator
      */
     public RenameDirectEditManager(GraphicalEditPart source, Class<?> editorType,
+            ICellEditorValidator validator,
             IDirectEditSupport directEditable) {
         super(source, editorType, directEditable.getDirectEditCellEditorLocator());
         this.directEditable = directEditable;
-        sourcePart = source;
+        this.sourcePart = source;
+        this.validator = validator;
     }
 
     @Override
@@ -77,6 +84,8 @@ public class RenameDirectEditManager extends DirectEditManager {
 
         // hide the underlying label text
         directEditable.setDirectEditTextVisible(false);
+        // set the validator
+        getCellEditor().setValidator(validator);
     }
 
     @Override
@@ -85,5 +94,17 @@ public class RenameDirectEditManager extends DirectEditManager {
         Text text = (Text) getCellEditor().getControl();
         text.removeVerifyListener(verifyListener);
         verifyListener = null;
+    }
+
+    @Override
+    protected void commit() {
+        String message = getCellEditor().isValueValid() ? null : getCellEditor().getErrorMessage();
+        if (message != null) {
+            bringDown();
+            MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                    "Rename failed", message);
+        }
+        else
+            super.commit();
     }
 }

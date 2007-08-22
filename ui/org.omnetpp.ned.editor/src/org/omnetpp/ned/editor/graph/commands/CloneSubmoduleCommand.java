@@ -57,13 +57,13 @@ public class CloneSubmoduleCommand extends Command {
      * @param oldConn
      */
     protected ConnectionElementEx cloneConnection(ConnectionElementEx oldConn, SubmoduleElementEx srcModuleRef, SubmoduleElementEx destModuleRef) {
-            
+
         ConnectionsElement connectionParent = null;
         if (parent instanceof CompoundModuleElementEx)
             connectionParent = parent.getFirstConnectionsChild();
-        
+
         ConnectionElementEx newConn = (ConnectionElementEx)oldConn.deepDup();
-            
+
         connectionParent.appendChild(newConn);
         newConn.setSrcModuleRef(srcModuleRef);
         newConn.setDestModuleRef(destModuleRef);
@@ -72,7 +72,7 @@ public class CloneSubmoduleCommand extends Command {
 
         return newConn;
     }
-    
+
     protected SubmoduleElementEx cloneModule(SubmoduleElementEx oldModule, Rectangle newBounds, int index) {
     	SubmoduleElementEx newModule = null;
 
@@ -81,7 +81,7 @@ public class CloneSubmoduleCommand extends Command {
 
         newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
 
-        // make the cloned submodule's name unique within the parent, before inserting into the modell
+        // make the cloned submodule's name unique within the parent, before inserting into the model
         // so it wont generate unnecessary notifications
         newModule.setName(NEDElementUtilEx.getUniqueNameFor(newModule, parent.getSubmodules()));
 
@@ -94,11 +94,11 @@ public class CloneSubmoduleCommand extends Command {
 
         // keep track of the new modules so we can delete them in undo
         newModules.add(newModule);
-        
+
         // keep track of the newModule -> OldModule map so that we can properly
         // attach all connections later.
         old2newMapping.put(oldModule, newModule);
-        
+
         return newModule;
     }
 
@@ -129,7 +129,7 @@ public class CloneSubmoduleCommand extends Command {
         for (SubmoduleElementEx oldSrcMod : modules)
             for (ConnectionElementEx oldConn : oldSrcMod.getSrcConnections()) {
             	IConnectableElement oldDestMod = oldConn.getDestModuleRef();
-                // if the destination side was also selected clone this connection connection too 
+                // if the destination side was also selected clone this connection connection too
                 // TODO future: clone the connections ONLY if they are selected too
                 if (old2newMapping.containsKey(oldDestMod)) {
                     SubmoduleElementEx newSrcMod = old2newMapping.get(oldSrcMod);
@@ -143,7 +143,7 @@ public class CloneSubmoduleCommand extends Command {
     public void undo() {
         for (SubmoduleElementEx mod : newModules)
             mod.removeFromParent();
-        
+
         for (ConnectionElementEx conn : newConnections)
             conn.removeFromParent();
     }

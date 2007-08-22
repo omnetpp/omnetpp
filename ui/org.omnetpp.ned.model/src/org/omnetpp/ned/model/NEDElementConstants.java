@@ -5,6 +5,15 @@ package org.omnetpp.ned.model;
  */
 public interface NEDElementConstants
 {
+    // reserved keywords for NED v2
+    public final static String[] RESERVED_NED_KEYWORDS =
+        { "import", "package","property","module","simple","network","channel",
+        "interface","channelinterface","extends","like","withcppclass","types",
+        "parameters","gates","submodules","connections","allowunconnected","double",
+        "int","string","bool","xml","volatile","typename","input","output","inout",
+        "if","for","true","false","this","default","const","sizeof","index","xmldoc"};
+
+
     public static final int  NED_GATETYPE_NONE = 100;
     public static final int  NED_GATETYPE_INPUT = 101;
     public static final int  NED_GATETYPE_OUTPUT = 102;

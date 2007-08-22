@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
+
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
@@ -21,6 +22,12 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
  */
 public class SubmoduleEditPart extends ModuleEditPart {
     protected GateAnchor gateAnchor;
+
+    @Override
+    public void activate() {
+        super.activate();
+        renameValidator = new SubmoduleNameValidator(getCompoundModulePart().getCompoundModuleModel());
+    }
 
     @Override
     protected void createEditPolicies() {

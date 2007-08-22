@@ -10,14 +10,14 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
-import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
+import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 
 /**
  * TODO add documentation
@@ -41,11 +41,11 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	public static DisplayString displayStringOf(IHasDisplayString node) {
 		return node == null ? null : node.getDisplayString();
 	}
-	
+
 	/**
 	 * Returns the display string of the given element (submodule, connection or
-	 * toplevel type) in an unparsed form, from the NED tree. 
-	 * 
+	 * toplevel type) in an unparsed form, from the NED tree.
+	 *
 	 * Returns null if the NED tree doesn't contain a display string.
 	 */
 	public static String getDisplayStringLiteral(IHasDisplayString node) {
@@ -69,12 +69,12 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	 * Sets the display string of a given node in the NED tree,
 	 * by creating or updating the LiteralElement that contains the
 	 * "@display" property in the tree.
-	 * 
-	 * Returns the LiteralElement which was created/updated. 
+	 *
+	 * Returns the LiteralElement which was created/updated.
 	 */
 	public static LiteralElement setDisplayStringLiteral(IHasDisplayString node1, String displayString) {
 		INEDElement node = node1;
-		
+
 		// the connection node is special because the display string is stored inside its
         // channel spec node, so we must create that too
         if (node instanceof ConnectionElement) {
@@ -133,7 +133,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		// if new, add it only here (also to minimize notifications)
 		if (literalElement.getParent() == null)
 			propertyKeyNode.appendChild(literalElement);
-		return literalElement; 
+		return literalElement;
 	}
 
     /**
@@ -178,7 +178,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	}
 
     /**
-     * Returns the name of component but stripped any digits from the right ie: name123 would be name
+     * Returns the name of component but stripped any digits from the right ie: "name123" would be "name"
      */
     private static String getNameBase(String name) {
         int i = name.length()-1;
@@ -190,7 +190,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     /**
      * Calculates a unique name for the provided model element
      * @param namedElement
-     * @param contextCollection A collection of IHasName elements wich proviedes a context in which the name should be unique
+     * @param contextCollection A collection of IHasName elements which provides a context in which the name should be unique
      * @return The new unique name, or the original name if it was unique
      */
     public static String getUniqueNameFor(IHasName namedElement, Set<String> contextCollection) {
@@ -226,8 +226,15 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     }
 
     /**
-     * When the user renames a submodule, we need to update the connections in the 
-     * same compound module (and its subclasses) accordingly, so that the model 
+     * Checks whether the provided string is a valid NED identifier
+     */
+    public static boolean isValidIdentifier(String str) {
+        return str != null && str.matches("[a-zA-Z_][a-zA-Z0-9_]*");
+    }
+
+    /**
+     * When the user renames a submodule, we need to update the connections in the
+     * same compound module (and its subclasses) accordingly, so that the model
      * will remain consistent. This method performs this change, for one compound
      * module.
      */

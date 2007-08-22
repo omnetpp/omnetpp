@@ -1,12 +1,17 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.util.Arrays;
+import java.util.Set;
+
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.ui.views.properties.IPropertySource;
+
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
@@ -14,6 +19,9 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -29,8 +37,51 @@ abstract public class NedEditPart
     private boolean editable = true;
     private IPropertySource propertySource;
     protected DirectEditManager manager;
+    protected ICellEditorValidator renameValidator;
 
     /**
+     * Validator used for checking top level type names. NOTE: Inner types should be validated differently.
+     */
+    class TypeNameValidator implements ICellEditorValidator {
+        public String isValid(Object newText) {
+            if (!NEDElementUtilEx.isValidIdentifier((String)newText))
+                return "Invalid identifier. Names must begin with a letter or underscore, and may contain letters," +
+                " digits or underscore.";
+            Set<String> usedNames = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();
+            if (usedNames.contains(newText))
+                return "Name is already in use. There is already a type with the same name.";
+            if (Arrays.asList(NEDElementConstants.RESERVED_NED_KEYWORDS).contains(newText))
+                return "Name is a reserved keyword.";
+
+            return null;
+        }
+    };
+
+    /**
+     * Validator used for checking submodule names.
+     */
+    class SubmoduleNameValidator implements ICellEditorValidator {
+        CompoundModuleElementEx compoundModuleModel;
+
+        public SubmoduleNameValidator(CompoundModuleElementEx compoundModuleModel) {
+            this.compoundModuleModel = compoundModuleModel;
+        }
+
+        public String isValid(Object newText) {
+            if (!NEDElementUtilEx.isValidIdentifier((String)newText))
+                return "Invalid identifier. Names must begin with a letter or underscore, and may contain letters," +
+                		" digits or underscore.";
+            if (compoundModuleModel.getNEDTypeInfo().getMembers().containsKey(newText))
+                return "Name is already in use. Submodule name must not be the same as an existing" +
+                		" submodule, gate, parameter or inner type name.";
+            if (Arrays.asList(NEDElementConstants.RESERVED_NED_KEYWORDS).contains(newText))
+                return "Name is a reserved keyword.";
+
+            return null;
+        }
+    };
+
+        /**
      * Installs the desired EditPolicies for this.
      */
     @Override
@@ -95,7 +146,7 @@ abstract public class NedEditPart
         if (manager == null && (getFigure() instanceof IDirectEditSupport)
                 && getNEDModel() instanceof IHasName) {
             IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();
-            manager = new RenameDirectEditManager(this, TextCellEditor.class,deSupport);
+            manager = new RenameDirectEditManager(this, TextCellEditor.class, renameValidator, deSupport);
         }
         if (manager != null)
             manager.show();

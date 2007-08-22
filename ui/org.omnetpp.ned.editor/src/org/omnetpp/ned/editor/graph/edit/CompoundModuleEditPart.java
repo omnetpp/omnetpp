@@ -21,6 +21,7 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
@@ -36,11 +37,17 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
  * @author rhornig
  */
 public class CompoundModuleEditPart extends ModuleEditPart {
-	
+
     // stores  the connection model - connection controller mapping for the compound module
     private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
 
     protected CompoundModuleGateAnchor gateAnchor;
+
+    @Override
+    public void activate() {
+        super.activate();
+        renameValidator = new TypeNameValidator();
+    }
 
     @Override
     protected void createEditPolicies() {
