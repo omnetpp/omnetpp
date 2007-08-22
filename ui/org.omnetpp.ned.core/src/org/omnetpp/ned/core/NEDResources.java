@@ -245,10 +245,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         markerSync.addMarkersToFileFromErrorStore(file, currentTree, errors);
         // we should defer the synchronization to a different job, so no deadlock can occur
         markerSync.runAsWorkspaceJob();
-        
-        
-        System.out.println(NEDTreeUtil.isExpressionValid("1 + 2"));
-        System.out.println(NEDTreeUtil.isExpressionValid("a + "));
     }
 
     // TODO we should use the NEDElements (the errorMarkerIds collection) to signal an error
