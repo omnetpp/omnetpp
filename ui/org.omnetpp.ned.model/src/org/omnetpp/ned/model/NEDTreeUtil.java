@@ -48,7 +48,7 @@ public class NEDTreeUtil {
         //System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
 
         NEDErrorStore errors = new NEDErrorStore();
-		errors.setPrintToStderr(false); //XXX just for debugging
+		errors.setPrintToStderr(false); // turn it on for debugging
 		if (keepSyntax && treeRoot instanceof NedFileElement && "1".equals(((NedFileElement)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
             return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!!
@@ -199,6 +199,18 @@ public class NEDTreeUtil {
 		}
 
 		return swigNode;
+	}
+
+	/**
+	 * Returns true if the given string can be parsed as a NED expression, and false otherwise.
+	 */
+	public static boolean isExpressionValid(String expression) {
+		Assert.isTrue(expression != null);
+		NEDErrorStore errors = new NEDErrorStore();
+		NEDParser np = new NEDParser(errors);
+		NEDElement swigTree = np.parseNEDExpression(expression);
+		if (swigTree != null) swigTree.delete();
+		return !errors.containsError();
 	}
 
     /**

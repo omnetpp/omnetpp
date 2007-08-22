@@ -65,6 +65,7 @@ static char textbuf[TEXTBUF_LEN];
 %}
 
 %%
+"@expr@"                 { return EXPRESSION_SELECTOR; /* must agree with nedparser.cc */ }
 
 "//"                     { comment(); }
 

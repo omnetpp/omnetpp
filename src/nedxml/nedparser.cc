@@ -21,6 +21,7 @@
 #include <string.h>
 #include <time.h>
 #include <sstream>
+#include <string>
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
@@ -29,6 +30,7 @@
 
 #include "nedyydefs.h"
 
+#define MAGIC_PREFIX   "@expr@"  // note: must agree with ned2.lex
 
 NEDParser *np;
 
@@ -59,6 +61,13 @@ NEDElement *NEDParser::parseNEDText(const char *nedtext)
     if (!loadText(nedtext))
         return NULL;
     return parseNED();
+}
+
+NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
+{
+    parseexpr = true;
+	std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
+	return parseNEDText(source.c_str());
 }
 
 NEDElement *NEDParser::parseMSGFile(const char *fname)

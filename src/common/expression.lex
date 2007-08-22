@@ -15,19 +15,6 @@
 *--------------------------------------------------------------*/
 
 
-/*
- * NED-2 reserved words:
- *    non-component: import package property
- *    component:     module simple network channel interface
- *    inheritance:   extends like withcppclass
- *    sections:      types parameters gates submodules connections allowunconnected
- *    param types:   double int string bool xml function
- *    gate types:    input output inout
- *    conditional:   if
- *    connections:   --> <-- <--> while ..
- *    expressions:   true false default const sizeof index xmldoc
- */
-
 D  [0-9]
 L  [$@a-zA-Z_]
 X  [0-9a-fA-F]

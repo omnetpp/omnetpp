@@ -237,7 +237,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	        currentTree.fireModelChanged(new NEDEndModelChangeEvent(currentTree));
         }
 
-        // TODO the below lines should go to the above if statement ???
+        // FIXME the below lines should go to the above if statement ???
 		rehash();
 
         NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);
@@ -245,6 +245,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         markerSync.addMarkersToFileFromErrorStore(file, currentTree, errors);
         // we should defer the synchronization to a different job, so no deadlock can occur
         markerSync.runAsWorkspaceJob();
+        
+        
+        System.out.println(NEDTreeUtil.isExpressionValid("1 + 2"));
+        System.out.println(NEDTreeUtil.isExpressionValid("a + "));
     }
 
     // TODO we should use the NEDElements (the errorMarkerIds collection) to signal an error

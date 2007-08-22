@@ -33,7 +33,9 @@
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
 
-%token INVALID_CHAR   /* just to generate parse error --VA */
+%token EXPRESSION_SELECTOR   /* forces parsing text as a singe expression */
+
+%token INVALID_CHAR   /* just to generate parse error */
 
 /* Operator precedences (low to high) and associativity */
 %right '?' ':'
@@ -46,7 +48,7 @@
 %right '^'
 %left UMIN NOT BIN_COMPL
 
-%start nedfile
+%start startsymbol
 
 /* requires at least bison 1.50 (tested with bison 2.1) */
 %glr-parser
@@ -175,6 +177,14 @@ static void assertNonEmpty(std::stack<NEDElement *>& somescope) {
 %}
 
 %%
+
+/*
+ * Start rule. Support parsing a standalone expression as well
+ */
+startsymbol
+        : EXPRESSION_SELECTOR expression
+        | nedfile
+        ;
 
 /*
  * Top-level components

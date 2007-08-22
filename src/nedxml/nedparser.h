@@ -108,25 +108,31 @@ class NEDXML_API NEDParser
 
     /**
      * Parse the given NED file and return the result tree.
-     * Returns NULL if there was an error.
+     * Returns NULL or partial tree if there was an error.
      */
     NEDElement *parseNEDFile(const char *fname);
 
     /**
      * Parse the given NED source and return the result tree.
-     * Returns NULL if there was an error.
+     * Returns NULL or partial tree if there was an error.
      */
     NEDElement *parseNEDText(const char *nedtext);
 
     /**
+     * Parse the given text as a NED expression, and return the result tree.
+     * Returns NULL or partial tree if there was an error.
+     */
+    NEDElement *parseNEDExpression(const char *nedexpression);
+
+    /**
      * Parse the given MSG (.msg) file and return the result tree.
-     * Returns NULL if there was an error.
+     * Returns NULL or partial tree if there was an error.
      */
     NEDElement *parseMSGFile(const char *fname);
 
     /**
      * Parse the given MSG source and return the result tree.
-     * Returns NULL if there was an error.
+     * Returns NULL or partial tree if there was an error.
      */
     NEDElement *parseMSGText(const char *nedtext);
 };
