@@ -17,6 +17,7 @@ import org.omnetpp.ned.editor.graph.properties.util.InterfacesListPropertySource
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 
@@ -34,7 +35,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
-            supportedProperties.addAll( EnumSet.range(DisplayString.Prop.WIDTH, 
+            supportedProperties.addAll( EnumSet.range(DisplayString.Prop.WIDTH,
             										  DisplayString.Prop.IMAGESIZE));
         }
 
@@ -50,7 +51,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
 
         public BasePropertySource(SimpleModuleElementEx connectionNodeModel) {
             model = connectionNodeModel;
-            
+
             // set up property descriptors
             networkProp = new CheckboxPropertyDescriptor(Prop.Network, "network");
             networkProp.setCategory(BASE_CATEGORY);
@@ -68,14 +69,14 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         }
 
         public Object getPropertyValue(Object propName) {
-            if (Prop.Network.equals(propName))  
-                return model.getIsNetwork(); 
+            if (Prop.Network.equals(propName))
+                return model.getIsNetwork();
 
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
-            if (Prop.Network.equals(propName)) 
+            if (Prop.Network.equals(propName))
                 model.setIsNetwork((Boolean)value);
         }
 
@@ -94,7 +95,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
     public SimpleModulePropertySource(SimpleModuleElementEx nodeModel) {
         super(nodeModel);
         //create name
-        mergePropertySource(new NamePropertySource(nodeModel));
+        mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
         mergePropertySource(new BasePropertySource(nodeModel));
         // extends
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
@@ -121,7 +122,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
                 GateListPropertySource.DESCRIPTION));
         // create a nested displayPropertySource
         mergePropertySource(new SimpleModuleDisplayPropertySource(nodeModel));
-        
+
     }
 
 }

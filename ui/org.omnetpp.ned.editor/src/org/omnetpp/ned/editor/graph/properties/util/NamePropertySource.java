@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.graph.properties.util;
 
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
@@ -18,11 +19,12 @@ public class NamePropertySource implements IPropertySource2 {
 
     public enum Prop { Name }
 
-    public NamePropertySource(IHasName namedNodeModel) {
+    public NamePropertySource(IHasName namedNodeModel, ICellEditorValidator validator) {
         model = namedNodeModel;
 
         // set up property descriptors
         PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "name");
+        nameProp.setValidator(validator);
         nameProp.setAlwaysIncompatible(true);
         nameProp.setCategory(MergedPropertySource.BASE_CATEGORY);
         nameProp.setDescription("The name of the object");
@@ -30,7 +32,7 @@ public class NamePropertySource implements IPropertySource2 {
     }
 
     public Object getEditableValue() {
-        // we don't need this if we don't want to embedd this property source into an other propertysource
+        // we don't need this if we don't want to embed this property source into an other propertysource
         return model.getName();
     }
 
@@ -39,9 +41,8 @@ public class NamePropertySource implements IPropertySource2 {
     }
 
     public Object getPropertyValue(Object propName) {
-        if (Prop.Name.equals(propName)) {
+        if (Prop.Name.equals(propName))
             return model.getName();
-        }
         return null;
     }
 

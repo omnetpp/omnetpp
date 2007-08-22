@@ -12,6 +12,7 @@ import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -23,7 +24,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
  */
 public class SubmodulePropertySource extends MergedPropertySource {
 
-	// submodule specific display property desc
+	// submodule specific display property description
     protected static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
         protected SubmoduleElementEx model;
 
@@ -41,7 +42,8 @@ public class SubmodulePropertySource extends MergedPropertySource {
         super(submoduleNodeModel);
         // create a nested displayPropertySource
         // name
-        mergePropertySource(new NamePropertySource(submoduleNodeModel));
+        mergePropertySource(new NamePropertySource(submoduleNodeModel,
+                new SubmoduleNameValidator(submoduleNodeModel)));
         // type
         mergePropertySource(new TypePropertySource(submoduleNodeModel) {
             @Override

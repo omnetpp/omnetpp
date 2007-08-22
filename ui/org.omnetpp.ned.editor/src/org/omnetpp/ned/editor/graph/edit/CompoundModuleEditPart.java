@@ -26,6 +26,7 @@ import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -46,7 +47,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new TypeNameValidator();
+        renameValidator = new TypeNameValidator(getCompoundModuleModel());
     }
 
     @Override

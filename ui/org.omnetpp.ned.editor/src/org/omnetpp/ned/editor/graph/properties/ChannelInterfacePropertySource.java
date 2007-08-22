@@ -5,6 +5,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ExtendsListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 
 /**
@@ -16,7 +17,7 @@ public class ChannelInterfacePropertySource extends MergedPropertySource {
 
     public ChannelInterfacePropertySource(ChannelInterfaceElementEx nodeModel) {
     	super(nodeModel);
-        mergePropertySource(new NamePropertySource(nodeModel));
+        mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
         mergePropertySource(new DelegatingPropertySource(
                 new ExtendsListPropertySource(nodeModel),
                 ExtendsListPropertySource.CATEGORY,

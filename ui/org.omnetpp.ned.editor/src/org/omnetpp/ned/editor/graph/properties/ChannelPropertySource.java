@@ -13,6 +13,7 @@ import org.omnetpp.ned.editor.graph.properties.util.InterfacesListPropertySource
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 
@@ -46,7 +47,7 @@ public class ChannelPropertySource extends MergedPropertySource {
      */
     public ChannelPropertySource(ChannelElementEx nodeModel) {
     	super(nodeModel);
-        mergePropertySource(new NamePropertySource(nodeModel));
+        mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
         // extends
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override

@@ -10,6 +10,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -26,7 +27,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new SubmoduleNameValidator(getCompoundModulePart().getCompoundModuleModel());
+        renameValidator = new SubmoduleNameValidator(getSubmoduleModel());
     }
 
     @Override

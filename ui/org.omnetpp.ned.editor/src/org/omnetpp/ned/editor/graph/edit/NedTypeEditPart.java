@@ -5,6 +5,7 @@ import org.eclipse.swt.graphics.Image;
 
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.NedTypeFigure;
+import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -28,7 +29,7 @@ public class NedTypeEditPart extends NedEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new TypeNameValidator();
+        renameValidator = new TypeNameValidator((IHasName)getNEDModel());
     }
 
     /**
