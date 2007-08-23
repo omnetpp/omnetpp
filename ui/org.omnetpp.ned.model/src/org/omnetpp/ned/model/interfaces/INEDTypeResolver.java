@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 
@@ -54,12 +55,16 @@ public interface INEDTypeResolver {
      */
     public String getNEDFileText(IFile file);
 
-    /**
-	 * Returns true if the given NED file has errors.
-	 *
-	 * @param file - must not be null
+	/**
+	 * Returns the markers for the given element and its subtree. The element
+	 * must be in the given file.
+	 * 
+	 * IMPORTANT: Do NOT use this method to check whether an element actually 
+	 * contains errors! Markers are written out in a background job, and there's
+	 * no guarantee that IFile already contains them. Use getMaxProblemSeverity()
+	 * and the likes from INEDElement instead. 
 	 */
-	public boolean hasError(IFile file);
+    public IMarker[] getMarkersForElement(INEDElement node, IFile file);
 
 	/**
 	 * Returns a component declared at the given file/line. The line number should

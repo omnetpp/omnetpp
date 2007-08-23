@@ -383,6 +383,17 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		return parent;
 	}
 
+	public INEDElement findElementWithId(long id) {
+		if (getId() == id)
+			return this;
+		for (INEDElement child : this) {
+			INEDElement node = child.findElementWithId(id);
+			if (node != null)
+				return node;
+		}
+		return null;
+	}
+	
     public void setUserData(Object key, Object value) {
         if (userData == null)
             userData = new HashMap<Object,Object>();
@@ -506,10 +517,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     }
 
     public String getComment() {
-        CommentElement cn = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
-        if (cn == null)
-        	cn = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
-        return cn == null ? null : cn.getContent().trim();
+        CommentElement commentNode = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
+        if (commentNode == null)
+        	commentNode = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
+        return commentNode == null ? null : commentNode.getContent().trim();
     }
 
     public String getNEDSource() {

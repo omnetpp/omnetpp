@@ -247,17 +247,21 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-    // TODO we should use the NEDElements (the errorMarkerIds collection) to signal an error
-    // using the markers are problematic because the markers are added asynchronously in a background job
-    public synchronized boolean hasError(IFile file) {
-        try {
-            return file.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_ZERO) >= IMarker.SEVERITY_ERROR;
-        } catch (CoreException e) {
-            // if resource does not exists or the project is closed (=no error)
-            return false;
-        }
-    }
-
+	public IMarker[] getMarkersForElement(INEDElement node, IFile file) {
+		try {
+			Assert.isTrue(getNEDFileModel(file)==node.getParentWithTag(NEDElementTags.NED_NED_FILE)); //XXX find file from element? (needs element-to-file mapping)
+			List<IMarker> result = new ArrayList<IMarker>();
+			for (IMarker marker : file.findMarkers(IMarker.PROBLEM, true, IFile.DEPTH_ZERO)) {
+				int elementId = marker.getAttribute(NEDMarkerErrorStore.NEDELEMENT_ID, -1);
+				if (elementId != -1 && node.findElementWithId(elementId) != null)
+					result.add(marker);
+			}
+			return result.toArray(new IMarker[]{});
+		} 
+		catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
 		rehashIfNeeded();

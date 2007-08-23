@@ -31,11 +31,11 @@ import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.ned.core.IGotoNedElement;
-import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
@@ -154,8 +154,6 @@ public class MultiPageNedEditor
 		graphEditor = new GraphicalNedEditor();
 		textEditor = new TextualNedEditor();
 
-        IFile file = ((FileEditorInput)getEditorInput()).getFile();
-
 		try {
             // setup graphical editor
             graphPageIndex = addPage(graphEditor, getEditorInput());
@@ -166,21 +164,30 @@ public class MultiPageNedEditor
             // we don't have to set the content because it's set
             // automatically by the text editor (from the FileEditorInput)
             textPageIndex = addPage(textEditor, getEditorInput());
-            textEditor.markContent();
             setPageText(textPageIndex,"Text");
-            // remember the initial content so we can detect any change later
 
-    		//XXX force parsing this file now -- needed???
-            //NEDResourcesPlugin.getNEDResources().setNEDFileText(file, textEditor.getText());
+            // remember the initial content so we can detect any change later
+            textEditor.markContent();
 
             // switch to graphics mode initially if there's no error in the file
-            if (!NEDResourcesPlugin.getNEDResources().hasError(file))
+            if (maySwitchToGraphicalEditor())
                 setActivePage(graphPageIndex);
 		} 
 		catch (PartInitException e) {
 		    NedEditorPlugin.logError(e);
 		}
 
+	}
+
+	/**
+	 * Returns true if the editor is allowed to switch to the graphical editor page.
+	 * By default, the criteria is that there should be no parse error or basic validation error.
+	 * (Consistency errors are allowed).
+	 */
+	protected boolean maySwitchToGraphicalEditor() {
+        IFile file = ((FileEditorInput)getEditorInput()).getFile();
+		NedFileElementEx nedFileElement = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
+		return nedFileElement.getNedProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
 	}
 
 	@Override
@@ -225,17 +232,10 @@ public class MultiPageNedEditor
         }
         // end of kludge
 
-        IFile file = ((FileEditorInput)getEditorInput()).getFile();
-		NEDResources res = NEDResourcesPlugin.getNEDResources();
-
-		// XXX FIXME this may be a way too slow as invalidates everything
-        // it is needed only to display consistency errors correctly during page switching
-        // it would be OK to invalidate only the components inside this file
-
 		// switch from graphics to text:
         if (newPageIndex == textPageIndex) {
+        	// generate text representation from the model NOW
             if (graphEditor.hasContentChanged()) {
-                // generate text representation from the model NOW
                 textEditor.pullChangesFromNEDResources();
                 textEditor.markContent();
             }
@@ -267,10 +267,8 @@ public class MultiPageNedEditor
             if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
 
-            // only start in graphics mode if there's no error in the file
-            // FIXME sometimes the editor goes into graphical mode even if the file has errors
-            // could it be because the error store is synchronized in the background???
-            if (res.hasError(file)) {
+            // only start in graphics mode if there's no parse error in the file
+            if (!maySwitchToGraphicalEditor()) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have
 				// switched away from it in the first place)

@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.text.actions;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.TextEditorAction;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -27,7 +28,7 @@ public class ConvertToNewFormatAction extends TextEditorAction {
         NedFileElementEx nedFileNode = NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
         // enable only if the model does not have a syntax error and in V1 format
         setEnabled(nedFileNode != null
-                   && !NEDResourcesPlugin.getNEDResources().hasError(ifile)
+                   && nedFileNode.getNedProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR
                    && !"2".equals(nedFileNode.getVersion()));
     }
 

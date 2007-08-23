@@ -210,8 +210,6 @@ public class NEDTreeUtil {
         return line;
 	}
 
-
-
 	/**
 	 * Converts a plain java NEDElement tree to a native C++ (SWIG-wrapped) tree.
 	 * NOTE: There are two different NEDElement types handled in this function.

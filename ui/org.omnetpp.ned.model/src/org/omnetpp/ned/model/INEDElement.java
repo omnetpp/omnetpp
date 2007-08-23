@@ -268,6 +268,11 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public INEDElement getParentWithTag(int tagcode);
 
 	/**
+	 * Finds and returns the element with the given Id in this subtree, or null if not found.
+	 */
+	public INEDElement findElementWithId(long id);
+
+	/**
 	 * UserData not belonging directly to the model can be stored using a key. If the value
 	 * is NULL the data will be deleted.
 	 */
