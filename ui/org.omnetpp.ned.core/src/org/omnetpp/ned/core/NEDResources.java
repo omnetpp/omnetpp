@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
@@ -35,24 +36,13 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.ChannelElement;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
-import org.omnetpp.ned.model.pojo.CompoundModuleElement;
-import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.NedFileElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.ParametersElement;
-import org.omnetpp.ned.model.pojo.SimpleModuleElement;
+import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -95,7 +85,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                                 nedModelChanged(event);
                             }
                         };
-                        
+
     // stores parsed contents of NED files
     private final HashMap<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
 
@@ -229,7 +219,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         markerSync.registerFile(file);
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
         INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errorStore, file.getLocation().toOSString());
-        
+
         NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
         NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
 
@@ -242,7 +232,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	        // perform marker synchronization in a background job, to avoid deadlocks
 	        markerSync.runAsWorkspaceJob();
-	        
+
 	        // force rehash now, so that validation errors appear immediately
 	        rehash();
         }
@@ -435,7 +425,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDSYNTAXPROBLEM_MARKERID);
         NedFileElementEx tree = NEDTreeUtil.loadNedSource(fileName, errorStore);
         Assert.isNotNull(tree);
-        
+
         storeNEDFileModel(file, tree);
     }
 
@@ -450,7 +440,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             invalidate();
         }
     }
-    
+
     // store NED file contents
     private synchronized void storeNEDFileModel(IFile file, NedFileElementEx tree) {
         Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
@@ -550,7 +540,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         				map = modules;
         			else if (node instanceof ModuleInterfaceElement)
         				map = moduleInterfaces;
-        			else 
+        			else
         				throw new RuntimeException("internal error: unrecognized NED type " + node);
 
         			map.put(name, typeInfo);
@@ -582,7 +572,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehashIfNeeded(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
 
-        // we need to do the synchronization in a background job, to avoid deadlocks 
+        // we need to do the synchronization in a background job, to avoid deadlocks
         markerSync.runAsWorkspaceJob();
 
     }
@@ -599,9 +589,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             	// collect this type
             	INedTypeElement typeNode = (INedTypeElement)node;
 				result.put(namePrefix + typeNode.getName(), typeNode);
-				
+
 				// collect its inner types
-				INEDElement typesSection = typeNode.getFirstChildWithTag(NEDElementTags.NED_TYPES); 
+				INEDElement typesSection = typeNode.getFirstChildWithTag(NEDElementTags.NED_TYPES);
 				if (typesSection != null)
 					doCollectTypes(namePrefix + typeNode.getName() + ".", typesSection, result);
             }
@@ -671,16 +661,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     protected void nedModelChanged(NEDModelEvent event) {
         if (nedModelChangeNotificationDisabled)
             return;
-        // System.out.println("NEDRESOURCES NOTIFY: "+event);
-        // fire a component changed event if inheritance, naming or visual representation
-        // has changed
-        boolean inheritanceChanged = inheritanceMayHaveChanged(event);
-        if (inheritanceChanged) {
-            // System.out.println("Invalidating because of: " + event);
-        	rehash();
-        }
-        // a top level component has changed (name, inheritance, display string)
-        if (inheritanceChanged || displayStringMayHaveChanged(event)) {
+
+        if (event instanceof NEDModelChangeEvent) {
+            // NOTE: the rehash causes NEDMarkerChangeEvent
+            rehash();
+
             // notify component listeners (i.e. palette manager, where only the component name and
             // icon matters)
             if (nedComponentChangeListenerList != null)
@@ -696,57 +681,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         // long dt = System.currentTimeMillis() - startMillis;
         // System.out.println("visual notification took " + dt + "ms");
-    }
-
-    /**
-     * Returns whether the inheritance chain has changed somewhere
-     * (name, extends, adding and removing top level nodes).
-     */
-    protected static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
-    	if (event.getSource() == null)
-    		return true;
- 
-        // if we have changed a toplevel element's name we should rehash
-        if (event.getSource() instanceof INedTypeElement && event instanceof NEDAttributeChangeEvent
-                && SimpleModuleElement.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
-            return true;
-
-        // check for removal or insertion of top level nodes
-        if (event.getSource() instanceof NedFileElementEx && event instanceof NEDStructuralChangeEvent)
-            return true;
-
-        // check for extends name change
-        if (event.getSource() instanceof ExtendsElement && event instanceof NEDAttributeChangeEvent
-                && ExtendsElement.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
-            return true;
-        // refresh if we have removed an extend node
-        if (event instanceof NEDStructuralChangeEvent && ((NEDStructuralChangeEvent) event).getChild() instanceof ExtendsElement
-                && ((NEDStructuralChangeEvent) event).getType() == NEDStructuralChangeEvent.Type.REMOVAL)
-            return true;
-
-        // TODO missing the handling of type, like attribute change, interface
-        // node insert,remove, change
-
-        // none of the above, so do not refresh
-        return false;
-    }
-
-    /**
-     * Returns whether the display string has changed in the event.
-     */
-    protected static boolean displayStringMayHaveChanged(NEDModelEvent event) {
-    	return true; //TODO for now; then we can optimize later
-//    	// overly cautious check: if anything within a "parameters" section 
-//    	// was affected, or the removed subtree contains a "parameters" section,
-//    	// we assume it was a display string change 
-//		if (event.getSource().getParentWithTag(NEDElementTags.NED_PARAMETERS) != null)
-//    		return true;
-//		if (event instanceof NEDStructuralChangeEvent) {
-//			NEDStructuralChangeEvent structuralChangeEvent = (NEDStructuralChangeEvent) event;
-//			if (structuralChangeEvent.getChild().getParentWithTag(NEDElementTags.NED_PARAMETERS) != null)
-//				return true;
-//		}
-//        return false;
     }
 
     /**

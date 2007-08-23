@@ -40,7 +40,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	protected INedTypeElement componentNode;
 	protected IFile file;
-	
+
 	private int debugId = lastDebugId++;
 	private static int lastDebugId = 0;
 	private static int debugRefreshInheritedCount = 0;
@@ -79,7 +79,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 //    // all types which extends this component
 //    protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
-//    
+//
 //    // all types that contain instances (submodule, connection) of this type
 //    protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
 
@@ -118,18 +118,18 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     }
 
     /**
-	 * Collect elements (gates, params, etc) that match the predicate from the given section 
+	 * Collect elements (gates, params, etc) that match the predicate from the given section
 	 * (NED_PARAMETERS, NED_GATES, etc) into the map.
 	 */
 	@SuppressWarnings("unchecked")
-	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate predicate) { 
+	protected void collect(Map<String,? extends INEDElement> map, int sectionTagCode, IPredicate predicate) {
 		INEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
 		if (section != null)
-			for (INEDElement node : section) 
+			for (INEDElement node : section)
 				if (node instanceof IHasName && predicate.matches((IHasName)node))
 					((Map)map).put(((IHasName)node).getName(), node);
 	}
-	
+
 	/**
 	 * Collect the names from "extends" or "like" clauses into the given set
 	 */
@@ -183,7 +183,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     protected void refreshLocalMembersIfNeeded() {
     	if (!needsLocalUpdate)
     		return;
-    	
+
         ++debugRefreshLocalCount;
         // System.out.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
@@ -200,7 +200,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
         // collect base types: interfaces extend other interfaces, modules implement interfaces
         collectInheritance(localInterfaces, getNEDElement() instanceof IInterfaceTypeElement ? NED_EXTENDS : NED_INTERFACE_NAME);
-       
+
         // collect members from component declaration
         collect(localProperties, NED_PARAMETERS, new IPredicate() {
         	public boolean matches(IHasName node) {
@@ -251,7 +251,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected void refreshInheritedMembersIfNeeded() {
 		if (!needsUpdate)
 			return;
-		
+
         ++debugRefreshInheritedCount;
         // System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
 
@@ -273,7 +273,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		allMembers.clear();
 		allUsedTypes.clear();
 
-		// collect interfaces: what our base class implements (directly or indirectly), 
+		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
 		if (!(getNEDElement() instanceof IInterfaceTypeElement)) {
 			INEDTypeInfo directBaseType = getNEDElement().getFirstExtendsNEDTypeInfo();
@@ -286,7 +286,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			if (typeInfo != null)
 				allInterfaces.addAll(typeInfo.getInterfaces());
 		}
-		
+
         // collect all inherited members
 		INEDTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INEDTypeInfo[]{});
 		ArrayUtils.reverse(forwardExtendsChain);
