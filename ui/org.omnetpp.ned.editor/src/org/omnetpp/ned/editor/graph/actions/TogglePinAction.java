@@ -84,7 +84,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
         for (Object child : getSelectedObjects()) {
             if (child instanceof GraphicalEditPart) {
                 SetConstraintCommand c = createTogglePinCommand((GraphicalEditPart)child);
-                if (c != null)
+                if (c != null && PolicyUtil.isEditable(child))
                     resize.add(c);
             }
         }
@@ -103,7 +103,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
      * @return The created ConstraintCommand
      */
     protected SetConstraintCommand createTogglePinCommand(GraphicalEditPart child) {
-        if (child.getModel() instanceof SubmoduleElementEx && PolicyUtil.isEditable(child)) {
+        if (child.getModel() instanceof SubmoduleElementEx) {
             SubmoduleElementEx smodule = (SubmoduleElementEx) child.getModel();
             // get the compound module scaling factor
             float scale = ((ModuleEditPart)child).getScale();

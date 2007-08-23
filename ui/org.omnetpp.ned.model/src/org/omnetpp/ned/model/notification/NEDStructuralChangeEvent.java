@@ -9,7 +9,7 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
-public class NEDStructuralChangeEvent extends NEDModelEvent {
+public class NEDStructuralChangeEvent extends NEDModelChangeEvent {
     public enum Type {INSERTION, REMOVAL} ;
     protected Type type;
     protected INEDElement child;
@@ -18,7 +18,7 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
 
     /**
      * Constructor.
-     * 
+     *
      * @param source It is the parent of the new location or the old location for insert and delete respectively.
      * @param child The new child node currently inserted/removed
      * @param type The type of the event

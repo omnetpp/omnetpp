@@ -7,7 +7,7 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
-public class NEDAttributeChangeEvent extends NEDModelEvent {
+public class NEDAttributeChangeEvent extends NEDModelChangeEvent {
     protected String attribute;
     protected Object oldValue;
     protected Object newValue;

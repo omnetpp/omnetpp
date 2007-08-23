@@ -97,7 +97,7 @@ abstract public class NedEditPart
      */
     protected void performDirectEdit() {
         if (manager == null && (getFigure() instanceof IDirectEditSupport)
-                && getNEDModel() instanceof IHasName) {
+                && getNEDModel() instanceof IHasName && isEditable()) {
             IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();
             manager = new RenameDirectEditManager(this, TextCellEditor.class, renameValidator, deSupport);
         }

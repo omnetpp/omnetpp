@@ -25,7 +25,6 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.AlignmentAction;
-import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
@@ -70,15 +69,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
-import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
-import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
-import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
+import org.omnetpp.ned.editor.graph.actions.*;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -368,7 +359,7 @@ public class GraphicalNedEditor
     protected KeyHandler getCommonKeyHandler() {
         if (sharedKeyHandler == null) {
             sharedKeyHandler = new KeyHandler();
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F2, 0),
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F6, 0),
                                  getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
         }
         return sharedKeyHandler;
@@ -413,7 +404,7 @@ public class GraphicalNedEditor
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new DirectEditAction((IWorkbenchPart) this);
+        action = new NedDirectEditAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
