@@ -24,7 +24,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		// BUGFIX START
 		// The original implementation reaches the TERMINAL state BEFORE calling
 		// handleCreateConnect(). This causes a problem if we place an event loop in
-		// handleCreateConnect() as the tool resetets to initial state (no source or target parts)
+		// handleCreateConnect() as the tool resets to initial state (no source or target parts)
 		// leaving the previous sourceFeedback figure in place.
 		if (button == 1 && isInState(STATE_CONNECTION_STARTED)) {
 			boolean creationResult = handleCreateConnection();
@@ -58,10 +58,9 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
     	eraseSourceFeedback();
 
     	// if no selection was made, cancel the command
-		if (selectedConn == null) {
-			// revert the connection change (user cancel - do not execute the command)
+		if (selectedConn == null)
+            // revert the connection change (user cancel - do not execute the command)
 			return false;
-		}
 
 		// copy the selected connection attributes to the command
     	ConnectionElement templateConn = endCommand.getConnectionTemplate();
