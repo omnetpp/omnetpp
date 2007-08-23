@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
 import org.omnetpp.ned.engine.NED2Generator;
-import org.omnetpp.ned.engine.NEDBasicValidator;
+import org.omnetpp.ned.engine.NEDSyntaxValidator;
 import org.omnetpp.ned.engine.NEDDTDValidator;
 import org.omnetpp.ned.engine.NEDElement;
 import org.omnetpp.ned.engine.NEDElementCode;
@@ -122,7 +122,7 @@ public class NEDTreeUtil {
 			dtdvalidator.validate(swigTree);
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
-			NEDBasicValidator basicvalidator = new NEDBasicValidator(false, swigErrors);
+			NEDSyntaxValidator basicvalidator = new NEDSyntaxValidator(false, swigErrors);
 			basicvalidator.validate(swigTree);
 			//FIXME revise what BasicValidator does! is Assert OK here??
 			//FIXME for example, it shouldn't check 

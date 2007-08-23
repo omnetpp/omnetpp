@@ -36,7 +36,7 @@ void generateCpp(std::ostream& out, std::ostream& outh, NEDElement *node, NEDSym
 
 /**
  * NEDC functionality: generates C++ code from a NED object tree.
- * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
+ * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
  * Uses CppExpressionGenerator.
  *

@@ -27,7 +27,7 @@ class cParValue;
 
 /**
  * Utility classes for dynamic NED loading.
- * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
+ * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
  * @ingroup NetworkBuilder
  */

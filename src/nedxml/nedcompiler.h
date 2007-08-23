@@ -84,7 +84,7 @@ class NEDXML_API NEDClassicImportResolver : public NEDImportResolver
  * Manages the "middle" part of the compilation process for NED.
  * Implemented in validate(), the process involves:
  *   -# DTD and syntactic validation of the input (see NEDDTDValidator
- *      and NEDBasicValidator),
+ *      and NEDSyntaxValidator),
  *   -# loading of imports via the import resolver (see NEDImportResolver),
  *      adding them into the file cached (see NEDFileCache) and recursively
  *      validating them

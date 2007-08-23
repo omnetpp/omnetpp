@@ -16,7 +16,7 @@ IMPLIBS=../common/common.lib $(XML_LIBS)
 
 #OBJS= nedelements.obj nedelement.obj nederror.obj \
 #      nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
-#      nedbasicvalidator.obj nedsemanticvalidator.obj \
+#      nedsyntaxvalidator.obj nedsemanticvalidator.obj \
 #      nedfilebuffer.obj nedparser.obj nedyylib.obj \
 #      ned2.tab.obj lex.ned2yy.obj \
 #      msg2.tab.obj lex.msg2yy.obj \
@@ -28,7 +28,7 @@ IMPLIBS=../common/common.lib $(XML_LIBS)
 # FIXME begin temporary def
 OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
-      nedbasicvalidator.obj nedsemanticvalidator.obj \
+      nedsyntaxvalidator.obj nedsemanticvalidator.obj \
       nedfilebuffer.obj nedparser.obj nedyylib.obj \
       ned2.tab.obj lex.ned2yy.obj nedtools.obj \
       nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
@@ -210,9 +210,9 @@ ned2generator.obj: ned2generator.cc \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-nedbasicvalidator.obj: nedbasicvalidator.cc \
+nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
   nederror.h \
-  nedbasicvalidator.h \
+  nedsyntaxvalidator.h \
   nedelement.h \
   nedxmldefs.h \
   nedvalidator.h \
@@ -222,7 +222,7 @@ nedcompiler.obj: nedcompiler.cc \
   nedcompiler.h \
   nedparser.h \
   neddtdvalidator.h \
-  nedbasicvalidator.h \
+  nedsyntaxvalidator.h \
   nedsemanticvalidator.h \
   nedelement.h \
   nedxmldefs.h \
@@ -311,7 +311,7 @@ nedtool.obj: nedtool.cc \
   nederror.h \
   nedxmlparser.h \
   neddtdvalidator.h \
-  nedbasicvalidator.h \
+  nedsyntaxvalidator.h \
   nedsemanticvalidator.h \
   ned2generator.h \
   ned1generator.h \

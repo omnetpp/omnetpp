@@ -27,7 +27,7 @@ class NEDResourceCache;
 
 /**
  * Performs semantic validation. Should be called after tree passed
- * DTD validation and basic validation.
+ * DTD validation and syntax validation.
  *
  * @ingroup Validation
  */

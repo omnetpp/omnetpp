@@ -11,7 +11,7 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/
 
 #OBJS= nedelements.o nedelement.o nederror.o \
 #      nedvalidator.o neddtdvalidator.o neddtdvalidatorbase.o \
-#      #      nedbasicvalidator.o nedsemanticvalidator.o \
+#      #      nedsyntaxvalidator.o nedsemanticvalidator.o \
 #      nedfilebuffer.o nedparser.o nedyylib.o \
 #      #      ned2.tab.o lex.ned2yy.o \
 #      msg2.tab.o lex.msg2yy.o \
@@ -23,7 +23,7 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/
 #      # FIXME begin temporary def
 OBJS= nedelements.o nedelement.o nederror.o \
       nedvalidator.o neddtdvalidator.o neddtdvalidatorbase.o \
-      nedbasicvalidator.o nedsemanticvalidator.o \
+      nedsyntaxvalidator.o nedsemanticvalidator.o \
       nedfilebuffer.o nedparser.o nedyylib.o \
       ned2.tab.o lex.ned2yy.o nedtools.o \
       nedutil.o ned2generator.o ned1generator.o xmlgenerator.o \
@@ -152,9 +152,9 @@ ned2generator.o: ned2generator.cc \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-nedbasicvalidator.o: nedbasicvalidator.cc \
+nedsyntaxvalidator.o: nedsyntaxvalidator.cc \
   nederror.h \
-  nedbasicvalidator.h \
+  nedsyntaxvalidator.h \
   nedelement.h \
   nedxmldefs.h \
   nedvalidator.h \
@@ -164,7 +164,7 @@ nedcompiler.o: nedcompiler.cc \
   nedcompiler.h \
   nedparser.h \
   neddtdvalidator.h \
-  nedbasicvalidator.h \
+  nedsyntaxvalidator.h \
   nedsemanticvalidator.h \
   nedelement.h \
   nedxmldefs.h \
@@ -253,7 +253,7 @@ nedtool.o: nedtool.cc \
   nederror.h \
   nedxmlparser.h \
   neddtdvalidator.h \
-  nedbasicvalidator.h \
+  nedsyntaxvalidator.h \
   nedsemanticvalidator.h \
   ned2generator.h \
   ned1generator.h \

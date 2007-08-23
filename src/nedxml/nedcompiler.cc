@@ -22,7 +22,7 @@
 #include "nedcompiler.h"
 #include "nedparser.h"
 #include "neddtdvalidator.h"
-#include "nedbasicvalidator.h"
+#include "nedsyntaxvalidator.h"
 #include "nedsemanticvalidator.h"
 
 
@@ -116,14 +116,14 @@ void NEDCompiler::doValidate(NEDElement *tree)
 {
 //FIXME this logic is broken!!!!
 
-    // DTD validation and additional basic validation
+    // DTD validation and additional syntax validation
     NEDDTDValidator dtdvalidator(errors);
     dtdvalidator.validate(tree);
     if (errors->containsError())
         return;
 
-    NEDBasicValidator basicvalidator(true, errors);
-    basicvalidator.validate(tree);
+    NEDSyntaxValidator syntaxvalidator(true, errors);
+    syntaxvalidator.validate(tree);
     if (errors->containsError()) return;
 
     // import what's necessary and do semantic checks meanwhile

@@ -19,7 +19,7 @@
 #include "nedparser.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
-#include "nedbasicvalidator.h"
+#include "nedsyntaxvalidator.h"
 #include "nedsemanticvalidator.h"
 
 #include "cproperty.h"
@@ -168,7 +168,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
         throw cRuntimeError("errors while loading or parsing file `%s'", fname);
     }
 
-    // DTD validation and additional basic validation
+    // DTD validation and additional syntax validation
     NEDDTDValidator dtdvalidator(&errors);
     dtdvalidator.validate(tree);
     if (errors.containsError())
@@ -177,8 +177,8 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
         throw cRuntimeError("errors during DTD validation of file `%s'", fname);
     }
 
-    NEDBasicValidator basicvalidator(true, &errors);
-    basicvalidator.validate(tree);
+    NEDSyntaxValidator syntaxvalidator(true, &errors);
+    syntaxvalidator.validate(tree);
     if (errors.containsError())
     {
         delete tree;

@@ -36,7 +36,7 @@
 #include "nedparser.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
-#include "nedbasicvalidator.h"
+#include "nedsyntaxvalidator.h"
 #include "nedsemanticvalidator.h"
 #include "xmlgenerator.h"  // for debugging
 

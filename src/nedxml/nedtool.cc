@@ -27,7 +27,7 @@
 #include "nederror.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
-#include "nedbasicvalidator.h"
+#include "nedsyntaxvalidator.h"
 #include "nedsemanticvalidator.h"
 #include "ned2generator.h"
 #include "ned1generator.h"
@@ -207,7 +207,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
 
     //XXX NEDTools::repairNEDElementTree(tree);
 
-    // DTD validation and additional basic validation
+    // DTD validation and additional syntax validation
     NEDDTDValidator dtdvalidator(errors);
     try {
         dtdvalidator.validate(tree);
@@ -224,8 +224,8 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         return false;
     }
 
-    NEDBasicValidator basicvalidator(!opt_unparsedexpr, errors);
-    basicvalidator.validate(tree);
+    NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
+    syntaxvalidator.validate(tree);
     if (errors->containsError())
     {
         delete tree;
