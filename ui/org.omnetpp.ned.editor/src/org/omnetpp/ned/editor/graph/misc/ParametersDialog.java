@@ -46,10 +46,10 @@ import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 
 
@@ -58,6 +58,7 @@ import org.omnetpp.ned.model.pojo.ParametersElement;
  *
  * @author rhornig
  */
+// used from ParametersPropertySource and ParametersDialogAction
 public class ParametersDialog extends TitleAreaDialog {
     private static final String COL_TYPE = "type";
     private static final String COL_NAME = "name";
@@ -70,7 +71,7 @@ public class ParametersDialog extends TitleAreaDialog {
     private static final int DELETE_ID = 501;
 
 	private final String title;
-	private final List<ParamLine> paramLines = new ArrayList<ParametersDialog.ParamLine>();
+	private List<ParamLine> paramLines;
 	// widgets
     private TableViewer listViewer;
     private Command resultCommand = UnexecutableCommand.INSTANCE;
@@ -220,36 +221,58 @@ public class ParametersDialog extends TitleAreaDialog {
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.title = "Edit Parameters";
         this.module = module;
-        buildTable();
+        paramLines = buildTable();
     }
 
-    protected void buildTable() {
+    protected List<ParamLine> buildTable() {
+        List<ParamLine> params = new ArrayList<ParametersDialog.ParamLine>();
         // build ParamLine list (value objects) for dialog editing
-        for (ParamElement paramDecl : module.getParamDeclarations().values()) {
+        for (ParamElementEx paramDecl : module.getParamDeclarations().values()) {
             // get the the value of the parameter
             ParamElementEx paramValue = module.getParamAssignments().get(paramDecl.getName());
-            ParamLine paramLine = new ParamLine(paramValue);
-            boolean isDeclLocal = paramDecl.getParent().getParent() == module;
-            boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;
-            paramLine.type.isItalic = !isDeclLocal;
-            paramLine.type.isEditable = isDeclLocal;
-            paramLine.name.isItalic = !isDeclLocal && !isValueLocal;
-            paramLine.name.isEditable = isDeclLocal;
-            paramLine.value.isItalic = paramLine.comment.isItalic = !isValueLocal;
-            paramLine.value.isEditable = paramLine.comment.isEditable = true;
-
-            // fill the values
-            paramLine.type.value = paramLine.type.originalValue =
-                                        (paramDecl.getIsVolatile() ? VOLATILE+" " : "")
-                                        + paramDecl.getAttribute(ParamElementEx.ATT_TYPE);
-            paramLine.name.value = paramLine.name.originalValue = paramDecl.getName();
-            paramLine.value.value = paramLine.value.originalValue = paramValue.getValue();
-            // FIXME remove // from each line
-            paramLine.comment.value = paramLine.comment.originalValue =
-                StringUtils.strip(StringUtils.removeStart(getComment(paramValue), "//"));
-
-            paramLines.add(paramLine);
+            params.add(createParamLine(paramDecl, paramValue));
         }
+
+        // add those assignments which do not have corresponding declarations
+        for (ParamElementEx paramValue : module.getParamAssignments().values()) {
+            if (!module.getParamDeclarations().containsKey(paramValue.getName()))
+                params.add(createParamLine(null, paramValue));
+        }
+
+        return params;
+    }
+
+    /**
+     * @param paramDecl
+     * @param paramValue
+     * @return
+     */
+    private ParamLine createParamLine(ParamElementEx paramDecl, ParamElementEx paramValue) {
+        if (paramValue == null )
+            paramValue = paramDecl;
+        if (paramDecl == null )
+            paramDecl = paramValue;
+
+        ParamLine paramLine = new ParamLine(paramValue);
+        boolean isDeclLocal = paramDecl != null && paramDecl.getParent().getParent() == module;
+        boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;
+        paramLine.type.isItalic = !isDeclLocal;
+        paramLine.type.isEditable = isDeclLocal;
+        paramLine.name.isItalic = !isDeclLocal && !isValueLocal;
+        paramLine.name.isEditable = isDeclLocal;
+        paramLine.value.isItalic = paramLine.comment.isItalic = !isValueLocal;
+        paramLine.value.isEditable = paramLine.comment.isEditable = true;
+
+        // fill the values
+        paramLine.type.value = paramLine.type.originalValue =
+                                    (paramDecl.getIsVolatile() ? VOLATILE+" " : "")
+                                    + paramDecl.getAttribute(ParamElementEx.ATT_TYPE);
+        paramLine.name.value = paramLine.name.originalValue = paramDecl.getName();
+        paramLine.value.value = paramLine.value.originalValue = paramValue.getValue();
+        // FIXME remove // from each line
+        paramLine.comment.value = paramLine.comment.originalValue =
+            StringUtils.strip(StringUtils.removeStart(getComment(paramValue), "//"));
+        return paramLine;
     }
 
     /**
@@ -327,6 +350,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 addEntry();
             }
         });
+        button.setEnabled(!(module instanceof SubmoduleElementEx));
 
         button = createButton(buttonComposite, DELETE_ID, "Delete", false);
         button.addSelectionListener(new SelectionAdapter() {
@@ -382,6 +406,7 @@ public class ParametersDialog extends TitleAreaDialog {
         // set up tableViewer, content and label providers
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new ParametersTableLabelProvider());
+
 
         // edit support
         tableViewer.setColumnProperties(COLUMNS);

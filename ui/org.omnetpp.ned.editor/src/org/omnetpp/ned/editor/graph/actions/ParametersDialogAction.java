@@ -31,9 +31,12 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
 
     @Override
     protected boolean calculateEnabled() {
-        return getSelectedObjects().size() == 1 &&
-                getSelectedObjects().get(0) instanceof IModelProvider &&
-                ((IModelProvider)getSelectedObjects().get(0)).getNEDModel() instanceof IHasParameters;
+        // FIXEM remove if the parameterdialog is correctly implemented
+        return false;
+
+//        return getSelectedObjects().size() == 1 &&
+//                getSelectedObjects().get(0) instanceof IModelProvider &&
+//                ((IModelProvider)getSelectedObjects().get(0)).getNEDModel() instanceof IHasParameters;
     }
 
     @Override

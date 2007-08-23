@@ -4,13 +4,9 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
+
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 
@@ -25,18 +21,20 @@ public class ParameterListPropertySource extends NotifiedPropertySource
     class CellEditor extends DialogCellEditor {
         @Override
         protected Object openDialogBox(Control cellEditorWindow) {
-            ParametersDialog dialog =
-                new ParametersDialog(Display.getDefault().getActiveShell(), model);
+            // FIXME enable when the ParametersDialog is correctly implemented
 
-            // if the dialog is cancelled, the command is not executable
-            dialog.open();
-            // execute the command in the active editors command stack
-            // this is a little hack because we cannot access the command stack from the UndoablePropertySheetEntry
-            IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-            if (activeEditor instanceof MultiPageNedEditor) {
-                MultiPageNedEditor mpNedEditor = (MultiPageNedEditor) activeEditor;
-                mpNedEditor.getGraphEditor().getEditDomain().getCommandStack().execute(dialog.getResultCommand());
-            }
+//            ParametersDialog dialog =
+//                new ParametersDialog(Display.getDefault().getActiveShell(), model);
+//
+//            // if the dialog is cancelled, the command is not executable
+//            dialog.open();
+//            // execute the command in the active editors command stack
+//            // this is a little hack because we cannot access the command stack from the UndoablePropertySheetEntry
+//            IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+//            if (activeEditor instanceof MultiPageNedEditor) {
+//                MultiPageNedEditor mpNedEditor = (MultiPageNedEditor) activeEditor;
+//                mpNedEditor.getGraphEditor().getEditDomain().getCommandStack().execute(dialog.getResultCommand());
+//            }
             return null;
         }
     }

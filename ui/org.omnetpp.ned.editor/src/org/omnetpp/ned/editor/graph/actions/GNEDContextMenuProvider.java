@@ -80,34 +80,43 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         MenuManager submenu = new MenuManager("&Align");
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_LEFT);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_CENTER);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_RIGHT);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         submenu.add(new Separator());
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_TOP);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_MIDDLE);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_BOTTOM);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         submenu.add(new Separator());
 
         action = getActionRegistry().getAction(GEFActionConstants.MATCH_WIDTH);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         action = getActionRegistry().getAction(GEFActionConstants.MATCH_HEIGHT);
-        if (action.isEnabled()) submenu.add(action);
+        submenu.add(action);
 
         if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, submenu);
+
+        action = getActionRegistry().getAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY);
+        manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+        action = getActionRegistry().getAction(GEFActionConstants.ZOOM_IN);
+        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
+
+        action = getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT);
+        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
 
         MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
         showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
@@ -123,10 +132,10 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         IBindingService bindingService= (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
         if (bindingService != null)
-            keyBinding= bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu"); 
+            keyBinding= bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu");
 
         if (keyBinding == null)
-            keyBinding= ""; 
+            keyBinding= "";
 
         return NLS.bind("Show In \t{0}",keyBinding);
     }
