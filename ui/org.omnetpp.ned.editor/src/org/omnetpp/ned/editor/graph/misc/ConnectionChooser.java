@@ -20,16 +20,13 @@ import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
- * Helper class that allows to choose a connection for a module pair (src, dest)
+ * Helper class that allows to choose a connection for a module pair (src, dest) via a Popup menu
  *
  * @author rhornig
  */
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";
 
-    // TODO implement popup menu if only one of the srcModule or destModule is present
-    // only one side of the connection should be selected
-    // TODO show which gates are already connected (do not offer those gates)
     /**
      * This method asks the user which gates should be connected on the source and
      * destination module.
@@ -49,23 +46,50 @@ public class ConnectionChooser {
         List<GateElementEx> destInModuleGates = getModuleGates(connCommand.getDestModule(), GateElement.NED_GATETYPE_INPUT, connCommand.getDestGate());
         List<GateElementEx> destInOutModuleGates = getModuleGates(connCommand.getDestModule(), GateElement.NED_GATETYPE_INOUT, connCommand.getDestGate());
 
-        BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
+        List<ConnectionElement> unusedList = new ArrayList<ConnectionElement>();
+        List<ConnectionElement> usedList = new ArrayList<ConnectionElement>();
 
-        // unidirectional connections
+        // gather unidirectional connections
         for (GateElement srcOut : srcOutModuleGates)
             for (GateElement destIn : destInModuleGates)
-                addConnectionPairsToMenu(connCommand, menu, srcOut, destIn);
+                accumlateConnection(connCommand, srcOut, destIn, unusedList, usedList);
 
-        // bidirectional connections
+        // gather bidirectional connections
         for (GateElement srcInOut : srcInOutModuleGates)
             for (GateElement destInOut : destInOutModuleGates)
-                addConnectionPairsToMenu(connCommand, menu, srcInOut, destInOut);
+                accumlateConnection(connCommand, srcInOut, destInOut, unusedList, usedList);
+
+        BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
+
+        // add the enabled items
+        for (ConnectionElement conn : unusedList) {
+            createMenuItem(connCommand, menu, conn);
+        }
+
+        // add the used disabled items
+        for (ConnectionElement conn : usedList) {
+            MenuItem mi = createMenuItem(connCommand, menu, conn);
+            mi.setEnabled(false);
+        }
 
         MenuItem selection = menu.open();
         if (selection == null)
             return null;
 
         return (ConnectionElement)selection.getData();
+    }
+
+    /**
+     * Creates a new menu item from the provided connection template, and adds it to the provided menu.
+     * For convenience it returns the created item
+     */
+    private static MenuItem createMenuItem(ConnectionCommand connCommand, BlockingMenu menu, ConnectionElement conn) {
+        MenuItem mi = menu.addMenuItem(SWT.PUSH);
+        // store the connection template in the widget's extra data
+        mi.setData(conn);
+        String label = NEDTreeUtil.generateNedSource(conn, false).trim();
+        mi.setText(label);
+        return mi;
     }
 
     /**
@@ -91,38 +115,35 @@ public class ConnectionChooser {
     }
 
     /**
+     * Creates a connection template form the parameters and adds is to either the used
+     * or unused list. Used connection items should be displayed in disabled state.
      * @param connCommand The command used to specify which module and gates are to be used
-     * @param menu The popup menu where the connection menu items should be added
      * @param srcGate The source gate used to create the connections
      * @param destGate The source gate used to create the connections
+     * @param unusedList Connections that can be chosen
+     * @param usedList Connections that are already connected
      */
-    private static void addConnectionPairsToMenu(ConnectionCommand connCommand, BlockingMenu menu, GateElement srcGate, GateElement destGate) {
-        boolean isSrcGateVectorSizeSpecified = srcGate.getIsVector() && connCommand.getSrcModule().getGateSizes().containsKey(srcGate.getName());
-        boolean isDestGateVectorSizeSpecified = destGate.getIsVector() && connCommand.getDestModule().getGateSizes().containsKey(destGate.getName());
-
+    private static void accumlateConnection(ConnectionCommand connCommand, GateElement srcGate, GateElement destGate,
+                            List<ConnectionElement> unusedList, List<ConnectionElement> usedList) {
         // add the gate names to the menu item as additional widget data
-        ConnectionElement conn =  createTemplateConnection(connCommand.getSrcModule(), srcGate, !isSrcGateVectorSizeSpecified,
-                                                           connCommand.getDestModule(), destGate, !isDestGateVectorSizeSpecified);
-        if (conn != null)
-            addConnectionToMenu(connCommand, menu, conn, srcGate, destGate);
+        ConnectionElement conn =  createTemplateConnection(connCommand.getSrcModule(), srcGate,
+                                                           connCommand.getDestModule(), destGate);
+        if (conn != null) {
+            if (isConnectionUnused(connCommand, conn, srcGate, destGate))
+                unusedList.add(conn);
+            else
+                usedList.add(conn);
+        }
     }
     /**
 	 * Creates a template connection object from the provided gates and modules.
 	 * If the module is a vector, it uses module[0] syntax
-	 * If the gate is a vector uses either gate[0] or gate++ syntax depending on the gatePP parameter.
-	 * If the gatePP is set to <code>true</code> but none of the gates are vectors, it returns <code>null</code>
-	 *
-	 * @param srcMod
-	 * @param srcGate
-     * @param srcGatePP    if set to <code>true</code> creates gatename++ (only for vector gates)
-	 * @param destMod
-	 * @param destGate
-	 * @param destGatePP 	if set to <code>true</code> creates gatename++ (only for vector gates)
-	 * @return The template connection or <code>null</code> if connection cannot be created
+	 * If the gate is a vector uses either gate[0] or gate++ syntax depending whether the gate size was specified.
+	 * If the specified gates are incompatible (eg: labels do not match) it returns <code>null</code>
 	 */
 	private static ConnectionElement createTemplateConnection(
-						IConnectableElement srcMod, GateElement srcGate, boolean srcGatePP,
-						IConnectableElement destMod, GateElement destGate, boolean destGatePP) {
+						IConnectableElement srcMod, GateElement srcGate,
+						IConnectableElement destMod, GateElement destGate) {
 
 		ConnectionElement conn = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 		// set the source and dest module names.
@@ -155,43 +176,25 @@ public class ConnectionChooser {
 
 		// check if we have a module vector and add an index to it.
 		if (srcGate.getIsVector())
-			if (srcGatePP)
-				conn.setSrcGatePlusplus(true);
+			if (srcMod.getGateSizes().containsKey(srcGate.getName()))
+			    conn.setSrcGateIndex(DEFAULT_INDEX);
 			else
-				conn.setSrcGateIndex(DEFAULT_INDEX);
+			    conn.setSrcGatePlusplus(true);
 
 		if (destGate.getIsVector())
-			if (destGatePP)
-				conn.setDestGatePlusplus(true);
+			if (destMod.getGateSizes().containsKey(destGate.getName()))
+			    conn.setDestGateIndex(DEFAULT_INDEX);
 			else
-				conn.setDestGateIndex(DEFAULT_INDEX);
+			    conn.setDestGatePlusplus(true);
 
 		return conn;
 	}
 
     /**
-     * Add the provided TemplateConnection to the menu,
-     * @param connCommand The original connection command we want to specify
-     * @param menu
-     * @param conn A single connection that should be added to the menu
-     * @param srcGate The source gate we are connecting/connected to
-     * @param destGate The dest gate we are connecting/connected to
-     */
-    private static void addConnectionToMenu(ConnectionCommand connCommand, BlockingMenu menu, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
-        MenuItem mi = menu.addMenuItem(SWT.PUSH);
-        // store the connection template in the widget's extra data
-        mi.setData(conn);
-        String label = NEDTreeUtil.generateNedSource(conn, false).trim();
-        mi.setText(label);
-        // enable the menu item only if the used gates are unconnected;
-        mi.setEnabled(isConnectionValid(connCommand, conn, srcGate, destGate));
-    }
-
-    /**
-     * Returns whether the connection is valid, that is, the gates we want to connect
+     * Returns whether the connection is unused, that is, the gates we want to connect
      * are unconnected currently
      */
-    private static boolean isConnectionValid(ConnectionCommand connCommand, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
+    private static boolean isConnectionUnused(ConnectionCommand connCommand, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
         CompoundModuleElementEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();
         // note that vector gates or any gate on a submodule vector should be treated always unconnected
         // because the user can connect the connection to different instances/indexes of the gate/submodule
