@@ -651,7 +651,7 @@ public class GraphicalNedEditor
 		String hoverText = "";
 
 		// brief
-		hoverText += "<b>" + NEDTreeUtil.getNedModelLabelProvider().getText(element) + "</b>\n";
+		hoverText += "<b>" + StringUtils.quoteForHtml(NEDTreeUtil.getNedModelLabelProvider().getText(element)) + "</b>\n";
 
 		//debug code:
 		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
@@ -682,9 +682,9 @@ public class GraphicalNedEditor
 		}
 
 		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
-		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + nedCode + "</pre>";
+		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + StringUtils.quoteForHtml(nedCode) + "</pre>";
 
-    	outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
+		outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
 
 		return HoverSupport.addHTMLStyleSheet(hoverText);
 	}

@@ -77,7 +77,12 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof ChannelSpecElement) {
             ChannelSpecElement node = (ChannelSpecElement)model;
-            label = "channel "+node.getType();
+            label = "channel ";
+            String likeType = node.getLikeType();
+            if (likeType == null || "".equals(likeType))
+                 label += node.getType();
+            else
+                label += "like "+node.getLikeType();
         }
         else if (model instanceof ChannelElement) {
             ChannelElement node = (ChannelElement)model;
@@ -92,7 +97,13 @@ public class NedModelLabelProvider extends LabelProvider {
             label += vectorSizeInBrackets.equals("") ? (node.getIsVector() ? "[]" : "") : vectorSizeInBrackets;
         }
         else if (model instanceof ConnectionElementEx) {
-            label = StringUtils.strip(getSourceWithoutComments(model), ";");
+            // create a simplified representation (only the node and its channel spec is retained)
+            INEDElement dummyConn = model.dup();
+            INEDElement dummyChSpec = ((ConnectionElementEx)model).getFirstChannelSpecChild();
+            if (dummyChSpec != null)
+                dummyConn.appendChild(dummyChSpec.dup());
+
+            label = StringUtils.strip(dummyConn.getNEDSource().trim(), ";");
         }
         else if (model != null){
             label = model.getReadableTagName();

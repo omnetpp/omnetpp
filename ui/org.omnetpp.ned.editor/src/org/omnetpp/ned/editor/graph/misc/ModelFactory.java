@@ -8,8 +8,7 @@ import org.omnetpp.ned.model.interfaces.IHasType;
 
 
 /**
- * A factory used to create new model elements corresponding to graphical editor elements
- * Type and name must ba provided.
+ * A factory used to create new model elements corresponding to graphical editor elements.
  *
  * @author rhornig
  */
@@ -17,29 +16,42 @@ public class ModelFactory implements CreationFactory {
     protected String objectType;
     protected String name;
 	protected String type;
+	protected boolean useLike = false;
 
     /**
-     * @param objectType The class identifier of the INEDElement
+     * @param objectType The class identifier of the INEDElement passed NEDElementFactoryEx.getInstance().createElement
      */
     public ModelFactory(String objectType) {
-        this(objectType, null, null);
+        this(objectType, null);
     }
     /**
      * @param objectType The class identifier of the INEDElement
      * @param name The optional name of the new element
      */
     public ModelFactory(String objectType, String name) {
-        this(objectType, name, null);
+        this(objectType, name, null, false);
     }
-	/**
+
+    /**
+     * @param objectType The class identifier of the INEDElement
+     * @param name The optional name of the new element
+     * @param type The optional type of the new element (for submodules and connections)
+     */
+    public ModelFactory(String objectType, String name, String type) {
+        this(objectType, name, type, false);
+    }
+
+    /**
 	 * @param objectType The class identifier of the INEDElement
 	 * @param name The optional name of the new element
 	 * @param type The optional type of the new element (for submodules and connections)
+	 * @param useLike The provided type will be used as an interface type t
 	 */
-	public ModelFactory(String objectType, String name, String type) {
+	public ModelFactory(String objectType, String name, String type, boolean useLike) {
         this.objectType = objectType;
         this.name = name;
 		this.type = type;
+		this.useLike = useLike;
 	}
 
 	public Object getNewObject() {
@@ -47,8 +59,15 @@ public class ModelFactory implements CreationFactory {
         if (element instanceof IHasName)
             ((IHasName)element).setName(name);
 
-        if (element instanceof IHasType)
-            ((IHasType)element).setType(type);
+        if (element instanceof IHasType) {
+            if (!useLike)
+                ((IHasType)element).setType(type);
+            else {
+                ((IHasType)element).setLikeType(type);
+                // TODO maybe we could ask the user to specify the param name in a dialog box
+                ((IHasType)element).setLikeParam("paramName");
+            }
+        }
 
         return element;
 	}
