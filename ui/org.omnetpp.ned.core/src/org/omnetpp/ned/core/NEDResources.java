@@ -226,7 +226,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // parse
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
         markerSync.registerFile(file);
-        NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
+        NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
         INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errorStore, file.getLocation().toOSString());
         
         NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
@@ -410,9 +410,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized void readNEDFile(IFile file) {
-        ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
-        readNEDFile(file, sync);
-        sync.runAsWorkspaceJob();
+        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer();
+        readNEDFile(file, markerSync);
+        markerSync.runAsWorkspaceJob();
     }
 
     /**
@@ -525,7 +525,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         				duplicates.add(name);
 
         				// add error message to both files
-        				final String messageHalf = node.getReadableTagName() + " '" + name + "' already defined in ";
+        				String messageHalf = node.getReadableTagName() + " '" + name + "' already defined in ";
 						errorStore.addError(node, messageHalf + otherFile.getFullPath().toString());
         	        	NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
         				otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
@@ -566,8 +566,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
 
         // validate the NED trees (check cross-references etc)
+        Assert.isTrue(markerSync.getBaseMarkerType().equals(NEDMarkerErrorStore.NEDCONSISTENCYPROBLEM_MARKERID));
         for (IFile file : nedFiles.keySet()) {
-            NEDFileValidator validator = new NEDFileValidator(this, new NEDMarkerErrorStore(file, markerSync, NEDMarkerErrorStore.NEDCONSISTENCYPROBLEM_MARKERID));
+            NEDFileValidator validator = new NEDFileValidator(this, new NEDMarkerErrorStore(file, markerSync));
             NedFileElement tree = nedFiles.get(file);
             validator.validate(tree);
         }
