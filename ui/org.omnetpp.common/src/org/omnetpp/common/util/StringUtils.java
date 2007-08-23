@@ -7,14 +7,19 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
+
 import org.omnetpp.common.engine.Common;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
 
+    static {
+        // run unit test
+        testToInstanceName();
+    }
     /**
      * For null it returns "", otherwise it returns the passed string itself.
-     * 
-     * (Note: StringUtils.defaultString(string) does the same, but its name 
+     *
+     * (Note: StringUtils.defaultString(string) does the same, but its name
      * is not too intuitive.)
      */
 	public static String nullToEmpty(String str) {
@@ -27,6 +32,44 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 */
 	public static String toDisplayString(String javaIdString) {
 		return join(splitCamelCaseString(capitalize(javaIdString), '_').iterator(), ' ');
+	}
+
+	/**
+	 * Converts the provided CamelCase type-name to instance name (starting with lower case)
+	 * RULES: TCP -> tcp; _TCP -> _tcp; TCPModule -> tcpModule; TCP_module -> tcp_module
+     * TCP1 -> tcp1; helloWorld -> helloWorld; CamelCase -> camelCase; TCP_SACK -> tcp_sack
+     * TCP_Reno -> tcp_Reno
+	 */
+	public static String toInstanceName(String typeName) {
+	    if (typeName.matches("[A-Z_]+"))                   // TCP -> tcp; _TCP -> _tcp; TCP_SACK -> tcp_sack
+	        return typeName.toLowerCase();
+	    else if (typeName.matches("[A-Z_]+[A-Z][a-z].*"))  // TCPModule -> tcpModule
+	        return uncapitalize(typeName, typeName.replaceFirst("([A-Z_]+)[A-Z][a-z].*", "$1").length());
+	    else if (typeName.matches("[A-Z]+.*"))             // TCP1 -> tcp1; TCP_Reno -> tcp_Reno
+            return uncapitalize(typeName, typeName.replaceFirst("([A-Z]+).*", "$1").length());
+	    else
+	        return uncapitalize(typeName); // helloWorld -> helloWorld; CamelCase -> camelCase;
+	}
+
+	private static void testToInstanceName() {
+	    Assert.isTrue(toInstanceName("TCPModule").equals("tcpModule"));
+	    Assert.isTrue(toInstanceName("TCP_Reno").equals("tcp_Reno"));
+	    Assert.isTrue(toInstanceName("TCP1").equals("tcp1"));
+	    Assert.isTrue(toInstanceName("DerivedBaseVecWidthSize").equals("derivedBaseVecWidthSize"));
+	    Assert.isTrue(toInstanceName("AServer").equals("aServer"));
+	    Assert.isTrue(toInstanceName("AHost").equals("aHost"));
+	    Assert.isTrue(toInstanceName("ALOHAnet").equals("alohAnet"));
+	    Assert.isTrue(toInstanceName("CamelCase").equals("camelCase"));
+	    Assert.isTrue(toInstanceName("TCP_SACK").equals("tcp_sack"));
+	    Assert.isTrue(toInstanceName("_TCP").equals("_tcp"));
+	}
+
+	/**
+	 * Make the first noOfCahrs lower-case
+	 */
+	public static String uncapitalize(String value, int noOfChars) {
+	    return value.substring(0,noOfChars).toLowerCase()+value.substring(noOfChars);
+
 	}
 
 	/**
@@ -48,7 +91,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
 		if (beginningOfLine != text.length() || text.length() == 0)
 			result.add(text.substring(beginningOfLine, text.length()));
-		
+
 		return result.toArray(new String[0]);
 	}
 
@@ -60,7 +103,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	public static String getLines(String text, int start, int end) {
 		StringBuffer result = new StringBuffer();
 		String[] lines = splitToLines(text);
-		
+
 		for (int i = start; i < end; i++)
 			result.append(lines[i]);
 
@@ -147,7 +190,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 			max = Math.max(max, line.length());
 		return max;
 	}
-	
+
 	/**
 	 * Returns the number of newline characters in the text
 	 */
@@ -160,7 +203,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 		return newlineCount;
 	}
-	
+
 	/**
 	 * Interprets the text as multi-line string, and discards all leading lines
 	 * that start with (whitespace plus) the given comment marker.
@@ -329,7 +372,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     }
 
     /**
-     * Prepares plain text for inclusion into HTML "pre" tag: replaces "<", ">" 
+     * Prepares plain text for inclusion into HTML "pre" tag: replaces "<", ">"
      * with "&lt;", "&gt;", etc.
      */
     public static String quoteForHtml(String text) {
@@ -402,11 +445,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	}
     	return sb.toString();
     }
-    
+
 	/**
 	 * Splits {@code string} to consecutive substrings each having at
 	 * most {@code maxLength} length.
-	 * 
+	 *
 	 * @param string the string to be split
 	 * @param maxLength the maximum length of the returned strings
 	 * @return the array of substrings or {@code null} if {@code string} is {@code null}
@@ -414,11 +457,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String[] split(String string, int maxLength) {
     	if (string == null)
     		return null;
-    	
+
 		int len = string.length();
 		if (len <= maxLength)
 			return new String[] {string};
-		
+
 		int count = ((len + maxLength - 1) / maxLength);
 		String[] result = new String[count];
 		for (int i = 0, start = 0; i < count; ++i, start += maxLength) {
@@ -427,7 +470,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 		return result;
 	}
-    
+
     /**
      * Dictionary-compare two strings, the main difference from String.compare()
      * being that integers embedded in the strings are compared in
@@ -440,15 +483,15 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     		return 1;
     	if (second == null)
     		return -1;
-    	
+
     	return Common.strdictcmp(first, second);
     }
-    
+
     /**
      * Comparator for sorting lists with {@link dictionaryCompare()}.
      */
     public static final Comparator<String> dictionaryComparator = new DictionaryComparator();
-    
+
     private static final class DictionaryComparator implements Comparator<String> {
 		public int compare(String first, String second) {
 			return dictionaryCompare(first, second);
