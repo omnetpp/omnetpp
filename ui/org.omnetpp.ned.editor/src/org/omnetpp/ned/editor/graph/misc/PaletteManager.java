@@ -139,7 +139,7 @@ public class PaletteManager implements INEDChangeListener {
             // create the tool entry
             CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                     name, StringUtils.makeBriefDocu(comp.getNEDElement().getComment(), 300),
-                    new ModelFactory(SubmoduleElementEx.getStaticTagName(),name.toLowerCase(), name),
+                    new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(name), name),
                     imageDescNorm, imageDescLarge );
             // add to the selected drawer
             currentDrawer.add(combined);
