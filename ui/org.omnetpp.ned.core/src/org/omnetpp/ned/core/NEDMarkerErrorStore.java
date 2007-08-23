@@ -10,6 +10,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Standard implementation of INEDErrorStore
@@ -17,9 +18,7 @@ import org.omnetpp.ned.model.NEDTreeUtil;
  * @author Andras
  */
 public class NEDMarkerErrorStore implements INEDErrorStore {
-    public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.core.nedproblem";
-    public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
-    
+  
     public static final String NEDELEMENT_ID = "nedelement-id";
 
     private IFile file;
@@ -70,9 +69,9 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
         markerSync.addMarker(file, markerType, markerAttrs);
         
         // let the NED tree know as well
-        if (markerType.equals(NEDPROBLEM_MARKERID))
-        	context.nedProblemMarkerAdded(severity);
-        else if (markerType.equals(NEDCONSISTENCYPROBLEM_MARKERID))
+        if (markerType.equals(INEDTypeResolver.NEDSYNTAXPROBLEM_MARKERID))
+        	context.syntaxProblemMarkerAdded(severity);
+        else if (markerType.equals(INEDTypeResolver.NEDCONSISTENCYPROBLEM_MARKERID))
         	context.consistencyProblemMarkerAdded(severity);
         else
         	throw new IllegalArgumentException(); // wrong marker type

@@ -351,13 +351,13 @@ public interface INEDElement extends Iterable<INEDElement> {
 	public String getNEDSource();
 
 	//TODO comment
-    public void clearProblemMarkerSeverities();
+    public void clearSyntaxProblemMarkerSeverities();
     public void clearConsistencyProblemMarkerSeverities();
-    public void nedProblemMarkerAdded(int severity);
+    public void syntaxProblemMarkerAdded(int severity);
     public void consistencyProblemMarkerAdded(int severity);
-    public int getNedProblemMaxLocalSeverity();
+    public int getSyntaxProblemMaxLocalSeverity();
     public int getConsistencyProblemMaxLocalSeverity();
-    public int getNedProblemMaxCumulatedSeverity();
+    public int getSyntaxProblemMaxCumulatedSeverity();
     public int getConsistencyProblemMaxCumulatedSeverity();
     
     /**

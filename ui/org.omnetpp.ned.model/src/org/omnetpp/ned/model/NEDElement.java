@@ -46,11 +46,11 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	private static long lastid;
     
 	// store maximum severity of error markers associated with this element.
-	// "ned": NEDPROBLEM_MARKERID; "consistency": NEDCONSISTENCYPROBLEM_MARKERID;
+	// "syntax": NEDSYNTAXPROBLEM_MARKERID; "consistency": NEDCONSISTENCYPROBLEM_MARKERID;
 	// "local": this NEDElement; "cumulated": this element and its subtree
-    private int nedProblemMaxLocalSeverity = SEVERITY_NONE;
+    private int syntaxProblemMaxLocalSeverity = SEVERITY_NONE;
     private int consistencyProblemMaxLocalSeverity = SEVERITY_NONE;
-    private int nedProblemMaxCumulatedSeverity = SEVERITY_INVALID;
+    private int syntaxProblemMaxCumulatedSeverity = SEVERITY_INVALID;
     private int consistencyProblemMaxCumulatedSeverity = SEVERITY_INVALID;
 
     private transient NEDChangeListenerList listeners = null;
@@ -474,7 +474,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached data
     	source = null; 
-    	nedProblemMaxCumulatedSeverity = SEVERITY_INVALID;
+    	syntaxProblemMaxCumulatedSeverity = SEVERITY_INVALID;
     	consistencyProblemMaxCumulatedSeverity = SEVERITY_INVALID;
 
     	// notify listeners: first local, then parents
@@ -532,13 +532,13 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 
     /* problem markers */
     
-    public void clearProblemMarkerSeverities() {
-    	if (nedProblemMaxLocalSeverity != SEVERITY_NONE) {
-    		nedProblemMaxLocalSeverity = SEVERITY_NONE;
+    public void clearSyntaxProblemMarkerSeverities() {
+    	if (syntaxProblemMaxLocalSeverity != SEVERITY_NONE) {
+    		syntaxProblemMaxLocalSeverity = SEVERITY_NONE;
         	fireModelChanged(new NEDMarkerChangeEvent(this));
     	}
     	for (INEDElement child : this)
-    		child.clearProblemMarkerSeverities();
+    		child.clearSyntaxProblemMarkerSeverities();
     }
 
     public void clearConsistencyProblemMarkerSeverities() {
@@ -555,9 +555,9 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     	Assert.isTrue(SEVERITY_NONE < IMarker.SEVERITY_WARNING && IMarker.SEVERITY_WARNING < IMarker.SEVERITY_ERROR);
     }
 
-    public void nedProblemMarkerAdded(int severity) {
-    	if (nedProblemMaxLocalSeverity < severity) {
-    		nedProblemMaxLocalSeverity = severity;
+    public void syntaxProblemMarkerAdded(int severity) {
+    	if (syntaxProblemMaxLocalSeverity < severity) {
+    		syntaxProblemMaxLocalSeverity = severity;
     		fireModelChanged(new NEDMarkerChangeEvent(this));
     	}
     }
@@ -569,18 +569,18 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     	}
     }
 
-    public int getNedProblemMaxLocalSeverity() {
-		return nedProblemMaxLocalSeverity;
+    public int getSyntaxProblemMaxLocalSeverity() {
+		return syntaxProblemMaxLocalSeverity;
 	}
     
     public int getConsistencyProblemMaxLocalSeverity() {
 		return consistencyProblemMaxLocalSeverity;
 	}
     
-    public int getNedProblemMaxCumulatedSeverity() {
-    	if (nedProblemMaxCumulatedSeverity == SEVERITY_INVALID)
+    public int getSyntaxProblemMaxCumulatedSeverity() {
+    	if (syntaxProblemMaxCumulatedSeverity == SEVERITY_INVALID)
     		updateCumulatedProblemSeverities();
-		return nedProblemMaxCumulatedSeverity;
+		return syntaxProblemMaxCumulatedSeverity;
 	}
     
 	public int getConsistencyProblemMaxCumulatedSeverity() {
@@ -590,17 +590,17 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	}
 
 	public int getMaxProblemSeverity() {
-    	return Math.max(getNedProblemMaxCumulatedSeverity(), getConsistencyProblemMaxCumulatedSeverity());
+    	return Math.max(getSyntaxProblemMaxCumulatedSeverity(), getConsistencyProblemMaxCumulatedSeverity());
     }
 
 	protected void updateCumulatedProblemSeverities() {
-		int nedSeverity = nedProblemMaxLocalSeverity;
+		int nedSeverity = syntaxProblemMaxLocalSeverity;
 		int consistencySeverity = consistencyProblemMaxLocalSeverity;
 		for (INEDElement child : this) {
-			nedSeverity = Math.max(nedSeverity, child.getNedProblemMaxCumulatedSeverity());
+			nedSeverity = Math.max(nedSeverity, child.getSyntaxProblemMaxCumulatedSeverity());
 			consistencySeverity = Math.max(consistencySeverity, child.getConsistencyProblemMaxCumulatedSeverity());
 		}
-		nedProblemMaxCumulatedSeverity = nedSeverity;
+		syntaxProblemMaxCumulatedSeverity = nedSeverity;
 		consistencyProblemMaxCumulatedSeverity = consistencySeverity;
 	}
 

@@ -65,8 +65,9 @@ public class NEDTreeUtil {
 	/**
 	 * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
-	 * Callers should check INEDErrorStore to determine whether a parse error occurred.
 	 * The passed fileName will only be used to fill in the NedFileElement element.
+	 * Callers should check INEDErrorStore to determine whether a parse error occurred.
+	 * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
 	public static INEDElement parseNedSource(String source, INEDErrorStore errors, String fileName) {
         return parse(source, fileName, errors);
@@ -76,6 +77,7 @@ public class NEDTreeUtil {
 	 * Load and parse NED file to a NEDElement tree. Returns a non-null,
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
  	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
+	 * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
 	public static NedFileElementEx loadNedSource(String filename, INEDErrorStore errors) {
         return parse(null, filename, errors);

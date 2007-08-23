@@ -14,7 +14,11 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author Andras
  */
 public interface INEDTypeResolver {
-	/**
+	
+    public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
+    public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
+
+    /**
 	 * Interface used by filtering methods.
 	 */
 	public interface IPredicate {

@@ -187,7 +187,7 @@ public class MultiPageNedEditor
 	protected boolean maySwitchToGraphicalEditor() {
         IFile file = ((FileEditorInput)getEditorInput()).getFile();
 		NedFileElementEx nedFileElement = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
-		return nedFileElement.getNedProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
+		return nedFileElement.getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
 	}
 
 	@Override

@@ -3,14 +3,14 @@
 <plugin>
    <extension
          id="nedconsistencyproblem"
-         name="NED consistency problem"
+         name="NED Consistency Problem"
          point="org.eclipse.core.resources.markers">
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 
    </extension>
    <extension
-         id="nedproblem"
-         name="NED Problem"
+         id="nedsyntaxproblem"
+         name="NED Syntax Problem"
          point="org.eclipse.core.resources.markers">
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 

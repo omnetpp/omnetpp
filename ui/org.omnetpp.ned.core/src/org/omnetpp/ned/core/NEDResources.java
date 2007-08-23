@@ -63,6 +63,7 @@ import org.omnetpp.ned.model.pojo.SimpleModuleElement;
  *
  * @author andras
  */
+//FIXME this has to be called from somewhere!!! nedFiles.get(file).clearSyntaxProblemMarkerSeverities();
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // filters for component access with getAllComponentsFilteredBy
@@ -224,7 +225,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         INEDElement currentTree = getNEDFileModel(file);
 
         // parse
-        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
+        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDSYNTAXPROBLEM_MARKERID);
         markerSync.registerFile(file);
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
         INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errorStore, file.getLocation().toOSString());
@@ -431,7 +432,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
-        NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
+        NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDSYNTAXPROBLEM_MARKERID);
         NedFileElementEx tree = NEDTreeUtil.loadNedSource(fileName, errorStore);
         Assert.isNotNull(tree);
         
@@ -467,7 +468,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // fire a ned change notification (new tree added)
             nedModelChanged(new NEDStructuralChangeEvent(tree, tree, NEDStructuralChangeEvent.Type.INSERTION, tree, tree));
         }
-    	//FIXME this has to be called from somewhere: nedFiles.get(file).clearNedProblemMarkerSeverities();
     }
 
 	private void rehash() {
@@ -502,7 +502,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         components.put(bidirChannelType.getName(), bidirChannelType);
         components.put(unidirChannelType.getName(), unidirChannelType);
 
-        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDMarkerErrorStore.NEDCONSISTENCYPROBLEM_MARKERID);
+        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 
         // find NED types in each file, and register them
         for (IFile file : nedFiles.keySet()) {
@@ -572,7 +572,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
 
         // validate the NED trees (check cross-references etc)
-        Assert.isTrue(markerSync.getBaseMarkerType().equals(NEDMarkerErrorStore.NEDCONSISTENCYPROBLEM_MARKERID));
+        Assert.isTrue(markerSync.getBaseMarkerType().equals(NEDCONSISTENCYPROBLEM_MARKERID));
         for (IFile file : nedFiles.keySet()) {
             NEDFileValidator validator = new NEDFileValidator(this, new NEDMarkerErrorStore(file, markerSync));
             NedFileElement tree = nedFiles.get(file);
