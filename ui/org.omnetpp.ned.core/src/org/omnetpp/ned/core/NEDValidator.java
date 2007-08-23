@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INEDErrorStore;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -139,13 +140,13 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		String name = node.getName();
 		INEDTypeInfo e = resolver.getComponent(name);
 		if (e == null) {
-			errors.add(node, "no such component: '" + name+"'");
+			errors.addError(node, "no such component: '" + name+"'");
 			return;
 		}
 		int thisType = componentNode.getTagCode();
 		int extendsType = e.getNEDElement().getTagCode();
 		if (thisType != extendsType) {
-			errors.add(node, "'"+name+"' is not a "+componentNode.getReadableTagName());
+			errors.addError(node, "'"+name+"' is not a "+componentNode.getReadableTagName());
 			return;
 		}
 		//XXX enforce channel inheritance rules, wrt "withcppclass" keyword
@@ -153,7 +154,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		// if all OK, add inherited members to our member list
 		for (String memberName : e.getMembers().keySet()) {
 			if (members.containsKey(memberName))
-				errors.add(node, "conflict: '"+memberName+"' occurs in multiple base interfaces");
+				errors.addError(node, "conflict: '"+memberName+"' occurs in multiple base interfaces");
 			else
 			    members.put(memberName, e.getMembers().get(memberName));
 		}
@@ -228,17 +229,17 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		if (node.getType()!=NED_PARTYPE_NONE) {
 			// check definitions: allowed here at all?
 			if (submoduleNode!=null) {
-				errors.add(node, "'"+parname+"': new parameters can only be defined on a module type, but not per submodule");
+				errors.addError(node, "'"+parname+"': new parameters can only be defined on a module type, but not per submodule");
 				return;
 			}
 			if (channelSpecElement!=null) {
-				errors.add(node, "'"+parname+"': new channel parameters can only be defined on a channel type, but not per connection");
+				errors.addError(node, "'"+parname+"': new channel parameters can only be defined on a channel type, but not per connection");
 				return;
 			}
 
 			// param must NOT exist yet
 			if (members.containsKey(parname)) {
-				errors.add(node, "'"+parname+"': already defined at "+members.get(parname).getSourceLocation()); // and may not be a parameter at all...
+				errors.addError(node, "'"+parname+"': already defined at "+members.get(parname).getSourceLocation()); // and may not be a parameter at all...
 				return;
 			}
 			members.put(parname, node);
@@ -249,31 +250,31 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		if (submoduleNode!=null) {
 			// inside a submodule's definition
 			if (submoduleType==null) {
-				errors.add(node, "cannot assign parameters of a submodule of unknown type");
+				errors.addError(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
 			decl = (ParamElement) submoduleType.getParamDeclarations().get(parname);
 			if (decl==null) {
-				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
+				errors.addError(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
 				return;
 			}
 		}
 		else if (channelSpecElement!=null) {
 			// inside a connection's channel spec
 			if (channelSpecType==null) {
-				errors.add(node, "cannot assign parameters of a channel of unknown type");
+				errors.addError(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
 			decl = (ParamElement) channelSpecType.getParamDeclarations().get(parname);
 			if (decl==null) {
-				errors.add(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
+				errors.addError(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
 			}
 		}
 		else {
 			// global "parameters" section of type
 			if (!members.containsKey(parname)) {
-				errors.add(node, "'"+parname+"': undefined parameter");
+				errors.addError(node, "'"+parname+"': undefined parameter");
 				return;
 			}
 			decl = (ParamElement)members.get(parname);
@@ -311,13 +312,13 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		if (node.getType()!=NED_GATETYPE_NONE) {
 			// check definitions: allowed here at all?
 			if (submoduleNode!=null) {
-				errors.add(node, "'"+gatename+"': new gates can only be defined on a module type, but not per submodule");
+				errors.addError(node, "'"+gatename+"': new gates can only be defined on a module type, but not per submodule");
 				return;
 			}
 
 			// gate must NOT exist already
 			if (members.containsKey(gatename)) {
-				errors.add(node, "'"+gatename+"': already defined at "+members.get(gatename).getSourceLocation()); // and may not be a parameter at all...
+				errors.addError(node, "'"+gatename+"': already defined at "+members.get(gatename).getSourceLocation()); // and may not be a parameter at all...
 				return;
 			}
 			members.put(gatename, node);
@@ -328,19 +329,19 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		if (submoduleNode!=null) {
 			// inside a submodule's definition
 			if (submoduleType==null) {
-				errors.add(node, "cannot configure gates of a submodule of unknown type");
+				errors.addError(node, "cannot configure gates of a submodule of unknown type");
 				return;
 			}
 			decl = (GateElement) submoduleType.getGateDeclarations().get(gatename);
 			if (decl==null) {
-				errors.add(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
+				errors.addError(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
 				return;
 			}
 		}
 		else {
 			// global "gates" section of module
 			if (!members.containsKey(gatename)) {
-				errors.add(node, "'"+gatename+"': undefined gate");
+				errors.addError(node, "'"+gatename+"': undefined gate");
 				return;
 			}
 			decl = (GateElement)members.get(gatename);
@@ -348,11 +349,11 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 		// check vector/non vector stuff
         if (decl.getIsVector() && !node.getIsVector()) {
-			errors.add(node, "missing []: '"+gatename+"' was declared as a vector gate at "+decl.getSourceLocation());
+			errors.addError(node, "missing []: '"+gatename+"' was declared as a vector gate at "+decl.getSourceLocation());
 			return;
         }
         if (!decl.getIsVector() && node.getIsVector()) {
-			errors.add(node, "'"+gatename+"' was declared as a non-vector gate at "+decl.getSourceLocation());
+			errors.addError(node, "'"+gatename+"' was declared as a non-vector gate at "+decl.getSourceLocation());
 			return;
         }
 		validateChildren(node);
@@ -396,12 +397,12 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			// normal case
 			submoduleType = resolveTypeName(typeName);
 			if (submoduleType == null) {
-				errors.add(node, "'"+typeName+"': no such module type");
+				errors.addError(node, "'"+typeName+"': no such module type");
 				return;
 			}
 			int typeTag = submoduleType.getNEDElement().getTagCode();
 			if (typeTag!=NED_SIMPLE_MODULE && typeTag!=NED_COMPOUND_MODULE) {
-				errors.add(node, "'"+typeName+"' is not a module type");
+				errors.addError(node, "'"+typeName+"' is not a module type");
 				return;
 			}
 		}
@@ -413,18 +414,18 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			// "like" case
 			submoduleType = resolveTypeName(likeTypeName);
 			if (submoduleType == null) {
-				errors.add(node, "'"+likeTypeName+"': no such module or interface type");
+				errors.addError(node, "'"+likeTypeName+"': no such module or interface type");
 				return;
 			}
 			int typeTag = submoduleType.getNEDElement().getTagCode();
 			if (typeTag!=NED_SIMPLE_MODULE && typeTag!=NED_COMPOUND_MODULE && typeTag!=NED_MODULE_INTERFACE) {
-				errors.add(node, "'"+typeName+"' is not a module or interface type");
+				errors.addError(node, "'"+typeName+"' is not a module or interface type");
 				return;
 			}
 		}
 		else {
 			// XXXX   the "<> like *" case comes here but it should NOT!!!
-			errors.add(node, "no type info for '"+name+"'");  // should never happen
+			errors.addError(node, "no type info for '"+name+"'");  // should never happen
 			return;
 		}
 
@@ -541,12 +542,12 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			// normal case
 			channelSpecType = resolveTypeName(typeName);
 			if (channelSpecType == null) {
-				errors.add(node, "'"+typeName+"': no such channel type");
+				errors.addError(node, "'"+typeName+"': no such channel type");
 				return;
 			}
 			int typeTag = channelSpecType.getNEDElement().getTagCode();
 			if (typeTag!=NED_CHANNEL) {
-				errors.add(node, "'"+typeName+"' is not a channel type");
+				errors.addError(node, "'"+typeName+"' is not a channel type");
 				return;
 			}
 		}
@@ -558,12 +559,12 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			// "like" case
 			channelSpecType = resolver.getComponent(likeTypeName);
 			if (channelSpecType == null) {
-				errors.add(node, "'"+likeTypeName+"': no such channel or channel interface type");
+				errors.addError(node, "'"+likeTypeName+"': no such channel or channel interface type");
 				return;
 			}
 			int typeTag = channelSpecType.getNEDElement().getTagCode();
 			if (typeTag!=NED_CHANNEL && typeTag!=NED_CHANNEL_INTERFACE) {
-				errors.add(node, "'"+typeName+"' is not a channel or channel interface type");
+				errors.addError(node, "'"+typeName+"' is not a channel or channel interface type");
 				return;
 			}
 		}

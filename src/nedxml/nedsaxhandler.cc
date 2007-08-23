@@ -47,7 +47,7 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
         node = NEDElementFactory::getInstance()->createNodeWithTag(name);
     }
     catch (NEDException& e) {
-        errors->add(current, "error: %s", e.what());
+        errors->addError(current, "error: %s", e.what());
         node = new UnknownNode();
         node->setAttribute("element", name);
     }
@@ -65,7 +65,7 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
                 node->setAttribute(atts[i], atts[i+1]);
             }
             catch (NEDException& e) {
-                errors->add(node, "error in attribute '%s': %s", atts[i], e.what());
+                errors->addError(node, "error in attribute '%s': %s", atts[i], e.what());
             }
         }
     }

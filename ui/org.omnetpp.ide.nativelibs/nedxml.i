@@ -39,6 +39,7 @@ namespace std {
 // parse functions return new objects, supposed to be deleted from Java
 %newobject NEDParser::parseNEDText(const char *);
 %newobject NEDParser::parseNEDFile(const char *);
+%newobject NEDParser::parseNEDExpression(const char *);
 
 // These are only public for technical reasons, shouldn't be wrapped
 %ignore NEDParser::getSource();

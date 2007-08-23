@@ -23,6 +23,7 @@
 
 
 std::string slashifyFilename(const char *fname);
+const char *currentLocation();
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 void storePos(NEDElement *node, YYLTYPE pos);

@@ -22,7 +22,8 @@
 #include "nedelement.h"
 
 
-enum NEDErrorCategory {ERRCAT_INFO, ERRCAT_WARNING, ERRCAT_ERROR, ERRCAT_FATAL};
+// Note: this cannot be inner type because of swig wrapping
+enum NEDErrorSeverity {NED_SEVERITY_INFO, NED_SEVERITY_WARNING, NED_SEVERITY_ERROR};
 
 /**
  * Stores error messages
@@ -32,7 +33,7 @@ class NEDXML_API NEDErrorStore
     private:
         struct Entry {
             NEDElement *context;
-            int category;
+            int severity;
             std::string location;
             std::string message;
         };
@@ -41,7 +42,7 @@ class NEDXML_API NEDErrorStore
         bool doprint;
 
      private:
-        void doAdd(NEDElement *context, const char *loc, int category, const char *message);
+        void doAdd(NEDElement *context, const char *loc, int severity, const char *message);
 
      public:
         /**
@@ -56,19 +57,34 @@ class NEDXML_API NEDErrorStore
         void setPrintToStderr(bool p) {doprint = p;}
 
         /**
-         * Add an error message with the default category being ERROR.
+         * Add an error message with the severity ERROR.
          */
-        void add(NEDElement *context, const char *message, ...);
+        void addError(NEDElement *context, const char *message, ...);
+
+        /**
+         * Add an error message with the severity ERROR.
+         */
+        void addError(const char *location, const char *message, ...);
+
+        /**
+         * Add an error message with the severity WARNING.
+         */
+        void addWarning(NEDElement *context, const char *message, ...);
+
+        /**
+         * Add an error message with the severity WARNING.
+         */
+        void addWarning(const char *location, const char *message, ...);
 
         /**
          * Add an error message.
          */
-        void add(NEDElement *context, int category, const char *message, ...);
+        void add(NEDElement *context, int severity, const char *message, ...);
 
         /**
          * Add an error message.
          */
-        void add(const char *location, int category, const char *message, ...);
+        void add(const char *location, int severity, const char *message, ...);
 
         /**
          * Return true if there're no messages stored.
@@ -76,7 +92,7 @@ class NEDXML_API NEDErrorStore
         bool empty() const {return entries.empty();}
 
         /**
-         * Total number of fatal, error, warning and info messages.
+         * Total number of error, warning and info messages.
          */
         int numMessages() const {return entries.size();}
 
@@ -86,28 +102,29 @@ class NEDXML_API NEDErrorStore
         bool containsError() const;
 
         /**
-         * Returns true if there's a fatal error stored.
-         */
-        bool containsFatal() const;
-
-        /**
          * Discard all messages stored.
          */
         void clear() {entries.clear();}
 
         /** @name Returns properties of the ith message stored (i=0..numMessages-1) */
         //@{
-        const char *errorCategory(int i) const;
-        int errorCategoryCode(int i) const;
+        const char *errorSeverity(int i) const;
+        int errorSeverityCode(int i) const;
         const char *errorLocation(int i) const;
         NEDElement *errorContext(int i) const;
         const char *errorText(int i) const;
         //@}
 
         /**
-         * Convert categories from numeric to textual form.
+         * Return the first message with index >= startIndex whose
+         * context is the given node. Returns -1 if none found.
          */
-        static const char *categoryName(int cat);
+        int findFirstErrorFor(NEDElement *node, int startIndex) const;
+
+        /**
+         * Convert severities from numeric to textual form.
+         */
+        static const char *severityName(int severity);
 };
 
 

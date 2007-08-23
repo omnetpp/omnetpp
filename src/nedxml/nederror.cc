@@ -19,7 +19,15 @@
 #include "nederror.h"
 
 
-void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int category, const char *message)
+#define DO_VSPRINTF()  \
+    va_list va; \
+    va_start(va, message); \
+    char messagebuf[1024]; \
+    vsprintf(messagebuf,message,va); \
+    va_end(va);
+
+
+void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
 {
     entries.push_back(Entry());
     Entry& e = entries.back();
@@ -29,80 +37,75 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int category, co
 
     e.context = context;
     e.location = loc ? loc : "";
-    e.category = category;
+    e.severity = severity;
     e.message = message;
 
     if (doprint)
     {
-        const char *severity = categoryName(category);
+        const char *severitytext = severityName(severity);
         if (loc)
-            fprintf(stderr, "%s: %s: %s\n", loc, severity, message);
+            fprintf(stderr, "%s: %s: %s\n", loc, severitytext, message);
         else if (context)
-            fprintf(stderr, "<%s>: %s: %s\n", context->getTagName(), severity, message);
+            fprintf(stderr, "<%s>: %s: %s\n", context->getTagName(), severitytext, message);
         else
-            fprintf(stderr, "%s: %s\n", severity, message);
+            fprintf(stderr, "%s: %s\n", severitytext, message);
    }
 }
 
-void NEDErrorStore::add(NEDElement *context, const char *message, ...)
+void NEDErrorStore::addError(NEDElement *context, const char *message, ...)
 {
-    va_list va;
-    va_start(va, message);
-    char messagebuf[1024];
-    vsprintf(messagebuf,message,va);
-    va_end(va);
-
-    doAdd(context, NULL, ERRCAT_ERROR, messagebuf);
+    DO_VSPRINTF();
+    doAdd(context, NULL, NED_SEVERITY_ERROR, messagebuf);
 }
 
-void NEDErrorStore::add(NEDElement *context, int category, const char *message, ...)
+void NEDErrorStore::addError(const char *location, const char *message, ...)
 {
-    va_list va;
-    va_start(va, message);
-    char messagebuf[1024];
-    vsprintf(messagebuf,message,va);
-    va_end(va);
-
-    doAdd(context, NULL, category, messagebuf);
+    DO_VSPRINTF();
+    doAdd(NULL, location, NED_SEVERITY_ERROR, messagebuf);
 }
 
-void NEDErrorStore::add(const char *location, int category, const char *message, ...)
+void NEDErrorStore::addWarning(NEDElement *context, const char *message, ...)
 {
-    va_list va;
-    va_start(va, message);
-    char messagebuf[1024];
-    vsprintf(messagebuf,message,va);
-    va_end(va);
+    DO_VSPRINTF();
+    doAdd(context, NULL, NED_SEVERITY_WARNING, messagebuf);
+}
 
-    doAdd(NULL, location, category, messagebuf);
+void NEDErrorStore::addWarning(const char *location, const char *message, ...)
+{
+    DO_VSPRINTF();
+    doAdd(NULL, location, NED_SEVERITY_WARNING, messagebuf);
+}
+
+void NEDErrorStore::add(NEDElement *context, int severity, const char *message, ...)
+{
+    DO_VSPRINTF();
+    doAdd(context, NULL, severity, messagebuf);
+}
+
+void NEDErrorStore::add(const char *location, int severity, const char *message, ...)
+{
+    DO_VSPRINTF();
+    doAdd(NULL, location, severity, messagebuf);
 }
 
 bool NEDErrorStore::containsError() const
 {
     for (int i=0; i<(int)entries.size(); i++)
-        if (entries[i].category == ERRCAT_ERROR || entries[i].category == ERRCAT_FATAL)
+        if (entries[i].severity == NED_SEVERITY_ERROR)
             return true;
     return false;
 }
 
-bool NEDErrorStore::containsFatal() const
-{
-    for (int i=0; i<(int)entries.size(); i++)
-        if (entries[i].category == ERRCAT_FATAL)
-            return true;
-    return false;
-}
-
-const char *NEDErrorStore::errorCategory(int i) const
+const char *NEDErrorStore::errorSeverity(int i) const
 {
     if (i<0 || i>=(int)entries.size()) return NULL;
-    return categoryName(entries[i].category);
+    return severityName(entries[i].severity);
 }
 
-int NEDErrorStore::errorCategoryCode(int i) const
+int NEDErrorStore::errorSeverityCode(int i) const
 {
     if (i<0 || i>=(int)entries.size()) return -1;
-    return entries[i].category;
+    return entries[i].severity;
 }
 
 const char *NEDErrorStore::errorLocation(int i) const
@@ -123,15 +126,22 @@ const char *NEDErrorStore::errorText(int i) const
     return entries[i].message.c_str();
 }
 
-const char *NEDErrorStore::categoryName(int cat)
+int NEDErrorStore::findFirstErrorFor(NEDElement *node, int startIndex) const
 {
-    switch (cat)
+    for (int i=startIndex; i<(int)entries.size(); i++)
+        if (entries[i].context==node)
+            return i;
+    return -1;
+}
+
+const char *NEDErrorStore::severityName(int severity)
+{
+    switch (severity)
     {
-        case ERRCAT_INFO:    return "Info";
-        case ERRCAT_WARNING: return "Warning";
-        case ERRCAT_ERROR:   return "Error";
-        case ERRCAT_FATAL:   return "Fatal";
-        default:             return "???";
+        case NED_SEVERITY_INFO:    return "Info";
+        case NED_SEVERITY_WARNING: return "Warning";
+        case NED_SEVERITY_ERROR:   return "Error";
+        default:                   return "???";
     }
 }
 

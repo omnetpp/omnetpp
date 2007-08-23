@@ -10,6 +10,9 @@ import org.eclipse.jface.action.Action;
  * Re-implementation of GEF ToggleSnapToGeometryAction to toggle the PROPERTY_SNAP_ENABLED property
  * on the graphical viewer. The GEF version had a bug as it never called setChecked on the action
  * resulting in missing notification. This caused the contributor items to get out of sync.
+ * 
+ * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=130728
+ * 
  * @author rhornig
  */
 public class GNEDToggleSnapToGeometryAction

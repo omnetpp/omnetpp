@@ -509,6 +509,14 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		return source;
     }
 
+    public void clearMarkerNedIds() {
+    	errorMarkerIds.clear();
+    }
+
+    public void addMarkerNedId(int markerNedId) {
+    	errorMarkerIds.add(markerNedId);
+    }
+
     public List<Integer> getErrorMarkerIds() {
         return errorMarkerIds;
     }
@@ -524,5 +532,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         return getClass().getSimpleName() + " " + (hasAttribute("name") ? getAttribute("name") : "");
         //return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
     }
+    
+    
 };
 

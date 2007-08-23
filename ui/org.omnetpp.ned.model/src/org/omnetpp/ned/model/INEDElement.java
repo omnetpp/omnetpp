@@ -348,14 +348,21 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 */
 	public String getNEDSource();
 
+	//XXX comment; must be actually called from somewhere!
+	public void clearMarkerNedIds();
+	
+	//XXX comment
+	public void addMarkerNedId(int markerNedId);
+
 	/**
 	 * Returns a collection that contains the error marker ids attached to this element.
 	 * If the size is > 0 the element has an error.
 	 */
-	public List<Integer> getErrorMarkerIds();
+	public List<Integer> getErrorMarkerIds(); //XXX own? or for whole subtree?
 
 	/**
 	 * Returns the true if the element has attached errors/markers
 	 */
 	public int getMaxProblemSeverity();
+
 }

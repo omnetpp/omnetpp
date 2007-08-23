@@ -12,7 +12,6 @@ import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.Ran
 import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifferencer;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.CommentElement;
@@ -224,7 +223,12 @@ class NEDTreeDifferenceTest {
 		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
 
 		for (int i = 0; i < 100; i++) {
-			INEDElement original = NEDTreeUtil.loadNedSource("C:\\Workspace\\Repository\\trunk\\omnetpp\\samples\\queuenet\\CallCenter.ned", new NEDErrorStore());
+			INEDElement original = NEDTreeUtil.loadNedSource("C:\\Workspace\\Repository\\trunk\\omnetpp\\samples\\queuenet\\CallCenter.ned", new INEDErrorStore() {
+				public void addError(INEDElement context, String message) {}
+				public void addError(INEDElement context, int line, String message) {}
+				public void addWarning(INEDElement context, String message) {}
+				public void addWarning(INEDElement context, int line, String message) {}
+			});
 			test(original);
 		}
 	}

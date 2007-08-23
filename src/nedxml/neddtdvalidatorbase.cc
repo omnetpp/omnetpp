@@ -30,7 +30,7 @@ void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[
        {
          case '1':
            if (!p || p->getTagCode()!=tags[i])
-               {errors->add(node,"DTD validation error: child element '%s' unexpected", (p?p->getTagName():"")); return;}
+               {errors->addError(node,"DTD validation error: child element '%s' unexpected", (p?p->getTagName():"")); return;}
            p = p->getNextSibling();
            break;
          case '?':
@@ -39,7 +39,7 @@ void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[
            break;
          case '+':
            if (!p || p->getTagCode()!=tags[i])
-               {errors->add(node, "DTD validation error: child element '%s' unexpected", (p?p->getTagName():"")); return;}
+               {errors->addError(node, "DTD validation error: child element '%s' unexpected", (p?p->getTagName():"")); return;}
            p = p->getNextSibling();
            while (p && p->getTagCode()==tags[i])
                p = p->getNextSibling();
@@ -51,7 +51,7 @@ void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[
        }
     }
     if (p)
-        errors->add(node, "DTD validation error: child element '%s' unexpected", p->getTagName());
+        errors->addError(node, "DTD validation error: child element '%s' unexpected", p->getTagName());
 }
 
 static int isInVector(int a, int v[])
@@ -64,7 +64,7 @@ static int isInVector(int a, int v[])
 
 void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult)
 {
-    // note: 'node' argument is solely used by errors->add() (when curchild==NULL)
+    // note: 'node' argument is solely used by errors->addError() (when curchild==NULL)
     if (mult=='?')
     {
         // skip optional matching element
@@ -75,7 +75,7 @@ void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild
     {
         // match and skip first element of "1" or "+" sequence
         if (!curchild || !isInVector(curchild->getTagCode(), tags))
-            {errors->add(node,"DTD validation error: child element of multiplicity '1' or '+' missing"); return;}
+            {errors->addError(node,"DTD validation error: child element of multiplicity '1' or '+' missing"); return;}
         curchild = curchild->getNextSibling();
     }
 
@@ -92,7 +92,7 @@ void NEDDTDValidatorBase::checkChoice(NEDElement *node, int tags[], char mult)
     NEDElement *curchild = node->getFirstChild();
     tryCheckChoice(node, curchild, tags, mult);
     if (curchild)
-        errors->add(node,"DTD validation error: child element '%s' unexpected", curchild->getTagName());
+        errors->addError(node,"DTD validation error: child element '%s' unexpected", curchild->getTagName());
 }
 
 void NEDDTDValidatorBase::checkSeqOfChoices(NEDElement *node, Choice choices[], int n)
@@ -101,13 +101,13 @@ void NEDDTDValidatorBase::checkSeqOfChoices(NEDElement *node, Choice choices[], 
     for (int i=0; i<n; i++)
         tryCheckChoice(node, curchild, choices[i].tags, choices[i].mult);
     if (curchild)
-        errors->add(node,"DTD validation error: child element '%s' unexpected", curchild->getTagName());
+        errors->addError(node,"DTD validation error: child element '%s' unexpected", curchild->getTagName());
 }
 
 void NEDDTDValidatorBase::checkEmpty(NEDElement *node)
 {
     if (node->getFirstChild())
-        errors->add(node,"DTD validation error: EMPTY element has children\n");
+        errors->addError(node,"DTD validation error: EMPTY element has children\n");
 }
 
 void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *attr)
@@ -115,7 +115,7 @@ void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *a
     const char *s = node->getAttribute(attr);
     assert(s);
     if (!*s)
-        errors->add(node,"DTD validation error: required attribute '%s' is empty", attr);
+        errors->addError(node,"DTD validation error: required attribute '%s' is empty", attr);
 }
 
 void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
@@ -127,7 +127,7 @@ void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char 
             return;
     if (n==0)
         INTERNAL_ERROR1(node,"no allowed values for enumerated attribute '%s'", attr);
-    errors->add(node,"DTD validation error: invalid value '%s' for attribute '%s', not one of the "
+    errors->addError(node,"DTD validation error: invalid value '%s' for attribute '%s', not one of the "
                      "enumerated values ('%s',...)", s, attr, vals[0]);
 }
 
@@ -138,10 +138,10 @@ void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
     if (!*s)
         return;
     if (!isalpha(*s) && *s!='_')
-        errors->add(node,"DTD validation error: attribute %s='%s' starts with invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
+        errors->addError(node,"DTD validation error: attribute %s='%s' starts with invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
     while (*++s)
         if (!isalpha(*s) && !isdigit(*s) && *s!='_')
-            {errors->add(node,"DTD validation error: attribute %s='%s' contains invalid character (valid NED identifier expected)", attr, node->getAttribute(attr)); return;}
+            {errors->addError(node,"DTD validation error: attribute %s='%s' contains invalid character (valid NED identifier expected)", attr, node->getAttribute(attr)); return;}
 }
 
 void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *attr)
@@ -158,7 +158,7 @@ void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *at
             if (*s=='/' && *(s+1)=='/')
                 {s++; incomment = true;}
             else if (*s!=' ' && *s!='\t' && *s!='\n' && *s!='\r')
-                {errors->add(node,"DTD validation error: attribute %s='%s' does not contain a valid NED comment", attr, node->getAttribute(attr)); return;}
+                {errors->addError(node,"DTD validation error: attribute %s='%s' does not contain a valid NED comment", attr, node->getAttribute(attr)); return;}
         }
         else if (incomment)
         {
@@ -182,7 +182,7 @@ void NEDDTDValidatorBase::checkNMTokenAttribute(NEDElement *node, const char *at
         return;
     for (; *s; s++)
         if (!isalpha(*s) && !isdigit(*s) && *s!='_')
-            {errors->add(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
+            {errors->addError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 
 

@@ -970,7 +970,7 @@ typeblock
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   storeBannerAndRightComments(ps.types,@1,@2);
                   if (ps.inTypes)
-                     np->getErrors()->add(ps.types,"more than one level of type nesting is not allowed");
+                     np->getErrors()->addError(ps.types,"more than one level of type nesting is not allowed");
                   ps.inTypes = true;
                 }
            opt_localtypes
@@ -1102,9 +1102,9 @@ likeparam
 thisqualifier
         : THIS_
         | NAME
-                { np->getErrors()->add(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
+                { np->getErrors()->addError(currentLocation(), "invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
         | NAME vector
-                { np->getErrors()->add(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
+                { np->getErrors()->addError(currentLocation(), "invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
         ;
 
 
@@ -1170,7 +1170,7 @@ connectiongroup
         : opt_loops_and_conditions '{'
                 {
                   if (ps.inConnGroup)
-                      np->getErrors()->add(ps.conngroup,"nested connection groups are not allowed");
+                      np->getErrors()->addError(ps.conngroup,"nested connection groups are not allowed");
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if ($1) {
                       // for's and if's were collected in a temporary UnknownNode, put them under conngroup now
@@ -1388,7 +1388,7 @@ opt_subgate
                   else if (!strcmp(s,"o"))
                       ps.subgate = NED_SUBGATE_O;
                   else
-                       np->getErrors()->add(NULL,"invalid subgate spec `%s', must be `i' or `o'", toString(@2));
+                       np->getErrors()->addError(currentLocation(), "invalid subgate spec `%s', must be `i' or `o'", toString(@2));
                 }
         |
                 {  ps.subgate = NED_SUBGATE_NONE; }
@@ -1644,7 +1644,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {np->getErrors()->add(NULL, "unable to allocate work memory"); return false;}
+        {np->getErrors()->addError("", "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;

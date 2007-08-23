@@ -46,15 +46,18 @@ const char *toString(long l)
     return buf;
 }
 
+const char *currentLocation()
+{
+    static char buf[200];
+    sprintf(buf,"%s:%d", np->getFileName(), pos.li);
+    return buf;
+}
+
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
 {
     // create via a factory
     NEDElement *e = NEDElementFactory::getInstance()->createNodeWithTag(tagcode);
-
-    // "debug info"
-    char buf[200];
-    sprintf(buf,"%s:%d", np->getFileName(), pos.li);
-    e->setSourceLocation(buf);
+    e->setSourceLocation(currentLocation());
 
     // add to parent
     if (parent)

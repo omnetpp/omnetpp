@@ -353,7 +353,7 @@ displayblock
                       // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   }
                   catch (std::exception& e) {
-                      np->getErrors()->add(ps.property, e.what());
+                      np->getErrors()->addError(ps.property, e.what());
                   }
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
@@ -454,7 +454,7 @@ parameter
                 }
         | NAME ':' ANYTYPE
                 {
-                  np->getErrors()->add(ps.params,"type 'anytype' no longer supported");
+                  np->getErrors()->addError(ps.params,"type 'anytype' no longer supported");
                   ps.param = addParameter(ps.params, @1); // add anyway to prevent crash
                 }
         ;
@@ -649,9 +649,10 @@ substparamblock
                 {
                   createSubstparamsNodeIfNotExists();
                   delete $3;
-                  np->getErrors()->add(ps.substparams,"conditional parameters no longer supported -- "
-                                                      "please rewrite parameter assignments to use "
-                                                      "conditional expression syntax (cond ? a : b)");
+                  np->getErrors()->addError(ps.substparams,
+                                    "conditional parameters no longer supported -- "
+                                    "please rewrite parameter assignments to use "
+                                    "conditional expression syntax (cond ? a : b)");
                 }
           opt_substparameters
         ;
@@ -728,9 +729,10 @@ gatesizeblock
                 {
                   createSubstparamsNodeIfNotExists();
                   delete $3;
-                  np->getErrors()->add(ps.substparams,"conditional gatesizes no longer supported -- "
-                                                      "please rewrite gatesize assignments to use "
-                                                      "conditional expression syntax (cond ? a : b)");
+                  np->getErrors()->addError(ps.substparams,
+                                    "conditional gatesizes no longer supported -- "
+                                    "please rewrite gatesize assignments to use "
+                                    "conditional expression syntax (cond ? a : b)");
                 }
           opt_gatesizes
         ;
@@ -773,7 +775,7 @@ opt_submod_displayblock
                       // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   }
                   catch (std::exception& e) {
-                      np->getErrors()->add(ps.property, e.what());
+                      np->getErrors()->addError(ps.property, e.what());
                   }
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
@@ -887,7 +889,7 @@ opt_conn_displaystr
                       literal->setValue(displaystring.c_str());
                   }
                   catch (std::exception& e) {
-                      np->getErrors()->add(ps.property, e.what());
+                      np->getErrors()->addError(ps.property, e.what());
                   }
                   // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   ps.propkey->appendChild(literal);
@@ -1238,22 +1240,22 @@ parameter_expr
         | REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->add(ps.substparams,"`ref' modifier no longer supported (add `volatile' modifier to destination parameter instead)");
+                  np->getErrors()->addError(ps.substparams,"`ref' modifier no longer supported (add `volatile' modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
-                  np->getErrors()->add(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->addError(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
-                  np->getErrors()->add(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->addError(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->add(ps.substparams,"`ancestor' modifier no longer supported");
+                  np->getErrors()->addError(ps.substparams,"`ancestor' modifier no longer supported");
                 }
         ;
 
@@ -1327,7 +1329,7 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {np->getErrors()->add(NULL, "unable to allocate work memory"); return false;}
+        {np->getErrors()->addError("", "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;

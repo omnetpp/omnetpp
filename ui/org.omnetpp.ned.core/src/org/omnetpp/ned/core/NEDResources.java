@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.ned.engine.NEDErrorStore;
+import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
@@ -36,13 +36,13 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -223,28 +223,28 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public synchronized void setNEDFileText(IFile file, String text) {
         INEDElement currentTree = getNEDFileModel(file);
 
-        NEDErrorStore errors = new NEDErrorStore();
-        errors.setPrintToStderr(false);
-        INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
+        // parse
+        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
+        markerSync.registerFile(file);
+        NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
+        INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errorStore, file.getLocation().toOSString());
         
         NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
         NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
 
         if (treeDifferenceApplier.hasDifferences()) {
+        	// push tree differences into the official tree
         	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
 	        currentTree.fireModelChanged(new NEDBeginModelChangeEvent(currentTree));
 	        treeDifferenceApplier.apply();
 	        currentTree.fireModelChanged(new NEDEndModelChangeEvent(currentTree));
+
+	        // perform marker synchronization in a background job, to avoid deadlocks
+	        markerSync.runAsWorkspaceJob();
+	        
+	        // force rehash now, so that validation errors appear immediately
+	        rehash();
         }
-
-        // FIXME the below lines should go to the above if statement ???
-		rehash();
-
-        NEDProblemMarkerSynchronizer markerSync = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDPROBLEM_MARKERID);
-        markerSync.registerFile(file);
-        markerSync.addMarkersToFileFromErrorStore(file, currentTree, errors);
-        // we should defer the synchronization to a different job, so no deadlock can occur
-        markerSync.runAsWorkspaceJob();
     }
 
     // TODO we should use the NEDElements (the errorMarkerIds collection) to signal an error
@@ -410,7 +410,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized void readNEDFile(IFile file) {
-        NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
+        ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
         readNEDFile(file, sync);
         sync.runAsWorkspaceJob();
     }
@@ -418,7 +418,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Gets called from incremental builder.
      */
-    public synchronized void readNEDFile(IFile file, NEDProblemMarkerSynchronizer markerSync) {
+    public synchronized void readNEDFile(IFile file, ProblemMarkerSynchronizer markerSync) {
         // if this file is currently loaded in an editor, we don't read it from disk
         if (connectCount.containsKey(file))
             return;
@@ -427,10 +427,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
-        NEDErrorStore errors = new NEDErrorStore();
-        NedFileElementEx tree = NEDTreeUtil.loadNedSource(fileName, errors);
+        NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDMarkerErrorStore.NEDPROBLEM_MARKERID);
+        NedFileElementEx tree = NEDTreeUtil.loadNedSource(fileName, errorStore);
         Assert.isNotNull(tree);
-        markerSync.addMarkersToFileFromErrorStore(file, tree, errors);
         
         storeNEDFileModel(file, tree);
     }
@@ -498,8 +497,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         components.put(bidirChannelType.getName(), bidirChannelType);
         components.put(unidirChannelType.getName(), unidirChannelType);
 
-        final NEDProblemMarkerSynchronizer markerSync
-                = new NEDProblemMarkerSynchronizer(NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID);
+        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDMarkerErrorStore.NEDCONSISTENCYPROBLEM_MARKERID);
 
         // find NED types in each file, and register them
         for (IFile file : nedFiles.keySet()) {
@@ -518,24 +516,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         			// it is a duplicate: issue warning
         			IFile otherFile = components.get(name).getNEDFile();
         			INEDElement otherElement = components.get(name).getNEDElement();
+                	NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
         			if (otherFile == null) {
-        				String message = node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined";
-        				markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
-        						IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
+        				errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
         			}
         			else {
-        				// add it to the duplicate set so we can remove them
-        				// before the end
+        				// add it to the duplicate set so we can remove them at the end
         				duplicates.add(name);
-        				String message = node.getReadableTagName() + " '" + name + "' already defined in "
-        				+ otherFile.getFullPath().toString();
-        				markerSync.addMarker(file, node, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
-        						IMarker.SEVERITY_ERROR, message, node.getSourceLocation());
-        				// add the same error message to the other file too
-        				String otherMessage = node.getReadableTagName() + " '" + name + "' already defined in "
-        				+ file.getFullPath().toString();
-        				markerSync.addMarker(otherFile, otherElement, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
-        						IMarker.SEVERITY_ERROR, otherMessage, components.get(name).getNEDElement().getSourceLocation());
+
+        				// add error message to both files
+        				final String messageHalf = node.getReadableTagName() + " '" + name + "' already defined in ";
+						errorStore.addError(node, messageHalf + otherFile.getFullPath().toString());
+        	        	NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
+        				otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
         			}
         		}
         		else {
@@ -573,13 +566,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
 
         // validate the NED trees (check cross-references etc)
-        for (final IFile file : nedFiles.keySet()) {
-            INEDErrorStore errors = new INEDErrorStore() {
-                public void add(INEDElement context, String message) {
-                    markerSync.addMarker(file, context, NEDProblemMarkerSynchronizer.NEDCONSISTENCYPROBLEM_MARKERID,
-                            IMarker.SEVERITY_ERROR, message, context.getSourceLocation());
-                }};
-            NEDFileValidator validator = new NEDFileValidator(this, errors);
+        for (IFile file : nedFiles.keySet()) {
+            NEDFileValidator validator = new NEDFileValidator(this, new NEDMarkerErrorStore(file, markerSync, NEDMarkerErrorStore.NEDCONSISTENCYPROBLEM_MARKERID));
             NedFileElement tree = nedFiles.get(file);
             validator.validate(tree);
         }
@@ -627,7 +615,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             nedModelChangeNotificationDisabled = true;
             debugRehashCounter = 0;
             IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
-            final NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
+            final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             wsroot.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
                     if (isNEDFile(resource))
@@ -763,7 +751,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 return;
             // printResourceChangeEvent(event);
 
-            final NEDProblemMarkerSynchronizer sync = new NEDProblemMarkerSynchronizer();
+            final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();

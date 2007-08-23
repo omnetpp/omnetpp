@@ -2,6 +2,7 @@ package org.omnetpp.ned.core;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INEDErrorStore;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;

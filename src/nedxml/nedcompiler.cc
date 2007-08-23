@@ -152,7 +152,7 @@ void NEDCompiler::doValidate(NEDElement *tree)
                     // if couldn't load, skip
                     if (!importedtree)
                     {
-                       errors->add(import, "could not import '%s'",fname);
+                       errors->addError(import, "could not import '%s'",fname);
                        continue;
                     }
 

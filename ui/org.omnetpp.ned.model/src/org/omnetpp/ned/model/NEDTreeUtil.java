@@ -1,14 +1,17 @@
 package org.omnetpp.ned.model;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
 import org.omnetpp.ned.engine.NED2Generator;
 import org.omnetpp.ned.engine.NEDBasicValidator;
 import org.omnetpp.ned.engine.NEDDTDValidator;
 import org.omnetpp.ned.engine.NEDElement;
 import org.omnetpp.ned.engine.NEDElementCode;
+import org.omnetpp.ned.engine.NEDErrorSeverity;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
@@ -62,10 +65,10 @@ public class NEDTreeUtil {
 	/**
 	 * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
-	 * Callers should check NEDErrorStore to determine whether a parse error occurred.
+	 * Callers should check INEDErrorStore to determine whether a parse error occurred.
 	 * The passed fileName will only be used to fill in the NedFileElement element.
 	 */
-	public static INEDElement parseNedSource(String source, NEDErrorStore errors, String fileName) {
+	public static INEDElement parseNedSource(String source, INEDErrorStore errors, String fileName) {
         return parse(source, fileName, errors);
 	}
 
@@ -74,7 +77,7 @@ public class NEDTreeUtil {
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
  	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
 	 */
-	public static NedFileElementEx loadNedSource(String filename, NEDErrorStore errors) {
+	public static NedFileElementEx loadNedSource(String filename, INEDErrorStore errors) {
         return parse(null, filename, errors);
 	}
 
@@ -82,12 +85,13 @@ public class NEDTreeUtil {
 	 * Parse the given source (when source!=null) or the given file (when source==null).
 	 * Never returns null. 
 	 */
-	private static NedFileElementEx parse(String source, String filename, NEDErrorStore errors) {
+	private static NedFileElementEx parse(String source, String filename, INEDErrorStore errors) {
 		Assert.isTrue(filename != null);
 		NEDElement swigTree = null;
 		try {
 			// parse
-			NEDParser np = new NEDParser(errors);
+			NEDErrorStore swigErrors = new NEDErrorStore();
+			NEDParser np = new NEDParser(swigErrors);
 			np.setParseExpressions(false);
 			swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
 			if (swigTree == null) {
@@ -101,7 +105,7 @@ public class NEDTreeUtil {
             if (NEDElementCode.swigToEnum(swigTree.getTagCode()) == NEDElementCode.NED_NED_FILE)
                 swigTree.setAttribute("filename", filename);
 
-			if (!errors.empty()) {
+			if (!swigErrors.empty()) {
 				// There were parse errors, and the tree built may not be entirely correct.
 				// Typical problems are "mandatory attribute missing" especially with connections,
 				// due to parse errors before filling in the connection element was completed.
@@ -111,17 +115,19 @@ public class NEDTreeUtil {
 			}
 
 			// run DTD validation (once again)
-			int numMessages = errors.numMessages();
-			NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
+			int numMessages = swigErrors.numMessages();
+			NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
 			dtdvalidator.validate(swigTree);
-			Assert.isTrue(errors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
+			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
-			NEDBasicValidator basicvalidator = new NEDBasicValidator(false, errors);
+			NEDBasicValidator basicvalidator = new NEDBasicValidator(false, swigErrors);
 			basicvalidator.validate(swigTree);
-			Assert.isTrue(errors.numMessages() == numMessages, "NED tree fails basic validation, even after repairs");
+			//FIXME revise what BasicValidator does! is Assert OK here??
+			//FIXME for example, it shouldn't check 
+			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails basic validation, even after repairs");
 
 			// convert tree to pure Java objects
-			INEDElement pojoTree = swig2pojo(swigTree, null, errors);
+			INEDElement pojoTree = doSwig2pojo(swigTree, null, swigErrors, errors);
 
 			// System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
 
@@ -137,42 +143,74 @@ public class NEDTreeUtil {
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.
 	 * NOTE: There are two different NEDElement types handled in this function.
 	 */
-	public static INEDElement swig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore errors) {
-		INEDElement pojoNode = null;
-		try {
-			pojoNode = NEDElementFactory.getInstance().createElement(swigNode.getTagCode(), parent);
+	public static INEDElement swig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore swigErrors, INEDErrorStore errors) {
+		// convert tree
+		INEDElement pojoTree = doSwig2pojo(swigNode, parent, swigErrors, errors);
 
-			// set the attributes
-			for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
-				pojoNode.setAttribute(i, swigNode.getAttribute(i));
+		// piggyback errors which came without context node onto the tree root
+		if (swigErrors.findFirstErrorFor(null, 0) != -1) {
+			int i = -1;
+			while ((i = swigErrors.findFirstErrorFor(null, i+1)) != -1) {
+				int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
+				errors.add(severity, pojoTree, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
 			}
-
-			// copy source line number info
-			pojoNode.setSourceLocation(swigNode.getSourceLocation());
-			NEDSourceRegion swigRegion = swigNode.getSourceRegion();
-			if (swigRegion.getStartLine() != 0)
-				pojoNode.setSourceRegion(new org.omnetpp.ned.model.NEDSourceRegion(
-						swigRegion.getStartLine(), swigRegion.getStartColumn(),
-						swigRegion.getEndLine(), swigRegion.getEndColumn()));
-
-			// create child nodes
-			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
-				swig2pojo(child, pojoNode, errors);
-
-			return pojoNode;
 		}
-		catch (NEDElementException e) {
-			// prepare for errors during tree building, most notably
-			// "Nonexistent submodule" thrown from ConnectionElementEx.
-			errors.add(swigNode, e.getMessage()); // error message
-			if (pojoNode!=null) {
-				// throw out element that caused the error.
-				parent.removeChild(pojoNode);
-			}
-			return null;
-		}
-
+		
+		return pojoTree;
 	}
+	
+	protected static INEDElement doSwig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore swigErrors, INEDErrorStore errors) {
+		INEDElement pojoNode = NEDElementFactory.getInstance().createElement(swigNode.getTagCode(), parent);
+
+		// set the attributes
+		for (int i = 0; i < swigNode.getNumAttributes(); ++i)
+			pojoNode.setAttribute(i, swigNode.getAttribute(i));
+
+		// copy source line number info
+		pojoNode.setSourceLocation(swigNode.getSourceLocation());
+		NEDSourceRegion swigRegion = swigNode.getSourceRegion();
+		if (swigRegion.getStartLine() != 0)
+			pojoNode.setSourceRegion(new org.omnetpp.ned.model.NEDSourceRegion(
+					swigRegion.getStartLine(), swigRegion.getStartColumn(),
+					swigRegion.getEndLine(), swigRegion.getEndColumn()));
+		
+		// take over error messages related to this node
+		if (swigErrors.findFirstErrorFor(swigNode, 0) != -1) {
+			int i = -1;
+			while ((i = swigErrors.findFirstErrorFor(swigNode, i+1)) != -1) {
+				int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
+				errors.add(severity, pojoNode, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
+				//FIXME handle errors where context==NULL too! find closest INEDElement for them!
+			}
+		}
+
+		// create child nodes
+		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
+			doSwig2pojo(child, pojoNode, swigErrors, errors);
+
+		return pojoNode;
+	}
+
+	public static int getMarkerSeverityFor(NEDErrorSeverity severity) {
+		switch (severity) {
+		    case NED_SEVERITY_ERROR: return IMarker.SEVERITY_ERROR;
+		    case NED_SEVERITY_WARNING: return IMarker.SEVERITY_WARNING;
+		    case NED_SEVERITY_INFO: return IMarker.SEVERITY_INFO;
+		    default: throw new IllegalArgumentException();
+		}
+	}
+
+	/**
+	 * Get line number from a string in the format "file:line"
+	 */
+	public static int getLineFrom(String location) {
+		String lineStr = StringUtils.substringAfterLast(location, ":");
+        int line = 1;
+        try {line = Integer.parseInt(lineStr);} catch (Exception e) {}
+        return line;
+	}
+
+
 
 	/**
 	 * Converts a plain java NEDElement tree to a native C++ (SWIG-wrapped) tree.

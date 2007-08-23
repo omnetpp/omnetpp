@@ -102,7 +102,7 @@ bool NEDParser::loadFile(const char *fname)
 
     // load whole file into memory
     if (!nedsource->readFile(newfilename))
-        {errors->add(NULL, "cannot read %s", fname); return false;}
+        {errors->addError("", "cannot read %s", fname); return false;}
     return true;
 }
 
@@ -116,7 +116,7 @@ bool NEDParser::loadText(const char *nedtext)
 
     // prepare nedsource object
     if (!nedsource->setData(nedtext))
-        {errors->add(NULL, "unable to allocate work memory"); return false;}
+        {errors->addError("", "unable to allocate work memory"); return false;}
     return true;
 }
 
@@ -189,6 +189,6 @@ void NEDParser::error(const char *msg, int line)
 {
     std::stringstream os;
     os << filename << ":" << line;
-    errors->add(os.str().c_str(), ERRCAT_ERROR, "%s", msg);
+    errors->addError(os.str().c_str(), "%s", msg);
 }
 

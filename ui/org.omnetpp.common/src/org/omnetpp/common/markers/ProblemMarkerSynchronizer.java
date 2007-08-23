@@ -92,6 +92,10 @@ public class ProblemMarkerSynchronizer {
 		markerTable.get(file).add(markerData);
 	}
 
+	public String getBaseMarkerType() {
+		return markerBaseType;
+	}
+
 	/**
 	 * Returns the number of markers registered in this synchronizer.
 	 */
@@ -210,5 +214,4 @@ public class ProblemMarkerSynchronizer {
 		Object obj2 = map2.get(key);
 		return obj1==null ? obj2==null : obj1.equals(obj2);
 	}
-
 }
