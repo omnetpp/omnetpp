@@ -1,9 +1,7 @@
 package org.omnetpp.ned.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
@@ -17,6 +15,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
+import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.CommentElement;
@@ -32,6 +31,8 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  */
 public abstract class NEDElement extends PlatformObject implements INEDElement, IModelProvider
 {
+	private static final int SEVERITY_INVALID = Integer.MIN_VALUE;
+	
 	private String source;
 	private long id;
 	private String srcloc;
@@ -44,7 +45,13 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	private HashMap<Object,Object> userData;
 	private static long lastid;
     
-    private transient List<Integer> errorMarkerIds = new ArrayList<Integer>();
+	// store maximum severity of error markers associated with this element.
+	// "ned": NEDPROBLEM_MARKERID; "consistency": NEDCONSISTENCYPROBLEM_MARKERID;
+	// "local": this NEDElement; "cumulated": this element and its subtree
+    private int nedProblemMaxLocalSeverity = SEVERITY_NONE;
+    private int consistencyProblemMaxLocalSeverity = SEVERITY_NONE;
+    private int nedProblemMaxCumulatedSeverity = SEVERITY_INVALID;
+    private int consistencyProblemMaxCumulatedSeverity = SEVERITY_INVALID;
 
     private transient NEDChangeListenerList listeners = null;
     
@@ -148,7 +155,6 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		lastchild = null;
 		prevsibling = null;
 		nextsibling = null;
-		errorMarkerIds.clear();
 
 		id = ++lastid;
 	}
@@ -455,8 +461,12 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	}
 
     public void fireModelChanged(NEDModelEvent event) {
-    	source = null; // invalidate cached NED source code 
+    	// invalidate cached data
+    	source = null; 
+    	nedProblemMaxCumulatedSeverity = SEVERITY_INVALID;
+    	consistencyProblemMaxCumulatedSeverity = SEVERITY_INVALID;
 
+    	// notify listeners: first local, then parents
         if (listeners != null)
         	listeners.fireModelChanged(event);
 
@@ -509,21 +519,79 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		return source;
     }
 
-    public void clearMarkerNedIds() {
-    	errorMarkerIds.clear();
+    /* problem markers */
+    
+    public void clearProblemMarkerSeverities() {
+    	if (nedProblemMaxLocalSeverity != SEVERITY_NONE) {
+    		nedProblemMaxLocalSeverity = SEVERITY_NONE;
+        	fireModelChanged(new NEDMarkerChangeEvent(this));
+    	}
+    	for (INEDElement child : this)
+    		child.clearProblemMarkerSeverities();
     }
 
-    public void addMarkerNedId(int markerNedId) {
-    	errorMarkerIds.add(markerNedId);
+    public void clearConsistencyProblemMarkerSeverities() {
+    	if (consistencyProblemMaxLocalSeverity != SEVERITY_NONE) {
+    		consistencyProblemMaxLocalSeverity = SEVERITY_NONE;
+        	fireModelChanged(new NEDMarkerChangeEvent(this));
+    	}
+    	for (INEDElement child : this)
+    		child.clearConsistencyProblemMarkerSeverities();
     }
 
-    public List<Integer> getErrorMarkerIds() {
-        return errorMarkerIds;
+    static {
+    	// code below exploits numeric order of severities, lets assert it
+    	Assert.isTrue(SEVERITY_NONE < IMarker.SEVERITY_WARNING && IMarker.SEVERITY_WARNING < IMarker.SEVERITY_ERROR);
     }
 
-    public int getMaxProblemSeverity() {
-        return IMarker.SEVERITY_WARNING; //XXX errorMarkerIds.size() > 0;
+    public void nedProblemMarkerAdded(int severity) {
+    	if (nedProblemMaxLocalSeverity < severity) {
+    		nedProblemMaxLocalSeverity = severity;
+    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    	}
     }
+
+    public void consistencyProblemMarkerAdded(int severity) {
+    	if (consistencyProblemMaxLocalSeverity < severity) {
+    		consistencyProblemMaxLocalSeverity = severity;
+    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    	}
+    }
+
+    public int getNedProblemMaxLocalSeverity() {
+		return nedProblemMaxLocalSeverity;
+	}
+    
+    public int getConsistencyProblemMaxLocalSeverity() {
+		return consistencyProblemMaxLocalSeverity;
+	}
+    
+    public int getNedProblemMaxCumulatedSeverity() {
+    	if (nedProblemMaxCumulatedSeverity == SEVERITY_INVALID)
+    		updateCumulatedProblemSeverities();
+		return nedProblemMaxCumulatedSeverity;
+	}
+    
+	public int getConsistencyProblemMaxCumulatedSeverity() {
+    	if (consistencyProblemMaxCumulatedSeverity == SEVERITY_INVALID)
+    		updateCumulatedProblemSeverities();
+		return consistencyProblemMaxCumulatedSeverity;
+	}
+
+	public int getMaxProblemSeverity() {
+    	return Math.max(getNedProblemMaxCumulatedSeverity(), getConsistencyProblemMaxCumulatedSeverity());
+    }
+
+	protected void updateCumulatedProblemSeverities() {
+		int nedSeverity = nedProblemMaxLocalSeverity;
+		int consistencySeverity = consistencyProblemMaxLocalSeverity;
+		for (INEDElement child : this) {
+			nedSeverity = Math.max(nedSeverity, child.getNedProblemMaxCumulatedSeverity());
+			consistencySeverity = Math.max(consistencySeverity, child.getConsistencyProblemMaxCumulatedSeverity());
+		}
+		nedProblemMaxCumulatedSeverity = nedSeverity;
+		consistencyProblemMaxCumulatedSeverity = consistencySeverity;
+	}
 
     // For debugging purposes only
     @Override
@@ -533,6 +601,5 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         //return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
     }
     
-    
-};
+}
 

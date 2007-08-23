@@ -43,7 +43,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
 public class PaletteManager implements INEDChangeListener {
     GraphicalNedEditor hostingEditor;
     PaletteRoot nedPalette = new PaletteRoot();
-    PaletteContainer toolsDrawer, componentsDrwawer;
+    PaletteContainer toolsDrawer, componentsDrawer;
     DelayedJob paletteUpdaterJob = new DelayedJob(200) {
         public void run() {
             buildPalette();
@@ -54,7 +54,7 @@ public class PaletteManager implements INEDChangeListener {
         super();
         this.hostingEditor = hostingEditor;
         toolsDrawer = createToolsDrawer(nedPalette);
-        componentsDrwawer = createComponentsDrawer();
+        componentsDrawer = createComponentsDrawer();
         buildPalette();
     }
 
@@ -77,7 +77,7 @@ public class PaletteManager implements INEDChangeListener {
     public void buildPalette() {
         nedPalette.getChildren().clear();
         nedPalette.add(toolsDrawer);
-        nedPalette.add(componentsDrwawer);
+        nedPalette.add(componentsDrawer);
         nedPalette.addAll(createSubmodulesDrawer());
     }
 

@@ -1,8 +1,5 @@
 package org.omnetpp.ned.model;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -19,7 +16,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  */
 public interface INEDElement extends Iterable<INEDElement> {
 
-	public Iterator<INEDElement> iterator();
+	public static final int SEVERITY_NONE = -1;
 
 	/**
 	 * Returns the name of the XML element the class represents.
@@ -348,21 +345,20 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 */
 	public String getNEDSource();
 
-	//XXX comment; must be actually called from somewhere!
-	public void clearMarkerNedIds();
-	
-	//XXX comment
-	public void addMarkerNedId(int markerNedId);
-
-	/**
-	 * Returns a collection that contains the error marker ids attached to this element.
-	 * If the size is > 0 the element has an error.
-	 */
-	public List<Integer> getErrorMarkerIds(); //XXX own? or for whole subtree?
-
-	/**
-	 * Returns the true if the element has attached errors/markers
-	 */
-	public int getMaxProblemSeverity();
+	//TODO comment
+    public void clearProblemMarkerSeverities();
+    public void clearConsistencyProblemMarkerSeverities();
+    public void nedProblemMarkerAdded(int severity);
+    public void consistencyProblemMarkerAdded(int severity);
+    public int getNedProblemMaxLocalSeverity();
+    public int getConsistencyProblemMaxLocalSeverity();
+    public int getNedProblemMaxCumulatedSeverity();
+    public int getConsistencyProblemMaxCumulatedSeverity();
+    
+    /**
+     * Convenience method: returns the maximum severity of NED or NED consistency
+     * problems on this element or any element below.
+     */
+    public int getMaxProblemSeverity();
 
 }

@@ -20,10 +20,8 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
     public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.core.nedproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
     
-    public static final String NED_ID = "ned-id";
+    public static final String NEDELEMENT_ID = "nedelement-id";
 
-    private static int nextMarkerNedId = 0;
-    
     private IFile file;
 	private String markerType;
     private ProblemMarkerSynchronizer markerSync;
@@ -63,19 +61,21 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
 	public void add(int severity, INEDElement context, int line, String message) {
 		Assert.isNotNull(context);
 
-		// TODO we should generate a unique ID for each marker and add it to the marker as an attribute and also add
-		// to the problematic NED file's errorMarkerIds collection. Later we can check whether there is an error
-		// on a NEDElement and also get the IDs of those markers (if the user needs them, we can lookup those
-		// markers from the file)
-
+		// create would-be marker
 		Map<String, Object> markerAttrs = new HashMap<String, Object>();
         markerAttrs.put(IMarker.MESSAGE, message);
         markerAttrs.put(IMarker.SEVERITY, severity);
         markerAttrs.put(IMarker.LINE_NUMBER, line);
-        markerAttrs.put(NED_ID, ++nextMarkerNedId);
+        markerAttrs.put(NEDELEMENT_ID, context.getId());
         markerSync.addMarker(file, markerType, markerAttrs);
         
-        context.addMarkerNedId(nextMarkerNedId);
+        // let the NED tree know as well
+        if (markerType.equals(NEDPROBLEM_MARKERID))
+        	context.nedProblemMarkerAdded(severity);
+        else if (markerType.equals(NEDCONSISTENCYPROBLEM_MARKERID))
+        	context.consistencyProblemMarkerAdded(severity);
+        else
+        	throw new IllegalArgumentException(); // wrong marker type
 	}
 
 }

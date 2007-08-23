@@ -463,6 +463,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // fire a ned change notification (new tree added)
             nedModelChanged(new NEDStructuralChangeEvent(tree, tree, NEDStructuralChangeEvent.Type.INSERTION, tree, tree));
         }
+    	//FIXME this has to be called from somewhere: nedFiles.get(file).clearNedProblemMarkerSeverities();
     }
 
 	private void rehash() {
@@ -502,6 +503,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // find NED types in each file, and register them
         for (IFile file : nedFiles.keySet()) {
         	markerSync.registerFile(file);
+        	nedFiles.get(file).clearConsistencyProblemMarkerSeverities();
 
         	// collect types (including inner types) from the NED file, and process them one by one
         	Map<String, INedTypeElement> types = collectTypesFrom(nedFiles.get(file));
