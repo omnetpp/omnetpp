@@ -85,7 +85,12 @@ const char *NED2Generator::decreaseIndent(const char *indent)
 
 inline bool strnotnull(const char *s)
 {
-    return s && s[0];
+    return s && *s;
+}
+
+inline bool strnull(const char *s)
+{
+    return !s || !*s;
 }
 
 //---------------------------------------------------------------------------
@@ -602,8 +607,9 @@ void NED2Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     // arrow
     OUT << arrow;
 
-    // print channel attributes
-    if (node->getFirstChildWithTag(NED_CHANNEL_SPEC))
+    // print channel spec
+    ChannelSpecNode *channelSpecNode = (ChannelSpecNode *)node->getFirstChildWithTag(NED_CHANNEL_SPEC);
+    if (channelSpecNode && !isEmptyChannelSpec(channelSpecNode))
     {
         generateChildrenWithType(node, NED_CHANNEL_SPEC, indent);
         OUT << arrow;
@@ -624,6 +630,16 @@ void NED2Generator::doConnection(ConnectionNode *node, const char *indent, bool 
         generateChildrenWithTypes(node, tags, increaseIndent(indent), ", ");
     }
     OUT << ";" << getRightComment(node);
+}
+
+bool NED2Generator::isEmptyChannelSpec(ChannelSpecNode *node)
+{
+    if (strnotnull(node->getType()) || strnotnull(node->getLikeType()) || strnotnull(node->getLikeParam()))
+        return false;
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+        if (child->getTagCode() != NED_COMMENT)
+            return false;
+    return true;
 }
 
 void NED2Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)

@@ -93,6 +93,7 @@ class NEDXML_API NED2Generator
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
+    bool isEmptyChannelSpec(ChannelSpecNode *node);
     //@}
 
     /** @name Getters for comments */
