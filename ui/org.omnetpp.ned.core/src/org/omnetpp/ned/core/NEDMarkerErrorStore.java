@@ -70,7 +70,6 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
         markerAttrs.put(NEDELEMENT_ID, context.getId());
         markerSync.addMarker(file, markerType, markerAttrs);
         
-        // let the NED tree know as well
         if (markerType.equals(INEDTypeResolver.NEDSYNTAXPROBLEM_MARKERID))
         	context.syntaxProblemMarkerAdded(severity);
         else if (markerType.equals(INEDTypeResolver.NEDCONSISTENCYPROBLEM_MARKERID))

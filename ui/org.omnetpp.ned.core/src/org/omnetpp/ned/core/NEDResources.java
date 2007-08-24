@@ -22,6 +22,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.INEDErrorStore;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
@@ -589,49 +590,65 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * (NEDCONSISTENCYPROBLEM_MARKERID) are managed within this method.
      */
 	public synchronized void validateAllFiles() {
-        long startMillis = System.currentTimeMillis();
+		long startMillis = System.currentTimeMillis();
+		
+		// During validation, we potentially fire a large number of NEDMarkerChangeEvents.
+		// So we'll surround the code with begin..end notifications, which allows the
+		// graphical editor to optimize refresh() calls. Otherwise it would have to 
+		// refresh on each notification, which can be a disaster performance-wise.
 
-        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
-        for (IFile file : nedFiles.keySet()) {
-        	NedFileElementEx nedFileElement = nedFiles.get(file);
-        	markerSync.registerFile(file);
-            NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
-			NEDFileValidator validator = new NEDFileValidator(this, errorStore);
-			nedFileElement.clearConsistencyProblemMarkerSeverities();
-            validator.validate(nedFileElement);
-            //FIXME validator should throw the following message:
-			//errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
+		// fake a begin change event, then "finally" an end change event 
+		nedModelChanged(new NEDBeginModelChangeEvent(null));
+		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
+		try {
 
-        }
+			for (IFile file : nedFiles.keySet()) {
+				NedFileElementEx nedFileElement = nedFiles.get(file);
+				markerSync.registerFile(file);
+				INEDErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
+				//INEDErrorStore errorStore = new INEDErrorStore.SysoutNedErrorStore(); // for debugging
+				NEDFileValidator validator = new NEDFileValidator(this, errorStore);
+				nedFileElement.clearConsistencyProblemMarkerSeverities();
+				validator.validate(nedFileElement);
+				//FIXME validator should throw the following message:
+				//errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
 
-        //FIXME warn for duplicates
-//        for (INEDTypeInfo duplicate : duplicates.values()) {
+			}
+
+			//FIXME warn for duplicates
+//			for (INEDTypeInfo duplicate : duplicates.values()) {
 //			// it is a duplicate: issue warning
 //			IFile otherFile = components.get(name).getNEDFile();
 //			INEDElement otherElement = components.get(name).getNEDElement();
-//        	NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
+//			NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
 //			if (otherFile == null) {
-//				errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
+//			errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
 //			}
 //			else {
-//				// add it to the duplicate set so we can remove them at the end
-//				duplicates.put(name, typeInfo);
-//
-//				// add error message to both files
-//				String messageHalf = node.getReadableTagName() + " '" + name + "' already defined in ";
-//				errorStore.addError(node, messageHalf + otherFile.getFullPath().toString());
-//	        	NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
-//				otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
-//			}
-//        }
+//			// add it to the duplicate set so we can remove them at the end
+//			duplicates.put(name, typeInfo);
 
-        // we need to do the synchronization in a background job, to avoid deadlocks
-        markerSync.runAsWorkspaceJob();
+//			// add error message to both files
+//			String messageHalf = node.getReadableTagName() + " '" + name + "' already defined in ";
+//			errorStore.addError(node, messageHalf + otherFile.getFullPath().toString());
+//			NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
+//			otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
+//			}
+//			}
+
+			// we need to do the synchronization in a background job, to avoid deadlocks
+			markerSync.runAsWorkspaceJob();
+
+		}
+        finally {
+            nedModelChanged(new NEDEndModelChangeEvent(null));
+        }
 
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("validateAllFiles(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
         System.out.println("typeinfo: refreshLocalCount:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NEDTypeInfo.debugRefreshInheritedCount);
 	}
+
 
 	public synchronized void invalidate() {
 		needsRehash = true;

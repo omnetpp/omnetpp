@@ -218,8 +218,13 @@ public class GraphicalNedEditor
     // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
 
+    // storage for NED change notifications enclosed in begin..end
     private ExternalChangeCommand pendingExternalChangeCommand;
 
+    // open NEDBeginChangeEvent notifications
+    private int nedBeginChangeCount = 0;
+    
+    
     public GraphicalNedEditor() {
         paletteManager = new PaletteManager(this);
         // attach the palette manager as a listener to the resource manager plugin
@@ -548,7 +553,14 @@ public class GraphicalNedEditor
 
             	reactToModelChanges(event);
 
-            	getGraphicalViewer().getRootEditPart().refresh();
+				// optimize refreshes: skip those between begin...end notifications
+            	if (event instanceof NEDBeginModelChangeEvent)
+					nedBeginChangeCount++;
+				else if (event instanceof NEDEndModelChangeEvent)
+					nedBeginChangeCount--;
+            	Assert.isTrue(nedBeginChangeCount >= 0);
+            	if (nedBeginChangeCount == 0)
+            		getGraphicalViewer().getRootEditPart().refresh();
             }
 
 			private void recordExternalChangeCommand(NEDModelEvent event) {
@@ -557,7 +569,7 @@ public class GraphicalNedEditor
 			    }
 			    else if (event instanceof NEDBeginModelChangeEvent) {
 			        // handle possible begin..end grouping
-					Assert.isTrue(pendingExternalChangeCommand == null);
+					Assert.isTrue(pendingExternalChangeCommand == null); // we don't support nested begin...end here (yet?)
 					pendingExternalChangeCommand = new ExternalChangeCommand();
 				}
 	 			else if (event instanceof NEDEndModelChangeEvent) {

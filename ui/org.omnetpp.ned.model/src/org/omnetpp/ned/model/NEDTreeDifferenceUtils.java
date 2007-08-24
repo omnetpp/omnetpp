@@ -228,14 +228,8 @@ class NEDTreeDifferenceTest {
 		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
 
 		for (int i = 0; i < 100; i++) {
-			INEDElement original = NEDTreeUtil.loadNedSource("C:\\Workspace\\Repository\\trunk\\omnetpp\\samples\\queuenet\\CallCenter.ned", new INEDErrorStore() {
-				public void addError(INEDElement context, String message) {}
-				public void addError(INEDElement context, int line, String message) {}
-				public void addWarning(INEDElement context, String message) {}
-				public void addWarning(INEDElement context, int line, String message) {}
-				public void add(int severity, INEDElement context, int line, String message) {}
-				public int getNumProblems() {return 0;}
-			});
+			String nedFile = "C:\\Workspace\\Repository\\trunk\\omnetpp\\samples\\queuenet\\CallCenter.ned";
+			INEDElement original = NEDTreeUtil.loadNedSource(nedFile, new INEDErrorStore.SysoutNedErrorStore());
 			test(original);
 		}
 	}
