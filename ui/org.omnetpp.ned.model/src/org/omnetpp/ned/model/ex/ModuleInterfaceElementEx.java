@@ -64,13 +64,8 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
         NEDElementUtilEx.setFirstExtends(this, ext);
     }
 
-    public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        return resolveTypeName(getFirstExtends());
-    }
-
     public INedTypeElement getFirstExtendsRef() {
-        INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        return getNEDTypeInfo().getFirstExtendsRef();
     }
 
     public List<ExtendsElement> getAllExtends() {

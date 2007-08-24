@@ -48,7 +48,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }
-    
+
     @Override
     public void fireModelChanged(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
@@ -65,13 +65,13 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     // submodule related methods
-    
+
     /**
      * Returns all submodules contained in THIS module.
      */
 	protected List<SubmoduleElementEx> getOwnSubmodules() {
 		List<SubmoduleElementEx> result = new ArrayList<SubmoduleElementEx>();
-		
+
 		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
 		if (submodulesElement != null)
 			for (INEDElement currChild : submodulesElement)
@@ -83,9 +83,9 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     /**
      * Returns the list of all direct and inherited submodules
-     * 
+     *
      * "Best-Effort": This method never returns null, but the returned list
-     * may be incomplete if some NED type is incorrect, missing, or duplicate. 
+     * may be incomplete if some NED type is incorrect, missing, or duplicate.
      */
     public List<SubmoduleElementEx> getSubmodules() {
     	return Arrays.asList(getNEDTypeInfo().getSubmodules().values().toArray(new SubmoduleElementEx[]{}));
@@ -268,7 +268,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     /**
      * Add this connection to the model (connections section)
-     * @param insertBefore The sibling connection we want to insert our connection 
+     * @param insertBefore The sibling connection we want to insert our connection
      *                     before, or null for append
      */
 	public void insertConnection(ConnectionElementEx insertBefore, ConnectionElementEx conn) {
@@ -304,13 +304,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         NEDElementUtilEx.setFirstExtends(this, ext);
     }
 
-    public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-    	return resolveTypeName(getFirstExtends());
-    }
-
     public INedTypeElement getFirstExtendsRef() {
-        INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
-        return it == null ? null : it.getNEDElement();
+        return getNEDTypeInfo().getFirstExtendsRef();
     }
 
     public List<ExtendsElement> getAllExtends() {
@@ -325,7 +320,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
         return result;
     }
-    
+
     // parameter query support
     public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();

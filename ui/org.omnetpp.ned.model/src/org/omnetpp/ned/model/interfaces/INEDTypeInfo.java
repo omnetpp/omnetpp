@@ -55,7 +55,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
      * Signals that the info has been invalidated and must be rebuilt next time accessed.
      */
     public void invalidate();
-    
+
 	/**
 	 * Returns the list of nesting NED elements that extend over the given line:column
 	 * in the source file. The list contains the component's root node as well.
@@ -65,13 +65,20 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public INEDElement[] getNEDElementsAt(int line, int column);
 
 	/**
-	 * Returns the inheritance chain, starting with this NED type, and 
+	 * Returns the inheritance chain, starting with this NED type, and
 	 * ending with the root.
-	 * 
-	 * Only for non-interfaces (i.e. module or channel types): to get the 
+	 *
+	 * Only for non-interfaces (i.e. module or channel types): to get the
 	 * inheritance of an interface, use getInterfaces instead.
 	 */
 	public List<INEDTypeInfo> getExtendsChain();
+
+    /**
+     * Returns the first ned element that is in the extends clause. Returns NULL
+     * if the type does not exist, if the extends clause is missing
+     * or there is a cycle in the inheritance chain.
+     */
+    public INedTypeElement getFirstExtendsRef();
 
     /**
      * Returns the list of interfaces this type locally implements.
@@ -79,7 +86,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public Set<String> getLocalInterfaces();
 
 	/**
-     * Returns the list of interfaces this type and its ancestor types and 
+     * Returns the list of interfaces this type and its ancestor types and
      * ancestor interfaces implement.
      */
     public Set<String> getInterfaces();
@@ -112,29 +119,29 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Set<String> getLocalUsedTypes();
 
 	// same as above, for inherited members as well
-    
+
     /** XXX ? */
     public Map<String, INEDElement> getMembers();
 
     /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
     public Map<String, ParamElementEx> getParamDeclarations();
 
-    /** Parameter nodes where the "value" attribute is filled in, including inherited ones; 
-     * the most recent one for each parameter 
+    /** Parameter nodes where the "value" attribute is filled in, including inherited ones;
+     * the most recent one for each parameter
      */
     public Map<String, ParamElementEx> getParamAssignments();
 
-    /** Property nodes, including inherited ones; the most recent one for each property. 
-     * (Given the special inheritance rules for properties, this may not be what you want; 
-     * see getPropertyInheritanceChain(). 
+    /** Property nodes, including inherited ones; the most recent one for each property.
+     * (Given the special inheritance rules for properties, this may not be what you want;
+     * see getPropertyInheritanceChain().
      */
     public Map<String, PropertyElement> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
     public Map<String, GateElementEx> getGateDeclarations();
 
-    /** Gate nodes where the "vector size" attribute is filled in, including inherited ones; 
-     * the most recent one for each gate 
+    /** Gate nodes where the "vector size" attribute is filled in, including inherited ones;
+     * the most recent one for each gate
      */
     public Map<String, GateElementEx> getGateSizes();
 
@@ -144,8 +151,9 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /** All submodules in this (compound module) type, including inherited ones */
     public Map<String, SubmoduleElementEx> getSubmodules();
 
-    
+
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName);
 	public List<GateElementEx> getGateInheritanceChain(String gateName);
 	public List<PropertyElement> getPropertyInheritanceChain(String propertyName);
+
 }

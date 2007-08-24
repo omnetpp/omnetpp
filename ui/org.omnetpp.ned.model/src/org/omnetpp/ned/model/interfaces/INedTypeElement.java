@@ -12,18 +12,18 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  * @author rhornig
  */
 public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParameters {
-	
+
 	/**
 	 * Returns the typeinfo belonging to this NED type. This can be trusted
 	 * to be NOT null for all NED types, including duplicate and invalid ones.
-	 * 
-	 * Only null for detached trees that haven't been seen at all by NEDResources 
-	 * (i.e. not part of any NED file).   
+	 *
+	 * Only null for detached trees that haven't been seen at all by NEDResources
+	 * (i.e. not part of any NED file).
 	 */
 	public INEDTypeInfo getNEDTypeInfo();
 
 	/**
-	 * Sets the associated component type info. To be called from the NED type 
+	 * Sets the associated component type info. To be called from the NED type
 	 * resolver (NEDResources) only.
 	 */
 	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
@@ -39,18 +39,10 @@ public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParame
     public void setFirstExtends(String name);
 
     /**
-     * Returns the TypeInfo object of the base object of this component. I.e. this method checks the base type
-     * of this element and looks up the typeinfo object to that. NOTE that this check only the
-     * FIRST extends node, so it returns the first extends child for ModuleInterface and ChannelInterface
-     * (Special handling is needed for these types)
-     */
-    public INEDTypeInfo getFirstExtendsNEDTypeInfo();
-
-    /**
      * Returns the model element that represents the base object of this element.
      *
-     * NOTE that this checks only the FIRST "extends" node, so it doesn't return full 
-     * inheritance info for ModuleInterface and ChannelInterface. 
+     * NOTE that this checks only the FIRST "extends" node, so it doesn't return full
+     * inheritance info for ModuleInterface and ChannelInterface.
      */
     public INedTypeElement getFirstExtendsRef();
 
