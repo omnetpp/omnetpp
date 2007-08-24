@@ -32,6 +32,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new GateElementEx(parent);
         if (tagname.equals(ParamElementEx.getStaticTagName()))
             return new ParamElementEx(parent);
+        if (tagname.equals(PropertyElementEx.getStaticTagName()))
+            return new PropertyElementEx(parent);
 
         return super.createElement(tagname, parent);
 	}
@@ -58,6 +60,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new GateElementEx(parent);
         if (tagcode==NED_PARAM)
             return new ParamElementEx(parent);
+        if (tagcode==NED_PROPERTY)
+            return new PropertyElementEx(parent);
 
 		return super.createElement(tagcode, parent);
 	}

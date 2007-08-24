@@ -93,10 +93,10 @@ public class PaletteManager implements INEDChangeListener {
     private static List<PaletteContainer> createSubmodulesDrawer() {
         TreeMap<String,PaletteDrawer> containerMap = new TreeMap<String, PaletteDrawer>();
 
-        // create the default
-        PaletteDrawer defDrawer
-            = new PaletteDrawer(DEFAULT_SUBMODULE_GROUP_NAME, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
-        containerMap.put(DEFAULT_SUBMODULE_GROUP_NAME, defDrawer);
+//        // create the default
+//        PaletteDrawer defDrawer
+//            = new PaletteDrawer(DEFAULT_SUBMODULE_GROUP_NAME, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+//        containerMap.put(DEFAULT_SUBMODULE_GROUP_NAME, defDrawer);
 
         // get all the possible type names in alphabetical order
         List<String> typeNames
