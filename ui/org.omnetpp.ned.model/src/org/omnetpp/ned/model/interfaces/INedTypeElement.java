@@ -6,7 +6,8 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
 
 
 /**
- * A marker interface for elements that can be used as toplevel elements
+ * An interface for elements that have type info associated and can be extended
+ * by other types. They are toplevel elements
  * in a NED file, except property definitions and includes.
  *
  * @author rhornig
@@ -23,7 +24,9 @@ public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParame
 	public INEDTypeInfo getNEDTypeInfo();
 
     /**
-     * Returns the base object's name (ONLY the first extends node name returned)
+     * Returns the base object's name (ONLY the first extends node name returned).
+     * NULL if no base object exist or the object (or its inheritance chain) is invalid
+     * (ie. contains a cycle)
      */
     public String getFirstExtends();
 

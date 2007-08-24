@@ -59,6 +59,7 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -69,16 +70,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
-import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
-import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
-import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
-import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
+import org.omnetpp.ned.editor.graph.actions.*;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -98,6 +90,7 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
@@ -228,6 +221,11 @@ public class GraphicalNedEditor
     private ExternalChangeCommand pendingExternalChangeCommand;
 
     public GraphicalNedEditor() {
+        paletteManager = new PaletteManager(this);
+        // attach the palette manager as a listener to the resource manager plugin
+        // so it will be notified if the palette should be updated
+        NEDResourcesPlugin.getNEDResources().addNEDComponentChangeListener(paletteManager);
+
         setEditDomain(new DefaultEditDomain(this));
     }
 
@@ -248,12 +246,6 @@ public class GraphicalNedEditor
 
     @Override
     protected PaletteRoot getPaletteRoot() {
-        if (paletteManager == null) {
-            paletteManager = new PaletteManager(this);
-            // attach the palette manager as a listener to the resource manager plugin
-            // so it will be notified if the palette should be updated
-            NEDResourcesPlugin.getNEDResources().addNEDComponentChangeListener(paletteManager);
-        }
         return paletteManager.getRootPalette();
     }
 
@@ -261,6 +253,12 @@ public class GraphicalNedEditor
     public void commandStackChanged(EventObject event) {
     	firePropertyChange(IEditorPart.PROP_DIRTY);
     	super.commandStackChanged(event);
+    }
+
+    @Override
+    protected void initializeGraphicalViewer() {
+        super.initializeGraphicalViewer();
+        getGraphicalViewer().setContents(getModel());
     }
 
     @SuppressWarnings({ "unchecked", "deprecation" })
@@ -380,14 +378,6 @@ public class GraphicalNedEditor
     }
 
 
-    @Override
-    protected void initializeGraphicalViewer() {
-        super.initializeGraphicalViewer();
-        // TODO revise: is this needed (setInput does this)
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
-        getGraphicalViewer().setContents(getModel());
-    }
-
     /* (non-Javadoc)
      * @see org.eclipse.gef.ui.parts.GraphicalEditor#createActions()
      * Register the used actions
@@ -503,6 +493,7 @@ public class GraphicalNedEditor
         	Assert.isTrue(NEDResourcesPlugin.getNEDResources().getConnectCount(getFile())>0);  // must be already connected
         	NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         	setModel(getNEDFileModelFromResourcesPlugin());
+        	paletteManager.refresh();
         }
     }
 
@@ -561,8 +552,11 @@ public class GraphicalNedEditor
             }
 
 			private void recordExternalChangeCommand(NEDModelEvent event) {
-				// handle possible begin..end grouping
-				if (event instanceof NEDBeginModelChangeEvent) {
+			    if (event instanceof NEDMarkerChangeEvent) {
+			        ;    // ignore this event
+			    }
+			    else if (event instanceof NEDBeginModelChangeEvent) {
+			        // handle possible begin..end grouping
 					Assert.isTrue(pendingExternalChangeCommand == null);
 					pendingExternalChangeCommand = new ExternalChangeCommand();
 				}
