@@ -36,11 +36,6 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	 */
 	public String getName();
 
-    /**
-     * Returns the resolver implementation that created this typeInfo object
-     */
-    public INEDTypeResolver getResolver();
-
 	/**
 	 * Returns underlying INEDElement subtree.
 	 */

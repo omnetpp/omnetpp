@@ -22,12 +22,6 @@ public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParame
 	 */
 	public INEDTypeInfo getNEDTypeInfo();
 
-	/**
-	 * Sets the associated component type info. To be called from the NED type
-	 * resolver (NEDResources) only.
-	 */
-	public void setNEDTypeInfo(INEDTypeInfo typeInfo);
-
     /**
      * Returns the base object's name (ONLY the first extends node name returned)
      */

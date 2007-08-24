@@ -10,14 +10,15 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -36,11 +37,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  * @author rhornig, andras
  */
 public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementConstants {
-
-	protected INEDTypeResolver resolver;
-
 	protected INedTypeElement componentNode;
-	protected IFile file;
 
 	protected int debugId = lastDebugId++;
 	protected static int lastDebugId = 0;
@@ -97,9 +94,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	 * @param nedfile file containing the definition
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
-	public NEDTypeInfo(INedTypeElement node, IFile nedfile, INEDTypeResolver res) {
-		resolver = res;
-		file = nedfile;
+	public NEDTypeInfo(INedTypeElement node) {
 		componentNode = node;
 
 		// register the created component in the INEDElement, so we will have access to it
@@ -109,16 +104,11 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		if (oldTypeInfo != null)
 			node.removeNEDChangeListener(oldTypeInfo);
 		node.addNEDChangeListener(this);
-        node.setNEDTypeInfo(this);
 
         // the inherited and local members will be collected on demand
         needsLocalUpdate = true;
 		needsUpdate = true;
 	}
-
-    public INEDTypeResolver getResolver() {
-        return resolver;
-    }
 
     /**
 	 * Collect elements (gates, params, etc) that match the predicate from the given section
@@ -298,7 +288,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 		allInterfaces.addAll(localInterfaces);
 		for (String interfaceName : localInterfaces) {
-			INEDTypeInfo typeInfo = resolver.getComponent(interfaceName);
+			INEDTypeInfo typeInfo = getResolver().getComponent(interfaceName);
 			if (typeInfo != null)
 				allInterfaces.addAll(typeInfo.getInterfaces());
 		}
@@ -369,7 +359,12 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	public IFile getNEDFile() {
-		return file;
+		NedFileElementEx nedFileElement = (NedFileElementEx)getNEDElement().getParentWithTag(NEDElementTags.NED_NED_FILE);
+		return nedFileElement==null ? null : getResolver().getFile(nedFileElement); // Note: built-in types don't have a NedFileElement parent
+	}
+
+	protected INEDTypeResolver getResolver() {
+		return NEDElement.getDefaultTypeResolver();
 	}
 
 	public INEDElement[] getNEDElementsAt(int line, int column) {

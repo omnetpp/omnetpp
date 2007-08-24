@@ -24,12 +24,12 @@ public interface INEDTypeResolver {
 	public interface IPredicate {
 		public boolean matches(INEDTypeInfo node);
 	}
-	
-    /**
-     * Mark the whole resolver invalid
-     */
-    public void invalidate();
 
+	/**
+	 * Factory method, to be called from INedTypeElement constructors.
+	 */
+	public INEDTypeInfo createTypeInfoFor(INedTypeElement node);
+	
     /**
      * Recalculate everything if the state is invalid
      */
@@ -49,6 +49,11 @@ public interface INEDTypeResolver {
 	 * @param file - must not be null
 	 */
 	public NedFileElementEx getNEDFileModel(IFile file);
+
+    /**
+     * XXX todo 
+     */
+	public IFile getFile(NedFileElementEx nedFileElement);
 
     /**
      * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text
@@ -166,13 +171,4 @@ public interface INEDTypeResolver {
 	 * Returns a component by name, or null if it does not exist.
 	 */
 	public INEDTypeInfo getComponent(String name);
-
-	/**
-	 * Creates and returns an INEDTypeInfo for the given INEDElement representing
-	 * a module type, channel type, etc. The component will NOT be registered
-	 * in the resolver. This method was created for handling inner types.
-	 */
-	//XXX probably to be revised... --Andras
-	public INEDTypeInfo wrapNEDElement(INedTypeElement componentNode);
-
 }

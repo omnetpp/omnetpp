@@ -34,10 +34,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
 
     private void init() {
         setName("Unnamed");
-    }
-
-    public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
-    	this.typeInfo = typeInfo;
+		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
     }
 
     public INEDTypeInfo getNEDTypeInfo() {

@@ -26,15 +26,14 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
 
     protected ModuleInterfaceElementEx() {
 		super();
+		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+
 	}
 
     protected ModuleInterfaceElementEx(INEDElement parent) {
 		super(parent);
+		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
 	}
-
-    public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
-    	this.typeInfo = typeInfo;
-    }
 
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;

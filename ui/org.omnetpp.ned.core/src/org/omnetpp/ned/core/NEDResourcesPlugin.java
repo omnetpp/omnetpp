@@ -17,7 +17,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.editor.EditorUtil;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.osgi.framework.BundleContext;
 
@@ -42,7 +41,6 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public NEDResourcesPlugin() {
 		plugin = this;
 		resources = new NEDResources();
-		NEDElement.setDefaultTypeResolver(resources);
 	}
 
 	/**

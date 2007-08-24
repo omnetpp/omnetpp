@@ -61,13 +61,15 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
 
 /**
  * Validates consistency of NED files.
+ * 
+ * This code assumes UNPARSED expressions, and consequently, it doesn't validate expressions at all.
  *
  * @author andras
  */
-//FIXME this validates with UNPARSED expressions only!!!
+//FIXME SyntaxValidator has to be revised -- it must NOT check anything more than syntax! 
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
-//FIXME asap: validate connection!
+//FIXME asap: validate connection! validate extends chain! 2 simple modules with the same name!!
 public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;
@@ -373,7 +375,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				case NED_CHANNEL:
 					validator.validate(child);
 					String name = child.getAttribute("name");
-					innerTypes.put(name, resolver.wrapNEDElement((INedTypeElement)child));
+					innerTypes.put(name, ((INedTypeElement)child).getNEDTypeInfo()); //FIXME typeInfo already stores this
 					members.put(name, child);
 					break;
 				default:

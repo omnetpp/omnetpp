@@ -25,14 +25,13 @@ public class ChannelInterfaceElementEx extends ChannelInterfaceElement implement
 
 	protected ChannelInterfaceElementEx() {
 		super();
+		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
 	}
 
     protected ChannelInterfaceElementEx(INEDElement parent) {
 		super(parent);
+		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
 	}
-    public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
-    	this.typeInfo = typeInfo;
-    }
 
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
