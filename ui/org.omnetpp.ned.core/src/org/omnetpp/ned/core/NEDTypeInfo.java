@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
@@ -76,6 +77,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	// sum of all local+inherited stuff
 	protected Map<String, INEDElement> allMembers = new LinkedHashMap<String, INEDElement>();
+
+    private INedTypeElement firstExtendsRef;
 
 //    // all types which extends this component
 //    protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
@@ -165,14 +168,21 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	/**
 	 * Produce a list that starts with this type, and ends with the root.
-	 * Cycles in the "extends" chain are handled gracefully.
+	 * Cycles in the "extends" chain are handled gracefully. If cycle is detected its members
+	 * are skipped from the list.
 	 */
 	protected List<INEDTypeInfo> resolveExtendsChain() {
 	    List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
 	    INEDTypeInfo currentComponent = this;
-	    while (currentComponent != null && !result.contains(currentComponent)) {
+	    while (currentComponent != null) {
+	        // if cycle detected we remove the cycle members from the tail
+	        if (result.contains(currentComponent)) {
+	            int skipPoint = result.indexOf(currentComponent);
+	            return result.subList(0, skipPoint+1);
+	        }
 	    	result.add(currentComponent);
-	    	currentComponent = currentComponent.getNEDElement().getFirstExtendsNEDTypeInfo();
+	    	String extendsName = currentComponent.getNEDElement().getFirstExtends();
+	    	currentComponent = StringUtils.isNotEmpty(extendsName) ? getResolver().getComponent(extendsName) : null;
 	    }
 	    return result;
 	}
@@ -185,7 +195,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     		return;
 
 		//long startMillis = System.currentTimeMillis();
-    	
+
         ++debugRefreshLocalCount;
         // System.out.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
@@ -268,6 +278,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
         // determine extends chain
         extendsChain = resolveExtendsChain();
+        firstExtendsRef = extendsChain.size() >= 2 ? extendsChain.get(1).getNEDElement() : null;
 
         allInterfaces.clear();
 		allProperties.clear();
@@ -282,11 +293,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
-		if (!(getNEDElement() instanceof IInterfaceTypeElement)) {
-			INEDTypeInfo directBaseType = getNEDElement().getFirstExtendsNEDTypeInfo();
-			if (directBaseType != null)
-				allInterfaces.addAll(directBaseType.getInterfaces());
-		}
+		if (!(getNEDElement() instanceof IInterfaceTypeElement) && firstExtendsRef != null)
+		    allInterfaces.addAll(firstExtendsRef.getNEDTypeInfo().getInterfaces());
+
 		allInterfaces.addAll(localInterfaces);
 		for (String interfaceName : localInterfaces) {
 			INEDTypeInfo typeInfo = resolver.getComponent(interfaceName);
@@ -313,7 +322,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 		//long dt = System.currentTimeMillis() - startMillis;
         //System.out.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
-		
+
 // Not needed:
 //        // additional tables for derived types and types using this one
 //		allDerivedTypes.clear();
@@ -383,6 +392,11 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			}
 		}
 	}
+
+    public INedTypeElement getFirstExtendsRef() {
+        refreshInheritedMembersIfNeeded();
+        return firstExtendsRef;
+    }
 
     public List<INEDTypeInfo> getExtendsChain() {
     	refreshInheritedMembersIfNeeded();
@@ -553,4 +567,5 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     	System.out.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));
     	System.out.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
     }
+
 }

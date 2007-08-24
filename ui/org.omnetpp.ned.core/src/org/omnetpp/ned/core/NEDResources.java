@@ -249,7 +249,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 					result.add(marker);
 			}
 			return result.toArray(new IMarker[]{});
-		} 
+		}
 		catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -563,7 +563,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
 
       //FIXME: validation should to be done in a delayedJob!
-       
+
         // validate the NED trees (check cross-references etc)
         Assert.isTrue(markerSync.getBaseMarkerType().equals(NEDCONSISTENCYPROBLEM_MARKERID));
         for (IFile file : nedFiles.keySet()) {
@@ -668,8 +668,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         if (event instanceof NEDModelChangeEvent) {
             // NOTE: the rehash causes NEDMarkerChangeEvent
-        	invalidate();
-            //rehash();  //FIXME factor out validate, and call it in a delayedJob!
+        	// invalidate();
+            rehash();  //FIXME factor out validate, and call it in a delayedJob!
 
             // notify component listeners (i.e. palette manager, where only the component name and
             // icon matters)
