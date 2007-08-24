@@ -19,6 +19,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
@@ -94,6 +96,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                                 nedModelChanged(event);
                             }
                         };
+                        
 
     // associate IFiles with their NEDElement trees
     private final HashMap<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
@@ -128,6 +131,16 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private boolean nedModelChangeNotificationDisabled = false;
 
 
+    private DelayedJob validationJob = new DelayedJob(400) {
+		public void run() {
+			DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
+				public void run() {
+					validateAllFiles();
+				}
+			});
+		}
+    };
+    
     /**
      * Constructor.
      */
@@ -566,8 +579,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + components.size() + " registered types");
         
-        //FIXME: validation should to be done in a delayedJob!
-        validateAllFiles();
+        // schedule a validation
+        validationJob.restartTimer();
     }
 
     /**

@@ -49,6 +49,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
@@ -638,7 +639,8 @@ public class GraphicalNedEditor
     }
 
     public boolean isActive() {
-		IEditorPart activeEditorPart = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
+		IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
 		return activeEditorPart == this ||
 			(activeEditorPart instanceof MultiPageNedEditor && ((MultiPageNedEditor)activeEditorPart).isActiveEditor(this));
 	}
