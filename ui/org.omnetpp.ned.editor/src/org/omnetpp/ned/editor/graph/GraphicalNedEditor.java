@@ -19,6 +19,9 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CommandStackEvent;
+import org.eclipse.gef.commands.CommandStackEventListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -59,7 +62,6 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -70,7 +72,16 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.*;
+import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
+import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
+import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
+import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
+import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
+import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
+import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -90,7 +101,7 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
+import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
@@ -167,7 +178,7 @@ public class GraphicalNedEditor
         @Override
         public void init(IPageSite pageSite) {
             super.init(pageSite);
-            // set a sorter that places the Base group at the beginning. the rest
+            // set a sorter that places the Base group at the beginning. The rest
             // is alphabetically sorted
             setSorter(new BasePreferrerPropertySheetSorter());
             // integrates the GEF undo/redo stack
@@ -218,7 +229,7 @@ public class GraphicalNedEditor
     // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
 
-    // storage for NED change notifications enclosed in begin..end
+    // storage for NED change notifications enclosed in begin/end
     private ExternalChangeCommand pendingExternalChangeCommand;
 
     // open NEDBeginChangeEvent notifications
@@ -232,6 +243,18 @@ public class GraphicalNedEditor
         NEDResourcesPlugin.getNEDResources().addNEDComponentChangeListener(paletteManager);
 
         setEditDomain(new DefaultEditDomain(this));
+        
+        // surround commands with begin/end notifications, so that refreshes can be optimized
+        CommandStack commandStack = getEditDomain().getCommandStack();
+        commandStack.addCommandStackEventListener(new CommandStackEventListener() {
+			public void stackChanged(CommandStackEvent event) {
+				//System.out.println((event.isPreChangeEvent() ? "begin" : event.isPostChangeEvent() ? "end" : "?") + " surrounding command with begin/end");
+				if (event.isPreChangeEvent())
+					getModel().fireModelChanged(new NEDBeginModelChangeEvent(getModel()));
+				else if (event.isPostChangeEvent())
+					getModel().fireModelChanged(new NEDEndModelChangeEvent(getModel()));
+			}
+        });
     }
 
     @Override
@@ -547,43 +570,40 @@ public class GraphicalNedEditor
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public void run() {
-            	// check if we are the originator of this event and ignore if so
-            	if (!isActive() && event.getSource() != null)
-                	recordExternalChangeCommand(event);
-
-            	reactToModelChanges(event);
-
-				// optimize refreshes: skip those between begin...end notifications
-            	if (event instanceof NEDBeginModelChangeEvent)
+				// count begin/end nesting
+				if (event instanceof NEDBeginModelChangeEvent)
 					nedBeginChangeCount++;
 				else if (event instanceof NEDEndModelChangeEvent)
 					nedBeginChangeCount--;
-            	Assert.isTrue(nedBeginChangeCount >= 0);
+				// System.out.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
+				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
+				
+            	// record NED change as external event, unless we are the originator
+            	if (!isActive() && event.getSource() != null)
+                	recordExternalChangeCommand(event);
+
+        		// "execute" (==nop) external change command after "end" (or if came without begin/end)
+            	if (nedBeginChangeCount == 0 && pendingExternalChangeCommand != null) {
+                	ExternalChangeCommand tmp = pendingExternalChangeCommand;
+                	pendingExternalChangeCommand = null;
+                	//System.out.println("executing external change command");
+            		getCommandStack().execute(tmp);
+            		//System.out.println("done executing external change command");
+        		}
+
+            	// adjust connections after submodule name change, etc
+            	reactToModelChanges(event);
+
+				// optimize refresh(): skip those between begin/end notifications
             	if (nedBeginChangeCount == 0)
             		getGraphicalViewer().getRootEditPart().refresh();
             }
 
 			private void recordExternalChangeCommand(NEDModelEvent event) {
-			    if (event instanceof NEDMarkerChangeEvent) {
-			        ;    // ignore this event
-			    }
-			    else if (event instanceof NEDBeginModelChangeEvent) {
-			        // handle possible begin..end grouping
-					Assert.isTrue(pendingExternalChangeCommand == null); // we don't support nested begin...end here (yet?)
-					pendingExternalChangeCommand = new ExternalChangeCommand();
-				}
-	 			else if (event instanceof NEDEndModelChangeEvent) {
-					getCommandStack().execute(pendingExternalChangeCommand);
-					pendingExternalChangeCommand = null;
-				}
-				else if (pendingExternalChangeCommand == null) {
-					// no grouping
-					ExternalChangeCommand command = new ExternalChangeCommand();
-					command.addEvent(event);
-					getCommandStack().execute(command);
-				}
-				else {
-					// add to group
+				if (event instanceof NEDModelChangeEvent) {
+					if (pendingExternalChangeCommand == null)
+						pendingExternalChangeCommand = new ExternalChangeCommand();
+					System.out.println("adding " + event + " to current external change command");
 					pendingExternalChangeCommand.addEvent(event);
 				}
 			}

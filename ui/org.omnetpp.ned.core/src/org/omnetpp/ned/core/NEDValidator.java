@@ -364,22 +364,12 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	@Override
     protected void validateElement(TypesElement node) {
 		for (INEDElement child : node) {
-			NEDValidator validator = new NEDValidator(resolver, errors);
-			switch (child.getTagCode()) {
-				case NED_COMMENT:
-					break;
-				case NED_SIMPLE_MODULE:
-				case NED_MODULE_INTERFACE:
-				case NED_COMPOUND_MODULE:
-				case NED_CHANNEL_INTERFACE:
-				case NED_CHANNEL:
-					validator.validate(child);
-					String name = child.getAttribute("name");
-					innerTypes.put(name, ((INedTypeElement)child).getNEDTypeInfo()); //FIXME typeInfo already stores this
-					members.put(name, child);
-					break;
-				default:
-					Assert.isTrue(false, "unexpected element type: "+child.getTagName());
+			if (child instanceof INedTypeElement) {
+				INedTypeElement typeElement = (INedTypeElement)child;
+				new NEDValidator(resolver, errors).validate(child);
+				String name = typeElement.getName();
+				innerTypes.put(name, typeElement.getNEDTypeInfo()); //FIXME typeInfo already stores this
+				members.put(name, child);
 			}
 		}
 	}

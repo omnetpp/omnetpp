@@ -28,16 +28,16 @@ public class NEDModelEvent {
         return source;
     }
 
-    @Override
-    public String toString() {
-        return "EVENT: " + serial + " FROM: " + source;
-    }
-
     /**
      * Returns the unique serial number of the event. (Serial numbers increase
      * as new events are created.)
      */
     public long getSerial() {
         return serial;
+    }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + " #" + serial + " from: " + source;
     }
 }

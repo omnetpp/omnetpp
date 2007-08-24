@@ -47,7 +47,7 @@ public class NEDStructuralChangeEvent extends NEDModelChangeEvent {
 
     /**
      * Returns the location of the change. (The new child was removed before this node,
-     * or was removed at the end if it's NULL.
+     * or was removed at the end if it's null.)
      */
     public INEDElement getOldLocation() {
         return oldLocation;
@@ -55,7 +55,7 @@ public class NEDStructuralChangeEvent extends NEDModelChangeEvent {
 
     /**
      * Returns the location of the change. (The new child was added before this node,
-     * or was appended at the end if it's NULL)
+     * or was appended at the end if it's null.)
      */
     public INEDElement getNewLocation() {
         return newLocation;
@@ -70,8 +70,6 @@ public class NEDStructuralChangeEvent extends NEDModelChangeEvent {
 
     @Override
     public String toString() {
-        String nameString = child.getAttribute("name");
-        return super.toString()+" "+type.name()+" of child: "+child.getTagName() +
-                    ((nameString != null) ? " "+nameString : "");
+        return super.toString() + " " + type.name() + " of child: " + child.toString();
     }
 }

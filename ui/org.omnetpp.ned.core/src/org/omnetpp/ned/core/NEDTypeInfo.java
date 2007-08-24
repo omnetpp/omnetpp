@@ -28,6 +28,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.PropertyElement;
 
@@ -129,8 +130,10 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected void collectInheritance(Set<String> set, int tagCode) {
 		Assert.isTrue(tagCode==NED_INTERFACE_NAME || tagCode==NED_EXTENDS);
 		for (INEDElement child : getNEDElement())
-			if (child.getTagCode()==tagCode)
-				set.add(child.getAttribute(ExtendsElement.ATT_NAME));
+			if (child instanceof InterfaceNameElement)
+				set.add(((InterfaceNameElement)child).getName());
+			else if (child instanceof ExtendsElement)
+				set.add(((ExtendsElement)child).getName());
 	}
 
 	/**

@@ -42,6 +42,7 @@ import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
@@ -51,10 +52,8 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  *
  * @author rhornig
  */
-public class TextualNedEditor
-	extends TextEditor
-	implements INEDChangeListener
-{
+public class TextualNedEditor extends TextEditor implements INEDChangeListener {
+	
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
 
 	private static boolean pushingChanges;
@@ -349,9 +348,9 @@ public class TextualNedEditor
 	}
 
     public void modelChanged(NEDModelEvent event) {
-    	if (!pushingChanges) {
+    	if (event instanceof NEDMarkerChangeEvent && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
 			INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
-	
+
 			if (nedFileElement == null || nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
 				pullChangesJob.restartTimer();
     	}
@@ -395,6 +394,7 @@ public class TextualNedEditor
 		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
 			public synchronized void run() {
 				Assert.isTrue(Display.getCurrent() != null);
+				System.out.println("texteditor: pulling changes from NEDResources");
 				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
 						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getNEDSource());
 				//XXX then parse in again, and update line numbers with the resulting tree?
