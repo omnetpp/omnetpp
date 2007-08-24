@@ -24,6 +24,7 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
     private IFile file;
 	private String markerType;
     private ProblemMarkerSynchronizer markerSync;
+    private int problemsAdded = 0;
 
     public NEDMarkerErrorStore(IFile file, ProblemMarkerSynchronizer markerSync) {
     	this(file, markerSync, markerSync.getBaseMarkerType());
@@ -59,6 +60,7 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
 
 	public void add(int severity, INEDElement context, int line, String message) {
 		Assert.isNotNull(context);
+        problemsAdded++;
 
 		// create would-be marker
 		Map<String, Object> markerAttrs = new HashMap<String, Object>();
@@ -75,6 +77,10 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
         	context.consistencyProblemMarkerAdded(severity);
         else
         	throw new IllegalArgumentException(); // wrong marker type
+    }
+
+	public int getNumProblems() {
+		return problemsAdded;
 	}
 
 }

@@ -25,7 +25,8 @@ public class NEDTreeDifferenceUtils {
 	 * Applies changes identified by the tree diff algorithm to the tree. 
 	 */
 	public interface IApplier {
-		public void replaceSourceLocation(INEDElement element, String sourceLocation, NEDSourceRegion sourceRegion);
+		public void replaceNonAttributeData(INEDElement element, String sourceLocation, NEDSourceRegion sourceRegion, 
+				int syntaxProblemMaxLocalSeverity, int consistencyProblemMaxLocalSeverity);
 
 		public void replaceElements(INEDElement parent, int start, int end, int offset, INEDElement[] replacement);
 
@@ -35,7 +36,8 @@ public class NEDTreeDifferenceUtils {
 	@SuppressWarnings("unchecked")
 	public static void applyTreeDifferences(INEDElement original, INEDElement target, IApplier applier) {
 		applyAttributeDifferences(original, target, applier);
-		applier.replaceSourceLocation(original, target.getSourceLocation(), target.getSourceRegion());
+		applier.replaceNonAttributeData(original, target.getSourceLocation(), target.getSourceRegion(),
+				target.getSyntaxProblemMaxLocalSeverity(), target.getConsistencyProblemMaxLocalSeverity()); 
 
 		NEDElementChildrenComparator comparatorOriginal = new NEDElementChildrenComparator(original);
 		NEDElementChildrenComparator comparatorTarget = new NEDElementChildrenComparator(target);
@@ -66,7 +68,7 @@ public class NEDTreeDifferenceUtils {
 				offset += difference.rightLength() - difference.leftLength();
 			}
 			else
-				throw new RuntimeException("Unkown difference kind");
+				throw new RuntimeException("Unknown difference kind");
 		}
 	}
 
@@ -88,16 +90,19 @@ public class NEDTreeDifferenceUtils {
 		final ArrayList<Runnable> runnables = new ArrayList<Runnable>();
 		
 		// statistics, for debugging
-		private int numSourceLocationChanges = 0;
+		private int numNonAttributeDataChanges = 0;
 		private int numAttributeChanges = 0;
 		private int numElementReplacements = 0;
 
-		public void replaceSourceLocation(final INEDElement element, final String sourceLocation, final NEDSourceRegion sourceRegion) {
-			numSourceLocationChanges++;
+		public void replaceNonAttributeData(final INEDElement element, final String sourceLocation, final NEDSourceRegion sourceRegion,
+				final int syntaxProblemMaxLocalSeverity, final int consistencyProblemMaxLocalSeverity) {
+			numNonAttributeDataChanges++;
 			runnables.add(new Runnable() {
 				public void run() {
 					element.setSourceLocation(sourceLocation);
 					element.setSourceRegion(sourceRegion);
+					element.setSyntaxProblemMaxLocalSeverity(syntaxProblemMaxLocalSeverity);
+					element.setConsistencyProblemMaxLocalSeverity(consistencyProblemMaxLocalSeverity);
 				}
 			});
 		}
@@ -139,7 +144,7 @@ public class NEDTreeDifferenceUtils {
 		public String toString() {
 			return "element replacements: " + numElementReplacements +
 				   ", attribute changes: " + numAttributeChanges +
-			       ", source location changes: " + numSourceLocationChanges; 
+			       ", srcloc/markers: " + numNonAttributeDataChanges; 
 		}
 	}
 
@@ -229,6 +234,7 @@ class NEDTreeDifferenceTest {
 				public void addWarning(INEDElement context, String message) {}
 				public void addWarning(INEDElement context, int line, String message) {}
 				public void add(int severity, INEDElement context, int line, String message) {}
+				public int getNumProblems() {return 0;}
 			});
 			test(original);
 		}

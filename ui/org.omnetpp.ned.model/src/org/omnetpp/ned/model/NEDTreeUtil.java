@@ -129,7 +129,8 @@ public class NEDTreeUtil {
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails basic validation, even after repairs");
 
 			// convert tree to pure Java objects
-			INEDElement pojoTree = doSwig2pojo(swigTree, null, swigErrors, errors);
+			INEDElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
+			Assert.isTrue(swigErrors.numMessages() == errors.getNumProblems(), "problems lost in translation");
 
 			// System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
 

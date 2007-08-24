@@ -11,5 +11,5 @@ public interface INEDErrorStore {
 	public void addWarning(INEDElement context, String message);
 	public void addWarning(INEDElement context, int line, String message);
 	public void add(int severity, INEDElement context, int line, String message);
-
+	public int getNumProblems();
 }

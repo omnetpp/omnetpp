@@ -41,10 +41,10 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected INedTypeElement componentNode;
 	protected IFile file;
 
-	private int debugId = lastDebugId++;
-	private static int lastDebugId = 0;
-	private static int debugRefreshInheritedCount = 0;
-	private static int debugRefreshLocalCount = 0;
+	protected int debugId = lastDebugId++;
+	protected static int lastDebugId = 0;
+	protected static int debugRefreshInheritedCount = 0;
+	protected static int debugRefreshLocalCount = 0;
 
 	// local stuff
     protected boolean needsLocalUpdate;
@@ -184,6 +184,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     	if (!needsLocalUpdate)
     		return;
 
+		//long startMillis = System.currentTimeMillis();
+    	
         ++debugRefreshLocalCount;
         // System.out.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
@@ -243,6 +245,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         collectTypesInCompoundModule(localUsedTypes);
 
         needsLocalUpdate = false;
+
+		//long dt = System.currentTimeMillis() - startMillis;
+        //System.out.println("typeInfo " + getName() + " refreshLocalMembers(): " + dt + "ms");
     }
 
 	/**
@@ -251,6 +256,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected void refreshInheritedMembersIfNeeded() {
 		if (!needsUpdate)
 			return;
+
+        //long startMillis = System.currentTimeMillis();
 
         ++debugRefreshInheritedCount;
         // System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
@@ -304,6 +311,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			allUsedTypes.addAll(component.getLocalUsedTypes());
 		}
 
+		//long dt = System.currentTimeMillis() - startMillis;
+        //System.out.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
+		
 // Not needed:
 //        // additional tables for derived types and types using this one
 //		allDerivedTypes.clear();

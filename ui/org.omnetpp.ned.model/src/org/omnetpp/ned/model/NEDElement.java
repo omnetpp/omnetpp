@@ -428,6 +428,11 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         for (int i = 0; i < getNumAttributes(); ++i)
         	cloned.setAttribute(i, getAttribute(i));
 
+    	cloned.setSourceLocation(getSourceLocation());
+    	cloned.setSourceRegion(getSourceRegion());
+    	cloned.setSyntaxProblemMaxLocalSeverity(getSyntaxProblemMaxLocalSeverity());
+    	cloned.setConsistencyProblemMaxLocalSeverity(getConsistencyProblemMaxLocalSeverity());
+        
         return cloned;
     }
 
@@ -564,6 +569,20 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 
     public void consistencyProblemMarkerAdded(int severity) {
     	if (consistencyProblemMaxLocalSeverity < severity) {
+    		consistencyProblemMaxLocalSeverity = severity;
+    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    	}
+    }
+
+    public void setSyntaxProblemMaxLocalSeverity(int severity) {
+    	if (syntaxProblemMaxLocalSeverity != severity) {
+    		syntaxProblemMaxLocalSeverity = severity;
+    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    	}
+    }
+
+    public void setConsistencyProblemMaxLocalSeverity(int severity) {
+    	if (consistencyProblemMaxLocalSeverity != severity) {
     		consistencyProblemMaxLocalSeverity = severity;
     		fireModelChanged(new NEDMarkerChangeEvent(this));
     	}

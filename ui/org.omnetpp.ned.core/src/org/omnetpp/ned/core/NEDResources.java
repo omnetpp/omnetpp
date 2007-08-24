@@ -54,6 +54,7 @@ import org.omnetpp.ned.model.pojo.*;
  * @author andras
  */
 //FIXME this has to be called from somewhere!!! nedFiles.get(file).clearSyntaxProblemMarkerSeverities();
+//FIXME: validation should to be done in a delayedJob!
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // filters for component access with getAllComponentsFilteredBy
@@ -561,6 +562,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             components.remove(dupName);
         }
 
+      //FIXME: validation should to be done in a delayedJob!
+       
         // validate the NED trees (check cross-references etc)
         Assert.isTrue(markerSync.getBaseMarkerType().equals(NEDCONSISTENCYPROBLEM_MARKERID));
         for (IFile file : nedFiles.keySet()) {
@@ -571,6 +574,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehashIfNeeded(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
+        System.out.println("typeinfo: refreshLocal:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInherited:" + NEDTypeInfo.debugRefreshInheritedCount);
 
         // we need to do the synchronization in a background job, to avoid deadlocks
         markerSync.runAsWorkspaceJob();
@@ -664,7 +668,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         if (event instanceof NEDModelChangeEvent) {
             // NOTE: the rehash causes NEDMarkerChangeEvent
-            rehash();
+        	invalidate();
+            //rehash();  //FIXME factor out validate, and call it in a delayedJob!
 
             // notify component listeners (i.e. palette manager, where only the component name and
             // icon matters)

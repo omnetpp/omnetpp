@@ -58,7 +58,6 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -69,7 +68,16 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.*;
+import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
+import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
+import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
+import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
+import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
+import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
+import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -263,8 +271,13 @@ public class GraphicalNedEditor
         ScalableRootEditPart root = new ScalableRootEditPart() {
         	@Override
         	protected void refreshChildren() {
-        		for (EditPart editPart : (List<EditPart>)getChildren())
+                long startMillis = System.currentTimeMillis();
+
+                for (EditPart editPart : (List<EditPart>)getChildren())
         			editPart.refresh();
+
+        		long dt = System.currentTimeMillis() - startMillis;
+                System.out.println("graphicalViewer refresh(): " + dt + "ms");
         	}
         };
 
@@ -671,6 +684,13 @@ public class GraphicalNedEditor
 			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
 			hoverText += "<br/><br/>" + StringUtils.makeHtmlDocu(typeComment);
 		}
+
+		//debug code:
+		//hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
+		//			", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
+		//INEDElement fileElement = element.getParentWithTag(NEDElementTags.NED_NED_FILE);
+		//hoverText += "<br/><br/>" + "File: SyntaxProblemMaxCumulatedSeverity:" + fileElement.getSyntaxProblemMaxCumulatedSeverity() +
+		//", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
 
 		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
 		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + StringUtils.quoteForHtml(nedCode) + "</pre>";
