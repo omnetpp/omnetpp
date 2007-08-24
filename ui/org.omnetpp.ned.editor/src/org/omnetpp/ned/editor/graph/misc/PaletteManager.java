@@ -54,7 +54,7 @@ public class PaletteManager implements INEDChangeListener {
 
     protected GraphicalNedEditor hostingEditor;
     protected PaletteRoot nedPalette = new PaletteRoot();
-    protected PaletteContainer componentsDrawer;
+    protected PaletteContainer typesDrawer;
     protected DelayedJob paletteUpdaterJob = new DelayedJob(200) {
         public void run() {
             buildPalette();
@@ -64,7 +64,7 @@ public class PaletteManager implements INEDChangeListener {
     public PaletteManager(GraphicalNedEditor hostingEditor) {
         super();
         this.hostingEditor = hostingEditor;
-        componentsDrawer = createComponentsDrawer();
+        typesDrawer = createTypesDrawer();
         buildPalette();
     }
 
@@ -91,14 +91,16 @@ public class PaletteManager implements INEDChangeListener {
     public void buildPalette() {
         nedPalette.getChildren().clear();
         nedPalette.add(createToolsDrawer(nedPalette));
-        nedPalette.add(componentsDrawer);
+        nedPalette.add(typesDrawer);
+
         IFileEditorInput feinput = ((IFileEditorInput)hostingEditor.getEditorInput());
         if (feinput != null) {
             PaletteContainer localTypeDrawer = createInnerTypesDrawer(feinput.getFile());
             if (localTypeDrawer != null && localTypeDrawer.getChildren().size()>0)
                 nedPalette.add(localTypeDrawer);
         }
-        nedPalette.addAll(createSubmodulesDrawers());
+        List<PaletteContainer> submodulesDrawers = createSubmodulesDrawers();
+        nedPalette.addAll(submodulesDrawers);
     }
 
     /**
@@ -279,65 +281,55 @@ public class PaletteManager implements INEDChangeListener {
      * Builds a drawer containing base NED components without specifying types like
      * simple and compound modules
      */
-    private static PaletteContainer createComponentsDrawer() {
+    private static PaletteContainer createTypesDrawer() {
 
-        PaletteGroup drawer = new PaletteGroup("Components");
+        PaletteDrawer drawer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));;
+        drawer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
 
-        CombinedTemplateCreationEntry combined;
-
-        combined = new CombinedTemplateCreationEntry(
-        		"Submodule",
-        		"Create a submodule in a compound module",
-        		new ModelFactory(SubmoduleElementEx.getStaticTagName(), SubmoduleElementEx.DEFAULT_NAME, SubmoduleElementEx.DEFAULT_TYPE),
-        		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE),
-        		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE)
-        );
-        drawer.add(combined);
-
-        combined = new CombinedTemplateCreationEntry(
+         CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
                 "Simple"+NBSP+"module",
                 "Create a simple module type",
                 new ModelFactory(SimpleModuleElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
-        drawer.add(combined);
+        drawer.add(entry);
 
-        combined = new CombinedTemplateCreationEntry(
+        entry = new CombinedTemplateCreationEntry(
                 "Compound"+NBSP+"Module",
                 "Create a compound module type that may contain submodules",
                 new ModelFactory(CompoundModuleElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
-        drawer.add(combined);
+        drawer.add(entry);
 
-        combined = new CombinedTemplateCreationEntry(
+        entry = new CombinedTemplateCreationEntry(
                 "Channel",
                 "Create a channel type",
                 new ModelFactory(ChannelElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
-        drawer.add(combined);
+        drawer.add(entry);
 
-        combined = new CombinedTemplateCreationEntry(
+        entry = new CombinedTemplateCreationEntry(
         		"Module"+NBSP+"Interface",
         		"Create a module interface type",
         		new ModelFactory(ModuleInterfaceElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
-        drawer.add(combined);
+        drawer.add(entry);
 
-        combined = new CombinedTemplateCreationEntry(
+        entry = new CombinedTemplateCreationEntry(
                 "Channel"+NBSP+"Interface",
                 "Create a channel interface type",
                 new ModelFactory(ChannelInterfaceElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
-        drawer.add(combined);
+        drawer.add(entry);
 
         return drawer;
     }
