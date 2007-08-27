@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -90,7 +89,8 @@ public class MultiPageNedEditor
 
 			public void partActivated(IWorkbenchPart part) {
 				// when switching from another editor to this, we need to immediately pull the changes
-				if (getActivePage() == textPageIndex && graphEditor.hasContentChanged())
+				NedFileElementEx nedFileElement = getNEDFileElement();
+				if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
 					textEditor.pullChangesFromNEDResources();
 			}
 
@@ -187,9 +187,7 @@ public class MultiPageNedEditor
 	 * (Consistency errors are allowed).
 	 */
 	protected boolean maySwitchToGraphicalEditor() {
-        IFile file = ((FileEditorInput)getEditorInput()).getFile();
-		NedFileElementEx nedFileElement = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
-		return nedFileElement.getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
+		return getNEDFileElement().getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
 	}
 
 	@Override
@@ -237,7 +235,8 @@ public class MultiPageNedEditor
 		// switch from graphics to text:
         if (newPageIndex == textPageIndex) {
         	// generate text representation from the model NOW
-            if (graphEditor.hasContentChanged()) {
+            NedFileElementEx nedFileElement = getNEDFileElement();
+            if (graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
                 textEditor.pullChangesFromNEDResources();
                 textEditor.markContent();
             }
@@ -268,19 +267,6 @@ public class MultiPageNedEditor
 	        }
             if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
-
-            // only start in graphics mode if there's no parse error in the file
-            if (!maySwitchToGraphicalEditor()) {
-                // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
-				// parse error: switch back immediately to text view (we should never have
-				// switched away from it in the first place)
-				setActivePage(textPageIndex);
-
-				if (!initPhase) {
-		            MessageDialog.openError(Display.getDefault().getActiveShell(), "Error",
-		                    "The editor contents has errors, switching is not possible. Please fix the errors first.");
-	            }
-			}
 		}
 		else
 			throw new RuntimeException("Unknown page index");
@@ -294,7 +280,8 @@ public class MultiPageNedEditor
      * If we are in a graphical mode it generates the text version and puts it into the text editor.
      */
     private void prepareForSave() {
-        if (getActivePage() == graphPageIndex) {
+        NedFileElementEx nedFileElement = getNEDFileElement();
+		if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
             textEditor.pullChangesFromNEDResources();
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
@@ -451,7 +438,15 @@ public class MultiPageNedEditor
     public TextualNedEditor getTextEditor() {
         return textEditor;
     }
+
+    public IFile getFile() {
+		return ((FileEditorInput)getEditorInput()).getFile();
+	}
     
+    public NedFileElementEx getNEDFileElement() {
+    	return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+    }
+
     public boolean isActiveEditor(IEditorPart editorPart) {
     	return getActiveEditor() == editorPart;
     }

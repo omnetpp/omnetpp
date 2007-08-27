@@ -476,7 +476,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		getListeners().remove(listener);
 	}
 
-    public void fireModelChanged(NEDModelEvent event) {
+    public void fireModelEvent(NEDModelEvent event) {
     	// invalidate cached data
     	source = null; 
     	syntaxProblemMaxCumulatedSeverity = SEVERITY_INVALID;
@@ -487,7 +487,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         	listeners.fireModelChanged(event);
 
         if (parent != null)
-        	parent.fireModelChanged(event);
+        	parent.fireModelEvent(event);
     }
 
     /**
@@ -495,7 +495,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
      * this element was changed.
      */
     protected void fireAttributeChanged(String attr, Object newValue, Object oldValue) {
-    	fireModelChanged(new NEDAttributeChangeEvent(this, attr, newValue, oldValue));
+    	fireModelEvent(new NEDAttributeChangeEvent(this, attr, newValue, oldValue));
     }
 
     /**
@@ -503,7 +503,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
      * inserted into this element.
      */
     protected void fireChildInsertedBefore(INEDElement child, INEDElement where) {
-    	fireModelChanged(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null));
+    	fireModelEvent(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null));
     }
 
     /**
@@ -511,7 +511,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
      * removed from this element.
      */
     protected void fireChildRemoved(INEDElement child) {
-    	fireModelChanged(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling()));
+    	fireModelEvent(new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling()));
     }
 
     /* (non-Javadoc)
@@ -540,7 +540,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public void clearSyntaxProblemMarkerSeverities() {
     	if (syntaxProblemMaxLocalSeverity != SEVERITY_NONE) {
     		syntaxProblemMaxLocalSeverity = SEVERITY_NONE;
-        	fireModelChanged(new NEDMarkerChangeEvent(this));
+        	fireModelEvent(new NEDMarkerChangeEvent(this));
     	}
     	for (INEDElement child : this)
     		child.clearSyntaxProblemMarkerSeverities();
@@ -549,7 +549,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public void clearConsistencyProblemMarkerSeverities() {
     	if (consistencyProblemMaxLocalSeverity != SEVERITY_NONE) {
     		consistencyProblemMaxLocalSeverity = SEVERITY_NONE;
-        	fireModelChanged(new NEDMarkerChangeEvent(this));
+        	fireModelEvent(new NEDMarkerChangeEvent(this));
     	}
     	for (INEDElement child : this)
     		child.clearConsistencyProblemMarkerSeverities();
@@ -563,28 +563,28 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public void syntaxProblemMarkerAdded(int severity) {
     	if (syntaxProblemMaxLocalSeverity < severity) {
     		syntaxProblemMaxLocalSeverity = severity;
-    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    		fireModelEvent(new NEDMarkerChangeEvent(this));
     	}
     }
 
     public void consistencyProblemMarkerAdded(int severity) {
     	if (consistencyProblemMaxLocalSeverity < severity) {
     		consistencyProblemMaxLocalSeverity = severity;
-    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    		fireModelEvent(new NEDMarkerChangeEvent(this));
     	}
     }
 
     public void setSyntaxProblemMaxLocalSeverity(int severity) {
     	if (syntaxProblemMaxLocalSeverity != severity) {
     		syntaxProblemMaxLocalSeverity = severity;
-    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    		fireModelEvent(new NEDMarkerChangeEvent(this));
     	}
     }
 
     public void setConsistencyProblemMaxLocalSeverity(int severity) {
     	if (consistencyProblemMaxLocalSeverity != severity) {
     		consistencyProblemMaxLocalSeverity = severity;
-    		fireModelChanged(new NEDMarkerChangeEvent(this));
+    		fireModelEvent(new NEDMarkerChangeEvent(this));
     	}
     }
 

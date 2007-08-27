@@ -42,11 +42,11 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     @Override
-    public void fireModelChanged(NEDModelEvent event) {
+    public void fireModelEvent(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
     	if (!NEDElementUtilEx.isDisplayStringUpToDate(displayString, this))
     		displayString = null;
-    	super.fireModelChanged(event);
+    	super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {

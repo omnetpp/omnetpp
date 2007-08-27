@@ -2,10 +2,9 @@ package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.ToolbarLayout;
-import org.eclipse.draw2d.geometry.Insets;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.color.ColorFactory;
 
@@ -26,21 +25,19 @@ public class NedFileFigure extends Figure {
         fl.setStretchMinorAxis(false);
         fl.setSpacing(20);
         setLayoutManager(fl);
-        MarginBorder marginBorder = new MarginBorder(10) {
-        	@Override
-        	public void paint(IFigure figure, Graphics graphics, Insets insets) {
-        		super.paint(figure, graphics, insets);
-        		
-        		if (problemMessage != null) {
-        			graphics.setForegroundColor(ColorFactory.RED);
-        			graphics.setLineWidth(8);
-        			graphics.drawLine(0,0, 0, getSize().height);
-        		}
-        	}
-        };
+        MarginBorder marginBorder = new MarginBorder(10);
 		setBorder(marginBorder);
     }
 
+	@Override
+	public void paint(Graphics graphics) {
+		super.paint(graphics);
+
+		graphics.setBackgroundColor(problemMessage != null ? ColorFactory.RED : getBackgroundColor());
+		Rectangle r = getBounds();
+		graphics.fillRectangle(r.x, r.y, r.x + 12, r.y + r.height);
+	}
+	
     public void setProblemMessage(String problemMessage) {
     	this.problemMessage = problemMessage;
 		if (problemMessage == null)

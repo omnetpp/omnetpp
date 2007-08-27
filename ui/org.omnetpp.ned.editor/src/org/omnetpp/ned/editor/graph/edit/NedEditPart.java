@@ -4,6 +4,8 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
@@ -73,6 +75,11 @@ abstract public class NedEditPart
             return ((IReadOnlySupport)getParent()).isEditable();
         // otherwise edit is possible
         return true;
+    }
+    
+    @Override
+    public Command getCommand(Request request) {
+    	return isEditable() ? super.getCommand(request) : UnexecutableCommand.INSTANCE;
     }
 
     /* (non-Javadoc)

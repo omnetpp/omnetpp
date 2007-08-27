@@ -242,7 +242,29 @@ public class GraphicalNedEditor
         // so it will be notified if the palette should be updated
         NEDResourcesPlugin.getNEDResources().addNEDComponentChangeListener(paletteManager);
 
-        setEditDomain(new DefaultEditDomain(this));
+        DefaultEditDomain editDomain = new DefaultEditDomain(this);
+        editDomain.setCommandStack(new CommandStack() {
+        	private boolean isModelEditable() {
+        		return !nedFileModel.isReadOnly() && !nedFileModel.hasSyntaxError();
+        	}
+
+        	@Override
+        	public void execute(Command command) {
+        		if (isModelEditable())
+        			super.execute(command);
+        	}
+
+        	@Override
+        	public boolean canUndo() {
+        		return super.canUndo() && isModelEditable();
+        	}
+        	
+        	@Override
+        	public boolean canRedo() {
+        		return super.canRedo() && isModelEditable();
+        	}
+        });
+        setEditDomain(editDomain);
         
         // surround commands with begin/end notifications, so that refreshes can be optimized
         CommandStack commandStack = getEditDomain().getCommandStack();
@@ -250,9 +272,9 @@ public class GraphicalNedEditor
 			public void stackChanged(CommandStackEvent event) {
 				//System.out.println((event.isPreChangeEvent() ? "begin" : event.isPostChangeEvent() ? "end" : "?") + " surrounding command with begin/end");
 				if (event.isPreChangeEvent())
-					getModel().fireModelChanged(new NEDBeginModelChangeEvent(getModel()));
+					getModel().fireModelEvent(new NEDBeginModelChangeEvent(getModel()));
 				else if (event.isPostChangeEvent())
-					getModel().fireModelChanged(new NEDEndModelChangeEvent(getModel()));
+					getModel().fireModelEvent(new NEDEndModelChangeEvent(getModel()));
 			}
         });
     }

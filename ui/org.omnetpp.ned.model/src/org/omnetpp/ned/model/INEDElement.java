@@ -338,7 +338,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * Fires a model change element (forwards it to the listener list if any)
 	 * and propagates it up to the parent.
 	 */
-	public void fireModelChanged(NEDModelEvent event);
+	public void fireModelEvent(NEDModelEvent event);
 
 	/**
 	 * Returns the banner comment belonging to the element (if any)

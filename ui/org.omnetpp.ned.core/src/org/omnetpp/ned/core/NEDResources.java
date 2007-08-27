@@ -246,7 +246,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * @param text - the textual content of the ned file
      */
     public synchronized void setNEDFileText(IFile file, String text) {
-        INEDElement currentTree = getNEDFileModel(file);
+        NedFileElementEx currentTree = getNEDFileModel(file);
 
         // parse
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDSYNTAXPROBLEM_MARKERID);
@@ -254,21 +254,29 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
         INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errorStore, file.getLocation().toOSString());
 
-        NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
-        NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
+        if (targetTree.getSyntaxProblemMaxCumulatedSeverity() == INedTypeElement.SEVERITY_NONE) {
+        	NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
+	        NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
+	
+	        if (treeDifferenceApplier.hasDifferences()) {
+	        	// push tree differences into the official tree
+	        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
+		        currentTree.fireModelEvent(new NEDBeginModelChangeEvent(currentTree));
+		        treeDifferenceApplier.apply();
+		        currentTree.fireModelEvent(new NEDEndModelChangeEvent(currentTree));
 
-        if (treeDifferenceApplier.hasDifferences()) {
-        	// push tree differences into the official tree
-        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
-	        currentTree.fireModelChanged(new NEDBeginModelChangeEvent(currentTree));
-	        treeDifferenceApplier.apply();
-	        currentTree.fireModelChanged(new NEDEndModelChangeEvent(currentTree));
+		        // perform marker synchronization in a background job, to avoid deadlocks
+		        markerSync.runAsWorkspaceJob();
+	
+		        // force rehash now, so that validation errors appear immediately
+		        rehash();
+	        }
+        }
+        else {
+        	currentTree.setSyntaxProblemMaxLocalSeverity(IMarker.SEVERITY_ERROR);
 
 	        // perform marker synchronization in a background job, to avoid deadlocks
 	        markerSync.runAsWorkspaceJob();
-
-	        // force rehash now, so that validation errors appear immediately
-	        rehash();
         }
     }
 
