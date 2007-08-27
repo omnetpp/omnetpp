@@ -1,6 +1,8 @@
 package org.omnetpp.ned.editor.graph.actions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
@@ -9,14 +11,12 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.ui.actions.Clipboard;
 import org.eclipse.gef.ui.actions.SelectionAction;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -37,111 +37,129 @@ import org.omnetpp.ned.model.pojo.SubmodulesElement;
  */
 //FIXME as retargetAction!
 public class PasteAction extends SelectionAction {
-    public static final String ID = ActionFactory.PASTE.getId();
-    public static final String MENUNAME = "Paste";
-    public static final String TOOLTIP = "Paste from clipboard";
+	public static final String ID = ActionFactory.PASTE.getId();
+	public static final String MENUNAME = "Paste";
+	public static final String TOOLTIP = "Paste from clipboard";
 
-    public PasteAction(IWorkbenchPart part) {
-        super(part);
-        setText(MENUNAME);
-        setId(ID);
-        setToolTipText(TOOLTIP);
-        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-    	setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-    	setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE_DISABLED));
-    }
+	public PasteAction(IWorkbenchPart part) {
+		super(part);
+		setText(MENUNAME);
+		setId(ID);
+		setToolTipText(TOOLTIP);
+		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+		setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+		setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE_DISABLED));
+	}
 
-    @Override
-    protected boolean calculateEnabled() {
-    	//XXX getCommand().canExecute() ?
-        Object contents = Clipboard.getDefault().getContents();
-        return contents instanceof INEDElement[];
-    }
+	@Override
+	protected boolean calculateEnabled() {
+		//XXX getCommand().canExecute() ?
+		Object contents = Clipboard.getDefault().getContents();
+		return contents instanceof INEDElement[];
+	}
 
 	@Override @SuppressWarnings("unchecked")
-    public void run() {
+	public void run() {
 		Command command = getCommand();
 		if (command.canExecute())
 			execute(command);
-    }
+	}
 
-    /**
-     * Returns the command used for pasting the objects
-     */
-    protected Command getCommand() {
-        Object contents = Clipboard.getDefault().getContents();
-        if (contents instanceof INEDElement[]) {
-        	CompoundCommand result = new CompoundCommand();
+	/**
+	 * Returns the command for pasting the objects
+	 */
+	protected Command getCommand() {
+		Object contents = Clipboard.getDefault().getContents();
+		if (contents instanceof INEDElement[]) {
+			CompoundCommand compoundCommand = new CompoundCommand();
 
-            GraphicalViewer viewer = (GraphicalViewer)getWorkbenchPart().getAdapter(GraphicalViewer.class);
-            EditPart toplevelEditPart = viewer.getContents();
-//            // or we check if there is a selection. in this case parent is the compound module
-//            // in which the selection is present
-//            List selection = viewer.getSelectedEditParts();
-//            if (selection.size() > 0 && selection.get(0) instanceof ModuleEditPart)
-//            	toplevelEditPart = ((ModuleEditPart)selection.get(0)).getCompoundModulePart();
+			INEDElement[] elements = (INEDElement[]) contents;
+			CompoundModuleElementEx compoundModule = getTargetCompoundModule(); // for submodules and connections
+			//FIXME if needed, create a compound module on demand? or pop up an error dialog?
+			Map<String, String> submoduleNameMap = new HashMap<String, String>();
+			for (INEDElement element : elements) {
+				System.out.println("pasting " + element);
+				if (element instanceof INedTypeElement)
+					pasteNedTypeElement((INedTypeElement)element.deepDup(), compoundCommand);
+				else if (element instanceof SubmoduleElementEx && compoundModule != null)
+					pasteSubmodule((SubmoduleElementEx)element.deepDup(), compoundModule, submoduleNameMap, compoundCommand);
+				else if (element instanceof ConnectionElementEx && compoundModule != null)
+					pasteConnection((ConnectionElementEx)element.deepDup(), compoundModule, submoduleNameMap, compoundCommand);
+				else
+					System.out.println("don't know how to paste " + element);  //XXX
+			}
 
-            // we have the parent where all child part have to be selected
-//            viewer.setSelection(new StructuredSelection(toplevelEditPart.getChildren()));
+			compoundCommand.setLabel("Paste " + StringUtils.formatCounted(elements.length, "object"));
+			return compoundCommand;
+		}
+		else {
+			return UnexecutableCommand.INSTANCE;
+		}
 
-        	
-        	
-        	
-        	INEDElement[] elements = (INEDElement[]) contents;
-        	for (INEDElement element : elements) {
-    			System.out.println("pasting " + element);
-        		if (element instanceof INedTypeElement) {
-        			NedFileElementEx parent = (NedFileElementEx)toplevelEditPart.getModel();
-        			//FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
-        			result.add(new AddNEDElementCommand(parent, element.deepDup()));
-        		}
-        		else if (element instanceof SubmoduleElementEx) {
-        			List selection = viewer.getSelectedEditParts();
-        			if (selection.size() == 0 || !(selection.get(0) instanceof ModuleEditPart)) {
-        				//FIXME error: dunno where to insert
-					}
-        			else {
-        				CompoundModuleEditPart compoundModulePart = ((ModuleEditPart)selection.get(0)).getCompoundModulePart();
-        				CompoundModuleElementEx compoundModule = compoundModulePart.getCompoundModuleModel();
-        				SubmodulesElement submodulesElement = compoundModule.getFirstSubmodulesChild();
-        				if (submodulesElement == null) {
-        					submodulesElement = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
-        					submodulesElement.appendChild(element.deepDup());
-                			result.add(new AddNEDElementCommand(compoundModule, submodulesElement));
-        				}
-        				else {
-                			result.add(new AddNEDElementCommand(submodulesElement, element.deepDup()));
-        				}
-        			}
-        		}
-        		else if (element instanceof ConnectionElementEx) {
-        			List selection = viewer.getSelectedEditParts();
-        			if (selection.size() == 0 || !(selection.get(0) instanceof ModuleEditPart)) {
-        				//FIXME error: dunno where to insert
-					}
-        			else {
-        				CompoundModuleEditPart compoundModulePart = ((ModuleEditPart)selection.get(0)).getCompoundModulePart();
-        				CompoundModuleElementEx compoundModule = compoundModulePart.getCompoundModuleModel();
-        				ConnectionsElement connectionsElement = compoundModule.getFirstConnectionsChild();
-        				if (connectionsElement == null) {
-        					connectionsElement = (ConnectionsElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTIONS);
-        					connectionsElement.appendChild(element.deepDup());
-                			result.add(new AddNEDElementCommand(compoundModule, connectionsElement));
-        				}
-        				else {
-                			result.add(new AddNEDElementCommand(connectionsElement, element.deepDup()));
-        				}
-        			}
-        		}
-        		else {
-        			System.out.println("don't know how to paste " + element);  //XXX
-        		}
-        	}
-        	return result;
-        }
-        else {
-        	return UnexecutableCommand.INSTANCE;
-        }
-    	
-    }
+	}
+
+	protected void pasteNedTypeElement(INedTypeElement element, CompoundCommand compoundCommand) {
+		EditPart toplevelEditPart = getGraphicalViewer().getContents();
+		NedFileElementEx parent = (NedFileElementEx)toplevelEditPart.getModel();
+		//FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
+		compoundCommand.add(new AddNEDElementCommand(parent, element));
+	}
+
+	protected void pasteSubmodule(SubmoduleElementEx submodule, CompoundModuleElementEx targetModule, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
+		SubmodulesElement submodulesElement = targetModule.getFirstSubmodulesChild();
+		if (submodulesElement == null) {
+			submodulesElement = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
+			submodulesElement.appendChild(submodule);
+			compoundCommand.add(new AddNEDElementCommand(targetModule, submodulesElement));
+		}
+		else {
+			if (submodulesElement.getFirstChildWithAttribute(NEDElementTags.NED_SUBMODULE, SubmoduleElementEx.ATT_NAME, submodule.getName()) != null) {
+				String newName = "_" + submodule.getName();  // FIXME better/safer way to make it unique!! i.e. regard inherited submods too!
+				submoduleNameMap.put(submodule.getName(), newName);
+				submodule.setName(newName);
+			}
+			compoundCommand.add(new AddNEDElementCommand(submodulesElement, submodule));
+		}
+	}
+
+	protected void pasteConnection(ConnectionElementEx connection, CompoundModuleElementEx targetModule, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
+		// adjust src/dest submodule name if needed 
+		if (submoduleNameMap.containsKey(connection.getSrcModule()))
+			connection.setSrcModule(submoduleNameMap.get(connection.getSrcModule()));
+		if (submoduleNameMap.containsKey(connection.getDestModule()))
+			connection.setDestModule(submoduleNameMap.get(connection.getDestModule()));
+
+		// insert
+		ConnectionsElement connectionsElement = targetModule.getFirstConnectionsChild();
+		if (connectionsElement == null) {
+			connectionsElement = (ConnectionsElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTIONS);
+			connectionsElement.appendChild(connection);
+			compoundCommand.add(new AddNEDElementCommand(targetModule, connectionsElement));
+		}
+		else {
+			compoundCommand.add(new AddNEDElementCommand(connectionsElement, connection));
+		}
+		
+		//FIXME verify if src/dest submodule exists in the compound module?
+	}
+
+	@SuppressWarnings("unchecked")
+	protected CompoundModuleElementEx getTargetCompoundModule() {
+		// return the selected compound module or the compound module of the first selected submodule
+		GraphicalViewer graphicalViewer = getGraphicalViewer();
+		List selectedEditParts = graphicalViewer.getSelectedEditParts();
+		for (Object editPart : selectedEditParts)
+			if (editPart instanceof ModuleEditPart) 
+				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
+
+		// or, return the first compound module in the file; in the worst case return null
+		EditPart toplevelEditPart = graphicalViewer.getContents();
+		NedFileElementEx nedFileElement = (NedFileElementEx)toplevelEditPart.getModel();
+		return (CompoundModuleElementEx) nedFileElement.getFirstCompoundModuleChild(); // might be null
+	}
+
+	protected GraphicalViewer getGraphicalViewer() {
+		GraphicalViewer viewer = (GraphicalViewer)getWorkbenchPart().getAdapter(GraphicalViewer.class);
+		return viewer;
+	}
 }

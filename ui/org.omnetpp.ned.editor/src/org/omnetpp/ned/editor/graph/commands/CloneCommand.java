@@ -27,11 +27,11 @@ public class CloneCommand extends Command {
     private INEDElement insertBefore;
 
     /**
-     * Creates a generic cloning command that is able to clon any number of nodes and add them
+     * Creates a generic cloning command that is able to clone any number of nodes and add them
      * to the provided parent node.
      * @param parent The parent node where the newly cloned nodes should go
      * @param insertBefore A sibling in the parent before we should insert the cloned nodes
-     *        <code>null</code> should be used to insert at the end of the childlist
+     *        <code>null</code> should be used to insert at the end of the child list
      */
     public CloneCommand(INEDElement parent, INEDElement insertBefore) {
         super("Clone");
@@ -54,10 +54,11 @@ public class CloneCommand extends Command {
     }
 
     // clone just a single node and insert it into the correct position
-    protected INEDElement clonePart(INEDElement oldNode ) {
+    protected INEDElement clonePart(INEDElement oldNode) {
         // duplicate the subtree but do not add to the new parent yet
     	INEDElement newNode = oldNode.deepDup();
-        // set a unique name is this is a named toplevel element
+        // set a unique name if this is a named toplevel element
+    	// FIXME what if it's a submodule? what is this method accepting??? --Andras
         if ((newNode instanceof IHasName) && (newNode instanceof INedTypeElement)) {
             Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();
             ((IHasName)newNode).setName(NEDElementUtilEx.getUniqueNameFor((IHasName)newNode, context));
