@@ -34,22 +34,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.RectangularArea;
@@ -475,8 +477,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 */
 	class LegendTooltip
 	{
-		Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
-		Rectangle rect; // rectangle of the area
+		Button button;
 		List<Item> items = new ArrayList<Item>();
 		
 		class Item
@@ -493,11 +494,31 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 		public LegendTooltip() {
-			HoverSupport hoverSupport = new HoverSupport();
+			button = new Button(ChartCanvas.this, SWT.TOGGLE | SWT.FLAT);
+			Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
+			button.setImage(icon);
+			button.setSize(icon.getBounds().width, icon.getBounds().height);
+			
+			final HoverSupport hoverSupport = new HoverSupport();
 			hoverSupport.setHoverSizeConstaints(320,400);
-			hoverSupport.adapt(ChartCanvas.this, new IHoverTextProvider() {
+			hoverSupport.adapt(button, new IHoverTextProvider() {
 				public String getHoverTextFor(Control control, int x, int y, SizeConstraint preferredSize) {
 					return getTooltipText(x, y, preferredSize);
+				}
+			});
+			
+			button.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					if (!button.getSelection()) {
+						IInformationControl hoverControl = hoverSupport.getHoverControl();
+						if (hoverControl != null)
+							hoverControl.dispose();
+						button.setSelection(true);
+					}
+					else {
+						hoverSupport.makeHoverSticky();
+						button.setSelection(false);
+					}
 				}
 			});
 		}
@@ -511,21 +532,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 		public Rectangle layout(GC gc, Rectangle rect) {
-			int width = icon.getBounds().width;
-			int height = icon.getBounds().height;
-			this.rect = new Rectangle(rect.right() - width - 2, rect.y + 2,  width, height);
+			button.setLocation(rect.width - button.getSize().x - 2, rect.y + 2);
 			return rect;
 		}
 		
 		public void draw(GC gc) {
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.pushState();
-			graphics.drawImage(icon, rect.x, rect.y);
-			graphics.popState();
 		}
 		
 		public String getTooltipText(int x, int y, SizeConstraint preferredSize) {
-			if (rect.contains(x, y) && items.size() > 0) {
+			if (items.size() > 0) {
 				StringBuffer sb = new StringBuffer();
 				int height = 20;
 				sb.append("<b>Legend:</b>"); height += 17;
@@ -553,10 +568,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 		public String htmlText(String text) {
-			text = text.replace("<", "&lt;");
-			text = text.replace("&", "&amp;");
-			text = text.replace(">", "&gt;");
-			return text;
+			return StringEscapeUtils.escapeHtml(text);
 		}
 	}
 }
