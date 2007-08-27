@@ -89,11 +89,13 @@ public class MultiPageNedEditor
 			}
 
 			public void partActivated(IWorkbenchPart part) {
-				if (getActivePage() == textPageIndex)
+				// when switching from another editor to this, we need to immediately pull the changes
+				if (getActivePage() == textPageIndex && graphEditor.hasContentChanged())
 					textEditor.pullChangesFromNEDResources();
 			}
 
 			public void partDeactivated(IWorkbenchPart part) {
+				// when switching from one MultiPageNedEditor to another, we need to immediately push the changes
 				if (getActivePage() == textPageIndex && textEditor.hasContentChanged())
 					textEditor.pushChangesIntoNEDResources();
 			}
@@ -170,8 +172,8 @@ public class MultiPageNedEditor
             textEditor.markContent();
 
             // switch to graphics mode initially if there's no error in the file
-            if (maySwitchToGraphicalEditor())
-                setActivePage(graphPageIndex);
+            setActivePage(maySwitchToGraphicalEditor() ? graphPageIndex : textPageIndex);
+            	
 		} 
 		catch (PartInitException e) {
 		    NedEditorPlugin.logError(e);

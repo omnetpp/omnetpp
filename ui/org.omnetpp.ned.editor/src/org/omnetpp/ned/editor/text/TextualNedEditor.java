@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
@@ -342,16 +343,17 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
     }
 
 	public boolean isActive() {
-		IEditorPart activeEditorPart = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
+		IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
 		return activeEditorPart == this ||
 			(activeEditorPart instanceof MultiPageNedEditor && ((MultiPageNedEditor)activeEditorPart).isActiveEditor(this));
 	}
 
     public void modelChanged(NEDModelEvent event) {
-    	if (event instanceof NEDMarkerChangeEvent && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
-			INEDElement nedFileElement = event.getSource() == null ? null : event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
+    	if (event.getSource() != null && !(event instanceof NEDMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
+			INEDElement nedFileElement = event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
 
-			if (nedFileElement == null || nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
+			if (nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
 				pullChangesJob.restartTimer();
     	}
     }
