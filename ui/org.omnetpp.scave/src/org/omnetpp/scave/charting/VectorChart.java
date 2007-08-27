@@ -52,6 +52,7 @@ import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
+import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.CrossSymbol;
 import org.omnetpp.scave.charting.plotter.DiamondSymbol;
 import org.omnetpp.scave.charting.plotter.DotsVectorPlotter;
@@ -65,6 +66,7 @@ import org.omnetpp.scave.charting.plotter.PointsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.plotter.TriangleSymbol;
+import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
 
 
 /**
@@ -221,34 +223,17 @@ public class VectorChart extends ChartCanvas {
 			this.lineColor = lineColor;
 		}
 		
-		public IVectorPlotter getPlotter() { // XXX cache
+		public IVectorPlotter getPlotter() {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
-			switch (type) {
-			case Dots: return new DotsVectorPlotter();
-			case Linear: return new LinesVectorPlotter();
-			case SampleHold: return new SampleHoldVectorPlotter(false);
-			case BackwardSampleHold: return new SampleHoldVectorPlotter(true);
-			case Pins: return new PinsVectorPlotter();
-			case Points: return new PointsVectorPlotter();
-			default: throw new IllegalArgumentException("unknown line style: " + type);
-			}
+			return VectorPlotterFactory.createVectorPlotter(type);  // XXX cache
 		}
 		
-		public IChartSymbol getSymbol() { // XXX cache
+		public IChartSymbol getSymbol() {
 			Assert.isTrue(this != defaultProperties);
 			SymbolType type = getSymbolType();
 			int size = getSymbolSize();
-			switch (type) {
-			case None: return null;
-			case Cross: return new CrossSymbol(size);
-			case Diamond: return new DiamondSymbol(size);
-			case Dot: return new OvalSymbol(size);
-			case Plus: return new PlusSymbol(size);
-			case Square: return new SquareSymbol(size);
-			case Triangle: return new TriangleSymbol(size);
-			default: throw new IllegalArgumentException("unknown symbol type: " + type);
-			}
+			return ChartSymbolFactory.createChartSymbol(type, size);  // XXX cache
 		}
 		
 		public Color getColor() { // XXX cache

@@ -6,8 +6,10 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -17,6 +19,15 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
@@ -26,16 +37,25 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.ui.TristateButton;
+import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
+import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.IVectorPlotter;
+import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -57,6 +77,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	private ImageCombo symbolTypeCombo;
 	private Combo symbolSizeCombo;
 	private ImageCombo lineTypeCombo;
+	private PreviewCanvas previewCanvas;
 	
 	public BaseLineChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
@@ -85,6 +106,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			linesTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
 					updateLinePropertyEditFields((VectorChartProperties)properties);
+					updatePreview();
 				}
 			});
 			
@@ -95,33 +117,57 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			displayLineCheckbox = new TristateButton(subpanel, SWT.CHECK);
 			displayLineCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 			displayLineCheckbox.setText("Display line");
+			displayLineCheckbox.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					updatePreview();
+				}
+			});
 
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);
 			lineTypeCombo.add(AUTO, null);
 			for (LineType a : LineType.values())
 				lineTypeCombo.add(a.toString(), ScavePlugin.getCachedImage(a.getImageId()));
+			lineTypeCombo.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					updatePreview();
+				}
+			});
 
 			symbolTypeCombo = createImageComboField("Symbol type:", subpanel);
 			symbolTypeCombo.add(NO_CHANGE, null);
 			symbolTypeCombo.add(AUTO, null);
 			for (SymbolType a : SymbolType.values())
 				symbolTypeCombo.add(a.toString(), ScavePlugin.getCachedImage(a.getImageId()));
+			symbolTypeCombo.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					updatePreview();
+				}
+			});
 
 			symbolSizeCombo = createComboField("Symbol size:", subpanel, SYMBOL_SIZES, true);
 			symbolSizeCombo.add(NO_CHANGE, 0);
 			symbolSizeCombo.add(AUTO, 1);
 			symbolSizeCombo.setVisibleItemCount(SYMBOL_SIZES.length);
+			symbolSizeCombo.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					updatePreview();
+				}
+			});
 
 			colorEdit = createColorField("Color:", subpanel);
+			colorEdit.text.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					updatePreview();
+				}
+			});
 
 			Group previewPanel = new Group(panel, SWT.NONE);
 			previewPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			previewPanel.setLayout(new GridLayout(1,false));
 			previewPanel.setText("Preview");
-			Canvas previewCanvas = new Canvas(previewPanel, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+			previewCanvas = new PreviewCanvas(previewPanel);
 			previewCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			previewCanvas.setBackground(ColorFactory.WHITE);
 			
 			selectLine(getSelectedLineKey());
 			updateLinePropertyEditFields((VectorChartProperties)properties);
@@ -229,6 +275,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	protected void setProperties(ChartProperties props) {
 		// initializes form contents from the model (i.e. props)
 		super.setProperties(props);
+		previewCanvas.props = (VectorChartProperties)props;
 		updateLinePropertyEditFields((VectorChartProperties)props);
 	}
 
@@ -252,5 +299,252 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			lineTypeCombo.setText(NO_CHANGE);
 			colorEdit.setText(NO_CHANGE);
 		}
+	}
+	
+	private void updatePreview() {
+		previewCanvas.redraw();
+	}
+	
+	private class PreviewCanvas extends Canvas implements PaintListener
+	{
+		VectorChartProperties props;
+		IXYDataset dataset;
+		ICoordsMapping coordsMapping;
+		
+		public PreviewCanvas(Composite parent) {
+			super(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+			setBackground(ColorFactory.WHITE);
+			dataset = createSampleDataset();
+			coordsMapping = createCoordsMapping();
+			addPaintListener(this);
+		}
+		
+		private boolean getDisplayLine(String lineId) {
+			if (displayLineCheckbox.getGrayed()) {
+				return props.getLineProperties(lineId).getDisplayLine();
+			}
+			else
+				return displayLineCheckbox.getSelection();
+		}
+		
+		private IVectorPlotter getVectorPlotter(String lineId) {
+			LineType lineType = 
+				getEnumProperty(lineTypeCombo,
+								props.getLineProperties(lineId).getLineType(),
+								ChartDefaults.DEFAULT_LINE_STYLE,
+								LineType.class);
+			return VectorPlotterFactory.createVectorPlotter(lineType);
+		}
+		
+		private IChartSymbol getChartSymbol(String lineId) {
+			SymbolType type = 
+				getEnumProperty(symbolTypeCombo,
+								props.getLineProperties(lineId).getSymbolType(),
+								null,
+								SymbolType.class);
+			
+			if (type == null) {
+				int series = Arrays.asList(lineNames).indexOf(lineId);
+				switch (series % 6) {
+				case 0: type = SymbolType.Square; break;
+				case 1: type = SymbolType.Dot; break;
+				case 2: type = SymbolType.Triangle; break;
+				case 3: type = SymbolType.Diamond; break;
+				case 4: type = SymbolType.Cross; break;
+				case 5: type = SymbolType.Plus; break;
+				default: type = null; break;
+				}
+			}
+
+			int size = getSymbolSize(lineId);
+			
+			return ChartSymbolFactory.createChartSymbol(type, size);
+		}
+		
+		private <T extends Enum<T>> T getEnumProperty(ImageCombo combo, T property, T defaultValue, Class<T> clazz) {
+			String editText = combo.getText();
+			if (editText != null && !editText.equals(NO_CHANGE)) {
+				T value = resolveEnum(editText, clazz);
+				if (value != null)
+					return value;
+			}
+			return property != null ? property : defaultValue;
+		}
+		
+		private int getSymbolSize(String lineId) {
+			String sizeStr = symbolSizeCombo.getText();
+			if (sizeStr == null || sizeStr.equals(NO_CHANGE))
+				sizeStr = props.getLineProperties(lineId).getSymbolSize();
+
+			if (sizeStr != null) {
+				Integer value = Converter.stringToInteger(sizeStr);
+				if (value != null)
+					return value; 
+			}
+			
+			return ChartDefaults.DEFAULT_SYMBOL_SIZE;
+		}
+		
+		public Color getLineColor(String lineId) {
+			String colorStr = colorEdit.getText();
+			if (colorStr == null)
+				colorStr = props.getLineProperties(lineId).getLineColor();
+			RGB rgb = ColorFactory.asRGB(colorStr);
+			if (rgb != null)
+				return new Color(null, rgb);
+			else {
+				for (int series = 0; series < dataset.getSeriesCount(); ++series)
+					if (dataset.getSeriesKey(series).equals(lineId))
+						return ColorFactory.getGoodDarkColor(series);
+				return ColorFactory.getGoodDarkColor(0);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void paintControl(PaintEvent e) {
+			GC gc = e.gc;
+			drawBackground(gc, e.x, e.y, e.width, e.height);
+			
+			if (props == null)
+				return;
+			
+			IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
+			List selectedIds = selection.toList();
+			
+			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
+				String lineId = dataset.getSeriesKey(series);
+				if (selectedIds.contains(lineId) && getDisplayLine(lineId)) {
+					IVectorPlotter plotter = getVectorPlotter(lineId);
+					IChartSymbol symbol = getChartSymbol(lineId);
+					Color color = getLineColor(lineId);
+					gc.setAntialias(SWT.ON);
+					gc.setForeground(color);
+					gc.setBackground(color);
+
+					plotter.plot(dataset, series, gc, coordsMapping, symbol);
+				}
+			}
+		}
+		
+		private IXYDataset createSampleDataset() {
+			class RandomDataset implements IXYDataset {
+				
+				String[] seriesKeys;
+				double[][] yCoords;
+				
+				public RandomDataset(long seed, String[] seriesKeys) {
+					Random rg = new Random(seed);
+					this.seriesKeys = seriesKeys;
+					yCoords = new double[seriesKeys.length][];
+					for (int series = 0; series < seriesKeys.length; ++series) {
+						yCoords[series] = new double[4];
+						for (int i = 0; i < 4; ++i) {
+							yCoords[series][i] = rg.nextDouble();
+						}
+					}
+							
+				}
+
+				@Override
+				public int getSeriesCount() {
+					return seriesKeys.length;
+				}
+
+				@Override
+				public String getSeriesKey(int series) {
+					return seriesKeys[series];
+				}
+
+				@Override
+				public int getItemCount(int series) {
+					return yCoords[series].length;
+				}
+
+				@Override
+				public double getX(int series, int item) {
+					return (item+0.5)/(getItemCount(series));
+				}
+
+				@Override
+				public BigDecimal getPreciseX(int series, int item) {
+					return null;
+				}
+
+				@Override
+				public double getY(int series, int item) {
+					return yCoords[series][item];
+				}
+				
+				@Override
+				public BigDecimal getPreciseY(int series, int item) {
+					return null;
+				}
+			};
+			
+			return new RandomDataset(0, lineNames);
+		}
+		
+		private ICoordsMapping createCoordsMapping() {
+			return new ICoordsMapping() {
+				private int getWidth() {
+					return getSize().x;
+				}
+				
+				private int getHeight() {
+					return getSize().y;
+				}
+				
+				@Override
+				public double fromCanvasDistX(int x) {
+					return ((double)x)/getWidth();
+				}
+
+				@Override
+				public double fromCanvasDistY(int y) {
+					return ((double)y)/getHeight();
+				}
+
+				@Override
+				public double fromCanvasX(int x) {
+					return ((double)x)/getWidth();
+				}
+
+				@Override
+				public double fromCanvasY(int y) {
+					return ((double)(getHeight() - y))/getHeight();
+				}
+
+				@Override
+				public int toCanvasDistX(double coord) {
+					return (int)(coord * getWidth());
+				}
+
+				@Override
+				public int toCanvasDistY(double coord) {
+					return (int)(coord * getHeight());
+				}
+
+				@Override
+				public int toCanvasX(double coord) {
+					return (int)(coord * getWidth());
+				}
+
+				@Override
+				public int toCanvasY(double coord) {
+					return getHeight() - (int)(coord * getHeight());
+				}
+
+				@Override
+				public int getNumCoordinateOverflows() {
+					return 0;
+				}
+
+				@Override
+				public void resetCoordinateOverflowCount() {
+				}
+			};
+		}
+		
 	}
 }
