@@ -73,6 +73,12 @@ public class NedFileEditPart extends NedEditPart {
     }
 
     @Override
+    protected void refreshVisuals() {
+    	super.refreshVisuals();
+    	((NedFileFigure)getFigure()).setProblemMessage("Gebasz van!");
+    }
+    
+    @Override
     protected List<INedTypeElement> getModelChildren() {
     	return ((NedFileElementEx)getNEDModel()).getTopLevelTypeNodes();
     }
