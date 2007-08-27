@@ -680,6 +680,9 @@ public class GraphicalNedEditor
 			return null;
 
 		INEDElement element = ((IModelProvider)ep).getNEDModel();
+		if (element instanceof NedFileElementEx)
+			return null;
+		
 		String hoverText = "";
 
 		// brief
