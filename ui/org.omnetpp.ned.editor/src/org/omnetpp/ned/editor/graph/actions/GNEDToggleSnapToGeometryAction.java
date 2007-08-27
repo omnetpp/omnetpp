@@ -5,6 +5,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.internal.GEFMessages;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.Action;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
  * Re-implementation of GEF ToggleSnapToGeometryAction to toggle the PROPERTY_SNAP_ENABLED property
@@ -15,9 +16,9 @@ import org.eclipse.jface.action.Action;
  * 
  * @author rhornig
  */
-public class GNEDToggleSnapToGeometryAction
-    extends Action
-{
+public class GNEDToggleSnapToGeometryAction extends Action {
+
+	private static final String ICON = "icons/full/etool16/snaptogeometry.png";
     private GraphicalViewer diagramViewer;
 
     /**
@@ -33,6 +34,7 @@ public class GNEDToggleSnapToGeometryAction
         setToolTipText(GEFMessages.ToggleSnapToGeometry_Tooltip);
         setId(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY);
         setActionDefinitionId(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY);
+		setImageDescriptor(NedEditorPlugin.getImageDescriptor(ICON));
         setChecked(isSnapEnabled());
     }
 
