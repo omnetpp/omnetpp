@@ -74,12 +74,15 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
+import org.omnetpp.ned.editor.graph.actions.CopyAction;
+import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
 import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
 import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
+import org.omnetpp.ned.editor.graph.actions.PasteAction;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
@@ -140,6 +143,13 @@ public class GraphicalNedEditor
             id = ActionFactory.REDO.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
             id = ActionFactory.DELETE.getId();
+            bars.setGlobalActionHandler(id, registry.getAction(id));
+            
+            id = ActionFactory.CUT.getId();
+            bars.setGlobalActionHandler(id, registry.getAction(id));
+            id = ActionFactory.COPY.getId();
+            bars.setGlobalActionHandler(id, registry.getAction(id));
+            id = ActionFactory.PASTE.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
             bars.updateActionBars();
         }
@@ -377,6 +387,13 @@ public class GraphicalNedEditor
         getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
         id = ActionFactory.DELETE.getId();
         getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
+
+        id = ActionFactory.COPY.getId();
+        getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
+        id = ActionFactory.CUT.getId();
+        getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
+        id = ActionFactory.PASTE.getId();
+        getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
     }
 
     @Override
@@ -476,6 +493,18 @@ public class GraphicalNedEditor
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
+        action = new CopyAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new CutAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+        
+        action = new PasteAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+        
         action = new AlignmentAction((IWorkbenchPart) this, PositionConstants.LEFT);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());

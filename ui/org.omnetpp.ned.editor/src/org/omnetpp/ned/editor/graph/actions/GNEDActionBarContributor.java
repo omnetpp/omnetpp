@@ -186,6 +186,9 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addGlobalActionKey(ActionFactory.PRINT.getId());
         addGlobalActionKey(ActionFactory.SELECT_ALL.getId());
         addGlobalActionKey(ActionFactory.DELETE.getId());
+        addGlobalActionKey(ActionFactory.CUT.getId());
+        addGlobalActionKey(ActionFactory.COPY.getId());
+        addGlobalActionKey(ActionFactory.PASTE.getId());
     }
 
     /* (non-Javadoc)

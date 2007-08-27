@@ -54,6 +54,15 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ActionFactory.REDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
+        action = getActionRegistry().getAction(ActionFactory.CUT.getId());
+        manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+        action = getActionRegistry().getAction(ActionFactory.COPY.getId());
+        manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
+        manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+        manager.appendToGroup(GEFActionConstants.GROUP_EDIT, new Separator());
+
         action = getActionRegistry().getAction(ChooseIconAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
