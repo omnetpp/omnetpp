@@ -18,7 +18,6 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * 
  * @author Andras
  */
-//FIXME as retargetAction!
 public class CopyAction extends SelectionAction {
     public static final String ID = ActionFactory.COPY.getId();
     public static final String MENUNAME = "Copy";
@@ -42,6 +41,7 @@ public class CopyAction extends SelectionAction {
 	@Override @SuppressWarnings("unchecked")
     public void run() {
 		// note: getSelectedObjects() seems to return the editparts not the model objects
+		//FIXME include connections among selected submodules as well
 		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();
         for (Object o : getSelectedObjects())
         	if (o instanceof IModelProvider)
