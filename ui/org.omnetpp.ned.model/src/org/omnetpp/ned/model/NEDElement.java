@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -457,6 +458,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		while (node != null && !(node instanceof INedTypeElement))
 			node = node.getParent();
 		return (INedTypeElement) node;
+	}
+
+	public NedFileElementEx getContainingNedFileElement() {
+		return (NedFileElementEx) getParentWithTag(NEDElementTags.NED_NED_FILE);
 	}
 
     /**

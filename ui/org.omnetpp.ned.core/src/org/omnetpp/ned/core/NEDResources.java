@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -64,8 +65,6 @@ import org.omnetpp.ned.model.pojo.SimpleModuleElement;
  *
  * @author andras
  */
-//FIXME this has to be called from somewhere!!! nedFiles.get(file).clearSyntaxProblemMarkerSeverities();
-//FIXME: validation should to be done in a delayedJob!
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // filters for component access with getAllComponentsFilteredBy
@@ -100,17 +99,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                         
 
     // associate IFiles with their NEDElement trees
-    private final HashMap<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
-    private final HashMap<NedFileElementEx, IFile> nedElementFiles = new HashMap<NedFileElementEx,IFile>();
+    private final Map<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
+    private final Map<NedFileElementEx, IFile> nedElementFiles = new HashMap<NedFileElementEx,IFile>();
 
-    private final HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
+    private final Map<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 
     // non-duplicate toplevel (non-inner) types
-    private final HashMap<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
+    private final Map<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
     
     // duplicate toplevel (non-inner) types
-    private final HashMap<String, INEDTypeInfo> duplicates = new HashMap<String, INEDTypeInfo>();
-
+    private final Map<String, List<INedTypeElement>> duplicates = new HashMap<String, List<INedTypeElement>>();
+    
     // reserved (used) names (contains all names including duplicates)
     private final Set<String> reservedNames = new HashSet<String>();
 
@@ -120,10 +119,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // to assert that the function is not called unnecessarily
     private int debugRehashCounter = 0;
 
-    private final HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
-    private final HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
-    private final HashMap<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
-    private final HashMap<String, INEDTypeInfo> channelInterfaces = new HashMap<String, INEDTypeInfo>();
+    private final Map<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
+    private final Map<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
+    private final Map<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
+    private final Map<String, INEDTypeInfo> channelInterfaces = new HashMap<String, INEDTypeInfo>();
 
     private INEDTypeInfo basicChannelType = null;
     private INEDTypeInfo nullChannelType = null;
@@ -523,8 +522,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         debugRehashCounter++;
 
         components.clear();
-        duplicates.clear();
         reservedNames.clear();
+        duplicates.clear();
         
         channels.clear();
         channelInterfaces.clear();
@@ -547,12 +546,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         			INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
         			String name = typeElement.getName();
 
-        			if (components.containsKey(name)) {
-        				duplicates.put(name, typeInfo);
+        			if (reservedNames.contains(name)) {
+        				if (!duplicates.containsKey(name))
+        					duplicates.put(name, new ArrayList<INedTypeElement>());
+        				duplicates.get(name).add(typeElement);
         			}
         			else {
         				// normal case: not duplicate. Add the type info to our tables.
-        				HashMap<String, INEDTypeInfo> map;
+        				Map<String, INEDTypeInfo> map;
         				if (typeElement instanceof ChannelElement)
         					map = channels;
         				else if (typeElement instanceof ChannelInterfaceElement)
@@ -577,12 +578,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
 
         // now we should remove all types that were duplicates
-        for (String dupName : duplicates.keySet()) {
-            channels.remove(dupName);
-            channelInterfaces.remove(dupName);
-            modules.remove(dupName);
-            moduleInterfaces.remove(dupName);
-            components.remove(dupName);
+        for (String name : duplicates.keySet()) {
+        	duplicates.get(name).add(components.get(name).getNEDElement());
+            channels.remove(name);
+            channelInterfaces.remove(name);
+            modules.remove(name);
+            moduleInterfaces.remove(name);
+            components.remove(name);
         }
 
         long dt = System.currentTimeMillis() - startMillis;
@@ -609,7 +611,30 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		nedModelChanged(new NEDBeginModelChangeEvent(null));
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
+			// issue error message for duplicates
+			for (String name : duplicates.keySet()) {
+				List<INedTypeElement> duplicateList = duplicates.get(name);
+				for (int i = 0; i < duplicateList.size(); i++) {
+					INedTypeElement element = duplicateList.get(i);
+					INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
+					IFile file = getFile(element.getContainingNedFileElement());
+					IFile otherFile = getFile(otherElement.getContainingNedFileElement());
+					
+					NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
+					if (otherFile == null) {
+						errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
+					}
+					else {
+						// add error message to both files
+						String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
+						errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
+						NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
+						otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
+					}
+				}
+			}
 
+			// validate all files
 			for (IFile file : nedFiles.keySet()) {
 				NedFileElementEx nedFileElement = nedFiles.get(file);
 				markerSync.registerFile(file);
@@ -618,31 +643,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				NEDFileValidator validator = new NEDFileValidator(this, errorStore);
 				nedFileElement.clearConsistencyProblemMarkerSeverities();
 				validator.validate(nedFileElement);
-				//FIXME validator should throw the following message:
-				//errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
 
 			}
-
-			//FIXME warn for duplicates
-//			for (INEDTypeInfo duplicate : duplicates.values()) {
-//			// it is a duplicate: issue warning
-//			IFile otherFile = components.get(name).getNEDFile();
-//			INEDElement otherElement = components.get(name).getNEDElement();
-//			NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
-//			if (otherFile == null) {
-//			errorStore.addError(node, node.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
-//			}
-//			else {
-//			// add it to the duplicate set so we can remove them at the end
-//			duplicates.put(name, typeInfo);
-
-//			// add error message to both files
-//			String messageHalf = node.getReadableTagName() + " '" + name + "' already defined in ";
-//			errorStore.addError(node, messageHalf + otherFile.getFullPath().toString());
-//			NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
-//			otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
-//			}
-//			}
 
 			// we need to do the synchronization in a background job, to avoid deadlocks
 			markerSync.runAsWorkspaceJob();
@@ -686,7 +688,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
             nedModelChangeNotificationDisabled = false;
-            Assert.isTrue(debugRehashCounter <= 1,"Too many rehash operation in readAllNedFilesInWorkspace()");
+            Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readAllNedFilesInWorkspace()");
             nedModelChanged(new NEDModelEvent(null));
         }
     }
