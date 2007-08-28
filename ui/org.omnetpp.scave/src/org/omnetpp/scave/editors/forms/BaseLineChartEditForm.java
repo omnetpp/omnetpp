@@ -436,52 +436,42 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					return getSize().y;
 				}
 				
-				@Override
 				public double fromCanvasDistX(int x) {
 					return ((double)x)/getWidth();
 				}
 
-				@Override
 				public double fromCanvasDistY(int y) {
 					return ((double)y)/getHeight();
 				}
 
-				@Override
 				public double fromCanvasX(int x) {
 					return ((double)x)/getWidth();
 				}
 
-				@Override
 				public double fromCanvasY(int y) {
 					return ((double)(getHeight() - y))/getHeight();
 				}
 
-				@Override
 				public int toCanvasDistX(double coord) {
 					return (int)(coord * getWidth());
 				}
 
-				@Override
 				public int toCanvasDistY(double coord) {
 					return (int)(coord * getHeight());
 				}
 
-				@Override
 				public int toCanvasX(double coord) {
 					return (int)(coord * getWidth());
 				}
 
-				@Override
 				public int toCanvasY(double coord) {
 					return getHeight() - (int)(coord * getHeight());
 				}
 
-				@Override
 				public int getNumCoordinateOverflows() {
 					return 0;
 				}
 
-				@Override
 				public void resetCoordinateOverflowCount() {
 				}
 			};
