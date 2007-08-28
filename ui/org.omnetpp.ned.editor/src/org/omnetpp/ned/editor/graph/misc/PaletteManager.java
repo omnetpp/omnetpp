@@ -2,8 +2,10 @@ package org.omnetpp.ned.editor.graph.misc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.gef.palette.*;
@@ -49,23 +51,41 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
 public class PaletteManager implements INEDChangeListener {
     private static final String NBSP = "\u00A0";
     private static final String GROUP_PROPERTY = "group";
-    private static final String DEFAULT_SUBMODULE_GROUP_NAME = "Submodules";
-    private static final String LOCAL_TYPE_GROUP_NAME = "Local types";
 
     protected GraphicalNedEditor hostingEditor;
-    protected PaletteRoot nedPalette = new PaletteRoot();
-    protected PaletteContainer typesDrawer;
+    protected PaletteRoot nedPalette;
+    private PaletteContainer toolsContainer;
+    protected PaletteContainer channelsStack;
+    protected PaletteDrawer typesContainer;
+    protected PaletteContainer mruContainer;
+    protected PaletteDrawer defaultContainer;
+
+    protected Map<String, ToolEntry> currentEntries = new HashMap<String, ToolEntry>();
+    protected Map<String, PaletteContainer> currentContainers = new HashMap<String, PaletteContainer>();
+
     protected DelayedJob paletteUpdaterJob = new DelayedJob(200) {
         public void run() {
-            buildPalette();
+            synchronizePalette();
         }
     };
 
     public PaletteManager(GraphicalNedEditor hostingEditor) {
         super();
         this.hostingEditor = hostingEditor;
-        typesDrawer = createTypesDrawer();
-        buildPalette();
+        nedPalette = new PaletteRoot();
+        channelsStack = new PaletteStack("Connections", "Connect modules using this tool",ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
+        toolsContainer = createTools();
+        typesContainer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+        typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
+        mruContainer = new PaletteGroup("MRU");
+        defaultContainer = new PaletteDrawer("Submodules", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+
+
+        synchronizePalette();
+    }
+
+    public PaletteRoot getRootPalette() {
+        return nedPalette;
     }
 
     /* (non-Javadoc)
@@ -81,26 +101,83 @@ public class PaletteManager implements INEDChangeListener {
         paletteUpdaterJob.restartTimer();
     }
 
-    public PaletteRoot getRootPalette() {
-        return nedPalette;
-    }
-
     /**
      * Builds the palette (all drawers)
      */
-    public void buildPalette() {
+    public void synchronizePalette() {
         nedPalette.getChildren().clear();
-        nedPalette.add(createToolsDrawer(nedPalette));
-        nedPalette.add(typesDrawer);
+        nedPalette.add(toolsContainer);
+        nedPalette.add(typesContainer);
+        nedPalette.add(mruContainer);
+        nedPalette.add(defaultContainer);
+        channelsStack.getChildren().clear();
+        typesContainer.getChildren().clear();
+        mruContainer.getChildren().clear();
+        defaultContainer.getChildren().clear();
 
+        Map<String, PaletteEntry> newEntries = createPaletteModel();
+        for(String id: newEntries.keySet()) {
+            getContainerFor(id).add(newEntries.get(id));
+        }
+
+        // TODO sort the containers by name
+        for(PaletteContainer container : currentContainers.values())
+            nedPalette.add(container);
+    }
+
+    /**
+     * The container belonging to this ID
+     */
+    public PaletteContainer getContainerFor(String id) {
+        if (!id.contains("."))
+            return defaultContainer;
+        String group = StringUtils.substringBefore(id, ".");
+        if ("!mru".equals(group))
+            return defaultContainer;
+        if ("!connections".equals(group))
+            return channelsStack;
+        if ("!connections".equals(group))
+            return channelsStack;
+        if ("!types".equals(group))
+            return typesContainer;
+
+        PaletteContainer cont = currentContainers.get(group);
+        if (cont == null) {
+            cont = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+            currentContainers.put(group, cont);
+        }
+
+        return cont;
+    }
+
+    /**
+     * Builds a drawer containing basic tools like selection connection etc.
+     */
+    private PaletteContainer createTools() {
+        PaletteGroup controlGroup = new PaletteGroup("Tools");
+
+        ToolEntry tool = new PanningSelectionToolEntry("Selector","Select module(s)");
+        tool.setToolClass(NedSelectionTool.class);
+        controlGroup.add(tool);
+        getRootPalette().setDefaultEntry(tool);
+
+        controlGroup.add(channelsStack);
+        return controlGroup;
+    }
+
+    private Map<String, PaletteEntry> createPaletteModel() {
+        Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
+        entries.putAll(createChannelsStackEntries());
+        entries.putAll(createTypesEntries());
+        // and local types
         IFileEditorInput feinput = ((IFileEditorInput)hostingEditor.getEditorInput());
         if (feinput != null) {
-            PaletteContainer localTypeDrawer = createInnerTypesDrawer(feinput.getFile());
-            if (localTypeDrawer != null && localTypeDrawer.getChildren().size()>0)
-                nedPalette.add(localTypeDrawer);
+            entries.putAll(createInnerTypes(feinput.getFile()));
         }
-        List<PaletteContainer> submodulesDrawers = createSubmodulesDrawers();
-        nedPalette.addAll(submodulesDrawers);
+        entries.put("separator", new PaletteSeparator());
+        entries.putAll(createSubmodules());
+
+        return entries;
     }
 
     /**
@@ -108,8 +185,9 @@ public class PaletteManager implements INEDChangeListener {
      * Returns a Container containing all types in this file or NULL if there are no inner types
      * defined in this file's top level modules.
      */
-    private static PaletteContainer createInnerTypesDrawer(IFile file) {
-        PaletteContainer drawer = new PaletteDrawer(LOCAL_TYPE_GROUP_NAME, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+    private static Map<String, ToolEntry> createInnerTypes(IFile file) {
+        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
+
         for (INEDElement topLevelElement : NEDResourcesPlugin.getNEDResources().getNEDFileModel(file)) {
             // skip non NedType elements
             if (!(topLevelElement instanceof INedTypeElement))
@@ -122,6 +200,7 @@ public class PaletteManager implements INEDChangeListener {
                     continue;
 
                 boolean isInterface = typeElement instanceof ModuleInterfaceElement;
+                String key = "!mru."+typeElement.getName();
 
                 // set the default images for the palette entry
                 ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
@@ -132,6 +211,7 @@ public class PaletteManager implements INEDChangeListener {
                     if (StringUtils.isNotEmpty(iid)) {
                         imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
                         imageDescLarge = ImageFactory.getDescriptor(iid,"s",null,0);
+                        key = key+":"+iid;
                     }
                 }
 
@@ -141,19 +221,19 @@ public class PaletteManager implements INEDChangeListener {
                         new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
                         imageDescNorm, imageDescLarge );
 
-                drawer.add(toolEntry);
+                entries.put(key, toolEntry);
             }
         }
 
-        return drawer;
+        return entries;
     }
 
     /**
      * Creates several submodule drawers using currently parsed types,
      * and using the GROUP property as the drawer name.
      */
-    private static List<PaletteContainer> createSubmodulesDrawers() {
-        TreeMap<String,PaletteDrawer> containerMap = new TreeMap<String, PaletteDrawer>();
+    private static Map<String, ToolEntry> createSubmodules() {
+        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         // get all the possible type names in alphabetical order
         List<String> typeNames
@@ -165,6 +245,7 @@ public class PaletteManager implements INEDChangeListener {
             INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
             INEDElement typeElement = comp.getNEDElement();
             boolean isInterface = typeElement instanceof ModuleInterfaceElement;
+            String key = name;
 
             // skip this type if it is a top level network
             if (typeElement instanceof CompoundModuleElementEx &&
@@ -181,42 +262,31 @@ public class PaletteManager implements INEDChangeListener {
                 if (StringUtils.isNotEmpty(iid)) {
                     imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
                     imageDescLarge = ImageFactory.getDescriptor(iid,"s",null,0);
+                    key += ":"+iid;
                 }
             }
 
             // determine which palette group it belongs to or put it to the default
             PropertyElement property = comp.getProperties().get(GROUP_PROPERTY);
-            String group = property == null ? DEFAULT_SUBMODULE_GROUP_NAME
+            String group = property == null ? ""
                             : NEDElementUtilEx.getPropertyValue(property);
-
-            group = StringUtils.defaultIfEmpty(group, DEFAULT_SUBMODULE_GROUP_NAME);
-
-            // get the correct drawer and create a new one if does not exists
-            PaletteDrawer currentDrawer = containerMap.get(group);
-            if (currentDrawer == null) {
-                currentDrawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
-                containerMap.put(group, currentDrawer);
-            }
+            if (StringUtils.isNotEmpty(group))
+                key = group+"."+key;
 
             // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
             CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                     name + (isInterface ? NBSP+"(interface)" : ""), StringUtils.makeBriefDocu(typeElement.getComment(), 300),
                     new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(name), name, isInterface),
                     imageDescNorm, imageDescLarge );
-            // add to the selected drawer
-            currentDrawer.add(combined);
+
+            entries.put(key, combined);
         }
 
-        // remove the default drawer (and put it at the beginning)
-        PaletteContainer def = containerMap.remove(DEFAULT_SUBMODULE_GROUP_NAME);
-        ArrayList<PaletteContainer> result = new ArrayList<PaletteContainer>(containerMap.values());
-        if (def != null && def.getChildren().size() > 0)
-            result.add(0, def);
-        return result;
+        return entries;
     }
 
-    private static PaletteStack createChannelsStack() {
-        PaletteStack connectionStack = new PaletteStack("Connections","Connect modules using this tool",ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
+    private static Map<String, ToolEntry> createChannelsStackEntries() {
+        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         ConnectionCreationToolEntry defConnTool = new ConnectionCreationToolEntry(
                 "Connection",
@@ -227,13 +297,13 @@ public class PaletteManager implements INEDChangeListener {
         );
         // sets the required connection tool
         defConnTool.setToolClass(NedConnectionCreationTool.class);
-        connectionStack.add(defConnTool);
+        entries.put("!connections.connection", defConnTool);
 
+        // connection selection
         MarqueeToolEntry marquee = new MarqueeToolEntry("Connection"+NBSP+"selector","Drag out an area to select connections in it");
         marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR,
                 new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED));
-        connectionStack.add(marquee);
-
+        entries.put("!connections.marquee", marquee);
 
         // get all the possible type names in alphabetical order
         List<String> channelNames
@@ -256,44 +326,25 @@ public class PaletteManager implements INEDChangeListener {
             );
             // sets the required connection tool
             tool.setToolClass(NedConnectionCreationTool.class);
-            connectionStack.add(tool);
+            entries.put("!connections."+name, tool);
         }
-        return connectionStack;
+        return entries;
     }
 
     /**
-     * Builds a drawer containing basic tools like selection connection etc.
+     * Builds a tool entry list containing base top level NED components like simple, module, channel etc.
      */
-    private PaletteContainer createToolsDrawer(PaletteRoot root) {
-        PaletteGroup controlGroup = new PaletteGroup("Tools");
+    private static Map<String, ToolEntry> createTypesEntries() {
+        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
-        ToolEntry tool = new PanningSelectionToolEntry("Selector","Select module(s) and connections");
-        tool.setToolClass(NedSelectionTool.class);
-        controlGroup.add(tool);
-        root.setDefaultEntry(tool);
-
-        controlGroup.add(createChannelsStack());
-
-        return controlGroup;
-    }
-
-    /**
-     * Builds a drawer containing base NED components without specifying types like
-     * simple and compound modules
-     */
-    private static PaletteContainer createTypesDrawer() {
-
-        PaletteDrawer drawer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));;
-        drawer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
-
-         CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
+        CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
                 "Simple"+NBSP+"module",
                 "Create a simple module type",
                 new ModelFactory(SimpleModuleElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
-        drawer.add(entry);
+        entries.put("!types.simple", entry);
 
         entry = new CombinedTemplateCreationEntry(
                 "Compound"+NBSP+"Module",
@@ -302,7 +353,7 @@ public class PaletteManager implements INEDChangeListener {
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
-        drawer.add(entry);
+        entries.put("!types.compound", entry);
 
         entry = new CombinedTemplateCreationEntry(
                 "Channel",
@@ -311,7 +362,7 @@ public class PaletteManager implements INEDChangeListener {
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
-        drawer.add(entry);
+        entries.put("!types.channel", entry);
 
         entry = new CombinedTemplateCreationEntry(
         		"Module"+NBSP+"Interface",
@@ -320,7 +371,7 @@ public class PaletteManager implements INEDChangeListener {
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
-        drawer.add(entry);
+        entries.put("!types.moduleinterface", entry);
 
         entry = new CombinedTemplateCreationEntry(
                 "Channel"+NBSP+"Interface",
@@ -329,8 +380,8 @@ public class PaletteManager implements INEDChangeListener {
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
-        drawer.add(entry);
+        entries.put("!types.channelinterface", entry);
 
-        return drawer;
+        return entries;
     }
 }
