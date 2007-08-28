@@ -24,7 +24,7 @@ public class NedFileFigure extends Layer {
         fl.setStretchMinorAxis(false);
         fl.setSpacing(20);
         setLayoutManager(fl);
-        setProblemMessage("Hello");
+        setProblemMessage(null);
     }
 	
     public void setProblemMessage(String problemMessage) {
