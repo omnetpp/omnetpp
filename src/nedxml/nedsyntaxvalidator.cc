@@ -107,20 +107,6 @@ inline bool strnotnull(const char *s)
     return s && s[0];
 }
 
-void NEDSyntaxValidator::checkUniqueness(NEDElement *node, int childtype, const char *attr)
-{
-    for (NEDElement *child1=node->getFirstChildWithTag(childtype); child1; child1=child1->getNextSiblingWithTag(childtype))
-    {
-        const char *attr1 = child1->getAttribute(attr);
-        for (NEDElement *child2=node->getFirstChildWithTag(childtype); child2!=child1; child2=child2->getNextSiblingWithTag(childtype))
-        {
-            const char *attr2 = child2->getAttribute(attr);
-            if (attr1 && attr2 && !strcmp(attr1,attr2))
-                errors->addError(child1, "name '%s' not unique",attr1);
-        }
-    }
-}
-
 void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n)
 {
     if (parsedExpressions)
@@ -223,14 +209,20 @@ void NEDSyntaxValidator::validateElement(CompoundModuleNode *node)
 
 void NEDSyntaxValidator::validateElement(ParametersNode *node)
 {
-    // make sure parameter names are unique
-    checkUniqueness(node, NED_PARAM, "name");
+    //FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ParamNode *node)
 {
-    //FIXME revise
-    //TODO param declarations cannot occur in submodules, cannot be conditional, etc
+    // param declarations cannot occur in submodules
+    if (node->getType() != NED_PARTYPE_NONE)
+    {
+        NEDElement *parent = node->getParent();
+        if (parent)
+            parent = parent->getParent();
+        if (parent->getTagCode() == NED_SUBMODULE)
+            errors->addError(node, "cannot define new parameters within a submodule");
+    }
 }
 
 void NEDSyntaxValidator::validateElement(PatternNode *node)
@@ -250,25 +242,30 @@ void NEDSyntaxValidator::validateElement(PropertyKeyNode *node)
 
 void NEDSyntaxValidator::validateElement(GatesNode *node)
 {
-    // make sure gate names are unique
-    checkUniqueness(node, NED_GATE, "name");
+    //FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(TypesNode *node)
 {
     // make sure type names are unique
-    //FIXME checkUniqueness(node, NED_????, "name");
 }
 
 void NEDSyntaxValidator::validateElement(GateNode *node)
 {
-    //FIXME revise
+    // param declarations cannot occur in submodules
+    if (node->getType() != NED_GATETYPE_NONE)
+    {
+        NEDElement *parent = node->getParent();
+        if (parent)
+            parent = parent->getParent();
+        if (parent->getTagCode() == NED_SUBMODULE)
+            errors->addError(node, "cannot define new gates within a submodule");
+    }
 }
 
 void NEDSyntaxValidator::validateElement(SubmodulesNode *node)
 {
-    // make sure submodule names are unique
-    checkUniqueness(node, NED_SUBMODULE, "name");
+    //FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(SubmoduleNode *node)

@@ -210,13 +210,6 @@ ned2generator.obj: ned2generator.cc \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
-  nederror.h \
-  nedsyntaxvalidator.h \
-  nedelement.h \
-  nedxmldefs.h \
-  nedvalidator.h \
-  nedelements.h
 nedcompiler.obj: nedcompiler.cc \
   nederror.h \
   nedcompiler.h \
@@ -306,6 +299,13 @@ nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nedvalidator.h \
   nedelements.h \
   nedcomponent.h
+nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
+  nederror.h \
+  nedsyntaxvalidator.h \
+  nedelement.h \
+  nedxmldefs.h \
+  nedvalidator.h \
+  nedelements.h
 nedtool.obj: nedtool.cc \
   nedparser.h \
   nederror.h \
