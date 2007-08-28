@@ -229,7 +229,7 @@ public class MultiPageNedEditor
         ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
         if (contentOutline != null) {
             // notify from the old closed editor
-            contentOutline.partClosed(this);
+            contentOutline.partDeactivated(this);
             contentOutline.partActivated(this);
         }
         // end of kludge

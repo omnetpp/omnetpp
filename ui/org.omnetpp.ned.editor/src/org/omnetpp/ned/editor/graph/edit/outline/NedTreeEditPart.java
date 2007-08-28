@@ -4,13 +4,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.RootEditPart;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
@@ -18,14 +21,16 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
@@ -91,6 +96,16 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         return (INEDElement)getModel();
     }
 
+    public boolean isEditable() {
+    	NedFileElementEx nedFileElement = getNEDFileElement();
+       	return nedFileElement == null || (!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError());
+    }
+
+	@Override
+    public Command getCommand(Request request) {
+    	return isEditable() ? super.getCommand(request) : UnexecutableCommand.INSTANCE;
+    }
+
     /**
      * Returns the children of the model element of this editpart.
      */
@@ -112,26 +127,21 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     public void modelChanged(NEDModelEvent event) {
         // we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
-        if (Display.getCurrent() == null)
-            Display.getDefault().asyncExec(new Runnable() {
-                public void run() {
-                    totalRefresh();
-                }
-            });
-        else // refresh in the current UI thread
-            totalRefresh();
+    	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            public void run() {
+                refresh();
+            }
+        });
     }
 
     /**
      * Fully refresh ourselves an all of our children (recursively) visually
      */
-    // TODO: shouldn't it override refresh instead?
-    protected void totalRefresh() {
-        // refresh ourselves
-        refresh();
-        // delegate to all children and refresh all their appearance
+    @Override
+    public void refresh() {
+    	super.refresh();
         for (Object child : getChildren())
-            ((NedTreeEditPart)child).totalRefresh();
+            ((NedTreeEditPart)child).refresh();
 
     }
 
@@ -142,4 +152,8 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     public void setPropertySource(IPropertySource propertySource) {
         this.propertySource = propertySource;
     }
+
+    private NedFileElementEx getNEDFileElement() {
+		return (NedFileElementEx)getNEDModel().getParentWithTag(NEDElementTags.NED_NED_FILE);
+	}
 }
