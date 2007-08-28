@@ -17,7 +17,6 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -25,8 +24,8 @@ import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -84,7 +83,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     @Override
     protected Command createChangeConstraintCommand(EditPart child, Object newConstraint) {
         // do not allow change if we are read only components
-        if (!PolicyUtil.isEditable(child))
+        if (!EditPartUtil.isEditable(child))
             return null;
 
         Rectangle modelConstraint = (Rectangle)newConstraint;
@@ -144,7 +143,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected EditPolicy createChildEditPolicy(EditPart child) {
         ResizableEditPolicy policy = new NedResizeEditPolicy();
         // check if the edit part is editable and do not allow resize or drag operations
-        if (!PolicyUtil.isEditable(child)) {
+        if (!EditPartUtil.isEditable(child)) {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);
         }

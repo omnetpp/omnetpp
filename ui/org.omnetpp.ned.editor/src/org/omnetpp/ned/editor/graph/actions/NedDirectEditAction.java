@@ -2,8 +2,7 @@ package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.ui.IWorkbenchPart;
-
-import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
+import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 
 /**
  * Specialized DirectEditAction that disables the action if the element is read only
@@ -21,7 +20,7 @@ public class NedDirectEditAction extends DirectEditAction {
         if (!super.calculateEnabled())
             return false;
         // allows only the editing of non-readonly parts
-        return PolicyUtil.isEditable(getSelectedObjects().get(0));
+        return EditPartUtil.isEditable(getSelectedObjects().get(0));
     }
 
 

@@ -17,14 +17,13 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
+import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -51,7 +50,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         else  // and no resize for other types
             policy.setResizeDirections(PositionConstants.NONE);
 
-        if (!PolicyUtil.isEditable(child)) {
+        if (!EditPartUtil.isEditable(child)) {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);
         }

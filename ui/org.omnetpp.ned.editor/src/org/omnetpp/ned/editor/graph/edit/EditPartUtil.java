@@ -11,9 +11,19 @@ import org.eclipse.gef.EditPart;
 /**
  * Utility functions for editparts.
  * 
- * @author Andras
+ * @author rhornig, andras
  */
 public class EditPartUtil {
+    /**
+     * Returns whether the given object is editable
+     */
+    public static boolean isEditable(Object part) {
+        if (part instanceof IReadOnlySupport)
+            return ((IReadOnlySupport)part).isEditable();
+        // by default it is editable
+        return true;
+    }
+
 
 	/**
 	 * Returns a collection of all collection editparts that

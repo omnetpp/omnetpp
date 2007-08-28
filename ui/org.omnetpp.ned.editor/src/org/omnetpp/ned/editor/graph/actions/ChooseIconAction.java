@@ -6,12 +6,11 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.ImageSelectionDialog;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
-import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
+import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
@@ -80,7 +79,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
         if (getSelectedObjects().size() > 0) {
             Object obj = getSelectedObjects().get(0);
             // check if the part is editable at all
-            if (!PolicyUtil.isEditable(obj))
+            if (!EditPartUtil.isEditable(obj))
                 return UnexecutableCommand.INSTANCE;
 
             if (obj instanceof IModelProvider) {

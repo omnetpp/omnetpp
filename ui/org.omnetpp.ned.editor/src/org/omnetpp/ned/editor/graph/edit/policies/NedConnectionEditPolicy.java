@@ -5,9 +5,9 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
@@ -20,7 +20,7 @@ public class NedConnectionEditPolicy extends ConnectionEditPolicy {
     @Override
     protected Command getDeleteCommand(GroupRequest request) {
         // do not allow delete if we are read only components
-        if (!PolicyUtil.isEditable(getHost()))
+        if (!EditPartUtil.isEditable(getHost()))
             return null;
 
         ModuleEditPart srcEP = (ModuleEditPart)((ModuleConnectionEditPart)getHost()).getSource();

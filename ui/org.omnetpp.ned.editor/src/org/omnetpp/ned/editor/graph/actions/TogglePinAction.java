@@ -9,11 +9,10 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
-
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 
@@ -84,7 +83,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
         for (Object child : getSelectedObjects()) {
             if (child instanceof GraphicalEditPart) {
                 SetConstraintCommand c = createTogglePinCommand((GraphicalEditPart)child);
-                if (c != null && PolicyUtil.isEditable(child))
+                if (c != null && EditPartUtil.isEditable(child))
                     resize.add(c);
             }
         }
