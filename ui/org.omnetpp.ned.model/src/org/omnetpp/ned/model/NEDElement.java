@@ -23,7 +23,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * The default implementation of INEDElement.
- * 
+ *
  * It extends PlatformObject to have a default IAdaptable implementation
  * primarily for PropertySheet support.
  *
@@ -32,7 +32,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 public abstract class NEDElement extends PlatformObject implements INEDElement, IModelProvider
 {
 	private static final int SEVERITY_INVALID = Integer.MIN_VALUE;
-	
+
 	private String source;
 	private long id;
 	private String srcloc;
@@ -44,7 +44,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	private NEDElement nextsibling;
 	private HashMap<Object,Object> userData;
 	private static long lastid;
-    
+
 	// store maximum severity of error markers associated with this element.
 	// "syntax": NEDSYNTAXPROBLEM_MARKERID; "consistency": NEDCONSISTENCYPROBLEM_MARKERID;
 	// "local": this NEDElement; "cumulated": this element and its subtree
@@ -54,11 +54,11 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     private int consistencyProblemMaxCumulatedSeverity = SEVERITY_INVALID;
 
     private transient NEDChangeListenerList listeners = null;
-    
+
     // needed because we cannot write NEDResourcesPlugin.getNEDResources() (plug-in dependency cycle)
     private static INEDTypeResolver defaultTypeResolver = null;
 
-    
+
 	public Iterator<INEDElement> iterator() {
 		final INEDElement e = this;
 		return new Iterator<INEDElement> () {
@@ -145,7 +145,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	public static INEDTypeInfo resolveTypeName(String typeName) {
 		return StringUtils.isEmpty(typeName) ? null : getDefaultTypeResolver().getComponent(typeName);
 	}
-	
+
 	/**
 	 * Constructor
 	 */
@@ -175,7 +175,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public String getReadableTagName() {
     	return getTagName().replace('-', ' ');  // override if something more sophisticated is needed
     }
-	
+
 	public long getId() {
 		return id;
 	}
@@ -393,7 +393,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		}
 		return null;
 	}
-	
+
     public void setUserData(Object key, Object value) {
         if (userData == null)
             userData = new HashMap<Object,Object>();
@@ -432,7 +432,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     	cloned.setSourceRegion(getSourceRegion());
     	cloned.setSyntaxProblemMaxLocalSeverity(getSyntaxProblemMaxLocalSeverity());
     	cloned.setConsistencyProblemMaxLocalSeverity(getConsistencyProblemMaxLocalSeverity());
-        
+
         return cloned;
     }
 
@@ -478,7 +478,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 
     public void fireModelEvent(NEDModelEvent event) {
     	// invalidate cached data
-    	source = null; 
+    	source = null;
     	syntaxProblemMaxCumulatedSeverity = SEVERITY_INVALID;
     	consistencyProblemMaxCumulatedSeverity = SEVERITY_INVALID;
 
@@ -531,12 +531,12 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public String getNEDSource() {
 		if (source == null)
 			source = NEDTreeUtil.generateNedSource(this, true);
-		
+
 		return source;
     }
 
     /* problem markers */
-    
+
     public void clearSyntaxProblemMarkerSeverities() {
     	if (syntaxProblemMaxLocalSeverity != SEVERITY_NONE) {
     		syntaxProblemMaxLocalSeverity = SEVERITY_NONE;
@@ -591,17 +591,17 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     public int getSyntaxProblemMaxLocalSeverity() {
 		return syntaxProblemMaxLocalSeverity;
 	}
-    
+
     public int getConsistencyProblemMaxLocalSeverity() {
 		return consistencyProblemMaxLocalSeverity;
 	}
-    
+
     public int getSyntaxProblemMaxCumulatedSeverity() {
     	if (syntaxProblemMaxCumulatedSeverity == SEVERITY_INVALID)
     		updateCumulatedProblemSeverities();
 		return syntaxProblemMaxCumulatedSeverity;
 	}
-    
+
 	public int getConsistencyProblemMaxCumulatedSeverity() {
     	if (consistencyProblemMaxCumulatedSeverity == SEVERITY_INVALID)
     		updateCumulatedProblemSeverities();
@@ -630,6 +630,6 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         return getClass().getSimpleName() + " " + (hasAttribute("name") ? getAttribute("name") : "");
         //return NEDTreeUtil.generateXmlFromPojoElementTree(this, "  ");
     }
-    
+
 }
 
