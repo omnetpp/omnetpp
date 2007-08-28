@@ -56,7 +56,7 @@ public class PaletteManager implements INEDChangeListener {
     protected PaletteDrawer typesContainer;
     protected PaletteDrawer defaultContainer;
 
-    protected Map<String, ToolEntry> currentEntries = new HashMap<String, ToolEntry>();
+    protected Map<String, PaletteEntry> currentEntries = new HashMap<String, PaletteEntry>();
     protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
 
     protected DelayedJob paletteUpdaterJob = new DelayedJob(200) {
@@ -111,8 +111,14 @@ public class PaletteManager implements INEDChangeListener {
 
         Map<String, PaletteEntry> newEntries = createPaletteModel();
         for(String id: newEntries.keySet()) {
+            // if the same tool already exist use that object so the object identity will not change
+            // unnecessary
+            if (currentEntries.containsKey(id))
+                newEntries.put(id, currentEntries.get(id));
+
             getContainerFor(id).add(newEntries.get(id));
         }
+        currentEntries = newEntries;
 
         // TODO sort the containers by name
         for(PaletteContainer container : currentContainers.values())
