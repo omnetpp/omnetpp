@@ -45,9 +45,6 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  *
  * @author rhornig
  */
-// TODO currently the whole palette is rebuilt on each model change
-// this is not necessary. Detect the changes in the palette and add/remove/modify only
-// entries which really need refresh
 public class PaletteManager implements INEDChangeListener {
     private static final String NBSP = "\u00A0";
     private static final String GROUP_PROPERTY = "group";
@@ -57,11 +54,10 @@ public class PaletteManager implements INEDChangeListener {
     private PaletteContainer toolsContainer;
     protected PaletteContainer channelsStack;
     protected PaletteDrawer typesContainer;
-    protected PaletteContainer mruContainer;
     protected PaletteDrawer defaultContainer;
 
     protected Map<String, ToolEntry> currentEntries = new HashMap<String, ToolEntry>();
-    protected Map<String, PaletteContainer> currentContainers = new HashMap<String, PaletteContainer>();
+    protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
 
     protected DelayedJob paletteUpdaterJob = new DelayedJob(200) {
         public void run() {
@@ -77,9 +73,7 @@ public class PaletteManager implements INEDChangeListener {
         toolsContainer = createTools();
         typesContainer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
         typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
-        mruContainer = new PaletteGroup("MRU");
         defaultContainer = new PaletteDrawer("Submodules", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
-
 
         synchronizePalette();
     }
@@ -108,12 +102,12 @@ public class PaletteManager implements INEDChangeListener {
         nedPalette.getChildren().clear();
         nedPalette.add(toolsContainer);
         nedPalette.add(typesContainer);
-        nedPalette.add(mruContainer);
         nedPalette.add(defaultContainer);
         channelsStack.getChildren().clear();
         typesContainer.getChildren().clear();
-        mruContainer.getChildren().clear();
         defaultContainer.getChildren().clear();
+        for(PaletteContainer container : currentContainers.values())
+            container.getChildren().clear();
 
         Map<String, PaletteEntry> newEntries = createPaletteModel();
         for(String id: newEntries.keySet()) {
@@ -136,14 +130,13 @@ public class PaletteManager implements INEDChangeListener {
             return defaultContainer;
         if ("!connections".equals(group))
             return channelsStack;
-        if ("!connections".equals(group))
-            return channelsStack;
         if ("!types".equals(group))
             return typesContainer;
 
-        PaletteContainer cont = currentContainers.get(group);
+        PaletteDrawer cont = currentContainers.get(group);
         if (cont == null) {
             cont = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+            cont.setInitialState(PaletteDrawer.INITIAL_STATE_CLOSED);
             currentContainers.put(group, cont);
         }
 
