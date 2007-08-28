@@ -400,7 +400,6 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		}
 
 		@SuppressWarnings("unchecked")
-		@Override
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
 			drawBackground(gc, e.x, e.y, e.width, e.height);
