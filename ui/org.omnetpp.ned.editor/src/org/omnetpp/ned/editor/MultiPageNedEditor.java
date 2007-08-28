@@ -75,7 +75,7 @@ public class MultiPageNedEditor
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type (only workspace files can be opened): " + editorInput);
-		
+
 		super.init(site, editorInput);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
@@ -88,10 +88,12 @@ public class MultiPageNedEditor
 			}
 
 			public void partActivated(IWorkbenchPart part) {
-				// when switching from another editor to this, we need to immediately pull the changes
-				NedFileElementEx nedFileElement = getNEDFileElement();
-				if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
-					textEditor.pullChangesFromNEDResources();
+			    if (getEditorInput() != null) {
+			        // when switching from another editor to this, we need to immediately pull the changes
+			        NedFileElementEx nedFileElement = getNEDFileElement();
+			        if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
+			            textEditor.pullChangesFromNEDResources();
+			    }
 			}
 
 			public void partDeactivated(IWorkbenchPart part) {
@@ -109,7 +111,7 @@ public class MultiPageNedEditor
     public void dispose() {
         // detach the editor file from the core plugin and do not set a new file
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
-        
+
         // disconnect the editor from the ned resources plugin
         setInput(null);
         super.dispose();
@@ -121,7 +123,7 @@ public class MultiPageNedEditor
 
 		IEditorInput oldInput = getEditorInput();
 		if (ObjectUtils.equals(oldInput, newInput))
-            return; // no change 
+            return; // no change
 
         if (oldInput != null) {
         	// disconnect() must be *after* setInput(null)
@@ -130,7 +132,7 @@ public class MultiPageNedEditor
                 graphEditor.setInput(null);
             if (textEditor != null)
                 textEditor.setInput(null);
-            
+
             IFile oldFile = ((IFileEditorInput) oldInput).getFile();
             NEDResourcesPlugin.getNEDResources().disconnect(oldFile);
         }
@@ -173,8 +175,8 @@ public class MultiPageNedEditor
 
             // switch to graphics mode initially if there's no error in the file
             setActivePage(maySwitchToGraphicalEditor() ? graphPageIndex : textPageIndex);
-            	
-		} 
+
+		}
 		catch (PartInitException e) {
 		    NedEditorPlugin.logError(e);
 		}
@@ -198,7 +200,7 @@ public class MultiPageNedEditor
 
 	    super.setActivePage(pageIndex);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
 	 * Responsible of synchronizing the two editor's model with each other and the NEDResources plugin
@@ -214,14 +216,14 @@ public class MultiPageNedEditor
         super.pageChange(newPageIndex);
 
         // XXX Kludge: currently the workbench do not send a partActivated/deactivated messages
-        // for embedded editors in a MultiPageEditorView. (This is a missing unimplemented feature, 
+        // for embedded editors in a MultiPageEditorView. (This is a missing unimplemented feature,
         // it works with MultiEditor though).
         // To make the NED editor Outline page active, we need to send activate/deactivate directly.
-        // We find the Outline View directly, and send the notification by hand. 
+        // We find the Outline View directly, and send the notification by hand.
         // Once the platform MultiPageEditor class handles this correctly, this code can be removed.
-        // On each page change we emulate a close/open cycle of the multi-page editor, this removes 
-        // the associated Outline page, so the Outline View will re-request the multi-page editor 
-        // for a ContentOutlinePage (via getAdapter). The current implementation of 
+        // On each page change we emulate a close/open cycle of the multi-page editor, this removes
+        // the associated Outline page, so the Outline View will re-request the multi-page editor
+        // for a ContentOutlinePage (via getAdapter). The current implementation of
         // MultipageEditorPart.getAdapter delegates this request to the active embedded editor.
         //
         ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
@@ -346,7 +348,7 @@ public class MultiPageNedEditor
                         }
                     });
                 }
-                else { 
+                else {
                 	// else if it was moved or renamed
                     final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(delta.getMovedToPath());
                     display.asyncExec(new Runnable() {
@@ -368,7 +370,7 @@ public class MultiPageNedEditor
     }
 
 	protected void inputFileDeletedFromDisk() {
-		if (!isDirty()) 
+		if (!isDirty())
 			closeEditor(false);
 		else
 			; //TODO ask user?
@@ -383,7 +385,7 @@ public class MultiPageNedEditor
         // replaced by another version in the repository)
         // TODO ask the user and reload the file
 	}
-	
+
     public void gotoMarker(IMarker marker) {
         // switch to text page and delegate to it
         setActivePage(textPageIndex);
@@ -442,7 +444,7 @@ public class MultiPageNedEditor
     public IFile getFile() {
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
-    
+
     public NedFileElementEx getNEDFileElement() {
     	return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
     }

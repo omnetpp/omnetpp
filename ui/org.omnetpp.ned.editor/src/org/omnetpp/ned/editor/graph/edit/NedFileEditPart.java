@@ -41,7 +41,7 @@ public class NedFileEditPart extends NedEditPart {
         // no direct editing is possible on the toplevel model element
         installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, null);
     }
-    
+
     @Override
     public boolean isEditable() {
     	NedFileElementEx nedFileElement = getNEDFileElement();
@@ -82,9 +82,9 @@ public class NedFileEditPart extends NedEditPart {
     protected void refreshVisuals() {
     	super.refreshVisuals();
     	NedFileFigure nedFileFigure = ((NedFileFigure)getFigure());
-   		nedFileFigure.setProblemMessage(!getNEDFileElement().hasSyntaxError() ? null : "Syntax error, the graphical editor content may be outdated and invalid. Please fix the sytax errors first.");
+//   		nedFileFigure.setProblemMessage(!getNEDFileElement().hasSyntaxError() ? null : "Syntax error, the graphical editor content may be outdated and invalid. Please fix the sytax errors first.");
     }
-    
+
     @Override
     protected List<INedTypeElement> getModelChildren() {
     	return ((NedFileElementEx)getNEDModel()).getTopLevelTypeNodes();

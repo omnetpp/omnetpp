@@ -26,6 +26,8 @@ import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Layout policy used in the top level NedFile element allowing a vertical, toolbar like
@@ -67,19 +69,19 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return false;
 	}
 
-	// TODO implement generic clone command
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Command getCloneCommand(ChangeBoundsRequest request) {
 
 		EditPart iPoint = getInsertionReference(request);
 		INEDElement insertBeforeNode = iPoint != null ? (INEDElement)iPoint.getModel() : null;
-		INEDElement parent = (INEDElement)getHost().getModel();
+		NedFileElementEx parent = (NedFileElementEx)getHost().getModel();
 		CloneCommand cloneCmd = new CloneCommand(parent, insertBeforeNode);
 
 		// iterate through all involved editparts and add their model to the coning list
 		for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
-			cloneCmd.addPart((INEDElement)currPart.getModel());
+		    if (currPart.getModel() instanceof INedTypeElement)
+		        cloneCmd.add((INedTypeElement)currPart.getModel());
 
 		return cloneCmd;
 	}
