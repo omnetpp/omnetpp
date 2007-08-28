@@ -1,8 +1,10 @@
 package org.omnetpp.ned.editor.graph.actions;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
@@ -22,6 +24,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -75,13 +78,15 @@ public class PasteAction extends SelectionAction {
 			INEDElement[] elements = (INEDElement[]) contents;
 			CompoundModuleElementEx compoundModule = getTargetCompoundModule(); // for submodules and connections
 			//FIXME if needed, create a compound module on demand? or pop up an error dialog?
+			Set<String> usedSubmoduleNames = new HashSet<String>();
+			usedSubmoduleNames.addAll(compoundModule.getNEDTypeInfo().getSubmodules().keySet());
 			Map<String, String> submoduleNameMap = new HashMap<String, String>();
 			for (INEDElement element : elements) {
 				System.out.println("pasting " + element);
 				if (element instanceof INedTypeElement)
 					pasteNedTypeElement((INedTypeElement)element.deepDup(), compoundCommand);
 				else if (element instanceof SubmoduleElementEx && compoundModule != null)
-					pasteSubmodule((SubmoduleElementEx)element.deepDup(), compoundModule, submoduleNameMap, compoundCommand);
+					pasteSubmodule((SubmoduleElementEx)element.deepDup(), compoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
 				else if (element instanceof ConnectionElementEx && compoundModule != null)
 					pasteConnection((ConnectionElementEx)element.deepDup(), compoundModule, submoduleNameMap, compoundCommand);
 				else
@@ -104,16 +109,18 @@ public class PasteAction extends SelectionAction {
 		compoundCommand.add(new AddNEDElementCommand(parent, element));
 	}
 
-	protected void pasteSubmodule(SubmoduleElementEx submodule, CompoundModuleElementEx targetModule, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
+	protected void pasteSubmodule(SubmoduleElementEx submodule, CompoundModuleElementEx targetModule, Set<String> usedSubmoduleNames, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
 		SubmodulesElement submodulesElement = targetModule.getFirstSubmodulesChild();
 		if (submodulesElement == null) {
 			submodulesElement = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
 			submodulesElement.appendChild(submodule);
+			usedSubmoduleNames.add(submodule.getName());
 			compoundCommand.add(new AddNEDElementCommand(targetModule, submodulesElement));
 		}
 		else {
-			if (submodulesElement.getFirstChildWithAttribute(NEDElementTags.NED_SUBMODULE, SubmoduleElementEx.ATT_NAME, submodule.getName()) != null) {
-				String newName = "_" + submodule.getName();  // FIXME better/safer way to make it unique!! i.e. regard inherited submods too!
+			String newName = NEDElementUtilEx.getUniqueNameFor(submodule, usedSubmoduleNames);
+			usedSubmoduleNames.add(newName);
+			if (!newName.equals(submodule.getName())) {
 				submoduleNameMap.put(submodule.getName(), newName);
 				submodule.setName(newName);
 			}
