@@ -1,6 +1,5 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.edit;
 
-import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 
 /**
  * Static helper functions for policy classes

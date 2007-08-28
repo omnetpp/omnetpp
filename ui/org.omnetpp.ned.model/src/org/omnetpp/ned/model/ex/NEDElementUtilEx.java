@@ -188,10 +188,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     }
 
     /**
-     * Calculates a unique name for the provided model element
-     * @param namedElement
-     * @param contextCollection A collection of IHasName elements which provides a context in which the name should be unique
-     * @return The new unique name, or the original name if it was unique
+     * Calculates a unique name for the provided model element.
      */
     public static String getUniqueNameFor(IHasName namedElement, Set<String> contextCollection) {
 

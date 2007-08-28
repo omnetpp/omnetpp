@@ -127,7 +127,7 @@ public class CloneSubmoduleCommand extends Command {
 
         // go through all modules that were previously cloned and check all the source connections
         for (SubmoduleElementEx oldSrcMod : modules)
-            for (ConnectionElementEx oldConn : oldSrcMod.getSrcConnections()) {
+            for (ConnectionElementEx oldConn : oldSrcMod.getSrcConnections()) {  //FIXME this won't clone connections among inherited modules! --Andras
             	IConnectableElement oldDestMod = oldConn.getDestModuleRef();
                 // if the destination side was also selected clone this connection connection too
                 // TODO future: clone the connections ONLY if they are selected too

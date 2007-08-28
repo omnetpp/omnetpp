@@ -11,7 +11,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.ImageSelectionDialog;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
-import org.omnetpp.ned.editor.graph.edit.policies.PolicyUtil;
+import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;

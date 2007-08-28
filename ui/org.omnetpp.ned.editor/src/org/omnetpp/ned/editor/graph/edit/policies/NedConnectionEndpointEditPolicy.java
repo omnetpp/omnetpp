@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Color;
 
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
+import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 

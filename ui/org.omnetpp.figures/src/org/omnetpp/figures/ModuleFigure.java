@@ -2,7 +2,6 @@ package org.omnetpp.figures;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -46,18 +45,6 @@ abstract public class ModuleFigure extends Figure {
 		return image;
 	}
     
-    /**
-     * temporary debug function to display figure hierarchy
-     * @param f
-     * @param indent
-     */
-    static public void debugPrintFigureHierarchy(IFigure f, String indent) {
-    	System.out.println(indent+f+"@"+f.hashCode()+"  "+f.getBounds()+" parent="+f.getParent());
-    	for (Object child : f.getChildren()) {
-    		debugPrintFigureHierarchy((IFigure)child, indent+"    ");
-    	}
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName()+" "+figureName;

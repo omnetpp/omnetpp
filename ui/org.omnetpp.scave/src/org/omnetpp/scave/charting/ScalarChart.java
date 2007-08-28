@@ -591,7 +591,7 @@ public class ScalarChart extends ChartCanvas {
 		}
 
 		/**
-		 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
+		 * Modifies insets to accommodate room for axis title, ticks, tick labels etc.
 		 * Also returns insets for convenience. 
 		 */
 		public Insets layoutHint(GC gc, Rectangle rect, Insets insets) {

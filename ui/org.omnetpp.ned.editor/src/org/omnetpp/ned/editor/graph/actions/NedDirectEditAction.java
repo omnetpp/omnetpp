@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.actions;
 import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-import org.omnetpp.ned.editor.graph.edit.policies.PolicyUtil;
+import org.omnetpp.ned.editor.graph.edit.PolicyUtil;
 
 /**
  * Specialized DirectEditAction that disables the action if the element is read only
