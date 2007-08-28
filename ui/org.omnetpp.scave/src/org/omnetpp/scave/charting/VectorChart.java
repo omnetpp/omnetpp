@@ -53,19 +53,8 @@ import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
-import org.omnetpp.scave.charting.plotter.CrossSymbol;
-import org.omnetpp.scave.charting.plotter.DiamondSymbol;
-import org.omnetpp.scave.charting.plotter.DotsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
-import org.omnetpp.scave.charting.plotter.LinesVectorPlotter;
-import org.omnetpp.scave.charting.plotter.OvalSymbol;
-import org.omnetpp.scave.charting.plotter.PinsVectorPlotter;
-import org.omnetpp.scave.charting.plotter.PlusSymbol;
-import org.omnetpp.scave.charting.plotter.PointsVectorPlotter;
-import org.omnetpp.scave.charting.plotter.SampleHoldVectorPlotter;
-import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
 
 

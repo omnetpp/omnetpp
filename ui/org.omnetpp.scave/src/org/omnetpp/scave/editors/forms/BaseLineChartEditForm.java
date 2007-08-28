@@ -9,7 +9,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -39,7 +38,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.ui.TristateButton;
 import org.omnetpp.common.util.Converter;
@@ -52,6 +50,7 @@ import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.RandomXYDataset;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
@@ -314,7 +313,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public PreviewCanvas(Composite parent) {
 			super(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
 			setBackground(ColorFactory.WHITE);
-			dataset = createSampleDataset();
+			dataset = new RandomXYDataset(0, lineNames, 4);
 			coordsMapping = createCoordsMapping();
 			addPaintListener(this);
 		}
@@ -425,64 +424,6 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 					plotter.plot(dataset, series, gc, coordsMapping, symbol);
 				}
 			}
-		}
-		
-		private IXYDataset createSampleDataset() {
-			class RandomDataset implements IXYDataset {
-				
-				String[] seriesKeys;
-				double[][] yCoords;
-				
-				public RandomDataset(long seed, String[] seriesKeys) {
-					Random rg = new Random(seed);
-					this.seriesKeys = seriesKeys;
-					yCoords = new double[seriesKeys.length][];
-					for (int series = 0; series < seriesKeys.length; ++series) {
-						yCoords[series] = new double[4];
-						for (int i = 0; i < 4; ++i) {
-							yCoords[series][i] = rg.nextDouble();
-						}
-					}
-							
-				}
-
-				@Override
-				public int getSeriesCount() {
-					return seriesKeys.length;
-				}
-
-				@Override
-				public String getSeriesKey(int series) {
-					return seriesKeys[series];
-				}
-
-				@Override
-				public int getItemCount(int series) {
-					return yCoords[series].length;
-				}
-
-				@Override
-				public double getX(int series, int item) {
-					return (item+0.5)/(getItemCount(series));
-				}
-
-				@Override
-				public BigDecimal getPreciseX(int series, int item) {
-					return null;
-				}
-
-				@Override
-				public double getY(int series, int item) {
-					return yCoords[series][item];
-				}
-				
-				@Override
-				public BigDecimal getPreciseY(int series, int item) {
-					return null;
-				}
-			};
-			
-			return new RandomDataset(0, lineNames);
 		}
 		
 		private ICoordsMapping createCoordsMapping() {
