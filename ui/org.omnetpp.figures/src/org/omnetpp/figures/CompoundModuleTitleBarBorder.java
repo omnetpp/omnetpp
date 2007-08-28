@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.figures.misc.IDirectEditSupport;
 
 /**
- * TODO add documentation
+ * Title bar around the compound module providing title text
  *
  * @author rhornig
  */
@@ -29,7 +29,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 
 	private static Color defaultColor = ColorConstants.menuBackgroundSelected;
 
-	private Insets padding = new Insets(1, 3, 2, 2);
+	private Insets padding = new Insets(0, 0, 2, 3);
 	private Color fillColor = defaultColor;
 
 	private Insets imageInsets;
@@ -112,9 +112,12 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 		if (image != null) {
 			imgx += padding.left;
 			imgy += padding.top;
-			lx = imgx + image.getBounds().width;
+			lx = padding.right + imgx +image.getBounds().width;
 			titleBarHeight = Math.max(titleBarHeight, image.getBounds().height + padding.getHeight());
 		}
+
+		if (problemDecorationImage != null)
+		    lx = Math.max(lx, tRect.x +problemDecorationImage.getBounds().width);
 
 		// compute label position
 		titleBarHeight = Math.max(titleBarHeight, getTextExtents(figure).height + padding.getHeight());
@@ -130,12 +133,12 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 			g.setBackgroundColor(fillColor);
 			g.fillRectangle(tRect);
 		}
+		if (getImage() != null)
+		    g.drawImage(getImage(), imgx, imgy);
+		if (problemDecorationImage != null)
+		    g.drawImage(problemDecorationImage, imgx-1, imgy);  //FIXME better positioning, even if there's no icon!
         if (titleVisible)
             g.drawString(getLabel(), lx, ly);
-		if (getImage() != null)
-			g.drawImage(getImage(), imgx, imgy);
-		if (problemDecorationImage != null)
-			g.drawImage(problemDecorationImage, imgx, imgy);  //FIXME better positioning, even if there's no icon!
 
         // store the label bounds (in absolute coordinates) so cell editors
         // will be able to place the editor over it

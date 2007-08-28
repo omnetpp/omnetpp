@@ -1,19 +1,6 @@
 package org.omnetpp.figures;
 
-import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.ConnectionLayer;
-import org.eclipse.draw2d.ConnectionRouter;
-import org.eclipse.draw2d.FanRouter;
-import org.eclipse.draw2d.FreeformLayer;
-import org.eclipse.draw2d.FreeformLayeredPane;
-import org.eclipse.draw2d.FreeformViewport;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.LayeredPane;
-import org.eclipse.draw2d.SWTGraphics;
-import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
@@ -24,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
+
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -59,7 +47,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private ConnectionLayer connectionLayer;
     private FreeformLayer messageLayer;
     private SpringEmbedderLayout layouter;
-   
+
     // TODO implement ruler
     @SuppressWarnings("unused")
     private float scale = 1.0f;
@@ -146,7 +134,6 @@ public class CompoundModuleFigure extends ModuleFigure
     public CompoundModuleFigure() {
         super();
         setBorder(new CompoundModuleBorder());
-        getCompoundModuleBorder().getTitleBorder().setPadding(5);
 
         setLayoutManager(new StackLayout());
         // create scroller and viewport to manage the scrollbars and scrolling

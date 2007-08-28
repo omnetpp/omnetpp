@@ -7,6 +7,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -29,9 +30,9 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
 
     public NedTypeFigure() {
         setLayoutManager(new XYLayout());
-        add(problemMarkerFigure, new Rectangle(0,0,16,16)); //XXX hardcoded image size; need better positioning!
+        add(problemMarkerFigure, new Rectangle(-1,0,16,16)); //XXX hardcoded image size; need better positioning!
     }
-    
+
     protected void setShape(Image img,
             String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
