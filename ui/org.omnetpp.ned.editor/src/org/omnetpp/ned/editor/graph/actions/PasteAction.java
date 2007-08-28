@@ -18,6 +18,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
@@ -64,7 +65,7 @@ public class PasteAction extends SelectionAction {
 	public void run() {
 		Command command = getCommand();
 		if (command.canExecute())
-			execute(command);
+			execute(command);  //FIXME plus: select newly pasted stuff (how? no editparts yet! or?)
 	}
 
 	/**
@@ -76,15 +77,18 @@ public class PasteAction extends SelectionAction {
 			CompoundCommand compoundCommand = new CompoundCommand();
 
 			INEDElement[] elements = (INEDElement[]) contents;
+			Set<String> usedNedTypeNames = new HashSet<String>();
+			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
 			CompoundModuleElementEx compoundModule = getTargetCompoundModule(); // for submodules and connections
 			//FIXME if needed, create a compound module on demand? or pop up an error dialog?
 			Set<String> usedSubmoduleNames = new HashSet<String>();
-			usedSubmoduleNames.addAll(compoundModule.getNEDTypeInfo().getSubmodules().keySet());
+			if (compoundModule != null)
+				usedSubmoduleNames.addAll(compoundModule.getNEDTypeInfo().getSubmodules().keySet());
 			Map<String, String> submoduleNameMap = new HashMap<String, String>();
 			for (INEDElement element : elements) {
 				System.out.println("pasting " + element);
 				if (element instanceof INedTypeElement)
-					pasteNedTypeElement((INedTypeElement)element.deepDup(), compoundCommand);
+					pasteNedTypeElement((INedTypeElement)element.deepDup(), usedNedTypeNames, compoundCommand);
 				else if (element instanceof SubmoduleElementEx && compoundModule != null)
 					pasteSubmodule((SubmoduleElementEx)element.deepDup(), compoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
 				else if (element instanceof ConnectionElementEx && compoundModule != null)
@@ -102,10 +106,16 @@ public class PasteAction extends SelectionAction {
 
 	}
 
-	protected void pasteNedTypeElement(INedTypeElement element, CompoundCommand compoundCommand) {
+	protected void pasteNedTypeElement(INedTypeElement element, Set<String> usedNedTypeNames, CompoundCommand compoundCommand) {
+		// ensure name will be unique
+		String newName = NEDElementUtilEx.getUniqueNameFor(element, usedNedTypeNames);
+		usedNedTypeNames.add(newName);
+		element.setName(newName);
+		
+		// paste it
+		//FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
 		EditPart toplevelEditPart = getGraphicalViewer().getContents();
 		NedFileElementEx parent = (NedFileElementEx)toplevelEditPart.getModel();
-		//FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
 		compoundCommand.add(new AddNEDElementCommand(parent, element));
 	}
 
