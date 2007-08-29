@@ -1,11 +1,11 @@
-package org.omnetpp.test.gui.inifileeditor;
+package org.omnetpp.test.gui.core;
 
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
 
-public class TestFrameworkTest {
-
+public class TestFrameworkTest extends GUITestCase
+{
 	public void testFileNotExists_1() {
 		WorkspaceAccess.assertFileNotExists("/no-such-project/some-nonsense-filename");
 	}
@@ -41,5 +41,4 @@ public class TestFrameworkTest {
 		workbenchWindow.chooseFromMainMenu("File|Open File.*"); // bring up "File Open" dialog
 		workbenchWindow.assertIsActiveShell();  // now this should fail because dialog is open
 	}
-
 }

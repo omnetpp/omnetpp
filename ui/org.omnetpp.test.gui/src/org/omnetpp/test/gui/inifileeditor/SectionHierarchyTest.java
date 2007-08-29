@@ -8,10 +8,14 @@ import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
 import org.omnetpp.test.gui.core.GUITestCase;
+import org.omnetpp.test.gui.util.WorkbenchUtils;
 
-public class SectionHierarchyTest extends GUITestCase {
+public class SectionHierarchyTest extends GUITestCase 
+{
 	protected String projectName = "test-project";
+
 	protected String fileName = "tmp.ini";
+
 	protected String filePath = projectName + "/" + fileName;
 
 	@Override
@@ -20,7 +24,7 @@ public class SectionHierarchyTest extends GUITestCase {
 		workbenchWindow.assertIsActiveShell();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceAccess.createFileWithContent(filePath, "");
-		IniFileEditorTestUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
+		WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 		workbenchWindow.findEditorPartByTitle(fileName); //TODO .assertClass(InifileEditor.class)
 	}
 	
