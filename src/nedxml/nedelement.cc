@@ -326,10 +326,10 @@ NEDElement *NEDElement::getFirstChildWithAttribute(int tagcode, const char *attr
 
 NEDElement *NEDElement::getParentWithTag(int tagcode)
 {
-    NEDElement *parent = this->getParent();
-    while (parent && parent->getTagCode()!=tagcode)
-        parent = parent->getParent();
-    return parent;
+    NEDElement *node = this;
+    while (node && node->getTagCode()!=tagcode)
+        node = node->getParent();
+    return node;
 }
 
 void NEDElement::setUserData(NEDElementUserData *data)

@@ -372,7 +372,7 @@ class NEDXML_API NEDElement
 
     /**
      * Climb up in the element tree until it finds an element with the given tagcode.
-     * Returns NULL if not found.
+     * Returns "this" if its tagcode already matches. Returns NULL if not found.
      */
     NEDElement *getParentWithTag(int tagcode);
     //@}
