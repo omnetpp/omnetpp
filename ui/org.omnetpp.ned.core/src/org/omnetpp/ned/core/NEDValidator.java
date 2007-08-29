@@ -3,10 +3,12 @@ package org.omnetpp.ned.core;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
+
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
-import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
@@ -16,57 +18,16 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
-import org.omnetpp.ned.model.pojo.ClassDeclElement;
-import org.omnetpp.ned.model.pojo.ClassElement;
-import org.omnetpp.ned.model.pojo.CommentElement;
-import org.omnetpp.ned.model.pojo.ConditionElement;
-import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
-import org.omnetpp.ned.model.pojo.ConnectionsElement;
-import org.omnetpp.ned.model.pojo.CplusplusElement;
-import org.omnetpp.ned.model.pojo.EnumDeclElement;
-import org.omnetpp.ned.model.pojo.EnumElement;
-import org.omnetpp.ned.model.pojo.EnumFieldElement;
-import org.omnetpp.ned.model.pojo.EnumFieldsElement;
-import org.omnetpp.ned.model.pojo.ExpressionElement;
-import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.FieldElement;
-import org.omnetpp.ned.model.pojo.FieldsElement;
-import org.omnetpp.ned.model.pojo.FilesElement;
-import org.omnetpp.ned.model.pojo.FunctionElement;
-import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.IdentElement;
-import org.omnetpp.ned.model.pojo.ImportElement;
-import org.omnetpp.ned.model.pojo.InterfaceNameElement;
-import org.omnetpp.ned.model.pojo.LiteralElement;
-import org.omnetpp.ned.model.pojo.LoopElement;
-import org.omnetpp.ned.model.pojo.MessageDeclElement;
-import org.omnetpp.ned.model.pojo.MessageElement;
-import org.omnetpp.ned.model.pojo.MsgFileElement;
-import org.omnetpp.ned.model.pojo.MsgpropertyElement;
-import org.omnetpp.ned.model.pojo.OperatorElement;
-import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.ParametersElement;
-import org.omnetpp.ned.model.pojo.PatternElement;
-import org.omnetpp.ned.model.pojo.PropertiesElement;
-import org.omnetpp.ned.model.pojo.PropertyDeclElement;
-import org.omnetpp.ned.model.pojo.PropertyElement;
-import org.omnetpp.ned.model.pojo.PropertyKeyElement;
-import org.omnetpp.ned.model.pojo.StructDeclElement;
-import org.omnetpp.ned.model.pojo.StructElement;
-import org.omnetpp.ned.model.pojo.SubmodulesElement;
-import org.omnetpp.ned.model.pojo.TypesElement;
-import org.omnetpp.ned.model.pojo.UnknownElement;
+import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Validates consistency of NED files.
- * 
+ *
  * This code assumes UNPARSED expressions, and consequently, it doesn't validate expressions at all.
  *
  * @author andras
  */
-//FIXME SyntaxValidator has to be revised -- it must NOT check anything more than syntax! 
+//FIXME SyntaxValidator has to be revised -- it must NOT check anything more than syntax!
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
 //FIXME asap: validate connection! validate extends chain! 2 simple modules with the same name!!
@@ -255,7 +216,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				errors.addError(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
-			decl = (ParamElement) submoduleType.getParamDeclarations().get(parname);
+			decl = submoduleType.getParamDeclarations().get(parname);
 			if (decl==null) {
 				errors.addError(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
 				return;
@@ -267,7 +228,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				errors.addError(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
-			decl = (ParamElement) channelSpecType.getParamDeclarations().get(parname);
+			decl = channelSpecType.getParamDeclarations().get(parname);
 			if (decl==null) {
 				errors.addError(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
@@ -334,7 +295,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				errors.addError(node, "cannot configure gates of a submodule of unknown type");
 				return;
 			}
-			decl = (GateElement) submoduleType.getGateDeclarations().get(gatename);
+			decl = submoduleType.getGateDeclarations().get(gatename);
 			if (decl==null) {
 				errors.addError(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
 				return;
@@ -522,6 +483,11 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	@Override
     protected void validateElement(ConnectionElementEx node) {
 		INEDTypeInfo typeInfo = componentNode.getNEDTypeInfo();
+		if (StringUtils.isNotEmpty(node.getSrcModule()) && !typeInfo.getSubmodules().containsKey(node.getSrcModule()))
+            errors.addError(node, "'"+node.getSrcModule()+"': no such submodule");
+        if (StringUtils.isNotEmpty(node.getDestModule()) && !typeInfo.getSubmodules().containsKey(node.getDestModule()))
+            errors.addError(node, "'"+node.getDestModule()+"': no such submodule");
+
 		validateChildren(node);
 	}
 
@@ -634,55 +600,68 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		validateChildren(node);
 	}
 
-	protected void validateElement(MessageDeclElement node) {
+	@Override
+    protected void validateElement(MessageDeclElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(EnumDeclElement node) {
+	@Override
+    protected void validateElement(EnumDeclElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(EnumElement node) {
+	@Override
+    protected void validateElement(EnumElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(EnumFieldsElement node) {
+	@Override
+    protected void validateElement(EnumFieldsElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(EnumFieldElement node) {
+	@Override
+    protected void validateElement(EnumFieldElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(MessageElement node) {
+	@Override
+    protected void validateElement(MessageElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ClassElement node) {
+	@Override
+    protected void validateElement(ClassElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(StructElement node) {
+	@Override
+    protected void validateElement(StructElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(FieldsElement node) {
+	@Override
+    protected void validateElement(FieldsElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(FieldElement node) {
+	@Override
+    protected void validateElement(FieldElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(PropertiesElement node) {
+	@Override
+    protected void validateElement(PropertiesElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(MsgpropertyElement node) {
+	@Override
+    protected void validateElement(MsgpropertyElement node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(UnknownElement node) {
+	@Override
+    protected void validateElement(UnknownElement node) {
 		validateChildren(node);
 	}
 }
