@@ -76,10 +76,24 @@ abstract public class NedEditPart
         // otherwise edit is possible
         return true;
     }
-    
+
+    /**
+     * Validates the received command. If the edit part state does not allow modification, it should
+     * return UnexecutableCommand, otherwise it must return the received command.
+     * Derived parts can override to refine the validation based on command type and edit part state.
+     * By default all commands are disabled if the edit part is not editable.
+     */
+    protected Command validateCommand(Command command) {
+        return isEditable() ? command : UnexecutableCommand.INSTANCE;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractEditPart#getCommand(org.eclipse.gef.Request)
+     * Overridden so we have a chance to disable the command if the editor is read only.
+     */
     @Override
     public Command getCommand(Request request) {
-    	return isEditable() ? super.getCommand(request) : UnexecutableCommand.INSTANCE;
+        return validateCommand(super.getCommand(request));
     }
 
     /* (non-Javadoc)

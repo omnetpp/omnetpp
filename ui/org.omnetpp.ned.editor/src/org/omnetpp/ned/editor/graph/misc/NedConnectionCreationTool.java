@@ -2,8 +2,10 @@ package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
+
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
@@ -44,11 +46,12 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 	// which gates should be connected
 	@Override
 	protected boolean handleCreateConnection() {
-		ConnectionCommand endCommand = (ConnectionCommand)getCommand();
-    	setCurrentCommand(endCommand);
+		Command command = getCommand();
+		if (command == null || !(command instanceof ConnectionCommand))
+		    return false;
 
-        if (endCommand == null)
-            return false;
+		ConnectionCommand endCommand = (ConnectionCommand)command;
+    	setCurrentCommand(endCommand);
 
         endCommand.setDestGate(null);
         endCommand.setSrcGate(null);
@@ -69,8 +72,6 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
     	executeCurrentCommand();
     	return true;
 	}
-
-
 
 	// filter which editparts can be used as connection source or target
 	@Override

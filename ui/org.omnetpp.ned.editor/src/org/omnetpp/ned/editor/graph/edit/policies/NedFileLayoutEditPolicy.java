@@ -19,7 +19,7 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
-import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
+import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
@@ -105,11 +105,11 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
     protected Command getCreateCommand(CreateRequest request) {
-		INEDElement newElement = (INEDElement)request.getNewObject();
+	    INedTypeElement newElement = (INedTypeElement)request.getNewObject();
 		EditPart insertionPoint = getInsertionReference(request);
 		INEDElement where = insertionPoint != null ? (INEDElement)insertionPoint.getModel() : null;
-		INEDElement parent = (INEDElement)getHost().getModel();
-		return new CreateToplevelComponentCommand(parent, where, newElement);
+		NedFileElementEx parent = (NedFileElementEx)getHost().getModel();
+		return new CreateNedTypeElementCommand(parent, where, newElement);
 	}
 
 	/**
@@ -167,7 +167,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	 * @param child the child EditPart for which the constraint should be generated
 	 * @return the draw2d constraint
 	 */
-	protected Object getConstraintFor (ChangeBoundsRequest request, GraphicalEditPart child) {
+	protected Object getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
 		Rectangle rect = new PrecisionRectangle(child.getFigure().getBounds());
 		child.getFigure().translateToAbsolute(rect);
 		rect = request.getTransformedRectangle(rect);

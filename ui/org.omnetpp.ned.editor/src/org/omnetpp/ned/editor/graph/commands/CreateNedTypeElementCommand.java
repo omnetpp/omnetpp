@@ -16,13 +16,13 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  *
  * @author rhornig
  */
-public class CreateToplevelComponentCommand extends Command {
-    private INEDElement child;
-    private INEDElement parent;
+public class CreateNedTypeElementCommand extends Command {
+    private INedTypeElement child;
+    private NedFileElementEx parent;
     private INEDElement insertBefore;
 
 
-    public CreateToplevelComponentCommand(INEDElement parent, INEDElement where, INEDElement child) {
+    public CreateNedTypeElementCommand(NedFileElementEx parent, INEDElement where, INedTypeElement child) {
     	this.child = child;
     	this.parent = parent;
     	this.insertBefore = where;
@@ -30,9 +30,7 @@ public class CreateToplevelComponentCommand extends Command {
 
     @Override
     public boolean canExecute() {
-        return child != null && parent != null &&
-        		parent instanceof NedFileElementEx &&
-        		child instanceof INedTypeElement;
+        return child != null && parent != null;
     }
 
     @Override
@@ -45,7 +43,7 @@ public class CreateToplevelComponentCommand extends Command {
     public void redo() {
 
         if ((child instanceof IHasName) && (child instanceof INedTypeElement)) {
-            IHasName namedChild = (IHasName)child;
+            IHasName namedChild = child;
             // if no name is present set to default
             if (namedChild.getName() == null || "".equals(namedChild.getName()))
                 namedChild.setName("unnamed");

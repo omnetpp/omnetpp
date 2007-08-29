@@ -7,6 +7,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
+
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -71,7 +72,7 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
     public abstract CompoundModuleEditPart getCompoundModulePart();
 
     /**
-     * Reimplemented because the original implementation has a global (per viewer) MAP
+     * Re-implemented because the original implementation has a global (per viewer) MAP
      * to store MODEL - PART associations. This is a problem if we want to display a compound module which
      * inherits some submodules and connections from an other one (that is also displayed in this viewer)
      * In those case the original implementation would not create a new PART for the connection in the

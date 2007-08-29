@@ -8,6 +8,8 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -128,7 +130,7 @@ public class NedModelLabelProvider extends LabelProvider {
     public Image getImage(Object obj) {
         INEDElement model = (INEDElement)obj;
         Image image = null;
-        if (model instanceof IHasDisplayString) {
+        if (model instanceof IHasDisplayString && !(model instanceof ChannelElementEx || model instanceof ChannelInterfaceElementEx)) {
             DisplayString dps = ((IHasDisplayString) model).getDisplayString();
             image = ImageFactory.getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
         }

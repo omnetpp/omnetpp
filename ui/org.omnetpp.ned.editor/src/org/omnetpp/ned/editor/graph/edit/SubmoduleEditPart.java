@@ -6,10 +6,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -150,6 +152,16 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // editable only if the parent controllers model is the same as the model's parent
         // i.e. the submodule is defined in this compound module (not inherited)
         return super.isEditable() && getParent().getModel() == ((SubmoduleElementEx)getModel()).getCompoundModule();
+    }
+
+    @Override
+    protected Command validateCommand(Command command) {
+        // connection creation is allowed even if the submodule is non editable (but the containing
+        // compound module is editable)
+        if (command instanceof ConnectionCommand && getCompoundModulePart().isEditable())
+            return command;
+
+        return super.validateCommand(command);
     }
 
     @Override

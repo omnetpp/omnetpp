@@ -4,7 +4,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
 /**
- * TODO add documentation
+ * Creates edit parts for the NEDElements used in outline view
  *
  * @author rhornig
  */

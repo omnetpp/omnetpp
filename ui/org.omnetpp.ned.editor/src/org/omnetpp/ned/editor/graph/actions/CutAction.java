@@ -20,7 +20,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Implements "Cut to clipboard".
- * 
+ *
  * @author Andras
  */
 public class CutAction extends SelectionAction {
@@ -38,6 +38,7 @@ public class CutAction extends SelectionAction {
     	setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
     }
 
+    // FIXME non editable parts should not be deleted (cut should not be allowed here)
     @Override
     protected boolean calculateEnabled() {
         return getSelectedObjects().size() > 0;
