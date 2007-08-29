@@ -40,21 +40,17 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 //FIXME why doesn't this comment go into the normal class comment? --Andras
-// MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
-// editor maintains its own model independent of each other. The two model should be synchronized during
-// page change / or save operation. Additionally the model should be put back into the NEDResources, so
-// name lookup and other services will work correctly. Save is done by delegation to the Text editor's save
-// method (ie. The graphical editor itself cannot save its model, the multipage editor must first obtain
-// the model from the graphical editor, convert to text and pass it to the Text based editor and then
-// call the Text editor to save its content.
-//
-// when setting the input of the multipage editor both embedded editor should be notified (ie setInput must be
-// delegated)
 
 /**
  * Multi-page NED editor.
- *
- * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!!
+ * MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
+ * editor maintains its own model independent of each other. The two model should be synchronized during
+ * page change / or save operation. Additionally the model should be put back into the NEDResources, so
+ * name lookup and other services will work correctly. Save is done by delegation to the Text editor's save
+ * method (ie. The graphical editor itself cannot save its model, the multipage editor must first obtain
+ * the model from the graphical editor, convert to text and pass it to the Text based editor and then
+ * call the Text editor to save its content. When setting the input of the multipage editor both
+ * embedded editor should be notified (ie setInput must be delegated)
  *
  * @author rhornig
  */
@@ -69,7 +65,7 @@ public class MultiPageNedEditor
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
-    private boolean initPhase = true;
+//    private boolean initPhase = true;
 
 	@Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
@@ -274,7 +270,7 @@ public class MultiPageNedEditor
 			throw new RuntimeException("Unknown page index");
 
         insidePageChange = false;
-        initPhase = false;
+//        initPhase = false;
 	}
 
     /**

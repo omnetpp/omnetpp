@@ -13,6 +13,7 @@ import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -20,7 +21,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 
 /**
- * Action to edit the icon propery
+ * Action to edit the icon property
  *
  * @author rhornig
  */
@@ -87,7 +88,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
                 // return command only for those elements which support the icon property
                 if (element instanceof IHasDisplayString &&
                         (element instanceof SubmoduleElementEx || element instanceof SimpleModuleElementEx
-                                || element instanceof CompoundModuleElementEx))
+                                || element instanceof CompoundModuleElementEx || element instanceof ModuleInterfaceElementEx))
                     return new ChangeDisplayPropertyCommand((IHasDisplayString)element, IDisplayString.Prop.IMAGE);
             }
         }

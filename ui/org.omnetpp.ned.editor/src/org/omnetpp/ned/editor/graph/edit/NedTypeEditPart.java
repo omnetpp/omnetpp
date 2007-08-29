@@ -76,8 +76,6 @@ public class NedTypeEditPart extends NedEditPart {
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
             else if (getModel() instanceof ChannelElement)
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-            else if (getModel() instanceof ModuleInterfaceElement)
-                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
 
             if (image != null)
                 getNedTypeFigure().setIcon(image);
