@@ -15,5 +15,4 @@ public class VectorPlotterFactory {
 		default: throw new IllegalArgumentException("unknown line style: " + lineType);
 		}
 	}
-	
 }

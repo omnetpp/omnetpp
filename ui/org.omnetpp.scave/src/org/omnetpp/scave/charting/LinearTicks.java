@@ -6,17 +6,18 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Utility class for calculating ticks 
+ * Utility class for calculating ticks.
+ * 
  * @author Andras
  */
-public class Ticks implements Iterable<BigDecimal> {
+public class LinearTicks implements ITicks {
 	
 	private BigDecimal start;
 	private BigDecimal end;
 	private BigDecimal majorTickDelta;
 	private BigDecimal delta;
 	
-	public Ticks(double start, double end, double approxDelta) {
+	public LinearTicks(double start, double end, double approxDelta) {
 		int scale = (int)Math.ceil(Math.log10(approxDelta));
 		this.start = new BigDecimal(start).setScale(-scale, RoundingMode.FLOOR);
 		this.end = new BigDecimal(end).setScale(-scale, RoundingMode.CEILING);

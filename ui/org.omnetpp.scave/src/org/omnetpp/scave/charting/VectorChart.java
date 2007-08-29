@@ -5,6 +5,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LINE;
@@ -14,8 +15,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_INVERT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
@@ -65,8 +64,8 @@ public class VectorChart extends ChartCanvas {
 	
 	private IXYDataset dataset = null;
 
-	private LinearAxis xAxis = new LinearAxis(this, false);
-	private LinearAxis yAxis = new LinearAxis(this, true);
+	private LinearAxis xAxis = new LinearAxis(this, false, false);
+	private LinearAxis yAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC);
 	private List<LineProperties> lineProperties;
 	private LineProperties defaultProperties;
 	private CrossHair crosshair = new CrossHair(this);
@@ -215,7 +214,9 @@ public class VectorChart extends ChartCanvas {
 		public IVectorPlotter getPlotter() {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
-			return VectorPlotterFactory.createVectorPlotter(type);  // XXX cache
+			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);  // XXX cache
+			plotter.setDatasetTransformation(transform);
+			return plotter; 
 		}
 		
 		public IChartSymbol getSymbol() {
@@ -368,12 +369,8 @@ public class VectorChart extends ChartCanvas {
 			setXMin(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_MAX.equals(name))
 			setXMax(Converter.stringToDouble(value));
-		else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
-			; //TODO
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-			; //TODO
-		else if (PROP_XY_INVERT.equals(name))
-			; //TODO
+			setLogarithmicY(Converter.stringToBoolean(value));
 		else if (PROP_XY_GRID.equals(name))
 			setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
 		// Lines
@@ -447,14 +444,11 @@ public class VectorChart extends ChartCanvas {
 		chartChanged();
 	}
 	
-	public void setXMin(Double value) {
-		userMinX = value;
-		updateArea();
-		chartChanged();
-	}
-	
-	public void setXMax(Double value) {
-		userMaxX = value;
+	public void setLogarithmicY(Boolean value) {
+		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
+		yAxis.setLogarithmic(logarithmic);
+		transform = logarithmic ? new LogarithmicYTransform() : null;
+		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();
 	}
@@ -474,7 +468,7 @@ public class VectorChart extends ChartCanvas {
 		chartChanged();
 	}
 	
-	private RectangularArea calculatePlotArea() {
+	protected RectangularArea calculatePlotArea() {
 		double minX = Double.POSITIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY;
 		double maxX = Double.NEGATIVE_INFINITY;
@@ -487,10 +481,10 @@ public class VectorChart extends ChartCanvas {
 				int n = dataset.getItemCount(series);
 				if (n > 0) {
 					// X must be increasing
-					minX = Math.min(minX, dataset.getX(series, 0));
-					maxX = Math.max(maxX, dataset.getX(series, n-1));
+					minX = Math.min(minX, transformX(dataset.getX(series, 0)));
+					maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
 					for (int i = 0; i < n; i++) {
-						double y = dataset.getY(series, i);
+						double y = transformY(dataset.getY(series, i));
 						if (!Double.isNaN(y)) {
 							minY = Math.min(minY, y);
 							maxY = Math.max(maxY, y);
@@ -641,7 +635,7 @@ public class VectorChart extends ChartCanvas {
 			}
 		}
 	}
-
+	
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		System.out.println("paintNoncachableLayer()");
@@ -670,8 +664,8 @@ public class VectorChart extends ChartCanvas {
 				LineProperties props = getLineProperties(selection.series);
 				if (props != null && props.getDisplayLine()) {
 					ICoordsMapping mapper = getOptimizedCoordinateMapper();
-					int x = mapper.toCanvasX(dataset.getX(selection.series, selection.index));
-					int y = mapper.toCanvasY(dataset.getY(selection.series, selection.index));
+					int x = mapper.toCanvasX(transformX(dataset.getX(selection.series, selection.index)));
+					int y = mapper.toCanvasY(transformY(dataset.getY(selection.series, selection.index)));
 					gc.setForeground(ColorFactory.RED);
 					gc.setLineWidth(1);
 					gc.drawOval(x-5, y-5, 10, 10);

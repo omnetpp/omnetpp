@@ -56,9 +56,7 @@ public class ChartProperties extends PropertySource {
 		PROP_X_AXIS_MAX			= "X.Axis.Max",
 		PROP_Y_AXIS_MIN			= "Y.Axis.Min",
 		PROP_Y_AXIS_MAX			= "Y.Axis.Max",
-		PROP_X_AXIS_LOGARITHMIC = "X.Axis.Log",
 		PROP_Y_AXIS_LOGARITHMIC	= "Y.Axis.Log",
-		PROP_XY_INVERT			= "Axes.Invert",
 		PROP_XY_GRID			= "Axes.Grid",
 		// Bars
 		PROP_BAR_BASELINE		= "Bars.Baseline",
@@ -256,11 +254,6 @@ public class ChartProperties extends PropertySource {
 	public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
 	public boolean defaultYAxisLogarithmic() { return ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC; }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT,displayName="invert x y")
-	public boolean getXYInvert() { return getBooleanProperty(PROP_XY_INVERT); }
-	public void setXYInvert(boolean flag) { setProperty(PROP_XY_INVERT, flag); }
-	public boolean defaultXYInvert() { return ChartDefaults.DEFAULT_INVERT_XY; }
-
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid")
 	public ShowGrid getXYGrid() { return getEnumProperty(PROP_XY_GRID, ShowGrid.class); }
 	public void setXYGrid(ShowGrid showgrid) { setProperty(PROP_XY_GRID, showgrid); }
@@ -391,9 +384,6 @@ public class ChartProperties extends PropertySource {
 		public String getXAxisMax() { return getStringProperty(PROP_X_AXIS_MAX); }
 		public void setXAxisMax(String max) { setProperty(PROP_X_AXIS_MAX, max); }
 
-		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_LOGARITHMIC)
-		public boolean getXAxisLogarithmic() { return getBooleanProperty(PROP_X_AXIS_LOGARITHMIC); }
-		public void setXAxisLogarithmic(boolean flag) { setProperty(PROP_X_AXIS_LOGARITHMIC, flag); }
 		/*======================================================================
 		 *                             Lines
 		 *======================================================================*/

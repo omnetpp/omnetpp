@@ -68,6 +68,7 @@ import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.dataset.IDataset;
+import org.omnetpp.scave.charting.dataset.IDatasetTransform;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 
@@ -87,9 +88,17 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	private String statusText = "No data available."; // displayed when there's no dataset 
 
-	protected Double userMinX, userMaxX, userMinY, userMaxY; // bounds given by the user (minX,... property)
-	protected RectangularArea chartArea;	   // bounds calculated from the dataset
-	
+	/* bounds specified by the user*/
+	protected RectangularArea userDefinedArea = 
+		new RectangularArea(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
+				Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+	/* bounds calculated from the dataset */
+	protected RectangularArea chartArea;
+	/* area to be displayed */
+	private RectangularArea zoomedArea;
+	/* transforms dataset coordinates (when logarithmic y) */
+	protected IDatasetTransform transform;
+
 	private ZoomableCanvasMouseSupport mouseSupport;
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
@@ -98,7 +107,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private ListenerList listeners = new ListenerList();
 	
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
-	private RectangularArea zoomedArea;
 	private IDataset dataset;
 	
 	public ChartCanvas(Composite parent, int style) {
@@ -192,6 +200,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
 	abstract protected void doLayoutChart();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected abstract RectangularArea calculatePlotArea();
 	
 	public IChartSelection getSelection() {
 		return selection;
@@ -331,14 +345,26 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		chartChanged();
 	}
 	
+	public void setXMin(Double value) {
+		userDefinedArea.minX = value != null ? value : Double.NEGATIVE_INFINITY;
+		updateArea();
+		chartChanged();
+	}
+	
+	public void setXMax(Double value) {
+		userDefinedArea.maxX = value != null ? value : Double.POSITIVE_INFINITY;
+		updateArea();
+		chartChanged();
+	}
+	
 	public void setYMin(Double value) {
-		userMinY = value;
+		userDefinedArea.minY = value != null ? value : Double.NEGATIVE_INFINITY;
 		updateArea();
 		chartChanged();
 	}
 
 	public void setYMax(Double value) {
-		userMaxY = value;
+		userDefinedArea.maxY = value != null ? value : Double.POSITIVE_INFINITY;
 		updateArea();
 		chartChanged();
 	}
@@ -354,22 +380,48 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected void updateArea() {
 		if (chartArea == null)
 			return;
-
-		double minX = userMinX != null ? userMinX : chartArea.minX;
-		double maxX = userMaxX != null ? userMaxX : chartArea.maxX;
-		double minY = userMinY != null ? userMinY : chartArea.minY;
-		double maxY = userMaxY != null ? userMaxY : chartArea.maxY;
 		
-		if (minX != getMinX() || maxX != getMaxX() || minY != getMinY() || maxY != getMaxY()) {
+		RectangularArea area = transformArea(userDefinedArea).intersect(chartArea);
 		
-			System.out.format("area %f, %f, %f, %f --> %f, %f, %f, %f%n",
-					getMinX(), getMaxX(), getMinY(), getMaxY(),
-					minX, maxX, minY, maxY);
-			
-			setArea(minX, minY, maxX, maxY);
+		if (!area.equals(getArea())) {
+			if (debug) System.out.format("Update area: %s --> %s%n", getArea(), area);
+			setArea(area);
 		}
 	}
 	
+	protected RectangularArea transformArea(RectangularArea area) {
+		if (transform == null)
+			return area;
+		else {
+			double minX = transform.transformX(area.minX);
+			double minY = transform.transformY(area.minY);
+			double maxX = transform.transformX(area.maxX);
+			double maxY = transform.transformY(area.maxY);
+			
+			return new RectangularArea(
+							Double.isNaN(minX) ? Double.NEGATIVE_INFINITY : minX,
+							Double.isNaN(minY) ? Double.NEGATIVE_INFINITY : minY,
+							Double.isNaN(maxX) ? Double.POSITIVE_INFINITY : maxX,
+							Double.isNaN(maxY) ? Double.POSITIVE_INFINITY : maxY
+						);
+		}
+	}
+	
+	protected double transformX(double x) {
+		return (transform == null ? x : transform.transformX(x));
+	}
+	
+	protected double transformY(double y) {
+		return (transform == null ? y : transform.transformY(y));
+	}
+	
+	protected double inverseTransformX(double x) {
+		return (transform == null ? x : transform.inverseTransformX(x));
+	}
+	
+	protected double inverseTransformY(double y) {
+		return (transform == null ? y : transform.inverseTransformY(y));
+	}
 	/**
 	 * Resets all GC settings except clipping and transform.
 	 */
@@ -569,6 +621,27 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		
 		public String htmlText(String text) {
 			return StringEscapeUtils.escapeHtml(text);
+		}
+	}
+	
+	static class LogarithmicYTransform implements IDatasetTransform {
+
+		public double transformX(double x) {
+			return x;
+		}
+
+		public double transformY(double y) {
+			if (Double.isNaN(y) || y <= 0)
+				return Double.NaN;
+			return Math.log10(y);
+		}
+
+		public double inverseTransformX(double x) {
+			return x;
+		}
+
+		public double inverseTransformY(double y) {
+			return Math.pow(10.0, y);
 		}
 	}
 }

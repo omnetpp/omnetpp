@@ -1,14 +1,13 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_BASELINE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_OUTLINE_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INVERT_XY;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
@@ -16,7 +15,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_INVERT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
@@ -28,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -37,9 +34,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -49,7 +44,6 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
@@ -66,8 +60,8 @@ import org.omnetpp.scave.charting.plotter.SquareSymbol;
 public class ScalarChart extends ChartCanvas {
 	private ScalarDataset dataset;
 
-	private LinearAxis valueAxis = new LinearAxis(this, true);
-	private DomainAxis domainAxis = new DomainAxis();
+	private LinearAxis valueAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC);
+	private DomainAxis domainAxis = new DomainAxis(this);
 	private BarPlot plot = new BarPlot();
 
 	private Map<String,BarProperties> barProperties = new HashMap<String,BarProperties>();
@@ -105,13 +99,22 @@ public class ScalarChart extends ChartCanvas {
 		
 		this.dataset = (ScalarDataset)dataset;
 		updateLegend();
-		chartArea = plot.calculatePlotArea();
+		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();
 	}
 	
 	public ScalarDataset getDataset() {
 		return dataset;
+	}
+	
+	public BarPlot getPlot() {
+		return plot;
+	}
+
+	@Override
+	protected RectangularArea calculatePlotArea() {
+		return plot.calculatePlotArea();
 	}
 
 	private void updateLegend() {
@@ -149,12 +152,10 @@ public class ScalarChart extends ChartCanvas {
 		else if (name.startsWith(PROP_BAR_COLOR))
 			setBarColor(getKeyFrom(name), ColorFactory.asRGB(value));
 		// Axes
-		else if (PROP_XY_INVERT.equals(name))
-			setInvertXY(Converter.stringToBoolean(value));
 		else if (PROP_XY_GRID.equals(name))
 			setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-			throw new IllegalArgumentException("Logarithmic axis not yet supported"); //TODO
+			setLogarithmicY(Converter.stringToBoolean(value));
 		else
 			super.setProperty(name, value);
 	}
@@ -239,11 +240,12 @@ public class ScalarChart extends ChartCanvas {
 		chartChanged();
 	}
 
-	public void setInvertXY(Boolean value) {
-		if (value == null)
-			value = DEFAULT_INVERT_XY;
-
-		plot.invertXY = value;
+	public void setLogarithmicY(Boolean value) {
+		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
+		transform = logarithmic ? new LogarithmicYTransform() : null;
+		valueAxis.setLogarithmic(logarithmic);
+		chartArea = calculatePlotArea();
+		updateArea();
 		chartChanged();
 	}
 
@@ -369,10 +371,6 @@ public class ScalarChart extends ChartCanvas {
 		plot.draw(gc);
 	}
 	
-	private Rectangle getPlotRectangle() {
-		return plot.getRectangle();
-	}
-
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		resetDrawingStylesAndColors(gc);
@@ -418,7 +416,6 @@ public class ScalarChart extends ChartCanvas {
 		private double barBaseline = DEFAULT_BAR_BASELINE;
 		private BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
 		private Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
-		private Boolean invertXY = DEFAULT_INVERT_XY;
 		
 		public Rectangle getRectangle() {
 			return rect;
@@ -494,7 +491,7 @@ public class ScalarChart extends ChartCanvas {
 			if (x > widthBar)
 				return -1;  // x falls in a minor gap
 			double value = dataset.getValue(row, column);
-			if (value >= barBaseline ? (y < barBaseline || y > value) : (y > barBaseline || y < value))
+			if (Double.isNaN(value) || (value >= barBaseline ? (y < barBaseline || y > value) : (y > barBaseline || y < value)))
 				return -1;  // above or below actual bar 
 			return row * cColumns + column; 
 		}
@@ -515,7 +512,7 @@ public class ScalarChart extends ChartCanvas {
 			return new Rectangle(x, y, width, height);
 		}
 		
-		public RectangularArea calculatePlotArea() {
+		protected RectangularArea calculatePlotArea() {
 			if (dataset == null)
 				return new RectangularArea(0, 0, 1, 1);
 			
@@ -527,8 +524,12 @@ public class ScalarChart extends ChartCanvas {
 			double maxY = Double.NEGATIVE_INFINITY;
 			for (int row = 0; row < cRows; ++row)
 				for (int column = 0; column < cColumns; ++column) {
-					minY = Math.min(minY, plot.getBottomY(row, column));
-					maxY = Math.max(maxY, plot.getTopY(row, column));
+					double topY = plot.getTopY(row, column);
+					double bottomY = plot.getBottomY(row, column);
+					if (!Double.isNaN(bottomY))
+						minY = Math.min(minY, bottomY);
+					if (!Double.isNaN(topY))
+						maxY = Math.max(maxY, topY);
 				}
 			if (minY > maxY) { // no data points
 				minY = 0.0;
@@ -550,162 +551,29 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		protected double getTopY(int row, int column) {
-			double value = dataset.getValue(row, column);
-			return (value > barBaseline ? value : barBaseline);
+			double value = transformValue(dataset.getValue(row, column));
+			double baseline = transformBaseline(barBaseline);
+			return (Double.isNaN(value) || value > baseline ?
+					value : baseline);
 		}
 		
 		protected double getBottomY(int row, int column) {
-			double value = dataset.getValue(row, column);
-			return (value < barBaseline ? value : barBaseline);
-		}
-	}
-
-
-	static class GroupLabelLayoutData {
-		TextLayout textLayout;
-		Dimension size;
-		Dimension rotatedSize;
-	}
-
-	/**
-	 * Domain axis for bar chart.
-	 */
-	class DomainAxis {
-		private Rectangle rect; // strip below the plotArea where the axis text etc goes
-		private GroupLabelLayoutData[] layoutData;
-		private int labelsHeight;
-		private String title = DEFAULT_X_AXIS_TITLE;
-		private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
-		private Font labelsFont = DEFAULT_LABELS_FONT;
-		private double rotation = DEFAULT_X_LABELS_ROTATED_BY;
-		private int gap = 4;  // between chart and axis 
-		
-		public void dispose() {
-			for (GroupLabelLayoutData data : layoutData)
-				if (data != null && data.textLayout != null)
-					data.textLayout.dispose();
+			double value = transformValue(dataset.getValue(row, column));
+			double baseline = transformBaseline(barBaseline);
+			return (Double.isNaN(value) || value < baseline ?
+					value : baseline);
 		}
 		
-		public Ticks getTicks() {
-			return new Ticks(1.0, 0.0, 1.0); // TODO
-		}
-
-		/**
-		 * Modifies insets to accommodate room for axis title, ticks, tick labels etc.
-		 * Also returns insets for convenience. 
-		 */
-		public Insets layoutHint(GC gc, Rectangle rect, Insets insets) {
-
-			// measure title height and labels height
-			gc.setFont(titleFont);
-			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
-			gc.setFont(labelsFont);
-			labelsHeight = 0;
-			if (dataset != null) {
-				int cColumns = dataset.getColumnCount();
-				int cRows = dataset.getRowCount();
-				if (layoutData != null) {
-					for (GroupLabelLayoutData data : layoutData)
-						data.textLayout.dispose();
-				}
-				layoutData = new GroupLabelLayoutData[cRows];
-				for (int row = 0; row < cRows; ++row) {
-					int left = plot.getBarRectangle(row, 0).x;
-					int right = plot.getBarRectangle(row, cColumns - 1).right();
-					int maxWidth = Math.max(right - left, 10);
-					int maxHeight = Math.max(rect.height / 2, 10);
-					layoutData[row] = layoutGroupLabel(dataset.getRowKey(row),
-											labelsFont, rotation, gc, maxWidth, maxHeight);
-					labelsHeight = Math.max(labelsHeight, layoutData[row].rotatedSize.height);
-					//System.out.println("labelsheight: "+labelsHeight);
-				}
-			}
-			
-			// modify insets with space required
-			insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
-			insets.bottom = Math.max(insets.bottom, gap + labelsHeight + titleHeight + 8);
-			
-			return insets;
+		protected double transformValue(double y) {
+			if (transform != null)
+				return transform.transformY(y);
+			else
+				return y;
 		}
 		
-		private GroupLabelLayoutData layoutGroupLabel(String label, Font font, double rotation , GC gc, int maxWidth, int maxHeight) {
-			GroupLabelLayoutData data = new GroupLabelLayoutData();
-			data.textLayout = new TextLayout(gc.getDevice());
-			data.textLayout.setText(label);
-			data.textLayout.setFont(font);
-			data.textLayout.setAlignment(SWT.CENTER);
-			data.textLayout.setWidth(maxWidth);
-			//System.out.format("width=%s%n", maxWidth);
-			if (data.textLayout.getLineCount() > 1) {
-				// TODO soft hyphens are visible even when no break at them 
-				data.textLayout.setText(label.replace(';', '\u00ad'));
-			}
-			org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds(); 
-			data.size = new Dimension(bounds.width, Math.min(bounds.height, maxHeight)); //new Dimension(gc.textExtent(data.label));
-			data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);
-			return data;
-		}
-
-		/**
-		 * Sets geometry info used for drawing. Plot area = bounds minus insets.
-		 */
-		public void setLayout(Rectangle bounds, Insets insets) {
-			rect = bounds.getCopy();
-			int bottom = rect.bottom();
-			rect.height = insets.bottom;
-			rect.y = bottom - rect.height;
-			rect.x += insets.left;
-			rect.width -= insets.getWidth();
-		}
-		
-		public void draw(GC gc) {
-			org.eclipse.swt.graphics.Rectangle oldClip = gc.getClipping(); // graphics.popState() doesn't restore it!
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.pushState();
-
-			graphics.setClip(rect);
-			
-			graphics.setLineStyle(SWT.LINE_SOLID);
-			graphics.setLineWidth(1);
-			graphics.setForegroundColor(ColorFactory.BLACK);
-
-			Rectangle plotRect = getPlotRectangle();
-
-			// draw labels
-			if (dataset != null) {
-				int cColumns = dataset.getColumnCount();
-				graphics.setFont(labelsFont);
-				graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
-				graphics.pushState();
-				for (int row = 0; row < dataset.getRowCount(); ++row) {
-					int left = plot.getBarRectangle(row, 0).x;
-					int right = plot.getBarRectangle(row, cColumns - 1).right();
-
-					graphics.restoreState();
-					graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
-					
-					GroupLabelLayoutData data = layoutData[row];
-					//String label = data.label;
-					Dimension size = data.size;
-					Dimension rotatedSize = data.rotatedSize;
-					
-					graphics.translate((left + right) / 2 - rotatedSize.width / 2, rect.y + gap + 1 + size.height/2);
-					graphics.rotate((float)rotation);
-					graphics.drawTextLayout(data.textLayout, 0, -size.height/2);
-					//graphics.drawText(label, 0, -size.height/2);
-				}
-				graphics.popState();
-			}
-			
-			// draw axis title
-			graphics.setFont(titleFont);
-			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
-			Point size = gc.textExtent(title);
-			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
-
-			graphics.popState();
-			graphics.dispose();
-			gc.setClipping(oldClip); // graphics.popState() doesn't restore it!
+		protected double transformBaseline(double baseline) {
+			baseline = transformValue(baseline);
+			return Double.isNaN(baseline) ? 0.0 : baseline;
 		}
 	}
 	
@@ -725,7 +593,8 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		private String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
-			int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
+			int rowColumn = plot.findRowColumn(inverseTransformX(fromCanvasX(x)),
+											   inverseTransformY(fromCanvasY(y)));
 			if (rowColumn != -1) {
 				int numColumns = dataset.getColumnCount();
 				int row = rowColumn / numColumns;

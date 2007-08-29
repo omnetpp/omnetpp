@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.IDatasetTransform;
 
 
 /**
@@ -15,12 +16,36 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  * @author andras
  */
 public abstract class VectorPlotter implements IVectorPlotter {
+	
+	protected IDatasetTransform transform;
+	
+	public void setDatasetTransformation(IDatasetTransform transform) {
+		this.transform = transform;
+	}
+
+	protected double transformX(double x) {
+		return transform == null ? x : transform.transformX(x);
+	}
+
+	protected double transformY(double y) {
+		return transform == null ? y :transform.transformY(y);
+	}
+
+	protected double inverseTransformX(double x) {
+		return transform == null ? x :transform.inverseTransformX(x);
+	}
+
+	protected double inverseTransformY(double y) {
+		return transform == null ? y :transform.inverseTransformY(y);
+	}
 
 	public int[] indexRange(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping) {
 		int n = dataset.getItemCount(series);
 		Rectangle clip = gc.getClipping();
-		int first = DatasetUtils.findXLowerLimit(dataset, series, mapping.fromCanvasX(clip.x));
-		int last = DatasetUtils.findXUpperLimit(dataset, series, mapping.fromCanvasX(clip.x+clip.width));
+		double left = inverseTransformX(mapping.fromCanvasX(clip.x));
+		double right = inverseTransformY(mapping.fromCanvasX(clip.x+clip.width));
+		int first = DatasetUtils.findXLowerLimit(dataset, series, left);
+		int last = DatasetUtils.findXUpperLimit(dataset, series, right);
 		first = first<=0 ? 0 : first-1;
 		last = last>=n-1 ? n-1 : last+1;
 		return new int[] {first, last};
@@ -49,6 +74,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	              
 	/**
 	 * Utility function to plot the symbols
+	 * @param transform TODO
 	 */
 	protected void plotSymbols(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		if (symbol == null)
@@ -69,25 +95,26 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		// performance improvement.
 		//
 		HashSet<Integer> yset = new HashSet<Integer>();
-		int prevX = Integer.MIN_VALUE;
+		int prevCanvasX = Integer.MIN_VALUE;
 		for (int i = first; i <= last; i++) {
-			double value = dataset.getY(series, i);
-			if (value < lo || value > hi || Double.isNaN(value))  // even skip coord transform for off-screen values 
+			double y = transformY(dataset.getY(series, i));
+			if (y < lo || y > hi || Double.isNaN(y))  // even skip coord transform for off-screen values 
 				continue;
 			
-			int x = mapping.toCanvasX(dataset.getX(series, i));
-			int y = mapping.toCanvasY(value);
+			double x = transformX(dataset.getX(series, i));
+			int canvasX = mapping.toCanvasX(x);
+			int canvasY = mapping.toCanvasY(y);
 			
-			if (prevX != x) {
+			if (prevCanvasX != canvasX) {
 				yset.clear();
-				prevX = x;
-				symbol.drawSymbol(gc, x, y);
-				yset.add(y);
+				prevCanvasX = canvasX;
+				symbol.drawSymbol(gc, canvasX, canvasY);
+				yset.add(canvasY);
 			}
 			else {
-				if (!yset.contains(y)) {
-					symbol.drawSymbol(gc, x, y);
-					yset.add(y);
+				if (!yset.contains(canvasY)) {
+					symbol.drawSymbol(gc, canvasX, canvasY);
+					yset.add(canvasY);
 				}
 			}
 		}

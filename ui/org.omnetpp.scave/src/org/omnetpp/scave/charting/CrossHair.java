@@ -50,8 +50,8 @@ class CrossHair {
 	Rectangle plotArea;
 
 	// to transfer the coordinates from mouseMoved() to paint()
-	private int x = Integer.MAX_VALUE;
-	private int y = Integer.MAX_VALUE;
+	private int canvasX = Integer.MAX_VALUE;
+	private int canvasY = Integer.MAX_VALUE;
 
 	protected static class DataPoint {
 		int series;
@@ -117,14 +117,14 @@ class CrossHair {
 					return;
 				}
 
-				x = e.x;
-				y = e.y;
+				canvasX = e.x;
+				canvasY = e.y;
 				detailedTooltip = false;
 
 				finalChart.redraw();  //XXX this is killer if canvas is not cached. unfortunately, gc.setXORMode() cannot be used
 
 				// set cursor
-				if (plotArea != null && plotArea.contains(x,y)) {
+				if (plotArea != null && plotArea.contains(canvasX,canvasY)) {
 					if (finalChart.getCursor() == null)
 						finalChart.setCursor(CROSS_CURSOR);
 				}
@@ -159,8 +159,8 @@ class CrossHair {
 				if (finalChart.getCursor() == null)
 					finalChart.setCursor(CROSS_CURSOR);
 
-				x = e.x;
-				y = e.y;
+				canvasX = e.x;
+				canvasY = e.y;
 				detailedTooltip = false;
 				finalChart.redraw();
 			}
@@ -175,8 +175,8 @@ class CrossHair {
 	}
 
 	private void invalidatePosition() {
-		x = Integer.MAX_VALUE;
-		y = Integer.MAX_VALUE;
+		canvasX = Integer.MAX_VALUE;
+		canvasY = Integer.MAX_VALUE;
 		detailedTooltip = false;
 	}
 
@@ -186,31 +186,31 @@ class CrossHair {
 	}
 
 	public void draw(GC gc) {
-		if (plotArea != null && plotArea.contains(x, y)) {
+		if (plotArea != null && plotArea.contains(canvasX, canvasY)) {
 			int[] saveLineDash = gc.getLineDash();
 			int saveLineWidth = gc.getLineWidth();
 			Color saveForeground = gc.getForeground();
 
 			// collect points close to cursor (x,y)
 			ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-			int totalFound = dataPointsNear(x, y, HALO, dataPoints, 1); 
+			int totalFound = dataPointsNear(canvasX, canvasY, HALO, dataPoints, 1); 
 
 			// snap to data point
 			DataPoint dataPoint = dataPoints.isEmpty() ? null : dataPoints.get(0);
 			if (dataPoint != null) {
 				IXYDataset dataset = chart.getDataset();
-				double xx = dataset.getX(dataPoint.series, dataPoint.index);
-				double yy = dataset.getY(dataPoint.series, dataPoint.index);
-				x = chart.toCanvasX(xx);
-				y = chart.toCanvasY(yy);
+				double x = chart.transformX(dataset.getX(dataPoint.series, dataPoint.index));
+				double y = chart.transformY(dataset.getY(dataPoint.series, dataPoint.index));
+				canvasX = chart.toCanvasX(x);
+				canvasY = chart.toCanvasY(y);
 			}
 
 			// draw crosshair
 			gc.setLineDash(new int[] {3, 3});
 			gc.setLineWidth(1);
 			gc.setForeground(ColorFactory.RED);
-			gc.drawLine(plotArea.x, y, plotArea.x + plotArea.width, y);
-			gc.drawLine(x, plotArea.y, x, plotArea.y + plotArea.height);
+			gc.drawLine(plotArea.x, canvasY, plotArea.x + plotArea.width, canvasY);
+			gc.drawLine(canvasX, plotArea.y, canvasX, plotArea.y + plotArea.height);
 
 //			hoverCanvas.getShell().setVisible(true);
 //			hoverCanvas.getShell().setLocation(chart.toDisplay(x+5, y+5));
@@ -234,14 +234,16 @@ class CrossHair {
 		gc.setFont(CROSSHAIR_NORMAL_FONT);
 
 		if (dataPoints.isEmpty() || !detailedTooltip) {
-			String coordinates = String.format("%g, %g", chart.fromCanvasX(x), chart.fromCanvasY(y)); //FIXME precision: the x distance one pixel represents!
+			double x = chart.inverseTransformX(chart.fromCanvasX(canvasX));
+			double y = chart.inverseTransformY(chart.fromCanvasY(canvasY));
+			String coordinates = String.format("%g, %g", x, y); //FIXME precision: the x distance one pixel represents!
 			Point size = gc.textExtent(coordinates);
-			int left = x + 3;
-			int top = y - size.y - 4;
+			int left = canvasX + 3;
+			int top = canvasY - size.y - 4;
 			if (left + size.x + 3 > plotArea.x + plotArea.width)
-				left = x - size.x - 6;
+				left = canvasX - size.x - 6;
 			if (top < plotArea.y)
-				top = y + 3;
+				top = canvasY + 3;
 			gc.fillRectangle(left, top, size.x + 2, size.y + 2);
 			gc.drawRectangle(left, top, size.x + 2, size.y + 2);
 			gc.drawText(coordinates, left + 2, top + 1, false); // XXX set as tooltip, rather than draw it on the canvas!
@@ -309,12 +311,12 @@ class CrossHair {
 			if (!props.getDisplayLine())
 				continue;
 			// find data point nearest to cursor x, using binary search
-			int mid = DatasetUtils.findXLowerLimit(dataset, series, chart.fromCanvasX(x));
+			int mid = DatasetUtils.findXLowerLimit(dataset, series, chart.inverseTransformX(chart.fromCanvasX(x)));
 
 			// then search downwards and upwards for data points close to (x,y)
 			for (int i = mid; i >= 0; --i) {
-				double xx = dataset.getX(series, i);
-				double yy = dataset.getY(series, i);
+				double xx = chart.transformX(dataset.getX(series, i));
+				double yy = chart.transformY(dataset.getY(series, i));
 				int dx = chart.toCanvasX(xx) - x;
 				int dy = chart.toCanvasY(yy) - y;
 				if (dx * dx + dy * dy <= d * d) {
@@ -326,8 +328,8 @@ class CrossHair {
 					break;
 			}
 			for (int i = mid + 1; i < dataset.getItemCount(series); ++i) {
-				double xx = dataset.getX(series, i);
-				double yy = dataset.getY(series, i);
+				double xx = chart.transformX(dataset.getX(series, i));
+				double yy = chart.transformY(dataset.getY(series, i));
 				int dx = chart.toCanvasX(xx) - x;
 				int dy = chart.toCanvasY(yy) - y;
 				if (dx * dx + dy * dy <= d * d) {
@@ -341,5 +343,4 @@ class CrossHair {
 		}
 		return totalFound;
 	}
-
 }

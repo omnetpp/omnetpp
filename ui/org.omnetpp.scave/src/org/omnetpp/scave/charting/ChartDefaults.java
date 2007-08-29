@@ -15,7 +15,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_POSITION;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_INVERT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
@@ -70,7 +69,6 @@ public class ChartDefaults {
 	public static final Color DEFAULT_AXIS_COLOR = ColorFactory.BLACK;
 	public static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	public static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
-	public static final boolean DEFAULT_INVERT_XY = false;
 	public static final boolean DEFAULT_Y_AXIS_LOGARITHMIC = false;
 
 	// grid
@@ -117,7 +115,6 @@ public class ChartDefaults {
 		// TODO: AXIS_COLOR
 		defaults.put(PROP_LABEL_FONT, DEFAULT_LABELS_FONT);
 		defaults.put(PROP_X_LABELS_ROTATE_BY, DEFAULT_X_LABELS_ROTATED_BY);
-		defaults.put(PROP_XY_INVERT, DEFAULT_INVERT_XY);
 		
 		defaults.put(PROP_XY_GRID, DEFAULT_SHOW_GRID);
 		

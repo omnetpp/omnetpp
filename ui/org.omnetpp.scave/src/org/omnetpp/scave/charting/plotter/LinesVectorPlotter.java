@@ -46,8 +46,8 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int prevSymbolX = Integer.MIN_VALUE;
 		
 		for (int i = first; i <= last; i++) {
-			int x = mapping.toCanvasX(dataset.getX(series, i));
-			int y = mapping.toCanvasY(dataset.getY(series, i)); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+			int x = mapping.toCanvasX(transformX(dataset.getX(series, i)));
+			int y = mapping.toCanvasY(transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing: 
 			// if (i%5==0) y = NANPIX;

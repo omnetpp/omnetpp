@@ -51,11 +51,11 @@ public class PinsVectorPlotter extends VectorPlotter {
 		
 		// draw pins
 		for (int i = first; i <= last; i++) {
-			double value = dataset.getY(series, i);
-			if ((referenceLevel < lo && value < lo) || (referenceLevel > hi && value > hi) || Double.isNaN(value)) 
+			double value = transformY(dataset.getY(series, i));
+			if (transform == null && ((referenceLevel < lo && value < lo) || (referenceLevel > hi && value > hi) || Double.isNaN(value))) 
 				continue; // pin is off-screen
 
-			int x = mapping.toCanvasX(dataset.getX(series, i));
+			int x = mapping.toCanvasX(transformX(dataset.getX(series, i)));
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			if (prevX != x) {

@@ -4,7 +4,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
 
@@ -97,9 +96,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Text xAxisMaxText;
 	private Text yAxisMinText;
 	private Text yAxisMaxText;
-	private Button xAxisLogCheckbox;
 	private Button yAxisLogCheckbox;
-	private Button invertAxesCheckbox;
 	private Combo showGridCombo;
 
 	private Button displayLegendCheckbox;
@@ -212,9 +209,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			yAxisMinText = createTextField("Y axis", group);
 			yAxisMaxText = createTextField(null, group);
 			group = createGroup("Axis options", panel, 1);
-			xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", group);
 			yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", group);
-			invertAxesCheckbox = createCheckboxField("Invert X,Y", group);
 			group = createGroup("Grid", panel, 1);
 			showGridCombo = createComboField("Show grid", group, ShowGrid.class, false);
 		}
@@ -448,9 +443,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		newProps.setProperty(PROP_X_AXIS_MAX, xAxisMaxText.getText()); // XXX
 		newProps.setYAxisMin(yAxisMinText.getText());
 		newProps.setYAxisMax(yAxisMaxText.getText());
-		newProps.setProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection()); // XXX
 		newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
-		newProps.setXYInvert(invertAxesCheckbox.getSelection());
 		newProps.setXYGrid(resolveEnum(showGridCombo.getText(), ShowGrid.class));
 		// Legend
 		newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
@@ -497,9 +490,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		xAxisMaxText.setText(props.getStringProperty(PROP_X_AXIS_MAX)); // XXX for vector chart only
 		yAxisMinText.setText(props.getYAxisMin());
 		yAxisMaxText.setText(props.getYAxisMax());
-		xAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_X_AXIS_LOGARITHMIC)); // XXX for vector charts only
 		yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
-		invertAxesCheckbox.setSelection(props.getXYInvert());
 		showGridCombo.setText(props.getXYGrid().name());
 		// Legend
 		displayLegendCheckbox.setSelection(props.getDisplayLegend());

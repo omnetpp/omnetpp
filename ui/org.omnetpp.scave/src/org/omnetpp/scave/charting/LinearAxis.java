@@ -28,26 +28,31 @@ import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
  * @author andras
  */
 public class LinearAxis {
-	private boolean vertical; // horizontal or vertical axis
-	private int gap = 2;  // space between axis line and plot area (usually 0)
-	private int majorTickLength = 4;
-	private int minorTickLength = 2;
+	/* Properties */
+	private boolean vertical;    // horizontal or vertical axis
+	private boolean logarithmic; // logarithmic axis
 	private ShowGrid showGrid = DEFAULT_SHOW_GRID;
 	private boolean drawTickLabels = true;
 	private boolean drawTitle = true;
-
-	private Rectangle bounds;
-	private Insets insets;  // plot area = bounds minus insets
-
-	private ICoordsMapping mapping;
-	
 	private String title; 
 	private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 	private Font tickFont = DEFAULT_TICK_FONT;
 
-	public LinearAxis(ICoordsMapping mapping, boolean vertical) {
+	
+	/* Layout parameters */
+	private int gap = 2;  // space between axis line and plot area (usually 0)
+	private int majorTickLength = 4;
+	private int minorTickLength = 2;
+	private Rectangle bounds;
+	private Insets insets;  // plot area = bounds minus insets
+
+	/* Area -> Canvas coords */
+	private ICoordsMapping mapping;
+	
+	public LinearAxis(ICoordsMapping mapping, boolean vertical, boolean logarithmic) {
 		this.mapping = mapping;
 		this.vertical = vertical;
+		this.logarithmic = logarithmic;
 		this.title = vertical ? DEFAULT_Y_AXIS_TITLE : DEFAULT_X_AXIS_TITLE;
 	}
 
@@ -93,7 +98,7 @@ public class LinearAxis {
 		// calculate longest tick label length
 		if (!drawTickLabels)
 			return 0;
-		Ticks ticks = createTicks(bounds);
+		ITicks ticks = createTicks(bounds);
 		int labelWidth = 0;
 		if (ticks != null) {
 			gc.setFont(tickFont);
@@ -121,20 +126,20 @@ public class LinearAxis {
 		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn 
 		// to the whole clipping region (cached image area) not just the plot area    
 		Rectangle rect = new Rectangle(gc.getClipping());
-		Ticks ticks = createTicks(rect);
+		ITicks ticks = createTicks(rect);
 		if (ticks != null) {
 			gc.setLineStyle(Graphics.LINE_DOT);
 			gc.setForeground(DEFAULT_GRID_COLOR);
 			for (BigDecimal tick : ticks) {
 				if (showGrid == ShowGrid.All || ticks.isMajorTick(tick)) {
 					if (vertical) {
-						int y = mapping.toCanvasY(tick.doubleValue()); 
+						int y = mapping.toCanvasY(transform(tick.doubleValue())); 
 						if (y >= rect.y && y <= rect.bottom()) {
 							gc.drawLine(rect.x, y, rect.right(), y);
 						}
 					}
 					else {
-						int x = mapping.toCanvasX(tick.doubleValue()); 
+						int x = mapping.toCanvasX(transform(tick.doubleValue())); 
 						if (x >= rect.x && x <= rect.right()) {
 							gc.drawLine(x, rect.y, x, rect.bottom());
 						}
@@ -155,7 +160,7 @@ public class LinearAxis {
 
 		Point titleSize = gc.textExtent(title);
 		if (vertical) {
-			if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
+			if (!logarithmic && mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
 				gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
 			gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
 			gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
@@ -169,7 +174,7 @@ public class LinearAxis {
 			}
 		}
 		else {
-			if (mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
+			if (!logarithmic && mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
 				gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
 			gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
 			gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
@@ -178,7 +183,7 @@ public class LinearAxis {
 		}
 
 		// draw ticks and labels
-		Ticks ticks = createTicks(plotArea);
+		ITicks ticks = createTicks(plotArea);
 		if (ticks != null) {
 			gc.setFont(tickFont);
 			for (BigDecimal tick : ticks) {
@@ -186,7 +191,7 @@ public class LinearAxis {
 				Point size = gc.textExtent(label);
 				int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength; 
 				if (vertical) {
-					int y = mapping.toCanvasY(tick.doubleValue()); 
+					int y = mapping.toCanvasY(transform(tick.doubleValue())); 
 					if (y >= plotArea.y && y <= plotArea.bottom()) {
 						gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
 						gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
@@ -197,7 +202,7 @@ public class LinearAxis {
 					}
 				}
 				else {
-					int x = mapping.toCanvasX(tick.doubleValue()); 
+					int x = mapping.toCanvasX(transform(tick.doubleValue())); 
 					if (x >= plotArea.x && x <= plotArea.right()) {
 						gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
 						gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
@@ -211,15 +216,18 @@ public class LinearAxis {
 		}
 	}
 
-	protected Ticks createTicks(Rectangle plotArea) {
+	protected ITicks createTicks(Rectangle plotArea) {
 		if (vertical)
 			return createTicks(mapping.fromCanvasY(plotArea.bottom()), mapping.fromCanvasY(plotArea.y), plotArea.height);
 		else
 			return createTicks(mapping.fromCanvasX(plotArea.x), mapping.fromCanvasX(plotArea.right()), plotArea.width);
 	}
 
-	protected static Ticks createTicks(double start, double end, int pixels) {
-		return pixels != 0 ? new Ticks(start, end, 50 * (end-start) / pixels ) : null;
+	protected ITicks createTicks(double start, double end, int pixels) {
+		if (logarithmic)
+			return new LogarithmicTicks(Math.pow(10.0, start), Math.pow(10.0, end));
+		else
+			return pixels != 0 ? new LinearTicks(start, end, 50 * (end-start) / pixels ) : null;
 	}
 
 	public Rectangle getBounds() {
@@ -228,6 +236,22 @@ public class LinearAxis {
 
 	public Insets getInsets() {
 		return insets;  // note: no setter! use setLayout()
+	}
+	
+	public boolean isVertical() {
+		return vertical;
+	}
+
+	public void setVertical(boolean vertical) {
+		this.vertical = vertical;
+	}
+	
+	public boolean isLogarithmic() {
+		return logarithmic;
+	}
+
+	public void setLogarithmic(boolean logarithmic) {
+		this.logarithmic = logarithmic;
 	}
 
 	public int getGap() {
@@ -284,5 +308,9 @@ public class LinearAxis {
 
 	public void setDrawTitle(boolean drawTitle) {
 		this.drawTitle = drawTitle;
+	}
+	
+	private double transform(double coord) {
+		return logarithmic ? Math.log10(coord) : coord;
 	}
 }
