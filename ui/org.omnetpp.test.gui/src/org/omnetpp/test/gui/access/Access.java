@@ -22,7 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.test.gui.EventTracer;
+import org.omnetpp.test.gui.core.EventTracer;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 

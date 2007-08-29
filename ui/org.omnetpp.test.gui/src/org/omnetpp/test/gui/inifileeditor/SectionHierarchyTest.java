@@ -1,13 +1,13 @@
 package org.omnetpp.test.gui.inifileeditor;
 
 import org.eclipse.swt.SWT;
-import org.omnetpp.test.gui.GUITestCase;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.EditorPartAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.access.WorkspaceAccess;
+import org.omnetpp.test.gui.core.GUITestCase;
 
 public class SectionHierarchyTest extends GUITestCase {
 	protected String projectName = "test-project";

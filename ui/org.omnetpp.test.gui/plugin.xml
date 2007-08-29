@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.omnetpp.test.gui.TestApplication">
+               class="org.omnetpp.test.gui.core.TestApplication">
          </run>
       </application>
    </extension>

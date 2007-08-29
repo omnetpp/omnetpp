@@ -1,4 +1,4 @@
-package org.omnetpp.test.gui;
+package org.omnetpp.test.gui.core;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplicationContext;

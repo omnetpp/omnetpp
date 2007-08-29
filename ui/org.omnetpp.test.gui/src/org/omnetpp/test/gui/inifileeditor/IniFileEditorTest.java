@@ -4,12 +4,12 @@ import junit.framework.Assert;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
-import org.omnetpp.test.gui.GUITestCase;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.EditorPartAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
+import org.omnetpp.test.gui.core.GUITestCase;
 
 public class IniFileEditorTest extends GUITestCase {
 	protected String projectName = "test-project";

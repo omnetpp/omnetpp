@@ -1,4 +1,4 @@
-package org.omnetpp.test.gui;
+package org.omnetpp.test.gui.core;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;

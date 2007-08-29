@@ -1,4 +1,4 @@
-package org.omnetpp.test.gui;
+package org.omnetpp.test.gui.core;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.CodeSignature;
