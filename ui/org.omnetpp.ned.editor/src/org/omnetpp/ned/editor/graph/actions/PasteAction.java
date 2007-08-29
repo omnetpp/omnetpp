@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,11 +11,10 @@ import java.util.Set;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
-import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.ui.actions.Clipboard;
 import org.eclipse.gef.ui.actions.SelectionAction;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
@@ -32,7 +32,6 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.SubmodulesElement;
@@ -60,143 +59,146 @@ public class PasteAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		//XXX getCommand().canExecute() ?
 		Object contents = Clipboard.getDefault().getContents();
 		return contents instanceof INEDElement[];
 	}
 
 	@Override @SuppressWarnings("unchecked")
 	public void run() {
-		Command command = getCommand();
-		if (command.canExecute())
-			execute(command);  //FIXME plus: select newly pasted stuff (how? no editparts yet! or?)
-	}
-
-	/**
-	 * Returns the command for pasting the objects
-	 */
-	protected Command getCommand() {
 		Object contents = Clipboard.getDefault().getContents();
-		if (contents instanceof INEDElement[]) {
-			CompoundCommand compoundCommand = new CompoundCommand();
+		if (!(contents instanceof INEDElement[]))
+			return;
+		
+		// we'll paste a *duplicate* of the elements on the clipboard
+		List<INEDElement> elements = new ArrayList<INEDElement>();
+		for (INEDElement element : (INEDElement[])contents)
+			elements.add(element.deepDup());
 
-			// we'll paste a *duplicate* of the elements on the clipboard
-			INEDElement[] elements = ((INEDElement[])contents).clone();
-			for (int i=0; i<elements.length; i++)
-				elements[i] = elements[i].deepDup();
-			
-			// we need to paste in a certain order: 
-			// - submodules before connections (because connections has to follow 
-			//   submodule renaming)
-			// - named elements in dictionary order (so that numbering of duplicates
-			//   will be consistent with the original order, i.e. pasting node1, node2, 
-			//   node3 will result in node4, node5, node6 in *that* order
-			//
-			Arrays.sort(elements, new Comparator<INEDElement>() {
-				public int compare(INEDElement o1, INEDElement o2) {
-					// connections must be pasted last (after submodules)
-					if (o1 instanceof ConnectionElement && !(o2 instanceof ConnectionElement))
-						return 1;
-					if (!(o1 instanceof ConnectionElement) && o2 instanceof ConnectionElement)
-						return -1;
-					// do named ones in dictionary order
-					if (o1 instanceof IHasName && o2 instanceof IHasName)
-						return StringUtils.dictionaryCompare(((IHasName)o1).getName(), ((IHasName)o2).getName());
-					if (o1 instanceof IHasName && !(o2 instanceof IHasName))
-						return 1;
-					if (!(o1 instanceof IHasName) && o2 instanceof IHasName)
-						return -1;
-					// default: by hashCode
-					return o1.hashCode() - o2.hashCode();
-				}
-			});
-			
-			System.out.println("Pasting in the following order: " + StringUtils.join(elements, ", "));
-				
-			
-			Set<String> usedNedTypeNames = new HashSet<String>();
-			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
-			CompoundModuleElementEx targetCompoundModule = getTargetCompoundModule(); // for submodules and connections
-			//FIXME if needed, create a compound module on demand? or pop up an error dialog?
-			Set<String> usedSubmoduleNames = new HashSet<String>();
-			if (targetCompoundModule != null)
-				usedSubmoduleNames.addAll(targetCompoundModule.getNEDTypeInfo().getSubmodules().keySet());
-			
-			Map<String, String> submoduleNameMap = new HashMap<String, String>();
-			// FIXME first submodules should be added and connections only after them
-			for (INEDElement element : elements) {
-				System.out.println("pasting " + element);
-				if (element instanceof INedTypeElement)
-					pasteNedTypeElement((INedTypeElement)element, usedNedTypeNames, compoundCommand);
-				else if (element instanceof SubmoduleElementEx && targetCompoundModule != null)
-					pasteSubmodule((SubmoduleElementEx)element, targetCompoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
-				else if (element instanceof ConnectionElementEx && targetCompoundModule != null)
-					pasteConnection((ConnectionElementEx)element, targetCompoundModule, submoduleNameMap, compoundCommand);
-				else
-					System.out.println("don't know how to paste " + element);  //XXX handle pasting of: parameters, gates etc; toplevel types into compound module (as inner type)
+		// sort the collection so named elements will be pasted in dictionary
+		// order, so that numbering after renaming the duplicates will be consistent 
+		// with the original order (i.e. pasting node1, node2, node3 will result in 
+		// node4, node5, node6 in *that* order)
+		Collections.sort(elements, new Comparator<INEDElement>() {
+			public int compare(INEDElement o1, INEDElement o2) {
+				// do named ones in dictionary order
+				if (o1 instanceof IHasName && o2 instanceof IHasName)
+					return StringUtils.dictionaryCompare(((IHasName)o1).getName(), ((IHasName)o2).getName());
+				if (o1 instanceof IHasName)
+					return 1;
+				if (o2 instanceof IHasName)
+					return -1;
+				return 0;
 			}
+		});
 
-			compoundCommand.setLabel("Paste " + StringUtils.formatCounted(elements.length, "object"));
-			return compoundCommand;
-		} else
-            return UnexecutableCommand.INSTANCE;
+		// assemble compound command which effectively does the paste
+		CompoundCommand compoundCommand = new CompoundCommand();
+		List<INEDElement> pastedElements = new ArrayList<INEDElement>();
+		pasteNedTypes(elements, compoundCommand, pastedElements);
+		pasteSubmodulesAndConnections(elements, compoundCommand, pastedElements);
+		//XXX handle pasting of: parameters, gates etc; toplevel types into compound module (as inner type)
 
+		// warn for elements that could not be pasted
+		elements.removeAll(pastedElements);
+		if (elements.size() > 0) {
+			System.out.println("don't know how to paste: " + StringUtils.join(elements, ", "));  
+			Display.getCurrent().beep();
+		}
+
+		// execute the command
+		compoundCommand.setLabel("Paste " + StringUtils.formatCounted(pastedElements.size(), "object"));
+		execute(compoundCommand);
+		
+		// select newly pasted stuff in the editor
+		GraphicalViewer graphicalViewer = getGraphicalViewer();
+		graphicalViewer.getRootEditPart().refresh();
+		getGraphicalViewer().deselectAll();
+		Map<INEDElement,EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
+		for (INEDElement element : pastedElements) {
+			EditPart editPart = editPartRegistry.get(element);
+			if (editPart != null)
+				graphicalViewer.appendSelection(editPart);
+		}
 	}
 
-	protected void pasteNedTypeElement(INedTypeElement element, Set<String> usedNedTypeNames, CompoundCommand compoundCommand) {
-		// ensure name will be unique
-		String newName = NEDElementUtilEx.getUniqueNameFor(element, usedNedTypeNames);
-		usedNedTypeNames.add(newName);
-		element.setName(newName);
+	protected void pasteNedTypes(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+		Set<String> usedNedTypeNames = new HashSet<String>();
+		usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
 
-		// paste it
-		//FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
 		EditPart toplevelEditPart = getGraphicalViewer().getContents();
 		NedFileElementEx parent = (NedFileElementEx)toplevelEditPart.getModel();
-		compoundCommand.add(new AddNEDElementCommand(parent, element));
-	}
+		INEDElement beforeElement = null; //FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
 
-	protected void pasteSubmodule(SubmoduleElementEx submodule, CompoundModuleElementEx targetModule, Set<String> usedSubmoduleNames, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
-		SubmodulesElement submodulesElement = targetModule.getFirstSubmodulesChild();
-		// FIXME unique names always needed
-		// FIXME submodules element should be added only once
-		if (submodulesElement == null) {
-			submodulesElement = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
-			submodulesElement.appendChild(submodule);
-			usedSubmoduleNames.add(submodule.getName());
-			compoundCommand.add(new AddNEDElementCommand(targetModule, submodulesElement));
-		}
-		else {
-			String newName = NEDElementUtilEx.getUniqueNameFor(submodule, usedSubmoduleNames);
-			usedSubmoduleNames.add(newName);
-			if (!newName.equals(submodule.getName())) {
-				submoduleNameMap.put(submodule.getName(), newName);
-				submodule.setName(newName);
+		for (INEDElement element : elements) {
+			if (element instanceof INedTypeElement) {
+				INedTypeElement typeElement = (INedTypeElement) element;
+
+				// ensure name will be unique
+				String newName = NEDElementUtilEx.getUniqueNameFor(typeElement, usedNedTypeNames);
+				typeElement.setName(newName);
+				usedNedTypeNames.add(newName);
+
+				// paste it
+				compoundCommand.add(new AddNEDElementCommand(parent, typeElement, beforeElement));
+				pastedElements.add(typeElement);
 			}
-			compoundCommand.add(new AddNEDElementCommand(submodulesElement, submodule));
 		}
 	}
 
-	protected void pasteConnection(ConnectionElementEx connection, CompoundModuleElementEx targetModule, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
-		// adjust src/dest submodule name if needed
-		if (submoduleNameMap.containsKey(connection.getSrcModule()))
-			connection.setSrcModule(submoduleNameMap.get(connection.getSrcModule()));
-		if (submoduleNameMap.containsKey(connection.getDestModule()))
-			connection.setDestModule(submoduleNameMap.get(connection.getDestModule()));
+	protected void pasteSubmodulesAndConnections(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+		CompoundModuleElementEx targetModule = getTargetCompoundModule();
+		if (targetModule == null)
+			return;
 
-		// insert
-        // FIXME connections element should be added only once
-		ConnectionsElement connectionsElement = targetModule.getFirstConnectionsChild();
-		if (connectionsElement == null) {
-			connectionsElement = (ConnectionsElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTIONS);
-			connectionsElement.appendChild(connection);
-			compoundCommand.add(new AddNEDElementCommand(targetModule, connectionsElement));
-		}
-		else {
-			compoundCommand.add(new AddNEDElementCommand(connectionsElement, connection));
+		Set<String> usedSubmoduleNames = new HashSet<String>();
+		usedSubmoduleNames.addAll(targetModule.getNEDTypeInfo().getSubmodules().keySet());
+		Map<String, String> submoduleNameMap = new HashMap<String, String>();
+
+		// paste submodules
+		SubmodulesElement submodulesSection = targetModule.getFirstSubmodulesChild();
+		for (INEDElement element : elements) {
+			if (element instanceof SubmoduleElementEx) {
+				SubmoduleElementEx submodule = (SubmoduleElementEx) element;
+
+				// generate unique name if needed
+				String newName = NEDElementUtilEx.getUniqueNameFor(submodule, usedSubmoduleNames);
+				usedSubmoduleNames.add(newName);
+				if (!newName.equals(submodule.getName())) {
+					submoduleNameMap.put(submodule.getName(), newName);
+					submodule.setName(newName);
+				}
+
+				// insert
+				if (submodulesSection == null) {
+					submodulesSection = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
+					compoundCommand.add(new AddNEDElementCommand(targetModule, submodulesSection));
+				}
+				compoundCommand.add(new AddNEDElementCommand(submodulesSection, submodule));
+				pastedElements.add(submodule);
+			}
 		}
 
-		//FIXME verify if src/dest submodule exists in the compound module?
+		// paste connections
+		ConnectionsElement connectionsSection = targetModule.getFirstConnectionsChild();
+		for (INEDElement element : elements) {
+			if (element instanceof ConnectionElementEx) {
+				ConnectionElementEx connection = (ConnectionElementEx)element;
+
+				// adjust src/dest submodule name if needed
+				if (submoduleNameMap.containsKey(connection.getSrcModule()))
+					connection.setSrcModule(submoduleNameMap.get(connection.getSrcModule()));
+				if (submoduleNameMap.containsKey(connection.getDestModule()))
+					connection.setDestModule(submoduleNameMap.get(connection.getDestModule()));
+
+				// insert
+				if (connectionsSection == null) {
+					connectionsSection = (ConnectionsElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTIONS);
+					compoundCommand.add(new AddNEDElementCommand(targetModule, connectionsSection));
+				}
+				compoundCommand.add(new AddNEDElementCommand(connectionsSection, connection));
+				pastedElements.add(connection);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
