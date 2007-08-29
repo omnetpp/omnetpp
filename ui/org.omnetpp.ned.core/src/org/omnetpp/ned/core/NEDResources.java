@@ -417,10 +417,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * NED editors should call this when they get opened.
      */
     public synchronized void connect(IFile file) {
-        readNEDFile(file);
         if (connectCount.containsKey(file))
             connectCount.put(file, connectCount.get(file) + 1);
         else {
+        	if (!nedFiles.containsKey(file))
+        		readNEDFile(file);
             connectCount.put(file, 1);
         }
     }
@@ -441,19 +442,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
+    /**
+     * May only be called if the file is not already open in an editor.
+     */
     public synchronized void readNEDFile(IFile file) {
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer();
         readNEDFile(file, markerSync);
         markerSync.runAsWorkspaceJob();
+        rehash();
     }
 
-    /**
-     * Gets called from incremental builder.
-     */
-    public synchronized void readNEDFile(IFile file, ProblemMarkerSynchronizer markerSync) {
-        // if this file is currently loaded in an editor, we don't read it from disk
-        if (connectCount.containsKey(file))
-            return;
+    private synchronized void readNEDFile(IFile file, ProblemMarkerSynchronizer markerSync) {
+    	Assert.isTrue(!hasConnectedEditor(file));
 
         System.out.println("reading from disk: " + file.toString());
 
@@ -677,8 +677,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             wsroot.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
-                    if (isNEDFile(resource))
-                        readNEDFile((IFile) resource, sync);
+                    if (isNEDFile(resource) && !hasConnectedEditor((IFile)resource))
+                        readNEDFile((IFile)resource, sync);
                     return true;
                 }
             });
@@ -695,7 +695,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // ******************* notification helpers ************************************
 
-    public void addNEDComponentChangeListener(INEDChangeListener listener) {
+	public void addNEDComponentChangeListener(INEDChangeListener listener) {
         if (nedComponentChangeListenerList == null)
             nedComponentChangeListenerList = new NEDChangeListenerList();
         nedComponentChangeListenerList.add(listener);
@@ -764,22 +764,23 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                         return true;
 
                     // printDelta(delta);
+                    IFile file = (IFile)resource;
                     switch (delta.getKind()) {
                         case IResourceDelta.REMOVED:
                             // handle removed resource
-                            forgetNEDFile((IFile) resource);
+                            forgetNEDFile(file);
                             invalidate();
                             break;
                         case IResourceDelta.ADDED:
-                            readNEDFile((IFile) resource, sync);
+                            readNEDFile(file, sync);
                             invalidate();
                             break;
                         case IResourceDelta.CHANGED:
                             // handle changed resource, but we are interested
                             // only in content change
                             // we don't care about marker and property changes
-                            if ((delta.getFlags() & IResourceDelta.CONTENT) != 0) {
-                                readNEDFile((IFile) resource, sync);
+                            if ((delta.getFlags() & IResourceDelta.CONTENT) != 0 && !hasConnectedEditor(file)) {
+                                readNEDFile(file, sync);
                                 invalidate();
                             }
                             break;
@@ -810,5 +811,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	public int getConnectCount(IFile file) {
 		return connectCount.containsKey(file) ? connectCount.get(file) : 0;
+	}
+
+    protected boolean hasConnectedEditor(IFile file) {
+        return connectCount.containsKey(file);
 	}
 }
