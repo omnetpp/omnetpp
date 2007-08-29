@@ -26,26 +26,26 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	protected boolean handleButtonUp(int button) {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
 			ConnectionCommand connCommand = (ConnectionCommand)getCommand();
-	    	
+	    	if (connCommand == null)
+	    	    return false;
             // depending on which side we are reconnecting, we offer a full gate list on that side
             if (getCommandName() == RequestConstants.REQ_RECONNECT_TARGET)
                 connCommand.setDestGate(null);
             if (getCommandName() == RequestConstants.REQ_RECONNECT_SOURCE)
                 connCommand.setSrcGate(null);
-            
+
 	    	// ask the user about which gates should be connected
-			ConnectionElement selectedConn 
+			ConnectionElement selectedConn
 				= ConnectionChooser.open(connCommand);
-			
+
 			eraseSourceFeedback();
 			eraseTargetFeedback();
 
 	    	// if no selection was made, cancel the command
-			if (selectedConn == null) {
-				// revert the connection change (user cancel - do not execute the command)
+			if (selectedConn == null)
+                // revert the connection change (user cancel - do not execute the command)
 				return false;
-			}
-	    	
+
 			// copy the selected connection attributes to the command
 	    	ConnectionElement templateConn = connCommand.getConnectionTemplate();
 			ConnectionCommand.copyConn(selectedConn, templateConn);
@@ -77,7 +77,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
         // allow dragging ONLY if the connection is editable
         if (((ModuleConnectionEditPart)getConnectionEditPart()).isEditable())
             return super.handleDragInProgress();
-        
+
         return false;
     }
 }

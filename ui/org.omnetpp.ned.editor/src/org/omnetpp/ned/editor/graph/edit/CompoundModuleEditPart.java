@@ -33,7 +33,8 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
- * TODO add documentation
+ * Edit part controlling the appearance of the compound module figure. Note that this
+ * editpart handles its own connection part registry and does not use the global registry
  *
  * @author rhornig
  */

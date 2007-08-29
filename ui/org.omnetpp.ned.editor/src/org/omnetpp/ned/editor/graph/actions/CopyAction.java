@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Implements "Copy to clipboard".
- * 
+ *
  * @author Andras
  */
 public class CopyAction extends SelectionAction {
@@ -44,7 +44,7 @@ public class CopyAction extends SelectionAction {
 	public void run() {
 		// collect selected editparts
 		List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
-		selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));
+		selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));  // FIXME skip connections that already selected
 
 		// translate from editparts to model elements
 		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();

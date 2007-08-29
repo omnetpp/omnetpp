@@ -36,7 +36,7 @@ import org.omnetpp.ned.model.pojo.SubmodulesElement;
 
 /**
  * Implements "Paste from clipboard".
- * 
+ *
  * @author Andras
  */
 public class PasteAction extends SelectionAction {
@@ -79,30 +79,29 @@ public class PasteAction extends SelectionAction {
 			INEDElement[] elements = (INEDElement[]) contents;
 			Set<String> usedNedTypeNames = new HashSet<String>();
 			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
-			CompoundModuleElementEx compoundModule = getTargetCompoundModule(); // for submodules and connections
+			CompoundModuleElementEx targetCompoundModule = getTargetCompoundModule(); // for submodules and connections
 			//FIXME if needed, create a compound module on demand? or pop up an error dialog?
 			Set<String> usedSubmoduleNames = new HashSet<String>();
-			if (compoundModule != null)
-				usedSubmoduleNames.addAll(compoundModule.getNEDTypeInfo().getSubmodules().keySet());
+			if (targetCompoundModule != null)
+				usedSubmoduleNames.addAll(targetCompoundModule.getNEDTypeInfo().getSubmodules().keySet());
 			Map<String, String> submoduleNameMap = new HashMap<String, String>();
+			// FIXME first submodules should be added and connections only after them
 			for (INEDElement element : elements) {
 				System.out.println("pasting " + element);
 				if (element instanceof INedTypeElement)
 					pasteNedTypeElement((INedTypeElement)element.deepDup(), usedNedTypeNames, compoundCommand);
-				else if (element instanceof SubmoduleElementEx && compoundModule != null)
-					pasteSubmodule((SubmoduleElementEx)element.deepDup(), compoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
-				else if (element instanceof ConnectionElementEx && compoundModule != null)
-					pasteConnection((ConnectionElementEx)element.deepDup(), compoundModule, submoduleNameMap, compoundCommand);
+				else if (element instanceof SubmoduleElementEx && targetCompoundModule != null)
+					pasteSubmodule((SubmoduleElementEx)element.deepDup(), targetCompoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
+				else if (element instanceof ConnectionElementEx && targetCompoundModule != null)
+					pasteConnection((ConnectionElementEx)element.deepDup(), targetCompoundModule, submoduleNameMap, compoundCommand);
 				else
 					System.out.println("don't know how to paste " + element);  //XXX
 			}
 
 			compoundCommand.setLabel("Paste " + StringUtils.formatCounted(elements.length, "object"));
 			return compoundCommand;
-		}
-		else {
-			return UnexecutableCommand.INSTANCE;
-		}
+		} else
+            return UnexecutableCommand.INSTANCE;
 
 	}
 
@@ -111,7 +110,7 @@ public class PasteAction extends SelectionAction {
 		String newName = NEDElementUtilEx.getUniqueNameFor(element, usedNedTypeNames);
 		usedNedTypeNames.add(newName);
 		element.setName(newName);
-		
+
 		// paste it
 		//FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
 		EditPart toplevelEditPart = getGraphicalViewer().getContents();
@@ -121,6 +120,8 @@ public class PasteAction extends SelectionAction {
 
 	protected void pasteSubmodule(SubmoduleElementEx submodule, CompoundModuleElementEx targetModule, Set<String> usedSubmoduleNames, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
 		SubmodulesElement submodulesElement = targetModule.getFirstSubmodulesChild();
+		// FIXME unique names always needed
+		// FIXME submodules element should be added only once
 		if (submodulesElement == null) {
 			submodulesElement = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
 			submodulesElement.appendChild(submodule);
@@ -139,13 +140,14 @@ public class PasteAction extends SelectionAction {
 	}
 
 	protected void pasteConnection(ConnectionElementEx connection, CompoundModuleElementEx targetModule, Map<String, String> submoduleNameMap, CompoundCommand compoundCommand) {
-		// adjust src/dest submodule name if needed 
+		// adjust src/dest submodule name if needed
 		if (submoduleNameMap.containsKey(connection.getSrcModule()))
 			connection.setSrcModule(submoduleNameMap.get(connection.getSrcModule()));
 		if (submoduleNameMap.containsKey(connection.getDestModule()))
 			connection.setDestModule(submoduleNameMap.get(connection.getDestModule()));
 
 		// insert
+        // FIXME connections element should be added only once
 		ConnectionsElement connectionsElement = targetModule.getFirstConnectionsChild();
 		if (connectionsElement == null) {
 			connectionsElement = (ConnectionsElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTIONS);
@@ -155,7 +157,7 @@ public class PasteAction extends SelectionAction {
 		else {
 			compoundCommand.add(new AddNEDElementCommand(connectionsElement, connection));
 		}
-		
+
 		//FIXME verify if src/dest submodule exists in the compound module?
 	}
 
@@ -165,7 +167,7 @@ public class PasteAction extends SelectionAction {
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		List selectedEditParts = graphicalViewer.getSelectedEditParts();
 		for (Object editPart : selectedEditParts)
-			if (editPart instanceof ModuleEditPart) 
+			if (editPart instanceof ModuleEditPart)
 				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
 
 		// or, return the first compound module in the file; in the worst case return null
