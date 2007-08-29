@@ -32,6 +32,10 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	public ZoomableCachingCanvas(Composite parent, int style) {
 		super(parent, style);
 	}
+	
+	public void setArea(RectangularArea area) {
+		setArea(area.minX, area.minY, area.maxX, area.maxY);
+	}
 
 	public void setArea(double minX, double minY, double maxX, double maxY) {
 		this.minX = minX;
@@ -45,6 +49,10 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		
 		zoomToFit(); // includes updateVirtualSize(), clearCanvasCache(), redraw() etc.
 		System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
+	}
+	
+	public RectangularArea getArea() {
+		return new RectangularArea(minX, minY, maxX, maxY);
 	}
 
 	public double getMaxX() {
