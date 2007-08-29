@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.graph;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.parts.AbstractEditPartViewer;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
@@ -44,6 +46,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -156,7 +160,18 @@ public class GraphicalNedEditor
 
         @Override
         public void createControl(Composite parent) {
-            super.createControl(parent);
+        	// TODO KLUDGE: This block removes the drag source and drop targets so that dragging will work when switch back and forth
+        	//              between the text and graphical editors. See comment in MultiPageNedEditor in pageChange.
+        	//              Both the drag source and the drag target are disposed by their corresponding setter methods.
+        	Method method = ReflectionUtils.getMethod(AbstractEditPartViewer.class, "setDragSource", DragSource.class);
+        	ReflectionUtils.setAccessible(method);
+        	ReflectionUtils.invokeMethod(method, getViewer(), (DragSource)null);
+        	method = ReflectionUtils.getMethod(AbstractEditPartViewer.class, "setDropTarget", DropTarget.class);
+        	ReflectionUtils.setAccessible(method);
+        	ReflectionUtils.invokeMethod(method, getViewer(), (DropTarget)null);
+        	// KLUDGE END
+
+        	super.createControl(parent);
             getViewer().setEditDomain(getEditDomain());
             getViewer().setEditPartFactory(new NedTreeEditPartFactory());
             ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), getActionRegistry());

@@ -39,18 +39,16 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
-//FIXME why doesn't this comment go into the normal class comment? --Andras
-
 /**
  * Multi-page NED editor.
  * MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
  * editor maintains its own model independent of each other. The two model should be synchronized during
  * page change / or save operation. Additionally the model should be put back into the NEDResources, so
  * name lookup and other services will work correctly. Save is done by delegation to the Text editor's save
- * method (ie. The graphical editor itself cannot save its model, the multipage editor must first obtain
+ * method (i.e. The graphical editor itself cannot save its model, the multipage editor must first obtain
  * the model from the graphical editor, convert to text and pass it to the Text based editor and then
  * call the Text editor to save its content. When setting the input of the multipage editor both
- * embedded editor should be notified (ie setInput must be delegated)
+ * embedded editor should be notified (i.e. setInput must be delegated)
  *
  * @author rhornig
  */
@@ -65,7 +63,6 @@ public class MultiPageNedEditor
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
-//    private boolean initPhase = true;
 
 	@Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
@@ -225,6 +222,10 @@ public class MultiPageNedEditor
         ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
         if (contentOutline != null) {
             // notify from the old closed editor
+        	// TODO: after switching to text page and back to graphical page the dragging will be broken in the outline view
+        	//       look at somewhere near hookControl() and refreshDragSourceAdapter() in AbstractEditPartView
+        	//       somehow the getDragSource() method returns a non null value and listeners are not correctly hooked up
+        	//       and that's why dragging will not work AFAICT now. KLUDGE: this has been worked around in GraphicalNedEditor
             contentOutline.partClosed(this);
             contentOutline.partActivated(this);
         }
@@ -270,7 +271,6 @@ public class MultiPageNedEditor
 			throw new RuntimeException("Unknown page index");
 
         insidePageChange = false;
-//        initPhase = false;
 	}
 
     /**
