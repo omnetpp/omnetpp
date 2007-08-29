@@ -105,11 +105,15 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
     protected Command getCreateCommand(CreateRequest request) {
-	    INedTypeElement newElement = (INedTypeElement)request.getNewObject();
+	    Object element = request.getNewObject();
+	    if (!(element instanceof INedTypeElement))
+	        return UnexecutableCommand.INSTANCE;
+
+	    INedTypeElement newTypeElement = (INedTypeElement)element;
 		EditPart insertionPoint = getInsertionReference(request);
 		INEDElement where = insertionPoint != null ? (INEDElement)insertionPoint.getModel() : null;
 		NedFileElementEx parent = (NedFileElementEx)getHost().getModel();
-		return new CreateNedTypeElementCommand(parent, where, newElement);
+		return new CreateNedTypeElementCommand(parent, where, newTypeElement);
 	}
 
 	/**
