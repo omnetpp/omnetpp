@@ -57,7 +57,7 @@ public class ChartUpdater {
 			return;
 		
 		// add/remove chart property 
-		if (notifier instanceof Chart) {
+		if (notifier instanceof Chart && notifier == chart) {
 			switch (notification.getFeatureID(Chart.class)) {
 			case ScaveModelPackage.CHART__FILTERS:
 				scheduleDatasetUpdate();
@@ -114,7 +114,7 @@ public class ChartUpdater {
 			}
 		}
 		// change chart property
-		else if (notifier instanceof Property) {
+		else if (notifier instanceof Property && notifier.eContainer() == chart) {
 			switch (notification.getFeatureID(Property.class)) {
 			case ScaveModelPackage.PROPERTY__VALUE:
 				Property property = (Property)notification.getNotifier();
