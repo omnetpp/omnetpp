@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
@@ -44,17 +45,7 @@ import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.ChannelElement;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
-import org.omnetpp.ned.model.pojo.CompoundModuleElement;
-import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
-import org.omnetpp.ned.model.pojo.NEDElementFactory;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.ParametersElement;
-import org.omnetpp.ned.model.pojo.SimpleModuleElement;
+import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -88,7 +79,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private static final String NED_EXTENSION = "ned";
 
     // listener list that listeners on all NED changes
-    private NEDChangeListenerList nedComponentChangeListenerList = null;
     private NEDChangeListenerList nedModelChangeListenerList = null;
     private final INEDChangeListener nedModelChangeListener =
                         new INEDChangeListener() {
@@ -96,7 +86,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                                 nedModelChanged(event);
                             }
                         };
-                        
+
 
     // associate IFiles with their NEDElement trees
     private final Map<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
@@ -106,10 +96,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // non-duplicate toplevel (non-inner) types
     private final Map<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
-    
+
     // duplicate toplevel (non-inner) types
     private final Map<String, List<INedTypeElement>> duplicates = new HashMap<String, List<INedTypeElement>>();
-    
+
     // reserved (used) names (contains all names including duplicates)
     private final Set<String> reservedNames = new HashSet<String>();
 
@@ -140,7 +130,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			});
 		}
     };
-    
+
     /**
      * Constructor.
      */
@@ -229,7 +219,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	Assert.isTrue(nedElementFiles.containsKey(nedFileElement), "NedFileElement is not in the resolver");
 		return nedElementFiles.get(nedFileElement);
 	}
-    
+
     /**
      * Returns the textual (reformatted) content of the NED file, generated
      * from the model that belongs to the given file.
@@ -256,7 +246,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (targetTree.getSyntaxProblemMaxCumulatedSeverity() == INedTypeElement.SEVERITY_NONE) {
         	NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
 	        NEDTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
-	
+
 	        if (treeDifferenceApplier.hasDifferences()) {
 	        	// push tree differences into the official tree
 	        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
@@ -266,7 +256,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		        // perform marker synchronization in a background job, to avoid deadlocks
 		        markerSync.runAsWorkspaceJob();
-	
+
 		        // force rehash now, so that validation errors appear immediately
 		        rehash();
 	        }
@@ -474,7 +464,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // remove our model change listener from the file
             NedFileElementEx nedFileElement = nedFiles.get(file);
 			nedFileElement.removeNEDChangeListener(nedModelChangeListener);
-			
+
 			// unregister
             nedFiles.remove(file);
             nedElementFiles.remove(nedFileElement);
@@ -524,7 +514,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         components.clear();
         reservedNames.clear();
         duplicates.clear();
-        
+
         channels.clear();
         channelInterfaces.clear();
         modules.clear();
@@ -589,7 +579,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + components.size() + " registered types");
-        
+
         // schedule a validation
         validationJob.restartTimer();
     }
@@ -601,13 +591,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      */
 	public synchronized void validateAllFiles() {
 		long startMillis = System.currentTimeMillis();
-		
+
 		// During validation, we potentially fire a large number of NEDMarkerChangeEvents.
 		// So we'll surround the code with begin..end notifications, which allows the
-		// graphical editor to optimize refresh() calls. Otherwise it would have to 
+		// graphical editor to optimize refresh() calls. Otherwise it would have to
 		// refresh on each notification, which can be a disaster performance-wise.
 
-		// fake a begin change event, then "finally" an end change event 
+		// fake a begin change event, then "finally" an end change event
 		nedModelChanged(new NEDBeginModelChangeEvent(null));
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
@@ -619,7 +609,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 					INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
 					IFile file = getFile(element.getContainingNedFileElement());
 					IFile otherFile = getFile(otherElement.getContainingNedFileElement());
-					
+
 					NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
 					if (otherFile == null) {
 						errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
@@ -695,17 +685,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // ******************* notification helpers ************************************
 
-	public void addNEDComponentChangeListener(INEDChangeListener listener) {
-        if (nedComponentChangeListenerList == null)
-            nedComponentChangeListenerList = new NEDChangeListenerList();
-        nedComponentChangeListenerList.add(listener);
-    }
-
-    public void removeNEDComponentChangeListener(INEDChangeListener listener) {
-        if (nedComponentChangeListenerList != null)
-        	nedComponentChangeListenerList.remove(listener);
-    }
-
     public void addNEDModelChangeListener(INEDChangeListener listener) {
         if (nedModelChangeListenerList == null)
             nedModelChangeListenerList = new NEDChangeListenerList();
@@ -729,10 +708,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         	// invalidate();
             rehash();  //FIXME factor out validate, and call it in a delayedJob!
 
-            // notify component listeners (i.e. palette manager, where only the component name and
-            // icon matters)
-            if (nedComponentChangeListenerList != null)
-                nedComponentChangeListenerList.fireModelChanged(event);
         }
 
         // notify generic listeners (like NedFileEditParts who refresh themselves
