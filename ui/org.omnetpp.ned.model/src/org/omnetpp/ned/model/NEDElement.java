@@ -378,10 +378,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	}
 
 	public INEDElement getParentWithTag(int tagcode) {
-		INEDElement parent = this.getParent();
-		while (parent!=null && parent.getTagCode()!=tagcode)
-			parent = parent.getParent();
-		return parent;
+		INEDElement node = this;
+		while (node!=null && node.getTagCode()!=tagcode)
+			node = node.getParent();
+		return node;
 	}
 
 	public INEDElement findElementWithId(long id) {

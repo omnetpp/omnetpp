@@ -45,7 +45,6 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 
 /**
@@ -351,7 +350,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
     public void modelChanged(NEDModelEvent event) {
     	if (event.getSource() != null && !(event instanceof NEDMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
-			INEDElement nedFileElement = event.getSource().getParentWithTag(NEDElementTags.NED_NED_FILE);
+			INEDElement nedFileElement = event.getSource().getContainingNedFileElement();
 
 			if (nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
 				pullChangesJob.restartTimer();

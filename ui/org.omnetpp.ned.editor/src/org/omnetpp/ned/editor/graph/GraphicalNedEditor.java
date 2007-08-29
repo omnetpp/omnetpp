@@ -563,7 +563,7 @@ public class GraphicalNedEditor
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileElementEx getNEDFileModelFromResourcesPlugin() {
+	protected NedFileElementEx getNEDFileModelFromNEDResourcesPlugin() {
 		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
 	}
 
@@ -586,7 +586,7 @@ public class GraphicalNedEditor
         	Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
         	Assert.isTrue(NEDResourcesPlugin.getNEDResources().getConnectCount(getFile())>0);  // must be already connected
         	NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
-        	setModel(getNEDFileModelFromResourcesPlugin());
+        	setModel(getNEDFileModelFromNEDResourcesPlugin());
         	paletteManager.refresh();
         }
     }
@@ -630,50 +630,56 @@ public class GraphicalNedEditor
     }
 
     public void modelChanged(final NEDModelEvent event) {
-    	Assert.isTrue(getModel() == getNEDFileModelFromResourcesPlugin());
+    	Assert.isTrue(getModel() == getNEDFileModelFromNEDResourcesPlugin());
 
-    	// we do a full refresh in response of a change
-        // if we are in a background thread, refresh later when UI thread is active
-    	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-			public void run() {
-				// count begin/end nesting
-				if (event instanceof NEDBeginModelChangeEvent)
-					nedBeginChangeCount++;
-				else if (event instanceof NEDEndModelChangeEvent)
-					nedBeginChangeCount--;
-				// System.out.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
-				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
-				
-            	// record NED change as external event, unless we are the originator
-            	if (!isActive() && event.getSource() != null)
-                	recordExternalChangeCommand(event);
-
-        		// "execute" (==nop) external change command after "end" (or if came without begin/end)
-            	if (nedBeginChangeCount == 0 && pendingExternalChangeCommand != null) {
-                	ExternalChangeCommand tmp = pendingExternalChangeCommand;
-                	pendingExternalChangeCommand = null;
-                	//System.out.println("executing external change command");
-            		getCommandStack().execute(tmp);
-            		//System.out.println("done executing external change command");
-        		}
-
-            	// adjust connections after submodule name change, etc
-            	reactToModelChanges(event);
-
-				// optimize refresh(): skip those between begin/end notifications
-            	if (nedBeginChangeCount == 0)
-            		getGraphicalViewer().getRootEditPart().refresh();
-            }
-
-			private void recordExternalChangeCommand(NEDModelEvent event) {
-				if (event instanceof NEDModelChangeEvent) {
-					if (pendingExternalChangeCommand == null)
-						pendingExternalChangeCommand = new ExternalChangeCommand();
-					System.out.println("adding " + event + " to current external change command");
-					pendingExternalChangeCommand.addEvent(event);
-				}
+    	if (event.getSource() != null) {
+			INEDElement nedFileElement = event.getSource().getContainingNedFileElement();
+	
+			if (nedFileElement == getNEDFileModelFromNEDResourcesPlugin()) {
+		    	// we do a full refresh in response of a change
+		        // if we are in a background thread, refresh later when UI thread is active
+		    	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+					public void run() {
+						// count begin/end nesting
+						if (event instanceof NEDBeginModelChangeEvent)
+							nedBeginChangeCount++;
+						else if (event instanceof NEDEndModelChangeEvent)
+							nedBeginChangeCount--;
+						// System.out.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
+						Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
+						
+		            	// record NED change as external event, unless we are the originator
+		            	if (!isActive() && event.getSource() != null)
+		                	recordExternalChangeCommand(event);
+		
+		        		// "execute" (==nop) external change command after "end" (or if came without begin/end)
+		            	if (nedBeginChangeCount == 0 && pendingExternalChangeCommand != null) {
+		                	ExternalChangeCommand tmp = pendingExternalChangeCommand;
+		                	pendingExternalChangeCommand = null;
+		                	//System.out.println("executing external change command");
+		            		getCommandStack().execute(tmp);
+		            		//System.out.println("done executing external change command");
+		        		}
+		
+		            	// adjust connections after submodule name change, etc
+		            	reactToModelChanges(event);
+		
+						// optimize refresh(): skip those between begin/end notifications
+		            	if (nedBeginChangeCount == 0)
+		            		getGraphicalViewer().getRootEditPart().refresh();
+		            }
+		
+					private void recordExternalChangeCommand(NEDModelEvent event) {
+						if (event instanceof NEDModelChangeEvent) {
+							if (pendingExternalChangeCommand == null)
+								pendingExternalChangeCommand = new ExternalChangeCommand();
+							System.out.println("adding " + event + " to current external change command");
+							pendingExternalChangeCommand.addEvent(event);
+						}
+					}
+		        });
 			}
-        });
+    	}
     }
 
     protected void reactToModelChanges(NEDModelEvent event) {

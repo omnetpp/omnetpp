@@ -281,7 +281,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	public IMarker[] getMarkersForElement(INEDElement node, IFile file) {
 		try {
-			Assert.isTrue(getNEDFileModel(file)==node.getParentWithTag(NEDElementTags.NED_NED_FILE)); //XXX find file from element? (needs element-to-file mapping)
+			Assert.isTrue(getNEDFileModel(file)==node.getContainingNedFileElement()); //XXX find file from element? (needs element-to-file mapping)
 			List<IMarker> result = new ArrayList<IMarker>();
 			for (IMarker marker : file.findMarkers(IMarker.PROBLEM, true, IFile.DEPTH_ZERO)) {
 				int elementId = marker.getAttribute(NEDMarkerErrorStore.NEDELEMENT_ID, -1);

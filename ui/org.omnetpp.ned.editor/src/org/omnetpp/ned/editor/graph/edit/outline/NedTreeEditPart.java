@@ -97,7 +97,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     }
 
     public boolean isEditable() {
-    	NedFileElementEx nedFileElement = getNEDFileElement();
+    	NedFileElementEx nedFileElement = getNEDModel().getContainingNedFileElement();
        	return nedFileElement == null || (!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError());
     }
 
@@ -152,8 +152,4 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     public void setPropertySource(IPropertySource propertySource) {
         this.propertySource = propertySource;
     }
-
-    private NedFileElementEx getNEDFileElement() {
-		return (NedFileElementEx)getNEDModel().getParentWithTag(NEDElementTags.NED_NED_FILE);
-	}
 }

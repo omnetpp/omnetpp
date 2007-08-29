@@ -362,7 +362,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	public IFile getNEDFile() {
-		NedFileElementEx nedFileElement = (NedFileElementEx)getNEDElement().getParentWithTag(NEDElementTags.NED_NED_FILE);
+		NedFileElementEx nedFileElement = getNEDElement().getContainingNedFileElement();
 		return nedFileElement==null ? null : getResolver().getFile(nedFileElement); // Note: built-in types don't have a NedFileElement parent
 	}
 
