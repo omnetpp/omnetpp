@@ -1,5 +1,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +30,9 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.SubmodulesElement;
@@ -76,7 +80,40 @@ public class PasteAction extends SelectionAction {
 		if (contents instanceof INEDElement[]) {
 			CompoundCommand compoundCommand = new CompoundCommand();
 
-			INEDElement[] elements = (INEDElement[]) contents;
+			// we'll paste a *duplicate* of the elements on the clipboard
+			INEDElement[] elements = ((INEDElement[])contents).clone();
+			for (int i=0; i<elements.length; i++)
+				elements[i] = elements[i].deepDup();
+			
+			// we need to paste in a certain order: 
+			// - submodules before connections (because connections has to follow 
+			//   submodule renaming)
+			// - named elements in dictionary order (so that numbering of duplicates
+			//   will be consistent with the original order, i.e. pasting node1, node2, 
+			//   node3 will result in node4, node5, node6 in *that* order
+			//
+			Arrays.sort(elements, new Comparator<INEDElement>() {
+				public int compare(INEDElement o1, INEDElement o2) {
+					// connections must be pasted last (after submodules)
+					if (o1 instanceof ConnectionElement && !(o2 instanceof ConnectionElement))
+						return 1;
+					if (!(o1 instanceof ConnectionElement) && o2 instanceof ConnectionElement)
+						return -1;
+					// do named ones in dictionary order
+					if (o1 instanceof IHasName && o2 instanceof IHasName)
+						return StringUtils.dictionaryCompare(((IHasName)o1).getName(), ((IHasName)o2).getName());
+					if (o1 instanceof IHasName && !(o2 instanceof IHasName))
+						return 1;
+					if (!(o1 instanceof IHasName) && o2 instanceof IHasName)
+						return -1;
+					// default: by hashCode
+					return o1.hashCode() - o2.hashCode();
+				}
+			});
+			
+			System.out.println("Pasting in the following order: " + StringUtils.join(elements, ", "));
+				
+			
 			Set<String> usedNedTypeNames = new HashSet<String>();
 			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
 			CompoundModuleElementEx targetCompoundModule = getTargetCompoundModule(); // for submodules and connections
@@ -84,18 +121,19 @@ public class PasteAction extends SelectionAction {
 			Set<String> usedSubmoduleNames = new HashSet<String>();
 			if (targetCompoundModule != null)
 				usedSubmoduleNames.addAll(targetCompoundModule.getNEDTypeInfo().getSubmodules().keySet());
+			
 			Map<String, String> submoduleNameMap = new HashMap<String, String>();
 			// FIXME first submodules should be added and connections only after them
 			for (INEDElement element : elements) {
 				System.out.println("pasting " + element);
 				if (element instanceof INedTypeElement)
-					pasteNedTypeElement((INedTypeElement)element.deepDup(), usedNedTypeNames, compoundCommand);
+					pasteNedTypeElement((INedTypeElement)element, usedNedTypeNames, compoundCommand);
 				else if (element instanceof SubmoduleElementEx && targetCompoundModule != null)
-					pasteSubmodule((SubmoduleElementEx)element.deepDup(), targetCompoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
+					pasteSubmodule((SubmoduleElementEx)element, targetCompoundModule, usedSubmoduleNames, submoduleNameMap, compoundCommand);
 				else if (element instanceof ConnectionElementEx && targetCompoundModule != null)
-					pasteConnection((ConnectionElementEx)element.deepDup(), targetCompoundModule, submoduleNameMap, compoundCommand);
+					pasteConnection((ConnectionElementEx)element, targetCompoundModule, submoduleNameMap, compoundCommand);
 				else
-					System.out.println("don't know how to paste " + element);  //XXX
+					System.out.println("don't know how to paste " + element);  //XXX handle pasting of: parameters, gates etc; toplevel types into compound module (as inner type)
 			}
 
 			compoundCommand.setLabel("Paste " + StringUtils.formatCounted(elements.length, "object"));

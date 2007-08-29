@@ -30,7 +30,7 @@ import org.omnetpp.ned.model.pojo.*;
 //FIXME SyntaxValidator has to be revised -- it must NOT check anything more than syntax!
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
-//FIXME asap: validate connection! validate extends chain! 2 simple modules with the same name!!
+//FIXME asap: validate connection! validate extends chain (cycles!!) validate 2 submods with the same name! etc 
 public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;

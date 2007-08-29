@@ -344,12 +344,14 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         needsUpdate = false;
 	}
 
-	/**
-	 * Causes information about inherited members to be discarded, and
-	 * later re-built on demand.
-	 */
 	public void invalidate() {
+		System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
         needsLocalUpdate = true;
+		needsUpdate = true;
+	}
+
+	public void invalidateInherited() {
+		System.out.println(getName() +  ": invalidated inherited members");
 		needsUpdate = true;
 	}
 

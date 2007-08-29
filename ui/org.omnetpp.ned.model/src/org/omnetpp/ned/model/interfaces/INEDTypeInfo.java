@@ -52,6 +52,12 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public void invalidate();
 
 	/**
+	 * Causes information about inherited members to be discarded, and later 
+	 * re-built on demand.
+	 */
+    public void invalidateInherited();
+
+	/**
 	 * Returns the list of nesting NED elements that extend over the given line:column
 	 * in the source file. The list contains the component's root node as well.
 	 * Returns null if there is no match (the component's declaration doesn't contain

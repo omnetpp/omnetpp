@@ -577,12 +577,32 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             components.remove(name);
         }
 
+        // invalidate all inherited members on all typeInfo objects
+        for (NedFileElementEx file : nedElementFiles.keySet())
+			invalidateTypeInfo(file);
+
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + components.size() + " registered types");
 
         // schedule a validation
         validationJob.restartTimer();
     }
+
+	protected void invalidateTypeInfo(INEDElement parent) {
+		for (INEDElement element : parent) {
+			if (element instanceof INedTypeElement) {
+				// invalidate
+				((INedTypeElement)element).getNEDTypeInfo().invalidateInherited();
+				
+				// do inner types too
+				if (element instanceof CompoundModuleElementEx) {
+					INEDElement typesSection = ((CompoundModuleElementEx)element).getFirstTypesChild();
+					if (typesSection != null)
+						invalidateTypeInfo(typesSection);
+				}
+			}
+		}
+	}
 
     /**
      * Validates all NED files for consistency (no such parameter/gate/module-type, redeclarations,
@@ -705,8 +725,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         if (event instanceof NEDModelChangeEvent) {
             // NOTE: the rehash causes NEDMarkerChangeEvent
-        	// invalidate();
-            rehash();  //FIXME factor out validate, and call it in a delayedJob!
+            rehash();
 
         }
 
