@@ -1,5 +1,10 @@
 package org.omnetpp.ned.editor.graph.actions;
 
+import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_CONNECTIONS;
+import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_GATES;
+import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_PARAMETERS;
+import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_SUBMODULES;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,7 +38,11 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.PropertyElement;
 import org.omnetpp.ned.model.pojo.SubmodulesElement;
 
 
@@ -96,7 +105,8 @@ public class PasteAction extends SelectionAction {
 		List<INEDElement> pastedElements = new ArrayList<INEDElement>();
 		pasteNedTypes(elements, compoundCommand, pastedElements);
 		pasteSubmodulesAndConnections(elements, compoundCommand, pastedElements);
-		//XXX handle pasting of: parameters, gates etc; toplevel types into compound module (as inner type)
+		pasteParametersAndProperties(elements, compoundCommand, pastedElements);
+		pasteGates(elements, compoundCommand, pastedElements);
 
 		// warn for elements that could not be pasted
 		elements.removeAll(pastedElements);
@@ -122,6 +132,7 @@ public class PasteAction extends SelectionAction {
 	}
 
 	protected void pasteNedTypes(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+		//XXX handle pasting of: NED types into compound module (as inner type)
 		Set<String> usedNedTypeNames = new HashSet<String>();
 		usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
 
@@ -155,7 +166,7 @@ public class PasteAction extends SelectionAction {
 		Map<String, String> submoduleNameMap = new HashMap<String, String>();
 
 		// paste submodules
-		SubmodulesElement submodulesSection = targetModule.getFirstSubmodulesChild();
+		SubmodulesElement submodulesSection = null;
 		for (INEDElement element : elements) {
 			if (element instanceof SubmoduleElementEx) {
 				SubmoduleElementEx submodule = (SubmoduleElementEx) element;
@@ -169,17 +180,15 @@ public class PasteAction extends SelectionAction {
 				}
 
 				// insert
-				if (submodulesSection == null) {
-					submodulesSection = (SubmodulesElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_SUBMODULES);
-					compoundCommand.add(new AddNEDElementCommand(targetModule, submodulesSection));
-				}
+				if (submodulesSection == null)
+					submodulesSection = (SubmodulesElement) findOrCreateSection(targetModule, NED_SUBMODULES, compoundCommand);
 				compoundCommand.add(new AddNEDElementCommand(submodulesSection, submodule));
 				pastedElements.add(submodule);
 			}
 		}
 
 		// paste connections
-		ConnectionsElement connectionsSection = targetModule.getFirstConnectionsChild();
+		ConnectionsElement connectionsSection = null;
 		for (INEDElement element : elements) {
 			if (element instanceof ConnectionElementEx) {
 				ConnectionElementEx connection = (ConnectionElementEx)element;
@@ -191,16 +200,57 @@ public class PasteAction extends SelectionAction {
 					connection.setDestModule(submoduleNameMap.get(connection.getDestModule()));
 
 				// insert
-				if (connectionsSection == null) {
-					connectionsSection = (ConnectionsElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTIONS);
-					compoundCommand.add(new AddNEDElementCommand(targetModule, connectionsSection));
-				}
+				if (connectionsSection == null)
+					connectionsSection = (ConnectionsElement) findOrCreateSection(targetModule, NED_CONNECTIONS, compoundCommand);
 				compoundCommand.add(new AddNEDElementCommand(connectionsSection, connection));
 				pastedElements.add(connection);
 			}
 		}
 	}
 
+	protected void pasteParametersAndProperties(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+		INEDElement target = null; //FIXME
+		if (target == null)
+			return;
+
+		ParametersElement parametersSection = null;
+		for (INEDElement element : elements) {
+			if (element instanceof ParamElement || element instanceof PropertyElement) {
+				// insert
+				if (parametersSection == null)
+					parametersSection = (ParametersElement) findOrCreateSection(target, NED_PARAMETERS, compoundCommand);
+				compoundCommand.add(new AddNEDElementCommand(parametersSection, element));
+				pastedElements.add(element);
+			}
+		}
+	}
+
+	protected void pasteGates(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+		INEDElement targetModule = null; //FIXME
+		if (targetModule == null)
+			return;
+
+		GatesElement gatesSection = null;
+		for (INEDElement element : elements) {
+			if (element instanceof GateElement) {
+				// insert
+				if (gatesSection == null)
+					gatesSection = (GatesElement) findOrCreateSection(targetModule, NED_GATES, compoundCommand);
+				compoundCommand.add(new AddNEDElementCommand(gatesSection, element));
+				pastedElements.add(element);
+			}
+		}
+	}
+
+	protected INEDElement findOrCreateSection(INEDElement parent, int tagcode, CompoundCommand compoundCommand) {
+		INEDElement sectionElement = parent.getFirstChildWithTag(tagcode);
+		if (sectionElement == null) {
+			sectionElement = NEDElementFactoryEx.getInstance().createElement(tagcode);
+			compoundCommand.add(new AddNEDElementCommand(parent, sectionElement));
+		}
+		return sectionElement;
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected CompoundModuleElementEx getTargetCompoundModule() {
 		// return the selected compound module or the compound module of the first selected submodule
@@ -209,11 +259,23 @@ public class PasteAction extends SelectionAction {
 		for (Object editPart : selectedEditParts)
 			if (editPart instanceof ModuleEditPart)
 				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
+		return null;
+//XXX probably bad idea:		
+//		// or, return the first compound module in the file; in the worst case return null
+//		EditPart toplevelEditPart = graphicalViewer.getContents();
+//		NedFileElementEx nedFileElement = (NedFileElementEx)toplevelEditPart.getModel();
+//		return (CompoundModuleElementEx) nedFileElement.getFirstCompoundModuleChild(); // might be null
+	}
 
-		// or, return the first compound module in the file; in the worst case return null
-		EditPart toplevelEditPart = graphicalViewer.getContents();
-		NedFileElementEx nedFileElement = (NedFileElementEx)toplevelEditPart.getModel();
-		return (CompoundModuleElementEx) nedFileElement.getFirstCompoundModuleChild(); // might be null
+//	@SuppressWarnings("unchecked")
+//	protected CompoundModuleElementEx getFirstTargetCompoundModule() {
+//		// return the selected compound module or the compound module of the first selected submodule
+//		GraphicalViewer graphicalViewer = getGraphicalViewer();
+//		List selectedEditParts = graphicalViewer.getSelectedEditParts();
+//		for (Object editPart : selectedEditParts)
+//			if (editPart instanceof ModuleEditPart)
+//				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
+//		return null;
 	}
 
 	protected GraphicalViewer getGraphicalViewer() {

@@ -122,11 +122,9 @@ public class NEDTreeUtil {
 			dtdvalidator.validate(swigTree);
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
-			NEDSyntaxValidator basicvalidator = new NEDSyntaxValidator(false, swigErrors);
-			basicvalidator.validate(swigTree);
-			//FIXME revise what BasicValidator does! is Assert OK here??
-			//FIXME for example, it shouldn't check 
-			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails basic validation, even after repairs");
+			// additional syntax-related validation
+			NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
+			syntaxValidator.validate(swigTree);
 
 			// convert tree to pure Java objects
 			INEDElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
