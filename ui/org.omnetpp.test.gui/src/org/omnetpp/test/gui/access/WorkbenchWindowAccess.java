@@ -12,8 +12,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.test.gui.InUIThread;
-import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
+import org.omnetpp.test.gui.core.NotInUIThread;
 
 public class WorkbenchWindowAccess extends ShellAccess {
 	private IWorkbenchWindow workbenchWindow;

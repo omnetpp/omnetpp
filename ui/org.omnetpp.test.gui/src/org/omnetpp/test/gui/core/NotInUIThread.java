@@ -1,4 +1,4 @@
-package org.omnetpp.test.gui;
+package org.omnetpp.test.gui.core;
 
 public @interface NotInUIThread {
 

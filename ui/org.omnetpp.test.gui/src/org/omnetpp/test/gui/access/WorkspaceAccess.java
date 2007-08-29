@@ -10,8 +10,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.test.gui.InUIThread;
-import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
+import org.omnetpp.test.gui.core.NotInUIThread;
 
 public class WorkspaceAccess {
 

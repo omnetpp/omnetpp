@@ -3,7 +3,7 @@ package org.omnetpp.test.gui.access;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class TreeItemAccess extends ClickableWidgetAccess<TreeItem>
 {

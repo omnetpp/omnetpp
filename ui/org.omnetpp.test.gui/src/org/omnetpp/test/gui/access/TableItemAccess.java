@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class TableItemAccess extends ClickableWidgetAccess<TableItem>
 {

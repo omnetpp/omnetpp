@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class MenuAccess extends WidgetAccess<Menu> {
 

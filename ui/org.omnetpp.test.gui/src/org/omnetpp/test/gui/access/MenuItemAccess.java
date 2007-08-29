@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.ReflectionUtils;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class MenuItemAccess extends ClickableWidgetAccess<MenuItem>
 {

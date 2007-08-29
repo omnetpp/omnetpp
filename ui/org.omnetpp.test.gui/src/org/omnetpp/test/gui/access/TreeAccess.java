@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class TreeAccess extends ControlAccess<Tree>
 {

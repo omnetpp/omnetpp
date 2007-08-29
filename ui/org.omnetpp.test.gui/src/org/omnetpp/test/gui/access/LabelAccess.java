@@ -7,5 +7,4 @@ public class LabelAccess extends ControlAccess<Label>
 	public LabelAccess(Label control) {
 		super(control);
 	}
-
 }

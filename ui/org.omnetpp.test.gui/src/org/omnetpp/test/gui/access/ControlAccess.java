@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 {

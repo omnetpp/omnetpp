@@ -1,7 +1,7 @@
 package org.omnetpp.test.gui.access;
 
 import org.eclipse.swt.custom.StyledText;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class StyledTextAccess extends CompositeAccess<StyledText>
 {

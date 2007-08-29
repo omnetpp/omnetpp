@@ -23,8 +23,8 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.test.gui.EventTracer;
-import org.omnetpp.test.gui.InUIThread;
-import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
+import org.omnetpp.test.gui.core.NotInUIThread;
 
 public class Access {
 	protected final static boolean debug = true;

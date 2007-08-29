@@ -3,7 +3,7 @@ package org.omnetpp.test.gui.access;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.ui.IEditorPart;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class EditorPartAccess extends WorkbenchPartAccess {
 

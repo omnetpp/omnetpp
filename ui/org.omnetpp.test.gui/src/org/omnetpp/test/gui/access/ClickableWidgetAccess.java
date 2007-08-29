@@ -3,8 +3,8 @@ package org.omnetpp.test.gui.access;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
-import org.omnetpp.test.gui.InUIThread;
-import org.omnetpp.test.gui.NotInUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
+import org.omnetpp.test.gui.core.NotInUIThread;
 
 public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAccess<T>
 {

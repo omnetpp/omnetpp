@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class TextAccess extends ControlAccess<Text>
 {

@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.omnetpp.test.gui.InUIThread;
+import org.omnetpp.test.gui.core.InUIThread;
 
 public class ShellAccess extends CompositeAccess<Shell>
 {
