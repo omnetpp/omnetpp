@@ -125,18 +125,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	/**
-	 * Collect the names from "extends" or "like" clauses into the given set
-	 */
-	protected void collectInheritance(Set<String> set, int tagCode) {
-		Assert.isTrue(tagCode==NED_INTERFACE_NAME || tagCode==NED_EXTENDS);
-		for (INEDElement child : getNEDElement())
-			if (child instanceof InterfaceNameElement)
-				set.add(((InterfaceNameElement)child).getName());
-			else if (child instanceof ExtendsElement)
-				set.add(((ExtendsElement)child).getName());
-	}
-
-	/**
      * Collects all type names that are used in this module (submodule and connection types)
      * @param result storage for the used types
      */
@@ -203,8 +191,19 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         localMembers.clear();
         localUsedTypes.clear();
 
-        // collect base types: interfaces extend other interfaces, modules implement interfaces
-        collectInheritance(localInterfaces, getNEDElement() instanceof IInterfaceTypeElement ? NED_EXTENDS : NED_INTERFACE_NAME);
+        // collect local interfaces:
+        if (getNEDElement() instanceof IInterfaceTypeElement) {
+        	// interfaces *extend* other interfaces
+        	for (INEDElement child : getNEDElement())
+        		if (child instanceof ExtendsElement)
+        			localInterfaces.add(((ExtendsElement)child).getName());
+        }
+        else {
+        	// modules & channels *implement* interfaces ("like")
+        	for (INEDElement child : getNEDElement())
+        		if (child instanceof InterfaceNameElement)
+        			localInterfaces.add(((InterfaceNameElement)child).getName());
+        }
 
         // collect members from component declaration
         collect(localProperties, NED_PARAMETERS, new IPredicate() {
