@@ -34,6 +34,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
@@ -88,7 +89,8 @@ public class PaletteManager implements INEDChangeListener {
      * NOTE: this notification can arrive in any thread (even in a background thread)
      */
     public void modelChanged(NEDModelEvent event) {
-        refresh();
+        if (event instanceof NEDModelChangeEvent)
+            refresh();
     }
 
     public void refresh() {

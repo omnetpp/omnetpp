@@ -66,6 +66,7 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -76,19 +77,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
-import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
-import org.omnetpp.ned.editor.graph.actions.CopyAction;
-import org.omnetpp.ned.editor.graph.actions.CutAction;
-import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
-import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
-import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
-import org.omnetpp.ned.editor.graph.actions.PasteAction;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
+import org.omnetpp.ned.editor.graph.actions.*;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -148,7 +137,7 @@ public class GraphicalNedEditor
             bars.setGlobalActionHandler(id, registry.getAction(id));
             id = ActionFactory.DELETE.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
-            
+
             id = ActionFactory.CUT.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
             id = ActionFactory.COPY.getId();
@@ -259,13 +248,13 @@ public class GraphicalNedEditor
 
     // open NEDBeginChangeEvent notifications
     private int nedBeginChangeCount = 0;
-    
-    
+
+
     public GraphicalNedEditor() {
         paletteManager = new PaletteManager(this);
         // attach the palette manager as a listener to the resource manager plugin
         // so it will be notified if the palette should be updated
-        NEDResourcesPlugin.getNEDResources().addNEDComponentChangeListener(paletteManager);
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(paletteManager);
 
         DefaultEditDomain editDomain = new DefaultEditDomain(this);
         editDomain.setCommandStack(new CommandStack() {
@@ -283,14 +272,14 @@ public class GraphicalNedEditor
         	public boolean canUndo() {
         		return super.canUndo() && isModelEditable();
         	}
-        	
+
         	@Override
         	public boolean canRedo() {
         		return super.canRedo() && isModelEditable();
         	}
         });
         setEditDomain(editDomain);
-        
+
         // surround commands with begin/end notifications, so that refreshes can be optimized
         CommandStack commandStack = getEditDomain().getCommandStack();
         commandStack.addCommandStackEventListener(new CommandStackEventListener() {
@@ -307,7 +296,7 @@ public class GraphicalNedEditor
     @Override
     public void dispose() {
         NEDResources resources = NEDResourcesPlugin.getNEDResources();
-		resources.removeNEDComponentChangeListener(paletteManager);
+		resources.removeNEDModelChangeListener(paletteManager);
 		resources.removeNEDModelChangeListener(this);
         super.dispose();
     }
@@ -515,11 +504,11 @@ public class GraphicalNedEditor
         action = new CutAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
-        
+
         action = new PasteAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
-        
+
         action = new AlignmentAction((IWorkbenchPart) this, PositionConstants.LEFT);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
@@ -659,7 +648,7 @@ public class GraphicalNedEditor
 					nedBeginChangeCount--;
 				// System.out.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
 				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
-				
+
 				// record NED change as external event, unless we are the originator
 				if (!isActive()) {
 					if (event instanceof NEDModelChangeEvent) {
@@ -754,7 +743,7 @@ public class GraphicalNedEditor
 		INEDElement element = ((IModelProvider)ep).getNEDModel();
 		if (element instanceof NedFileElementEx)
 			return null;
-		
+
 		String hoverText = "";
 
 		// brief
