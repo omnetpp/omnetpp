@@ -71,11 +71,11 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof ModuleInterfaceElement) {
             ModuleInterfaceElement node = (ModuleInterfaceElement)model;
-            label = "interface " + node.getName();
+            label = node.getName()+" (module interface)";
         }
         else if (model instanceof ChannelInterfaceElement) {
             ChannelInterfaceElement node = (ChannelInterfaceElement)model;
-            label = "channelinterface "+node.getName();
+            label = node.getName()+" (channel interface)";
         }
         else if (model instanceof ChannelSpecElement) {
             ChannelSpecElement node = (ChannelSpecElement)model;

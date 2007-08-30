@@ -53,11 +53,11 @@ public class NedTypeEditPart extends NedEditPart {
     		String nameToDisplay = ((IHasName)getModel()).getName();
 
             if (getModel() instanceof ChannelInterfaceElement)
-                nameToDisplay = "Channel interface: " + nameToDisplay;
+                nameToDisplay = nameToDisplay +" (channel interface)";
             else if (getModel() instanceof ChannelElement)
                 nameToDisplay = "Channel: " + nameToDisplay;
             else if (getModel() instanceof ModuleInterfaceElement)
-                nameToDisplay = "Interface: " + nameToDisplay;
+                nameToDisplay = nameToDisplay +" (module interface)";
 
             getNedTypeFigure().setText(nameToDisplay);
     	}

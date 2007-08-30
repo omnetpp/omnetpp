@@ -89,6 +89,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 	protected IContextInformationValidator fValidator= new Validator();
 
+    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		// long startMillis = System.currentTimeMillis(); // measure time
 
@@ -117,7 +118,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.COMPOUND_MODULE_FILTER), "compound-module type");
 			else if (line.matches(".*\\bchannel .* extends"))
 				addProposals(viewer, documentOffset, result, res.getChannelNames(), "channel type");
-			else if (line.matches(".*\\binterface .* extends"))
+			else if (line.matches(".*\\bmoduleinterface .* extends"))
 				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
 			else if (line.matches(".*\\bchannelinterface .* extends"))
 				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
@@ -427,8 +428,8 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		//		IContextInformation[] result= new IContextInformation[5];
 		//		for (int i= 0; i < result.length; i++)
 		//			result[i]= new ContextInformation(
-		//				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.display.pattern"), new Object[] { new Integer(i), new Integer(documentOffset) }),  
-		//				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.value.pattern"), new Object[] { new Integer(i), new Integer(documentOffset - 5), new Integer(documentOffset + 5)})); 
+		//				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.display.pattern"), new Object[] { new Integer(i), new Integer(documentOffset) }),
+		//				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.value.pattern"), new Object[] { new Integer(i), new Integer(documentOffset - 5), new Integer(documentOffset + 5)}));
 		//		return result;
 		return null;
 	}

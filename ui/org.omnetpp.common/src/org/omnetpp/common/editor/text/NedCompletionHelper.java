@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * This class contains all the possible keywords for syntax highlighting 
+ * This class contains all the possible keywords for syntax highlighting
  * and context assist functions for NED files.
  *
  * @author rhornig
@@ -28,7 +28,7 @@ public final class NedCompletionHelper {
     public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
     public final static String[] highlightNedTypes = { "bool", "double", "volatile", "inout", "input", "int", "output", "string", "xml" };
     public final static String[] highlightNedSpecialKeywords = { "-->", "<--", "<-->", ".." };
-    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "for", "gates", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "withcppclass" };
+    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "for", "gates", "if", "import", "index", "moduleinterface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "withcppclass" };
     public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] highlightConstants = { "false", "true" };
 
@@ -40,27 +40,27 @@ public final class NedCompletionHelper {
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
     public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
     public final static String[] proposedNedTopLevelKeywords = { "import", "network", "package", "property"};
-    public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channel withcppclass", "channelinterface", "interface", "module", "simple"};
+    public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channel withcppclass", "channelinterface", "moduleinterface", "module", "simple"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
     public final static String[] proposedNedOtherExpressionKeywords = {"index", "this"};
     public final static String[] proposedConstants = { "false", "true" };
 
-    
+
     public final static Template[] proposedNedComponentPropertyTempl = {
-        makeShortTemplate("@display(\"i=${icon}\");", "property") 
+        makeShortTemplate("@display(\"i=${icon}\");", "property")
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
-    
+
     public final static Template[] proposedNedParamPropertyTempl = {
-        makeShortTemplate("@prompt(\"${message}\")", "property"), 
-        makeShortTemplate("@enum(${value1}, ${value2})", "property"), 
-        makeShortTemplate("@classname(${className})", "property"), 
-        makeShortTemplate("@unit(${unitName})", "property"), 
+        makeShortTemplate("@prompt(\"${message}\")", "property"),
+        makeShortTemplate("@enum(${value1}, ${value2})", "property"),
+        makeShortTemplate("@classname(${className})", "property"),
+        makeShortTemplate("@unit(${unitName})", "property"),
     }; //XXX check this list before release
-    
+
     public final static Template[] proposedNedGatePropertyTempl = {
-        makeShortTemplate("@labels(${label1})", "property"), 
-        makeShortTemplate("@inlabels(${inLabel1})", "property"), 
-        makeShortTemplate("@outlabels(${outLabel1})", "property"), 
+        makeShortTemplate("@labels(${label1})", "property"),
+        makeShortTemplate("@inlabels(${inLabel1})", "property"),
+        makeShortTemplate("@outlabels(${outLabel1})", "property"),
     }; //XXX check this list before release
 
     // MSG specific completions - not used currently
@@ -95,7 +95,7 @@ public final class NedCompletionHelper {
     	makeShortTemplate("log(${x})", "function"),
     	makeShortTemplate("log10(${x})", "function"),
     };
-    
+
     public final static Template[] proposedNedContinuousDistributionsTempl = new Template[] {
     	makeShortTemplate("beta(${alpha1}, ${alpha2})", "continuous distribution"),
     	makeShortTemplate("cauchy(${a}, ${b})", "continuous distribution"),
@@ -112,7 +112,7 @@ public final class NedCompletionHelper {
     	makeShortTemplate("uniform(${a}, ${b})", "continuous distribution"),
     	makeShortTemplate("weibull(${a}, ${b})", "continuous distribution"),
     };
-    
+
     public final static Template[] proposedNedContinuousDistributionsTemplExt = addRngNumArgument(proposedNedContinuousDistributionsTempl);
 
     public final static Template[] proposedNedDiscreteDistributionsTempl = new Template[] {
@@ -125,9 +125,9 @@ public final class NedCompletionHelper {
     };
 
     public final static Template[] proposedNedDiscreteDistributionsTemplExt = addRngNumArgument(proposedNedDiscreteDistributionsTempl);
-    
+
     public final static Template[] proposedNedGlobalTempl = new Template[] {
-    	makeTemplate("import", "import NED file", 
+    	makeTemplate("import", "import NED file",
     			"import \"${FileName}\";\n"),
         makeTemplate("simple1", "create simple module",
                 "//\n// ${description_of_the_simple_module}\n//\n"+
@@ -173,10 +173,10 @@ public final class NedCompletionHelper {
         		"    submodules:\n"+
         		"    connections:\n"+
         		"}"),
-		makeTemplate("interface", "create module interface",
+		makeTemplate("moduleinterface", "create module interface",
 				"//\n// ${description_of_the_interface}\n//\n"+
                 "// @author ${user}\n//\n"+
-				"interface ${SomeInterface}\n{\n"+
+				"moduleinterface ${SomeInterface}\n{\n"+
 				"    parameters:${cursor}\n"+
 				"    gates:\n"+
 				"}"),
@@ -212,7 +212,7 @@ public final class NedCompletionHelper {
         		"channelinterface ${SomeChannelInterface}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"}"),
-        // special compound modules with submodule topologies 
+        // special compound modules with submodule topologies
         makeTemplate("moduletree", "module with binary tree topology",
                 "// binary tree node\n"+
                 "simple ${BinaryTreeNode}\n{\n"+
@@ -309,7 +309,7 @@ public final class NedCompletionHelper {
                 "        }\n" +
                 "}"),
     };
-    
+
     public final static Template[] proposedNedSubmoduleTempl = new Template[] {
         makeTemplate("submodule1", "submodule",
         		"${someSubmodule} : ${SomeModule};"),
@@ -326,7 +326,7 @@ public final class NedCompletionHelper {
         		"    gates:${cursor}\n"+
         		"}"),
     };
-    
+
     public final static Template[] proposedNedConnectionTempl = new Template[] {
         makeTemplate("connection1", "two one-way connections",
         		"${mod1}.${outgate1} --> ${mod2}.${ingate2};\n"+
@@ -431,7 +431,7 @@ public final class NedCompletionHelper {
         pattern = pattern.replace("\n", "\n${indent}");
         return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
     }
-    
+
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
      */
@@ -504,5 +504,5 @@ public final class NedCompletionHelper {
             return Character.isLetter(c) || c == '/' || c == '>';
         }
     }
-   
+
 }
