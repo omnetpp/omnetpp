@@ -92,8 +92,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	/**
 	 * Constructor
 	 * @param node INEDElement tree to be wrapped
-	 * @param nedfile file containing the definition
-	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
 	public NEDTypeInfo(INedTypeElement node) {
 		componentNode = node;
@@ -344,13 +342,13 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	public void invalidate() {
-		System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
+		//System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
         needsLocalUpdate = true;
 		needsUpdate = true;
 	}
 
 	public void invalidateInherited() {
-		System.out.println(getName() +  ": invalidated inherited members");
+		//System.out.println(getName() +  ": invalidated inherited members");
 		needsUpdate = true;
 	}
 

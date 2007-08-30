@@ -3,7 +3,6 @@ package org.omnetpp.ned.core;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
@@ -11,14 +10,57 @@ import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.pojo.*;
+import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.pojo.ClassDeclElement;
+import org.omnetpp.ned.model.pojo.ClassElement;
+import org.omnetpp.ned.model.pojo.CommentElement;
+import org.omnetpp.ned.model.pojo.ConditionElement;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
+import org.omnetpp.ned.model.pojo.ConnectionsElement;
+import org.omnetpp.ned.model.pojo.CplusplusElement;
+import org.omnetpp.ned.model.pojo.EnumDeclElement;
+import org.omnetpp.ned.model.pojo.EnumElement;
+import org.omnetpp.ned.model.pojo.EnumFieldElement;
+import org.omnetpp.ned.model.pojo.EnumFieldsElement;
+import org.omnetpp.ned.model.pojo.ExpressionElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.FieldElement;
+import org.omnetpp.ned.model.pojo.FieldsElement;
+import org.omnetpp.ned.model.pojo.FilesElement;
+import org.omnetpp.ned.model.pojo.FunctionElement;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.IdentElement;
+import org.omnetpp.ned.model.pojo.ImportElement;
+import org.omnetpp.ned.model.pojo.InterfaceNameElement;
+import org.omnetpp.ned.model.pojo.LiteralElement;
+import org.omnetpp.ned.model.pojo.LoopElement;
+import org.omnetpp.ned.model.pojo.MessageDeclElement;
+import org.omnetpp.ned.model.pojo.MessageElement;
+import org.omnetpp.ned.model.pojo.MsgFileElement;
+import org.omnetpp.ned.model.pojo.MsgpropertyElement;
+import org.omnetpp.ned.model.pojo.OperatorElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.PatternElement;
+import org.omnetpp.ned.model.pojo.PropertiesElement;
+import org.omnetpp.ned.model.pojo.PropertyDeclElement;
+import org.omnetpp.ned.model.pojo.PropertyElement;
+import org.omnetpp.ned.model.pojo.PropertyKeyElement;
+import org.omnetpp.ned.model.pojo.StructDeclElement;
+import org.omnetpp.ned.model.pojo.StructElement;
+import org.omnetpp.ned.model.pojo.SubmodulesElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
+import org.omnetpp.ned.model.pojo.UnknownElement;
 
 /**
  * Validates consistency of NED files.
@@ -29,7 +71,7 @@ import org.omnetpp.ned.model.pojo.*;
  */
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
-//FIXME asap: validate connection! validate extends chain (cycles!!) validate 2 submods with the same name! etc 
+//FIXME asap: validate extends chain (cycles!!) validate 2 submods with the same name! etc 
 public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;
@@ -399,95 +441,97 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		validateChildren(node);
 	}
 
-//	void NEDSemanticValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
-//	{
-//	    // FIXME revise
-//	    // check gate direction, check if vector
-//	    const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
-//	    if (hasGateIndex && !gate->getIsVector())
-//	        errors->add(conn, "%s: extra gate index or '++' ('%s' is not a vector gate)", q, gate->getName());
-//	    else if (!hasGateIndex && gate->getIsVector())
-//	        errors->add(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
-//
-//	    // check gate direction, check if vector
-//	    if (isInput && gate->getType()==NED_GATETYPE_OUTPUT)
-//	        errors->add(conn, "%s: input gate expected but '%s' is an output gate", q, gate->getName());
-//	    else if (!isInput && gate->getType()==NED_GATETYPE_INPUT)
-//	        errors->add(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
-//	}
-//
-//	void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
-//	                                            const char *gateName, bool hasGateIndex,
-//	                                            NEDElement *parent, NEDElement *conn, bool isSrc)
-//	{
-//	    // FIXME revise
-//	    const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
-//	    if (strnull(submodName))
-//	    {
-//	        // connected to parent module: check such gate is declared
-//	        NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
-//	        GateElement *gate;
-//	        if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
-//	            errors->add(conn, "%s: compound module has no gate named '%s'", q, gateName);
-//	        else
-//	            checkGate(gate, hasGateIndex, isSrc, conn, isSrc);
-//	    }
-//	    else
-//	    {
-//	        // check such submodule is declared
-//	        NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
-//	        SubmoduleElement *submod = NULL;
-//	        if (!submods || (submod=(SubmoduleElement*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
-//	        {
-//	            errors->add(conn, "%s: compound module has no submodule named '%s'", q, submodName);
-//	        }
-//	        else
-//	        {
-//	            bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
-//	            if (hasSubmodIndex && !isSubmodVector)
-//	                errors->add(conn, "%s: extra submodule index ('%s' is not a vector submodule)", q, submodName);
-//	            else if (!hasSubmodIndex && isSubmodVector)
-//	                errors->add(conn, "%s: missing submodule index ('%s' is a vector submodule)", q, submodName);
-//
-//	            // check gate
-//	            NEDElement *submodType = getModuleDeclaration(submod->getType());
-//	            if (!submodType)
-//	                return; // we gave error earlier if submod type is not present
-//	            NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
-//	            GateElement *gate;
-//	            if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
-//	                errors->add(conn, "%s: submodule '%s' has no gate named '%s'", q, submodName, gateName);
-//	            else
-//	                checkGate(gate, hasGateIndex, !isSrc, conn, isSrc);
-//	        }
-//	    }
-//	}
-//
-//	void NEDSemanticValidator::validateElement(ConnectionElement *node)
-//	{
-//	    // FIXME revise
-//	    // make sure submodule and gate names are valid, gate direction is OK
-//	    // and that gates & modules are really vector (or really not)
-//	    NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
-//	    if (!compound)
-//	        INTERNAL_ERROR0(node,"occurs outside a compound-module");
-//
-//	    bool srcModIx =   node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index")!=NULL;
-//	    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL || node->getSrcGatePlusplus();
-//	    bool destModIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index")!=NULL;
-//	    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL || node->getDestGatePlusplus();
-//	    validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, compound, node, true);
-//	    validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
-//	}
-	@Override
-    protected void validateElement(ConnectionElementEx node) {
-		INEDTypeInfo typeInfo = componentNode.getNEDTypeInfo();
-		if (StringUtils.isNotEmpty(node.getSrcModule()) && !typeInfo.getSubmodules().containsKey(node.getSrcModule()))
-            errors.addError(node, "'"+node.getSrcModule()+"': no such submodule");
-        if (StringUtils.isNotEmpty(node.getDestModule()) && !typeInfo.getSubmodules().containsKey(node.getDestModule()))
-            errors.addError(node, "'"+node.getDestModule()+"': no such submodule");
+	protected void checkGate(IHasGates module, String gateName, ConnectionElementEx conn, boolean doSrcGate) {
+	    // check gate direction, check if vector
+		int subgate = doSrcGate ? conn.getSrcGateSubg() : conn.getDestGateSubg();
+		String gateIndex = doSrcGate ? conn.getSrcGateIndex() : conn.getDestGateIndex();
+		boolean gatePlusPlus  = doSrcGate ? conn.getSrcGatePlusplus() : conn.getDestGatePlusplus();
+		boolean gateUsedAsVector = gatePlusPlus || StringUtils.isNotEmpty(gateIndex);
+		
+		// gate is vector / not vector
+		String prefix = doSrcGate ? "wrong source gate: " : "wrong destination gate: ";
+		GateElementEx gate = module.getGateDeclarations().get(gateName);
+		if (gateUsedAsVector && !gate.getIsVector())
+	        errors.addError(conn, prefix + "extra gate index or '++' ('"+gateName+"' is not a vector gate)");
+	    else if (!gateUsedAsVector && gate.getIsVector())
+	    	errors.addError(conn, prefix + "missing gate index ('"+gateName+"' is a vector gate)");
 
-		validateChildren(node);
+		// check subgate notation
+		if (gate.getType() != NED_GATETYPE_INOUT && subgate != NED_SUBGATE_NONE)
+			errors.addError(conn, prefix + "$i/$o syntax only allowed for inout gates ('"+gateName+"' is an "+getGateTypeAsString(gate.getType())+" gate)");
+		else {
+			// check gate direction
+			int gateDir = subgate==NED_SUBGATE_I ? NED_GATETYPE_INPUT : subgate==NED_SUBGATE_O ? NED_GATETYPE_OUTPUT : gate.getType(); 
+
+			boolean connectedToParent = StringUtils.isEmpty(doSrcGate ? conn.getSrcModule() : conn.getDestModule());
+			int expectedGateDir;
+			if (conn.getArrowDirection()==NED_ARROWDIR_BIDIR)
+				expectedGateDir = NED_GATETYPE_INOUT;
+			else 
+				expectedGateDir = (doSrcGate==connectedToParent) ? NED_GATETYPE_INPUT : NED_GATETYPE_OUTPUT;
+
+			if (gateDir != expectedGateDir) {
+				String gateDirString = getGateTypeAsString(gateDir);
+				String expectedGateDirString = getGateTypeAsString(expectedGateDir);
+				String fullGateName = subgate==NED_SUBGATE_I ? (gateName+"$i") : subgate==NED_SUBGATE_O ? (gateName+"$o") : gateName; 
+				errors.addError(conn, prefix + expectedGateDirString+" gate expected but '"+fullGateName+"' is an "+gateDirString+" gate");
+			}
+		}
+	}
+
+	private static String getGateTypeAsString(int gateDir) {
+		return gateDir==NED_GATETYPE_INPUT ? "input" : gateDir==NED_GATETYPE_OUTPUT ? "output" : "inout";
+	}
+
+	protected void validateConnGate(ConnectionElementEx conn, boolean doSrcGate) {
+		String submodName = doSrcGate ? conn.getSrcModule() : conn.getDestModule();
+		String submodIndex = doSrcGate ? conn.getSrcModuleIndex() : conn.getDestModuleIndex();
+		String gateName = doSrcGate ? conn.getSrcGate() : conn.getDestGate();
+		boolean hasSubmodIndex = StringUtils.isNotEmpty(submodIndex);
+		
+		CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) componentNode;
+	    String prefix = doSrcGate ? "wrong source gate: " : "wrong destination gate: ";
+	    if (StringUtils.isEmpty(submodName)) {
+	        // connected to parent module: check such gate is declared
+	    	GateElementEx gate = compoundModule.getGateDeclarations().get(gateName);
+	    	if (gate == null)
+	            errors.addError(conn, prefix + "compound module has no gate named '"+gateName+"'");
+	        else
+            	checkGate(compoundModule, gateName, conn, doSrcGate);
+	    }
+	    else {
+	        // check such submodule is declared
+	    	SubmoduleElementEx submodule = ((CompoundModuleElementEx)componentNode).getSubmoduleByName(submodName);
+	    	if (submodule == null)
+	            errors.addError(conn, prefix + "no such submodule: '"+submodName+"'");
+	        else {
+	            boolean isSubmodVector = StringUtils.isNotEmpty(submodule.getVectorSize());
+	            if (hasSubmodIndex && !isSubmodVector)
+	                errors.addError(conn, prefix + "extra submodule index ('"+submodName+"' is not a vector submodule)");
+	            else if (!hasSubmodIndex && isSubmodVector)
+	                errors.addError(conn, prefix + "missing submodule index ('"+submodName+"' is a vector submodule)");
+
+	            // check gate
+	            GateElementEx gate = submodule.getGateDeclarations().get(gateName);
+	            if (gate == null)
+	            	errors.addError(conn, prefix + "submodule '"+submodName+"' has no gate named '"+gateName+"'");
+	            else
+	            	checkGate(submodule, gateName, conn, doSrcGate);
+	        }
+	    }
+	}
+
+	@Override
+	protected void validateElement(ConnectionElementEx node)
+	{
+		// make sure submodule and gate names are valid, gate direction is OK
+		// and that gates & modules are really vector (or really not)
+		Assert.isTrue(componentNode instanceof CompoundModuleElementEx);
+	    validateConnGate(node, true);
+	    validateConnGate(node, false);
+
+	    //FIXME validate channel
+	    validateChildren(node);
 	}
 
 	@Override
@@ -507,10 +551,6 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				errors.addError(node, "'"+typeName+"' is not a channel type");
 				return;
 			}
-		}
-		else if ("*".equals(likeTypeName)) {
-			// unchecked "like"...
-			channelSpecType = null;
 		}
 		else if (likeTypeName!=null && !likeTypeName.equals("")) {
 			// "like" case

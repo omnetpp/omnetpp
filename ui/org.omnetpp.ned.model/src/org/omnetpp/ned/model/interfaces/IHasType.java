@@ -46,7 +46,8 @@ public interface IHasType extends INEDElement {
     /**
      * Returns the typeinfo for the effective type.
      * 
-     * Returns null if the effective type is not filled in, or is not a valid NED type. 
+     * Returns null if the effective type is not filled in, or is not a valid NED type, 
+     * or not a type that's accepted at the given place (e.g. a channel for submodule type). 
      */
     public INEDTypeInfo getNEDTypeInfo();
 
@@ -54,7 +55,8 @@ public interface IHasType extends INEDElement {
      * Returns the model element for the effective type. Equivalent to 
      * getNEDTypeInfo().getNEDElement(), but handles nulls.
      * 
-     * Returns null if the effective type is not filled in, or is not a valid NED type. 
+     * Returns null if the effective type is not filled in, or is not a valid NED type,
+     * or not a type that's accepted at the given place (e.g. a channel for submodule type). 
      */
     public INedTypeElement getEffectiveTypeRef();
 }

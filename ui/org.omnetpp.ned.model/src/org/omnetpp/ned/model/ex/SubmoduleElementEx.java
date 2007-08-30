@@ -124,8 +124,15 @@ public class SubmoduleElementEx extends SubmoduleElement
     }
 
     // type support
-    public INEDTypeInfo getNEDTypeInfo() {
-    	return resolveTypeName(getEffectiveType());
+	public String getEffectiveType() {
+		String likeType = getLikeType();
+		return StringUtils.isEmpty(likeType) ? getType() : likeType;
+	}
+
+	public INEDTypeInfo getNEDTypeInfo() {
+    	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType());
+    	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
+		return (typeElement instanceof IModuleTypeElement || typeElement instanceof ModuleInterfaceElementEx) ? typeInfo : null;
     }
 
     public INedTypeElement getEffectiveTypeRef() {
@@ -133,10 +140,6 @@ public class SubmoduleElementEx extends SubmoduleElement
         return info == null ? null : info.getNEDElement();
     }
 
-    public String getEffectiveType() {
-        String likeType = getLikeType();
-        return StringUtils.isEmpty(likeType) ? getType() : likeType;
-    }
 
     /**
      * Returns the list of all parameters assigned in this submodule's body

@@ -118,32 +118,25 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
 	}
 
 	/**
-	 * Returns the identifier of the source gate instance the connection connected to
+	 * Returns the identifier of the source gate instance the connection is connected to
 	 */
-	//FIXME factor out common part with next one
 	public String getSrcGateWithIndex() {
-		String gate = getSrcGate();
-		if (getSrcGatePlusplus())
-			gate += "++";
-		if (getSrcGateIndex() != null && !"".equals(getSrcGateIndex()))
-			gate += "["+getSrcGateIndex()+"]";
-		if (getSrcGateSubg() == NED_SUBGATE_I) gate+="$i";
-		if (getSrcGateSubg() == NED_SUBGATE_O) gate+="$o";
-		return gate;
+		return getGateNameWithIndex(getSrcGate(), getSrcGateSubg(), getSrcGateIndex(), getSrcGatePlusplus());
 	}
 
 	/**
-	 * Returns the identifier of the destination gate instance the connection connected to
+	 * Returns the identifier of the destination gate instance the connection is connected to
 	 */
 	public String getDestGateWithIndex() {
-		String gate = getDestGate();
-		if (getDestGatePlusplus())
-			gate += "++";
-		if (getDestGateIndex() != null && !"".equals(getDestGateIndex()))
-			gate += "["+getDestGateIndex()+"]";
-		if (getDestGateSubg() == NED_SUBGATE_I) gate+="$i";
-		if (getDestGateSubg() == NED_SUBGATE_O) gate+="$o";
+		return getGateNameWithIndex(getDestGate(), getDestGateSubg(), getDestGateIndex(), getDestGatePlusplus());
+	}
 
+	protected static String getGateNameWithIndex(String name, int subgate, String index, boolean isPlusPlus) {
+		String gate = name;
+		if (subgate == NED_SUBGATE_I) gate += "$i";
+		if (subgate == NED_SUBGATE_O) gate += "$o";
+		if (isPlusPlus) gate += "++";
+		if (StringUtils.isNotEmpty(index)) gate += "["+index+"]";
 		return gate;
 	}
 
@@ -229,7 +222,9 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
     }
 
     public INEDTypeInfo getNEDTypeInfo() {
-        return resolveTypeName(getEffectiveType());
+    	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType());
+    	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
+		return (typeElement instanceof ChannelElementEx || typeElement instanceof ChannelInterfaceElementEx) ? typeInfo : null;
     }
 
     public INedTypeElement getEffectiveTypeRef() {

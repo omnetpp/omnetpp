@@ -13,7 +13,8 @@ public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayStr
     /**
      * Returns the typeinfo for the effective type.
      *
-     * Returns null if the effective type is not filled in, or is not a valid NED type.
+     * Returns null if the effective type is not filled in, or is not a valid NED type,
+     * or not a type that's accepted at the given place (e.g. a channel for submodule type). 
      */
     public INEDTypeInfo getNEDTypeInfo();
 
@@ -21,9 +22,9 @@ public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayStr
      * Returns ALL VALID connections contained in / and inherited by 
      * this module where this module is the source. 
      * 
-     * IMPORTANT: cannot use this method to get the connections in a compound module
+     * IMPORTANT: Cannot use this method to get the connections inside a compound module
      * where this module is an inherited submodule! The returned list won't contain
-     * connections added in the derived compound module.
+     * connections added in the derived compound module. Use editparts instead.
      */
     public List<ConnectionElementEx> getSrcConnections();
 
@@ -31,9 +32,9 @@ public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayStr
      * Returns ALL VALID connections contained in / and inherited by 
      * this module where this module is the destination.
      * 
-     * IMPORTANT: cannot use this method to get the connections in a compound module
+     * IMPORTANT: Cannot use this method to get the connections inside a compound module
      * where this module is an inherited submodule! The returned list won't contain
-     * connections added in the derived compound module.
+     * connections added in the derived compound module. Use editparts instead.
      */
     public List<ConnectionElementEx> getDestConnections();
 
