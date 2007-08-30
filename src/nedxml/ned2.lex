@@ -77,7 +77,7 @@ static char textbuf[TEXTBUF_LEN];
 "simple"                 { count(); return SIMPLE; }
 "network"                { count(); return NETWORK; }
 "channel"                { count(); return CHANNEL; }
-"interface"              { count(); return INTERFACE; }
+"moduleinterface"        { count(); return MODULEINTERFACE; }
 "channelinterface"       { count(); return CHANNELINTERFACE; }
 
 "extends"                { count(); return EXTENDS; }

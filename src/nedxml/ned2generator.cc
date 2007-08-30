@@ -331,7 +331,7 @@ void NED2Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, b
 void NED2Generator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << "interface " << node->getName();
+    OUT << indent << "moduleinterface " << node->getName();
     printInheritance(node, indent);
     OUT << getRightComment(node);
     OUT << indent << "{\n";

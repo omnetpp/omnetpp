@@ -16,7 +16,7 @@
 
 /* Reserved words */
 %token IMPORT PACKAGE PROPERTY
-%token MODULE SIMPLE NETWORK CHANNEL INTERFACE CHANNELINTERFACE
+%token MODULE SIMPLE NETWORK CHANNEL MODULEINTERFACE CHANNELINTERFACE
 %token EXTENDS LIKE WITHCPPCLASS
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE VOLATILE TYPENAME
@@ -229,7 +229,7 @@ definition
                 { restoreGlobalParserState(); }
         | moduleinterfaceheader error '}'
                 { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | INTERFACE error '}'
+        | MODULEINTERFACE error '}'
                 { restoreGlobalParserState(); }
         | channelheader error '}'
                 { storePos(ps.component, @$); restoreGlobalParserState(); }
@@ -586,7 +586,7 @@ moduleinterfacedefinition
         ;
 
 moduleinterfaceheader
-        : INTERFACE NAME
+        : MODULEINTERFACE NAME
                 {
                   ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
@@ -754,7 +754,7 @@ pattern_elem
         | '{' pattern '}'
         /* allow reserved words in patterns as well */
         | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | INTERFACE | CHANNELINTERFACE
+        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
         | EXTENDS | LIKE | WITHCPPCLASS
         | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE | TYPENAME
         | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR
