@@ -4,6 +4,7 @@ import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_CONNECTIONS;
 import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_GATES;
 import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_PARAMETERS;
 import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_SUBMODULES;
+import static org.omnetpp.ned.model.pojo.NEDElementTags.NED_TYPES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,6 +135,13 @@ public class PasteAction extends SelectionAction {
 	}
 
 	protected void pasteNedTypes(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
+		boolean containsNedType = false;
+		for (INEDElement element : elements)
+			if (element instanceof INedTypeElement)
+				containsNedType = true;
+		if (!containsNedType)
+			return;
+
 		INEDElement parent;
 		INEDElement beforeElement;
 		Set<String> usedNedTypeNames = new HashSet<String>();
@@ -142,9 +150,10 @@ public class PasteAction extends SelectionAction {
 		INEDElement primarySelectionElement = getPrimarySelectionElement();
 		if (primarySelectionElement instanceof CompoundModuleElementEx) {
 			// paste as inner type
-			parent = primarySelectionElement;
-			beforeElement = null;  // at end 
-			usedNedTypeNames.addAll(((CompoundModuleElementEx)parent).getNEDTypeInfo().getInnerTypes().keySet());
+			CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)primarySelectionElement;
+			parent = findOrCreateSection(compoundModule, NED_TYPES, compoundCommand);
+			beforeElement = null;  // =append 
+			usedNedTypeNames.addAll(compoundModule.getNEDTypeInfo().getInnerTypes().keySet());
 		}
 		else {
 			// paste as toplevel type into the file
@@ -154,6 +163,7 @@ public class PasteAction extends SelectionAction {
 			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
 		}
 
+		// insert stuff into parent
 		for (INEDElement element : elements) {
 			if (element instanceof INedTypeElement) {
 				INedTypeElement typeElement = (INedTypeElement) element;
