@@ -19,7 +19,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
@@ -45,7 +44,17 @@ import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.*;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
+import org.omnetpp.ned.model.pojo.NEDElementFactory;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -621,6 +630,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		nedModelChanged(new NEDBeginModelChangeEvent(null));
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
+			// clear consistency error markers from the ned tree 
+			for (IFile file : nedFiles.keySet())
+				nedFiles.get(file).clearConsistencyProblemMarkerSeverities();
+
 			// issue error message for duplicates
 			for (String name : duplicates.keySet()) {
 				List<INedTypeElement> duplicateList = duplicates.get(name);
@@ -650,10 +663,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				markerSync.registerFile(file);
 				INEDErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
 				//INEDErrorStore errorStore = new INEDErrorStore.SysoutNedErrorStore(); // for debugging
-				NEDFileValidator validator = new NEDFileValidator(this, errorStore);
-				nedFileElement.clearConsistencyProblemMarkerSeverities();
-				validator.validate(nedFileElement);
-
+				new NEDFileValidator(this, errorStore).validate(nedFileElement);
 			}
 
 			// we need to do the synchronization in a background job, to avoid deadlocks

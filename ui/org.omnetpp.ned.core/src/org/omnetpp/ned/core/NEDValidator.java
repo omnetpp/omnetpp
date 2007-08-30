@@ -27,7 +27,6 @@ import org.omnetpp.ned.model.pojo.*;
  *
  * @author andras
  */
-//FIXME SyntaxValidator has to be revised -- it must NOT check anything more than syntax!
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
 //FIXME asap: validate connection! validate extends chain (cycles!!) validate 2 submods with the same name! etc 
@@ -42,9 +41,9 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 	// non-null while we're validating a submodule
 	SubmoduleElementEx submoduleNode;
-	INEDTypeInfo submoduleType; // null for the "like *" case(!); valid while submoduleNode!=null
+	INEDTypeInfo submoduleType; // may be null; valid while submoduleNode!=null
 
-	// non-null while we're validating a channelspec of a connection
+	// non-null while we're validating a channel spec of a connection
 	ChannelSpecElement channelSpecElement;
 	INEDTypeInfo channelSpecType; // may be null; valid while channelSpecElement!=null
 
