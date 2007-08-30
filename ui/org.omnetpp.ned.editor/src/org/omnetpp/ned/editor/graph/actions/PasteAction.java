@@ -160,7 +160,7 @@ public class PasteAction extends SelectionAction {
 			EditPart toplevelEditPart = getGraphicalViewer().getContents();
 			parent = (INEDElement) toplevelEditPart.getModel();
 			beforeElement = (primarySelectionElement != null && primarySelectionElement.getParent() == parent) ? primarySelectionElement : null;
-			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
+			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedComponentNames());
 		}
 
 		// insert stuff into parent
