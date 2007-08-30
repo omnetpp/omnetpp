@@ -33,7 +33,6 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -135,13 +134,25 @@ public class PasteAction extends SelectionAction {
 	}
 
 	protected void pasteNedTypes(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
-		//XXX handle pasting of: NED types into compound module (as inner type)
+		INEDElement parent;
+		INEDElement beforeElement;
 		Set<String> usedNedTypeNames = new HashSet<String>();
-		usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
-
-		EditPart toplevelEditPart = getGraphicalViewer().getContents();
-		NedFileElementEx parent = (NedFileElementEx)toplevelEditPart.getModel();
-		INEDElement beforeElement = null; //FIXME refine insertion point: maybe before the first selected element's INedTypeElement parent?
+		
+		// find insertion point
+		INEDElement primarySelectionElement = getPrimarySelectionElement();
+		if (primarySelectionElement instanceof CompoundModuleElementEx) {
+			// paste as inner type
+			parent = primarySelectionElement;
+			beforeElement = null;  // at end 
+			usedNedTypeNames.addAll(((CompoundModuleElementEx)parent).getNEDTypeInfo().getInnerTypes().keySet());
+		}
+		else {
+			// paste as toplevel type into the file
+			EditPart toplevelEditPart = getGraphicalViewer().getContents();
+			parent = (INEDElement) toplevelEditPart.getModel();
+			beforeElement = (primarySelectionElement != null && primarySelectionElement.getParent() == parent) ? primarySelectionElement : null;
+			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getAllComponentNames());
+		}
 
 		for (INEDElement element : elements) {
 			if (element instanceof INedTypeElement) {
