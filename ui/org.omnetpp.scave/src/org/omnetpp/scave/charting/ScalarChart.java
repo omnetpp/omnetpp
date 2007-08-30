@@ -225,6 +225,8 @@ public class ScalarChart extends ChartCanvas {
 			value = DEFAULT_BAR_BASELINE;
 
 		plot.barBaseline = value;
+		chartArea = calculatePlotArea();
+		updateArea();
 		chartChanged();
 	}
 
@@ -520,8 +522,8 @@ public class ScalarChart extends ChartCanvas {
 			int cColumns = dataset.getColumnCount();
 			double minX = getLeftX(0, 0);
 			double maxX = getRightX(cRows - 1, cColumns - 1);
-			double minY = Double.POSITIVE_INFINITY;
-			double maxY = Double.NEGATIVE_INFINITY;
+			double minY = transformBaseline(barBaseline);
+			double maxY = transformBaseline(barBaseline);
 			for (int row = 0; row < cRows; ++row)
 				for (int column = 0; column < cColumns; ++column) {
 					double topY = plot.getTopY(row, column);
