@@ -13,6 +13,7 @@
 #include "indexedvectorfile.h"
 #include "vectorfileindexer.h"
 #include "vectorfilereader.h"
+#include "indexedvectorfilereader.h"
 #include "scaveexception.h"
 #include "export.h"
 %}
@@ -367,7 +368,10 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 /* ------------- datasorter.h  ----------------- */
 %include "datasorter.h"
 
+
+/* ------------- dataflownetwork.h  ----------------- */
 // wrap the data-flow engine as well
+CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
 %include scave-plove.i
 
 /* ------------- indexedvectorfile.h  ----------------- */
@@ -402,6 +406,14 @@ namespace std {
 
 %ignore VectorFileReaderNodeType;
 %include "vectorfilereader.h"
+
+/* ------------- indexedvectorfilereader.h  ----------------- */
+%include "indexedvectorfilereader.h"
+
+
+%extend IndexedVectorFileReaderNode {
+	static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
+};
 
 /* ------------------ datasorter.h --------------------- */
 %include "datasorter.h"
