@@ -16,14 +16,19 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <stdio.h>
+#include <sstream>
 #include "scaveexception.h"
 
 
-ResultFileFormatException::ResultFileFormatException(const char *message, const char *file, int line)
-    : opp_runtime_error(""), file(file), line(line)
+ResultFileFormatException::ResultFileFormatException(const char *message, const char *file, int line, long offset)
+    : opp_runtime_error(""), file(file), line(line), offset(offset)
 {
-    char messagebuf[1024];
-    sprintf(messagebuf, "%s, file %s, line %d", message, file, line);
-    errormsg = messagebuf;
+    std::ostringstream msg;
+    msg << message << ", file " << file;
+    if (line >= 0)
+    	msg << ", line " << line;
+    if (offset >= 0)
+    	msg << ", offset " << offset;
+    
+    errormsg = msg.str(); 
 }

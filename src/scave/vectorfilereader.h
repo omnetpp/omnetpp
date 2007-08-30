@@ -26,6 +26,8 @@
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
 #define VECFILEREADER_BUFSIZE  (64*1024)
 
+// shared with indexedvectorfilereadernode
+Datum parseColumns(char **tokens, int numtokens, const std::string &columns, const char* file, int lineno, long offset);
 
 /**
  * Producer node which reads an output vector file.
@@ -38,6 +40,7 @@ class SCAVE_API VectorFileReaderNode : public Node
         typedef std::string ColumnSpec;
         typedef std::map<int,ColumnSpec> ColumnMap;
     private:
+    	std::string filename;
         Portmap ports;
         ColumnMap columns;
         FileReader reader;

@@ -30,12 +30,13 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
   private:
       std::string file;
       int line;
+      long offset;
 
   public:
     /**
      * Constructor with error message and location.
      */
-    ResultFileFormatException(const char *msg, const char *file, int line);
+    ResultFileFormatException(const char *msg, const char *file, int line, long offset = -1);
 
     /**
      * Destructor with throw clause required by gcc.
@@ -51,6 +52,11 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
      * Returns the line number at which the error occured.
      */
     int getLine() const { return line; }
+    
+    /**
+     * Returns the file offset at which the error occured.
+     */
+    long getFileOffset() const { return offset; }
 };
 
 #endif

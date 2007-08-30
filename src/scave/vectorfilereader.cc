@@ -18,11 +18,14 @@
 
 #include "channel.h"
 #include "scaveutils.h"
+#include "scaveexception.h"
 #include "vectorfilereader.h"
+
+using namespace std;
 
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
-  reader(fileName, bufferSize), tokenizer(), fFinished(false)
+  filename(fileName), reader(fileName, bufferSize), tokenizer(), fFinished(false)
 {
 }
 
@@ -47,15 +50,15 @@ bool VectorFileReaderNode::isReady() const
 /**
  * Parses columns of one line in the vector file.
  */
-static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNode::ColumnSpec &columns, int lineno)
+Datum parseColumns(char **tokens, int numtokens, const string &columns, const char *file, int lineno, long offset)
 {
     Datum a;
     int colno = columns.size();
 
     if (colno > numtokens - 1)
-        throw opp_runtime_error("invalid vector file syntax: missing columns, line %d", lineno);
+        throw ResultFileFormatException("invalid vector file syntax: missing columns", file, lineno, offset);
     if (numtokens - 1 > colno)
-        throw opp_runtime_error("invalid vector file syntax: extra columns, line %d", lineno);
+        throw ResultFileFormatException("invalid vector file syntax: extra columns", file, lineno, offset);
 
     // optimization:
     //   first process the two most common case, then the general case
@@ -64,7 +67,7 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
     {
         // parse time and value
         if (!parseSimtime(tokens[1],a.xp) || !parseDouble(tokens[2],a.y))
-            throw opp_runtime_error("invalid vector file syntax: invalid time or value column, line %d", lineno);
+            throw ResultFileFormatException("invalid vector file syntax: invalid time or value column", file, lineno, offset);
         a.eventNumber = -1;
         a.x = a.xp.dbl();
     }
@@ -72,7 +75,7 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
     {
         // parse event number, time and value
         if (!parseLong(tokens[1], a.eventNumber) || !parseSimtime(tokens[2],a.xp) || !parseDouble(tokens[3],a.y))
-            throw opp_runtime_error("invalid vector file syntax: invalid event number, time or value column, line %d", lineno);
+            throw ResultFileFormatException("invalid vector file syntax: invalid event number, time or value column", file, lineno, offset);
         a.x = a.xp.dbl();
     }
     else // interpret general case
@@ -84,19 +87,19 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
             {
             case 'E':
                 if (!parseLong(tokens[i+1], a.eventNumber))
-                    throw opp_runtime_error("invalid vector file syntax: invalid event number, line %d", lineno);
+                    throw ResultFileFormatException("invalid vector file syntax: invalid event number", file, lineno, offset);
                 break;
             case 'T':
                 if (!parseSimtime(tokens[i+1], a.xp))
-                    throw opp_runtime_error("invalid vector file syntax: invalid time, line %d", lineno);
+                    throw ResultFileFormatException("invalid vector file syntax: invalid time", file, lineno, offset);
                 a.x = a.xp.dbl();
                 break;
             case 'V':
                 if (!parseDouble(tokens[i+1], a.y))
-                    throw opp_runtime_error("invalid vector file syntax: invalid value, line %d", lineno);
+                    throw ResultFileFormatException("invalid vector file syntax: invalid value", file, lineno, offset);
                 break;
             default:
-                throw opp_runtime_error("invalid vector file syntax: unknown column type: '%c', line %d", columns[i], lineno);
+                throw ResultFileFormatException("invalid vector file syntax: unknown column type", file, lineno, offset);
             }
         }
     }
@@ -106,9 +109,11 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
 
 void VectorFileReaderNode::process()
 {
+	const char *file = filename.c_str();
     char *line;
     for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=NULL; k++)
     {
+    	int lineNo = (int)reader.getNumReadLines();
         int length = reader.getLastLineLength();
         tokenizer.tokenize(line, length);
 
@@ -117,10 +122,9 @@ void VectorFileReaderNode::process()
         if (numtokens>=3 && isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
             // extract vector id
-            char *e;
-            int vectorId = (int) strtol(vec[0],&e,10);
-            if (*e)
-                throw opp_runtime_error("invalid vector file syntax: invalid vector id column, line %d", (int)reader.getNumReadLines());
+            int vectorId;
+            if (!parseInt(vec[0], vectorId))
+                throw ResultFileFormatException("invalid vector file syntax: invalid vector id column", file, lineNo, -1);
 
             Portmap::iterator portvec = ports.find(vectorId);
             if (portvec!=ports.end())
@@ -129,7 +133,7 @@ void VectorFileReaderNode::process()
                 assert(columnSpec != columns.end());
 
                 // parse columns
-                Datum a = parseColumns(vec, numtokens, columnSpec->second, (int)reader.getNumReadLines());
+                Datum a = parseColumns(vec, numtokens, columnSpec->second, file, lineNo, -1);
 
                 // write to port(s)
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)

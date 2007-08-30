@@ -17,7 +17,8 @@ OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \
       xyplotnode.o indexedvectorfile.o \
       vectorfileindexer.o indexfile.o scaveutils.o \
-      scaveexception.o enumtype.o export.o teenode.o
+      scaveexception.o enumtype.o export.o teenode.o \
+      indexedvectorfilereader.o
 
 #
 # Automatic rules
