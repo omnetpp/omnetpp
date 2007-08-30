@@ -85,13 +85,13 @@ simple Queue
         output out;
 }
 
-interface TCPApp
+moduleinterface TCPApp
 {
     gates:
         inout toTCP @inlabels(tcp2app) @outlabels(app2tcp);
 }
 
-interface UDPApp
+moduleinterface UDPApp
 {
     gates:
         inout toUDP @inlabels(udp2app) @outlabels(app2udp);
@@ -123,7 +123,7 @@ module FlexibleApp like TCPApp, UDPApp
         inout toUDP @inlabels(udp2app) @outlabels(app2udp);
 }
 
-interface TCPUDPApp extends TCPApp, UDPApp
+moduleinterface TCPUDPApp extends TCPApp, UDPApp
 {
 }
 
@@ -323,14 +323,14 @@ channel withcppclass PPPLine
 {
 }
 
-interface IBidirectionalChannel
+moduleinterface IBidirectionalChannel
 {
     gates:
         inout a;
         inout b;
 }
 
-interface IUnidirectionalChannel
+moduleinterface IUnidirectionalChannel
 {
     gates:
         input i;
