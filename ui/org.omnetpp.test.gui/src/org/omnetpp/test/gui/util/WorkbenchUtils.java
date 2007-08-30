@@ -1,8 +1,5 @@
 package org.omnetpp.test.gui.util;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.Access;
@@ -14,12 +11,6 @@ import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 
 public class WorkbenchUtils
 {
-	public static void ensureProjectFileDeleted(String projectName, String fileName) throws CoreException {
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(fileName);
-		if (file.exists())
-			file.delete(true, null);
-	}
-
 	public static void choosePerspectiveFromDialog(String perspectiveLabel) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.chooseFromMainMenu("Window|Open Perspective|Other.*");
@@ -53,5 +44,11 @@ public class WorkbenchUtils
 			tree.pressKey(SWT.ARROW_RIGHT);
 		}
 		return tree.findTreeItemByContent(new Path(path).lastSegment()).reveal();
+	}
+
+	public static void assertErrorMessageInProblemsView(String errorText) {
+		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
+		problemsView.activateWithMouseClick();
+		problemsView.findTree().findTreeItemByContent(errorText);
 	}
 }

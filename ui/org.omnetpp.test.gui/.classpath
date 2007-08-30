@@ -6,6 +6,7 @@
 		<accessrules>
 			<accessrule kind="accessible" pattern="org/eclipse/ui/internal/**"/>
 			<accessrule kind="accessible" pattern="org/eclipse/swt/internal/**"/>
+			<accessrule kind="accessible" pattern="org/omnetpp/**"/>
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

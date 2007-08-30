@@ -12,14 +12,14 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class MenuAccess extends WidgetAccess<Menu> {
+public class MenuAccess extends WidgetAccess {
 
 	public MenuAccess(Menu menu) {
 		super(menu);
 	}
 
 	public Menu getMenu() {
-		return widget;
+		return (Menu)widget;
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class MenuAccess extends WidgetAccess<Menu> {
 	@InUIThread
 	public MenuItemAccess findMenuItemByLabel(final String label) {
 		try {
-			return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(widget, new IPredicate() {
+			return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(getMenu(), new IPredicate() {
 				public boolean matches(Object object) {
 					String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
 					return menuItemLabel.matches(label);

@@ -1,4 +1,4 @@
-package org.omnetpp.test.gui.access;
+package org.omnetpp.test.gui.util;
 
 import java.io.ByteArrayInputStream;
 
@@ -8,13 +8,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
-public class WorkspaceAccess {
-
+public class WorkspaceUtils
+{
 	@InUIThread
 	public static IProject assertProjectExists(String name) {
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
@@ -69,7 +70,13 @@ public class WorkspaceAccess {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
 		if (file.exists()) file.delete(true, null);
 		file.create(new ByteArrayInputStream(content.getBytes()), true, null);
-		WorkspaceAccess.assertFileExistsWithContent(path, content); // wait until background job finishes
+		WorkspaceUtils.assertFileExistsWithContent(path, content); // wait until background job finishes
 	}
 
+	@NotInUIThread
+	public static void ensureProjectFileDeleted(String projectName, String fileName) throws CoreException {
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(fileName);
+		if (file.exists())
+			file.delete(true, null);
+	}
 }

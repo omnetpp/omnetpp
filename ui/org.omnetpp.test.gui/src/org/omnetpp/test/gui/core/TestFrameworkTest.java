@@ -2,16 +2,16 @@ package org.omnetpp.test.gui.core;
 
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.access.WorkspaceAccess;
+import org.omnetpp.test.gui.util.WorkspaceUtils;
 
 public class TestFrameworkTest extends GUITestCase
 {
 	public void testFileNotExists_1() {
-		WorkspaceAccess.assertFileNotExists("/no-such-project/some-nonsense-filename");
+		WorkspaceUtils.assertFileNotExists("/no-such-project/some-nonsense-filename");
 	}
 
 	public void testFileExists_SHOULDFAIL_1() {
-		WorkspaceAccess.assertFileNotExists("/no-such-project/some-nonsense-filename");
+		WorkspaceUtils.assertFileNotExists("/no-such-project/some-nonsense-filename");
 	}
 
 	public void testMainMenu_1() {

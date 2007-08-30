@@ -15,21 +15,20 @@ import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
-public class WorkbenchWindowAccess extends ShellAccess {
+public class WorkbenchWindowAccess extends Access {
 	private IWorkbenchWindow workbenchWindow;
 	
 	public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
-		super(workbenchWindow.getShell());
 		this.workbenchWindow = workbenchWindow;
 	}
 
-	public IWorkbenchWindow getWorkbenchWindow() {
-		return workbenchWindow;
+	public ShellAccess getShell() {
+		return new ShellAccess(workbenchWindow.getShell());
 	}
 
 	@InUIThread
 	public MenuAccess getMenuBar() {
-		return new MenuAccess(getWorkbenchWindow().getShell().getMenuBar());
+		return getShell().getMenuBar();
 	}
 	
 	@NotInUIThread
@@ -42,12 +41,12 @@ public class WorkbenchWindowAccess extends ShellAccess {
 	
 	@InUIThread
 	public EditorPartAccess getActiveEditorPart() {
-		return new EditorPartAccess(getWorkbenchWindow().getPages()[0].getActiveEditor());
+		return new EditorPartAccess(workbenchWindow.getPages()[0].getActiveEditor());
 	}
 
 	@InUIThread
 	public WorkbenchPartAccess getActivePart() {
-		IWorkbenchPart activePart = getWorkbenchWindow().getPages()[0].getActivePart();
+		IWorkbenchPart activePart = workbenchWindow.getPages()[0].getActivePart();
 		if (activePart instanceof IEditorPart)
 			return new EditorPartAccess((IEditorPart)activePart);
 		else 
@@ -56,7 +55,7 @@ public class WorkbenchWindowAccess extends ShellAccess {
 
 	@InUIThread
 	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
-		return new ViewPartAccess(getWorkbenchWindow().getPages()[0].showView(viewId));
+		return new ViewPartAccess(workbenchWindow.getPages()[0].showView(viewId));
 	}
 
 	@InUIThread
@@ -68,7 +67,7 @@ public class WorkbenchWindowAccess extends ShellAccess {
 	public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
 		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
 
-		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
+		for (IWorkbenchPage page : workbenchWindow.getPages()) {
 			for (IViewReference viewReference : page.getViewReferences()) {
 				System.out.println("  checking viewpart: " + viewReference.getPartName());
 				if (viewReference.getPartName().matches(title))
@@ -85,14 +84,19 @@ public class WorkbenchWindowAccess extends ShellAccess {
 	}
 	
 	@InUIThread
+	public MultiPageEditorPartAccess findMultiPageEditorPartByTitle(String title) {
+		return (MultiPageEditorPartAccess)findEditorPartByTitle(title, true);
+	}
+	
+	@InUIThread
 	public EditorPartAccess findEditorPartByTitle(String title, boolean restore) {
 		ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
 
-		for (IWorkbenchPage page : getWorkbenchWindow().getPages()) {
+		for (IWorkbenchPage page : workbenchWindow.getPages()) {
 			for (IEditorReference editorReference : page.getEditorReferences()) {
 				System.out.println("  checking editorpart: " + editorReference.getTitle());
 				if (editorReference.getTitle().matches(title))
-					result.add(new EditorPartAccess((IEditorPart)editorReference.getEditor(restore)));
+					result.add((EditorPartAccess)createAccess(editorReference.getEditor(restore)));
 			}
 		}
 		return (EditorPartAccess)theOnlyObject(result);
@@ -101,5 +105,9 @@ public class WorkbenchWindowAccess extends ShellAccess {
 	@InUIThread
 	public void closeAllEditorPartsWithHotKey() {
 		pressKey('w', SWT.CONTROL + SWT.SHIFT);
+	}
+
+	public void assertIsActiveShell() {
+		getShell().assertIsActive();
 	}
 }

@@ -6,8 +6,8 @@ import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.TreeAccess;
 import org.omnetpp.test.gui.access.TreeItemAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.access.WorkspaceAccess;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
+import org.omnetpp.test.gui.util.WorkspaceUtils;
 
 public class IniFileEditorUtils
 {
@@ -26,7 +26,7 @@ public class IniFileEditorUtils
 		fillNewInifileWizard(null, fileName, networkName);
 
 		// make sure the file really exists
-		WorkspaceAccess.assertFileExists(projectName+"/"+fileName);
+		WorkspaceUtils.assertFileExists(projectName+"/"+fileName);
 	}
 
 	public static void createNewIniFileByWizard2(String parentFolder, String fileName, String networkName) {
@@ -34,7 +34,7 @@ public class IniFileEditorUtils
 		WorkbenchUtils.choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Ini.*");
 		fillNewInifileWizard(parentFolder, fileName, networkName); // fill in wizard
-		WorkspaceAccess.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
+		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
 	}
 
 	public static void fillNewInifileWizard(String parentFolder, String fileName, String networkName) {

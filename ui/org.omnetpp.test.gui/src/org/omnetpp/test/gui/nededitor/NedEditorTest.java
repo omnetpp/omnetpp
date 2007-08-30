@@ -3,14 +3,17 @@ package org.omnetpp.test.gui.nededitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.EditorPartAccess;
+import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
+import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
+import org.omnetpp.test.gui.access.TextualEditorAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.access.WorkspaceAccess;
 import org.omnetpp.test.gui.core.GUITestCase;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
+import org.omnetpp.test.gui.util.WorkspaceUtils;
 
 public class NedEditorTest extends GUITestCase
 {
@@ -23,30 +26,40 @@ public class NedEditorTest extends GUITestCase
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.assertIsActiveShell();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
-		WorkbenchUtils.ensureProjectFileDeleted(projectName, fileName);
+		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}
 
 	public void testCreateNedFile() throws Throwable {
 		prepareForTest();
-
 		createNewNEDFileByWizard(projectName, fileName);
-		
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.findEditorPartByTitle(fileName).activatePage("Text");
+		MultiPageEditorPartAccess mutliPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+		mutliPageEditorPart.activatePage("Text");
 	}
 	
-	private void createNewNEDFileByWizard(String parentFolder, String fileName) {
+	public void testCreateNedModel() throws Throwable {
+		prepareForTest();
+		createNewNEDFileByWizard(projectName, fileName);
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		WorkbenchUtils.choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|NED file" in the menu
-		workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
-		ShellAccess shell = Access.findShellByTitle("New NED File");
-		shell.findTextAfterLabel("File name.*").clickAndType(fileName);
-		shell.findButtonWithLabel("Finish").activateWithMouseClick();
-		WorkspaceAccess.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
+		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePage("Graphical");
+		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
+		TextualEditorAccess textualEditor = (TextualEditorAccess)multiPageEditorPart.activatePage("Text");
+		textualEditor.moveCursorAfter("simple TestNode.*{");
+		textualEditor.typeIn("\n");
+		textualEditor.typeIn("gates:\n");
+		textualEditor.typeIn("inout g;\n");
+		CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.createCompoundModuleWithPalette("TestNetwork");
+		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node1", 100, 100);
+		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node2", 200, 200);
+		compoundModuleEditPart.createConnectionWithPalette("node1", "node2");
 	}
 
 	//TODO incomplete code...
 	public void testInheritanceErrors() throws Throwable {
+		prepareForTest();
+		createNewNEDFileByWizard(projectName, fileName);
+
 		// plain inheritance
 		checkErrorInSource("simple A {}", null); //OK
 		checkErrorInSource("simple A extends Unknown {}", "no such type: Unknown");
@@ -59,22 +72,27 @@ public class NedEditorTest extends GUITestCase
 		checkErrorInSource("simple A extends B {}\nsimple B extends C {}\nsimple C extends A {}", "cycle");
 		//TODO: same thing with "module" and "channel" instead of "simple"
 	}
+	
+	private void createNewNEDFileByWizard(String parentFolder, String fileName) {
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchUtils.choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|NED file" in the menu
+		workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
+		ShellAccess shell = Access.findShellByTitle("New NED File");
+		shell.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
+		shell.findTextAfterLabel("File name.*").clickAndType(fileName);
+		shell.findButtonWithLabel("Finish").activateWithMouseClick();
+		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
+	}
 
 	private void checkErrorInSource(String nedSource, String errorText) {
-		EditorPartAccess editor = Access.getWorkbenchWindowAccess().getActiveEditorPart();
-		editor.activatePage("Text");
-		StyledTextAccess styledText = editor.findStyledText();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+		TextualEditorAccess textualEditor = (TextualEditorAccess)multiPageEditorPart.activatePage("Text");
+		StyledTextAccess styledText = textualEditor.findStyledText();
 		styledText.pressKey('A', SWT.CTRL); // "Select all"
 		styledText.typeIn(nedSource);
-		assertErrorMessageInProblemsView(errorText);
-		editor.activatePage("Graphics");
+		WorkbenchUtils.assertErrorMessageInProblemsView(errorText);
+		multiPageEditorPart.activatePage("Graphics");
 		//TODO: do something in the graphical editor: check error markers are there, etc
 	}
-
-	private void assertErrorMessageInProblemsView(String errorText) {
-		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
-		problemsView.activateWithMouseClick();
-		problemsView.findTree().findTreeItemByContent(errorText);
-	}
-
 }

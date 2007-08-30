@@ -14,14 +14,14 @@ import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class CompositeAccess<T extends Composite> extends ControlAccess<T>
+public class CompositeAccess extends ControlAccess
 {
-	public CompositeAccess(T composite) {
+	public CompositeAccess(Composite composite) {
 		super(composite);
 	}
 
 	public Composite getComposite() {
-		return widget;
+		return (Composite)widget;
 	}
 
 	@InUIThread

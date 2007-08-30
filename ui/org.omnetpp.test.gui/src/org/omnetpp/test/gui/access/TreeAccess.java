@@ -8,14 +8,14 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class TreeAccess extends ControlAccess<Tree>
+public class TreeAccess extends ControlAccess
 {
 	public TreeAccess(Tree tree) {
 		super(tree);
 	}
 
 	public Tree getTree() {
-		return widget;
+		return (Tree)widget;
 	}
 
 	@InUIThread

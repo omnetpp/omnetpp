@@ -5,14 +5,14 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class TreeItemAccess extends ClickableWidgetAccess<TreeItem>
+public class TreeItemAccess extends ClickableWidgetAccess
 {
 	public TreeItemAccess(TreeItem treeItem) {
 		super(treeItem);
 	}
 
 	public TreeItem getTreeItem() {
-		return widget;
+		return (TreeItem)widget;
 	}
 
 	@InUIThread @Override
@@ -24,17 +24,17 @@ public class TreeItemAccess extends ClickableWidgetAccess<TreeItem>
 
 	@InUIThread
 	public TreeItemAccess reveal() {
-		widget.getParent().setTopItem(widget); // scroll there
+		getTreeItem().getParent().setTopItem(getTreeItem()); // scroll there
 		return this;
 	}
 	
 	@Override
 	protected Point getPointToClick() {
-		return widget.getParent().toDisplay(getCenter(widget.getBounds()));
+		return getTreeItem().getParent().toDisplay(getCenter(getTreeItem().getBounds()));
 	}
 
 	@Override
 	protected Menu getContextMenu() {
-		return (Menu)widget.getParent().getMenu();
+		return (Menu)getTreeItem().getParent().getMenu();
 	}
 }

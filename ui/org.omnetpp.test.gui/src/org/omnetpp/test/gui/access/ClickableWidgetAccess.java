@@ -6,9 +6,9 @@ import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
-public abstract class ClickableWidgetAccess<T extends Widget> extends WidgetAccess<T>
+public abstract class ClickableWidgetAccess extends WidgetAccess
 {
-	public ClickableWidgetAccess(T widget) {
+	public ClickableWidgetAccess(Widget widget) {
 		super(widget);
 	}
 

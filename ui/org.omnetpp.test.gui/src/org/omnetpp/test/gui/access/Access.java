@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
@@ -26,18 +27,44 @@ import org.omnetpp.test.gui.core.EventTracer;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
-public class Access {
+public class Access
+{
 	protected final static boolean debug = true;
 
 	public final static int LEFT_MOUSE_BUTTON = 1;
 	public final static int MIDDLE_MOUSE_BUTTON = 2;
 	public final static int RIGHT_MOUSE_BUTTON = 3;
+	
+	protected Object target;
+
+	protected Access createAccess(Object instance) {
+		Class<?> clazz = instance.getClass();
+
+		while (clazz != Object.class) {
+			try {
+				String lookupClassName = "org.omnetpp.test.gui.access." + clazz.getSimpleName() + "Access";
+				if (debug)
+					System.out.println("Looking up access class " + lookupClassName);
+		        Class<?> accessClass = Class.forName(lookupClassName);
+		        
+		        return (Access)ReflectionUtils.invokeConstructor(accessClass, instance);
+			} 
+			catch (ClassNotFoundException e) {
+				// skip this class
+			}
+			
+			clazz = clazz.getSuperclass();
+		}
+
+		Assert.fail("No Access class found for: " + instance.getClass());
+		return null;
+	}
 
 	public static Display getDisplay() {
 		Display display = Display.getCurrent();
 		return display != null ? display : Display.getDefault();
 	}
-
+	
 	@InUIThread
 	public static WorkbenchWindowAccess getWorkbenchWindowAccess() {
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -46,8 +73,8 @@ public class Access {
 	}
 
 	@InUIThread
-	public static Shell getActiveShell() {
-		return getDisplay().getActiveShell();
+	public static ShellAccess getActiveShell() {
+		return new ShellAccess(getDisplay().getActiveShell());
 	}
 
 	@InUIThread
@@ -100,9 +127,9 @@ public class Access {
 		EventTracer.start();
 	}
 
-	public static Event newEvent(Widget widget, int type) {
+	public static Event newEvent(int type) {
 		Event event = new Event();
-		event.widget = widget;
+		//event.widget = widget;
 		event.type = type;
 		event.display = getDisplay();
 
@@ -110,10 +137,104 @@ public class Access {
 	}
 
 	@InUIThread
+	public void pressKey(int keyCode) {
+		pressKey(keyCode, SWT.None);
+	}
+
+	@InUIThread
+	public void pressKey(int keyCode, int modifierKeys) {
+		pressKey((char)0, keyCode, modifierKeys);
+	}
+
+	@InUIThread
+	public void pressKey(char character) {
+		pressKey(character, SWT.None);
+	}
+
+	@InUIThread
+	public void pressKey(char character, int modifierKeys) {
+		pressKey(character, 0, modifierKeys);
+	}
+
+	@InUIThread
+	public void pressKey(char character, int keyCode, int modifierKeys) {
+		Event event;
+
+		if (modifierKeys != 0) {
+			if ((modifierKeys & SWT.SHIFT) != 0) {
+				event = newEvent(SWT.KeyDown);
+				event.keyCode = SWT.SHIFT;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.CONTROL) != 0) {
+				event = newEvent(SWT.KeyDown);
+				event.keyCode = SWT.CONTROL;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.ALT) != 0) {
+				event = newEvent(SWT.KeyDown);
+				event.keyCode = SWT.ALT;
+				postEvent(event);
+			}
+		}
+
+		event = newEvent(SWT.KeyDown);
+		event.character = character;
+		event.keyCode = keyCode;
+		postEvent(event);
+
+		event = newEvent(SWT.KeyUp);
+		event.keyCode = keyCode;
+		event.character = (char)keyCode;
+		postEvent(event);
+
+		if (modifierKeys != 0) {
+			if ((modifierKeys & SWT.SHIFT) != 0) {
+				event = newEvent(SWT.KeyUp);
+				event.keyCode = SWT.SHIFT;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.CONTROL) != 0) {
+				event = newEvent(SWT.KeyUp);
+				event.keyCode = SWT.CONTROL;
+				postEvent(event);
+			}
+
+			if ((modifierKeys & SWT.ALT) != 0) {
+				event = newEvent(SWT.KeyUp);
+				event.keyCode = SWT.ALT;
+				postEvent(event);
+			}
+		}
+	}
+
+	protected void postMouseEvent(int type, int button, int x, int y) {
+		Event event = newEvent(type); // e.g. SWT.MouseMove
+		event.button = button;
+		event.x = x;
+		event.y = y;
+		event.count = 1;
+		postEvent(event);
+	}
+
+	@InUIThread
+	public static Object findObject(List<Object> objects, IPredicate predicate) {
+		return theOnlyObject(collectObjects(objects, predicate));
+	}
+
+	@InUIThread
 	public static Object findObject(Object[] objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate));
 	}
 
+	@InUIThread
+	public static List<Object> collectObjects(List<Object> objects, IPredicate predicate) {
+		return collectObjects(objects.toArray(new Object[0]), predicate);
+	}
+	
 	@InUIThread
 	public static List<Object> collectObjects(Object[] objects, IPredicate predicate) {
 		ArrayList<Object> resultObjects = new ArrayList<Object>();

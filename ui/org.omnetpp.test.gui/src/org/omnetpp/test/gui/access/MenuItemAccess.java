@@ -9,19 +9,19 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class MenuItemAccess extends ClickableWidgetAccess<MenuItem>
+public class MenuItemAccess extends ClickableWidgetAccess
 {
 	public MenuItemAccess(MenuItem menuItem) {
 		super(menuItem);
 	}
 
 	public MenuItem getMenuItem() {
-		return widget;
+		return (MenuItem)widget;
 	}
 
 	@InUIThread
 	public void assertEnabled() {
-		if (!widget.isEnabled()) {
+		if (!getMenuItem().isEnabled()) {
 	    	MenuAccess.closeMenus();
 	    	Assert.assertTrue("menu item is disabled", false);
 		}
@@ -31,13 +31,13 @@ public class MenuItemAccess extends ClickableWidgetAccess<MenuItem>
 	public MenuAccess activateWithMouseClick() {
 		assertEnabled();
 		click();
-		return widget.getMenu() == null ? null : new MenuAccess(widget.getMenu());
+		return getMenuItem().getMenu() == null ? null : new MenuAccess(getMenuItem().getMenu());
 	}
 
 	@Override
 	protected Point getPointToClick() {
-		Rectangle parentRectangle = (Rectangle)ReflectionUtils.invokeMethod(widget.getParent(), "getBounds");
-		Rectangle rectangle = (Rectangle)ReflectionUtils.invokeMethod(widget, "getBounds");
+		Rectangle parentRectangle = (Rectangle)ReflectionUtils.invokeMethod(getMenuItem().getParent(), "getBounds");
+		Rectangle rectangle = (Rectangle)ReflectionUtils.invokeMethod(getMenuItem(), "getBounds");
 		rectangle.x = rectangle.x + parentRectangle.x;
 		rectangle.y = rectangle.y + parentRectangle.y;
 		return getCenter(rectangle);

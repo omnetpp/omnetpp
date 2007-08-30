@@ -6,23 +6,23 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class ComboAccess extends ControlAccess<Combo>
+public class ComboAccess extends ControlAccess
 {
 	public ComboAccess(Combo combo) {
 		super(combo);
 	}
 
 	public Combo getCombo() {
-		return widget;
+		return (Combo)widget;
 	}
 	
 	@InUIThread
 	public String getTextContent() {
-		return widget.getText();
+		return getCombo().getText();
 	}
 
 	public void assertEditable() {
-		Assert.assertTrue("combo is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
+		Assert.assertTrue("combo is readonly", (getCombo().getStyle() & SWT.READ_ONLY) == 0);
 	}
 	
 	@InUIThread

@@ -6,14 +6,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class ShellAccess extends CompositeAccess<Shell>
+public class ShellAccess extends CompositeAccess
 {
 	public ShellAccess(Shell shell) {
 		super(shell);
 	}
 
 	public Shell getShell() {
-		return widget;
+		return (Shell)widget;
+	}
+
+	@InUIThread
+	public MenuAccess getMenuBar() {
+		return new MenuAccess(getShell().getMenuBar());
 	}
 
 	/**
@@ -24,7 +29,7 @@ public class ShellAccess extends CompositeAccess<Shell>
 	 * detect open dialogs left behind by previous test cases.
 	 */
 	@InUIThread
-	public void assertIsActiveShell() {
-		Assert.assertTrue("not the active shell", Display.getCurrent().getActiveShell() == widget);
+	public void assertIsActive() {
+		Assert.assertTrue("not the active shell", Display.getCurrent().getActiveShell() == getShell());
 	}
 }

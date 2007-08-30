@@ -6,19 +6,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class TextAccess extends ControlAccess<Text>
+public class TextAccess extends ControlAccess
 {
 	public TextAccess(Text text) {
 		super(text);
 	}
 
 	public Text getText() {
-		return widget;
+		return (Text)widget;
 	}
 	
 	@InUIThread
 	public String getTextContent() {
-		return widget.getText();
+		return getText().getText();
 	}
 
 	public void assertEditable() {

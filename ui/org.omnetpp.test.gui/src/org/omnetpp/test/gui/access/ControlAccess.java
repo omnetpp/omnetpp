@@ -10,39 +10,39 @@ import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
+public class ControlAccess extends ClickableWidgetAccess
 {
-	public ControlAccess(T control) {
+	public ControlAccess(Control control) {
 		super(control);
 	}
 
-	public T getControl() {
-		return widget;
+	public Control getControl() {
+		return (Control)widget;
 	}
 
 	@InUIThread
 	public void assertEnabled() {
-		Assert.assertTrue("control is disabled", widget.getEnabled());
+		Assert.assertTrue("control is disabled", getControl().getEnabled());
 	}
 
 	@InUIThread
 	public void assertHasFocus() {
-		Assert.assertTrue("control has no focus", widget.isFocusControl());
+		Assert.assertTrue("control has no focus", getControl().isFocusControl());
 	}
 
 	@InUIThread
 	public void assertVisible() {
-		Assert.assertTrue("control not visible", widget.isVisible());
+		Assert.assertTrue("control not visible", getControl().isVisible());
 	}
 
 	@Override
 	protected Point getPointToClick() {
-		return widget.getParent().toDisplay(getCenter(widget.getBounds()));
+		return getControl().getParent().toDisplay(getCenter(getControl().getBounds()));
 	}
 
 	@Override
 	protected Menu getContextMenu() {
-		return widget.getMenu();
+		return getControl().getMenu();
 	}
 
 	@InUIThread
@@ -57,10 +57,10 @@ public class ControlAccess<T extends Control> extends ClickableWidgetAccess<T>
 	public Control findNextControl(final IPredicate predicate) {
 		// Returns the first control after this one that matches the predicate
 		// TODO: should consider layout
-		List<Control> objects = collectDescendantControls(widget.getShell(), new IPredicate() {
+		List<Control> objects = collectDescendantControls(getControl().getShell(), new IPredicate() {
 			boolean thisWidgetSeen = false;
 			public boolean matches(Object object) {
-				if (object == widget)
+				if (object == getControl())
 					thisWidgetSeen = true;
 				return thisWidgetSeen && predicate.matches(object);
 			}
