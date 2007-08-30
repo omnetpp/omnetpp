@@ -477,6 +477,7 @@ public class VectorChart extends ChartCanvas {
 		if (dataset!=null && dataset.getSeriesCount() > 0) {
 			// calculate bounding box
 			long startTime = System.currentTimeMillis();
+			long numOfPoints = 0;
 			for (int series = 0; series < dataset.getSeriesCount(); series++) {
 				int n = dataset.getItemCount(series);
 				if (n > 0) {
@@ -490,10 +491,12 @@ public class VectorChart extends ChartCanvas {
 							maxY = Math.max(maxY, y);
 						}
 					}
+
+					numOfPoints += n;
 				}
 			}
 			long duration = System.currentTimeMillis() - startTime;
-			System.out.println("calculateArea(): "+duration+" ms");
+			System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
 		}
 		
 		if (minX > maxX) {

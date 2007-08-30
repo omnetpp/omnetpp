@@ -287,12 +287,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 
 	public void setAntialias(Boolean antialias) {
-		this.antialias = antialias != null && antialias.booleanValue();
+		this.antialias = antialias != null ? antialias : DEFAULT_ANTIALIAS;
 		chartChanged();
 	}
 	
 	public void setCaching(Boolean caching) {
-		super.setCaching(caching != null && caching.booleanValue());
+		super.setCaching(caching != null ? caching : DEFAULT_CANVAS_CACHING);
 		chartChanged();
 	}
 	
