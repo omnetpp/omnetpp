@@ -35,7 +35,10 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasParameters;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -209,8 +212,8 @@ public class PasteAction extends SelectionAction {
 	}
 
 	protected void pasteParametersAndProperties(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
-		INEDElement target = null; //FIXME
-		if (target == null)
+		INEDElement targetElement = getPrimarySelectionElement();
+		if (targetElement == null || !(targetElement instanceof IHasParameters))
 			return;
 
 		ParametersElement parametersSection = null;
@@ -218,7 +221,7 @@ public class PasteAction extends SelectionAction {
 			if (element instanceof ParamElement || element instanceof PropertyElement) {
 				// insert
 				if (parametersSection == null)
-					parametersSection = (ParametersElement) findOrCreateSection(target, NED_PARAMETERS, compoundCommand);
+					parametersSection = (ParametersElement) findOrCreateSection(targetElement, NED_PARAMETERS, compoundCommand);
 				compoundCommand.add(new AddNEDElementCommand(parametersSection, element));
 				pastedElements.add(element);
 			}
@@ -226,8 +229,8 @@ public class PasteAction extends SelectionAction {
 	}
 
 	protected void pasteGates(List<INEDElement> elements, CompoundCommand compoundCommand, List<INEDElement> pastedElements) {
-		INEDElement targetModule = null; //FIXME
-		if (targetModule == null)
+		INEDElement targetElement = getPrimarySelectionElement();
+		if (targetElement == null || !(targetElement instanceof IHasGates))
 			return;
 
 		GatesElement gatesSection = null;
@@ -235,7 +238,7 @@ public class PasteAction extends SelectionAction {
 			if (element instanceof GateElement) {
 				// insert
 				if (gatesSection == null)
-					gatesSection = (GatesElement) findOrCreateSection(targetModule, NED_GATES, compoundCommand);
+					gatesSection = (GatesElement) findOrCreateSection(targetElement, NED_GATES, compoundCommand);
 				compoundCommand.add(new AddNEDElementCommand(gatesSection, element));
 				pastedElements.add(element);
 			}
@@ -260,23 +263,18 @@ public class PasteAction extends SelectionAction {
 			if (editPart instanceof ModuleEditPart)
 				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
 		return null;
-//XXX probably bad idea:		
-//		// or, return the first compound module in the file; in the worst case return null
-//		EditPart toplevelEditPart = graphicalViewer.getContents();
-//		NedFileElementEx nedFileElement = (NedFileElementEx)toplevelEditPart.getModel();
-//		return (CompoundModuleElementEx) nedFileElement.getFirstCompoundModuleChild(); // might be null
 	}
 
-//	@SuppressWarnings("unchecked")
-//	protected CompoundModuleElementEx getFirstTargetCompoundModule() {
-//		// return the selected compound module or the compound module of the first selected submodule
-//		GraphicalViewer graphicalViewer = getGraphicalViewer();
-//		List selectedEditParts = graphicalViewer.getSelectedEditParts();
-//		for (Object editPart : selectedEditParts)
-//			if (editPart instanceof ModuleEditPart)
-//				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
-//		return null;
-//	}
+	@SuppressWarnings("unchecked")
+	protected INEDElement getPrimarySelectionElement() {
+		// return the element from the primary selection
+		GraphicalViewer graphicalViewer = getGraphicalViewer();
+		List<EditPart> selectedEditParts = graphicalViewer.getSelectedEditParts();
+		if (selectedEditParts.size() > 0 && selectedEditParts.get(0) instanceof IModelProvider)
+			return ((IModelProvider)selectedEditParts.get(0)).getNEDModel();
+		else
+			return null;
+	}
 
 	protected GraphicalViewer getGraphicalViewer() {
 		GraphicalViewer viewer = (GraphicalViewer)getWorkbenchPart().getAdapter(GraphicalViewer.class);
