@@ -13,7 +13,7 @@ import org.omnetpp.ned.model.interfaces.IHasType;
  * @author rhornig
  */
 public class ModelFactory implements CreationFactory {
-    protected String objectType;
+    protected int tagCode;
     protected String name;
 	protected String type;
 	protected boolean useLike = false;
@@ -21,15 +21,15 @@ public class ModelFactory implements CreationFactory {
     /**
      * @param objectType The class identifier of the INEDElement passed NEDElementFactoryEx.getInstance().createElement
      */
-    public ModelFactory(String objectType) {
-        this(objectType, null);
+    public ModelFactory(int tagCode) {
+        this(tagCode, null);
     }
     /**
      * @param objectType The class identifier of the INEDElement
      * @param name The optional name of the new element
      */
-    public ModelFactory(String objectType, String name) {
-        this(objectType, name, null, false);
+    public ModelFactory(int tagCode, String name) {
+        this(tagCode, name, null, false);
     }
 
     /**
@@ -37,8 +37,8 @@ public class ModelFactory implements CreationFactory {
      * @param name The optional name of the new element
      * @param type The optional type of the new element (for submodules and connections)
      */
-    public ModelFactory(String objectType, String name, String type) {
-        this(objectType, name, type, false);
+    public ModelFactory(int tagCode, String name, String type) {
+        this(tagCode, name, type, false);
     }
 
     /**
@@ -47,15 +47,15 @@ public class ModelFactory implements CreationFactory {
 	 * @param type The optional type of the new element (for submodules and connections)
 	 * @param useLike The provided type will be used as an interface type t
 	 */
-	public ModelFactory(String objectType, String name, String type, boolean useLike) {
-        this.objectType = objectType;
+	public ModelFactory(int tagCode, String name, String type, boolean useLike) {
+        this.tagCode = tagCode;
         this.name = name;
 		this.type = type;
 		this.useLike = useLike;
 	}
 
 	public Object getNewObject() {
-		INEDElement element = NEDElementFactoryEx.getInstance().createElement(objectType);
+		INEDElement element = NEDElementFactoryEx.getInstance().createElement(tagCode);
         if (element instanceof IHasName)
             ((IHasName)element).setName(name);
 
@@ -73,7 +73,7 @@ public class ModelFactory implements CreationFactory {
 	}
 
 	public Object getObjectType() {
-		return objectType;
+		return tagCode;
 	}
 
 }

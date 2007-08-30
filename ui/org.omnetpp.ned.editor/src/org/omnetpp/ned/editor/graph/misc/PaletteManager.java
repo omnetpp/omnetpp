@@ -20,14 +20,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.ChannelElementEx;
-import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
-import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
@@ -38,6 +32,7 @@ import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.PropertyElement;
 
 /**
@@ -266,7 +261,7 @@ public class PaletteManager implements INEDChangeListener {
 
         CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
                 label, StringUtils.makeBriefDocu(typeElement.getComment(), 300),
-                new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
+                new ModelFactory(typeElement.getTagCode(), StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
                 imageDescNorm, imageDescLarge );
 
         entries.put(key, toolEntry);
@@ -278,7 +273,7 @@ public class PaletteManager implements INEDChangeListener {
         ConnectionCreationToolEntry defConnTool = new ConnectionCreationToolEntry(
                 "Connection",
                 "Create connections between submodules, or submodule and parent module",
-                new ModelFactory(ConnectionElementEx.getStaticTagName()),
+                new ModelFactory(NEDElementTags.NED_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
@@ -307,7 +302,7 @@ public class PaletteManager implements INEDChangeListener {
                = new ConnectionCreationToolEntry(
                     name + (isInterface ? NBSP+"(interface)" : ""),
                     StringUtils.makeBriefDocu(comp.getNEDElement().getComment(), 300),
-                    new ModelFactory(ConnectionElementEx.getStaticTagName(),name.toLowerCase(), name, isInterface),
+                    new ModelFactory(NEDElementTags.NED_CONNECTION, name.toLowerCase(), name, isInterface),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
             );
@@ -327,7 +322,7 @@ public class PaletteManager implements INEDChangeListener {
         CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
                 "Simple"+NBSP+"module",
                 "Create a simple module type",
-                new ModelFactory(SimpleModuleElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
+                new ModelFactory(NEDElementTags.NED_SIMPLE_MODULE, IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
@@ -336,7 +331,7 @@ public class PaletteManager implements INEDChangeListener {
         entry = new CombinedTemplateCreationEntry(
                 "Compound"+NBSP+"Module",
                 "Create a compound module type that may contain submodules",
-                new ModelFactory(CompoundModuleElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
+                new ModelFactory(NEDElementTags.NED_COMPOUND_MODULE, IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
@@ -345,7 +340,7 @@ public class PaletteManager implements INEDChangeListener {
         entry = new CombinedTemplateCreationEntry(
                 "Channel",
                 "Create a channel type",
-                new ModelFactory(ChannelElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
+                new ModelFactory(NEDElementTags.NED_CHANNEL, IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
@@ -354,7 +349,7 @@ public class PaletteManager implements INEDChangeListener {
         entry = new CombinedTemplateCreationEntry(
         		"Module"+NBSP+"Interface",
         		"Create a module interface type",
-        		new ModelFactory(ModuleInterfaceElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
+        		new ModelFactory(NEDElementTags.NED_MODULE_INTERFACE, IHasName.DEFAULT_TYPE_NAME),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
         		ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
@@ -363,7 +358,7 @@ public class PaletteManager implements INEDChangeListener {
         entry = new CombinedTemplateCreationEntry(
                 "Channel"+NBSP+"Interface",
                 "Create a channel interface type",
-                new ModelFactory(ChannelInterfaceElementEx.getStaticTagName(), IHasName.DEFAULT_TYPE_NAME),
+                new ModelFactory(NEDElementTags.NED_CHANNEL_INTERFACE, IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
