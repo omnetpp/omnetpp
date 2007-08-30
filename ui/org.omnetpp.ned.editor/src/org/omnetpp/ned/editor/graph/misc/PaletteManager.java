@@ -197,32 +197,8 @@ public class PaletteManager implements INEDChangeListener {
             // check all inner types for this element
             for (INedTypeElement typeElement : ((INedTypeElement)topLevelElement).getNEDTypeInfo().getInnerTypes().values()) {
                 // skip if it cannot be used to create a submodule (ie. should be Module a module type)
-                if (!(typeElement instanceof IModuleTypeElement) && !(typeElement instanceof ModuleInterfaceElement))
-                    continue;
-
-                boolean isInterface = typeElement instanceof ModuleInterfaceElement;
-                String key = "!mru."+typeElement.getName();
-
-                // set the default images for the palette entry
-                ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
-                ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
-                if (typeElement instanceof IHasDisplayString) {
-                    IDisplayString dps = ((IHasDisplayString)typeElement).getDisplayString();
-                    String iid = dps.getAsString(IDisplayString.Prop.IMAGE);
-                    if (StringUtils.isNotEmpty(iid)) {
-                        imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
-                        imageDescLarge = ImageFactory.getDescriptor(iid,"s",null,0);
-                        key = key+":"+iid;
-                    }
-                }
-
-                // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
-                CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
-                        typeElement.getName() + (isInterface ? NBSP+"(interface)" : ""), StringUtils.makeBriefDocu(typeElement.getComment(), 300),
-                        new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
-                        imageDescNorm, imageDescLarge );
-
-                entries.put(key, toolEntry);
+                if ((typeElement instanceof IModuleTypeElement) || (typeElement instanceof ModuleInterfaceElement))
+                    addToolEntry(typeElement, "!mru", entries);
             }
         }
 
@@ -243,10 +219,7 @@ public class PaletteManager implements INEDChangeListener {
         Collections.sort(typeNames, StringUtils.dictionaryComparator);
 
         for (String name : typeNames) {
-            INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
-            INEDElement typeElement = comp.getNEDElement();
-            boolean isInterface = typeElement instanceof ModuleInterfaceElement;
-            String key = name;
+            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getComponent(name).getNEDElement();
 
             // skip this type if it is a top level network
             if (typeElement instanceof CompoundModuleElementEx &&
@@ -254,36 +227,49 @@ public class PaletteManager implements INEDChangeListener {
                 continue;
             }
 
-            // set the default images for the palette entry
-            ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
-            ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
-            if (typeElement instanceof IHasDisplayString) {
-                IDisplayString dps = ((IHasDisplayString)typeElement).getDisplayString();
-                String iid = dps.getAsString(IDisplayString.Prop.IMAGE);
-                if (StringUtils.isNotEmpty(iid)) {
-                    imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
-                    imageDescLarge = ImageFactory.getDescriptor(iid,"s",null,0);
-                    key += ":"+iid;
-                }
-            }
-
             // determine which palette group it belongs to or put it to the default
-            PropertyElement property = comp.getProperties().get(GROUP_PROPERTY);
-            String group = property == null ? ""
-                            : NEDElementUtilEx.getPropertyValue(property);
-            if (StringUtils.isNotEmpty(group))
-                key = group+"."+key;
+            PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
+            String group = (property == null) ? "" : NEDElementUtilEx.getPropertyValue(property);
 
-            // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
-            CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
-                    name + (isInterface ? NBSP+"(interface)" : ""), StringUtils.makeBriefDocu(typeElement.getComment(), 300),
-                    new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(name), name, isInterface),
-                    imageDescNorm, imageDescLarge );
-
-            entries.put(key, combined);
+            addToolEntry(typeElement, group, entries);
         }
 
         return entries;
+    }
+
+    private static void addToolEntry(INedTypeElement typeElement, String group, Map<String, ToolEntry> entries) {
+        String key = typeElement.getName();
+
+        if (StringUtils.isNotEmpty(group))
+            key = group+"."+key;
+        // set the default images for the palette entry
+        ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
+        ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
+        if (typeElement instanceof IHasDisplayString) {
+            IDisplayString dps = ((IHasDisplayString)typeElement).getDisplayString();
+            String imageId = dps.getAsString(IDisplayString.Prop.IMAGE);
+            if (StringUtils.isNotEmpty(imageId)) {
+                imageDescNorm = ImageFactory.getDescriptor(imageId,"vs",null,0);
+                imageDescLarge = ImageFactory.getDescriptor(imageId,"s",null,0);
+                key += ":"+imageId;
+            }
+        }
+
+        // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
+
+        boolean isInterface = typeElement instanceof ModuleInterfaceElement;
+        String label = typeElement.getName();
+        if (typeElement.getEnclosingTypeNode() != null)
+                label += NBSP+"(in"+NBSP+typeElement.getEnclosingTypeNode().getName()+")";
+        if (isInterface)
+                label += NBSP+"(interface)";
+
+        CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
+                label, StringUtils.makeBriefDocu(typeElement.getComment(), 300),
+                new ModelFactory(SubmoduleElementEx.getStaticTagName(),StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
+                imageDescNorm, imageDescLarge );
+
+        entries.put(key, toolEntry);
     }
 
     private static Map<String, ToolEntry> createChannelsStackEntries() {

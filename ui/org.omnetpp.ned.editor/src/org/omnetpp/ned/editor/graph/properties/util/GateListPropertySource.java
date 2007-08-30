@@ -38,7 +38,9 @@ public class GateListPropertySource extends NotifiedPropertySource {
                 inheritedParamCount++;
                 definedIn= " (inherited from " + gateDecl.getEnclosingTypeNode().getName() + ")";
             }
-            pdesc[totalParamCount] = new PropertyDescriptor(gateDecl, typeString );
+
+            String label = typeString+" "+gateDecl.getName() + (gateDecl.getIsVector() ? "[]" : "");
+            pdesc[totalParamCount] = new PropertyDescriptor(gateDecl, label);
             pdesc[totalParamCount].setCategory(CATEGORY);
             pdesc[totalParamCount].setDescription("Gate "+gateDecl.getNameWithIndex()+" of type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
@@ -65,9 +67,9 @@ public class GateListPropertySource extends NotifiedPropertySource {
         if (!(id instanceof GateElementEx))
             return getEditableValue();
         Map<String, GateElementEx> gateSizes = model.getGateSizes();
-        GateElementEx gateDefNode = (GateElementEx)id;
-        GateElementEx gateSizeNode = gateSizes.get(gateDefNode.getName());
-        String valueString = gateSizeNode== null ? "" : gateSizeNode.getNameWithIndex();
+        GateElementEx gateDeclNode = (GateElementEx)id;
+        GateElementEx gateSizeNode = gateSizes.get(gateDeclNode.getName());
+        String valueString = gateSizeNode== null ? "" : gateSizeNode.getVectorSize();
         return valueString;
     }
 
