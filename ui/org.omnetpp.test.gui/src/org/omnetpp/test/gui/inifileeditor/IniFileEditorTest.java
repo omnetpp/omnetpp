@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
-import org.omnetpp.test.gui.access.TextualEditorAccess;
+import org.omnetpp.test.gui.access.TextEditorAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.core.GUITestCase;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
@@ -64,7 +64,7 @@ public class IniFileEditorTest extends GUITestCase
 		IniFileEditorUtils.createNewIniFileByWizard2(projectName, fileName, null);
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		TextualEditorAccess textualEditor = (TextualEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).activatePage("Text");
+		TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).activatePage("Text");
 
 		// Wizard has created the file with an empty "network=" line; type "Undefined" there as network name
 		textualEditor.findStyledText().moveCursorAfter("network.*=");

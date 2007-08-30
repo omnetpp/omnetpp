@@ -1,9 +1,13 @@
 package org.omnetpp.test.gui.access;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.internal.PartSite;
+import org.eclipse.ui.part.MultiPageEditorSite;
 import org.omnetpp.test.gui.core.InUIThread;
 
 public class WorkbenchPartAccess
@@ -24,7 +28,15 @@ public class WorkbenchPartAccess
 	}
 
 	protected Composite getCompositeInternal() {
-		return (Composite)((PartSite)workbenchPart.getSite()).getPane().getControl();
+		IWorkbenchPartSite site = workbenchPart.getSite();
+
+		if (site instanceof PartSite)
+			return (Composite)((PartSite)site).getPane().getControl();
+		else if (site instanceof MultiPageEditorSite)
+			return (Composite)((PartSite)((MultiPageEditorSite)site).getMultiPageEditor().getSite()).getPane().getControl();
+
+		Assert.fail("Unknown site " + site);
+		return null;
 	}
 
 	@InUIThread

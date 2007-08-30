@@ -8,8 +8,7 @@ import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
-import org.omnetpp.test.gui.access.TextualEditorAccess;
-import org.omnetpp.test.gui.access.ViewPartAccess;
+import org.omnetpp.test.gui.access.TextEditorAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.core.GUITestCase;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
@@ -29,7 +28,7 @@ public class NedEditorTest extends GUITestCase
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}
 
-	public void testCreateNedFile() throws Throwable {
+	public void _testCreateNedFile() throws Throwable {
 		prepareForTest();
 		createNewNEDFileByWizard(projectName, fileName);
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
@@ -44,8 +43,8 @@ public class NedEditorTest extends GUITestCase
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePage("Graphical");
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
-		TextualEditorAccess textualEditor = (TextualEditorAccess)multiPageEditorPart.activatePage("Text");
-		textualEditor.moveCursorAfter("simple TestNode.*{");
+		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
+		textualEditor.moveCursorAfter("simple TestNode.*\\{");
 		textualEditor.typeIn("\n");
 		textualEditor.typeIn("gates:\n");
 		textualEditor.typeIn("inout g;\n");
@@ -56,7 +55,7 @@ public class NedEditorTest extends GUITestCase
 	}
 
 	//TODO incomplete code...
-	public void testInheritanceErrors() throws Throwable {
+	public void _testInheritanceErrors() throws Throwable {
 		prepareForTest();
 		createNewNEDFileByWizard(projectName, fileName);
 
@@ -87,7 +86,7 @@ public class NedEditorTest extends GUITestCase
 	private void checkErrorInSource(String nedSource, String errorText) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		TextualEditorAccess textualEditor = (TextualEditorAccess)multiPageEditorPart.activatePage("Text");
+		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
 		StyledTextAccess styledText = textualEditor.findStyledText();
 		styledText.pressKey('A', SWT.CTRL); // "Select all"
 		styledText.typeIn(nedSource);

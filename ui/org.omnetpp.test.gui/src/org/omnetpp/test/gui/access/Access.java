@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -35,8 +36,6 @@ public class Access
 	public final static int MIDDLE_MOUSE_BUTTON = 2;
 	public final static int RIGHT_MOUSE_BUTTON = 3;
 	
-	protected Object target;
-
 	protected Access createAccess(Object instance) {
 		Class<?> clazz = instance.getClass();
 
@@ -129,7 +128,6 @@ public class Access
 
 	public static Event newEvent(int type) {
 		Event event = new Event();
-		//event.widget = widget;
 		event.type = type;
 		event.display = getDisplay();
 
@@ -306,6 +304,52 @@ public class Access
 		});
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@InUIThread
+	public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
+		return theOnlyFigure(collectDescendantFigures(figure, new IPredicate() {
+			public boolean matches(Object Figure) {
+				return clazz.isInstance(Figure);
+			}
+		}));
+	}
+
+	@InUIThread
+	public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {
+		return theOnlyFigure(collectDescendantFigures(figure, predicate));
+	}
+
+	@InUIThread
+	public static List<IFigure> collectDescendantFigures(IFigure figure, IPredicate predicate) {
+		ArrayList<IFigure> figures = new ArrayList<IFigure>();
+		collectDescendantFigures(figure, predicate, figures);
+		return figures;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static void collectDescendantFigures(IFigure parentFigure, IPredicate predicate, List<IFigure> figures) {
+		for (IFigure figure: (List<IFigure>)parentFigure.getChildren()) {
+			collectDescendantFigures(figure, predicate, figures);
+
+			if (predicate.matches(figure))
+				figures.add(figure);
+		}
+	}
+	
 	protected static Object theOnlyObject(List<? extends Object> objects) {
 		Assert.assertTrue("Found more than one objects when exactly one is expected", objects.size() < 2);
 		Assert.assertTrue("Found zero object when exactly one is expected", objects.size() > 0);
@@ -317,10 +361,18 @@ public class Access
 	}
 
 	protected static Control theOnlyControl(List<? extends Control> controls) {
-		return (Control)theOnlyWidget(controls);
+		return (Control)theOnlyObject(controls);
+	}
+
+	protected static IFigure theOnlyFigure(List<? extends IFigure> controls) {
+		return (IFigure)theOnlyObject(controls);
 	}
 
 	protected static Point getCenter(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+	}
+
+	protected static Point getCenter(org.eclipse.draw2d.geometry.Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
 	}
 

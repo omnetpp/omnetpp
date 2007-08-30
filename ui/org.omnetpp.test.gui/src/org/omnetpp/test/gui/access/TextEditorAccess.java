@@ -3,9 +3,9 @@ package org.omnetpp.test.gui.access;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.test.gui.core.InUIThread;
 
-public class TextualEditorAccess extends EditorPartAccess 
+public class TextEditorAccess extends EditorPartAccess 
 {
-	public TextualEditorAccess(IEditorPart editorPart) {
+	public TextEditorAccess(IEditorPart editorPart) {
 		super(editorPart);
 	}
 

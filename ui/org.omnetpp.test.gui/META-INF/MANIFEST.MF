@@ -14,5 +14,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.aspectj.runtime,
  org.omnetpp.ned.core,
  org.omnetpp.ned.model,
- org.omnetpp.ned.editor
+ org.omnetpp.ned.editor,
+ org.omnetpp.figures
 Bundle-Vendor: OpenSim Ltd.

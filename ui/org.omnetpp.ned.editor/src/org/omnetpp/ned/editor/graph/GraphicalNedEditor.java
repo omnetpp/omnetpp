@@ -369,7 +369,7 @@ public class GraphicalNedEditor
         // add tooltip support
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 200);
-		hoverSupport.adapt(getEditor(), new IHoverTextProvider() {
+		hoverSupport.adapt(getFigureCanvas(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
                 return getHTMLHoverTextFor(ep, outPreferredSize);
@@ -543,7 +543,7 @@ public class GraphicalNedEditor
 
     }
 
-    protected FigureCanvas getEditor() {
+    public FigureCanvas getFigureCanvas() {
         return (FigureCanvas) getGraphicalViewer().getControl();
     }
 
