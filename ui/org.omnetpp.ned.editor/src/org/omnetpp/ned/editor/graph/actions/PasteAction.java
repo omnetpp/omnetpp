@@ -276,7 +276,7 @@ public class PasteAction extends SelectionAction {
 //			if (editPart instanceof ModuleEditPart)
 //				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
 //		return null;
-	}
+//	}
 
 	protected GraphicalViewer getGraphicalViewer() {
 		GraphicalViewer viewer = (GraphicalViewer)getWorkbenchPart().getAdapter(GraphicalViewer.class);
