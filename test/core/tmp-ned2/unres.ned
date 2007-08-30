@@ -10,7 +10,7 @@ module BogusLike2 like Qwerty { }
 channel BogusLike3 like Rreterty { }
 network BogusLike4 like Tewrrwr { }
 
-interface IBogus1 extends Bgfhgf { }
+moduleinterface IBogus1 extends Bgfhgf { }
 channelinterface IBogus2 extends Otytr { }
 
 network Net {
@@ -24,8 +24,7 @@ network Net {
         module BogusLike2 like Qwerty { }
         channel BogusLike3 like Rreterty { }
         network BogusLike4 like Tewrrwr { }
-        
-        interface IBogus1 extends Bgfhgf { }
+
+        moduleinterface IBogus1 extends Bgfhgf { }
         channelinterface IBogus2 extends Otytr { }
 }
- 

@@ -12,7 +12,7 @@
 // Interface of modules types that can be used as a node in a Hypercube;
 // see comment at the Hypercube module.
 //
-interface IHypercubeNode
+moduleinterface IHypercubeNode
 {
     parameters:
         int address;
