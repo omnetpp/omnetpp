@@ -40,14 +40,17 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		boolean prevIsNaN = Double.isNaN(transformY(dataset.getY(series, first)));
 		int maxY = prevY;
 		int minY = prevY;
+
+		// We are drawing vertical/horizontal lines, so turn off antialias (it is slow).
+		int origAntialias = gc.getAntialias();
+		gc.setAntialias(SWT.OFF);
 		
 		int[] dots = new int[] {1,2};
 		gc.setLineDash(dots);
-		//gc.setLineStyle(SWT.LINE_DOT);  // faster, but doesn't look as good
 		
 		if (!prevIsNaN && backward)
 			gc.drawPoint(prevX, prevY);
-
+		
 		for (int i = first+1; i <= last; i++) {
 			double value = transformY(dataset.getY(series, i));
 
@@ -107,6 +110,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			gc.drawPoint(prevX, prevY);
 
 		// draw symbols
+		gc.setAntialias(origAntialias);
 		gc.setLineStyle(SWT.LINE_SOLID);
 		plotSymbols(dataset, series, gc, mapping, symbol);
 	}

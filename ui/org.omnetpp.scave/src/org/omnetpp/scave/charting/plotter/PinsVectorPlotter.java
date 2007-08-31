@@ -52,7 +52,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 		
 		// We are drawing solid vertical lines, so antialiasing does not improve
 		// the plot much, but it slows down the plotting by a factor of 2.
-		int origAntiAlias = gc.getAntialias();
+		int origAntialias = gc.getAntialias();
 		gc.setAntialias(SWT.OFF);
 		
 		// draw pins
@@ -81,7 +81,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 		}
 		
 		// restore original antialias mode
-		gc.setAntialias(origAntiAlias);
+		gc.setAntialias(origAntialias);
 
 		// and draw symbols
 		plotSymbols(dataset, series, gc, mapping, symbol);

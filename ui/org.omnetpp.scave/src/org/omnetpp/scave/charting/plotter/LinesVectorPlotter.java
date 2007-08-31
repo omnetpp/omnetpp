@@ -4,6 +4,7 @@ import static org.omnetpp.common.canvas.ICoordsMapping.NAN_PIX;
 
 import java.util.HashSet;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -31,7 +32,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int[] yrange = canvasYRange(gc, symbol);
 		int top = yrange[0], bottom = yrange[1];  // top < bottom
 		
-		//
+		
 		// Performance optimization: avoid painting the same pixels over and over 
 		// when drawing vertical lines. This results in magnitudes faster
 		// execution for large datasets.
@@ -41,6 +42,9 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int maxY = prevY;
 		int minY = prevY;
 
+		// turn off antialias for vertical lines
+		int origAntialias = gc.getAntialias();
+		
 		// used for preventing painting the same symbol on the same pixels over and over.
 		HashSet<Integer> yset = new HashSet<Integer>();
 		int prevSymbolX = Integer.MIN_VALUE;
@@ -61,11 +65,15 @@ public class LinesVectorPlotter extends VectorPlotter {
 					minY = maxY = y;
 				}
 				else if (y < minY) {
+					gc.setAntialias(SWT.OFF);
 					gc.drawLine(x, minY, x, y);
+					gc.setAntialias(origAntialias);
 					minY = y;
 				}
 				else if (y > maxY) {
+					gc.setAntialias(SWT.OFF);
 					gc.drawLine(x, maxY, x, y);
+					gc.setAntialias(origAntialias);
 					maxY = y;
 				}
 				prevX = x;
