@@ -54,9 +54,12 @@ public class ControlAccess extends ClickableWidgetAccess
 			char character = text.charAt(i);
 			boolean holdShift = Character.isUpperCase(character);
 
-			// TODO: this is kind of a hack, but if we don't hold the shift down then we get ';' instead of ':'
-			if (character == ':')
+			// TODO: these are kind of a hack
+			// but for example if we don't hold the shift down then we get ';' instead of ':'
+			if (character == ':' || character == '{' || character == '}') 
 				holdShift = true;
+			else if (character == '\n')
+				character = '\r';
 			
 			pressKey(Character.toLowerCase(character), holdShift ? SWT.SHIFT : SWT.NONE);
 		}
