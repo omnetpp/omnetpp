@@ -348,8 +348,9 @@ public class DataflowNetworkBuilder {
 			public Object caseCompute(Compute compute) {
 				IDList idlist = select(getIDs(), compute.getFilters());
 				for (int i = 0; i < idlist.size(); ++i) {
-					TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
-					
+					addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
+
+					//TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
 					//addFilterNode(teeNode.outPort2.id, compute.getOperation(), compute.getParams());
 				}
 				return this;

@@ -8,7 +8,6 @@ import static org.omnetpp.scave.model2.RunAttribute.getRunAttribute;
 import org.omnetpp.common.ui.CachedTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.engine.ResultFile;
-import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
