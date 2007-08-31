@@ -3,6 +3,8 @@ package org.omnetpp.test.gui.access;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.IPredicate;
@@ -16,6 +18,11 @@ public class TreeAccess extends ControlAccess
 
 	public Tree getTree() {
 		return (Tree)widget;
+	}
+
+	@InUIThread
+	public void assertEmpty() {
+		Assert.assertTrue(getTree().getItemCount() == 0);
 	}
 
 	@InUIThread

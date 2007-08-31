@@ -46,6 +46,12 @@ public class WorkbenchUtils
 		return tree.findTreeItemByContent(new Path(path).lastSegment()).reveal();
 	}
 
+	public static void assertNoErrorMessageInProblemsView() {
+		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
+		problemsView.activateWithMouseClick();
+		problemsView.findTree().assertEmpty();
+	}
+
 	public static void assertErrorMessageInProblemsView(String errorText) {
 		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
 		problemsView.activateWithMouseClick();
