@@ -1,5 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -49,6 +50,11 @@ public class PinsVectorPlotter extends VectorPlotter {
 		int maxY = refY;
 		int minY = refY;
 		
+		// We are drawing solid vertical lines, so antialiasing does not improve
+		// the plot much, but it slows down the plotting by a factor of 2.
+		int origAntiAlias = gc.getAntialias();
+		gc.setAntialias(SWT.OFF);
+		
 		// draw pins
 		for (int i = first; i <= last; i++) {
 			double value = transformY(dataset.getY(series, i));
@@ -73,6 +79,9 @@ public class PinsVectorPlotter extends VectorPlotter {
 				maxY = y;
 			}
 		}
+		
+		// restore original antialias mode
+		gc.setAntialias(origAntiAlias);
 
 		// and draw symbols
 		plotSymbols(dataset, series, gc, mapping, symbol);
