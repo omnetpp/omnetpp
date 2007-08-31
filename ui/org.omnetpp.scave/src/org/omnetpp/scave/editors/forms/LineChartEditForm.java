@@ -48,9 +48,8 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	protected void populateTabItem(final TabItem item) {
 		super.populateTabItem(item);
 		String name = item.getText();
-		Composite panel = (Composite)item.getControl();
 		if (TAB_MAIN.equals(name)) {
-			lineNamePattern = createTextField("Line names:", panel);
+			lineNamePattern = createTextField("Line names:", nameGroup);
 			new ResultItemNamePatternField(lineNamePattern, ResultItemFields.getFieldNames());
 		}
 		else if (TAB_LINES.equals(name)) {

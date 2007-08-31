@@ -201,6 +201,19 @@ public class ChartProperties extends PropertySource {
 	}
 
 	/*======================================================================
+	 *                             Main
+	 *======================================================================*/
+	@org.omnetpp.common.properties.Property(category="Main",id=PROP_ANTIALIAS,displayName="antialias")
+	public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
+	public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
+	public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
+
+	@org.omnetpp.common.properties.Property(category="Main",id=PROP_CACHING,displayName="caching")
+	public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
+	public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
+	public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
+
+	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE)
@@ -390,16 +403,6 @@ public class ChartProperties extends PropertySource {
 		@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
 		public LinesPropertySource getLineProperties() { return new LinesPropertySource(); }
 
-		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_ANTIALIAS,displayName="antialias")
-		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
-		public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
-		public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
-
-		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_CACHING,displayName="caching")
-		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
-		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
-		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
-		
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 	}
 	
@@ -469,16 +472,6 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Bars
 		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_ANTIALIAS,displayName="antialias")
-		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
-		public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
-		public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
-
-		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_CACHING,displayName="caching")
-		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
-		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
-		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
-		
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_BASELINE)
 		public String getBarBaseline() { return getStringProperty(PROP_BAR_BASELINE); } // XXX return Double
 		public void setBarBaseline(String baseline) { setProperty(PROP_BAR_BASELINE, baseline); }

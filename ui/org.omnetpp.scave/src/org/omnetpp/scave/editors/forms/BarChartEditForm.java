@@ -77,7 +77,7 @@ public class BarChartEditForm extends ChartEditForm {
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
 		if ("Main".equals(name)) {
-			Group group = createGroup("Content", panel, 2, 3);
+			Group group = createGroup("Content", panel, 1, 3);
 			Label label = new Label(group, SWT.WRAP);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 			label.setText("You can move fields by dragging.");

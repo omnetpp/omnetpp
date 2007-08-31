@@ -82,7 +82,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected ChartProperties properties;
 
 	// controls
+	protected Group nameGroup;
 	private Text nameText;
+	protected Group optionsGroup;
+	private Button antialiasCheckbox;
+	private Button cachingCheckbox;
 
 	private Text graphTitleText;
 	private Text graphTitleFontText;
@@ -169,7 +173,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * Creates the tabs of the dialog.
 	 */
 	protected void populateTabFolder(TabFolder tabfolder) {
-		createTab(TAB_MAIN, tabfolder, 2);
+		createTab(TAB_MAIN, tabfolder, 1);
 		createTab(TAB_TITLES, tabfolder, 1);
 		createTab(TAB_AXES, tabfolder, 2);
 		createTab(TAB_LEGEND, tabfolder, 1);
@@ -184,8 +188,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		final Composite panel = (Composite)item.getControl();
 		
 		if (TAB_MAIN.equals(name)) {
-			nameText = createTextField("Chart name:", panel);
+			nameGroup = createGroup("Names", panel);
+			nameText = createTextField("Chart name:", nameGroup);
 			nameText.setFocus();
+			optionsGroup = createGroup("Options", panel, 1);
+			antialiasCheckbox = createCheckboxField("Use antialias", optionsGroup);
+			cachingCheckbox = createCheckboxField("Use caching", optionsGroup);
 		}
 		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);
@@ -430,6 +438,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * Sets the properties in <code>newProps</code> from the values of the controls. 
 	 */
 	protected void collectProperties(ChartProperties newProps) {
+		// Main
+		newProps.setAntialias(antialiasCheckbox.getSelection());
+		newProps.setCaching(cachingCheckbox.getSelection());
 		// Titles
 		newProps.setGraphTitle(graphTitleText.getText());
 		newProps.setProperty(PROP_GRAPH_TITLE_FONT, graphTitleFontText.getText()); // XXX font
@@ -477,6 +488,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * @param props
 	 */
 	protected void setProperties(ChartProperties props) {
+		// Main
+		antialiasCheckbox.setSelection(props.getAntialias());
+		cachingCheckbox.setSelection(props.getCaching());
 		// Titles
 		graphTitleText.setText(props.getGraphTitle());
 		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT)); // XXX font
