@@ -103,6 +103,8 @@ public class NedTypeFigure extends NedFigure implements IDirectEditSupport {
             if ("".equals(mainFigure.getText()))
                 mainFigure.setText(tmpName);
         }
+        // invalidate();
+        validate();
     }
 
     @Override

@@ -51,13 +51,12 @@ public class LabelCellEditorLocator implements CellEditorLocator {
         text.setFont(scaledFont);
 
         Point editorSize = text.computeSize(-1, -1);
-        Rectangle labelBounds = label.getTextBounds().getTranslated(-1,0);
+        Rectangle labelBounds = label.getTextBounds();
         label.translateToAbsolute(labelBounds);
         if (centerAlign)
-            text.setBounds(labelBounds.x + (labelBounds.width- editorSize.x)/2 + 1, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
+            text.setBounds(labelBounds.x + (labelBounds.width - editorSize.x)/2 , labelBounds.y, editorSize.x, editorSize.y + 1);
         else
-            text.setBounds(labelBounds.x - 2, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
-        System.out.println(labelBounds);
+            text.setBounds(labelBounds.x, labelBounds.y, editorSize.x, editorSize.y + 1);
     }
 
 }

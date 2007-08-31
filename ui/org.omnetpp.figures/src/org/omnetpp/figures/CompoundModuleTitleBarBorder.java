@@ -212,10 +212,10 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
 
                 // and the location and size of the editor
                 org.eclipse.swt.graphics.Point pref = text.computeSize(-1, -1);
-                Point editorLoc = labelLoc.getTranslated(-1, 0);
+                Point editorLoc = labelLoc.getCopy();
                 hostFigure.translateToAbsolute(editorLoc);
 
-                text.setBounds(editorLoc.x-1, editorLoc.y, pref.x, pref.y);
+                text.setBounds(editorLoc.x - 3, editorLoc.y, pref.x, pref.y);
             }
         };
     }
