@@ -222,7 +222,7 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
     }
 
     public INEDTypeInfo getNEDTypeInfo() {
-    	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType());
+    	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
     	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
 		return (typeElement instanceof ChannelElementEx || typeElement instanceof ChannelInterfaceElementEx) ? typeInfo : null;
     }

@@ -53,7 +53,7 @@ void NEDDTDValidator::validateElement(ImportNode *node)
     char mult[] = {'*', 0};
     checkSequence(node, tags, mult);
 
-    checkRequiredAttribute(node, "filename");
+    checkRequiredAttribute(node, "import-spec");
 }
 
 void NEDDTDValidator::validateElement(PropertyDeclNode *node)

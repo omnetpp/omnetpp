@@ -32,7 +32,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     @Override
     public boolean canExecute() {
         // check if the type exist and the name is valid
-        boolean isGlobalType = NEDElement.getDefaultTypeResolver().getModuleNames().contains(child.getEffectiveType());
+        boolean isGlobalType = NEDElement.getDefaultTypeResolver().getModuleQNames().contains(child.getEffectiveType());
         boolean isLocalType = parent.getNEDTypeInfo().getInnerTypes().containsKey(child.getEffectiveType());
         return isGlobalType || isLocalType;
     }

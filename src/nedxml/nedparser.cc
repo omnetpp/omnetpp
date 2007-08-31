@@ -36,6 +36,41 @@ NEDParser *np;
 
 //--------
 
+const char *NEDParser::getBuiltInDeclarations()
+{
+    return
+        "package ned;\n"
+
+        "channel cBasicChannel\n"
+        "{\n"
+        "    bool disabled = false;\n"
+        "    double delay = 0 @unit(s);\n"
+        "    double error = 0;\n"
+        "    double datarate = 0 @unit(bps);\n"
+        "}\n"
+
+        "channel cIdealChannel\n"
+        "{\n"
+        "}\n"
+
+        "interface IBidirectionalChannel\n"
+        "{\n"
+        "    gates:\n"
+        "        inout a;\n"
+        "        inout b;\n"
+        "}\n"
+
+        "interface IUnidirectionalChannel\n"
+        "{\n"
+        "    gates:\n"
+        "        input i;\n"
+        "        output o;\n"
+        "}\n"
+    ;
+}
+
+//--------
+
 NEDParser::NEDParser(NEDErrorStore *e)
 {
     nedsource = NULL;

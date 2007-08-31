@@ -568,7 +568,7 @@ public class GraphicalNedEditor
 	}
 
 	protected NedFileElementEx getNEDFileModelFromNEDResourcesPlugin() {
-		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 
     protected void loadProperties() {

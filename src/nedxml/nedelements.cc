@@ -301,7 +301,7 @@ int ImportNode::getNumAttributes() const
 const char *ImportNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "filename";
+        case 0: return "import-spec";
         default: return 0;
     }
 }
@@ -309,7 +309,7 @@ const char *ImportNode::getAttributeName(int k) const
 const char *ImportNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return filename.c_str();
+        case 0: return importSpec.c_str();
         default: return 0;
     }
 }
@@ -317,7 +317,7 @@ const char *ImportNode::getAttribute(int k) const
 void ImportNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: filename = val; break;
+        case 0: importSpec = val; break;
         default: ;
     }
 }
@@ -333,7 +333,7 @@ const char *ImportNode::getAttributeDefault(int k) const
 ImportNode *ImportNode::dup() const
 {
     ImportNode *newNode = new ImportNode();
-    newNode->filename = this->filename;
+    newNode->importSpec = this->importSpec;
     return newNode;
 }
 

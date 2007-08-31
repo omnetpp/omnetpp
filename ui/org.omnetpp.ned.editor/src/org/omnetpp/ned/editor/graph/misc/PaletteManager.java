@@ -184,7 +184,7 @@ public class PaletteManager implements INEDChangeListener {
     private static Map<String, ToolEntry> createInnerTypes(IFile file) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
-        for (INEDElement topLevelElement : NEDResourcesPlugin.getNEDResources().getNEDFileModel(file)) {
+        for (INEDElement topLevelElement : NEDResourcesPlugin.getNEDResources().getNedFileElement(file)) {
             // skip non NedType elements
             if (!(topLevelElement instanceof INedTypeElement))
                 continue;
@@ -208,13 +208,13 @@ public class PaletteManager implements INEDChangeListener {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         // get all the possible type names in alphabetical order
-        List<String> typeNames
-                = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
-        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleInterfaceNames());
+        List<String> typeNames = new ArrayList<String>();
+        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleQNames());
+        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleInterfaceQNames());
         Collections.sort(typeNames, StringUtils.dictionaryComparator);
 
         for (String name : typeNames) {
-            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getComponent(name).getNEDElement();
+            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getNedType(name).getNEDElement();
 
             // skip this type if it is a top level network
             if (typeElement instanceof CompoundModuleElementEx &&
@@ -289,17 +289,16 @@ public class PaletteManager implements INEDChangeListener {
 
         // get all the possible type names in alphabetical order
         List<String> channelNames
-                = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
-        channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelInterfaceNames());
+                = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames());
+        channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelInterfaceQNames());
         Collections.sort(channelNames, StringUtils.dictionaryComparator);
 
         for (String name : channelNames) {
-            INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
+            INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getNedType(name);
             INEDElement modelElement = comp.getNEDElement();
             boolean isInterface = modelElement instanceof ChannelInterfaceElement;
 
-            ConnectionCreationToolEntry tool
-               = new ConnectionCreationToolEntry(
+            ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
                     name + (isInterface ? NBSP+"(interface)" : ""),
                     StringUtils.makeBriefDocu(comp.getNEDElement().getComment(), 300),
                     new ModelFactory(NEDElementTags.NED_CONNECTION, name.toLowerCase(), name, isInterface),

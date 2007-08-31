@@ -57,7 +57,7 @@ public class CloneCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
         INedTypeElement newNode = (INedTypeElement)oldNode.deepDup();
         // set a unique name
-        Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();
+        Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames();
         newNode.setName(NEDElementUtilEx.getUniqueNameFor(newNode, context));
 
     	// insert into the parent at the correct position

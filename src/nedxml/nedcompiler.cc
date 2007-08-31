@@ -132,7 +132,7 @@ void NEDCompiler::doValidate(NEDElement *tree)
         if (node->getTagCode()==NED_IMPORT)
         {
             ImportNode *import = (ImportNode *)node;
-            const char *fname = import->getFilename();
+            const char *fname = import->getImportSpec();
 
             // if already imported, nothing to do
             if (!isImported(fname))

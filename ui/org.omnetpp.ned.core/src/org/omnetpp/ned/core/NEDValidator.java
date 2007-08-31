@@ -142,7 +142,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 		// referenced component must exist and must be the same type as this one
 		String name = node.getName();
-		INEDTypeInfo e = resolver.getComponent(name);
+		INEDTypeInfo e = resolver.lookupNedType(name, null);
 		if (e == null) {
 			errors.addError(node, "no such component: '" + name+"'");
 			return;
@@ -433,7 +433,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		INEDTypeInfo component = innerTypes.get(typeName);
 		if (component!=null)
 			return component;
-		return resolver.getComponent(typeName);
+		return resolver.lookupNedType(typeName, null);
 	}
 
 	@Override
@@ -554,7 +554,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 		else if (likeTypeName!=null && !likeTypeName.equals("")) {
 			// "like" case
-			channelSpecType = resolver.getComponent(likeTypeName);
+			channelSpecType = resolver.lookupNedType(likeTypeName, null);
 			if (channelSpecType == null) {
 				errors.addError(node, "'"+likeTypeName+"': no such channel or channel interface type");
 				return;
@@ -567,7 +567,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 		else {
 			// fallback: type is BasicChannel
-			channelSpecType = resolver.getComponent("cBasicChannel");
+			channelSpecType = resolver.lookupNedType("ned.cBasicChannel", null);
 			Assert.isTrue(channelSpecType!=null);
 		}
 

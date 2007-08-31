@@ -32,9 +32,14 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  */
 public interface INEDTypeInfo extends INEDChangeListener {
 	/**
-	 * Convenience method: returns the name of the module/interface/channel/etc.
+	 * Convenience method: returns the short name of the module/interface/channel/etc.
 	 */
 	public String getName();
+
+	/**
+	 * XXX comment
+	 */
+	public String getFullyQualifiedName();
 
 	/**
 	 * Returns underlying INEDElement subtree.
@@ -157,4 +162,6 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public List<GateElementEx> getGateInheritanceChain(String gateName);
 	public List<PropertyElement> getPropertyInheritanceChain(String propertyName);
 
+	//XXX move into INEDElement?
+	public INedTypeLookupContext getParentLookupContext();
 }

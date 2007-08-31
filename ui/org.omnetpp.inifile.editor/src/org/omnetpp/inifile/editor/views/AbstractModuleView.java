@@ -302,7 +302,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 					showMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
 					return;
 				}
-                INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getComponent(networkName);
+                INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().lookupNedType(networkName, null);
                 if (networkType == null) {
                     showMessage("Unknown module type specified for network: "+networkName);
                     return;

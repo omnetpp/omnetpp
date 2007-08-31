@@ -35,9 +35,10 @@ public class NEDTreeDifferenceUtils {
 
 	@SuppressWarnings("unchecked")
 	public static void applyTreeDifferences(INEDElement original, INEDElement target, IApplier applier) {
-		applyAttributeDifferences(original, target, applier);
 		applier.replaceNonAttributeData(original, target.getSourceLocation(), target.getSourceRegion(),
 				target.getSyntaxProblemMaxLocalSeverity(), target.getConsistencyProblemMaxLocalSeverity()); 
+
+		applyAttributeDifferences(original, target, applier);
 
 		NEDElementChildrenComparator comparatorOriginal = new NEDElementChildrenComparator(original);
 		NEDElementChildrenComparator comparatorTarget = new NEDElementChildrenComparator(target);
@@ -51,8 +52,6 @@ public class NEDTreeDifferenceUtils {
 
 		int offset = 0;
 		for (RangeDifference difference : differences) {
-//			System.out.println(difference);
-
 			int leftStart = difference.leftStart();
 			int leftEnd = difference.leftEnd();
 			int rightStart = difference.rightStart();

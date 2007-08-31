@@ -212,7 +212,7 @@ filename
         : STRINGCONSTANT
                 {
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
-                  ps.import->setFilename(toString(trimQuotes(@1)));
+                  ps.import->setImportSpec(toString(trimQuotes(@1)));
                   storeBannerAndRightComments(ps.import,@1);
                   storePos(ps.import, @$);
                 }

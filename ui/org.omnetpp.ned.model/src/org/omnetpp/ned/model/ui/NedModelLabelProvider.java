@@ -30,7 +30,7 @@ public class NedModelLabelProvider extends LabelProvider {
 
         if (model instanceof ImportElement) {
             ImportElement node = (ImportElement)model;
-            label = "import \""+node.getFilename()+"\"";
+            label = "import "+node.getImportSpec();
         }
         else if (model instanceof ConnectionGroupElement) {
             label = StringUtils.substringBefore(getSourceWithoutComments(model), " {");;

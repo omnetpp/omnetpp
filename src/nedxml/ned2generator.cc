@@ -276,13 +276,15 @@ void NED2Generator::doFiles(FilesNode *node, const char *indent, bool, const cha
 void NED2Generator::doNedFile(NedFileNode *node, const char *indent, bool, const char *)
 {
     OUT << getBannerComment(node, indent);
+    if (strnotnull(node->getPackage()))
+        OUT << indent << "package " << node->getPackage() << ";" << getRightComment(node);
     generateChildren(node, indent);
 }
 
 void NED2Generator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << "import \"" << node->getFilename() << "\";" << getRightComment(node);
+    OUT << indent << "import " << node->getImportSpec() << ";" << getRightComment(node);
 }
 
 void NED2Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)

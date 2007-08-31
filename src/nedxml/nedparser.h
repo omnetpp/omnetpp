@@ -78,6 +78,12 @@ class NEDXML_API NEDParser
     ~NEDParser();
 
     /**
+     * Returns a NED source which contains declarations of
+     * built-in NED types.
+     */
+    static const char *getBuiltInDeclarations();
+
+    /**
      * Affects operation of parseFile() and parseText(), specifies whether
      * expressions should be parsed or not.
      * Default is true.

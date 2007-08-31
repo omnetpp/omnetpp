@@ -303,7 +303,7 @@ void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, 
 
     OUT << getBannerComment(node, indent);
     bool isLastImport = !node->getNextSibling() || node->getNextSibling()->getTagCode()!=NED_IMPORT;
-    OUT << increaseIndent(indent) << "\"" << node->getFilename() << "\"";
+    OUT << increaseIndent(indent) << "\"" << node->getImportSpec() << "\"";
     OUT << (isLastImport ? ";" : ",") << getRightComment(node);
 }
 

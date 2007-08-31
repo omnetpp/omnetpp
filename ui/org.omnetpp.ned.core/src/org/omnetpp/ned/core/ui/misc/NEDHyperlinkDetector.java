@@ -37,7 +37,7 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
         int wordLength = wordEnd-wordStart;
         
         String word = text.substring(wordStart, wordEnd);
-        INEDTypeInfo nedComponentUnderCursor = NEDResourcesPlugin.getNEDResources().getComponent(word);
+        INEDTypeInfo nedComponentUnderCursor = NEDResourcesPlugin.getNEDResources().lookupNedType(word, null);
         if (nedComponentUnderCursor != null)
             return new IHyperlink[] {new NEDHyperlink(new Region(wordStart, wordLength),
                                                       nedComponentUnderCursor.getNEDElement())};

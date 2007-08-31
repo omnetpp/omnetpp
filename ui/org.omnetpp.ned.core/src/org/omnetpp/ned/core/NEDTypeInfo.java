@@ -26,6 +26,7 @@ import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
@@ -45,7 +46,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected static int debugRefreshInheritedCount = 0;
 	protected static int debugRefreshLocalCount = 0;
 
-	// local stuff
+	protected String fullyQualifiedName; // computed on demand
+
+	// local members
     protected boolean needsLocalUpdate;
 	protected Set<String> localInterfaces = new HashSet<String>();
 	protected Map<String, PropertyElement> localProperties = new LinkedHashMap<String, PropertyElement>();
@@ -78,12 +81,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
     private INedTypeElement firstExtendsRef;
 
-//    // all types which extends this component
-//    protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
-//
-//    // all types that contain instances (submodule, connection) of this type
-//    protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
-
 	// for local use
     interface IPredicate {
 		public boolean matches(IHasName node);
@@ -105,6 +102,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		node.addNEDChangeListener(this);
 
         // the inherited and local members will be collected on demand
+		fullyQualifiedName = null;
         needsLocalUpdate = true;
 		needsUpdate = true;
 	}
@@ -153,6 +151,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected List<INEDTypeInfo> resolveExtendsChain() {
 	    List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
 	    INEDTypeInfo currentComponent = this;
+	    //FIXME todo: don't follow the chain if type is different (i.e. a channel cannot extend a module!)
 	    while (currentComponent != null) {
 	        // if cycle detected we remove the cycle members from the tail
 	        if (result.contains(currentComponent)) {
@@ -161,7 +160,10 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	        }
 	    	result.add(currentComponent);
 	    	String extendsName = currentComponent.getNEDElement().getFirstExtends();
-	    	currentComponent = StringUtils.isNotEmpty(extendsName) ? getResolver().getComponent(extendsName) : null;
+	    	if (StringUtils.isNotEmpty(extendsName))
+	    		currentComponent = getResolver().lookupNedType(extendsName, currentComponent.getParentLookupContext());
+	    	else
+	    		currentComponent = null;
 	    }
 	    return result;
 	}
@@ -178,6 +180,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         ++debugRefreshLocalCount;
         // System.out.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
+   		// clear tables before collecting members
         localInterfaces.clear();
         localProperties.clear();
         localParamDecls.clear();
@@ -281,6 +284,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		allMembers.clear();
 		allUsedTypes.clear();
 
+		INedTypeLookupContext parentContext = getParentLookupContext();
+		
 		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
 		if (!(getNEDElement() instanceof IInterfaceTypeElement) && firstExtendsRef != null)
@@ -288,7 +293,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 		allInterfaces.addAll(localInterfaces);
 		for (String interfaceName : localInterfaces) {
-			INEDTypeInfo typeInfo = getResolver().getComponent(interfaceName);
+			INEDTypeInfo typeInfo = getResolver().lookupNedType(interfaceName, parentContext);
 			if (typeInfo != null)
 				allInterfaces.addAll(typeInfo.getInterfaces());
 		}
@@ -313,36 +318,18 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		//long dt = System.currentTimeMillis() - startMillis;
         //System.out.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
 
-// Not needed:
-//        // additional tables for derived types and types using this one
-//		allDerivedTypes.clear();
-//
-//		// collect all types that are derived from this
-//        for (INEDTypeInfo currentComp : getResolver().getAllComponents()) {
-//            if (currentComp == this)
-//                continue;
-//
-//            // check for components the are extending us (directly or indirectly)
-//            INEDElement element = currentComp.getNEDElement();
-//            for (INEDElement child : element) {
-//                if (child instanceof ExtendsElement) {
-//                    String extendsName = ((ExtendsElement)child).getName();
-//                    if (getName().equals(extendsName)) {
-//                        allDerivedTypes.add(currentComp);
-//                    }
-//                }
-//            }
-//
-//            // check for components that contain submodules, connections that use this type
-//            if (currentComp.getLocalUsedTypes().contains(getName())) {
-//                allUsingTypes.add(currentComp);
-//            }
-//        }
         needsUpdate = false;
+	}
+
+	public INedTypeLookupContext getParentLookupContext() {
+		INedTypeElement enclosingType = getNEDElement().getEnclosingTypeNode();
+		Assert.isTrue(enclosingType==null || enclosingType instanceof CompoundModuleElementEx, "only compound modules may contain references to other types");
+		return enclosingType != null ? (CompoundModuleElementEx)enclosingType : getNEDElement().getContainingNedFileElement();
 	}
 
 	public void invalidate() {
 		//System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
+		fullyQualifiedName = null;
         needsLocalUpdate = true;
 		needsUpdate = true;
 	}
@@ -356,13 +343,29 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		return componentNode.getName();
 	}
 
+	public String getFullyQualifiedName() {
+		if (fullyQualifiedName == null) {
+	        // compute it
+	        INedTypeElement enclosingType = getNEDElement().getEnclosingTypeNode();
+	   		Assert.isTrue(enclosingType==null || enclosingType instanceof CompoundModuleElementEx, "only compound modules may have inner types");
+	   		String name = getNEDElement().getName();
+			if (enclosingType != null)
+	    		fullyQualifiedName = enclosingType.getNEDTypeInfo().getFullyQualifiedName() + "." + name; // causes that type to refresh as well
+	   		else {
+	    		String packageName = getNEDElement().getContainingNedFileElement().getPackage();
+	    		fullyQualifiedName = StringUtils.isNotEmpty(packageName) ? packageName + "." + name : name;
+	   		}
+		}
+		return fullyQualifiedName;
+	}
+
 	public INedTypeElement getNEDElement() {
 		return componentNode;
 	}
 
 	public IFile getNEDFile() {
 		NedFileElementEx nedFileElement = getNEDElement().getContainingNedFileElement();
-		return nedFileElement==null ? null : getResolver().getFile(nedFileElement); // Note: built-in types don't have a NedFileElement parent
+		return nedFileElement==null ? null : getResolver().getNedFile(nedFileElement); // Note: built-in types don't have a NedFileElement parent
 	}
 
 	protected INEDTypeResolver getResolver() {

@@ -47,7 +47,7 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
             }
             
         }); 
-        dialog.setElements(ned.getAllComponents().toArray());
+        dialog.setElements(ned.getAllNedTypes().toArray());
         dialog.setMessage("Select NED type to open:");
         dialog.setTitle("Open NED Type");
         if (dialog.open() == ListDialog.OK) {

@@ -107,7 +107,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
         mergePropertySource(new TypePropertySource(connectionNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
+                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames());
                 Collections.sort(channelNames);
               return channelNames;
             }

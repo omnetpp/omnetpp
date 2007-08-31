@@ -14,7 +14,7 @@ public class TypeNameValidator extends  NedNameValidator {
 
     @Override
     public String isValid(Object newText) {
-        if (NEDResourcesPlugin.getNEDResources().getReservedComponentNames().contains(newText) &&
+        if (NEDResourcesPlugin.getNEDResources().getReservedQNames().contains(newText) &&
                 !newText.equals(originalName))
             return "Name is already in use. There is already a type with the same name.";
 

@@ -1,10 +1,13 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRELOAD_NED_FILES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +28,9 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -120,8 +123,9 @@ s	 * before getting presented to the user.
 		}
 
 		if (entry==CFGID_NETWORK) {
-			for (INEDTypeInfo ned : NEDResourcesPlugin.getNEDResources().getNetworks())
-				p.add(new ContentProposal(ned.getName(), ned.getName(), StringUtils.makeTextDocu(ned.getNEDElement().getComment())));
+			NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+			for (String networkName : nedResources.getNetworkQNames())
+				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(nedResources.lookupNedType(networkName, null).getNEDElement().getComment())));
 			sort(p);
 		}
 		else if (entry==CFGID_PRELOAD_NED_FILES) {

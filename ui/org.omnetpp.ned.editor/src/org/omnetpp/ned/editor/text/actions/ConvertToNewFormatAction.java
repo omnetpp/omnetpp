@@ -25,7 +25,7 @@ public class ConvertToNewFormatAction extends TextEditorAction {
     @Override
     public void update() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        NedFileElementEx nedFileNode = NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
+        NedFileElementEx nedFileNode = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         // enable only if the model does not have a syntax error and in V1 format
         setEnabled(nedFileNode != null
                    && nedFileNode.getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR
@@ -35,7 +35,7 @@ public class ConvertToNewFormatAction extends TextEditorAction {
     @Override
     public void run() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        INEDElement model = NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
+        INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         NEDTreeUtil.cleanupPojoTree(model);
         ((TextualNedEditor)getTextEditor()).setText(NEDTreeUtil.generateNedSource(model, false));
     }

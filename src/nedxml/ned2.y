@@ -237,11 +237,12 @@ definition
                 { restoreGlobalParserState(); }
         ;
 
-packagedeclaration         /* TBD package is currently not supported */
+packagedeclaration
         : PACKAGE packagename ';'
+                { ps.nedfile->setPackage(toString(@2)); }
         ; /* no error recovery rule -- see discussion at top */
 
-packagename                /* TBD package is currently not supported */
+packagename
         : packagename '.' NAME
         | NAME
         ;
@@ -251,14 +252,28 @@ packagename                /* TBD package is currently not supported */
  * Import
  */
 import
-        : IMPORT STRINGCONSTANT ';'
+        : IMPORT importspec ';'
                 {
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
-                  ps.import->setFilename(toString(trimQuotes(@2)));
+                  ps.import->setImportSpec(toString(@2));
                   storePos(ps.import,@$);
                   storeBannerAndRightComments(ps.import,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
+
+importspec
+        : importspec '.' importname
+        | importname
+        ;
+
+importname
+        : importname NAME
+        | importname '*'
+        | importname DOUBLEASTERISK
+        | NAME
+        | '*'
+        | DOUBLEASTERISK
+        ;
 
 /*
  * Property declaration

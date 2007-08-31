@@ -48,7 +48,7 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new TypePropertySource(submoduleNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
+              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames());
               Collections.sort(moduleNames);
               return moduleNames;
             }

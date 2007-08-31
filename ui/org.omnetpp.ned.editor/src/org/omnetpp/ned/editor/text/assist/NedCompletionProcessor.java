@@ -102,10 +102,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		String line = info.linePrefixTrimmed;
 		INEDTypeInfo parentComponent = null;
 		if (info.componentName!=null)
-			parentComponent = res.getComponent(info.componentName); // hopefully autobuilder (reconciler) has already run on current source
+			parentComponent = res.lookupNedType(info.componentName, null); // hopefully autobuilder (reconciler) has already run on current source
 		INEDTypeInfo submoduleType = null;
 		if (info.submoduleTypeName!=null)
-			submoduleType = res.getComponent(info.submoduleTypeName);
+			submoduleType = res.lookupNedType(info.submoduleTypeName, null);
 
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
@@ -113,23 +113,23 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
-				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.SIMPLE_MODULE_FILTER), "simple-module type");
+				addProposals(viewer, documentOffset, result, res.getNedTypeQNames(NEDResources.SIMPLE_MODULE_FILTER), "simple-module type");
 			else if (line.matches(".*\\b(module|network) .* extends"))
-				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.COMPOUND_MODULE_FILTER), "compound-module type");
+				addProposals(viewer, documentOffset, result, res.getNedTypeQNames(NEDResources.COMPOUND_MODULE_FILTER), "compound-module type");
 			else if (line.matches(".*\\bchannel .* extends"))
-				addProposals(viewer, documentOffset, result, res.getChannelNames(), "channel type");
+				addProposals(viewer, documentOffset, result, res.getChannelQNames(), "channel type");
 			else if (line.matches(".*\\bmoduleinterface .* extends"))
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
+				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(), "module interface type");
 			else if (line.matches(".*\\bchannelinterface .* extends"))
-				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
+				addProposals(viewer, documentOffset, result, res.getChannelInterfaceQNames(), "channel interface type");
 
 			// match "like" clauses
 			if (line.matches(".*\\bsimple .* like") || line.matches(".*\\bsimple .* like .*,"))
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
+				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(), "module interface type");
 			else if (line.matches(".*\\b(module|network) .* like") || line.matches(".*\\b(module|network) .* like .*,"))
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
+				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(), "module interface type");
 			else if (line.matches(".*\\bchannel .* like") || line.matches(".*\\bchannel .* like .*,"))
-				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
+				addProposals(viewer, documentOffset, result, res.getChannelInterfaceQNames(), "channel interface type");
 
 			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|interface|channelinterface)\\b.*"))
 				addProposals(viewer, documentOffset, result, new String[]{"extends "}, "keyword");
@@ -213,7 +213,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
 					// System.out.println(" offering params of type "+submodTypeName);
-					INEDTypeInfo submodType = res.getComponent(submodTypeName);
+					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, null);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
 							addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
@@ -258,7 +258,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			// System.out.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
 				// XXX offer "like" template too
-				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
+				addProposals(viewer, documentOffset, result, res.getModuleQNames(), "module type");
 			}
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (parentComponent!=null)
@@ -268,7 +268,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, "keyword");
 			}
 			else if (line.matches(".*\\blike")) {
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
+				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(), "module interface type");
 			}
 		}
 
@@ -291,7 +291,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
 					// System.out.println(" offering gates of type "+submodTypeName);
-					INEDTypeInfo submodType = res.getComponent(submodTypeName);
+					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, null);
 					if (submodType!=null)
 						addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
 	    		}

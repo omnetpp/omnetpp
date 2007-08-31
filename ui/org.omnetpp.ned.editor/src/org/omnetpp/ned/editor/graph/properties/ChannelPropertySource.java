@@ -52,7 +52,7 @@ public class ChannelPropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
+              List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames());
               Collections.sort(names);
               return names;
             }

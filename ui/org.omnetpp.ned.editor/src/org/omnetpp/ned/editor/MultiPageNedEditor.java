@@ -442,7 +442,7 @@ public class MultiPageNedEditor
 	}
 
     public NedFileElementEx getNEDFileElement() {
-    	return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+    	return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
     }
 
     public boolean isActiveEditor(IEditorPart editorPart) {

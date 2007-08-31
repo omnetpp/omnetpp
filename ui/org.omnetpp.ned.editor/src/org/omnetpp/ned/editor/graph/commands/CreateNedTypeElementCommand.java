@@ -48,7 +48,7 @@ public class CreateNedTypeElementCommand extends Command {
             if (namedChild.getName() == null || "".equals(namedChild.getName()))
                 namedChild.setName("unnamed");
             // make the name unique
-            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedComponentNames();
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames();
             namedChild.setName(NEDElementUtilEx.getUniqueNameFor(namedChild, context));
         }
 

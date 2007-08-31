@@ -219,7 +219,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	}
 
 	protected NedFileElementEx getNEDFileModelFromNEDResourcesPlugin() {
-		return NEDResourcesPlugin.getNEDResources().getNEDFileModel(getFile());
+		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 
 	/*
@@ -377,7 +377,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 						// the access is serialized through asyncExec.
 						pushingChanges = true;
 						// perform parsing (of full text, we ignore the changed region)
-						NEDResourcesPlugin.getNEDResources().setNEDFileText(getFile(), getText());
+						NEDResourcesPlugin.getNEDResources().setNedFileText(getFile(), getText());
 					}
 					finally {
 						pushingChanges = false;

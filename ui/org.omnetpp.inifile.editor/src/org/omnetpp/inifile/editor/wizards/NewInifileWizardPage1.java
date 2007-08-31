@@ -68,7 +68,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// fill network combo
-		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkNames();
+		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames();
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);

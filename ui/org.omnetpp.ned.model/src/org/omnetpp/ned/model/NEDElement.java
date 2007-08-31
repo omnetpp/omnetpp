@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
@@ -122,7 +123,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		if (n==0) throw new RuntimeException("call to validateEnum() with n=0");
 		throw new RuntimeException("invalid integer value "+b+" for enum attribute");
 	}
-
+	
 	/**
 	 * Sets the default NED type resolver. May only be invoked once.
 	 */
@@ -143,8 +144,8 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	 * Resolves the given type name using the default NED type resolver,
 	 * or returns null if the given string is null or "".
 	 */
-	public static INEDTypeInfo resolveTypeName(String typeName) {
-		return StringUtils.isEmpty(typeName) ? null : getDefaultTypeResolver().getComponent(typeName);
+	public static INEDTypeInfo resolveTypeName(String typeName, INedTypeLookupContext context) {
+		return StringUtils.isEmpty(typeName) ? null : getDefaultTypeResolver().lookupNedType(typeName, context);
 	}
 
 	/**

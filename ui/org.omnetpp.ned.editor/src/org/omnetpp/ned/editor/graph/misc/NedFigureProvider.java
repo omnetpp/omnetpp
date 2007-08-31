@@ -28,7 +28,7 @@ public class NedFigureProvider extends AbstractFigureProvider {
 
     public Map<IFigure, String> provideExportImageFigures(IFile diagramFile) {
         Map<IFigure, String> result =new HashMap<IFigure, String>();
-        INEDElement modelRoot = NEDResourcesPlugin.getNEDResources().getNEDFileModel(diagramFile);
+        INEDElement modelRoot = NEDResourcesPlugin.getNEDResources().getNedFileElement(diagramFile);
         ScrollingGraphicalViewer viewer = new ScrollingGraphicalViewer();
         viewer.setEditPartFactory(new NedEditPartFactory());
         viewer.setContents(modelRoot);

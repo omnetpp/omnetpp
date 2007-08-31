@@ -11,6 +11,7 @@ import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
@@ -23,7 +24,7 @@ import org.omnetpp.ned.model.pojo.SubmodulesElement;
  *
  * @author rhornig
  */
-public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeElement, IConnectableElement {
+public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeElement, IConnectableElement, INedTypeLookupContext {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
@@ -45,6 +46,10 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }
+
+	public String getQNameAsPrefix() {
+		return getNEDTypeInfo().getFullyQualifiedName() + ".";
+	}
 
     @Override
     public void fireModelEvent(NEDModelEvent event) {

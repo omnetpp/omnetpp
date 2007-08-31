@@ -39,7 +39,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 		// if we find a NED component with that name, display its source code
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();    	
-		INEDTypeInfo component = res.getComponent(word);
+		INEDTypeInfo component = res.lookupNedType(word, null);
 		
 		if (component!=null)
 		    return HoverSupport.addHTMLStyleSheet(

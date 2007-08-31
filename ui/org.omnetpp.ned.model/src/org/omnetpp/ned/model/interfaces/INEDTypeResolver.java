@@ -22,11 +22,11 @@ public interface INEDTypeResolver {
 	 * Interface used by filtering methods.
 	 */
 	public interface IPredicate {
-		public boolean matches(INEDTypeInfo node);
+		public boolean matches(INEDTypeInfo typeInfo);
 	}
 
 	/**
-	 * Factory method, to be called from INedTypeElement constructors.
+	 * INTERNAL Factory method, to be called from INedTypeElement constructors.
 	 */
 	public INEDTypeInfo createTypeInfoFor(INedTypeElement node);
 	
@@ -38,7 +38,7 @@ public interface INEDTypeResolver {
 	/**
 	 * Returns NED files in the workspace.
 	 */
-	public Set<IFile> getNEDFiles();
+	public Set<IFile> getNedFiles();
 
 	/**
 	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree
@@ -48,12 +48,12 @@ public interface INEDTypeResolver {
 	 *
 	 * @param file - must not be null
 	 */
-	public NedFileElementEx getNEDFileModel(IFile file);
+	public NedFileElementEx getNedFileElement(IFile file);
 
     /**
      * XXX todo 
      */
-	public IFile getFile(NedFileElementEx nedFileElement);
+	public IFile getNedFile(NedFileElementEx nedFileElement);
 
     /**
      * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text
@@ -62,7 +62,7 @@ public interface INEDTypeResolver {
      *
      * @param file - must not be null
      */
-    public String getNEDFileText(IFile file);
+    public String getNedFileText(IFile file);
 
 	/**
 	 * Returns the markers for the given element and its subtree. The element
@@ -82,93 +82,92 @@ public interface INEDTypeResolver {
 	 *
 	 * @param file - must not be null
 	 */
-	public INEDTypeInfo getComponentAt(IFile file, int lineNumber);
+	public INEDTypeInfo getNedTypeAt(IFile file, int lineNumber);
 
     /**
-     * Returns a INEDElement at the given file/line/column. returns null if no ned element
-     * found under the position
+     * Returns a INEDElement at the given file/line/column. Returns null if no 
+     * NED element was found at that position.
      *
      * @param file - must not be null
      */
-    public INEDElement getNEDElementAt(IFile file, int line, int column);
+    public INEDElement getNedElementAt(IFile file, int line, int column);
 
     /**
 	 * Returns all components in the NED files.
 	 */
-	public Collection<INEDTypeInfo> getAllComponents();
-
-    /**
-     * Returns the components in the NED files that are matched by the predicate
-     */
-    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IPredicate predicate);
-
-	/**
-	 * Returns all simple and compound modules in the NED files.
-	 */
-	public Collection<INEDTypeInfo> getModules();
-
-	/**
-	 * Returns all networks in the NED files.
-	 */
-	public Collection<INEDTypeInfo> getNetworks();
-
-	/**
-	 * Returns all channels in the NED files.
-	 */
-	public Collection<INEDTypeInfo> getChannels();
-
-	/**
-	 * Returns all module interfaces in the NED files.
-	 */
-	public Collection<INEDTypeInfo> getModuleInterfaces();
-
-	/**
-	 * Returns all channel interfaces in the NED files.
-	 */
-	public Collection<INEDTypeInfo> getChannelInterfaces();
+	public Collection<INEDTypeInfo> getAllNedTypes();
 
     /**
      * Returns all VALID component names in the NED files.
+	 * Returned names are fully qualified.
      */
-    public Set<String> getAllComponentNames();
+    public Set<String> getAllNedTypeQNames();
 
     /**
-     * Returns all VALID component names in the NED files where the predicate matches
+     * Returns all VALID component names in the NED files where the predicate matches.
+	 * Returned names are fully qualified.
      */
-    public Set<String> getAllComponentNamesFilteredBy(IPredicate predicate);
+    public Set<String> getNedTypeQNames(IPredicate predicate);
 
     /**
      * Returns ALL component names in the NED files, including duplicates.
+	 * Returned names are fully qualified.
      */
-    public Set<String> getReservedComponentNames();
+    public Set<String> getReservedQNames();
+
+    /**
+     * Return a NED type from its fully qualified name. Returns null if not found.
+     */
+    public INEDTypeInfo getNedType(String qualifiedName);
+
+    /**
+	 * Looks up the name in the given context, and returns the NED type info, 
+	 * or null if it does not exist. 
+	 * @param name  May be a simple name or a qualified name; cannot be null
+	 * @param context May not be null.
+	 */
+	public INEDTypeInfo lookupNedType(String name, INedTypeLookupContext context);
+
+	/**
+	 * Return all NED type names visible in the given context without
+	 * fully qualifying them. Returned names are short names (NOT fully qualified). 
+	 */
+	public Set<String> getVisibleTypeNames(INedTypeLookupContext context);
+
+	/**
+	 * Return all NED type names matching the predicate, and visible in the given
+	 * context without fully qualifying them. Returned names are short names 
+	 * (NOT fully qualified). 
+	 */
+	public Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
 
     /**
 	 * Returns all module names in the NED files.
+	 * Returned names are fully qualified.
 	 */
-	public Set<String> getModuleNames();
+	public Set<String> getModuleQNames();
 
     /**
 	 * Returns all network names in the NED files.
+	 * Returned names are fully qualified.
 	 */
-	public Set<String> getNetworkNames();
+	public Set<String> getNetworkQNames();
 
 	/**
 	 * Returns all channel names in the NED files.
+	 * Returned names are fully qualified.
 	 */
-	public Set<String> getChannelNames();
+	public Set<String> getChannelQNames();
 
 	/**
 	 * Returns all module interface names in the NED files.
+	 * Returned names are fully qualified.
 	 */
-	public Set<String> getModuleInterfaceNames();
+	public Set<String> getModuleInterfaceQNames();
 
 	/**
 	 * Returns all channel interface names in the NED files.
+	 * Returned names are fully qualified.
 	 */
-	public Set<String> getChannelInterfaceNames();
-
-	/**
-	 * Returns a component by name, or null if it does not exist.
-	 */
-	public INEDTypeInfo getComponent(String name);
+	public Set<String> getChannelInterfaceQNames();
 }

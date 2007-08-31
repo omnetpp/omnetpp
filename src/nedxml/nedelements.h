@@ -298,7 +298,7 @@ class NEDXML_API CommentNode : public NEDElement
  * <pre>
  * <!ELEMENT import (comment*)>
  * <!ATTLIST import
- *      filename           CDATA     #REQUIRED>
+ *      import-spec        CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -306,7 +306,7 @@ class NEDXML_API CommentNode : public NEDElement
 class NEDXML_API ImportNode : public NEDElement
 {
   private:
-    std::string filename;
+    std::string importSpec;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -329,8 +329,8 @@ class NEDXML_API ImportNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getFilename() const  {return filename.c_str();}
-    void setFilename(const char * val)  {filename = val;}
+    const char * getImportSpec() const  {return importSpec.c_str();}
+    void setImportSpec(const char * val)  {importSpec = val;}
 
     virtual ImportNode *getNextImportNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;

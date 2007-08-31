@@ -30,7 +30,7 @@ public class NEDTreeTraversal {
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
 	public void traverse(String moduleTypeName) {
-		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
+		INEDTypeInfo moduleType = nedResources.lookupNedType(moduleTypeName, null);
 		if (moduleType==null)
 			visitor.unresolvedType(null, moduleTypeName);
 		else
@@ -51,7 +51,7 @@ public class NEDTreeTraversal {
 	public void traverse(SubmoduleElement submodule) {
 		visitedTypes.clear();
 		String submoduleTypeName = resolveTypeName(submodule);
-		INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.getComponent(submoduleTypeName);
+		INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.lookupNedType(submoduleTypeName, null);
 		if (submoduleType == null)
 			visitor.unresolvedType(submodule, submoduleTypeName);
 		else
@@ -68,7 +68,7 @@ public class NEDTreeTraversal {
 			// dig out type info (NED declaration)
 			SubmoduleElement submodule = (SubmoduleElement) node;
 			String submoduleTypeName = resolveTypeName(submodule);
-			INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.getComponent(submoduleTypeName);
+			INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.lookupNedType(submoduleTypeName, null);
 
 			// recursive call
 			if (submoduleType == null)

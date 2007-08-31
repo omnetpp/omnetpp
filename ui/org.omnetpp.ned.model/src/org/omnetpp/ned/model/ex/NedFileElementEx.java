@@ -5,18 +5,21 @@ import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
- * TODO add documentation
+ * Represents a NED file
  *
  * @author rhornig
  */
-public class NedFileElementEx extends NedFileElement {
+public class NedFileElementEx extends NedFileElement implements INedTypeLookupContext {
 	protected boolean readOnly;
 
     protected NedFileElementEx() {
@@ -39,7 +42,10 @@ public class NedFileElementEx extends NedFileElement {
     	return getSyntaxProblemMaxCumulatedSeverity() == IMarker.SEVERITY_ERROR;
 	}
 
-	public List<INedTypeElement> getTopLevelTypeNodes() {
+	/**
+	 * Returns a list of the toplevel (non-inner) NED types in this file
+	 */
+    public List<INedTypeElement> getTopLevelTypeNodes() {
 		List<INedTypeElement> result = new ArrayList<INedTypeElement>();
 		for (INEDElement currChild : this)
 			if (currChild instanceof INedTypeElement)
@@ -52,5 +58,20 @@ public class NedFileElementEx extends NedFileElement {
 	public void fireModelEvent(NEDModelEvent event) {
 		Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NEDModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
 		super.fireModelEvent(event);
+	}
+
+	public String getQNameAsPrefix() {
+		return StringUtils.isEmpty(getPackage()) ? "" : getPackage() + ".";
+	}
+	
+	/**
+	 * Returns the imports in this file
+	 */
+	public List<String> getImports() {
+		List<String> result = new ArrayList<String>();
+		for (INEDElement child : this)
+			if (child instanceof ImportElement)
+				result.add(((ImportElement)child).getImportSpec());
+		return result;
 	}
 }

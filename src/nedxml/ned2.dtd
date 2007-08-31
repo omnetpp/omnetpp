@@ -29,7 +29,7 @@
 
 <!ELEMENT import (comment*)>
 <!ATTLIST import
-     filename           CDATA     #REQUIRED>
+     import-spec        CDATA     #REQUIRED>
 
 <!ELEMENT property-decl (comment*, property-key*, property*)>
 <!ATTLIST property-decl
