@@ -10,7 +10,12 @@ public class ClickableAccess
 {
 	@InUIThread
 	public void moveMouse(Point p) {
-		postMouseEvent(SWT.MouseMove, 0, p.x, p.y);
+		moveMouse(p.x, p.y);
+	}
+
+	@InUIThread
+	public void moveMouse(int x, int y) {
+		postMouseEvent(SWT.MouseMove, 0, x, y);
 	}
 
 	@InUIThread
@@ -20,7 +25,7 @@ public class ClickableAccess
 
 	@InUIThread
 	public void click(int button, int x, int y) {
-		postMouseEvent(SWT.MouseMove, button, x, y);
+		moveMouse(x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
@@ -29,7 +34,6 @@ public class ClickableAccess
 	public void doubleClick(int button, int x, int y) {
 		click(button, x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
-		postMouseEvent(SWT.MouseDoubleClick, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
 
