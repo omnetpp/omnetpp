@@ -1,9 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.swt.graphics.Image;
 
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.NedTypeFigure;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
@@ -55,7 +53,7 @@ public class NedTypeEditPart extends NedEditPart {
             if (getModel() instanceof ChannelInterfaceElement)
                 nameToDisplay = nameToDisplay +" (channel interface)";
             else if (getModel() instanceof ChannelElement)
-                nameToDisplay = "Channel: " + nameToDisplay;
+                nameToDisplay = nameToDisplay+" (channel)";
             else if (getModel() instanceof ModuleInterfaceElement)
                 nameToDisplay = nameToDisplay +" (module interface)";
 
@@ -69,20 +67,28 @@ public class NedTypeEditPart extends NedEditPart {
 
     		getNedTypeFigure().setDisplayString(dps);
 
+    		// TODO remove this if channels can draw their own icons by default
+
             // set icon names for the channel and module/channel interface figures
             // we use special icons for these types
-            Image image = null;
-            if (getModel() instanceof ChannelInterfaceElement)
-                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
-            else if (getModel() instanceof ChannelElement)
-                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
 
-            if (image != null)
-                getNedTypeFigure().setIcon(image);
+//            Image image = null;
+//            if (getModel() instanceof ChannelInterfaceElement)
+//                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
+//            else if (getModel() instanceof ChannelElement)
+//                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
+//
+//            if (image != null)
+//                getNedTypeFigure().setIcon(image);
     	}
 
     	// indicate the error
-        getNedTypeFigure().setProblemDecoration(getNEDModel().getMaxProblemSeverity());
+        int maxSeverity = getNEDModel().getMaxProblemSeverity();
+        getNedTypeFigure().setProblemDecoration(maxSeverity);
+//        if (maxSeverity >= IMarker.SEVERITY_INFO) {
+//            getNedTypeFigure().setProblemTooltipText("A problem occurred");
+//        }
+
 
 	}
 

@@ -9,7 +9,7 @@ import org.eclipse.draw2d.text.ParagraphTextLayout;
 import org.eclipse.draw2d.text.TextFlow;
 
 /**
- * TODO add documentation
+ * Figure used to ad tooltip information to other figures.
  *
  * @author rhornig
  */

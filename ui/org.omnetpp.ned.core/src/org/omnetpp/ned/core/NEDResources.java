@@ -602,7 +602,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			if (element instanceof INedTypeElement) {
 				// invalidate
 				((INedTypeElement)element).getNEDTypeInfo().invalidateInherited();
-				
+
 				// do inner types too
 				if (element instanceof CompoundModuleElementEx) {
 					INEDElement typesSection = ((CompoundModuleElementEx)element).getFirstTypesChild();
@@ -709,7 +709,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         } finally {
             nedModelChangeNotificationDisabled = false;
             Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readAllNedFilesInWorkspace()");
-            nedModelChanged(new NEDModelEvent(null));
+            nedModelChanged(new NEDModelChangeEvent(null));
         }
     }
 

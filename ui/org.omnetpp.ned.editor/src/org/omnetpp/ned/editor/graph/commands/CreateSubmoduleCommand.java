@@ -1,6 +1,9 @@
 package org.omnetpp.ned.editor.graph.commands;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Rectangle;
+
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -20,15 +23,18 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
 
     public CreateSubmoduleCommand(CompoundModuleElementEx parent, SubmoduleElementEx child) {
+        Assert.isNotNull(parent);
+        Assert.isNotNull(child);
     	this.child = child;
     	this.parent = parent;
     }
 
     @Override
     public boolean canExecute() {
-        return child != null && parent != null &&
-        		child instanceof SubmoduleElementEx &&
-        		parent instanceof CompoundModuleElementEx;
+        // check if the type exist and the name is valid
+        boolean isGlobalType = NEDElement.getDefaultTypeResolver().getModuleNames().contains(child.getEffectiveType());
+        boolean isLocalType = parent.getNEDTypeInfo().getInnerTypes().containsKey(child.getEffectiveType());
+        return isGlobalType || isLocalType;
     }
 
     @Override

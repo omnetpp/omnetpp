@@ -385,6 +385,8 @@ public class GraphicalNedEditor
 		hoverSupport.adapt(getFigureCanvas(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
+//                System.out.println("x,y: "+x+","+y);
+//                System.out.println("fx,fy: "+ep.get+","+y);
                 return getHTMLHoverTextFor(ep, outPreferredSize);
             }
         });
@@ -640,11 +642,11 @@ public class GraphicalNedEditor
 			public void run() {
 		    	if (event.getSource() != null) {
 					INEDElement nedFileElement = event.getSource().getContainingNedFileElement();
-			
+
 					if (nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
 						updateExternalCommand(event);
 		    	}
-				
+
             	// adjust connections after submodule name change, etc
             	reactToModelChanges(event);
 

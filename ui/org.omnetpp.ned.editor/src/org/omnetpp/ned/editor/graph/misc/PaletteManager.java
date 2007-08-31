@@ -261,7 +261,7 @@ public class PaletteManager implements INEDChangeListener {
 
         CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
                 label, StringUtils.makeBriefDocu(typeElement.getComment(), 300),
-                new ModelFactory(typeElement.getTagCode(), StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
+                new ModelFactory(NEDElementTags.NED_SUBMODULE, StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
                 imageDescNorm, imageDescLarge );
 
         entries.put(key, toolEntry);

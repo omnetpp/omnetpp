@@ -25,7 +25,7 @@ import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
  *
  * @author rhornig
  */
-public class CompoundModuleFigure extends ModuleFigure
+public class CompoundModuleFigure extends NedFigure
 				implements ILayerSupport, HandleBounds, IDirectEditSupport {
 
     private static final int ERROR_BORDER_WIDTH = 2;

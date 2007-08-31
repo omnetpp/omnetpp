@@ -22,15 +22,17 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
  *
  * @author rhornig
  */
-public class NedTypeFigure extends Label implements IDirectEditSupport {
+public class NedTypeFigure extends NedFigure implements IDirectEditSupport {
 
     private String tmpName;
+    private Label mainFigure = new Label();
     private TooltipFigure tooltipFigure;
     private ImageFigure problemMarkerFigure = new ImageFigure();
 
     public NedTypeFigure() {
         setLayoutManager(new XYLayout());
-        add(problemMarkerFigure, new Rectangle(-1,0,16,16)); //XXX hardcoded image size; need better positioning!
+        add(mainFigure, new Rectangle(0,0,-1,-1));
+        add(problemMarkerFigure, new Rectangle(-1,0,16,16));
     }
 
     protected void setShape(Image img,
@@ -40,14 +42,15 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
         if (img == null)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
 
-        setIcon(img);
+        mainFigure.setIcon(img);
     }
 
     /**
 	 * Adjusts the image properties using a displayString object (except the location
 	 * and size)
 	 */
-	public void setDisplayString(IDisplayString dps) {
+	@Override
+    public void setDisplayString(IDisplayString dps) {
 
         // shape support
         String imgSize = dps.getAsString(IDisplayString.Prop.IMAGESIZE);
@@ -83,28 +86,28 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
     }
 
     public CellEditorLocator getDirectEditCellEditorLocator() {
-        return new LabelCellEditorLocator(this);
+        return new LabelCellEditorLocator(mainFigure);
     }
 
     public String getDirectEditText() {
-        return getText();
+        return mainFigure.getText();
     }
 
     public void setDirectEditTextVisible(boolean visible) {
         // HACK to hide the text part only of the label
         if (!visible) {
-            tmpName = getText();
-            setText("");
+            tmpName = mainFigure.getText();
+            mainFigure.setText("");
         }
         else {
-            if ("".equals(getText()))
-                setText(tmpName);
+            if ("".equals(mainFigure.getText()))
+                mainFigure.setText(tmpName);
         }
     }
 
     @Override
 	public String toString() {
-	    return getClass().getSimpleName()+" "+getText();
+	    return getClass().getSimpleName()+" "+mainFigure.getText();
 	}
 
     /**
@@ -112,12 +115,15 @@ public class NedTypeFigure extends Label implements IDirectEditSupport {
      * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
      */
     public void setProblemDecoration(int severity) {
-    	Image image = ModuleFigure.getProblemImageFor(severity); //TODO subclass this AND ModuleFigure from a common NedFigure!
+    	Image image = NedFigure.getProblemImageFor(severity); //TODO subclass this AND ModuleFigure from a common NedFigure!
     	if (image != null)
     		problemMarkerFigure.setImage(image);
     	problemMarkerFigure.setVisible(image != null);
     	invalidate(); //XXX needed?
     }
 
+    public void setText(String text) {
+        mainFigure.setText(text);
+    }
 }
 

@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Places the cell editor over the provided label (and sets its fontsize too)
+ * Places the cell editor over the provided label (and sets its font size too)
  *
  * @author rhornig
  */
@@ -54,9 +54,10 @@ public class LabelCellEditorLocator implements CellEditorLocator {
         Rectangle labelBounds = label.getTextBounds().getTranslated(-1,0);
         label.translateToAbsolute(labelBounds);
         if (centerAlign)
-            text.setBounds(labelBounds.x + labelBounds.width/2 - editorSize.x/2, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
+            text.setBounds(labelBounds.x + (labelBounds.width- editorSize.x)/2 + 1, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
         else
-            text.setBounds(labelBounds.x, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
-}
+            text.setBounds(labelBounds.x - 2, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
+        System.out.println(labelBounds);
+    }
 
 }
