@@ -16,6 +16,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -71,7 +72,9 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
  */
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
-//FIXME asap: validate extends chain (cycles!!) validate 2 submods with the same name! etc 
+//FIXME asap: validate extends chain (cycles!!) 
+//FIXME validate 2 submods with the same name! etc
+//FIXME validate imports (what if there're clashes)
 public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;
@@ -140,9 +143,11 @@ public class NEDValidator extends AbstractNEDValidatorEx {
     protected void validateElement(ExtendsElement node) {
 		Assert.isTrue(componentNode!=null);
 
+		//FIXME detect cycles, etc
+		
 		// referenced component must exist and must be the same type as this one
 		String name = node.getName();
-		INEDTypeInfo e = resolver.lookupNedType(name, null);
+		INEDTypeInfo e = resolver.lookupNedType(name, (CompoundModuleElementEx)componentNode);
 		if (e == null) {
 			errors.addError(node, "no such component: '" + name+"'");
 			return;
@@ -387,38 +392,24 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		String name = node.getName();
 		String typeName = node.getType();
 		String likeTypeName = node.getLikeType();
-		if (typeName!=null && !typeName.equals("")) {
+		CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)componentNode;
+		if (StringUtils.isNotEmpty(typeName)) {
 			// normal case
-			submoduleType = resolveTypeName(typeName);
-			if (submoduleType == null) {
+			submoduleType = resolver.lookupNedType(typeName, compoundModule);
+			if (submoduleType == null)
 				errors.addError(node, "'"+typeName+"': no such module type");
-				return;
-			}
-			int typeTag = submoduleType.getNEDElement().getTagCode();
-			if (typeTag!=NED_SIMPLE_MODULE && typeTag!=NED_COMPOUND_MODULE) {
+			else if (!(submoduleType.getNEDElement() instanceof IModuleTypeElement))
 				errors.addError(node, "'"+typeName+"' is not a module type");
-				return;
-			}
 		}
-		else if ("*".equals(likeTypeName)) {
-			// unchecked "like"...
-			submoduleType = null;
-		}
-		else if (likeTypeName!=null && !likeTypeName.equals("")) {
+		else if (StringUtils.isNotEmpty(likeTypeName)) {
 			// "like" case
-			submoduleType = resolveTypeName(likeTypeName);
-			if (submoduleType == null) {
-				errors.addError(node, "'"+likeTypeName+"': no such module or interface type");
-				return;
-			}
-			int typeTag = submoduleType.getNEDElement().getTagCode();
-			if (typeTag!=NED_SIMPLE_MODULE && typeTag!=NED_COMPOUND_MODULE && typeTag!=NED_MODULE_INTERFACE) {
-				errors.addError(node, "'"+typeName+"' is not a module or interface type");
-				return;
-			}
+			submoduleType = resolver.lookupNedType(likeTypeName, compoundModule);
+			if (submoduleType == null)
+				errors.addError(node, "'"+likeTypeName+"': no such module interface type");
+			else if (!(submoduleType.getNEDElement() instanceof ModuleInterfaceElementEx))
+				errors.addError(node, "'"+typeName+"' is not a module interface type");
 		}
 		else {
-			// XXXX   the "<> like *" case comes here but it should NOT!!!
 			errors.addError(node, "no type info for '"+name+"'");  // should never happen
 			return;
 		}
@@ -427,13 +418,6 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		submoduleNode = node;
 		validateChildren(node);
 		submoduleNode = null;
-	}
-
-	protected INEDTypeInfo resolveTypeName(String typeName) {
-		INEDTypeInfo component = innerTypes.get(typeName);
-		if (component!=null)
-			return component;
-		return resolver.lookupNedType(typeName, null);
 	}
 
 	@Override
@@ -539,35 +523,26 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		// find channel type
 		String typeName = node.getType();
 		String likeTypeName = node.getLikeType();
-		if (typeName!=null && !typeName.equals("")) {
+		CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)componentNode;
+		if (StringUtils.isNotEmpty(typeName)) {
 			// normal case
-			channelSpecType = resolveTypeName(typeName);
-			if (channelSpecType == null) {
+			channelSpecType = resolver.lookupNedType(typeName, compoundModule);
+			if (channelSpecType == null)
 				errors.addError(node, "'"+typeName+"': no such channel type");
-				return;
-			}
-			int typeTag = channelSpecType.getNEDElement().getTagCode();
-			if (typeTag!=NED_CHANNEL) {
+			else if (!(channelSpecType.getNEDElement() instanceof ChannelElementEx))
 				errors.addError(node, "'"+typeName+"' is not a channel type");
-				return;
-			}
 		}
-		else if (likeTypeName!=null && !likeTypeName.equals("")) {
+		else if (StringUtils.isNotEmpty(likeTypeName)) {
 			// "like" case
-			channelSpecType = resolver.lookupNedType(likeTypeName, null);
-			if (channelSpecType == null) {
+			channelSpecType = resolver.lookupNedType(likeTypeName, compoundModule);
+			if (channelSpecType == null)
 				errors.addError(node, "'"+likeTypeName+"': no such channel or channel interface type");
-				return;
-			}
-			int typeTag = channelSpecType.getNEDElement().getTagCode();
-			if (typeTag!=NED_CHANNEL && typeTag!=NED_CHANNEL_INTERFACE) {
-				errors.addError(node, "'"+typeName+"' is not a channel or channel interface type");
-				return;
-			}
+			else if (!(channelSpecType.getNEDElement() instanceof ChannelInterfaceElementEx))
+				errors.addError(node, "'"+typeName+"' is not a channel interface type");
 		}
 		else {
 			// fallback: type is BasicChannel
-			channelSpecType = resolver.lookupNedType("ned.cBasicChannel", null);
+			channelSpecType = resolver.getNedType("ned.cBasicChannel");
 			Assert.isTrue(channelSpecType!=null);
 		}
 

@@ -49,7 +49,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected String fullyQualifiedName; // computed on demand
 
 	// local members
-    protected boolean needsLocalUpdate;
+    protected boolean needsRefreshLocal;
 	protected Set<String> localInterfaces = new HashSet<String>();
 	protected Map<String, PropertyElement> localProperties = new LinkedHashMap<String, PropertyElement>();
     protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
@@ -64,7 +64,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected Map<String, INEDElement> localMembers = new LinkedHashMap<String, INEDElement>();
 
 	// local plus inherited
-	protected boolean needsUpdate;
+	protected boolean needsRefreshInherited;
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<String> allInterfaces = new HashSet<String>();
 	protected Map<String, PropertyElement> allProperties = new LinkedHashMap<String, PropertyElement>();
@@ -103,8 +103,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
         // the inherited and local members will be collected on demand
 		fullyQualifiedName = null;
-        needsLocalUpdate = true;
-		needsUpdate = true;
+        needsRefreshLocal = true;
+		needsRefreshInherited = true;
 	}
 
     /**
@@ -172,7 +172,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
      * Refresh tables of local members
      */
     protected void refreshLocalMembersIfNeeded() {
-    	if (!needsLocalUpdate)
+    	if (!needsRefreshLocal)
     		return;
 
 		//long startMillis = System.currentTimeMillis();
@@ -247,7 +247,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         // collect the types that were used in this module (meaningful only for compound modules)
         collectTypesInCompoundModule(localUsedTypes);
 
-        needsLocalUpdate = false;
+        needsRefreshLocal = false;
 
 		//long dt = System.currentTimeMillis() - startMillis;
         //System.out.println("typeInfo " + getName() + " refreshLocalMembers(): " + dt + "ms");
@@ -257,7 +257,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	 * Collect all inherited parameters, gates, properties, submodules, etc.
 	 */
 	protected void refreshInheritedMembersIfNeeded() {
-		if (!needsUpdate)
+		if (!needsRefreshInherited)
 			return;
 
         //long startMillis = System.currentTimeMillis();
@@ -266,7 +266,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         // System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
 
         // first wee need our local members updated
-        if (needsLocalUpdate)
+        if (needsRefreshLocal)
             refreshLocalMembersIfNeeded();
 
         // determine extends chain
@@ -318,7 +318,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		//long dt = System.currentTimeMillis() - startMillis;
         //System.out.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
 
-        needsUpdate = false;
+        needsRefreshInherited = false;
 	}
 
 	public INedTypeLookupContext getParentLookupContext() {
@@ -330,13 +330,14 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	public void invalidate() {
 		//System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
 		fullyQualifiedName = null;
-        needsLocalUpdate = true;
-		needsUpdate = true;
+        needsRefreshLocal = true;
+		needsRefreshInherited = true;
 	}
 
 	public void invalidateInherited() {
 		//System.out.println(getName() +  ": invalidated inherited members");
-		needsUpdate = true;
+		fullyQualifiedName = null;
+		needsRefreshInherited = true;
 	}
 
 	public String getName() {
@@ -553,7 +554,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
     public void debugDump() {
     	System.out.println("NEDTypeInfo: " + getNEDElement().toString() + " debugId=" + debugId);
-    	if (needsUpdate || needsLocalUpdate)
+    	if (needsRefreshInherited || needsRefreshLocal)
     		System.out.println(" currently invalid (needs refresh)");
     	System.out.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));
     	System.out.println("  local interfaces: " + StringUtils.join(localInterfaces, ", "));

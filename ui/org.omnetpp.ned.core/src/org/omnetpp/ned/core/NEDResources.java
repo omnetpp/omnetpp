@@ -617,6 +617,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + components.size() + " registered types");
+        System.out.println("types: " + StringUtils.join(components.keySet(), ", ", " and "));
 
         // schedule a validation
         validationJob.restartTimer();
