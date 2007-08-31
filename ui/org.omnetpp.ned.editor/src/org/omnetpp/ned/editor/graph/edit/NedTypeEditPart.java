@@ -57,7 +57,7 @@ public class NedTypeEditPart extends NedEditPart {
             else if (getModel() instanceof ModuleInterfaceElement)
                 nameToDisplay = nameToDisplay +" (module interface)";
 
-            getNedTypeFigure().setText(nameToDisplay);
+            getNedTypeFigure().setName(nameToDisplay);
     	}
 
     	// parse a display string, so it's easier to get values from it.

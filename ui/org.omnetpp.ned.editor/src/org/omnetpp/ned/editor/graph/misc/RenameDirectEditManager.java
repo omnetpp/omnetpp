@@ -56,7 +56,7 @@ public class RenameDirectEditManager extends DirectEditManager {
         super.bringDown();
         if (disposeFont != null)
             disposeFont.dispose();
-        directEditable.setDirectEditTextVisible(true);
+        directEditable.showLabelUnderCellEditor(true);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class RenameDirectEditManager extends DirectEditManager {
             getCellEditor().setValue(((IHasName)sourcePart.getModel()).getName());
 
         // hide the underlying label text
-        directEditable.setDirectEditTextVisible(false);
+        directEditable.showLabelUnderCellEditor(false);
         // set the validator
         getCellEditor().setValidator(validator);
     }
