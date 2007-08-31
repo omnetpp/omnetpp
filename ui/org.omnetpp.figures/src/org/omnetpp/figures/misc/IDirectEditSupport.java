@@ -12,14 +12,14 @@ public interface IDirectEditSupport {
     /**
      * Returns the text that should be direct edited
      */
-    String getDirectEditText();
+    String getName();
 
     /**
-     * Sets the text that is displayed under the cell editor. Note that this changes
-     * ONLY the figure, so the underlying model is NOT changed by this method. Model should be changed
-     * by a command.
+     * Sets whether the label under the cell editor should be visible. When the cell editor is active
+     * we should hide the original label otherwise it would look ugly during edit operation if the
+     * new text is shorted than the old.
      */
-    void setDirectEditTextVisible(boolean visible);
+    void showLabelUnderCellEditor(boolean isVisible);
 
     /**
      * Returns an editor locator for placing the cell editor

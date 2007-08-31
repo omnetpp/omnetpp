@@ -220,11 +220,11 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
         };
     }
 
-    public String getDirectEditText() {
+    public String getName() {
         return getLabel();
     }
 
-    public void setDirectEditTextVisible(boolean visible) {
+    public void showLabelUnderCellEditor(boolean visible) {
         titleVisible = visible;
         invalidate();
     }

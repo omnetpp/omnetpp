@@ -1,6 +1,7 @@
 package org.omnetpp.figures.misc;
 
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.tools.CellEditorLocator;
@@ -17,7 +18,6 @@ import org.eclipse.swt.widgets.Text;
  */
 public class LabelCellEditorLocator implements CellEditorLocator {
     protected Label label;
-    protected boolean centerAlign = false;
 
     /**
      * Creates a new LabelCellEditorLocator for the given Label
@@ -28,17 +28,10 @@ public class LabelCellEditorLocator implements CellEditorLocator {
     }
 
     /**
-     * Creates a new LabelCellEditorLocator for the given Label
-     * @param label
-     * @param centerAlign whether to align the center of the cell editor to the center of the label
-     */
-    public LabelCellEditorLocator(Label label, boolean centerAlign) {
-        this.label = label;
-        this.centerAlign = centerAlign;
-    }
-
-    /**
      * @see CellEditorLocator#relocate(org.eclipse.jface.viewers.CellEditor)
+     * relocates the cell editor taking into account the current label location and alignment
+     * (ie. centered labels cell editor will be centered around the labels center)
+     * Also sets the font size according to the zoom setting.
      */
     public void relocate(CellEditor celleditor) {
         Text text = (Text)celleditor.getControl();
@@ -53,7 +46,8 @@ public class LabelCellEditorLocator implements CellEditorLocator {
         Point editorSize = text.computeSize(-1, -1);
         Rectangle labelBounds = label.getTextBounds();
         label.translateToAbsolute(labelBounds);
-        if (centerAlign)
+        // if the label is center aligned we mimic that with the cell editor too
+        if (label.getTextAlignment() == PositionConstants.CENTER)
             text.setBounds(labelBounds.x + (labelBounds.width - editorSize.x)/2 , labelBounds.y, editorSize.x, editorSize.y + 1);
         else
             text.setBounds(labelBounds.x, labelBounds.y, editorSize.x, editorSize.y + 1);

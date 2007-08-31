@@ -2,17 +2,7 @@ package org.omnetpp.figures;
 
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Ellipse;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ImageFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.RectangleFigure;
-import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.draw2d.Shape;
-import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
@@ -20,17 +10,15 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.gef.handles.HandleBounds;
-import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.ILayerSupport.LayerID;
-import org.omnetpp.figures.misc.IDirectEditSupport;
-import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
  * Figure representing a submodule inside a compound module figure. Contains several figures attached
@@ -40,8 +28,10 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
  *
  * @author rhornig
  */
-//FIXME change this so that figures are created on demand.
-public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectEditSupport {
+// FIXME change this so that figures are created on demand.
+// TODO maybe we should use locators to place the different figures relative to the main figure
+// instead of using attachedLayers
+public class SubmoduleFigure extends NedFigure implements HandleBounds {
 	// parent figures for attached figures
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
@@ -63,14 +53,11 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
     protected ImageFigure imageFigure = new ImageFigure();
     protected ImageFigure decoratorImageFigure = new ImageFigure();
     protected ImageFigure pinFigure = new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
-    protected ImageFigure problemMarkerFigure = new ImageFigure();
-    protected Label nameFigure = new Label();
     protected AttachedLayer textAttachLayer;
 	private AttachedLayer rangeAttachLayer;
     protected TextFlow textFigure = new TextFlow();
     protected FlowPage textFlowPage = new FlowPage();
     protected Label queueFigure = new Label();
-    protected TooltipFigure tooltipFigure;
     protected Shape rangeFigure = new RangeFigure();
 
 
@@ -84,6 +71,9 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
         rangeFigure.setOpaque(false);
         shapeVisible = false;
         textFlowPage.add(textFigure);
+        // use center alignment under the icon for the name
+        nameFigure.setTextAlignment(PositionConstants.CENTER);
+        nameFigure.setTextPlacement(PositionConstants.SOUTH);
     }
 
     @Override
@@ -164,16 +154,6 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
         super.addNotify();
     }
 
-    /**
-     * Sets the name associated with the submodule.
-     */
-    public void setName(String name) {
-        nameFigure.setVisible(name != null && !"".equals(name));
-        nameFigure.setText(name);
-        figureName = name;
-        invalidate();
-    }
-
     protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
         if (radius > 0) {
             int rad = radius;
@@ -194,19 +174,6 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
         	rangeAttachLayer.revalidate();
 
         invalidate();
-    }
-
-    protected void setTooltipText(String tttext) {
-        if (tttext == null || "".equals(tttext)) {
-            setToolTip(null);
-            tooltipFigure = null;
-        }
-        else {
-            tooltipFigure = new TooltipFigure();
-            setToolTip(tooltipFigure);
-            tooltipFigure.setText(tttext);
-            invalidate();
-        }
     }
 
     protected void setQueueText(String qtext) {
@@ -353,8 +320,6 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
 	 */
 	@Override
     public void setDisplayString(IDisplayString dps) {
-		lastDisplayString = dps;
-
         // get the position from the display string. When a coordinate is missing
 		// in the display string, use Integer.MIN_VALUE. (means: it's UNPINNED)
 		preferredLocation = dps.getLocation(scale);
@@ -444,18 +409,6 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
 		return preferredLocation;
 	}
 
-    public CellEditorLocator getDirectEditCellEditorLocator() {
-        // create a center aligned label locator
-        return new LabelCellEditorLocator(nameFigure, true);
-    }
-
-    public String getDirectEditText() {
-        return nameFigure.getText();
-    }
-
-    public void setDirectEditTextVisible(boolean visible) {
-        nameFigure.setVisible(visible);
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
@@ -478,20 +431,21 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds, IDirectE
         return shapeVisible;
     }
 
-    /**
-     * Display a "problem" image decoration on the submodule.
-     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-     */
-    public void setProblemDecoration(int severity) {
-    	Image image = getProblemImageFor(severity);
-    	if (image != null)
-    		problemMarkerFigure.setImage(image);
-    	problemMarkerFigure.setVisible(image != null);
-    	invalidate(); //XXX needed?
-    }
+//    /**
+//     * Display a "problem" image decoration on the submodule.
+//     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
+//     */
+//    @Override
+//    public void setProblemDecoration(int severity) {
+//    	Image image = getProblemImageFor(severity);
+//    	if (image != null)
+//    		problemMarkerFigure.setImage(image);
+//    	problemMarkerFigure.setVisible(image != null);
+//    	invalidate(); //XXX needed?
+//    }
 
     /**
-     * Turns the "pin" icon (which shows whether the submodule has a 
+     * Turns the "pin" icon (which shows whether the submodule has a
      * user-specified position) on/off
      */
     public void setPinDecoration(boolean enabled) {

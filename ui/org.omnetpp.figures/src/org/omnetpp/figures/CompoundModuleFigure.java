@@ -16,17 +16,17 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
-import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 /**
- * TODO add documentation
+ * A figure representing a compound module. Also displays a caption with the name and the default
+ * image (if any)
  *
  * @author rhornig
  */
 public class CompoundModuleFigure extends NedFigure
-				implements ILayerSupport, HandleBounds, IDirectEditSupport {
+				implements ILayerSupport, HandleBounds {
 
     private static final int ERROR_BORDER_WIDTH = 2;
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
@@ -284,7 +284,6 @@ public class CompoundModuleFigure extends NedFigure
 
 	public void setName(String name) {
 		getCompoundModuleBorder().setLabel(name);
-		figureName = name;
         invalidate();
 	}
 
@@ -305,8 +304,6 @@ public class CompoundModuleFigure extends NedFigure
 	 */
 	@Override
     public void setDisplayString(IDisplayString dps) {
-		lastDisplayString = dps;
-
 		// setup the figure's properties
         // set the icon showing the default representation in the titlebar
         Image img = ImageFactory.getImage(
@@ -432,12 +429,12 @@ public class CompoundModuleFigure extends NedFigure
         return getCompoundModuleBorder().getTitleBorder().getDirectEditCellEditorLocator();
     }
 
-    public String getDirectEditText() {
-        return getCompoundModuleBorder().getTitleBorder().getDirectEditText();
+    public String getName() {
+        return getCompoundModuleBorder().getTitleBorder().getName();
     }
 
-    public void setDirectEditTextVisible(boolean visible) {
-        getCompoundModuleBorder().getTitleBorder().setDirectEditTextVisible(visible);
+    public void showLabelUnderCellEditor(boolean visible) {
+        getCompoundModuleBorder().getTitleBorder().showLabelUnderCellEditor(visible);
     }
 
     /**
