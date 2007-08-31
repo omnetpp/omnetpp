@@ -12,15 +12,19 @@ import org.omnetpp.common.engine.BigDecimal;
 public class RandomXYDataset implements IXYDataset {
 
 	String[] seriesKeys;
+	double[][] xCoords;
 	double[][] yCoords;
 	
 	public RandomXYDataset(long seed, String[] seriesKeys, int numOfItems) {
 		Random rg = new Random(seed);
 		this.seriesKeys = seriesKeys;
+		xCoords = new double[seriesKeys.length][];
 		yCoords = new double[seriesKeys.length][];
 		for (int series = 0; series < seriesKeys.length; ++series) {
+			xCoords[series] = new double[numOfItems];
 			yCoords[series] = new double[numOfItems];
 			for (int i = 0; i < numOfItems; ++i) {
+				xCoords[series][i] = (i + rg.nextDouble()) / numOfItems;
 				yCoords[series][i] = rg.nextDouble();
 			}
 		}
@@ -35,11 +39,11 @@ public class RandomXYDataset implements IXYDataset {
 	}
 
 	public int getItemCount(int series) {
-		return yCoords[series].length;
+		return xCoords[series].length;
 	}
 
 	public double getX(int series, int item) {
-		return (item+0.5)/(getItemCount(series));
+		return xCoords[series][item];
 	}
 
 	public BigDecimal getPreciseX(int series, int item) {
