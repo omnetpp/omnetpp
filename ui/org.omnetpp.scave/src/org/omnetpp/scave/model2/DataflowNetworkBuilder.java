@@ -10,18 +10,21 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.DataflowManager;
+import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IndexedVectorFileReaderNode;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.Port;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
-import org.omnetpp.scave.engine.IndexedVectorFileReaderNode;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
@@ -35,6 +38,7 @@ import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
@@ -207,6 +211,37 @@ public class DataflowNetworkBuilder {
 		}
 	}
 	
+	class XYPlotNode extends NodeWrapper
+	{
+		PortWrapper xPort;
+		
+		public XYPlotNode() {
+			super("xyplotnode", EMPTY_ATTRS);
+			addInputPort(xPort = new PortWrapper(-1, "x"));
+		}
+		
+		public PortWrapper addPort() {
+			int index = outPorts.size();
+			PortWrapper yPort = new PortWrapper(-1, "y"+index);
+			PortWrapper outPort = new PortWrapper(-1, "out"+index);
+			addInputPort(yPort);
+			addOutputPort(outPort);
+			return yPort;
+		}
+
+		@Override
+		public void connected(PortWrapper in) {
+			if (in == xPort) {
+				idToOutputPortMap.remove(in.id);
+			}
+			else {
+				int index = inPorts.indexOf(in) - 1;
+				Assert.isTrue(index >= 0);
+				idToOutputPortMap.put(in.id, outPorts.get(index));
+			}
+		}
+	}
+	
 	class SinkNode extends NodeWrapper
 	{
 		PortWrapper inPort;
@@ -366,6 +401,41 @@ public class DataflowNetworkBuilder {
 					IDList idlist = getIDs();
 					idlist.substract(select(idlist, chart.getFilters()));
 					removeSources(idlist);
+				}
+				return this;
+			}
+			
+			/**
+			 * Filters the output according to the chart's filters when the chart is
+			 * the target of the dataflow network.
+			 * Select x data and add xyplotnodes for them.
+			 * Associated y data differ only by module/name.
+			 */
+			public Object caseScatterChart(ScatterChart chart) {
+				if (chart == target) {
+					// discard everything not on the chart
+					IDList idlist = getIDs();
+					IDList displayedIds = select(idlist, chart.getFilters());
+					idlist.substract(displayedIds);
+					removeSources(idlist);
+
+					// select x data
+					String moduleName = chart.getXDataModule();
+					String dataName = chart.getXDataModule();
+					if (!StringUtils.isEmpty(moduleName) && !StringUtils.isEmpty(dataName)) {
+						IDList xData = resultfileManager.filterIDList(displayedIds, null, moduleName, dataName);
+						for (int i = 0; i < xData.size(); ++i) {
+							long id = xData.get(i);
+							ResultItem item = resultfileManager.getItem(id);
+							FileRunList fileruns = new FileRunList();
+							fileruns.add(item.getFileRun());
+							IDList yData = resultfileManager.filterIDList(displayedIds, fileruns, "", "");
+							yData.substract(id);
+							
+							addXYPlotNode(id, yData);
+						}
+						
+					}
 				}
 				return this;
 			}
@@ -534,6 +604,17 @@ public class DataflowNetworkBuilder {
 		PortWrapper port = getOutputPort(id);
 		connect(port, sinkNode.inPort);
 		return sinkNode;
+	}
+	
+	private XYPlotNode addXYPlotNode(long xid, IDList yids) {
+		XYPlotNode xyplotNode = new XYPlotNode();
+		PortWrapper port = getOutputPort(xid);
+		connect(port, xyplotNode.xPort);
+		for (int i = 0; i < yids.size(); ++i) {
+			port = getOutputPort(yids.get(i));
+			connect(port, xyplotNode.addPort());
+		}
+		return xyplotNode;
 	}
 
 	private void removeSources(IDList ids) {

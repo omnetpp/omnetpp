@@ -1,23 +1,39 @@
 package org.omnetpp.scave.model2;
 
+import static org.omnetpp.scave.engine.ScalarFields.EXPERIMENT;
+import static org.omnetpp.scave.engine.ScalarFields.MEASUREMENT;
+import static org.omnetpp.scave.engine.ScalarFields.REPLICATION;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.charting.dataset.CompoundXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
-import org.omnetpp.scave.charting.dataset.ScatterPlotDataset;
+import org.omnetpp.scave.charting.dataset.ScalarScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
+import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engine.XYDataset;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
@@ -228,11 +244,11 @@ public class DatasetManager {
 				new VectorDataset(idlist, lineNameFormat, manager);
 	}
 	
-	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+	public static IXYDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		return createScatterPlotDataset(chart, null, manager, monitor);
 	}
 	
-	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
+	public static IXYDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
 		Assert.isLegal(chart.getXDataModule() != null, "Module name is not set");
 		Assert.isLegal(chart.getXDataName() != null, "Data name is not set");
 		
@@ -240,9 +256,45 @@ public class DatasetManager {
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-			return new ScatterPlotDataset(idlist, chart.getXDataModule(), chart.getXDataName(),
-												chart.isAverageReplications(), manager);
+			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
+			
+			XYDataset xyScalars = null;
+			if (!scalars.isEmpty()) {
+				String moduleName = chart.getXDataModule();
+				String scalarName = chart.getXDataName();
+				boolean averageReplications = chart.isAverageReplications();
+				
+				ScalarDataSorter sorter = new ScalarDataSorter(manager);
+				ScalarFields rowFields = new ScalarFields(ScalarFields.MODULE | ScalarFields.NAME);
+				ScalarFields columnFields = averageReplications ? new ScalarFields(EXPERIMENT | MEASUREMENT) :
+					                                              new ScalarFields(EXPERIMENT | MEASUREMENT | REPLICATION);
+				xyScalars = sorter.prepareScatterPlot2(scalars, moduleName, scalarName, rowFields, columnFields);
+			}
+			
+			XYArray[] xyVectors = null;
+			IDList yVectors = null;
+			if (!vectors.isEmpty()) {
+				DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+				DataflowManager dataflowManager = builder.build(dataset, chart, true /*computeData*/); // XXX
+				yVectors = builder.getDisplayedIDs();
+
+				if (dataflowManager != null) {
+					List<Node> arrayBuilders = builder.getArrayBuilders();
+					dataflowManager.dump();
+					xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders);
+				}
+			}
+			
+			if (xyScalars != null && xyVectors == null)
+				return new ScalarScatterPlotDataset(xyScalars);
+			else if (xyScalars == null && xyVectors != null)
+				return new VectorScatterPlotDataset(yVectors, xyVectors, manager);
+			else if (xyScalars != null && xyVectors != null)
+				return new CompoundXYDataset(
+								new ScalarScatterPlotDataset(xyScalars),
+								new VectorScatterPlotDataset(yVectors, xyVectors, manager));
+			
 		}
 		return null;
 	}
@@ -257,6 +309,48 @@ public class DatasetManager {
 		else
 			return null;
 	}
+	
+	public static String[] getResultItemNames(IDList idlist, String nameFormat, ResultFileManager manager) {
+		ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+		String format = StringUtils.isEmpty(nameFormat) ? getLineNameFormat(items) : nameFormat;
+		return ResultItemFormatter.formatResultItems(format, items);
+	}
+	
+	/**
+	 * Returns the default format string for names of the lines in {@code items}.
+	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
+	 * but fields that are the same for each item are omitted.
+	 * If all the fields has the same value in {@code items}, then the "{index}" is used as 
+	 * the format string. 
+	 */
+	private static String getLineNameFormat(ResultItem[] items) {
+		if (items.length == 0)
+			return "";
+		
+		StringBuffer sbFormat = new StringBuffer();
+		char separator = ' ';
+		String[] fields = new String[] {FIELD_FILENAME, FIELD_RUNNAME, RUNNUMBER, FIELD_MODULENAME, FIELD_DATANAME,
+										RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION};
+		for (String field : fields) {
+			String firstValue = ResultItemFields.getFieldValue(items[0], field);
+			
+			for (int i = 1; i < items.length; ++i) {
+				String value = ResultItemFields.getFieldValue(items[i], field);
+				if (!ObjectUtils.equals(firstValue, value)) {
+					sbFormat.append('{').append(field).append('}').append(separator);
+					break;
+				}
+			}
+		}
+		
+		if (sbFormat.length() > 0)
+			sbFormat.deleteCharAt(sbFormat.length() - 1);
+		else
+			sbFormat.append("{index}");
+		
+		return sbFormat.toString();
+	}
+	
 
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, ResultType type) {
 		IDList result = new IDList();

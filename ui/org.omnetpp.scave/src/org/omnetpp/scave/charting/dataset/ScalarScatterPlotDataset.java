@@ -1,13 +1,8 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.XYDataset;
-
-import static org.omnetpp.scave.engine.ScalarFields.*;
 
 /**
  * IXYDataset implementation for a scatter plot computed from a list of scalars.
@@ -22,23 +17,19 @@ import static org.omnetpp.scave.engine.ScalarFields.*;
  * 
  * @author tomi
  */
-public class ScatterPlotDataset implements IXYDataset {
+public class ScalarScatterPlotDataset implements IXYDataset {
 	
-	private XYDataset data; // first row contains X values,
-	                        // other rows contain Y values (NaN if missing)
+	private XYDataset scalars; 	// first row contains X values,
+	                        	// other rows contain Y values (NaN if missing)
 	private String[] keys;
 	
-	public ScatterPlotDataset(IDList idlist, String moduleName, String scalarName, boolean averageReplications, ResultFileManager manager) {
-		ScalarDataSorter sorter = new ScalarDataSorter(manager);
-		ScalarFields rowFields = new ScalarFields(ScalarFields.MODULE | ScalarFields.NAME);
-		ScalarFields columnFields = averageReplications ? new ScalarFields(EXPERIMENT | MEASUREMENT) :
-			                                              new ScalarFields(EXPERIMENT | MEASUREMENT | REPLICATION);
-		this.data = sorter.prepareScatterPlot2(idlist, moduleName, scalarName, rowFields, columnFields);
-		this.keys = computeKeys(this.data);
+	public ScalarScatterPlotDataset(XYDataset scalars) {
+		this.scalars = scalars;
+		this.keys = computeKeys(this.scalars);
 	}
 	
 	public int getSeriesCount() {
-		return data.getRowCount() - 1;
+		return keys.length;
 	}
 
 	public String getSeriesKey(int series) {
@@ -46,11 +37,11 @@ public class ScatterPlotDataset implements IXYDataset {
 	}
 
 	public int getItemCount(int series) {
-		return data.getColumnCount();
+		return scalars.getColumnCount();
 	}
 
 	public double getX(int series, int item) {
-		return data.getValue(0, item);
+		return scalars.getValue(0, item);
 	}
 	
 	public BigDecimal getPreciseX(int series, int item) {
@@ -58,7 +49,7 @@ public class ScatterPlotDataset implements IXYDataset {
 	}
 
 	public double getY(int series, int item) {
-		return data.getValue(series+1, item);
+		return scalars.getValue(series+1, item);
 	}
 
 	public BigDecimal getPreciseY(int series, int item) {
