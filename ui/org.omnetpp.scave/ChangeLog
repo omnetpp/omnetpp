@@ -1,3 +1,24 @@
+2007-08-31
+----------
+
+Additions:
+
+   + Implemented IndexedVectorFileReaderNode. Only those blocks are read from
+     the disk that are displayed on the chart.
+
+   + Logarithmic Y axis works on line and bar charts.
+
+   + The "Style preview" canvas in the Edit dialog shows sample lines for the selected
+     vectors.
+
+Fixes:
+
+   + Antialias and caching properties could not be set to false.
+
+   + Removed "logarithmic X" and "invert XY" chart properties.
+
+   + "legend" icon works like a button.
+
 2007-08-17
 ----------
 
