@@ -26,16 +26,17 @@ public class StyledTextAccess extends CompositeAccess
 	@InUIThread
 	public void moveCursorAfter(String patternString) {
 		String text = getText();
-		Pattern pattern = Pattern.compile(patternString);
+		Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);
 		boolean matches = matcher.matches();
 		Assert.isTrue(matches);
-		int targetOffset = matcher.end();
+		int targetOffset = matcher.end(1);
+		matcher.region(matcher.end(), text.length());
 		Assert.isTrue(!matcher.matches());
 		
 		int currentOffset = getStyledText().getCaretOffset();
 		
 		for (int i = 0; i < targetOffset - currentOffset; i++)
-			pressKey(SWT.ARROW_LEFT);
+			pressKey(SWT.ARROW_RIGHT);
 	}
 }

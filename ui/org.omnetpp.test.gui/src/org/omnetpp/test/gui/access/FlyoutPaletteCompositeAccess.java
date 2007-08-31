@@ -1,12 +1,10 @@
 package org.omnetpp.test.gui.access;
 
-import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -33,9 +31,7 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 			}
 		});
 		
-		Composite paletteContainer = (Composite)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "paletteContainer");
-		Control figureCanvas = findDescendantControl(paletteContainer, FigureCanvas.class);
-		new FigureAccess(figure).click(LEFT_MOUSE_BUTTON, figureCanvas);
+		new FigureAccess(figure).click(LEFT_MOUSE_BUTTON);
 	}
 
 	@InUIThread

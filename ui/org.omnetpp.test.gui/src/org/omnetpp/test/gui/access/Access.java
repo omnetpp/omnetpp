@@ -6,6 +6,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -92,10 +93,12 @@ public class Access
 
 	@InUIThread
 	public static void postEvent(Event event) {
+		Assert.assertTrue(getDisplay().getActiveShell() != null);
+		
 		if (debug)
 			System.out.println("Posting event: " + event);
 
-		getDisplay().post(event);
+		Assert.assertTrue(getDisplay().post(event));
 	}
 
 	@InUIThread
@@ -134,6 +137,11 @@ public class Access
 		return event;
 	}
 
+	@InUIThread
+	public void pressEnter() {
+		pressKey(SWT.KEYPAD_CR);
+	}
+	
 	@InUIThread
 	public void pressKey(int keyCode) {
 		pressKey(keyCode, SWT.None);
@@ -303,21 +311,6 @@ public class Access
 			}
 		});
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	@InUIThread
 	public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
@@ -350,6 +343,37 @@ public class Access
 		}
 	}
 	
+	@InUIThread
+	public static EditPart findDescendantEditPart(EditPart editPart, final Class<? extends EditPart> clazz) {
+		return theOnlyEditPart(collectDescendantEditParts(editPart, new IPredicate() {
+			public boolean matches(Object EditPart) {
+				return clazz.isInstance(EditPart);
+			}
+		}));
+	}
+
+	@InUIThread
+	public static EditPart findDescendantEditPart(EditPart editPart, IPredicate predicate) {
+		return theOnlyEditPart(collectDescendantEditParts(editPart, predicate));
+	}
+
+	@InUIThread
+	public static List<EditPart> collectDescendantEditParts(EditPart editPart, IPredicate predicate) {
+		ArrayList<EditPart> editParts = new ArrayList<EditPart>();
+		collectDescendantEditParts(editPart, predicate, editParts);
+		return editParts;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static void collectDescendantEditParts(EditPart parentEditPart, IPredicate predicate, List<EditPart> editParts) {
+		for (EditPart editPart: (List<EditPart>)parentEditPart.getChildren()) {
+			collectDescendantEditParts(editPart, predicate, editParts);
+
+			if (predicate.matches(editPart))
+				editParts.add(editPart);
+		}
+	}
+
 	protected static Object theOnlyObject(List<? extends Object> objects) {
 		Assert.assertTrue("Found more than one objects when exactly one is expected", objects.size() < 2);
 		Assert.assertTrue("Found zero object when exactly one is expected", objects.size() > 0);
@@ -366,6 +390,10 @@ public class Access
 
 	protected static IFigure theOnlyFigure(List<? extends IFigure> controls) {
 		return (IFigure)theOnlyObject(controls);
+	}
+
+	protected static EditPart theOnlyEditPart(List<? extends EditPart> controls) {
+		return (EditPart)theOnlyObject(controls);
 	}
 
 	protected static Point getCenter(Rectangle rectangle) {
@@ -424,8 +452,21 @@ public class Access
 
 	protected static void dumpWidgetHierarchy(Control control, int level) {
 		System.out.println(StringUtils.repeat("  ", level) + control.toString());
+		
+		if (control.getMenu() != null)
+			dumpMenu(control.getMenu(), level);
+
 		if (control instanceof Composite)
 			for (Control child : ((Composite)control).getChildren())
 				dumpWidgetHierarchy(child, level+1);
+	}
+
+	protected static void dumpMenu(Menu menu, int level) {
+		for (MenuItem menuItem : menu.getItems()) {
+			System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());
+
+			if (menuItem.getMenu() != null)
+				dumpMenu(menuItem.getMenu(), level + 1);
+		}
 	}
 }

@@ -25,7 +25,7 @@ public aspect UIThread {
 	 * When the code is already executing in the UI thread, just
 	 * proceed with the call.
 	 */
-	Object around(): execution(@InUIThread public * *(..)) {
+	Object around(): execution(@InUIThread * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
 	    	System.out.println("AJ: doing " + method + " (already in UI thread)");
@@ -65,6 +65,4 @@ public aspect UIThread {
 	    	throw new TestException(e);
 	    }
 	}
-	
-	
 }

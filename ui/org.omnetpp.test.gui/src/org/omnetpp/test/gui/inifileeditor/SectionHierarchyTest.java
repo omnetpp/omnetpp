@@ -21,7 +21,6 @@ public class SectionHierarchyTest extends GUITestCase
 	@Override
 	protected void setUp() throws Exception {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.assertIsActiveShell();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceUtils.createFileWithContent(filePath, "");
 		WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();

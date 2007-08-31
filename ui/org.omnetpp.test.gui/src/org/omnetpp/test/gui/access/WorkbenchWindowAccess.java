@@ -106,8 +106,4 @@ public class WorkbenchWindowAccess extends Access {
 	public void closeAllEditorPartsWithHotKey() {
 		pressKey('w', SWT.CONTROL + SWT.SHIFT);
 	}
-
-	public void assertIsActiveShell() {
-		getShell().assertIsActive();
-	}
 }

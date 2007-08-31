@@ -23,7 +23,6 @@ public class NedEditorTest extends GUITestCase
 	protected void prepareForTest() throws CoreException {
 		// Test setup: close all editors, delete the file left over from previous runs
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.assertIsActiveShell();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}
@@ -44,14 +43,18 @@ public class NedEditorTest extends GUITestCase
 		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePage("Graphical");
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
 		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
-		textualEditor.moveCursorAfter("simple TestNode.*\\{");
-		textualEditor.typeIn("\n");
-		textualEditor.typeIn("gates:\n");
-		textualEditor.typeIn("inout g;\n");
+		textualEditor.moveCursorAfter("simple TestNode.*\\n\\{");
+		textualEditor.pressEnter();
+		textualEditor.typeIn("gates:");
+		textualEditor.pressEnter();
+		textualEditor.typeIn("inout g;");
+		textualEditor.pressEnter();
+		multiPageEditorPart.activatePage("Graphical");
 		CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.createCompoundModuleWithPalette("TestNetwork");
-		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node1", 100, 100);
-		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node2", 200, 200);
-		compoundModuleEditPart.createConnectionWithPalette("node1", "node2");
+		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node1", 200, 200);
+		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node2", 100, 100);
+		compoundModuleEditPart.createConnectionWithPalette("node1", "node2", ".*g.*");
+		multiPageEditorPart.saveWithHotKey();
 	}
 
 	//TODO incomplete code...

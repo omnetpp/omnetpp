@@ -1,6 +1,17 @@
 package org.omnetpp.test.gui.access;
 
-public class EditPartAccess extends Access
-{
+import org.eclipse.gef.EditPart;
 
+public class EditPartAccess
+	extends Access
+{
+	protected EditPart editPart;
+	
+	public EditPartAccess(EditPart editPart) {
+		this.editPart = editPart;
+	}
+	
+	public EditPart getEditPart() {
+		return editPart;
+	}
 }

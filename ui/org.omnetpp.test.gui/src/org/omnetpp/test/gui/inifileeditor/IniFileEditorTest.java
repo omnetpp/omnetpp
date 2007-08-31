@@ -21,7 +21,6 @@ public class IniFileEditorTest extends GUITestCase
 	protected void prepareForTest() throws CoreException {
 		// Test setup: close all editors, delete the file left over from previous runs
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.assertIsActiveShell();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}

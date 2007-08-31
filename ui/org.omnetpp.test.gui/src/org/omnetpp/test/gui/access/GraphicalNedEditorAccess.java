@@ -3,11 +3,15 @@ package org.omnetpp.test.gui.access;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
+import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.NedTypeEditPart;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
@@ -28,7 +32,7 @@ public class GraphicalNedEditorAccess
 	}
 
 	@NotInUIThread
-	public SimpleModuleEditPartAccess createSimpleModuleWithPalette(String name) {
+	public NedTypeEditPart createSimpleModuleWithPalette(String name) {
 		clickPaletteItem(".*Simple.*module.*");
 		clickBackground();
 		renameModule("Unnamed.*", name);
@@ -37,21 +41,33 @@ public class GraphicalNedEditorAccess
 		return null;
 	}
 
+	@NotInUIThread
+	public void renameModule(String oldName, String newName) {
+		clickModuleFigureWithName(oldName);
+		typeInNewName(newName);
+	}
+
 	@InUIThread
-	private void renameModule(final String oldName, String newName) {
+	private void typeInNewName(String name) {
+		FigureCanvas figureCanvas = getGraphicalNedEditor().getFigureCanvas();
+		Text text = (Text)Access.findDescendantControl(figureCanvas, Text.class);
+		TextAccess textAccess = new TextAccess(text);
+		textAccess.pressKey(SWT.F6);
+		textAccess.typeIn(name);
+		textAccess.pressEnter();
+	}
+
+	@InUIThread
+	public void clickModuleFigureWithName(final String name) {
 		FigureCanvas figureCanvas = getGraphicalNedEditor().getFigureCanvas();
 		IFigure rootFigure = figureCanvas.getLightweightSystem().getRootFigure();
 		IFigure labelFigure = findDescendantFigure(rootFigure, new IPredicate() {
 			public boolean matches(Object object) {
-				return object instanceof Label && ((Label)object).getText().matches(oldName);
+				return object instanceof Label && ((Label)object).getText().matches(name);
 			}
 		});
 
-		new FigureAccess(labelFigure).click(LEFT_MOUSE_BUTTON, figureCanvas);
-		ControlAccess canvasAccess = new ControlAccess(figureCanvas);
-		canvasAccess.pressKey(SWT.F6);
-		canvasAccess.typeIn(newName);
-		canvasAccess.pressKey(SWT.KEYPAD_CR);
+		new FigureAccess(labelFigure).click(LEFT_MOUSE_BUTTON);
 	}
 
 	@InUIThread
@@ -65,6 +81,10 @@ public class GraphicalNedEditorAccess
 	}
 
 	public CompoundModuleEditPartAccess createCompoundModuleWithPalette(String name) {
-		return null;
+		clickPaletteItem(".*Compound.*Module.*");
+		clickBackground();
+		
+		GraphicalViewer graphicalViewer = (GraphicalViewer)ReflectionUtils.invokeMethod(getGraphicalNedEditor(), "getGraphicalViewer");
+		return new CompoundModuleEditPartAccess((CompoundModuleEditPart)findDescendantEditPart(graphicalViewer.getRootEditPart(), CompoundModuleEditPart.class));
 	}
 }
