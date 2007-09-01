@@ -7,8 +7,8 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
 /**
@@ -54,29 +54,11 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     public void redo() {
         // make the submodule name unique if needed before inserting into the model
         child.setName(NEDElementUtilEx.getUniqueNameFor(child, parent.getSubmodules()));
-        
-        // replace fully qualified name with import + simple name if needed/possible
-    	importElement = null;
-		if (fullyQualifiedTypeName.contains(".")) {
-        	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
-        	INEDTypeResolver resolver = NEDElement.getDefaultTypeResolver();
-			INEDTypeInfo existingSimilarType = resolver.lookupNedType(simpleTypeName, parent);
-			if (existingSimilarType == null) {
-				// add import
-				importElement = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
-				child.setType(simpleTypeName);
-			}
-			else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
-				// import not needed, this type is already visible 
-				child.setType(simpleTypeName);
-			}
-			else {
-				// another module with the same simple name already imported -- must use fully qualified name
-				child.setType(fullyQualifiedTypeName);
-			}
-        }
 
-		parent.insertSubmodule(null, child);
+        child.setType(fullyQualifiedTypeName);
+        parent.insertSubmodule(null, child);
+        
+        importElement = NEDElementUtilEx.addImportFor(child);
     }
 
     @Override

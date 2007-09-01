@@ -7,12 +7,16 @@ import java.util.Set;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
@@ -254,6 +258,39 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 				doRenameSubmoduleInConnections(child, oldName, newName);
 			}
 		}
+	}
+
+    /**
+     * Given a submodule or connection whose type name is a fully qualified name,
+     * this method replaces it with the simple name plus an import in the NED file
+     * if needed/possible. 
+     * 
+     * Returns the newly create ImportElement; or null if no import got added.
+     * (I.e. it returns null as well if an existing import already covered this type.)
+     */
+	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
+		ImportElement theImport = null;
+		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeNode();
+		
+		if (submoduleOrConnection.getType().contains(".")) {
+			String fullyQualifiedTypeName = submoduleOrConnection.getType();
+        	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
+			INEDTypeInfo existingSimilarType = NEDElement.getDefaultTypeResolver().lookupNedType(simpleTypeName, parent);
+			if (existingSimilarType == null) {
+				// add import
+				theImport = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
+				submoduleOrConnection.setType(simpleTypeName);
+			}
+			else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
+				// import not needed, this type is already visible 
+				submoduleOrConnection.setType(simpleTypeName);
+			}
+			else {
+				// another module with the same simple name already imported -- must use fully qualified name
+				submoduleOrConnection.setType(fullyQualifiedTypeName);
+			}
+        }
+		return theImport;
 	}
 
 }
