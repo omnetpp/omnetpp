@@ -34,6 +34,7 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author rhornig
  */
+//FIXME DTD validation will panic on dotted submodule type names (a : org.foo.Node)! change validation procedure!!!!!!
 public class NEDTreeUtil {
 
 	private static ITreeContentProvider nedModelContentProvider = new NedModelContentProvider();
