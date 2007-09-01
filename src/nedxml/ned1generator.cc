@@ -727,16 +727,12 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << ": ";
 
-    if (node->getLikeAny() || strnotnull(node->getLikeType()))
+    if (strnotnull(node->getLikeType()))
     {
         // "like" version
         printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
         printOptVector(node, "vector-size",indent);
-
-        if (strnotnull(node->getLikeType()))
-            OUT << " like " << node->getLikeType();
-        if (node->getLikeAny())
-            errors->addWarning(node, NED2FEATURE "`like *'");
+        OUT << " like " << node->getLikeType();
     }
     else
     {
@@ -869,7 +865,7 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
     bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
 
-    if (node->getLikeAny() || strnotnull(node->getLikeType()))
+    if (strnotnull(node->getLikeType()))
     {
         errors->addWarning(node, NED2FEATURE "channel `like'");
     }

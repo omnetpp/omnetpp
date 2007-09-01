@@ -238,15 +238,14 @@ definition
         ;
 
 packagedeclaration
-        : PACKAGE packagename ';'
+        : PACKAGE dottedname ';'
                 { ps.nedfile->setPackage(toString(@2)); }
         ; /* no error recovery rule -- see discussion at top */
 
-packagename
-        : packagename '.' NAME
+dottedname
+        : dottedname '.' NAME
         | NAME
         ;
-
 
 /*
  * Import
@@ -1073,19 +1072,14 @@ submodule
         ; /* no error recovery rule -- see discussion at top */
 
 submoduleheader
-        : submodulename ':' NAME
+        : submodulename ':' dottedname
                 {
                   ps.submod->setType(toString(@3));
                 }
-        | submodulename ':' likeparam LIKE NAME
+        | submodulename ':' likeparam LIKE dottedname
                 {
                   addLikeParam(ps.submod, "like-param", @3, $3);
                   ps.submod->setLikeType(toString(@5));
-                }
-        | submodulename ':' likeparam LIKE '*'
-                {
-                  addLikeParam(ps.submod, "like-param", @3, $3);
-                  ps.submod->setLikeAny(true);
                 }
         ;
 
@@ -1431,22 +1425,16 @@ channelspec_header
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                 }
-        | NAME
+        | dottedname
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                   ps.chanspec->setType(toString(@1));
                 }
-        | likeparam LIKE NAME
+        | likeparam LIKE dottedname
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                   addLikeParam(ps.chanspec, "like-param", @1, $1);
                   ps.chanspec->setLikeType(toString(@3));
-                }
-        | likeparam LIKE '*'
-                {
-                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  addLikeParam(ps.chanspec, "like-param", @1, $1);
-                  ps.chanspec->setLikeAny(true);
                 }
         ;
 

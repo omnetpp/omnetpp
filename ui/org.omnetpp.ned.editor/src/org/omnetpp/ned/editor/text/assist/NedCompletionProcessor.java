@@ -31,6 +31,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 //    org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds
 //    org.eclipse.jdt.internal.ui.infoviews.SourceView
 //    org.eclipse.jdt.ui.actions.OpenEditorActionGroup
+//TODO completion for imports
 /**
  * NED completion processor.
  *

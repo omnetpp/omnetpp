@@ -542,17 +542,13 @@ void NED2Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     printOptVector(node, "vector-size",indent);
     OUT << ": ";
 
-    if (node->getLikeAny() || strnotnull(node->getLikeType()))
+    if (strnotnull(node->getLikeType()))
     {
         // "like" version
         OUT << "<";
         printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
         OUT << ">";
-
-        if (strnotnull(node->getLikeType()))
-            OUT << " like " << node->getLikeType();
-        if (node->getLikeAny())
-            OUT << " like *";
+        OUT << " like " << node->getLikeType();
     }
     else
     {
@@ -646,17 +642,13 @@ bool NED2Generator::isEmptyChannelSpec(ChannelSpecNode *node)
 
 void NED2Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)
 {
-    if (node->getLikeAny() || strnotnull(node->getLikeType()))
+    if (strnotnull(node->getLikeType()))
     {
         // "like" version
         OUT << " <";
         printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
         OUT << ">";
-
-        if (strnotnull(node->getLikeType()))
-            OUT << " like " << node->getLikeType();
-        if (node->getLikeAny())
-            OUT << " like *";
+        OUT << " like " << node->getLikeType();
     }
     else if (strnotnull(node->getType()))
     {

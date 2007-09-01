@@ -117,7 +117,6 @@
      name               NMTOKEN   #REQUIRED
      type               NMTOKEN   #IMPLIED
      like-type          NMTOKEN   #IMPLIED
-     like-any           (true|false) "false" <!-- set if "like *" -->
      like-param         CDATA     #IMPLIED
      vector-size        CDATA     #IMPLIED>
 
@@ -145,7 +144,6 @@
 <!ATTLIST channel-spec
      type               NMTOKEN   #IMPLIED
      like-type          NMTOKEN   #IMPLIED
-     like-any           (true|false) "false" <!-- set if "like *" -->
      like-param         CDATA     #IMPLIED>
 
 <!ELEMENT connection-group (comment*, (loop|condition)*, connection*)>

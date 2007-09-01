@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 public class NEDTreeTraversal {
 	private INEDTypeResolver nedResources;
 	private IModuleTreeVisitor visitor;
-	private Stack<INEDTypeInfo> visitedTypes = new Stack<INEDTypeInfo>(); // circle detection
+	private Stack<INEDTypeInfo> visitedTypes = new Stack<INEDTypeInfo>(); // cycle detection
 
 	/**
 	 * Constructor

@@ -255,8 +255,6 @@ void NEDDTDValidator::validateElement(SubmoduleNode *node)
     checkNameAttribute(node, "name");
     checkNMTokenAttribute(node, "type");
     checkNMTokenAttribute(node, "like-type");
-    const char *vals3[] = {"true","false"};
-    checkEnumeratedAttribute(node, "like-any", vals3, sizeof(vals3)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ConnectionsNode *node)
@@ -308,8 +306,6 @@ void NEDDTDValidator::validateElement(ChannelSpecNode *node)
 
     checkNMTokenAttribute(node, "type");
     checkNMTokenAttribute(node, "like-type");
-    const char *vals2[] = {"true","false"};
-    checkEnumeratedAttribute(node, "like-any", vals2, sizeof(vals2)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ConnectionGroupNode *node)
