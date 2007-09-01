@@ -15,6 +15,8 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
  *
  * @author rhornig
  */
+//FIXME does not know about package structure yet
+//FIXME ^^^ already implemented in NedTextHover, factor out common parts!
 public class NEDHyperlinkDetector implements IHyperlinkDetector {
 
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {

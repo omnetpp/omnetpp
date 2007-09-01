@@ -338,7 +338,7 @@ public class InifileAnalyzer {
 			// note: we do not validate "extends=" here -- that's all done in validateSections()!
 		}
 		else if (e==CFGID_NETWORK) {
-			INEDTypeInfo network = ned.lookupNedType(value, null);
+			INEDTypeInfo network = ned.getNedType(value);
 			if (network == null) {
 				addError(section, key, "No such NED network: "+value);
 				return;

@@ -10,7 +10,8 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 
 /** 
- * The NedAnnotationHover provides the hover support for java editors.
+ * Provides annotation hover support for NED editors. Annotations include 
+ * problem markers, bookmarks, etc.
  *
  * @author rhornig
  */

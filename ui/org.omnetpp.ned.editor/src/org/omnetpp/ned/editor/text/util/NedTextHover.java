@@ -49,7 +49,6 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 			IDocument doc = textViewer.getDocument();
 			int line = doc.getLineOfOffset(hoverRegion.getOffset());
 			int column = hoverRegion.getOffset() - doc.getLineOffset(line);
-			line++;   // IDocument is 0-based, NEDResources is 1-based
 
 			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 			INEDElement hoveredElement = res.getNedElementAt(file, line, column);
@@ -59,7 +58,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 					(INedTypeLookupContext)hoveredElement.getEnclosingTypeNode() : 
 						hoveredElement.getContainingNedFileElement(); 
 			INEDTypeInfo typeInfo = res.lookupNedType(word, context);
-			System.out.println("typeInfo="+typeInfo+" on hovering "+word+" in "+hoveredElement);
+			System.out.println("typeInfo="+typeInfo+" on hovering "+word+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");
 			if (typeInfo == null)
 				return null;
 
@@ -83,6 +82,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 
 	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
+		//FIXME one-letter words are not recognized!
 		try {
 			// if mouse hovers over a selection, return that
 			IDocument docu = viewer.getDocument();
@@ -112,7 +112,8 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 				length++;
 
 			return docu.get(offset, length);
-		} catch (BadLocationException e) {
+		} 
+		catch (BadLocationException e) {
 			return null;
 		}
 	}

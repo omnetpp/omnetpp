@@ -125,7 +125,7 @@ s	 * before getting presented to the user.
 		if (entry==CFGID_NETWORK) {
 			NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
 			for (String networkName : nedResources.getNetworkQNames())
-				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(nedResources.lookupNedType(networkName, null).getNEDElement().getComment())));
+				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(nedResources.getNedType(networkName).getNEDElement().getComment())));
 			sort(p);
 		}
 		else if (entry==CFGID_PRELOAD_NED_FILES) {
