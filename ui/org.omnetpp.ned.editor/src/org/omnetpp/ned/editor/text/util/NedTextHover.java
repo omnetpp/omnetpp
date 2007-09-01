@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.text.util;
 
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -13,43 +14,74 @@ import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
- * Example implementation for an <code>ITextHover</code> which hovers over NED code.
+ * NED text hover. Currently it displays the documentation of the NED type name hovered. 
  *
- * @author rhornig
+ * @author rhornig, andras
  */
-// TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 public class NedTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
 
-	//private IEditorPart editor = null;
-	
+	private IEditorPart editor = null;
+
 	public NedTextHover(IEditorPart editor) {
-		//this.editor = editor;
+		this.editor = editor;
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		String word = getWordUnderCursor(textViewer, hoverRegion, NedCompletionHelper.nedWordDetector);
+		try {
+			String word = getWordUnderCursor(textViewer, hoverRegion, NedCompletionHelper.nedWordDetector);
+			if (StringUtils.isEmpty(word))
+				return null;
 
-		// if we find a NED component with that name, display its source code
-		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();    	
-		INEDTypeInfo component = res.lookupNedType(word, null);
-		
-		if (component!=null)
-		    return HoverSupport.addHTMLStyleSheet(
-		                    StringUtils.makeHtmlDocu(component.getNEDElement().getComment()));
+			// if we find a NED component with that name, display its source code
+			IFile file = ((FileEditorInput)editor.getEditorInput()).getFile();
+			IDocument doc = textViewer.getDocument();
+			int line = doc.getLineOfOffset(hoverRegion.getOffset());
+			int column = hoverRegion.getOffset() - doc.getLineOffset(line);
+			line++;   // IDocument is 0-based, NEDResources is 1-based
 
-		// otherwise, give up (TODO we might try harder though, ie using context info)
-		return "";
+			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+			INEDElement hoveredElement = res.getNedElementAt(file, line, column);
+			if (hoveredElement == null)
+				return null;
+			INedTypeLookupContext context = (hoveredElement.getEnclosingTypeNode() instanceof INedTypeLookupContext) ? 
+					(INedTypeLookupContext)hoveredElement.getEnclosingTypeNode() : 
+						hoveredElement.getContainingNedFileElement(); 
+			INEDTypeInfo typeInfo = res.lookupNedType(word, context);
+			System.out.println("typeInfo="+typeInfo+" on hovering "+word+" in "+hoveredElement);
+			if (typeInfo == null)
+				return null;
+
+			return makeHTMLHoverFor(typeInfo);
+		} 
+		catch (BadLocationException e) {
+			NedEditorPlugin.logError(e);
+			return null;
+		}
 	}
 
-	
+	protected static String makeHTMLHoverFor(INEDTypeInfo typeInfo) {
+		String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
+		
+		String comment = typeInfo.getNEDElement().getComment();
+		if (StringUtils.isNotEmpty(comment))
+				text += "<br/>" + StringUtils.makeHtmlDocu(comment);
+
+		return HoverSupport.addHTMLStyleSheet(text);
+	}
+
+
 	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
 		try {
 			// if mouse hovers over a selection, return that
@@ -73,12 +105,12 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 			// check if the first char of the word is also ok.
 			if (!wordDetector.isWordStart(docu.getChar(offset)))
 				return null; // this is not a word (but probably a number)
-			
+
 			// now we should stand on the first char of the word; now iterate through 
 			// the rest of chars until a character cannot be recognized as an in/word char
 			while(offset + length < docu.getLength() && wordDetector.isWordPart(docu.getChar(offset + length)))
 				length++;
-			
+
 			return docu.get(offset, length);
 		} catch (BadLocationException e) {
 			return null;
@@ -91,17 +123,18 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 			return new Region(selection.x, selection.y);
 		return new Region(offset, 0);
 	}
-    /*
-     * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
-     */
-    public IInformationControlCreator getHoverControlCreator() {
-        return HoverSupport.getHoverControlCreator();
-    }
+	
+	/*
+	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
+	 */
+	public IInformationControlCreator getHoverControlCreator() {
+		return HoverSupport.getHoverControlCreator();
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
-     */
-    public IInformationControlCreator getInformationPresenterControlCreator() {
-        return HoverSupport.getInformationPresenterControlCreator();
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
+	 */
+	public IInformationControlCreator getInformationPresenterControlCreator() {
+		return HoverSupport.getInformationPresenterControlCreator();
+	}
 }
