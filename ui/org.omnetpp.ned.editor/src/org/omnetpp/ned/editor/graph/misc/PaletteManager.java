@@ -234,7 +234,9 @@ public class PaletteManager implements INEDChangeListener {
     }
 
     private static void addToolEntry(INedTypeElement typeElement, String group, Map<String, ToolEntry> entries) {
-        String key = typeElement.getNEDTypeInfo().getFullyQualifiedName();
+        String fullyQualifiedTypeName = typeElement.getNEDTypeInfo().getFullyQualifiedName();
+
+        String key = fullyQualifiedTypeName;
         if (StringUtils.isNotEmpty(group))
             key = group+GROUP_DELIMITER+key;
         
@@ -254,15 +256,16 @@ public class PaletteManager implements INEDChangeListener {
         // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
 
         boolean isInterface = typeElement instanceof ModuleInterfaceElement;
-        String label = typeElement.getNEDTypeInfo().getFullyQualifiedName(); // or: getName();
+        String label = fullyQualifiedTypeName; // or: getName();
         if (typeElement.getEnclosingTypeNode() != null)
         	label += NBSP+"(in"+NBSP+typeElement.getEnclosingTypeNode().getName()+")";
         if (isInterface)
         	label += NBSP+"(interface)";
 
-        CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
+        String instanceName = StringUtils.toInstanceName(typeElement.getName());
+		CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
                 label, StringUtils.makeBriefDocu(typeElement.getComment(), 300),
-                new ModelFactory(NEDElementTags.NED_SUBMODULE, StringUtils.toInstanceName(typeElement.getName()), typeElement.getName(), isInterface),
+                new ModelFactory(NEDElementTags.NED_SUBMODULE, instanceName, fullyQualifiedTypeName, isInterface),
                 imageDescNorm, imageDescLarge );
 
         entries.put(key, toolEntry);
@@ -285,7 +288,7 @@ public class PaletteManager implements INEDChangeListener {
 
         // connection selection
         MarqueeToolEntry marquee = new MarqueeToolEntry("Connection"+NBSP+"selector", "Drag out an area to select connections in it");
-        marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR,
+        marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
                 MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED);
         entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"marquee", marquee);
 
@@ -295,21 +298,21 @@ public class PaletteManager implements INEDChangeListener {
         channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelInterfaceQNames());
         Collections.sort(channelNames, StringUtils.dictionaryComparator);
 
-        for (String name : channelNames) {
-            INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getNedType(name);
-            INEDElement modelElement = comp.getNEDElement();
+        for (String fullyQualifiedName : channelNames) {
+            INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getNedType(fullyQualifiedName);
+            INEDElement modelElement = typeInfo.getNEDElement();
             boolean isInterface = modelElement instanceof ChannelInterfaceElement;
 
             ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
-                    comp.getFullyQualifiedName() + (isInterface ? NBSP+"(interface)" : ""),
-                    StringUtils.makeBriefDocu(comp.getNEDElement().getComment(), 300),
-                    new ModelFactory(NEDElementTags.NED_CONNECTION, name.toLowerCase(), name, isInterface),
+                    fullyQualifiedName + (isInterface ? NBSP+"(interface)" : ""),
+                    StringUtils.makeBriefDocu(typeInfo.getNEDElement().getComment(), 300),
+                    new ModelFactory(NEDElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, isInterface),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
             );
             // sets the required connection tool
             tool.setToolClass(NedConnectionCreationTool.class);
-            entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+name, tool);
+            entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+fullyQualifiedName, tool);
         }
         return entries;
     }

@@ -137,15 +137,15 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      */
 	public void insertSubmodule(int index, SubmoduleElementEx child) {
 		// check whether Submodules node exists and create one if doesn't
-		SubmodulesElement snode = getFirstSubmodulesChild();
-		if (snode == null)
-			snode = (SubmodulesElement)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_SUBMODULES, this);
+		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
+		if (submodulesElement == null)
+			submodulesElement = (SubmodulesElement)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_SUBMODULES, this);
 
-		INEDElement insertBefore = snode.getFirstChild();
-		for (int i=0; (i<index) && (insertBefore!=null); ++i)
+		INEDElement insertBefore = submodulesElement.getFirstChild();
+		for (int i=0; i<index && insertBefore!=null; ++i)
 			insertBefore = insertBefore.getNextSibling();
 
-		snode.insertChildBefore(insertBefore, child);
+		submodulesElement.insertChildBefore(insertBefore, child);
 	}
 
     /**
@@ -154,11 +154,11 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      */
 	public void insertSubmodule(SubmoduleElementEx insertBefore, SubmoduleElementEx child) {
 		// check whether Submodules node exists and create one if doesn't
-		SubmodulesElement snode = getFirstSubmodulesChild();
-		if (snode == null)
-			snode = (SubmodulesElement)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_SUBMODULES, this);
+		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
+		if (submodulesElement == null)
+			submodulesElement = (SubmodulesElement)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_SUBMODULES, this);
 
-		snode.insertChildBefore(insertBefore, child);
+		submodulesElement.insertChildBefore(insertBefore, child);
 	}
 
     // connection related methods

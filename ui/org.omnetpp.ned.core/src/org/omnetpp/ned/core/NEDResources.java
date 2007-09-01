@@ -395,13 +395,27 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		
 		// inner type?
 		if (context instanceof INedTypeElement) {
-			INedTypeElement innerType = ((INedTypeElement)context).getNEDTypeInfo().getInnerTypes().get(name);
-			if (innerType != null)
-				return innerType.getNEDTypeInfo();
+			INEDTypeInfo contextTypeInfo = ((INedTypeElement)context).getNEDTypeInfo();
+			if (name.contains(".")) {
+				// inner type with fully qualified name?
+				String prefix = StringUtils.substringBeforeLast(name, ".");
+				String simpleName = StringUtils.substringAfterLast(name, ".");
+				if (contextTypeInfo.getFullyQualifiedName().equals(prefix)) {
+					INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(simpleName);
+					if (innerType != null)
+						return innerType.getNEDTypeInfo();
+				}
+			}
+			else {
+				// inner type with simple name
+				INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(name);
+				if (innerType != null)
+					return innerType.getNEDTypeInfo();
+			}
 		}
 		
 		// type from the same package?
-		String packageName = context.getContainingNedFileElement().getPackage();  //FIXME this function probably redundant: getQNameAsPrefix();
+		String packageName = context.getContainingNedFileElement().getPackage();
 		INEDTypeInfo samePackageType = components.get(StringUtils.isNotEmpty(packageName) ? packageName+"."+name : name);
 		if (samePackageType != null)
 			return samePackageType;

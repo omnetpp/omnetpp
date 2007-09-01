@@ -122,7 +122,8 @@ public interface INEDTypeResolver {
 
     /**
 	 * Looks up the name in the given context, and returns the NED type info, 
-	 * or null if it does not exist. 
+	 * or null if it does not exist. Considers imports, etc; inner types are
+	 * also handled.
 	 * @param name  May be a simple name or a qualified name; cannot be null
 	 * @param context May not be null.
 	 */

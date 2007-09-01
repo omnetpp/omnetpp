@@ -12,6 +12,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ImportElement;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
@@ -73,5 +74,22 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 			if (child instanceof ImportElement)
 				result.add(((ImportElement)child).getImportSpec());
 		return result;
+	}
+
+	/**
+	 * Insert an import after the last import in the file
+	 */
+   public ImportElement addImport(String importSpec) {
+		ImportElement importElement = (ImportElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_IMPORT);
+		importElement.setImportSpec(importSpec);
+
+		INEDElement lastImport = null;
+		for (INEDElement element : this)
+			if (element instanceof ImportElement)
+				lastImport = element; 
+		INEDElement insertionPoint = lastImport==null ? getFirstChild() : lastImport.getNextSibling();
+		
+		insertChildBefore(insertionPoint, importElement);
+		return importElement;
 	}
 }

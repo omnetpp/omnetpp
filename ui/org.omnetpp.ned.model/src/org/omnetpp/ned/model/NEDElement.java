@@ -317,6 +317,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	}
 
 	public INEDElement removeChild(INEDElement inode) {
+		Assert.isTrue(inode.getParent() == this);
 		NEDElement node = (NEDElement) inode;
 		if (node.prevsibling!=null)
 			node.prevsibling.nextsibling = node.nextsibling;
