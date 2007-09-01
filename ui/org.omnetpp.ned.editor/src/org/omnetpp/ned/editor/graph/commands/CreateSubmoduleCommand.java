@@ -2,13 +2,10 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
 /**
@@ -55,10 +52,10 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
         // make the submodule name unique if needed before inserting into the model
         child.setName(NEDElementUtilEx.getUniqueNameFor(child, parent.getSubmodules()));
 
-        child.setType(fullyQualifiedTypeName);
+        child.setType(fullyQualifiedTypeName); // restore it (needed when redoing the 2nd+ time)
         parent.insertSubmodule(null, child);
         
-        importElement = NEDElementUtilEx.addImportFor(child);
+        importElement = NEDElementUtilEx.addImportFor(child); // overwrites type
     }
 
     @Override

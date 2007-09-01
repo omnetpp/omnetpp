@@ -265,7 +265,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      * this method replaces it with the simple name plus an import in the NED file
      * if needed/possible. 
      * 
-     * Returns the newly create ImportElement; or null if no import got added.
+     * Returns the newly created ImportElement, or null if no import got added.
      * (I.e. it returns null as well if an existing import already covered this type.)
      */
 	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
