@@ -421,7 +421,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
 
 		// maybe it's already a fully qualified name
-		if (components.get(name) != null)
+		if (name.contains(".") && components.get(name) != null)
 			return components.get(name);
 		
 		return null;
