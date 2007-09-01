@@ -36,8 +36,9 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
   protected:
     bool parsedExpressions;
 
-    // internal helper: verify attributes
+    // internal helpers: verify attributes
     void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
+    void checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed);
 
   public:
     /**

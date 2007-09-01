@@ -71,8 +71,8 @@ nedtool.obj : nedtool.cc
 	@: note: nedtool.cc must be compiled *without* -DBUILDING_NEDXML
 	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp nedtool.cc
 
-nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned2.dtd
-	$(PERL) dtdclassgen.pl ned2.dtd
+nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
+	$(PERL) dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 
 ned1.tab.h ned1.tab.cc : ned1.y
 	$(YACC:/=\) -p ned1yy -b ned1 -d ned1.y
@@ -156,6 +156,16 @@ ned1generator.obj: ned1generator.cc \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
+ned2.tab.obj: ned2.tab.cc \
+  nedyydefs.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 ned2generator.obj: ned2generator.cc \
   ned2generator.h \
   nederror.h \

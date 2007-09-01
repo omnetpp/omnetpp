@@ -67,7 +67,6 @@
 <!-- if there is no "extends", it defaults to "BasicChannel" -->
 <!ELEMENT channel (comment*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
-     is-withcppclass     (true|false)  "false"
      name                NMTOKEN   #REQUIRED>
 
 <!ELEMENT parameters (comment*, (property|param|pattern)*)>
@@ -115,8 +114,8 @@
 <!ELEMENT submodule (comment*, expression*, parameters?, gates?)>  <!-- FIXME needs condition? -->
 <!ATTLIST submodule
      name               NMTOKEN   #REQUIRED
-     type               NMTOKEN   #IMPLIED
-     like-type          NMTOKEN   #IMPLIED
+     type               CDATA     #IMPLIED
+     like-type          CDATA     #IMPLIED
      like-param         CDATA     #IMPLIED
      vector-size        CDATA     #IMPLIED>
 
@@ -142,8 +141,8 @@
 
 <!ELEMENT channel-spec (comment*, expression*, parameters?)>
 <!ATTLIST channel-spec
-     type               NMTOKEN   #IMPLIED
-     like-type          NMTOKEN   #IMPLIED
+     type               CDATA     #IMPLIED
+     like-type          CDATA     #IMPLIED
      like-param         CDATA     #IMPLIED>
 
 <!ELEMENT connection-group (comment*, (loop|condition)*, connection*)>

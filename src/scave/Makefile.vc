@@ -243,6 +243,26 @@ indexedvectorfile.obj: indexedvectorfile.cc \
   dataflowmanager.h \
   idlist.h \
   enumtype.h
+indexedvectorfilereader.obj: indexedvectorfilereader.cc \
+  channel.h \
+  scaveutils.h \
+  vectorfilereader.h \
+  indexedvectorfilereader.h \
+  ../common/commonutil.h \
+  node.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  nodetype.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h \
+  resultfilemanager.h \
+  dataflowmanager.h \
+  idlist.h \
+  enumtype.h \
+  statistics.h \
+  indexfile.h
 indexfile.obj: indexfile.cc \
   ../common/exception.h \
   ../common/filereader.h \
@@ -286,6 +306,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   vectorfilereader.h \
   vectorfilewriter.h \
   indexedvectorfile.h \
+  indexedvectorfilereader.h \
   filewriter.h \
   windowavg.h \
   slidingwinavg.h \
@@ -295,6 +316,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   diffquot.h \
   customfilter.h \
   stddev.h \
+  teenode.h \
   ../common/commondefs.h \
   ../common/exception.h \
   node.h \
@@ -407,6 +429,18 @@ stddev.obj: stddev.cc \
   xyarray.h \
   nodetype.h \
   dataflowmanager.h
+teenode.obj: teenode.cc \
+  channel.h \
+  teenode.h \
+  ../common/commonutil.h \
+  node.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
 vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/stringutil.h \
   scaveutils.h \
@@ -427,6 +461,7 @@ vectorfileindexer.obj: vectorfileindexer.cc \
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   scaveutils.h \
+  scaveexception.h \
   vectorfilereader.h \
   ../common/commonutil.h \
   node.h \

@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
 
@@ -157,14 +158,24 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
     }
 }
 
+void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed)
+{
+    const char *s = node->getAttribute(attr);
+    assert(s);
+    if (!*s)
+        return;
+    for (; *s; s++)
+        if (!isalpha(*s) && !isdigit(*s) && *s!='_' && *s!='.' && (wildcardsAllowed ? *s!='*' : true))
+            {errors->addError(node,"validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
+}
+
 void NEDSyntaxValidator::validateElement(FilesNode *node)
 {
-    //FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(NedFileNode *node)
 {
-    //FIXME revise
+    checkDottedNameAttribute(node, "package", false);
 }
 
 void NEDSyntaxValidator::validateElement(CommentNode *node)
@@ -174,7 +185,7 @@ void NEDSyntaxValidator::validateElement(CommentNode *node)
 
 void NEDSyntaxValidator::validateElement(ImportNode *node)
 {
-    //FIXME revise
+    checkDottedNameAttribute(node, "import-spec", true);
 }
 
 void NEDSyntaxValidator::validateElement(PropertyDeclNode *node)
@@ -275,6 +286,10 @@ void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
 
+    checkDottedNameAttribute(node, "type", false);
+    checkDottedNameAttribute(node, "like-type", false);
+
+
 //    // if there's a "like", name should be an existing module parameter name
 //    if (strnotnull(node->getLikeParam()))
 //    {
@@ -349,6 +364,8 @@ void NEDSyntaxValidator::validateElement(ConnectionNode *node)
 
 void NEDSyntaxValidator::validateElement(ChannelSpecNode *node)
 {
+    checkDottedNameAttribute(node, "type", false);
+    checkDottedNameAttribute(node, "like-type", false);
     //FIXME revise
 }
 

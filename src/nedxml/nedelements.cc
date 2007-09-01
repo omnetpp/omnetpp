@@ -908,26 +908,23 @@ ParametersNode *ChannelInterfaceNode::getFirstParametersChild() const
 
 ChannelNode::ChannelNode()
 {
-    isWithcppclass = false;
     applyDefaults();
 }
 
 ChannelNode::ChannelNode(NEDElement *parent) : NEDElement(parent)
 {
-    isWithcppclass = false;
     applyDefaults();
 }
 
 int ChannelNode::getNumAttributes() const
 {
-    return 2;
+    return 1;
 }
 
 const char *ChannelNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "is-withcppclass";
-        case 1: return "name";
+        case 0: return "name";
         default: return 0;
     }
 }
@@ -935,8 +932,7 @@ const char *ChannelNode::getAttributeName(int k) const
 const char *ChannelNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return boolToString(isWithcppclass);
-        case 1: return name.c_str();
+        case 0: return name.c_str();
         default: return 0;
     }
 }
@@ -944,8 +940,7 @@ const char *ChannelNode::getAttribute(int k) const
 void ChannelNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: isWithcppclass = stringToBool(val); break;
-        case 1: name = val; break;
+        case 0: name = val; break;
         default: ;
     }
 }
@@ -953,8 +948,7 @@ void ChannelNode::setAttribute(int k, const char *val)
 const char *ChannelNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "false";
-        case 1: return NULL;
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -962,7 +956,6 @@ const char *ChannelNode::getAttributeDefault(int k) const
 ChannelNode *ChannelNode::dup() const
 {
     ChannelNode *newNode = new ChannelNode();
-    newNode->isWithcppclass = this->isWithcppclass;
     newNode->name = this->name;
     return newNode;
 }

@@ -689,7 +689,6 @@ class NEDXML_API ChannelInterfaceNode : public NEDElement
  * <pre>
  * <!ELEMENT channel (comment*, extends?, interface-name*, parameters?)>
  * <!ATTLIST channel
- *      is-withcppclass     (true|false)  "false"
  *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
@@ -698,7 +697,6 @@ class NEDXML_API ChannelInterfaceNode : public NEDElement
 class NEDXML_API ChannelNode : public NEDElement
 {
   private:
-    bool isWithcppclass;
     std::string name;
   public:
     /** @name Constructors, destructor */
@@ -722,8 +720,6 @@ class NEDXML_API ChannelNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    bool getIsWithcppclass() const  {return isWithcppclass;}
-    void setIsWithcppclass(bool val)  {isWithcppclass = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
@@ -1198,8 +1194,8 @@ class NEDXML_API SubmodulesNode : public NEDElement
  * <!ELEMENT submodule (comment*, expression*, parameters?, gates?)>
  * <!ATTLIST submodule
  *      name               NMTOKEN   #REQUIRED
- *      type               NMTOKEN   #IMPLIED
- *      like-type          NMTOKEN   #IMPLIED
+ *      type               CDATA     #IMPLIED
+ *      like-type          CDATA     #IMPLIED
  *      like-param         CDATA     #IMPLIED
  *      vector-size        CDATA     #IMPLIED>
  * </pre>
@@ -1405,8 +1401,8 @@ class NEDXML_API ConnectionNode : public NEDElement
  * <pre>
  * <!ELEMENT channel-spec (comment*, expression*, parameters?)>
  * <!ATTLIST channel-spec
- *      type               NMTOKEN   #IMPLIED
- *      like-type          NMTOKEN   #IMPLIED
+ *      type               CDATA     #IMPLIED
+ *      like-type          CDATA     #IMPLIED
  *      like-param         CDATA     #IMPLIED>
  * </pre>
  * 

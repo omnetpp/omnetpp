@@ -1799,6 +1799,34 @@ errmsg.obj: errmsg.cc \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h
+expr.tab.obj: expr.tab.cc \
+  expryydefs.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cpar.h \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../../include/globals.h \
+  ../../include/cfunction.h \
+  ../../include/cnedfunction.h \
+  ../../include/nedsupport.h \
+  ../../include/cexpression.h \
+  ../../include/cstringpool.h \
+  ../../include/cobject.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/opp_string.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 globals.obj: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1825,6 +1853,23 @@ globals.obj: globals.cc \
   ../../include/cneddeclarationbase.h \
   ../../include/cexpression.h \
   ../../include/cparvalue.h
+lex.expryy.obj: lex.expryy.cc \
+  expryydefs.h \
+  ../../include/cexception.h \
+  expr.tab.h \
+  ../../include/util.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cexpression.h \
+  ../../include/cstringpool.h \
+  ../../include/cobject.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h
 minixpath.obj: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \

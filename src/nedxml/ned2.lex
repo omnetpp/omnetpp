@@ -19,7 +19,7 @@
  * NED-2 reserved words:
  *    non-component: import package property
  *    component:     module simple network channel interface
- *    inheritance:   extends like withcppclass
+ *    inheritance:   extends like
  *    sections:      types parameters gates submodules connections allowunconnected
  *    param types:   double int string bool xml volatile
  *    gate types:    input output inout
@@ -82,7 +82,6 @@ static char textbuf[TEXTBUF_LEN];
 
 "extends"                { count(); return EXTENDS; }
 "like"                   { count(); return LIKE; }
-"withcppclass"           { count(); return WITHCPPCLASS; }
 
 "types"                  { count(); return TYPES; }
 "parameters"             { count(); return PARAMETERS; }

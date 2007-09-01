@@ -124,7 +124,8 @@ fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   exception.h
 lcgrandom.obj: lcgrandom.cc \
   lcgrandom.h \
-  commondefs.h
+  commondefs.h \
+  exception.h
 lex.expressionyy.obj: lex.expressionyy.cc \
   expressionyydefs.h \
   exception.h \

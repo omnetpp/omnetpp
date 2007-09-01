@@ -58,6 +58,7 @@ void transferChildren(NEDElement *from, NEDElement *to);
 
 const char *toString(YYLTYPE);
 const char *toString(long);
+std::string removeSpaces(YYLTYPE pos);
 
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);

@@ -17,7 +17,7 @@
 /* Reserved words */
 %token IMPORT PACKAGE PROPERTY
 %token MODULE SIMPLE NETWORK CHANNEL MODULEINTERFACE CHANNELINTERFACE
-%token EXTENDS LIKE WITHCPPCLASS
+%token EXTENDS LIKE
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE VOLATILE TYPENAME
 %token INPUT_ OUTPUT_ INOUT_
@@ -239,7 +239,7 @@ definition
 
 packagedeclaration
         : PACKAGE dottedname ';'
-                { ps.nedfile->setPackage(toString(@2)); }
+                { ps.nedfile->setPackage(removeSpaces(@2).c_str()); }
         ; /* no error recovery rule -- see discussion at top */
 
 dottedname
@@ -368,11 +368,10 @@ channelheader
                 }
            opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
-        | CHANNEL WITHCPPCLASS NAME
+        | CHANNEL NAME
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
-                  ((ChannelNode *)ps.component)->setName(toString(@3));
-                  ((ChannelNode *)ps.component)->setIsWithcppclass(true);
+                  ((ChannelNode *)ps.component)->setName(toString(@2));
                 }
            opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -769,7 +768,7 @@ pattern_elem
         /* allow reserved words in patterns as well */
         | IMPORT | PACKAGE | PROPERTY
         | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE | WITHCPPCLASS
+        | EXTENDS | LIKE
         | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE | TYPENAME
         | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR
         | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
@@ -1074,12 +1073,12 @@ submodule
 submoduleheader
         : submodulename ':' dottedname
                 {
-                  ps.submod->setType(toString(@3));
+                  ps.submod->setType(removeSpaces(@3).c_str());
                 }
         | submodulename ':' likeparam LIKE dottedname
                 {
                   addLikeParam(ps.submod, "like-param", @3, $3);
-                  ps.submod->setLikeType(toString(@5));
+                  ps.submod->setLikeType(removeSpaces(@5).c_str());
                 }
         ;
 
@@ -1428,13 +1427,13 @@ channelspec_header
         | dottedname
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  ps.chanspec->setType(toString(@1));
+                  ps.chanspec->setType(removeSpaces(@1).c_str());
                 }
         | likeparam LIKE dottedname
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                   addLikeParam(ps.chanspec, "like-param", @1, $1);
-                  ps.chanspec->setLikeType(toString(@3));
+                  ps.chanspec->setLikeType(removeSpaces(@3).c_str());
                 }
         ;
 

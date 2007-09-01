@@ -379,8 +379,6 @@ void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "channel ";
-    if (node->getIsWithcppclass())
-        errors->addWarning(node, NED2FEATURE "channel withcppclass");
     OUT << node->getName();
     printInheritance(node, indent);
     OUT << getRightComment(node);

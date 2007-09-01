@@ -32,18 +32,18 @@
 // TODO:
 // - CHANNELS: two implicit (built-in) channel types exist: NullChannel, BasicChannel.
 //   Their names can be referenced, ie one can write "channel X extends NullChannel..."
-//         channel withcppclass BasicChannel {
+//         channel BasicChannel {
+//             @class(BasicChannel);
 //             double delay = 0;  // make it "volatile double" ???
 //             double error = 0;
 //             double datarate = 0;
 //         };
-//         channel withcppclass NullChannel {
+//         channel NullChannel {
+//             @class(NullChannel);
 //         };
 // - Channel inheritance:  ultimate base class is always a "channel withcppclass";
 //   "channel withcppclass X extends Y" is ILLEGAL! (ie "withcppclass" can only be
 //   an ultimate base class).
-//
-// - alternative name for "channel withcppclass": "channelbase X {...}" ???
 //
 // - The default base class is BasicChannel. That is:
 //     1. "--> {...} -->" means "--> BasicChannel {...} -->"
@@ -646,9 +646,9 @@ channel PPPLine1
 }
 
 // channel with or without corresponding C++ class
-// (@withcppclass property idea was discarded)
-channel withcppclass PPPLine2   // FIXME find better syntax...
+channel PPPLine2
 {
+    @class(PPPLine2);
 }
 
 // modules as channels

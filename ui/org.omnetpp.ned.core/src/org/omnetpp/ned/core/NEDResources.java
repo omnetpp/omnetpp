@@ -162,13 +162,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDElementFactory factory = NEDElementFactoryEx.getInstance();
 		ChannelElementEx nullChannel = (ChannelElementEx) factory.createElement(NEDElementTags.NED_CHANNEL);
         nullChannel.setName("cIdealChannel");
-        nullChannel.setIsWithcppclass(true);
+//        nullChannel.setIsWithcppclass(true);
         nullChannelType = nullChannel.getNEDTypeInfo();
 
         // create built-in channel type cBasicChannel
         ChannelElementEx basicChannel = (ChannelElementEx) factory.createElement(NEDElementTags.NED_CHANNEL);
         basicChannel.setName("cBasicChannel");
-        basicChannel.setIsWithcppclass(true);
+//        basicChannel.setIsWithcppclass(true);
         ParametersElement params = (ParametersElement) factory.createElement(
                 NEDElementTags.NED_PARAMETERS, basicChannel);
         params.appendChild(createImplicitChannelParameter("delay", NEDElementConstants.NED_PARTYPE_DOUBLE));
@@ -420,6 +420,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 					return components.get(qualifiedName);
 		}
 
+		// maybe it's already a fully qualified name
+		if (components.get(name) != null)
+			return components.get(name);
+		
 		return null;
     }
 

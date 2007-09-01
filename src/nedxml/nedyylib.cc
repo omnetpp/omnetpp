@@ -46,6 +46,16 @@ const char *toString(long l)
     return buf;
 }
 
+std::string removeSpaces(YYLTYPE pos)
+{
+    const char *s = np->getSource()->get(pos);
+    std::string result;
+    for (; *s; s++)
+        if (!isspace(*s))
+            result += *s;
+    return result;
+}
+
 const char *currentLocation()
 {
     static char buf[200];

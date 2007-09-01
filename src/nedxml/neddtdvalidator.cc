@@ -138,8 +138,6 @@ void NEDDTDValidator::validateElement(ChannelNode *node)
     char mult[] = {'*','?','*','?', 0};
     checkSequence(node, tags, mult);
 
-    const char *vals0[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-withcppclass", vals0, sizeof(vals0)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
 }
@@ -253,8 +251,6 @@ void NEDDTDValidator::validateElement(SubmoduleNode *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNMTokenAttribute(node, "type");
-    checkNMTokenAttribute(node, "like-type");
 }
 
 void NEDDTDValidator::validateElement(ConnectionsNode *node)
@@ -304,8 +300,6 @@ void NEDDTDValidator::validateElement(ChannelSpecNode *node)
     char mult[] = {'*','*','?', 0};
     checkSequence(node, tags, mult);
 
-    checkNMTokenAttribute(node, "type");
-    checkNMTokenAttribute(node, "like-type");
 }
 
 void NEDDTDValidator::validateElement(ConnectionGroupNode *node)
