@@ -92,15 +92,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private static final String NED_EXTENSION = "ned";
 
-    // listener list that listeners on all NED changes
+    // list of objects that listen on *all* NED changes
     private NEDChangeListenerList nedModelChangeListenerList = null;
-    private final INEDChangeListener nedModelChangeListener =
-                        new INEDChangeListener() {
-                            public void modelChanged(NEDModelEvent event) {
-                                nedModelChanged(event);
-                            }
-                        };
-
 
     // associate IFiles with their NEDElement trees
     private final Map<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
@@ -133,7 +126,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     
     private boolean nedModelChangeNotificationDisabled = false;
 
-
     private DelayedJob validationJob = new DelayedJob(400) {
 		public void run() {
 			DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
@@ -142,6 +134,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				}
 			});
 		}
+    };
+
+    private INEDChangeListener nedModelChangeListener = new INEDChangeListener() {
+    	public void modelChanged(NEDModelEvent event) {
+    		nedModelChanged(event);
+    	}
     };
 
     /**
@@ -707,7 +705,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				markerSync.registerFile(file);
 				INEDErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
 				//INEDErrorStore errorStore = new INEDErrorStore.SysoutNedErrorStore(); // for debugging
-				new NEDFileValidator(this, errorStore).validate(nedFileElement);
+				new NEDValidator(this, errorStore).validate(nedFileElement);
 			}
 
 			// we need to do the synchronization in a background job, to avoid deadlocks

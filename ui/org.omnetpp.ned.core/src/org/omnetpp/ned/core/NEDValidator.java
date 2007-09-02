@@ -71,6 +71,8 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
  *
  * @author andras
  */
+//FIXME check that a module/channel satisfies the interfaces it implements!
+//FIXME finish validator functions! e.g. turn on expression parsing
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
 //FIXME asap: validate extends chain (cycles!!) 
@@ -137,7 +139,23 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 	@Override
     protected void validateElement(ImportElement node) {
-		//TODO check if file exists?
+		//XXX check clashing imports!
+		String name = node.getImportSpec();
+		if (!name.contains("*")) {
+			// not a wildcard import: must match a type
+			if (resolver.getNedType(name) == null)
+				errors.addError(node, "imported NED type not found: '" + name+"'");
+		}
+		else {
+			// wildcard import: check if it matches anything
+			String regex = name.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
+			boolean found = false;
+			for (String qualifiedName : resolver.getAllNedTypeQNames())
+				if (qualifiedName.matches(regex))
+					{found = true; break;}
+			if (!found)
+				errors.addError(node, "import does not match any NED type: '" + name+"'");
+		}
 		validateChildren(node);
 	}
 

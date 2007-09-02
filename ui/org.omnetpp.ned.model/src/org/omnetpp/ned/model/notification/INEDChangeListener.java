@@ -7,8 +7,8 @@ package org.omnetpp.ned.model.notification;
 public interface INEDChangeListener {
 
     /**
-     * @param event Callback invoked when a change occurs in the model
+     * Callback invoked when a change occurs in the model.
      */
-    public void modelChanged(NEDModelEvent event);
+    void modelChanged(NEDModelEvent event);
     
 }
