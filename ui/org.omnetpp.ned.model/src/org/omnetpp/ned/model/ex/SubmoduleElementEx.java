@@ -29,7 +29,6 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 public class SubmoduleElementEx extends SubmoduleElement
                             implements IConnectableElement, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
-    public static final String DEFAULT_TYPE = "Unknown";
     public static final String DEFAULT_NAME = "unnamed";
 
     protected DisplayString displayString = null;
@@ -45,7 +44,6 @@ public class SubmoduleElementEx extends SubmoduleElement
 
     private void init() {
         setName(DEFAULT_NAME);
-        setType(DEFAULT_TYPE);
     }
 
     public String getNameWithIndex() {

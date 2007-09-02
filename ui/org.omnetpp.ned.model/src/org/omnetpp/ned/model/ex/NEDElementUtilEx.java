@@ -272,25 +272,34 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		ImportElement theImport = null;
 		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeNode();
 		
-		if (submoduleOrConnection.getType().contains(".")) {
-			String fullyQualifiedTypeName = submoduleOrConnection.getType();
+		if (submoduleOrConnection.getEffectiveType().contains(".")) {
+			String fullyQualifiedTypeName = submoduleOrConnection.getEffectiveType();
         	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
 			INEDTypeInfo existingSimilarType = NEDElement.getDefaultTypeResolver().lookupNedType(simpleTypeName, parent);
 			if (existingSimilarType == null) {
 				// add import
 				theImport = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
-				submoduleOrConnection.setType(simpleTypeName);
+				setEffectiveType(submoduleOrConnection, simpleTypeName);
 			}
 			else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
-				// import not needed, this type is already visible 
-				submoduleOrConnection.setType(simpleTypeName);
+				// import not needed, this type is already visible: just use short name 
+				setEffectiveType(submoduleOrConnection, simpleTypeName);
 			}
 			else {
-				// another module with the same simple name already imported -- must use fully qualified name
-				submoduleOrConnection.setType(fullyQualifiedTypeName);
+				// do nothing: another module with the same simple name already imported, so leave fully qualified name
 			}
+
         }
 		return theImport;
 	}
 
+	public static void setEffectiveType(IHasType submoduleOrConnection, String value) {
+		// adjust whichever (of "type" and "like-type") was originally set 
+		if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
+			submoduleOrConnection.setLikeType(value); 
+		else
+			submoduleOrConnection.setType(value);
+	}
+
+	
 }

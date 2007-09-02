@@ -75,6 +75,7 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
 //FIXME asap: validate extends chain (cycles!!) 
 //FIXME validate 2 submods with the same name! etc
 //FIXME validate imports (what if there're clashes)
+//FIXME validate like-param: must me a string parameter, etc!
 public class NEDValidator extends AbstractNEDValidatorEx {
 
 	INEDTypeResolver resolver;

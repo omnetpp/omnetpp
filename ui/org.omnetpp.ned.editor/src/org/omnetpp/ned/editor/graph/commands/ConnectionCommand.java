@@ -17,6 +17,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  * @author rhornig
  */
 // TODO handling of subgates $i and $o is missing
+//FIXME import the channel type used: see CreateSubmoduleCommand and NEDElementUtilEx.addImportFor()
 public class ConnectionCommand extends Command {
 
 	protected IConnectableElement oldSrcModule;

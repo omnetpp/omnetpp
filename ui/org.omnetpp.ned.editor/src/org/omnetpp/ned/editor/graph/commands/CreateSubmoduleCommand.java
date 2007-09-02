@@ -26,7 +26,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
         Assert.isNotNull(child);
     	this.child = child;
     	this.parent = parent;
-    	this.fullyQualifiedTypeName = child.getType();  // redo() destructively modifies child's type
+    	this.fullyQualifiedTypeName = child.getEffectiveType();  // redo() destructively modifies child's type
     }
 
     @Override
@@ -52,15 +52,17 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
         // make the submodule name unique if needed before inserting into the model
         child.setName(NEDElementUtilEx.getUniqueNameFor(child, parent.getSubmodules()));
 
-        child.setType(fullyQualifiedTypeName); // restore it (needed when redoing the 2nd+ time)
+        // insert
         parent.insertSubmodule(null, child);
-        
-        importElement = NEDElementUtilEx.addImportFor(child); // overwrites type
+      
+        // replace fully qualified type name with simple name + import
+        importElement = NEDElementUtilEx.addImportFor(child); // note: overwrites "type" (or "like-type") attribute
     }
 
     @Override
     public void undo() {
         parent.removeSubmodule(child);
+        NEDElementUtilEx.setEffectiveType(child, fullyQualifiedTypeName); // restore original value (redo() will need it) 
         if (importElement != null)
         	importElement.removeFromParent();
     }
