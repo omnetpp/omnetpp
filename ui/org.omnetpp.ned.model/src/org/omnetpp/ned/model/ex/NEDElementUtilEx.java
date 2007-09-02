@@ -293,13 +293,32 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		return theImport;
 	}
 
+	/** 
+	 * Sets whichever of "type" and "like-type" is already set on the element
+	 */ 
 	public static void setEffectiveType(IHasType submoduleOrConnection, String value) {
-		// adjust whichever (of "type" and "like-type") was originally set 
 		if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
 			submoduleOrConnection.setLikeType(value); 
 		else
 			submoduleOrConnection.setType(value);
 	}
 
+	/**
+	 * Given an import that contains "*" or "**" as wildcard, this method returns
+	 * the corresponding regex that can be used to check whether a fully qualified
+	 * type name matches the import.
+	 */
+	public static String importToRegex(String importSpec) {
+		return importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
+	}
 	
+	public interface INEDElementVisitor {
+		void visit(INEDElement element);
+	}
+
+	public static void visitNedTee(INEDElement element, INEDElementVisitor visitor) {
+		visitor.visit(element);
+		for (INEDElement child : element)
+			visitNedTee(child, visitor);
+	}
 }

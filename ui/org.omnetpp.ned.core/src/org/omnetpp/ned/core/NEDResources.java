@@ -35,6 +35,7 @@ import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
@@ -426,7 +427,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				return components.get(importSpec);
 		// try harder, using wildcards
 		for (String importSpec : imports) {
-			String importRegex = importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
+			String importRegex = NEDElementUtilEx.importToRegex(importSpec);
 			for (String qualifiedName : components.keySet())
 				if (qualifiedName.matches(importRegex) && qualifiedName.endsWith("." + name))
 					return components.get(qualifiedName);

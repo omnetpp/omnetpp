@@ -12,6 +12,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -148,7 +149,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 		else {
 			// wildcard import: check if it matches anything
-			String regex = name.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
+			String regex = NEDElementUtilEx.importToRegex(name);
 			boolean found = false;
 			for (String qualifiedName : resolver.getAllNedTypeQNames())
 				if (qualifiedName.matches(regex))

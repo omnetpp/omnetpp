@@ -66,6 +66,20 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		return StringUtils.isEmpty(getPackage()) ? "" : getPackage() + ".";
 	}
 	
+	public String getPackage() {
+		PackageElement packageElement = getFirstPackageChild();
+		return packageElement == null ? null : packageElement.getName();
+	}
+
+	public void setPackage(String packageName) {
+		PackageElement packageElement = getFirstPackageChild();
+		if (packageElement == null) {
+			packageElement = (PackageElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PACKAGE);
+			insertChildBefore(getFirstChild(), packageElement);
+		}
+		packageElement.setName(packageName);
+	}
+
 	/**
 	 * Returns the imports in this file
 	 */
@@ -88,23 +102,16 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		for (INEDElement element : this)
 			if (element instanceof ImportElement)
 				lastImport = element; 
-		INEDElement insertionPoint = lastImport==null ? getFirstChild() : lastImport.getNextSibling();
+		INEDElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() : 
+			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() :
+				getFirstChild();
 		
 		insertChildBefore(insertionPoint, importElement);
 		return importElement;
 	}
 
-	public String getPackage() {
-		PackageElement packageElement = getFirstPackageChild();
-		return packageElement == null ? null : packageElement.getName();
-	}
-
-	public void setPackage(String packageName) {
-		PackageElement packageElement = getFirstPackageChild();
-		if (packageElement == null) {
-			packageElement = (PackageElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PACKAGE);
-			insertChildBefore(getFirstChild(), packageElement);
-		}
-		packageElement.setName(packageName);
+	public void removeImports() {
+		while (getFirstImportChild() != null)
+			getFirstImportChild().removeFromParent();
 	}
 }
