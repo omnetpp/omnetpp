@@ -175,12 +175,16 @@ void NEDSyntaxValidator::validateElement(FilesNode *node)
 
 void NEDSyntaxValidator::validateElement(NedFileNode *node)
 {
-    checkDottedNameAttribute(node, "package", false);
 }
 
 void NEDSyntaxValidator::validateElement(CommentNode *node)
 {
     //FIXME revise
+}
+
+void NEDSyntaxValidator::validateElement(PackageNode *node)
+{
+    checkDottedNameAttribute(node, "name", false);
 }
 
 void NEDSyntaxValidator::validateElement(ImportNode *node)

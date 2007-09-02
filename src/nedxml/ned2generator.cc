@@ -276,9 +276,13 @@ void NED2Generator::doFiles(FilesNode *node, const char *indent, bool, const cha
 void NED2Generator::doNedFile(NedFileNode *node, const char *indent, bool, const char *)
 {
     OUT << getBannerComment(node, indent);
-    if (strnotnull(node->getPackage()))
-        OUT << indent << "package " << node->getPackage() << ";" << getRightComment(node);
     generateChildren(node, indent);
+}
+
+void NED2Generator::doPackage(PackageNode *node, const char *indent, bool islast, const char *)
+{
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "package " << node->getName() << ";" << getRightComment(node);
 }
 
 void NED2Generator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
@@ -1088,6 +1092,8 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doFiles((FilesNode *)node, indent, islast, arg); break;
         case NED_NED_FILE:
             doNedFile((NedFileNode *)node, indent, islast, arg); break;
+        case NED_PACKAGE:
+            doPackage((PackageNode *)node, indent, islast, arg); break;
         case NED_IMPORT:
             doImport((ImportNode *)node, indent, islast, arg); break;
         case NED_PROPERTY_DECL:

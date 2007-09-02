@@ -25,6 +25,7 @@
 class FilesNode;
 class NedFileNode;
 class CommentNode;
+class PackageNode;
 class ImportNode;
 class PropertyDeclNode;
 class ExtendsNode;
@@ -84,6 +85,7 @@ enum NEDElementCode {
     NED_FILES,
     NED_NED_FILE,
     NED_COMMENT,
+    NED_PACKAGE,
     NED_IMPORT,
     NED_PROPERTY_DECL,
     NED_EXTENDS,
@@ -186,12 +188,11 @@ class NEDXML_API FilesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ned-file (comment*, (import|property-decl|property|channel|
+ * <!ELEMENT ned-file (comment*, package?, (import|property-decl|property|channel|
  *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
- *      version            CDATA     "2"
- *      package            CDATA     #IMPLIED>
+ *      version            CDATA     "2">
  * </pre>
  * 
  * @ingroup Data
@@ -201,7 +202,6 @@ class NEDXML_API NedFileNode : public NEDElement
   private:
     std::string filename;
     std::string version;
-    std::string package;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -228,11 +228,10 @@ class NEDXML_API NedFileNode : public NEDElement
     void setFilename(const char * val)  {filename = val;}
     const char * getVersion() const  {return version.c_str();}
     void setVersion(const char * val)  {version = val;}
-    const char * getPackage() const  {return package.c_str();}
-    void setPackage(const char * val)  {package = val;}
 
     virtual NedFileNode *getNextNedFileNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
+    virtual PackageNode *getFirstPackageChild() const;
     virtual ImportNode *getFirstImportChild() const;
     virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
@@ -289,6 +288,51 @@ class NEDXML_API CommentNode : public NEDElement
     void setContent(const char * val)  {content = val;}
 
     virtual CommentNode *getNextCommentNodeSibling() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;package&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT package (comment*)>
+ * <!ATTLIST package
+ *      name               CDATA     #REQUIRED>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class NEDXML_API PackageNode : public NEDElement
+{
+  private:
+    std::string name;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    PackageNode();
+    PackageNode(NEDElement *parent);
+    virtual ~PackageNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "package";}
+    virtual int getTagCode() const {return NED_PACKAGE;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    virtual PackageNode *dup() const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+
+    virtual PackageNode *getNextPackageNodeSibling() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2817,7 +2861,7 @@ class NEDXML_API MsgpropertyNode : public NEDElement
  * <pre>
  * <!ELEMENT unknown        ANY>
  * <!ATTLIST unknown
- *      element             NMTOKEN   #REQUIRED>
+ *      element             CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data

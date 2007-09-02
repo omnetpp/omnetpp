@@ -32,6 +32,7 @@ void NEDDTDValidator::validateElement(NedFileNode *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
+        {{NED_PACKAGE, NED_NULL}, '?'},
         {{NED_IMPORT, NED_PROPERTY_DECL, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
@@ -44,7 +45,16 @@ void NEDDTDValidator::validateElement(CommentNode *node)
     checkEmpty(node);
 
     checkRequiredAttribute(node, "locid");
-    checkNMTokenAttribute(node, "locid");
+    checkNameAttribute(node, "locid");
+}
+
+void NEDDTDValidator::validateElement(PackageNode *node)
+{
+    int tags[] = {NED_COMMENT, NED_NULL};
+    char mult[] = {'*', 0};
+    checkSequence(node, tags, mult);
+
+    checkRequiredAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(ImportNode *node)
@@ -191,7 +201,7 @@ void NEDDTDValidator::validateElement(PropertyNode *node)
     checkEnumeratedAttribute(node, "is-implicit", vals0, sizeof(vals0)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNMTokenAttribute(node, "index");
+    checkNameAttribute(node, "index");
 }
 
 void NEDDTDValidator::validateElement(PropertyKeyNode *node)
@@ -200,7 +210,6 @@ void NEDDTDValidator::validateElement(PropertyKeyNode *node)
     char mult[] = {'*','*', 0};
     checkSequence(node, tags, mult);
 
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(GatesNode *node)
@@ -597,6 +606,5 @@ void NEDDTDValidator::validateElement(UnknownNode *node)
     // ANY
 
     checkRequiredAttribute(node, "element");
-    checkNMTokenAttribute(node, "element");
 }
 

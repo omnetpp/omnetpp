@@ -109,6 +109,7 @@ class NEDXML_API NED2Generator
     //@{
     void doFiles(FilesNode *node, const char *indent, bool islast, const char *);
     void doNedFile(NedFileNode *node, const char *indent, bool islast, const char *);
+    void doPackage(PackageNode *node, const char *indent, bool islast, const char *);
     void doImport(ImportNode *node, const char *indent, bool islast, const char *);
     void doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *);
     void doExtends(ExtendsNode *node, const char *indent, bool islast, const char *);

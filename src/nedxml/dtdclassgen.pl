@@ -771,14 +771,11 @@ foreach $element (@elements)
             print DTDVAL_CC "    const char *vals${i}[] = {$vals};\n";
             print DTDVAL_CC "    checkEnumeratedAttribute(node, \"$attname\", vals$i, sizeof(vals$i)/sizeof(const char *));\n";
         }
-        elsif ($element ne 'operator' && ($attname eq "name" || $attname =~ /-name$/ || $attname =~ /-module$/ || $attname =~ /-gate$/)) {
-            print DTDVAL_CC "    checkNameAttribute(node, \"$attname\");\n";
-        }
         elsif ($attname eq "comment" || $attname =~ /-comment$/) {
             print DTDVAL_CC "    checkCommentAttribute(node, \"$attname\");\n";
         }
         elsif ($atttype eq "NMTOKEN") {
-            print DTDVAL_CC "    checkNMTokenAttribute(node, \"$attname\");\n";
+            print DTDVAL_CC "    checkNameAttribute(node, \"$attname\");\n";
         }
     }
     print DTDVAL_CC "}\n\n";

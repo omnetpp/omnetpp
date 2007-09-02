@@ -50,6 +50,7 @@ import org.omnetpp.ned.model.pojo.MessageElement;
 import org.omnetpp.ned.model.pojo.MsgFileElement;
 import org.omnetpp.ned.model.pojo.MsgpropertyElement;
 import org.omnetpp.ned.model.pojo.OperatorElement;
+import org.omnetpp.ned.model.pojo.PackageElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.PatternElement;
@@ -126,6 +127,11 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 	@Override
     protected void validateElement(CommentElement node) {
+		validateChildren(node);
+	}
+
+	@Override
+    protected void validateElement(PackageElement node) {
 		validateChildren(node);
 	}
 

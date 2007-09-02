@@ -133,6 +133,15 @@ void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char 
 
 void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
 {
+    //
+    // NOTE: we use this method for validating NMTOKEN attributes in our DTD.
+    // In our NED DTD we use NMTOKEN for NED and C++ identifiers, which allow
+    // ASCII letters, digits and underscore ONLY -- and we validate here accordingly.
+    //
+    // This is a deviation from W3C standards, where NMTOKEN would allow letters,
+    // digits, period, dash, underscore, colon, combining characters, extenders;
+    // and letters would include international characters as well.
+    //
     const char *s = node->getAttribute(attr);
     assert(s);
     if (!*s)
@@ -167,23 +176,5 @@ void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *at
         }
     }
 }
-
-void NEDDTDValidatorBase::checkNMTokenAttribute(NEDElement *node, const char *attr)
-{
-    //
-    // DEVIATION FROM W3C STANDARDS. NMTOKEN should allow letters, digits, period,
-    // dash, underscore, colon, combining characters, extenders. Letters would include
-    // international characters as well. However, in our NED DTD we use NMTOKEN for
-    // NED (and C++) identifiers which allow ASCII letters, digits and underscore ONLY.
-    //
-    const char *s = node->getAttribute(attr);
-    assert(s);
-    if (!*s)
-        return;
-    for (; *s; s++)
-        if (!isalpha(*s) && !isdigit(*s) && *s!='_')
-            {errors->addError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
-}
-
 
 

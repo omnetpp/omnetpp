@@ -37,6 +37,7 @@ public class NEDFileValidator implements NEDElementConstants, NEDElementTags {
 			NEDValidator validator = new NEDValidator(resolver, errors);
 			switch (child.getTagCode()) {
 			case NED_COMMENT: break;
+			case NED_PACKAGE: break;
 			case NED_IMPORT: break;
 			case NED_PROPERTY_DECL: validator.validate((PropertyDeclElement) child); break;
 			case NED_SIMPLE_MODULE: validator.validate((SimpleModuleElement) child); break;

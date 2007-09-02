@@ -45,7 +45,6 @@ class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
     void checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n);
     void checkNameAttribute(NEDElement *node, const char *attr);
     void checkCommentAttribute(NEDElement *node, const char *attr);
-    void checkNMTokenAttribute(NEDElement *node, const char *attr);
     //@}
   public:
     NEDDTDValidatorBase(NEDErrorStore *e) : NEDValidatorBase(e) {}

@@ -117,7 +117,7 @@ NedFileNode::NedFileNode(NEDElement *parent) : NEDElement(parent)
 
 int NedFileNode::getNumAttributes() const
 {
-    return 3;
+    return 2;
 }
 
 const char *NedFileNode::getAttributeName(int k) const
@@ -125,7 +125,6 @@ const char *NedFileNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "filename";
         case 1: return "version";
-        case 2: return "package";
         default: return 0;
     }
 }
@@ -135,7 +134,6 @@ const char *NedFileNode::getAttribute(int k) const
     switch (k) {
         case 0: return filename.c_str();
         case 1: return version.c_str();
-        case 2: return package.c_str();
         default: return 0;
     }
 }
@@ -145,7 +143,6 @@ void NedFileNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: filename = val; break;
         case 1: version = val; break;
-        case 2: package = val; break;
         default: ;
     }
 }
@@ -155,7 +152,6 @@ const char *NedFileNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return NULL;
         case 1: return "2";
-        case 2: return "";
         default: return 0;
     }
 }
@@ -165,7 +161,6 @@ NedFileNode *NedFileNode::dup() const
     NedFileNode *newNode = new NedFileNode();
     newNode->filename = this->filename;
     newNode->version = this->version;
-    newNode->package = this->package;
     return newNode;
 }
 
@@ -177,6 +172,11 @@ NedFileNode *NedFileNode::getNextNedFileNodeSibling() const
 CommentNode *NedFileNode::getFirstCommentChild() const
 {
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
+}
+
+PackageNode *NedFileNode::getFirstPackageChild() const
+{
+    return (PackageNode *)getFirstChildWithTag(NED_PACKAGE);
 }
 
 ImportNode *NedFileNode::getFirstImportChild() const
@@ -281,6 +281,70 @@ CommentNode *CommentNode::dup() const
 CommentNode *CommentNode::getNextCommentNodeSibling() const
 {
     return (CommentNode *)getNextSiblingWithTag(NED_COMMENT);
+}
+
+PackageNode::PackageNode()
+{
+    applyDefaults();
+}
+
+PackageNode::PackageNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
+int PackageNode::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *PackageNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        default: return 0;
+    }
+}
+
+const char *PackageNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        default: return 0;
+    }
+}
+
+void PackageNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        default: ;
+    }
+}
+
+const char *PackageNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return NULL;
+        default: return 0;
+    }
+}
+
+PackageNode *PackageNode::dup() const
+{
+    PackageNode *newNode = new PackageNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
+PackageNode *PackageNode::getNextPackageNodeSibling() const
+{
+    return (PackageNode *)getNextSiblingWithTag(NED_PACKAGE);
+}
+
+CommentNode *PackageNode::getFirstCommentChild() const
+{
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ImportNode::ImportNode()
@@ -4274,6 +4338,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='f' && !strcmp(tagname,"files"))  return new FilesNode();
     if (tagname[0]=='n' && !strcmp(tagname,"ned-file"))  return new NedFileNode();
     if (tagname[0]=='c' && !strcmp(tagname,"comment"))  return new CommentNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"package"))  return new PackageNode();
     if (tagname[0]=='i' && !strcmp(tagname,"import"))  return new ImportNode();
     if (tagname[0]=='p' && !strcmp(tagname,"property-decl"))  return new PropertyDeclNode();
     if (tagname[0]=='e' && !strcmp(tagname,"extends"))  return new ExtendsNode();
@@ -4330,6 +4395,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_FILES: return new FilesNode();
         case NED_NED_FILE: return new NedFileNode();
         case NED_COMMENT: return new CommentNode();
+        case NED_PACKAGE: return new PackageNode();
         case NED_IMPORT: return new ImportNode();
         case NED_PROPERTY_DECL: return new PropertyDeclNode();
         case NED_EXTENDS: return new ExtendsNode();

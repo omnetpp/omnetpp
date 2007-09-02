@@ -156,16 +156,6 @@ ned1generator.obj: ned1generator.cc \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
-ned2.tab.obj: ned2.tab.cc \
-  nedyydefs.h \
-  nederror.h \
-  nedparser.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedutil.h \
-  nedyylib.h \
-  nedxmldefs.h \
-  nedelement.h
 ned2generator.obj: ned2generator.cc \
   ned2generator.h \
   nederror.h \

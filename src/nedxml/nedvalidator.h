@@ -49,6 +49,7 @@ class NEDXML_API NEDValidatorBase
     virtual void validateElement(FilesNode *node) = 0;
     virtual void validateElement(NedFileNode *node) = 0;
     virtual void validateElement(CommentNode *node) = 0;
+    virtual void validateElement(PackageNode *node) = 0;
     virtual void validateElement(ImportNode *node) = 0;
     virtual void validateElement(PropertyDeclNode *node) = 0;
     virtual void validateElement(ExtendsNode *node) = 0;

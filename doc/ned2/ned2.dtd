@@ -10,12 +10,11 @@
   **  NED-2.
   -->
 
-<!ELEMENT ned-file (comment*, (import|property-decl|property|channel|
+<!ELEMENT ned-file (comment*, package?, (import|property-decl|property|channel|
                     channel-interface|simple-module|compound-module|module-interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
-     version            CDATA     "2"
-     package            CDATA     #IMPLIED>
+     version            CDATA     "2">
 
 <!-- comments and whitespace; comments include '//' marks. Note that although
      nearly all elements may contain comment elements, there are places
@@ -26,6 +25,10 @@
 <!ATTLIST comment
      locid              NMTOKEN   #REQUIRED
      content            CDATA     #IMPLIED>
+
+<!ELEMENT package (comment*)>
+<!ATTLIST package
+     name               CDATA     #REQUIRED>
 
 <!ELEMENT import (comment*)>
 <!ATTLIST import
@@ -336,6 +339,6 @@
   -->
 <!ELEMENT unknown        ANY>
 <!ATTLIST unknown
-     element             NMTOKEN   #REQUIRED>
+     element             CDATA     #REQUIRED>
 
 

@@ -32,9 +32,8 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 /**
  * Utility functions working on NEDElement trees. Conversions, serialization, dumping of trees.
  *
- * @author rhornig
+ * @author rhornig, andras
  */
-//FIXME DTD validation will panic on dotted submodule type names (a : org.foo.Node)! change validation procedure!!!!!!
 public class NEDTreeUtil {
 
 	private static ITreeContentProvider nedModelContentProvider = new NedModelContentProvider();

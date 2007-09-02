@@ -14,6 +14,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
+import org.omnetpp.ned.model.pojo.PackageElement;
 
 /**
  * Represents a NED file
@@ -91,5 +92,19 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		
 		insertChildBefore(insertionPoint, importElement);
 		return importElement;
+	}
+
+	public String getPackage() {
+		PackageElement packageElement = getFirstPackageChild();
+		return packageElement == null ? null : packageElement.getName();
+	}
+
+	public void setPackage(String packageName) {
+		PackageElement packageElement = getFirstPackageChild();
+		if (packageElement == null) {
+			packageElement = (PackageElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PACKAGE);
+			insertChildBefore(getFirstChild(), packageElement);
+		}
+		packageElement.setName(packageName);
 	}
 }

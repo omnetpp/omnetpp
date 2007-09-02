@@ -128,6 +128,7 @@ static struct NED2ParserState
     /* NED-II: modules, channels */
     NedFileNode *nedfile;
     CommentNode *comment;
+    PackageNode *package;
     ImportNode *import;
     PropertyDeclNode *propertydecl;
     ExtendsNode *extends;
@@ -239,7 +240,12 @@ definition
 
 packagedeclaration
         : PACKAGE dottedname ';'
-                { ps.nedfile->setPackage(removeSpaces(@2).c_str()); }
+                {
+                  ps.package = (PackageNode *)createNodeWithTag(NED_PACKAGE, ps.nedfile);
+                  ps.package->setName(removeSpaces(@2).c_str());
+                  storePos(ps.package,@$);
+                  storeBannerAndRightComments(ps.package,@$);
+                }
         ; /* no error recovery rule -- see discussion at top */
 
 dottedname
@@ -254,7 +260,7 @@ import
         : IMPORT importspec ';'
                 {
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
-                  ps.import->setImportSpec(toString(@2));
+                  ps.import->setImportSpec(removeSpaces(@2).c_str());
                   storePos(ps.import,@$);
                   storeBannerAndRightComments(ps.import,@$);
                 }

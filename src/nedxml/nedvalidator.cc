@@ -35,6 +35,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
             case NED_FILES: validateElement((FilesNode *) node); break;
             case NED_NED_FILE: validateElement((NedFileNode *) node); break;
             case NED_COMMENT: validateElement((CommentNode *) node); break;
+            case NED_PACKAGE: validateElement((PackageNode *) node); break;
             case NED_IMPORT: validateElement((ImportNode *) node); break;
             case NED_PROPERTY_DECL: validateElement((PropertyDeclNode *) node); break;
             case NED_EXTENDS: validateElement((ExtendsNode *) node); break;
