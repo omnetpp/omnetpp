@@ -82,14 +82,6 @@ public class NedTypeEditPart extends NedEditPart {
 //                getNedTypeFigure().setIcon(image);
     	}
 
-    	// indicate the error
-        int maxSeverity = getNEDModel().getMaxProblemSeverity();
-        getNedTypeFigure().setProblemDecoration(maxSeverity);
-//        if (maxSeverity >= IMarker.SEVERITY_INFO) {
-//            getNedTypeFigure().setProblemTooltipText("A problem occurred");
-//        }
-
-
 	}
 
     /* (non-Javadoc)

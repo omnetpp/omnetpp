@@ -1,6 +1,8 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -12,6 +14,8 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.ui.views.properties.IPropertySource;
 
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.figures.NedFigure;
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
@@ -21,6 +25,7 @@ import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Provides support for Container EditParts.
@@ -50,6 +55,27 @@ abstract public class NedEditPart
      */
     public INEDElement getNEDModel() {
         return (INEDElement) getModel();
+    }
+
+    @Override
+    protected void refreshVisuals() {
+        super.refreshVisuals();
+
+        // indicate the error
+        int maxSeverity = getNEDModel().getMaxProblemSeverity();
+        String message = "";
+        if (maxSeverity >= IMarker.SEVERITY_INFO) {
+            INedTypeElement enclosingElement = getNEDModel().getSelfOrEnclosingTypeNode();
+            if (enclosingElement != null) {
+                IFile file = enclosingElement.getNEDTypeInfo().getNEDFile();
+                IMarker[] markers
+                    = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNEDModel(), file);
+                for (IMarker marker : markers)
+                    message += marker.getAttribute(IMarker.MARKER, "")+"\n";
+            }
+        }
+        if (getFigure() instanceof NedFigure)
+            ((NedFigure)getFigure()).setProblemDecoration(maxSeverity, StringUtils.strip(message));
     }
 
     @Override

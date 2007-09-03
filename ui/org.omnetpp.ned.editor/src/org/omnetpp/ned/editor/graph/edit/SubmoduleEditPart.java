@@ -104,8 +104,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected void refreshVisuals() {
+        super.refreshVisuals();
         // define the properties that determine the visual appearance
-    	SubmoduleElementEx submNode = (SubmoduleElementEx)getModel();
+    	SubmoduleElementEx submNode = getSubmoduleModel();
 
     	// set module name and vector size
     	String nameToDisplay = submNode.getName();
@@ -128,9 +129,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
         // show/hide the pin marker
         getSubmoduleFigure().setPinDecoration(dps.getLocation(scale) != null);
-
-        // mark if the model is invalid
-        getSubmoduleFigure().setProblemDecoration(getSubmoduleModel().getMaxProblemSeverity());
 
         // set layout constraints
         SubmoduleConstraint constraint = new SubmoduleConstraint();

@@ -9,12 +9,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
@@ -34,7 +36,6 @@ import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
-import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.parts.AbstractEditPartViewer;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
@@ -59,7 +60,6 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
 import org.eclipse.ui.part.FileEditorInput;
@@ -68,6 +68,7 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -78,19 +79,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
-import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
-import org.omnetpp.ned.editor.graph.actions.CopyAction;
-import org.omnetpp.ned.editor.graph.actions.CutAction;
-import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
-import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
-import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
-import org.omnetpp.ned.editor.graph.actions.PasteAction;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
+import org.omnetpp.ned.editor.graph.actions.*;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -384,10 +373,13 @@ public class GraphicalNedEditor
         hoverSupport.setHoverSizeConstaints(600, 200);
 		hoverSupport.adapt(getFigureCanvas(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
-                EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
-//                System.out.println("x,y: "+x+","+y);
-//                System.out.println("fx,fy: "+ep.get+","+y);
-                return getHTMLHoverTextFor(ep, outPreferredSize);
+                GraphicalEditPart epUnderMouse = (GraphicalEditPart)getGraphicalViewer().findObjectAt(new Point(x,y));
+                // check if the figure has its own tooltip in this case we do not provide our own information provider
+                IFigure figureUnderMouse = epUnderMouse.getFigure().findFigureAt(x, y);
+                if (figureUnderMouse == null || figureUnderMouse.getToolTip() != null)
+                    return null;
+
+                return getHTMLHoverTextFor(epUnderMouse, outPreferredSize);
             }
         });
 
