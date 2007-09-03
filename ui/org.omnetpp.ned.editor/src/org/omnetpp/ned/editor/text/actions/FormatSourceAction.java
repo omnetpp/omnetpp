@@ -9,6 +9,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 
 /**
  * Reformat the NED source code.
@@ -21,11 +22,22 @@ public class FormatSourceAction extends TextEditorAction {
     }
 
     @Override
+	public void update() {
+    	setEnabled(getTextEditor() != null && !getNedFileElement().hasSyntaxError());
+	}
+    
+    @Override
     public void run() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         NEDTreeUtil.cleanupPojoTree(model);
         ((TextualNedEditor)getTextEditor()).setText(model.getNEDSource());
     }
+
+	//FIXME into some base class
+    protected NedFileElementEx getNedFileElement() {
+		IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
+        return NEDResourcesPlugin.getNEDResources().getNedFileElement(file);
+	}
 
 }
