@@ -12,6 +12,7 @@ import org.omnetpp.ned.editor.text.NedEditorMessages;
  *
  * @author rhornig
  */
+//FIXME use our own "TextEditorAction" which doesn't use resource files
 public class NedPresentationAction extends TextEditorAction {
 
 	/**

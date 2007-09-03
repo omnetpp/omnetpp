@@ -1,10 +1,8 @@
 package org.omnetpp.ned.editor.text.actions;
 
-import java.util.ResourceBundle;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.texteditor.TextEditorAction;
+import org.omnetpp.common.editor.text.TextEditorAction;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -17,8 +15,8 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author andras
  */
 public class FormatSourceAction extends TextEditorAction {
-    public FormatSourceAction(ResourceBundle resourceBundle, String prefix, TextualNedEditor editor) {
-        super(resourceBundle, prefix, editor);
+    public FormatSourceAction(TextualNedEditor editor) {
+        super(editor);
     }
 
     @Override
@@ -34,7 +32,6 @@ public class FormatSourceAction extends TextEditorAction {
         ((TextualNedEditor)getTextEditor()).setText(model.getNEDSource());
     }
 
-	//FIXME into some base class
     protected NedFileElementEx getNedFileElement() {
 		IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         return NEDResourcesPlugin.getNEDResources().getNedFileElement(file);

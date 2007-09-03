@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.filesystem,
  org.omnetpp.ide.nativelibs,
  org.eclipse.jface.text,
  org.eclipse.ui.workbench.texteditor,
- de.unikassel.imageexport
+ de.unikassel.imageexport,
+ org.eclipse.ui.editors
 Export-Package: org.apache.commons.collections,
  org.apache.commons.collections.bag,
  org.apache.commons.collections.bidimap,

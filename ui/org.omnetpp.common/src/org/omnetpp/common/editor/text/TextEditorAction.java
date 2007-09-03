@@ -1,11 +1,11 @@
 package org.omnetpp.common.editor.text;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorExtension;
 import org.eclipse.ui.texteditor.ITextEditorExtension2;
 import org.eclipse.ui.texteditor.IUpdate;
-import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
  * This is a copy of TextEditorAction, except that we don't want labels etc
@@ -23,24 +23,24 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  * actually modifying the editor contents.
  * </p>
  */
-public abstract class NedTextEditorAction extends Action implements IUpdate {
-	private TextualNedEditor fTextEditor;
+public abstract class TextEditorAction extends Action implements IUpdate {
+	private TextEditor fTextEditor;
 
-	public NedTextEditorAction(TextualNedEditor textEditor) {
+	public TextEditorAction(TextEditor textEditor) {
 		fTextEditor = textEditor;
 	}
 	
 	/**
 	 * Returns the action's text editor.
 	 */
-	protected TextualNedEditor getTextEditor() {
+	protected TextEditor getTextEditor() {
 		return fTextEditor;
 	}
 
 	/**
 	 * Retargets this action to the given editor.
 	 */
-	public void setEditor(TextualNedEditor editor) {
+	public void setEditor(TextEditor editor) {
 		fTextEditor = editor;
 	}
 

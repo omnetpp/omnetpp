@@ -1,12 +1,10 @@
 package org.omnetpp.ned.editor.text.actions;
 
-import java.util.ResourceBundle;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.texteditor.TextEditorAction;
+import org.omnetpp.common.editor.text.TextEditorAction;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
@@ -15,8 +13,11 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  * @author andras
  */
 public class ToggleCommentAction extends TextEditorAction {
-	public ToggleCommentAction(ResourceBundle resourceBundle, String prefix, TextualNedEditor editor) {
-		super(resourceBundle, prefix, editor);
+	public ToggleCommentAction(TextualNedEditor editor) {
+		super(editor);
+        setText("Toggle Comment");
+        setDescription("Toggle Comment");
+        setToolTipText("Toggle Comment");
 	}
 
 	@Override

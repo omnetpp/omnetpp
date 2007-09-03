@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -13,7 +12,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.texteditor.TextEditorAction;
+import org.omnetpp.common.editor.text.TextEditorAction;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -27,8 +26,11 @@ import org.omnetpp.ned.model.interfaces.IHasType;
  * @author andras
  */
 public class OrganizeImportsAction extends TextEditorAction {
-    public OrganizeImportsAction(ResourceBundle resourceBundle, String prefix, TextualNedEditor editor) {
-        super(resourceBundle, prefix, editor);
+    public OrganizeImportsAction(TextualNedEditor editor) {
+        super(editor);
+        setText("Organize imports");
+        setDescription("Organize imports");
+        setToolTipText("Organize imports");
     }
 
     @Override

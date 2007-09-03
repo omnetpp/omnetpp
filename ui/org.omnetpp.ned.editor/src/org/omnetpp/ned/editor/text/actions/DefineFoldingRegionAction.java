@@ -18,6 +18,7 @@ import org.eclipse.ui.texteditor.TextEditorAction;
  *
  * @author rhornig
  */
+//FIXME use our own "TextEditorAction" which doesn't use resource files
 public class DefineFoldingRegionAction extends TextEditorAction {
 
     public DefineFoldingRegionAction(ResourceBundle bundle, String prefix, ITextEditor editor) {
