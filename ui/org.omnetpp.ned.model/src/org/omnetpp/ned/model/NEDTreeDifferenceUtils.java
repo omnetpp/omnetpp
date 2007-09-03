@@ -228,7 +228,7 @@ class NEDTreeDifferenceTest {
 
 		for (int i = 0; i < 100; i++) {
 			String nedFile = "C:\\Workspace\\Repository\\trunk\\omnetpp\\samples\\queuenet\\CallCenter.ned";
-			INEDElement original = NEDTreeUtil.loadNedSource(nedFile, new INEDErrorStore.SysoutNedErrorStore());
+			INEDElement original = NEDTreeUtil.loadNedSource(nedFile, new SysoutNedErrorStore());
 			test(original);
 		}
 	}

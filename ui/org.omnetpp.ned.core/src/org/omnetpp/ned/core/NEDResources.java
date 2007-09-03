@@ -19,23 +19,22 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeDifferenceUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.SysoutNedErrorStore;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
-import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
@@ -51,12 +50,6 @@ import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.NEDElementFactory;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.ParametersElement;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -121,10 +114,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private int debugRehashCounter = 0;
 
     private NedFileElementEx builtInDeclarationsFile;
-    private INEDTypeInfo basicChannelType = null;
-    private INEDTypeInfo nullChannelType = null;
-    private INEDTypeInfo bidirChannelType = null;
-    private INEDTypeInfo unidirChannelType = null;
 
     private boolean nedModelChangeNotificationDisabled = false;
 
@@ -155,73 +144,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Create channel and interface types that are predefined in NED.
      */
-    // FIXME should use built-in NED text:
-    // String src = NEDParser.getBuiltInDeclarations(); ...
     protected void createBuiltInNEDTypes() {
-        // create built-in channel type cIdealChannel
-        NEDElementFactory factory = NEDElementFactoryEx.getInstance();
-		ChannelElementEx nullChannel = (ChannelElementEx) factory.createElement(NEDElementTags.NED_CHANNEL);
-        nullChannel.setName("cIdealChannel");
-//        nullChannel.setIsWithcppclass(true);
-        nullChannelType = nullChannel.getNEDTypeInfo();
-
-        // create built-in channel type cBasicChannel
-        ChannelElementEx basicChannel = (ChannelElementEx) factory.createElement(NEDElementTags.NED_CHANNEL);
-        basicChannel.setName("cBasicChannel");
-//        basicChannel.setIsWithcppclass(true);
-        ParametersElement params = (ParametersElement) factory.createElement(
-                NEDElementTags.NED_PARAMETERS, basicChannel);
-        params.appendChild(createImplicitChannelParameter("delay", NEDElementConstants.NED_PARTYPE_DOUBLE));
-        params.appendChild(createImplicitChannelParameter("error", NEDElementConstants.NED_PARTYPE_DOUBLE));
-        params.appendChild(createImplicitChannelParameter("datarate", NEDElementConstants.NED_PARTYPE_DOUBLE));
-        basicChannelType = basicChannel.getNEDTypeInfo();
-
-        //
-        // create built-in interfaces that allow modules to be used as channels
-        // interface IBidirectionalChannel { gates: inout a; inout b; }
-        // interface IUnidirectionalChannel {gates: input i; output o; }
-        //
-        ModuleInterfaceElementEx bidirChannel = (ModuleInterfaceElementEx) factory.createElement(NEDElementTags.NED_MODULE_INTERFACE);
-        bidirChannel.setName("IBidirectionalChannel");
-        GatesElement gates = (GatesElement) factory.createElement(NEDElementTags.NED_GATES, bidirChannel);
-        gates.appendChild(createGate("a", NEDElementConstants.NED_GATETYPE_INOUT));
-        gates.appendChild(createGate("b", NEDElementConstants.NED_GATETYPE_INOUT));
-        bidirChannelType = bidirChannel.getNEDTypeInfo();
-
-        ModuleInterfaceElementEx unidirChannel = (ModuleInterfaceElementEx) factory.createElement(NEDElementTags.NED_MODULE_INTERFACE);
-        unidirChannel.setName("IUnidirectionalChannel");
-        GatesElement gates2 = (GatesElement) factory.createElement(NEDElementTags.NED_GATES,unidirChannel);
-        gates2.appendChild(createGate("i", NEDElementConstants.NED_GATETYPE_INPUT));
-        gates2.appendChild(createGate("o", NEDElementConstants.NED_GATETYPE_OUTPUT));
-        unidirChannelType = unidirChannel.getNEDTypeInfo();
-
-        builtInDeclarationsFile = (NedFileElementEx) factory.createElement(NEDElementTags.NED_NED_FILE);
-        builtInDeclarationsFile.setFilename("[builtin-declarations]");
-        builtInDeclarationsFile.setPackage("ned");
-        builtInDeclarationsFile.appendChild(nullChannel);
-        builtInDeclarationsFile.appendChild(basicChannel);
-        builtInDeclarationsFile.appendChild(bidirChannel);
-        builtInDeclarationsFile.appendChild(unidirChannel);
+    	String source = NEDParser.getBuiltInDeclarations();
+    	INEDErrorStore errorStore = new SysoutNedErrorStore();
+    	builtInDeclarationsFile = (NedFileElementEx) NEDTreeUtil.parseNedSource(source, errorStore, "[builtin-declarations]");
+    	Assert.isTrue(errorStore.getNumProblems()==0);
     }
 
-    /* utility method */
-    protected INEDElement createGate(String name, int type) {
-        GateElement g = (GateElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_GATE);
-        g.setName(name);
-        g.setType(type);
-        return g;
-    }
-
-    /* utility method */
-    protected INEDElement createImplicitChannelParameter(String name, int type) {
-        ParamElement param = (ParamElement) NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PARAM);
-        param.setName(name);
-        param.setType(type);
-        param.setIsVolatile(false);
-        param.setIsDefault(false);
-        // TODO add default value of zero
-        param.setSourceLocation("internal");
-        return param;
+    // currently unused
+    protected INEDTypeInfo getBuiltInDeclaration(String name) {
+    	for (INEDElement child : builtInDeclarationsFile)
+    		if (child instanceof INedTypeElement && ((INedTypeElement)child).getName().equals(name))
+    			return ((INedTypeElement)child).getNEDTypeInfo();
+    	return null;
     }
 
 	public INEDTypeInfo createTypeInfoFor(INedTypeElement node) {
@@ -583,7 +518,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * duplicate names only get detected when this gets run!
      */
     public synchronized void rehashIfNeeded() {
-
         if (!needsRehash)
             return;
 
@@ -596,10 +530,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         reservedNames.clear();
         duplicates.clear();
 
-        components.put(nullChannelType.getFullyQualifiedName(), nullChannelType);
-        components.put(basicChannelType.getFullyQualifiedName(), basicChannelType);
-        components.put(bidirChannelType.getFullyQualifiedName(), bidirChannelType);
-        components.put(unidirChannelType.getFullyQualifiedName(), unidirChannelType);
+    	// re-register built-in declarations
+        for (INEDElement child : builtInDeclarationsFile) {
+    		if (child instanceof INedTypeElement) {
+    	        INEDTypeInfo typeInfo = ((INedTypeElement)child).getNEDTypeInfo();
+				components.put(typeInfo.getFullyQualifiedName(), typeInfo);
+    		}
+    	}
         reservedNames.addAll(components.keySet());
 
         // find NED types in each file, and register them

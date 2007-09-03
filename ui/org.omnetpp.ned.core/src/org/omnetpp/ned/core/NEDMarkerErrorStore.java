@@ -7,9 +7,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.ned.model.AbstractNedErrorStore;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.INEDErrorStore;
-import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
@@ -17,7 +16,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  *
  * @author Andras
  */
-public class NEDMarkerErrorStore implements INEDErrorStore {
+public class NEDMarkerErrorStore extends AbstractNedErrorStore {
 
     public static final String NEDELEMENT_ID = "nedelement-id";
 
@@ -35,27 +34,6 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
     	this.markerType = markerType;
 		this.markerSync = markerSync;
 		markerSync.registerFile(file);
-	}
-
-	public void addError(INEDElement context, String message) {
-		add(IMarker.SEVERITY_ERROR, context, getLineOf(context), message);
-	}
-
-
-	public void addError(INEDElement context, int line, String message) {
-		add(IMarker.SEVERITY_ERROR, context, line, message);
-	}
-
-	public void addWarning(INEDElement context, String message) {
-		add(IMarker.SEVERITY_WARNING, context, getLineOf(context), message);
-	}
-
-	public void addWarning(INEDElement context, int line, String message) {
-		add(IMarker.SEVERITY_WARNING, context, line, message);
-	}
-
-	private int getLineOf(INEDElement context) {
-		return NEDTreeUtil.getLineFrom(context.getSourceLocation());
 	}
 
 	public void add(int severity, INEDElement context, int line, String message) {
