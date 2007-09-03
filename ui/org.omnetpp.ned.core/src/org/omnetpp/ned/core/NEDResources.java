@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
@@ -113,7 +114,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private final Set<String> reservedNames = new HashSet<String>();
 
     // if tables need to be rebuilt
-    private boolean needsRehash = false; 
+    private boolean needsRehash = false;
 
     // We use this counter to increment whenever a rehash occurred. Checks can be made
     // to assert that the function is not called unnecessarily
@@ -124,7 +125,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private INEDTypeInfo nullChannelType = null;
     private INEDTypeInfo bidirChannelType = null;
     private INEDTypeInfo unidirChannelType = null;
-    
+
     private boolean nedModelChangeNotificationDisabled = false;
 
     private DelayedJob validationJob = new DelayedJob(400) {
@@ -154,7 +155,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Create channel and interface types that are predefined in NED.
      */
-    // FIXME should use built-in NED text: 
+    // FIXME should use built-in NED text:
     // String src = NEDParser.getBuiltInDeclarations(); ...
     protected void createBuiltInNEDTypes() {
         // create built-in channel type cIdealChannel
@@ -193,7 +194,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         gates2.appendChild(createGate("i", NEDElementConstants.NED_GATETYPE_INPUT));
         gates2.appendChild(createGate("o", NEDElementConstants.NED_GATETYPE_OUTPUT));
         unidirChannelType = unidirChannel.getNEDTypeInfo();
-        
+
         builtInDeclarationsFile = (NedFileElementEx) factory.createElement(NEDElementTags.NED_NED_FILE);
         builtInDeclarationsFile.setFilename("[builtin-declarations]");
         builtInDeclarationsFile.setPackage("ned");
@@ -292,6 +293,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
+    // FIXME it seems that the markers do not contain NEDELEMENT_ID attribute
 	public IMarker[] getMarkersForElement(INEDElement node, IFile file) {
 		try {
 			Assert.isTrue(getNedFileElement(file)==node.getContainingNedFileElement()); //XXX find file from element? (needs element-to-file mapping)
@@ -391,7 +393,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			NEDResourcesPlugin.logError(new IllegalArgumentException("lookupNedType(): called with context==null!!!"));
 			return components.get(name); //FIXME temp fix, remove it!!!!
 		}
-		
+
 		// inner type?
 		if (context instanceof INedTypeElement) {
 			INEDTypeInfo contextTypeInfo = ((INedTypeElement)context).getNEDTypeInfo();
@@ -412,15 +414,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 					return innerType.getNEDTypeInfo();
 			}
 		}
-		
+
 		// type from the same package?
 		String packageName = context.getContainingNedFileElement().getPackage();
 		INEDTypeInfo samePackageType = components.get(StringUtils.isNotEmpty(packageName) ? packageName+"."+name : name);
 		if (samePackageType != null)
 			return samePackageType;
-		
-		// imported type? 
-		// try a shortcut first: if the import doesn't contain wildcards 
+
+		// imported type?
+		// try a shortcut first: if the import doesn't contain wildcards
 		List<String> imports = context.getContainingNedFileElement().getImports();
 		for (String importSpec : imports)
 			if (components.containsKey(importSpec) && importSpec.endsWith("." + name))
@@ -436,7 +438,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		// maybe it's already a fully qualified name
 		if (name.contains(".") && components.get(name) != null)
 			return components.get(name);
-		
+
 		return null;
     }
 
@@ -448,7 +450,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate) {
 		rehashIfNeeded();
-		
+
 		// types from the same package
 		String prefix = context.getQNameAsPrefix();
 		String regex = prefix + "[^.]+";
@@ -673,7 +675,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		nedModelChanged(new NEDBeginModelChangeEvent(null));
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
-			// clear consistency error markers from the ned tree 
+			// clear consistency error markers from the ned tree
 			for (IFile file : nedFiles.keySet())
 				nedFiles.get(file).clearConsistencyProblemMarkerSeverities();
 
