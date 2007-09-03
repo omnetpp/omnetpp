@@ -1,10 +1,11 @@
-package org.omnetpp.figures;
+package org.omnetpp.figures.anchors;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.figures.misc.GateAnchor;
+
+import org.omnetpp.figures.CompoundModuleFigure;
 
 /**
  * Gate anchor used by the compound module. It can be locked to a specific point

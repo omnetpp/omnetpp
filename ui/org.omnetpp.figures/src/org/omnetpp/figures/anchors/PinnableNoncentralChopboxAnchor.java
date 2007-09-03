@@ -1,4 +1,4 @@
-package org.omnetpp.figures.misc;
+package org.omnetpp.figures.anchors;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;

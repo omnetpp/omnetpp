@@ -1,4 +1,4 @@
-package org.omnetpp.figures.misc;
+package org.omnetpp.figures.anchors;
 
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.IFigure;

@@ -4,7 +4,8 @@ import org.eclipse.draw2d.AbstractRouter;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
-import org.omnetpp.figures.CompoundModuleGateAnchor;
+
+import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 
 /**
  * Very basic straight connection router. It handles a CompoundModuleGateAnchor
