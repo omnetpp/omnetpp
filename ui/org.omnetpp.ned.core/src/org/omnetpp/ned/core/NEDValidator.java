@@ -21,6 +21,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ClassDeclElement;
 import org.omnetpp.ned.model.pojo.ClassElement;
@@ -173,7 +174,10 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		
 		// referenced component must exist and must be the same type as this one
 		String name = node.getName();
-		INEDTypeInfo e = resolver.lookupNedType(name, (CompoundModuleElementEx)componentNode);
+		INedTypeElement enclosingTypeNode = componentNode.getEnclosingTypeNode();
+		INedTypeLookupContext context = enclosingTypeNode == null ? componentNode.getContainingNedFileElement() : (CompoundModuleElementEx)enclosingTypeNode;
+		//FIXME introduce a getParentLookupContext() instead!!!!
+		INEDTypeInfo e = resolver.lookupNedType(name, context);
 		if (e == null) {
 			errors.addError(node, "no such component: '" + name+"'");
 			return;
