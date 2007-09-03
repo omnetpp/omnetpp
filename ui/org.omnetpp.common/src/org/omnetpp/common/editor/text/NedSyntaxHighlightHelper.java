@@ -9,8 +9,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 public class NedSyntaxHighlightHelper {
-
-
 	// word lists for syntax highlighting
 	// TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
 	public final static String[] highlightPrivateDocTodo = NedKeywords.DOC_TODO;
@@ -37,18 +35,18 @@ public class NedSyntaxHighlightHelper {
 	public final static IToken codeStringToken = new Token(new TextAttribute(NedSyntaxHighlightHelper.getColor(SWT.COLOR_DARK_GREEN)));
 	public final static IToken codeNumberToken = new Token(new TextAttribute(NedSyntaxHighlightHelper.getColor(SWT.COLOR_DARK_GREEN)));
 
-	// whitespace and word detectors for tokenization
-	public final static NedWordDetector nedWordDetector = new NedSyntaxHighlightHelper.NedWordDetector();
-	public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSyntaxHighlightHelper.NedSpecialWordDetector();
-	public final static NedAtWordDetector nedAtWordDetector = new NedSyntaxHighlightHelper.NedAtWordDetector();
-	public final static NedDocTagDetector nedDocTagDetector = new NedSyntaxHighlightHelper.NedDocTagDetector();
-
 	/**
 	 * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
 	 */
 	public static Color getColor(int color) {
 	    return Display.getDefault().getSystemColor(color);
 	}
+
+	// whitespace and word detectors for tokenization
+	public final static NedWordDetector nedWordDetector = new NedWordDetector();
+	public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSpecialWordDetector();
+	public final static NedAtWordDetector nedAtWordDetector = new NedAtWordDetector();
+	public final static NedDocTagDetector nedDocTagDetector = new NedDocTagDetector();
 
 	/**
 	 * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)

@@ -13,7 +13,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.rules.IWordDetector;
@@ -72,19 +71,18 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
     /**
      * Create a List of ICompletionProposal from an array of string. Checks the word under the current cursor
      * position and filters the proposal accordingly.
-     * @param viewer
-     * @param documentOffset
-     * @param wordDetector
-     * @param proposalString
-     * @return List of proposals
      */
     protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
         List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
-        IRegion wordRegion = detectWordRegion(viewer, documentOffset, wordDetector); 
-        String prefix = "";
+        String prefix;
+        IRegion wordRegion;
         try {
+        	wordRegion = TextEditorUtil.detectWordRegion(viewer, documentOffset, wordDetector); 
             prefix = viewer.getDocument().get(wordRegion.getOffset(), documentOffset - wordRegion.getOffset());
-        } catch (BadLocationException e) { }
+        } catch (BadLocationException e) { 
+        	CommonPlugin.logError(e);
+        	return propList;
+        }
 
         Arrays.sort(proposalString);
         
@@ -97,42 +95,6 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         }
 
         return propList;
-    }
-    
-    /**
-     * Detects the boundary of a single word under the current position (defined by the wordDetector)  
-     * @param viewer The document viewer where the word must be detected
-     * @param documentOffset current cursor offset
-     * @param wordDetector A specific word detector to detect in-word characters
-     * @return The region that should be replaced
-     */
-    protected IRegion detectWordRegion(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) {
-        int offset = documentOffset;
-        int length = 0;
-        
-        try {
-            // find the first char that may not be the trailing part of a word.
-            while (offset > 0 && wordDetector.isWordPart(viewer.getDocument().getChar(offset - 1)))
-                offset--;
-            
-            // check if the first char of the word is also ok.
-            if (offset > 0 && wordDetector.isWordStart(viewer.getDocument().getChar(offset - 1)))
-                offset--;
-            // now we should stand on the first char of the word
-            if (offset + length < viewer.getDocument().getLength() 
-                    && wordDetector.isWordStart(viewer.getDocument().getChar(offset + length)))
-                length++;
-            // now iterate through the rest of chars until a character cannot be recognized as an in/word char
-            while(offset + length < viewer.getDocument().getLength() 
-                    && wordDetector.isWordPart(viewer.getDocument().getChar(offset + length)))
-                length++;
-            
-        } catch (BadLocationException e) {
-            offset = documentOffset;
-            length = 0;
-        }
-        
-        return new Region(offset, length);
     }
 
 	/**
@@ -153,15 +115,19 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 		if (selection.getOffset() == offset)
 			offset= selection.getOffset() + selection.getLength();
 
-        IRegion wordRegion = detectWordRegion(viewer, offset, wordDetector); 
-        String prefix = "";
+        IRegion wordRegion; 
+        String prefix;
         try {
+            wordRegion = TextEditorUtil.detectWordRegion(viewer, offset, wordDetector); 
             prefix = viewer.getDocument().get(wordRegion.getOffset(), offset - wordRegion.getOffset());
-        } catch (BadLocationException e) { }
+        } catch (BadLocationException e) {
+        	CommonPlugin.logError(e);
+			return new ICompletionProposal[0];
+        }
 
 		TemplateContext context= createContext(viewer, wordRegion);
         // set the current indentation in a variable so we will be able to use ${indent} in templates
-        // ${indent} is implicitly added after each \n char during the creation of templae proposals
+        // ${indent} is implicitly added after each \n char during the creation of template proposals
         String indentPrefix = "";
         try {
             int lineStartOffset = viewer.getDocument().getLineInformationOfOffset(offset).getOffset();
