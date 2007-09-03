@@ -6,7 +6,6 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
-import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -37,8 +36,8 @@ public class CompoundModuleFigure extends NedFigure
     private static final int BORDER_SNAP_WIDTH = 3;
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 
-	private Layer pane;
-    private ScrollPane scrollpane;
+	private Layer submoduleLayer;
+    private ScrollPane mainContainer;
     private LayeredPane layeredPane;
     private Image backgroundImage;
     private String backgroundImageArrangement = "fix";
@@ -64,7 +63,7 @@ public class CompoundModuleFigure extends NedFigure
         	graphics.pushState();
 
         	// get the size of the viewport (which is actually the module size)
-	        Rectangle viewportRect = new Rectangle(new Point(0,0), scrollpane.getSize());
+	        Rectangle viewportRect = new Rectangle(new Point(0,0), mainContainer.getSize());
 
 	        // draw outer non playground area
 	        Pattern nonplayPattern = new Pattern(null, 0,0,5,5, moduleBackgroundColor, moduleBorderColor);
@@ -136,32 +135,37 @@ public class CompoundModuleFigure extends NedFigure
 
     public CompoundModuleFigure() {
         super();
-        setBorder(new CompoundModuleBorder());
 
-        setLayoutManager(new StackLayout());
-        // create scroller and viewport to manage the scrollbars and scrolling
-		scrollpane = new ScrollPane();
-        // add the main layer to the scroller pane
-        // create the main and the decoration layers that will be added into the viewportPane
-        pane = new FreeformLayer();
-        messageLayer = new NonExtendableFreeformLayer();
-        connectionLayer = new NedConnectionLayer();
+        // set up the name and error marker figure
+        ToolbarLayout tb = new ToolbarLayout();
+        tb.setSpacing(2);
+        setLayoutManager(tb);
+        // position the error marker above the problemMarker figure
+        Layer nameHelperLayer = new Layer();
+        nameHelperLayer.setLayoutManager(new XYLayout());
+        nameHelperLayer.add(nameFigure, new Rectangle(0,0,-1,-1));
+        nameHelperLayer.add(problemMarkerFigure, new Rectangle(-1,0,16,16));
+        add(nameHelperLayer);
 
+        // contains all layers used inside a compound modules submodule area
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
-
         layeredPane.addLayerAfter(new BackgroundLayer(), LayerID.BACKGROUND, null);
         layeredPane.addLayerAfter(new NonExtendableFreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
-        layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
+        layeredPane.addLayerAfter(submoduleLayer = new FreeformLayer(), LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
-        layeredPane.addLayerAfter(connectionLayer, LayerID.CONNECTION, LayerID.FRONT_DECORATION);
-        layeredPane.addLayerAfter(messageLayer, LayerID.MESSAGE, LayerID.CONNECTION);
+        layeredPane.addLayerAfter(connectionLayer = new NedConnectionLayer(), LayerID.CONNECTION, LayerID.FRONT_DECORATION);
+        layeredPane.addLayerAfter(messageLayer = new NonExtendableFreeformLayer(), LayerID.MESSAGE, LayerID.CONNECTION);
 
-        scrollpane.setViewport(new FreeformViewport());
-        scrollpane.setContents(layeredPane);
-        add(scrollpane);
+        submoduleLayer.setLayoutManager(layouter = new SpringEmbedderLayout(submoduleLayer, connectionLayer));
 
-        pane.setLayoutManager(layouter = new SpringEmbedderLayout(pane, connectionLayer));
+        // the main container area (where submodules are displayed) of the compModule
+        // create scroller and viewport to manage the scrollbars and scrolling
+        mainContainer = new ScrollPane();
+        mainContainer.setViewport(new FreeformViewport());
+        mainContainer.setContents(layeredPane);
+        mainContainer.setBorder(new CompoundModuleLineBorder());
+        add(mainContainer);
 
         // this effectively creates the following hierarchy:
         // -- ScrollPane (+FreeformViewport)
@@ -178,7 +182,7 @@ public class CompoundModuleFigure extends NedFigure
         FanRouter fr = new FanRouter();
         fr.setSeparation(10);
         CompoundModuleShortestPathConnectionRouter spcr =
-        	new CompoundModuleShortestPathConnectionRouter(pane);
+        	new CompoundModuleShortestPathConnectionRouter(submoduleLayer);
         spcr.setSpacing(10);
         fr.setNextRouter(spcr);
 // use this for fan router
@@ -193,24 +197,23 @@ public class CompoundModuleFigure extends NedFigure
 		connectionLayer.setConnectionRouter(router);
 	}
 
-    public IFigure getContentsPane() {
-        return pane;
+    public IFigure getSubmoduleContainer() {
+        // this is the figure which is used to add submodule children by the editpart
+        return submoduleLayer;
     }
 
     /**
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
     public Rectangle getHandleBounds() {
-    	// the selection handle should exclude the outer (title) border
-        return getBounds().getCropped(
-        		((CompoundModuleBorder)getBorder()).getOuterBorder().getInsets(this));
+        return mainContainer.getBounds();
     }
 
     /**
      * Returns the bounds where the anchors should be placed
      */
     public Rectangle getAnchorBounds() {
-    	Rectangle box = getClientArea();
+    	Rectangle box = mainContainer.getClientArea();
     	box.setLocation(0, 0);
     	// take into account the compound module scrolling position
     	layeredPane.translateToAbsolute(box);
@@ -221,11 +224,21 @@ public class CompoundModuleFigure extends NedFigure
 
     }
 
+    /**
+     * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible
+     */
+    public boolean isOnBorder(int x, int y) {
+        Point mouse = new Point(x,y);
+        translateToRelative(mouse);
+        return getBounds().contains(mouse) &&
+            !mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH).contains(mouse);
+    }
+
     @Override
     public Dimension getPreferredSize(int w, int h) {
     	// we are not sensitive to the external size hints
         Dimension prefSize = super.getPreferredSize(-1, -1);
-        if (pane.getChildren().size() == 0)
+        if (submoduleLayer.getChildren().size() == 0)
             return DEFAULT_SIZE;
 
         return prefSize;
@@ -234,8 +247,8 @@ public class CompoundModuleFigure extends NedFigure
     /**
      * Helper function to return the current border
      */
-    public CompoundModuleBorder getCompoundModuleBorder() {
-    	return (CompoundModuleBorder)getBorder();
+    public CompoundModuleLineBorder getCompoundModuleBorder() {
+    	return (CompoundModuleLineBorder)mainContainer.getBorder();
     }
 
     public Layer getLayer(LayerID layerId) {
@@ -255,11 +268,9 @@ public class CompoundModuleFigure extends NedFigure
 		moduleBorderColor = borderColor==null ? ERROR_BORDER_COLOR : borderColor;
 
 		// the global background is the same as the border color
-		setBackgroundColor(moduleBorderColor);
-		getCompoundModuleBorder().setBorderColor(moduleBorderColor);
-		// there is no separate title color
-        getCompoundModuleBorder().setTitleBackgroundColor(null);
-		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth);
+		mainContainer.setBackgroundColor(moduleBorderColor);
+		getCompoundModuleBorder().setColor(moduleBorderColor);
+		getCompoundModuleBorder().setWidth(borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;
 		backgroundImageArrangement = arrange != null ? arrange : "";
@@ -280,14 +291,9 @@ public class CompoundModuleFigure extends NedFigure
 	}
 
 	protected void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
-		getCompoundModuleBorder().setImage(img);
-		// TODO support shapes too
-		invalidate();
-	}
-
-	public void setName(String name) {
-		getCompoundModuleBorder().setLabel(name);
-        invalidate();
+        if (img == null)
+            img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
+		nameFigure.setIcon(img);
 	}
 
 	/**
@@ -351,7 +357,7 @@ public class CompoundModuleFigure extends NedFigure
         // finally set the location and size using the models helper methods
         // if the size is specified in the display string we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children
-        // we call the resizing last time because other parameters like the icon size or the broder width
+        // we call the resizing last time because other parameters like the icon size or the border width
         // can affect the size of bounding box
         Dimension newSize = dps.getCompoundSize(null);
 
@@ -363,40 +369,28 @@ public class CompoundModuleFigure extends NedFigure
         }
 
         if (newSize.height > 0 || newSize.width > 0) {
-            Insets borderInset = getBorder().getInsets(this);
+            Insets borderInset = mainContainer.getBorder().getInsets(this);
             Dimension newPrefSize = newSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
-            setPreferredSize(newPrefSize);
-            pane.setPreferredSize(newPrefSize.getCopy());
+            mainContainer.setPreferredSize(newPrefSize);
         }
         else {
-            setPreferredSize(null);
-            pane.setPreferredSize(null);
+            mainContainer.setPreferredSize(null);
         }
         invalidate();
-	}
-
-	/**
-	 * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible
-	 */
-	public boolean isOnBorder(int x, int y) {
-		Point mouse = new Point(x,y);
-		translateToRelative(mouse);
-		return getBounds().contains(mouse) &&
-			!getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH).contains(mouse);
 	}
 
 	/**
 	 * Adds the given submodule child figure to the correct layer
 	 */
 	public void addSubmoduleFigure(SubmoduleFigure submoduleFig) {
-		pane.add(submoduleFig);
+		submoduleLayer.add(submoduleFig);
 	}
 
 	/**
 	 * Removes a submodule child figure from the compound module
 	 */
 	public void removeSubmoduleFigure(SubmoduleFigure submoduleFig) {
-		pane.remove(submoduleFig);
+		submoduleLayer.remove(submoduleFig);
 	}
 
 	/**
@@ -426,28 +420,5 @@ public class CompoundModuleFigure extends NedFigure
 	public void removeMessageFigure(IFigure messageFigure) {
 		messageLayer.remove(messageFigure);
 	}
-
-    // delegate the direct edit support to the TitleBorder
-    public CellEditorLocator getDirectEditCellEditorLocator() {
-        return getCompoundModuleBorder().getTitleBorder().getDirectEditCellEditorLocator();
-    }
-
-    public String getName() {
-        return getCompoundModuleBorder().getTitleBorder().getName();
-    }
-
-    public void showLabelUnderCellEditor(boolean visible) {
-        getCompoundModuleBorder().getTitleBorder().showLabelUnderCellEditor(visible);
-    }
-
-    /**
-     * Display a "problem" image decoration on the submodule.
-     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-     */
-    public void setProblemDecoration(int severity) {
-    	Image image = getProblemImageFor(severity);
-		getCompoundModuleBorder().setProblemDecorationImage(image);
-    	invalidate(); //XXX needed?
-    }
 
 }

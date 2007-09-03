@@ -17,8 +17,8 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
  * It is the common base to all selectable figures in the editor.
- * (anything that can have a display string).
- * It can be annotated by an error marker. And supports name changes by direct edit operation.
+ * Anything that can have a display string, name.
+ * It can be annotated by an error marker and supports name changes by direct edit operation.
  *
  * @author rhornig
  */
@@ -34,7 +34,11 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
     protected TooltipFigure problemMarkerTooltipFigure;
 
     public NedFigure() {
+        // left align everything inside the figure
+        nameFigure.setLabelAlignment(PositionConstants.LEFT);
+        // text is on the east side of the icon
         nameFigure.setTextAlignment(PositionConstants.EAST);
+        // and placed at the middle vertically
         nameFigure.setTextPlacement(PositionConstants.MIDDLE);
     }
 
@@ -61,10 +65,6 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
         return new LabelCellEditorLocator(nameFigure);
     }
 
-    public String getName() {
-        return nameFigure.getText();
-    }
-
     public void showLabelUnderCellEditor(boolean visible) {
         // HACK to hide the text part only of the label
         if (!visible) {
@@ -72,7 +72,7 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
             nameFigure.setText("");
         }
         else {
-            if ("".equals(nameFigure.getText()))
+            if (StringUtils.isEmpty(nameFigure.getText()))
                 nameFigure.setText(tmpName);
         }
         invalidate();
@@ -112,13 +112,16 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
             problemMarkerTooltipFigure = new TooltipFigure();
             problemMarkerFigure.setToolTip(problemMarkerTooltipFigure);
             problemMarkerTooltipFigure.setText(text);
-            invalidate();
         }
         invalidate();
     }
 
     public void setName(String text) {
         nameFigure.setText(text);
+    }
+
+    public String getName() {
+        return nameFigure.getText();
     }
 
     @Override
