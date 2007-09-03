@@ -31,6 +31,7 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
     protected Label nameFigure = new Label();
     protected TooltipFigure tooltipFigure;
     protected ImageFigure problemMarkerFigure = new ImageFigure();
+    protected TooltipFigure problemMarkerTooltipFigure;
 
     public NedFigure() {
         nameFigure.setTextAlignment(PositionConstants.EAST);
@@ -93,14 +94,27 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
 
     /**
      * Display a "problem" image decoration on the submodule.
-     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
+     * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
+     * @param text the text to be displayed as a tooltip
      */
-    public void setProblemDecoration(int severity) {
-        Image image = NedFigure.getProblemImageFor(severity); //TODO subclass this AND ModuleFigure from a common NedFigure!
+    public void setProblemDecoration(int maxSeverity, String text) {
+        Image image = NedFigure.getProblemImageFor(maxSeverity);
         if (image != null)
             problemMarkerFigure.setImage(image);
         problemMarkerFigure.setVisible(image != null);
-        invalidate(); //XXX needed?
+
+        // set a tooltip text
+        if (StringUtils.isEmpty(text)) {
+            problemMarkerFigure.setToolTip(null);
+            problemMarkerTooltipFigure = null;
+        }
+        else {
+            problemMarkerTooltipFigure = new TooltipFigure();
+            problemMarkerFigure.setToolTip(problemMarkerTooltipFigure);
+            problemMarkerTooltipFigure.setText(text);
+            invalidate();
+        }
+        invalidate();
     }
 
     public void setName(String text) {

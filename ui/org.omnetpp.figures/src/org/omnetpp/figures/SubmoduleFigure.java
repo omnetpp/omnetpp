@@ -431,19 +431,6 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         return shapeVisible;
     }
 
-//    /**
-//     * Display a "problem" image decoration on the submodule.
-//     * @param severity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-//     */
-//    @Override
-//    public void setProblemDecoration(int severity) {
-//    	Image image = getProblemImageFor(severity);
-//    	if (image != null)
-//    		problemMarkerFigure.setImage(image);
-//    	problemMarkerFigure.setVisible(image != null);
-//    	invalidate(); //XXX needed?
-//    }
-
     /**
      * Turns the "pin" icon (which shows whether the submodule has a
      * user-specified position) on/off
