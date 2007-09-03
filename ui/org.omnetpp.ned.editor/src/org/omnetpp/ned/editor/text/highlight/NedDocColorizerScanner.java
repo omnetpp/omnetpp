@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.rules.*;
-import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 
 /**
  * A rule based NedDoc scanner.
@@ -23,27 +23,27 @@ public class NedDocColorizerScanner extends RuleBasedScanner {
 	 public NedDocColorizerScanner() {
 		super();
         // this is the default token for a comment
-        setDefaultReturnToken(NedCompletionHelper.docDefaultToken);
+        setDefaultReturnToken(NedSyntaxHighlightHelper.docDefaultToken);
 
 		List<IRule> list= new ArrayList<IRule>();
 
         // Add word rule for supported HTML tags
         // FIXME does not match if token is followed immediately with some characters
-        WordRule tagRule= new WordRule(NedCompletionHelper.nedDocTagDetector, Token.UNDEFINED);
-        for (int i= 0; i < NedCompletionHelper.highlightDocTags.length; i++)
+        WordRule tagRule= new WordRule(NedSyntaxHighlightHelper.nedDocTagDetector, Token.UNDEFINED);
+        for (int i= 0; i < NedSyntaxHighlightHelper.highlightDocTags.length; i++)
         {
-            String cTag = NedCompletionHelper.highlightDocTags[i];
-            list.add(new SingleLineRule("<" + cTag + " ", ">", NedCompletionHelper.docTagToken, (char)0, true));   // start tag with attributes
-            tagRule.addWord("<" + cTag + ">", NedCompletionHelper.docTagToken);    // empty start tag
-            tagRule.addWord("</" + cTag + ">", NedCompletionHelper.docTagToken);   // empty end tag
-            tagRule.addWord("<" + cTag + "/>", NedCompletionHelper.docTagToken);   // combined start / end tag
+            String cTag = NedSyntaxHighlightHelper.highlightDocTags[i];
+            list.add(new SingleLineRule("<" + cTag + " ", ">", NedSyntaxHighlightHelper.docTagToken, (char)0, true));   // start tag with attributes
+            tagRule.addWord("<" + cTag + ">", NedSyntaxHighlightHelper.docTagToken);    // empty start tag
+            tagRule.addWord("</" + cTag + ">", NedSyntaxHighlightHelper.docTagToken);   // empty end tag
+            tagRule.addWord("<" + cTag + "/>", NedSyntaxHighlightHelper.docTagToken);   // combined start / end tag
         }
         list.add(tagRule);
 
         // Add word rule for keywords.
-        WordRule keywordRule= new WordRule(NedCompletionHelper.nedAtWordDetector, Token.UNDEFINED);
-        for (int i= 0; i < NedCompletionHelper.highlightDocKeywords.length; i++)
-            keywordRule.addWord("@" + NedCompletionHelper.highlightDocKeywords[i], NedCompletionHelper.docKeywordToken);
+        WordRule keywordRule= new WordRule(NedSyntaxHighlightHelper.nedAtWordDetector, Token.UNDEFINED);
+        for (int i= 0; i < NedSyntaxHighlightHelper.highlightDocKeywords.length; i++)
+            keywordRule.addWord("@" + NedSyntaxHighlightHelper.highlightDocKeywords[i], NedSyntaxHighlightHelper.docKeywordToken);
         list.add(keywordRule);
         
 		IRule[] result= new IRule[list.size()];

@@ -18,6 +18,7 @@ import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
@@ -335,15 +336,15 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedCompletionHelper.nedWordDetector, "", proposals, "", description));
+		result.addAll(createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector, "", proposals, "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedCompletionHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
+		result.addAll(createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
-	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, NedCompletionHelper.nedWordDetector, templates)));
+	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector, templates)));
 	}
 
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {

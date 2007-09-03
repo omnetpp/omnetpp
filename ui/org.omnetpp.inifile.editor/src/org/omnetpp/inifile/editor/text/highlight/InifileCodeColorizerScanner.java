@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.rules.*;
-import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
@@ -30,11 +30,11 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
 		// Add word rule for keywords, types, and constants. If not recognized as either of these
         // then this is a regular identifier, so return an identifierToken by default
 		WordRule wordRule = new WordRule(InifileTextEditorHelper.inifileWordDetector, InifileTextEditorHelper.codeIdentifierToken);
-        for (String text : NedCompletionHelper.highlightNedFunctions)
+        for (String text : NedSyntaxHighlightHelper.highlightNedFunctions)
 			wordRule.addWord(text, InifileTextEditorHelper.codeFunctionToken);
-		for (String text : NedCompletionHelper.highlightNedKeywords)
+		for (String text : NedSyntaxHighlightHelper.highlightNedKeywords)
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
-		for (String text : NedCompletionHelper.highlightConstants)
+		for (String text : NedSyntaxHighlightHelper.highlightConstants)
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
 		for (ConfigKey entry : ConfigRegistry.getEntries())
 			wordRule.addWord(entry.getKey(), InifileTextEditorHelper.codeConfigKeyToken);

@@ -1,15 +1,7 @@
 package org.omnetpp.common.editor.text;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.TextAttribute;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.IWhitespaceDetector;
-import org.eclipse.jface.text.rules.IWordDetector;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.templates.Template;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * This class contains all the possible keywords for syntax highlighting
@@ -21,21 +13,10 @@ public final class NedCompletionHelper {
     /** This context's id */
     public static final String DEFAULT_NED_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
 
-    // word lists for syntax highlighting
-    // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
-    public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
-    public final static String[] highlightDocTags = { "a", "b", "body", "br", "center", "caption", "code", "dd", "dfn", "dl", "dt", "em", "form", "font", "hr", "h1", "h2", "h3", "i", "input", "img", "li", "meta", "multicol", "ol", "p", "small", "span", "strong", "sub", "sup", "table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
-    public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
-    public final static String[] highlightNedTypes = { "bool", "double", "volatile", "inout", "input", "int", "output", "string", "xml" };
-    public final static String[] highlightNedSpecialKeywords = { "-->", "<--", "<-->", ".." };
-    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "for", "gates", "if", "import", "index", "moduleinterface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "withcppclass" };
-    public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
-    public final static String[] highlightConstants = { "false", "true" };
-
     // word lists for completion
-    public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
-    public final static String[] proposedDocTags = highlightDocTags;
-    public final static String[] proposedDocKeywords = highlightDocKeywords;
+    public final static String[] proposedPrivateDocTodo = NedKeywords.DOC_TODO;
+    public final static String[] proposedDocTags = NedKeywords.DOC_TAGS;
+    public final static String[] proposedDocKeywords = NedKeywords.DOC_KEYWORDS;
     public final static String[] proposedNedBaseParamTypes = { "bool", "double", "int", "string", "xml" };
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
     public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
@@ -378,32 +359,6 @@ public final class NedCompletionHelper {
                 "}${cursor}"),
     };
 
-    // whitespace and word detectors for tokenization
-    public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();
-    public final static NedWordDetector nedWordDetector = new NedWordDetector();
-    public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSpecialWordDetector();
-    public final static NedAtWordDetector nedAtWordDetector = new NedAtWordDetector();
-    public final static NedDocTagDetector nedDocTagDetector = new NedDocTagDetector();
-
-    // tokens for syntax highlighting
-    // TODO these styles should be configurable
-    public final static IToken docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
-    public final static IToken docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
-    public final static IToken docTagToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED)));
-
-    public final static IToken docPrivateDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLUE), null, SWT.ITALIC));
-    public final static IToken docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
-
-    public final static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public final static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED), null, SWT.BOLD));
-    public final static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
-    public final static IToken codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE), null, SWT.BOLD));
-    public final static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
-    public final static IToken codePropertyToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK), null, SWT.BOLD));
-    public final static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-    public final static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-
-
     /**
      * Utility function for creating a one-line template
      */
@@ -430,79 +385,6 @@ public final class NedCompletionHelper {
     public static Template makeTemplate(String name, String description, String pattern) {
         pattern = pattern.replace("\n", "\n${indent}");
         return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
-    }
-
-    /**
-     * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
-     */
-    public static Color getColor(int color) {
-        return Display.getDefault().getSystemColor(color);
-    }
-
-    /**
-     * A generic white space detector
-     */
-    public static class NedWhitespaceDetector implements IWhitespaceDetector {
-
-        public boolean isWhitespace(char character) {
-            return Character.isWhitespace(character);
-        }
-    }
-
-    /**
-     * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)
-     */
-    public static class NedWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char character) {
-            return Character.isLetter(character) || character == '_' || character == '@';
-        }
-
-        public boolean isWordPart(char character) {
-            return Character.isLetterOrDigit(character) || character == '_';
-        }
-    }
-
-    /**
-     * Detector for extreme NED keywords (in: out: --> <-- .. ...) where the keyword may contain special chars
-     */
-    public static class NedSpecialWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return Character.isLetter(c) || c == '-' || c == '<' || c == '>' || c == '.';
-        }
-
-        public boolean isWordPart(char c) {
-            return isWordStart(c) || c == ':';
-        }
-    }
-
-    /**
-     * Detects keywords that are starting with @ and continuing with letters only.
-     */
-    public static class NedAtWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return (c == '@');
-        }
-
-        public boolean isWordPart(char c) {
-            return Character.isLetter(c);
-        }
-    }
-
-    /**
-     * Detects keywords that look like an XML tag.
-     */
-    public static class NedDocTagDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return (c == '<');
-        }
-
-        public boolean isWordPart(char c) {
-            return Character.isLetter(c) || c == '/' || c == '>';
-        }
     }
 
 }

@@ -5,7 +5,8 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.omnetpp.common.editor.text.NedCompletionHelper.NedWordDetector;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper.NedWordDetector;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -23,7 +24,7 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
         // extract the word under the cursor. go back and forward from the cursor point and detect word
         // boundaries
         String text = textViewer.getDocument().get();
-        NedWordDetector nwd = new NedWordDetector();
+        NedSyntaxHighlightHelper.NedWordDetector nwd = new NedSyntaxHighlightHelper.NedWordDetector();
         int wordStart = region.getOffset();
         // if we do not point into a word, just skip the whole detection
         if (!(nwd.isWordPart(text.charAt(wordStart)) || nwd.isWordStart(text.charAt(wordStart))))

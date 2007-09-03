@@ -15,7 +15,7 @@ import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -40,7 +40,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		try {
-			String word = getWordUnderCursor(textViewer, hoverRegion, NedCompletionHelper.nedWordDetector);
+			String word = getWordUnderCursor(textViewer, hoverRegion, NedSyntaxHighlightHelper.nedWordDetector);
 			if (StringUtils.isEmpty(word))
 				return null;
 
@@ -80,7 +80,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 	}
 
 
-    // FIXME word detector shoul dinclude the period too
+    // FIXME word detector should include the period too
 	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
 		//FIXME one-letter words are not recognized!
 		try {

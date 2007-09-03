@@ -133,7 +133,6 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         }
         
         return new Region(offset, length);
-        
     }
 
 	/**
