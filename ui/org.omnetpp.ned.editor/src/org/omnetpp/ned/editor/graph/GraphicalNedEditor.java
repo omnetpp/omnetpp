@@ -81,6 +81,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.actions.*;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
+import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
@@ -379,7 +380,9 @@ public class GraphicalNedEditor
                 // we do not show hover if a tooltip already set on the figure or we are inside a
                 // compound module figure (we display tooltips only over the border a title for
                 // a compound module)
-                if (figureUnderMouse == null || figureUnderMouse.getToolTip() != null)
+                if (figureUnderMouse == null || figureUnderMouse.getToolTip() != null ||
+                        (epUnderMouse instanceof CompoundModuleEditPart &&
+                                !((CompoundModuleEditPart)epUnderMouse).getCompoundModuleFigure().isOnBorder(x, y)))
                     return null;
 
                 return getHTMLHoverTextFor(epUnderMouse, outPreferredSize);

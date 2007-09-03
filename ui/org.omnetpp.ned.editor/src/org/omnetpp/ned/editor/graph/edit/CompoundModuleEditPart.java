@@ -72,7 +72,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     /**
      * Convenience method to return the figure object with the correct type
      */
-    protected CompoundModuleFigure getCompoundModuleFigure() {
+    public CompoundModuleFigure getCompoundModuleFigure() {
         return (CompoundModuleFigure) getFigure();
     }
 
