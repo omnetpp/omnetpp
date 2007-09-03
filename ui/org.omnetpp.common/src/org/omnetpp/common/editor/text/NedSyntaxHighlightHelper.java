@@ -8,9 +8,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Data for NED syntax highlighting
+ * 
+ * @author rhornig, andras
+ */
 public class NedSyntaxHighlightHelper {
 	// word lists for syntax highlighting
-	// TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
 	public final static String[] highlightPrivateDocTodo = NedKeywords.DOC_TODO;
 	public final static String[] highlightDocTags = NedKeywords.DOC_TAGS;
 	public final static String[] highlightDocKeywords = NedKeywords.DOC_KEYWORDS;

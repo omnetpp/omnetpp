@@ -12,6 +12,9 @@ import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.Ran
 import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifferencer;
 import org.omnetpp.common.util.StringUtils;
 
+/**
+ * @author levy
+ */
 public class TextDifferenceUtils {
 	public interface ITextDifferenceApplier {
 		void replace(int start, int end, String replacement);

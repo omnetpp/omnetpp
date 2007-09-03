@@ -4,8 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.templates.Template;
 
 /**
- * This class contains all the possible keywords for syntax highlighting
- * and context assist functions for NED files.
+ * This class contains data for context assist functions for NED files.
  *
  * @author rhornig
  */
@@ -17,14 +16,14 @@ public final class NedCompletionHelper {
     public final static String[] proposedPrivateDocTodo = NedKeywords.DOC_TODO;
     public final static String[] proposedDocTags = NedKeywords.DOC_TAGS;
     public final static String[] proposedDocKeywords = NedKeywords.DOC_KEYWORDS;
-    public final static String[] proposedNedBaseParamTypes = { "bool", "double", "int", "string", "xml" };
+    public final static String[] proposedNedBaseParamTypes = NedKeywords.PARAM_TYPES;
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
-    public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
+    public final static String[] proposedNedGateTypes = NedKeywords.GATE_TYPES;
     public final static String[] proposedNedTopLevelKeywords = { "import", "network", "package", "property"};
-    public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channel withcppclass", "channelinterface", "moduleinterface", "module", "simple"};
+    public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channelinterface", "moduleinterface", "module", "simple"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedOtherExpressionKeywords = {"index", "this"};
-    public final static String[] proposedConstants = { "false", "true" };
+    public final static String[] proposedNedOtherExpressionKeywords = NedKeywords.EXPRESSION_KEYWORDS;
+    public final static String[] proposedConstants = NedKeywords.CONSTANTS;
 
 
     public final static Template[] proposedNedComponentPropertyTempl = {

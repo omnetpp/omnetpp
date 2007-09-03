@@ -19,9 +19,11 @@ public class NedKeywords {
 
 	public final static String[] GATE_TYPES = { "inout", "input", "output" };
 
-	public final static String[] PARAM_TYPES = { "bool", "double", "int", "string", "xml", "volatile" };
+	public final static String[] PARAM_TYPES = { "bool", "double", "int", "string", "xml" };
+	
+	public final static String[] PARAM_TYPE_MODIFIERS = { "volatile" };
 
-	public final static String[] TYPES = concat(GATE_TYPES, PARAM_TYPES);
+	public final static String[] TYPES = concat(GATE_TYPES, PARAM_TYPES, PARAM_TYPE_MODIFIERS);
 
 	public final static String[] SPECIAL = { "-->", "<--", "<-->", ".." };
 
