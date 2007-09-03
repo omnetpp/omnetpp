@@ -353,6 +353,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			if (enclosingType != null)
 	    		fullyQualifiedName = enclosingType.getNEDTypeInfo().getFullyQualifiedName() + "." + name; // causes that type to refresh as well
 	   		else {
+                // FIXME use QNameAsPrefix
 	    		String packageName = getNEDElement().getContainingNedFileElement().getPackage();
 	    		fullyQualifiedName = StringUtils.isNotEmpty(packageName) ? packageName + "." + name : name;
 	   		}

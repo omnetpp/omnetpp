@@ -155,7 +155,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				if (qualifiedName.matches(regex))
 					{found = true; break;}
 			if (!found)
-				errors.addError(node, "import does not match any NED type: '" + name+"'");
+				errors.addWarning(node, "import does not match any NED type: '" + name+"'");
 		}
 		validateChildren(node);
 	}

@@ -417,6 +417,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		// type from the same package?
 		String packageName = context.getContainingNedFileElement().getPackage();
+        // FIXME (all below) if not contains "."
 		INEDTypeInfo samePackageType = components.get(StringUtils.isNotEmpty(packageName) ? packageName+"."+name : name);
 		if (samePackageType != null)
 			return samePackageType;
@@ -453,6 +454,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		// types from the same package
 		String prefix = context.getQNameAsPrefix();
+        // FIXME quote the dots in prefix
 		String regex = prefix + "[^.]+";
 		Set<String> result = new HashSet<String>();
 		for (INEDTypeInfo typeInfo : components.values())
@@ -462,6 +464,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		// imported types
 		List<String> imports = context.getContainingNedFileElement().getImports();
 		for (String importSpec : imports) {
+            // FIXME use util func
 			String importRegex = importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
 			for (INEDTypeInfo typeInfo : components.values())
 				if (typeInfo.getFullyQualifiedName().matches(importRegex) && predicate.matches(typeInfo))
