@@ -19,7 +19,7 @@ public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProce
 	@SuppressWarnings("unchecked")
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
-            createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector,
+            createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(),
                     "", NedCompletionHelper.proposedPrivateDocTodo, " ", null);
 
         Collections.sort(result, CompletionProposalComparator.getInstance());

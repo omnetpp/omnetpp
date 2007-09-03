@@ -13,7 +13,6 @@ import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
  * @author rhornig
  */
 public class NedCodeColorizerScanner extends RuleBasedScanner {
-
     
 	/**
 	 * Creates a NED code scanner
@@ -31,17 +30,17 @@ public class NedCodeColorizerScanner extends RuleBasedScanner {
         rules.add(new NumberRule(NedSyntaxHighlightHelper.codeNumberToken));
 
         // Add word rule for special keywords that require non-standard word detector
-        WordRule wordRuleSpecial= new WordRule(NedSyntaxHighlightHelper.nedSpecialWordDetector, Token.UNDEFINED);
+        WordRule wordRuleSpecial= new WordRule(new NedSyntaxHighlightHelper.NedSpecialWordDetector(), Token.UNDEFINED);
         for (int i= 0; i < NedSyntaxHighlightHelper.highlightNedSpecialKeywords.length; i++)
             wordRuleSpecial.addWord(NedSyntaxHighlightHelper.highlightNedSpecialKeywords[i], NedSyntaxHighlightHelper.codeKeywordToken);
         rules.add(wordRuleSpecial);
         
-        // detect properties (in form of @propname)
-        rules.add(new WordRule(NedSyntaxHighlightHelper.nedAtWordDetector, NedSyntaxHighlightHelper.codePropertyToken));
+        // detect properties (in the form "@propname")
+        rules.add(new WordRule(new NedSyntaxHighlightHelper.NedAtWordDetector(), NedSyntaxHighlightHelper.codePropertyToken));
 
 		// Add word rule for keywords, types, and constants. If not recognized as either of these
         // then this is a regular identifier, so return an identifierToken by default
-		WordRule wordRule= new WordRule(NedSyntaxHighlightHelper.nedWordDetector, NedSyntaxHighlightHelper.codeIdentifierToken);
+		WordRule wordRule= new WordRule(new NedSyntaxHighlightHelper.NedWordDetector(), NedSyntaxHighlightHelper.codeIdentifierToken);
 		for (int i= 0; i < NedSyntaxHighlightHelper.highlightNedKeywords.length; i++)
 			wordRule.addWord(NedSyntaxHighlightHelper.highlightNedKeywords[i], NedSyntaxHighlightHelper.codeKeywordToken);
         for (int i= 0; i < NedSyntaxHighlightHelper.highlightNedFunctions.length; i++)

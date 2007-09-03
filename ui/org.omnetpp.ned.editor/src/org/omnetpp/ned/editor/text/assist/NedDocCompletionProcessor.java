@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.text.assist;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.ITextViewer;
@@ -18,13 +19,13 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
     @Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
-        List<ICompletionProposal> result = 
-            createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedAtWordDetector,
-                    "@", NedCompletionHelper.proposedDocKeywords, " ", null);
-
-        result.addAll(createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedDocTagDetector, 
+        List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
+        
+        result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedAtWordDetector(),
+        		"@", NedCompletionHelper.proposedDocKeywords, " ", null));
+        result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedDocTagDetector(), 
                 "<", NedCompletionHelper.proposedDocTags, "> ", null));
-        result.addAll(createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedDocTagDetector, 
+        result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedDocTagDetector(), 
                 "</", NedCompletionHelper.proposedDocTags, "> ", null));
         
 //        Collections.sort(result, CompletionProposalComparator.getInstance());

@@ -42,12 +42,6 @@ public class NedSyntaxHighlightHelper {
 	    return Display.getDefault().getSystemColor(color);
 	}
 
-	// whitespace and word detectors for tokenization
-	public final static NedWordDetector nedWordDetector = new NedWordDetector();
-	public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSpecialWordDetector();
-	public final static NedAtWordDetector nedAtWordDetector = new NedAtWordDetector();
-	public final static NedDocTagDetector nedDocTagDetector = new NedDocTagDetector();
-
 	/**
 	 * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)
 	 */

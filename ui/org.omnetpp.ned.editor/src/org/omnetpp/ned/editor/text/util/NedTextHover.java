@@ -40,7 +40,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		try {
-			String word = getWordUnderCursor(textViewer, hoverRegion, NedSyntaxHighlightHelper.nedWordDetector);
+			String word = getWordUnderCursor(textViewer, hoverRegion, new NedSyntaxHighlightHelper.NedWordDetector());
 			if (StringUtils.isEmpty(word))
 				return null;
 

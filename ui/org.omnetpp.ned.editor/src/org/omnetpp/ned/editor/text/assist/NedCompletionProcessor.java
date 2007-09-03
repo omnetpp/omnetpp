@@ -336,15 +336,15 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector, "", proposals, "", description));
+		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals, "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
+		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals.toArray(new String[0]), "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
-	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, NedSyntaxHighlightHelper.nedWordDetector, templates)));
+	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), templates)));
 	}
 
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
