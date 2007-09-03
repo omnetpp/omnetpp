@@ -1,4 +1,4 @@
-package org.omnetpp.figures;
+package org.omnetpp.figures.misc;
 
 import org.eclipse.draw2d.IFigure;
 

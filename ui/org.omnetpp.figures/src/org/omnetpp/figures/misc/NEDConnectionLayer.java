@@ -1,9 +1,11 @@
-package org.omnetpp.figures;
+package org.omnetpp.figures.misc;
 
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+
+import org.omnetpp.figures.NedFileFigure;
 
 /**
  * A special layer used in compound module, for holding the connections. This
@@ -29,7 +31,7 @@ public class NEDConnectionLayer extends ConnectionLayer {
     @Override
     public void paint(Graphics graphics) {
         graphics.pushState();
-        // set antialiasing on contenet and child/derived figures
+        // set antialiasing on content and child/derived figures
         if (NedFileFigure.antialias != SWT.DEFAULT)
             graphics.setAntialias(NedFileFigure.antialias);
         super.paint(graphics);

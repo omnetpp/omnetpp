@@ -16,6 +16,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
+import org.omnetpp.figures.misc.ILayerSupport;
+import org.omnetpp.figures.misc.NEDConnectionLayer;
+import org.omnetpp.figures.misc.NonExtendableFreeformLayer;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 

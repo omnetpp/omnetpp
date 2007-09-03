@@ -18,7 +18,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.figures.ILayerSupport.LayerID;
+import org.omnetpp.figures.misc.AttachedLayer;
+import org.omnetpp.figures.misc.ILayerSupport;
+import org.omnetpp.figures.misc.ILayerSupport.LayerID;
 
 /**
  * Figure representing a submodule inside a compound module figure. Contains several figures attached
