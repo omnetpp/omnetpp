@@ -27,7 +27,6 @@ import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartition
 import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.InifileHyperlinkDetector;
 import org.omnetpp.inifile.editor.text.util.InifileTextHover;
-import org.omnetpp.ned.core.ui.misc.NEDHyperlinkDetector;
 
 /**
  * Configuration for a SourceViewer which shows an inifile.
@@ -119,7 +118,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
         return new IHyperlinkDetector[] { 
     		new URLHyperlinkDetector(), 
     		new InifileHyperlinkDetector(editorData), 
-    		new NEDHyperlinkDetector() 
+    		//FIXME new NEDHyperlinkDetector() 
         };
     }
 }

@@ -47,10 +47,11 @@ public class TextDifferenceUtils {
 			}}
 		);
 
+		//TODO see IDocumentExtension4 which introduces "rewrite sessions"! --Andras
 		int offset = 0;
 		for (int i = 0 ; i < differences.length; i++) {
 			RangeDifference difference = differences[i];
-//			System.out.println(difference);
+			//System.out.println(difference);
 
 			int leftStart = difference.leftStart();
 			int leftEnd = difference.leftEnd();

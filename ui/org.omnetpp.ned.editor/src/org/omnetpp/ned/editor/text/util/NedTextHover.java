@@ -11,11 +11,11 @@ import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.information.IInformationProviderExtension2;
-import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -26,12 +26,12 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
- * NED text hover. Currently it displays the documentation of the NED type name hovered. 
+ * NED text hover. Currently it displays fully qualified name and the documentation 
+ * of the NED type name hovered. 
  *
  * @author rhornig, andras
  */
 public class NedTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
-
 	private IEditorPart editor = null;
 
 	public NedTextHover(IEditorPart editor) {
@@ -40,7 +40,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		try {
-			String word = getWordUnderCursor(textViewer, hoverRegion, new NedSyntaxHighlightHelper.NedWordDetector());
+			String word = TextEditorUtil.getWordRegion(textViewer, hoverRegion.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
 			if (StringUtils.isEmpty(word))
 				return null;
 
@@ -77,45 +77,6 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 				text += "<br/>" + StringUtils.makeHtmlDocu(comment);
 
 		return HoverSupport.addHTMLStyleSheet(text);
-	}
-
-
-    // FIXME word detector should include the period too
-	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
-		//FIXME one-letter words are not recognized!
-		try {
-			// if mouse hovers over a selection, return that
-			IDocument docu = viewer.getDocument();
-			if (region.getLength()!=0)
-				return docu.get(region.getOffset(), region.getLength());
-
-			// if mouse is not over a word, return null
-			int offset = region.getOffset();
-			if (!wordDetector.isWordPart(docu.getChar(offset - 1)))
-				return null;
-
-			//XXX code copied from IncrementalCompletionProcessor.detectWordRegion(), except that that one
-			// has a small bug (it also accepts numbers) -- extract this code to some util class?
-			int length = 0;
-
-			// find the first char that may not be the trailing part of a word.
-			while (offset > 0 && wordDetector.isWordPart(docu.getChar(offset - 1)))
-				offset--;
-
-			// check if the first char of the word is also ok.
-			if (!wordDetector.isWordStart(docu.getChar(offset)))
-				return null; // this is not a word (but probably a number)
-
-			// now we should stand on the first char of the word; now iterate through 
-			// the rest of chars until a character cannot be recognized as an in/word char
-			while(offset + length < docu.getLength() && wordDetector.isWordPart(docu.getChar(offset + length)))
-				length++;
-
-			return docu.get(offset, length);
-		} 
-		catch (BadLocationException e) {
-			return null;
-		}
 	}
 
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {

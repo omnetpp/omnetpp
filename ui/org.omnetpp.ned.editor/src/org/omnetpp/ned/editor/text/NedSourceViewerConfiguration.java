@@ -19,7 +19,6 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.omnetpp.ned.core.ui.misc.NEDHyperlinkDetector;
 import org.omnetpp.ned.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.ned.editor.text.assist.NedDocCompletionProcessor;
@@ -28,6 +27,7 @@ import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
+import org.omnetpp.ned.editor.text.util.NEDHyperlinkDetector;
 import org.omnetpp.ned.editor.text.util.NedAnnotationHover;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
@@ -138,6 +138,6 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
         if (sourceViewer == null)
             return null;
 
-        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector() };
+        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector(editor) };
     }
 }

@@ -46,7 +46,6 @@ public class NedSyntaxHighlightHelper {
 	 * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)
 	 */
 	public static class NedWordDetector implements IWordDetector {
-	
 	    public boolean isWordStart(char character) {
 	        return Character.isLetter(character) || character == '_' || character == '@';
 	    }
@@ -55,12 +54,24 @@ public class NedSyntaxHighlightHelper {
 	        return Character.isLetterOrDigit(character) || character == '_';
 	    }
 	}
+
+	/**
+	 * Detector for a NED qualified type names (a sequence of identifiers, separated by dots) 
+	 */
+	public static class NedDottedWordDetector implements IWordDetector {
+	    public boolean isWordStart(char character) {
+	        return Character.isLetter(character) || character == '_' || character == '@';
+	    }
 	
+	    public boolean isWordPart(char character) {
+	        return Character.isLetterOrDigit(character) || character == '_' || character == '.';
+	    }
+	}
+
 	/**
 	 * Detector for extreme NED keywords (in: out: --> <-- .. ...) where the keyword may contain special chars
 	 */
 	public static class NedSpecialWordDetector implements IWordDetector {
-	
 	    public boolean isWordStart(char c) {
 	        return Character.isLetter(c) || c == '-' || c == '<' || c == '>' || c == '.';
 	    }
@@ -74,7 +85,6 @@ public class NedSyntaxHighlightHelper {
 	 * Detects keywords that are starting with @ and continuing with letters only.
 	 */
 	public static class NedAtWordDetector implements IWordDetector {
-	
 	    public boolean isWordStart(char c) {
 	        return (c == '@');
 	    }
@@ -88,7 +98,6 @@ public class NedSyntaxHighlightHelper {
 	 * Detects keywords that look like an XML tag.
 	 */
 	public static class NedDocTagDetector implements IWordDetector {
-	
 	    public boolean isWordStart(char c) {
 	        return (c == '<');
 	    }
