@@ -47,7 +47,7 @@ public class ProblemMarkerSynchronizer {
 	private int markersRemoved = 0;
 
 	/**
-     * Creates a new marker synchronizer which will synchronize problem markers 
+     * Creates a new marker synchronizer which will synchronize problem markers
      * (IMarker.PROBLEM) and its subclasses. Other marker types will remain untouched.
 	 */
 	public ProblemMarkerSynchronizer() {
@@ -112,7 +112,7 @@ public class ProblemMarkerSynchronizer {
 			count += markerTable.get(file).size();
 	    return count;
 	}
-	
+
 	/**
 	 * Performs the marker synchronization.
 	 */
@@ -143,14 +143,14 @@ public class ProblemMarkerSynchronizer {
                 }
             };
             job.setSystem(true);
-            
+
             // the job should not run together with other jobs accessing the workspace resources
             job.setRule(ResourcesPlugin.getWorkspace().getRoot());
             job.setPriority(Job.INTERACTIVE);
             job.schedule();
         }
     }
-	
+
 	protected void addRemoveMarkers() throws CoreException {
 	    // process each file registered
 		for (IFile file : markerTable.keySet()) {
@@ -194,24 +194,12 @@ public class ProblemMarkerSynchronizer {
 
 	@SuppressWarnings("unchecked")
 	protected boolean markerAttributesAreEqual(Map markerAttributes, MarkerData markerData) {
-		return mapElementsEqual(markerAttributes, markerData.attrs, IMarker.LINE_NUMBER) &&
-		mapElementsEqual(markerAttributes, markerData.attrs, IMarker.SEVERITY) &&
-		mapElementsEqual(markerAttributes, markerData.attrs, IMarker.MESSAGE) &&
-		mapElementsEqual(markerAttributes, markerData.attrs, IMarker.CHAR_START) &&
-		mapElementsEqual(markerAttributes, markerData.attrs, IMarker.CHAR_END) &&
-		mapElementsEqual(markerAttributes, markerData.attrs, IMarker.LOCATION);
+		return markerAttributes.equals(markerData.attrs);
 	}
 
 	protected void createMarker(IFile file, MarkerData markerData) throws CoreException {
 		IMarker marker = file.createMarker(markerData.type);
 		marker.setAttributes(markerData.attrs);
 		markersAdded++;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected boolean mapElementsEqual(Map map1, Map map2, String key) {
-		Object obj1 = map1.get(key);
-		Object obj2 = map2.get(key);
-		return obj1==null ? obj2==null : obj1.equals(obj2);
 	}
 }

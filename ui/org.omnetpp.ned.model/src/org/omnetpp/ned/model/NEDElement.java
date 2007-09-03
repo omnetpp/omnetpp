@@ -123,7 +123,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		if (n==0) throw new RuntimeException("call to validateEnum() with n=0");
 		throw new RuntimeException("invalid integer value "+b+" for enum attribute");
 	}
-	
+
 	/**
 	 * Sets the default NED type resolver. May only be invoked once.
 	 */
@@ -152,12 +152,6 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	 * Constructor
 	 */
 	public NEDElement() {
-		parent = null;
-		firstchild = null;
-		lastchild = null;
-		prevsibling = null;
-		nextsibling = null;
-
 		id = ++lastid;
 	}
 
@@ -165,7 +159,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	 * Constructor. Takes parent element.
 	 */
 	public NEDElement(INEDElement parent) {
-		super();
+		this();
 		if (parent != null)
 			parent.appendChild(this);
 	}

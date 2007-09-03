@@ -1,7 +1,6 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -25,7 +24,6 @@ import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Provides support for Container EditParts.
@@ -65,14 +63,9 @@ abstract public class NedEditPart
         int maxSeverity = getNEDModel().getMaxProblemSeverity();
         String message = "";
         if (maxSeverity >= IMarker.SEVERITY_INFO) {
-            INedTypeElement enclosingElement = getNEDModel().getSelfOrEnclosingTypeNode();
-            if (enclosingElement != null) {
-                IFile file = enclosingElement.getNEDTypeInfo().getNEDFile();
-                IMarker[] markers
-                    = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNEDModel(), file);
-                for (IMarker marker : markers)
-                    message += marker.getAttribute(IMarker.MARKER, "")+"\n";
-            }
+            IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNEDModel());
+            for (IMarker marker : markers)
+                message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
         }
         if (getFigure() instanceof NedFigure)
             ((NedFigure)getFigure()).setProblemDecoration(maxSeverity, StringUtils.strip(message));

@@ -14,11 +14,11 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Standard implementation of INEDErrorStore
- * 
+ *
  * @author Andras
  */
 public class NEDMarkerErrorStore implements INEDErrorStore {
-  
+
     public static final String NEDELEMENT_ID = "nedelement-id";
 
     private IFile file;
@@ -67,9 +67,9 @@ public class NEDMarkerErrorStore implements INEDErrorStore {
         markerAttrs.put(IMarker.MESSAGE, message);
         markerAttrs.put(IMarker.SEVERITY, severity);
         markerAttrs.put(IMarker.LINE_NUMBER, line);
-        markerAttrs.put(NEDELEMENT_ID, context.getId());
+        markerAttrs.put(NEDELEMENT_ID, (int)context.getId());
         markerSync.addMarker(file, markerType, markerAttrs);
-        
+
         if (markerType.equals(INEDTypeResolver.NEDSYNTAXPROBLEM_MARKERID))
         	context.syntaxProblemMarkerAdded(severity);
         else if (markerType.equals(INEDTypeResolver.NEDCONSISTENCYPROBLEM_MARKERID))

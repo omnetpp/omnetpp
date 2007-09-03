@@ -293,10 +293,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-    // FIXME it seems that the markers do not contain NEDELEMENT_ID attribute
-	public IMarker[] getMarkersForElement(INEDElement node, IFile file) {
+	public IMarker[] getMarkersForElement(INEDElement node) {
 		try {
-			Assert.isTrue(getNedFileElement(file)==node.getContainingNedFileElement()); //XXX find file from element? (needs element-to-file mapping)
+            IFile file = getNedFile(node.getContainingNedFileElement());
 			List<IMarker> result = new ArrayList<IMarker>();
 			for (IMarker marker : file.findMarkers(IMarker.PROBLEM, true, IFile.DEPTH_ZERO)) {
 				int elementId = marker.getAttribute(NEDMarkerErrorStore.NEDELEMENT_ID, -1);

@@ -94,6 +94,7 @@ public class OrganizeImportsAction extends TextEditorAction {
 				potentialMatches.add(qualifiedName);
 
 		// if one of the names is in the same package as this file, no need to add an import
+        // FIXME dont use potential matches
 		for (String potentialMatch : potentialMatches)
 			if (potentialMatch.equals(packagePrefix + unqualifiedTypeName))
 				return;

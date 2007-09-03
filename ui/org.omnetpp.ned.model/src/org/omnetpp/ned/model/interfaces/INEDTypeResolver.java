@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author Andras
  */
 public interface INEDTypeResolver {
-	
+
     public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
 
@@ -29,7 +29,7 @@ public interface INEDTypeResolver {
 	 * INTERNAL Factory method, to be called from INedTypeElement constructors.
 	 */
 	public INEDTypeInfo createTypeInfoFor(INedTypeElement node);
-	
+
     /**
      * Recalculate everything if the state is invalid
      */
@@ -43,7 +43,7 @@ public interface INEDTypeResolver {
 	/**
 	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree
 	 * if the file has parse errors; one can call containsNEDErrors() to find out
-	 * if that is the case. Return value is never null. It is an error to invoke 
+	 * if that is the case. Return value is never null. It is an error to invoke
 	 * this method on a non-NED file.
 	 *
 	 * @param file - must not be null
@@ -51,7 +51,7 @@ public interface INEDTypeResolver {
 	public NedFileElementEx getNedFileElement(IFile file);
 
     /**
-     * XXX todo 
+     * XXX todo
      */
 	public IFile getNedFile(NedFileElementEx nedFileElement);
 
@@ -65,15 +65,14 @@ public interface INEDTypeResolver {
     public String getNedFileText(IFile file);
 
 	/**
-	 * Returns the markers for the given element and its subtree. The element
-	 * must be in the given file.
-	 * 
-	 * IMPORTANT: Do NOT use this method to check whether an element actually 
+	 * Returns the markers for the given element and its subtree.
+	 *
+	 * IMPORTANT: Do NOT use this method to check whether an element actually
 	 * contains errors! Markers are written out in a background job, and there's
 	 * no guarantee that IFile already contains them. Use getMaxProblemSeverity()
-	 * and the likes from INEDElement instead. 
+	 * and the likes from INEDElement instead.
 	 */
-    public IMarker[] getMarkersForElement(INEDElement node, IFile file);
+    public IMarker[] getMarkersForElement(INEDElement node);
 
 	/**
 	 * Returns a component declared at the given file/line. The line number should
@@ -85,7 +84,7 @@ public interface INEDTypeResolver {
 	public INEDTypeInfo getNedTypeAt(IFile file, int lineNumber);
 
     /**
-     * Returns a INEDElement at the given file/line/column. Returns null if no 
+     * Returns a INEDElement at the given file/line/column. Returns null if no
      * NED element was found at that position.
      *
      * @param file - must not be null
@@ -121,7 +120,7 @@ public interface INEDTypeResolver {
     public INEDTypeInfo getNedType(String qualifiedName);
 
     /**
-	 * Looks up the name in the given context, and returns the NED type info, 
+	 * Looks up the name in the given context, and returns the NED type info,
 	 * or null if it does not exist. Considers imports, etc; inner types are
 	 * also handled.
 	 * @param name  May be a simple name or a qualified name; cannot be null
@@ -131,14 +130,14 @@ public interface INEDTypeResolver {
 
 	/**
 	 * Return all NED type names visible in the given context without
-	 * fully qualifying them. Returned names are short names (NOT fully qualified). 
+	 * fully qualifying them. Returned names are short names (NOT fully qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context);
 
 	/**
 	 * Return all NED type names matching the predicate, and visible in the given
-	 * context without fully qualifying them. Returned names are short names 
-	 * (NOT fully qualified). 
+	 * context without fully qualifying them. Returned names are short names
+	 * (NOT fully qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
 

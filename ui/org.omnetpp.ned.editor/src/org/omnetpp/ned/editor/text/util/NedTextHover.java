@@ -81,6 +81,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 	}
 
 
+    // FIXME word detector shoul dinclude the period too
 	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
 		//FIXME one-letter words are not recognized!
 		try {
