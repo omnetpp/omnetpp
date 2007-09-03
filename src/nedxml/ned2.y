@@ -374,13 +374,6 @@ channelheader
                 }
            opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
-        | CHANNEL NAME
-                {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
-                  ((ChannelNode *)ps.component)->setName(toString(@2));
-                }
-           opt_inheritance
-                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 opt_inheritance
