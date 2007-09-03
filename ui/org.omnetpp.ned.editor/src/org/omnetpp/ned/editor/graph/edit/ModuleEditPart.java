@@ -8,7 +8,7 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 
-import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 

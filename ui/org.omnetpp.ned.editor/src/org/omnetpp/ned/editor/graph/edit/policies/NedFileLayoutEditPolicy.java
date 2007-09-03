@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 import java.util.List;
 
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -17,6 +18,7 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
@@ -148,10 +150,14 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
             CompoundModuleElementEx module = (CompoundModuleElementEx) child.getModel();
             CompoundModuleFigure cfigure = (CompoundModuleFigure)((GraphicalEditPart)child).getFigure();
             SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
-            // shrink the size with the border insets (we want to store ONLY the inside dimensions, not the
-            // bounding box
-            Insets borderInset = cfigure.getBorder().getInsets(cfigure);
-            cmd.setSize(modelConstraint.getSize().shrink(borderInset.getWidth(), borderInset.getHeight()));
+            // from the constraint size subtract the difference between the whole figure size and
+            // the selection rectangle
+            Dimension newSize = modelConstraint.getSize().expand(cfigure.getHandleBounds().getSize());
+            newSize.shrink(figureBounds.width, figureBounds.height);
+            // reduce the size with the module border
+            Insets inset = cfigure.getCompoundModuleBorder().getInsets(cfigure);
+            newSize.shrink(inset.getWidth(), inset.getHeight());
+            cmd.setSize(newSize);
 
             // if size constraint is not specified, then remove it from the model too
             // TODO is this needed?

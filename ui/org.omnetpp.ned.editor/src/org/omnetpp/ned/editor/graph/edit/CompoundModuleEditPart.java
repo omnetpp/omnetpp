@@ -23,8 +23,8 @@ import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 
 import org.omnetpp.figures.CompoundModuleFigure;
-import org.omnetpp.figures.CompoundModuleGateAnchor;
-import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
+import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.INEDElement;
@@ -85,7 +85,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     public IFigure getContentPane() {
-        return getCompoundModuleFigure().getContentsPane();
+        // FIXME remove this method and add the figures directly to the main figure
+        // the add method inside the compoundModuleFigure should be overridden
+        // and it should add the figure to the appropriate part (submoduleContainer or innerTypeContainer)
+        return getCompoundModuleFigure().getSubmoduleContainer();
     }
 
     @Override
@@ -139,11 +142,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected void refreshVisuals() {
+        super.refreshVisuals();
         // define the properties that determine the visual appearance
         getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
     	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getDisplayString());
-        // mark if the model is invalid
-        getCompoundModuleFigure().setProblemDecoration(getCompoundModuleModel().getMaxProblemSeverity());
     }
 
 	/**

@@ -10,7 +10,7 @@ import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;

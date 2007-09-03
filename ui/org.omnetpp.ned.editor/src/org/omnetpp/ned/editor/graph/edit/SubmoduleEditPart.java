@@ -9,8 +9,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
-import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.model.DisplayString;
