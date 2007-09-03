@@ -17,16 +17,8 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  * CompoundModuleElement or ModuleInterfaceElement subtree; provides easy lookup
  * of its gates, parameters, properties, submodules, inner types.
  * Enables the model element so have some additional cross-model info like a
- * list of names in the inheritance chain, the containing workspace file
- * inherited parameter, gate, connection and submodule lists
- *
- * XXX: stuff like getType(), getDocu(), getValue() etc should be declared on the Ex classes!
- * XXX: getContainingComponent() should be defined on Ex classes as well
- * TODO: - would love to see: reference to the ancestor module (extends)
- *       - extends chain (name and INEDElement list)
- *       - derived list (name and INEDElement) of elements directly or indirectly derived from this element
- *       - methods returning the INEDElement list instead of simple name list (for all methods)
- *       - access to toplevel components via this interface ???
+ * list of names in the inheritance chain, the containing workspace file,
+ * inherited parameter, gate, connection and submodule lists.
  *
  * @author rhornig, andras
  */
@@ -37,12 +29,13 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public String getName();
 
 	/**
-	 * XXX comment
+	 * Returns the fully qualified name for the type. This consists of the package name,
+	 * optional enclosing type name (for inner types), and the type name, separated by dot.
 	 */
 	public String getFullyQualifiedName();
 
 	/**
-	 * Returns underlying INEDElement subtree.
+	 * Returns the underlying INEDElement subtree.
 	 */
 	public INedTypeElement getNEDElement();
 
