@@ -17,7 +17,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
 import org.omnetpp.figures.misc.ILayerSupport;
-import org.omnetpp.figures.misc.NEDConnectionLayer;
+import org.omnetpp.figures.misc.NedConnectionLayer;
 import org.omnetpp.figures.misc.NonExtendableFreeformLayer;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
@@ -145,7 +145,7 @@ public class CompoundModuleFigure extends NedFigure
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
         messageLayer = new NonExtendableFreeformLayer();
-        connectionLayer = new NEDConnectionLayer();
+        connectionLayer = new NedConnectionLayer();
 
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());

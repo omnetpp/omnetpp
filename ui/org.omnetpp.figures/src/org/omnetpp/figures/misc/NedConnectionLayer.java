@@ -14,7 +14,7 @@ import org.omnetpp.figures.NedFileFigure;
  *
  * @author rhornig
  */
-public class NEDConnectionLayer2 extends ConnectionLayer {
+public class NedConnectionLayer extends ConnectionLayer {
 
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.FreeformLayer#getFreeformExtent()
