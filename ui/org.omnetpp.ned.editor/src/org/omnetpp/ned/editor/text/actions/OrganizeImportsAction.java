@@ -71,7 +71,7 @@ public class OrganizeImportsAction extends TextEditorAction {
      */
 	protected Set<String> collectUnqualifiedTypeNames(NedFileElementEx nedFileElement) {
 		final Set<String> result = new HashSet<String>(); 
-		NEDElementUtilEx.visitNedTee(nedFileElement, new NEDElementUtilEx.INEDElementVisitor() {
+		NEDElementUtilEx.visitNedTree(nedFileElement, new NEDElementUtilEx.INEDElementVisitor() {
 			public void visit(INEDElement element) {
 				if (element instanceof IHasType) {
 					String effectiveType = ((IHasType)element).getEffectiveType();
@@ -87,17 +87,15 @@ public class OrganizeImportsAction extends TextEditorAction {
 	 * Find the fully qualified type for the given simple name, and add it to the imports list.
 	 */
 	protected void resolveImport(String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
+		// name is in the same package as this file, no need to add an import
+		if (NEDResourcesPlugin.getNEDResources().getNedType(packagePrefix + unqualifiedTypeName) != null)
+			return;
+
 		// find all potential types
         List<String> potentialMatches = new ArrayList<String>();
 		for (String qualifiedName : NEDResourcesPlugin.getNEDResources().getAllNedTypeQNames())
 			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
 				potentialMatches.add(qualifiedName);
-
-		// if one of the names is in the same package as this file, no need to add an import
-        // FIXME dont use potential matches
-		for (String potentialMatch : potentialMatches)
-			if (potentialMatch.equals(packagePrefix + unqualifiedTypeName))
-				return;
 
 		// if there's zero or one match, we're done
 		if (potentialMatches.size() == 0)

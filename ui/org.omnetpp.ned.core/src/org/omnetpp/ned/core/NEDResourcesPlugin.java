@@ -133,7 +133,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
      *             or in automatic mode
      */
     public static void openNEDElementInEditor(INEDElement element, IGotoNedElement.Mode mode) {
-        INEDTypeInfo typeInfo = element.getSelfOrEnclosingTypeNode().getNEDTypeInfo();
+        INEDTypeInfo typeInfo = element.getSelfOrEnclosingTypeElement().getNEDTypeInfo();
         IFile file = typeInfo.getNEDFile();
 
         // check if file is null. it is a built in type in this case

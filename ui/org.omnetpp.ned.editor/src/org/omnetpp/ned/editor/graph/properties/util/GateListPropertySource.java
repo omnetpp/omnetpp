@@ -34,9 +34,9 @@ public class GateListPropertySource extends NotifiedPropertySource {
         for (GateElementEx gateDecl : gates.values()) {
             String typeString = gateDecl.getAttribute(GateElementEx.ATT_TYPE);
             String definedIn = "";
-            if (gateDecl.getEnclosingTypeNode() != model) {
+            if (gateDecl.getEnclosingTypeElement() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from " + gateDecl.getEnclosingTypeNode().getName() + ")";
+                definedIn= " (inherited from " + gateDecl.getEnclosingTypeElement().getName() + ")";
             }
 
             String label = typeString+" "+gateDecl.getName() + (gateDecl.getIsVector() ? "[]" : "");

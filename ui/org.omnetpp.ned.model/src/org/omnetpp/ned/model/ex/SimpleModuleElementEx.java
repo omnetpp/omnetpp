@@ -1,14 +1,15 @@
 package org.omnetpp.ned.model.ex;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
@@ -52,7 +53,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getFirstExtendsRef()));
+    	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getFirstExtendsRef()));
     	return displayString;
     }
 
@@ -70,19 +71,15 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     public List<ExtendsElement> getAllExtends() {
-        List<ExtendsElement> result = new ArrayList<ExtendsElement>();
-        ExtendsElement extendsElement = getFirstExtendsChild();
-        if (extendsElement == null)
-            return result;
-
-        for (INEDElement currChild : extendsElement)
-            if (currChild instanceof ExtendsElement)
-                result.add(extendsElement);
-
-        return result;
+    	return getAllExtendsFrom(this);
     }
 
+	public INedTypeLookupContext getParentLookupContext() {
+		return getParentLookupContextFor(this);
+	}
+    
     // parameter query support
+	
     public Map<String, ParamElementEx> getParamAssignments() {
         return getNEDTypeInfo().getParamAssignments();
     }

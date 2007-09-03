@@ -54,8 +54,8 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 			INEDElement hoveredElement = res.getNedElementAt(file, line, column);
 			if (hoveredElement == null)
 				return null;
-			INedTypeLookupContext context = (hoveredElement.getEnclosingTypeNode() instanceof INedTypeLookupContext) ? 
-					(INedTypeLookupContext)hoveredElement.getEnclosingTypeNode() : 
+			INedTypeLookupContext context = (hoveredElement.getEnclosingTypeElement() instanceof INedTypeLookupContext) ? 
+					(INedTypeLookupContext)hoveredElement.getEnclosingTypeElement() : 
 						hoveredElement.getContainingNedFileElement(); 
 			INEDTypeInfo typeInfo = res.lookupNedType(word, context);
 			System.out.println("typeInfo="+typeInfo+" on hovering "+word+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");

@@ -393,9 +393,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			return components.get(name); //FIXME temp fix, remove it!!!!
 		}
 
-		// inner type?
-		if (context instanceof INedTypeElement) {
-			INEDTypeInfo contextTypeInfo = ((INedTypeElement)context).getNEDTypeInfo();
+		// context is a compound module, so it may be an inner type
+		if (context instanceof CompoundModuleElementEx) {
+			INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)context).getNEDTypeInfo();
 			if (name.contains(".")) {
 				// inner type with fully qualified name?
 				String prefix = StringUtils.substringBeforeLast(name, ".");
@@ -407,38 +407,42 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				}
 			}
 			else {
-				// inner type with simple name
 				INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(name);
 				if (innerType != null)
 					return innerType.getNEDTypeInfo();
 			}
 		}
 
-		// type from the same package?
-		String packageName = context.getContainingNedFileElement().getPackage();
-        // FIXME (all below) if not contains "."
-		INEDTypeInfo samePackageType = components.get(StringUtils.isNotEmpty(packageName) ? packageName+"."+name : name);
-		if (samePackageType != null)
-			return samePackageType;
-
-		// imported type?
-		// try a shortcut first: if the import doesn't contain wildcards
-		List<String> imports = context.getContainingNedFileElement().getImports();
-		for (String importSpec : imports)
-			if (components.containsKey(importSpec) && importSpec.endsWith("." + name))
-				return components.get(importSpec);
-		// try harder, using wildcards
-		for (String importSpec : imports) {
-			String importRegex = NEDElementUtilEx.importToRegex(importSpec);
-			for (String qualifiedName : components.keySet())
-				if (qualifiedName.matches(importRegex) && qualifiedName.endsWith("." + name))
-					return components.get(qualifiedName);
+		// not an inner type: look up as toplevel type
+		if (name.contains(".")) {
+			// fully qualified name (as we don't accept partially qualified names)
+			if (components.get(name) != null)
+				return components.get(name);
 		}
+		else {
+			// name is an unqualified name (simple name). 
 
-		// maybe it's already a fully qualified name
-		if (name.contains(".") && components.get(name) != null)
-			return components.get(name);
+			// from the same package?
+			String packagePrefix = context.getContainingNedFileElement().getQNameAsPrefix();
+			INEDTypeInfo samePackageType = components.get(packagePrefix + name);
+			if (samePackageType != null)
+				return samePackageType;
 
+			// imported type?
+			// try a shortcut first: if the import doesn't contain wildcards
+			List<String> imports = context.getContainingNedFileElement().getImports();
+			for (String importSpec : imports)
+				if (components.containsKey(importSpec) && importSpec.endsWith("." + name))
+					return components.get(importSpec);
+
+			// try harder, using wildcards
+			for (String importSpec : imports) {
+				String importRegex = NEDElementUtilEx.importToRegex(importSpec);
+				for (String qualifiedName : components.keySet())
+					if (qualifiedName.matches(importRegex) && qualifiedName.endsWith("." + name))
+						return components.get(qualifiedName);
+			}
+		}
 		return null;
     }
 
@@ -453,8 +457,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		// types from the same package
 		String prefix = context.getQNameAsPrefix();
-        // FIXME quote the dots in prefix
-		String regex = prefix + "[^.]+";
+		String regex = prefix.replace(".", "\\.") + "[^.]+";
 		Set<String> result = new HashSet<String>();
 		for (INEDTypeInfo typeInfo : components.values())
 			if (typeInfo.getFullyQualifiedName().matches(regex) && predicate.matches(typeInfo))
@@ -463,8 +466,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		// imported types
 		List<String> imports = context.getContainingNedFileElement().getImports();
 		for (String importSpec : imports) {
-            // FIXME use util func
-			String importRegex = importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
+			String importRegex = NEDElementUtilEx.importToRegex(importSpec);
 			for (INEDTypeInfo typeInfo : components.values())
 				if (typeInfo.getFullyQualifiedName().matches(importRegex) && predicate.matches(typeInfo))
 					result.add(typeInfo.getName());

@@ -40,13 +40,6 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 	}
 
 	/**
-	 * Convenience method: Returns node.getDisplayString(), or null if node==null.
-	 */
-	public static DisplayString displayStringOf(IHasDisplayString node) {
-		return node == null ? null : node.getDisplayString();
-	}
-
-	/**
 	 * Returns the display string of the given element (submodule, connection or
 	 * toplevel type) in an unparsed form, from the NED tree.
 	 *
@@ -270,7 +263,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      */
 	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
 		ImportElement theImport = null;
-		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeNode();
+		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 		
 		if (submoduleOrConnection.getEffectiveType().contains(".")) {
 			String fullyQualifiedTypeName = submoduleOrConnection.getEffectiveType();
@@ -316,9 +309,10 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		void visit(INEDElement element);
 	}
 
-	public static void visitNedTee(INEDElement element, INEDElementVisitor visitor) {
+	public static void visitNedTree(INEDElement element, INEDElementVisitor visitor) {
 		visitor.visit(element);
 		for (INEDElement child : element)
-			visitNedTee(child, visitor);
+			visitNedTree(child, visitor);
 	}
+
 }

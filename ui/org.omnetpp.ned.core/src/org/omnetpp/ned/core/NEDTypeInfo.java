@@ -125,7 +125,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
      * @param result storage for the used types
      */
     protected void collectTypesInCompoundModule(Set<String> result) {
-        // this is only meaningful for CompoundModules so skip the others
+        // this is only meaningful for CompoundModules, so skip others
         if (componentNode instanceof CompoundModuleElementEx) {
         	// look for submodule types
         	INEDElement submodules = componentNode.getFirstChildWithTag(NED_SUBMODULES);
@@ -161,7 +161,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	    	result.add(currentComponent);
 	    	String extendsName = currentComponent.getNEDElement().getFirstExtends();
 	    	if (StringUtils.isNotEmpty(extendsName))
-	    		currentComponent = getResolver().lookupNedType(extendsName, currentComponent.getParentLookupContext());
+	    		currentComponent = getResolver().lookupNedType(extendsName, currentComponent.getNEDElement().getParentLookupContext());
 	    	else
 	    		currentComponent = null;
 	    }
@@ -284,7 +284,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		allMembers.clear();
 		allUsedTypes.clear();
 
-		INedTypeLookupContext parentContext = getParentLookupContext();
+		INedTypeLookupContext parentContext = getNEDElement().getParentLookupContext();
 		
 		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
@@ -321,12 +321,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         needsRefreshInherited = false;
 	}
 
-	public INedTypeLookupContext getParentLookupContext() {
-		INedTypeElement enclosingType = getNEDElement().getEnclosingTypeNode();
-		Assert.isTrue(enclosingType==null || enclosingType instanceof CompoundModuleElementEx, "only compound modules may contain references to other types");
-		return enclosingType != null ? (CompoundModuleElementEx)enclosingType : getNEDElement().getContainingNedFileElement();
-	}
-
 	public void invalidate() {
 		//System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
 		fullyQualifiedName = null;
@@ -345,19 +339,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	public String getFullyQualifiedName() {
-		if (fullyQualifiedName == null) {
-	        // compute it
-	        INedTypeElement enclosingType = getNEDElement().getEnclosingTypeNode();
-	   		Assert.isTrue(enclosingType==null || enclosingType instanceof CompoundModuleElementEx, "only compound modules may have inner types");
-	   		String name = getNEDElement().getName();
-			if (enclosingType != null)
-	    		fullyQualifiedName = enclosingType.getNEDTypeInfo().getFullyQualifiedName() + "." + name; // causes that type to refresh as well
-	   		else {
-                // FIXME use QNameAsPrefix
-	    		String packageName = getNEDElement().getContainingNedFileElement().getPackage();
-	    		fullyQualifiedName = StringUtils.isNotEmpty(packageName) ? packageName + "." + name : name;
-	   		}
-		}
+		if (fullyQualifiedName == null)
+			fullyQualifiedName = getNEDElement().getParentLookupContext().getQNameAsPrefix() + getNEDElement().getName();
 		return fullyQualifiedName;
 	}
 
@@ -504,17 +487,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     	refreshInheritedMembersIfNeeded();
         return allUsedTypes;
     }
-
-//    public List<INEDTypeInfo> getAllDerivedTypes() {
-//        if (needsUpdate)
-//            refreshInheritedMembers();
-//        return allDerivedTypes;
-//    }
-//
-//    public List<INEDTypeInfo> getAllUsingTypes() {
-//    	refreshInheritedMembersIfNeeded();
-//        return allUsingTypes;
-//    }
 
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
 		List<ParamElementEx> result = new ArrayList<ParamElementEx>();

@@ -1,14 +1,18 @@
 package org.omnetpp.ned.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -21,6 +25,7 @@ import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.CommentElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
@@ -35,7 +40,6 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 {
 	private static final int SEVERITY_INVALID = Integer.MIN_VALUE;
 
-	private String source;
 	private long id;
 	private String srcloc;
 	private NEDSourceRegion srcregion;
@@ -44,6 +48,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	private NEDElement lastchild;
 	private NEDElement prevsibling;
 	private NEDElement nextsibling;
+	private String source;
 	private HashMap<Object,Object> userData;
 	private static long lastid;
 
@@ -442,14 +447,14 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         return result;
     }
 
-	public INedTypeElement getEnclosingTypeNode() {
+	public INedTypeElement getEnclosingTypeElement() {
 		INEDElement node = getParent();
 		while (node != null && !(node instanceof INedTypeElement))
 			node = node.getParent();
 		return (INedTypeElement) node;
 	}
 
-	public INedTypeElement getSelfOrEnclosingTypeNode() {
+	public INedTypeElement getSelfOrEnclosingTypeElement() {
 		INEDElement node = this;
 		while (node != null && !(node instanceof INedTypeElement))
 			node = node.getParent();
@@ -522,11 +527,38 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
         return this;
     }
 
-    public String getComment() {
-        CommentElement commentNode = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
-        if (commentNode == null)
-        	commentNode = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
-        return commentNode == null ? null : commentNode.getContent().trim();
+	/*
+	 * Utility function for INedTypeElement subclasses
+	 */
+    protected static INedTypeLookupContext getParentLookupContextFor(INedTypeElement nedTypeElement) {
+        INedTypeElement enclosingType = nedTypeElement.getEnclosingTypeElement();
+   		Assert.isTrue(enclosingType==null || enclosingType instanceof CompoundModuleElementEx, "only compound modules may have inner types");
+   		return enclosingType != null ? (CompoundModuleElementEx)enclosingType : nedTypeElement.getContainingNedFileElement();
+	}
+
+	/*
+	 * Utility function for INedTypeElement subclasses
+	 */
+    protected static List<ExtendsElement> getAllExtendsFrom(INedTypeElement nedTypeElement) {
+        List<ExtendsElement> result = new ArrayList<ExtendsElement>();
+        for (INEDElement child : nedTypeElement)
+            if (child instanceof ExtendsElement)
+                result.add((ExtendsElement)child);
+        return result;
+    }
+
+	/*
+	 * Utility function for subclasses: returns node.getDisplayString(), or null if node==null.
+	 */
+	protected static DisplayString displayStringOf(IHasDisplayString element) {
+		return element == null ? null : element.getDisplayString();
+	}
+
+	public String getComment() {
+        CommentElement comment = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
+        if (comment == null)
+        	comment = (CommentElement)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
+        return comment == null ? null : comment.getContent().trim();
     }
 
     public String getNEDSource() {

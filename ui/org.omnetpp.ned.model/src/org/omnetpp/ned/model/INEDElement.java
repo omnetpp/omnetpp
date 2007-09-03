@@ -315,12 +315,12 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * compound module; for an inner type it returns the parent type; and for a 
 	 * toplevel type it returns null.
 	 */
-	public INedTypeElement getEnclosingTypeNode();
+	public INedTypeElement getEnclosingTypeElement();
 
 	/**
 	 * Like getEnclosingTypeNode(), but for NED types (INedTypeElement) it returns itself.
 	 */
-	public INedTypeElement getSelfOrEnclosingTypeNode();
+	public INedTypeElement getSelfOrEnclosingTypeElement();
 
 	/**
 	 * Returns the (nearest) NedFileElementEx parent of this element, or null.

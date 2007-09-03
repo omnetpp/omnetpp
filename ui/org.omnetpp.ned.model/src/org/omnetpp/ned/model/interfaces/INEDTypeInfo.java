@@ -161,7 +161,4 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName);
 	public List<GateElementEx> getGateInheritanceChain(String gateName);
 	public List<PropertyElement> getPropertyInheritanceChain(String propertyName);
-
-	//XXX move into INEDElement?
-	public INedTypeLookupContext getParentLookupContext();
 }

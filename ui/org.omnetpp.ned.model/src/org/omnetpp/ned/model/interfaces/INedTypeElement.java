@@ -47,6 +47,12 @@ public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParame
      * Returns the list of all ned elements that used as base (usually only a single element,
      * but can be more than that)
      */
-    //FIXME needed? get it from typeInfo --Andras
     public List<ExtendsElement> getAllExtends();
+    
+    /**
+     * For an inner type it returns the containing compound module type, and
+     * for a toplevel type it returns the containing NED file. 
+     */
+	public INedTypeLookupContext getParentLookupContext();
+
 }

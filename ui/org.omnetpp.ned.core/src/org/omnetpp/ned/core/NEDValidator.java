@@ -174,7 +174,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		
 		// referenced component must exist and must be the same type as this one
 		String name = node.getName();
-		INedTypeElement enclosingTypeNode = componentNode.getEnclosingTypeNode();
+		INedTypeElement enclosingTypeNode = componentNode.getEnclosingTypeElement();
 		INedTypeLookupContext context = enclosingTypeNode == null ? componentNode.getContainingNedFileElement() : (CompoundModuleElementEx)enclosingTypeNode;
 		//FIXME introduce a getParentLookupContext() instead!!!!
 		INEDTypeInfo e = resolver.lookupNedType(name, context);

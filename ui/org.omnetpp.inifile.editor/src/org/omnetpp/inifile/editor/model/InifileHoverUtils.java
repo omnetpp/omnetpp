@@ -184,7 +184,7 @@ public class InifileHoverUtils {
 		for (ParamElement paramDeclNode : paramDeclNodes) {
 			String paramName = paramDeclNode.getName();
 			String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-			String paramDeclaredOn = paramDeclNode.getEnclosingTypeNode().getName();
+			String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
 			String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
 			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
@@ -223,7 +223,7 @@ public class InifileHoverUtils {
 		String paramName = paramDeclNode.getName();
 		
 		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeNode().getName();
+		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
 		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
 		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 

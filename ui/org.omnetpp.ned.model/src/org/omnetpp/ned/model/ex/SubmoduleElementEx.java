@@ -8,6 +8,7 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
@@ -64,7 +65,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getEffectiveTypeRef()));
+    	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getEffectiveTypeRef()));
     	return displayString;
     }
 

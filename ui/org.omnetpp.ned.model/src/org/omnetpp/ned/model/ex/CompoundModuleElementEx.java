@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -51,6 +52,10 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 		return getNEDTypeInfo().getFullyQualifiedName() + ".";
 	}
 
+	public INedTypeLookupContext getParentLookupContext() {
+		return getParentLookupContextFor(this);
+	}
+
     @Override
     public void fireModelEvent(NEDModelEvent event) {
     	// invalidate cached display string because NED tree may have changed outside the DisplayString class
@@ -62,7 +67,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getFirstExtendsRef()));
+    	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getFirstExtendsRef()));
     	return displayString;
     }
 
@@ -311,16 +316,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     public List<ExtendsElement> getAllExtends() {
-        List<ExtendsElement> result = new ArrayList<ExtendsElement>();
-        ExtendsElement extendsElement = getFirstExtendsChild();
-        if (extendsElement == null)
-            return result;
-
-        for (INEDElement currChild : extendsElement)
-            if (currChild instanceof ExtendsElement)
-                result.add(extendsElement);
-
-        return result;
+    	return getAllExtendsFrom(this);
     }
 
     // parameter query support

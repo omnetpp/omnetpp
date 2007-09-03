@@ -8,6 +8,7 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
@@ -151,7 +152,7 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NEDElementUtilEx.displayStringOf(getEffectiveTypeRef()));
+    	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getEffectiveTypeRef()));
     	return displayString;
     }
 
@@ -160,7 +161,7 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
      * connection is not part of the model (i.e. has no compound module parent).
      */
     public CompoundModuleElementEx getCompoundModule() {
-    	return (CompoundModuleElementEx)getEnclosingTypeNode();
+    	return (CompoundModuleElementEx)getEnclosingTypeElement();
     }
 
     /**

@@ -257,8 +257,8 @@ public class PaletteManager implements INEDChangeListener {
 
         boolean isInterface = typeElement instanceof ModuleInterfaceElement;
         String label = fullyQualifiedTypeName; // or: getName();
-        if (typeElement.getEnclosingTypeNode() != null)
-        	label += NBSP+"(in"+NBSP+typeElement.getEnclosingTypeNode().getName()+")";
+        if (typeElement.getEnclosingTypeElement() != null)
+        	label += NBSP+"(in"+NBSP+typeElement.getEnclosingTypeElement().getName()+")";
         if (isInterface)
         	label += NBSP+"(interface)";
 
