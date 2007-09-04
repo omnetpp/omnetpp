@@ -138,8 +138,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
         // check if file is null. it is a built in type in this case
         if (file == null) {
-            MessageDialog.openError(Display.getDefault().getActiveShell(),
-                    "Warning", "Built-in types cannot be opened for editing.");
+            MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                    "Cannot Open Type", "Built-in types cannot be opened for editing.");
             return;
         }
 

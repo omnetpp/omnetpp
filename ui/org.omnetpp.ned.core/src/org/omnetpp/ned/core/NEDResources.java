@@ -27,7 +27,6 @@ import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeDifferenceUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.SysoutNedErrorStore;
@@ -244,29 +243,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
 	}
 
-    public synchronized INEDTypeInfo getNedTypeAt(IFile file, int lineNumber) {
-		rehashIfNeeded();
-        for (INEDTypeInfo component : components.values()) {
-            if (file.equals(component.getNEDFile())) {
-                NEDSourceRegion region = component.getNEDElement().getSourceRegion();
-                if (region != null && region.containsLine(lineNumber))
-                    return component;
-            }
-        }
-        return null;
+    public synchronized INEDElement getNedElementAt(IFile file, int line, int column) {
+        return getNedElementAt(getNedFileElement(file), line, column);
     }
 
-    public synchronized INEDElement getNedElementAt(IFile file, int line, int column) {
-        line++;  // IDocument is 0-based
-
-        // find component and NEDElements under the cursor
-        INEDTypeInfo typeInfo = getNedTypeAt(file, line);
-        if (typeInfo != null) {
-            INEDElement[] elements = typeInfo.getNEDElementsAt(line, column);
-            if (elements != null && elements.length > 0)
-                return elements[elements.length-1];
-        }
-        return null;
+    public synchronized INEDElement getNedElementAt(INEDElement parent, int line, int column) {
+        for (INEDElement child : parent)
+        	if (child.getSourceRegion() != null && child.getSourceRegion().contains(line, column))
+        		return getNedElementAt(child, line, column);
+    	return parent.getSourceRegion() != null && parent.getSourceRegion().contains(line, column) ? parent : null;
     }
 
     public synchronized Collection<INEDTypeInfo> getAllNedTypes() {

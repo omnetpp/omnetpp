@@ -205,7 +205,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			}
 			else if (line.matches(".*\\bsizeof *\\(")) {
 				if (parentComponent!=null) {
-                    // FIXME add only vector submoduleas and vectors
+                    // FIXME add only vector submodules and vectors
 					addProposals(viewer, documentOffset, result, parentComponent.getGateDeclarations().keySet(), "gate");
 					addProposals(viewer, documentOffset, result, parentComponent.getSubmodules().keySet(), "submodule");
 				}

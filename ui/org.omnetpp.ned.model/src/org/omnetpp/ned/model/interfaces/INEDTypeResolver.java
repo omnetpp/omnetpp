@@ -74,23 +74,20 @@ public interface INEDTypeResolver {
 	 */
     public IMarker[] getMarkersForElement(INEDElement node);
 
-	/**
-	 * Returns a component declared at the given file/line. The line number should
-	 * point into the declaration of the component. Returns null if no such component
-	 * was found.
-	 *
-	 * @param file - must not be null
-	 */
-	public INEDTypeInfo getNedTypeAt(IFile file, int lineNumber);
-
     /**
      * Returns a INEDElement at the given file/line/column. Returns null if no
-     * NED element was found at that position.
-     *
-     * @param file - must not be null
+     * NED element was found at that position (that may be caused by 
+     * missing source region info.)
      */
     public INEDElement getNedElementAt(IFile file, int line, int column);
 
+    /**
+     * Returns a INEDElement within the given parent at the given line/column. 
+     * Returns null if no NED element was found at that position (that may be 
+     * caused by missing source region info.)
+     */
+    public INEDElement getNedElementAt(INEDElement parent, int line, int column);
+    
     /**
 	 * Returns all components in the NED files.
 	 */

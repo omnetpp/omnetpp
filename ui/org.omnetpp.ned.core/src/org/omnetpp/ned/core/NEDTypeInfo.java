@@ -14,7 +14,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
-import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
@@ -355,27 +354,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	protected INEDTypeResolver getResolver() {
 		return NEDElement.getDefaultTypeResolver();
-	}
-
-	public INEDElement[] getNEDElementsAt(int line, int column) {
-		ArrayList<INEDElement> list = new ArrayList<INEDElement>();
-		NEDSourceRegion region = componentNode.getSourceRegion();
-		if (region!=null && region.contains(line, column)) {
-			list.add(componentNode);
-			collectNEDElements(componentNode, line, column, list);
-			return list.toArray(new INEDElement[list.size()]);
-		}
-		return null;
-	}
-
-	protected void collectNEDElements(INEDElement node, int line, int column, List<INEDElement> list) {
-		for (INEDElement child : node) {
-			NEDSourceRegion region = child.getSourceRegion();
-			if (region!=null && region.contains(line, column)) {
-				list.add(child);
-				collectNEDElements(child, line, column, list); // children fall inside parent's region
-			}
-		}
 	}
 
     public INedTypeElement getFirstExtendsRef() {

@@ -210,3 +210,4 @@ redeclarations
 subgate
 uncomments
 retargets
+decorators

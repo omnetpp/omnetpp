@@ -56,14 +56,6 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public void invalidateInherited();
 
 	/**
-	 * Returns the list of nesting NED elements that extend over the given line:column
-	 * in the source file. The list contains the component's root node as well.
-	 * Returns null if there is no match (the component's declaration doesn't contain
-	 * the given line:column, or source region info is missing from the INEDElement tree).
-	 */
-	public INEDElement[] getNEDElementsAt(int line, int column);
-
-	/**
 	 * Returns the inheritance chain, starting with this NED type, and
 	 * ending with the root.
 	 *

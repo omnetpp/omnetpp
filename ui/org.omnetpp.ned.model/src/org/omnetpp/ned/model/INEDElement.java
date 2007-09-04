@@ -60,7 +60,7 @@ public interface INEDElement extends Iterable<INEDElement> {
 
 	/**
 	 * Returns the source region, containing a line:col region in the source file
-	 * that corresponds to this element.
+	 * that corresponds to this element. May be null.
 	 */
 	public NEDSourceRegion getSourceRegion();
 

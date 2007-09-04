@@ -21,8 +21,10 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
@@ -52,16 +54,20 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 			INEDElement hoveredElement = res.getNedElementAt(file, line, column);
+			System.out.println("HOVERED:"+hoveredElement);
 			if (hoveredElement == null)
 				return null;
-			
-			INedTypeLookupContext context = hoveredElement.getEnclosingTypeElement().getParentLookupContext();
-			INEDTypeInfo typeInfo = res.lookupNedType(word, context);
-			System.out.println("typeInfo="+typeInfo+" on hovering "+word+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");
-			if (typeInfo == null)
+
+			INedTypeElement typeElement = hoveredElement.getEnclosingTypeElement();
+			INedTypeLookupContext context = typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : 
+				typeElement!=null ? typeElement.getParentLookupContext() : 
+					hoveredElement.getContainingNedFileElement();
+			INEDTypeInfo nedTypeHovered = res.lookupNedType(word, context);
+			System.out.println("typeInfo="+nedTypeHovered+" on hovering "+word+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");
+			if (nedTypeHovered == null)
 				return null;
 
-			return makeHTMLHoverFor(typeInfo);
+			return makeHTMLHoverFor(nedTypeHovered);
 		} 
 		catch (BadLocationException e) {
 			NedEditorPlugin.logError(e);

@@ -15,8 +15,10 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
@@ -50,10 +52,13 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
 			if (hoveredElement == null)
 				return null;
 			
-			INedTypeLookupContext context = hoveredElement.getEnclosingTypeElement().getParentLookupContext();
-			INEDTypeInfo nedComponentUnderCursor = NEDResourcesPlugin.getNEDResources().lookupNedType(word, context);
-			if (nedComponentUnderCursor != null)
-				return new IHyperlink[] {new NEDHyperlink(wordRegion, nedComponentUnderCursor.getNEDElement())};
+			INedTypeElement typeElement = hoveredElement.getEnclosingTypeElement();
+			INedTypeLookupContext context = typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : 
+				typeElement!=null ? typeElement.getParentLookupContext() : 
+					hoveredElement.getContainingNedFileElement();
+			INEDTypeInfo nedTypeUnderCursor = NEDResourcesPlugin.getNEDResources().lookupNedType(word, context);
+			if (nedTypeUnderCursor != null)
+				return new IHyperlink[] {new NEDHyperlink(wordRegion, nedTypeUnderCursor.getNEDElement())};
 
 			// if not found among the components, we do not create a hyperlink
 			return null;
