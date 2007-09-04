@@ -38,23 +38,22 @@ public class NedSelectionProvider implements IPostSelectionProvider {
          * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
          */
         public ISelection getSelection() {
-          ISelection selection = fNedTextEditor.getSelectionProvider().getSelection();
+        	ISelection selection = fNedTextEditor.getSelectionProvider().getSelection();
 
-                    // calculate the ned element under the current position
-                    int offset = ((ITextSelection)selection).getOffset();
-                    int line;
-                    try {
-                        line = fNedTextEditor.getDocument().getLineOfOffset(offset);
-                        int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
-                        IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
-                        INEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNedElementAt(file, line, column);
-                        // create a structured selection
-                        selection = (selectedElement != null) ? new StructuredSelection(selectedElement)
-                        : StructuredSelection.EMPTY;
-                    } catch (BadLocationException e) {
-                    }
+        	// calculate the ned element under the current position
+        	int offset = ((ITextSelection)selection).getOffset();
+        	int line;
+        	try {
+        		line = fNedTextEditor.getDocument().getLineOfOffset(offset);
+        		int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
+        		IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
+        		INEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNedElementAt(file, line+1, column);
+        		// create a structured selection
+        		selection = (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
+        	} catch (BadLocationException e) {
+        	}
 
-            return selection;
+        	return selection;
         }
 
         /*

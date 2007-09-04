@@ -48,7 +48,7 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
 			int column = region.getOffset() - doc.getLineOffset(line);
 
 			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-			INEDElement hoveredElement = res.getNedElementAt(file, line, column);
+			INEDElement hoveredElement = res.getNedElementAt(file, line+1, column);
 			if (hoveredElement == null)
 				return null;
 			

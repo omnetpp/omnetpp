@@ -53,7 +53,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 			int column = hoverRegion.getOffset() - doc.getLineOffset(line);
 
 			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-			INEDElement hoveredElement = res.getNedElementAt(file, line, column);
+			INEDElement hoveredElement = res.getNedElementAt(file, line+1, column);
 			System.out.println("HOVERED:"+hoveredElement);
 			if (hoveredElement == null)
 				return null;
