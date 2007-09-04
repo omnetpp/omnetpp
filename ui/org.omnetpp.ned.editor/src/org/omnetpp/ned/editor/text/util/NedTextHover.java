@@ -22,10 +22,18 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.ImportElement;
+import org.omnetpp.ned.model.pojo.InterfaceNameElement;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * NED text hover. Currently it displays fully qualified name and the documentation 
@@ -42,11 +50,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		try {
-			String word = TextEditorUtil.getWordRegion(textViewer, hoverRegion.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
-			if (StringUtils.isEmpty(word))
-				return null;
-
-			// if we find a NED component with that name, display its source code
+			// find which NED element was hovered
 			IFile file = ((FileEditorInput)editor.getEditorInput()).getFile();
 			IDocument doc = textViewer.getDocument();
 			int line = doc.getLineOfOffset(hoverRegion.getOffset());
@@ -54,20 +58,14 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 			INEDElement hoveredElement = res.getNedElementAt(file, line+1, column);
-			System.out.println("HOVERED:"+hoveredElement);
 			if (hoveredElement == null)
-				return null;
+				return null; // we don't know what's there
 
-			INedTypeElement typeElement = hoveredElement.getEnclosingTypeElement();
-			INedTypeLookupContext context = typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : 
-				typeElement!=null ? typeElement.getParentLookupContext() : 
-					hoveredElement.getContainingNedFileElement();
-			INEDTypeInfo nedTypeHovered = res.lookupNedType(word, context);
-			System.out.println("typeInfo="+nedTypeHovered+" on hovering "+word+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");
-			if (nedTypeHovered == null)
-				return null;
+			// get hover text for this
+			String dottedWord = TextEditorUtil.getWordRegion(textViewer, hoverRegion.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
+			String word = TextEditorUtil.getWordRegion(textViewer, hoverRegion.getOffset(), new NedSyntaxHighlightHelper.NedWordDetector());
 
-			return makeHTMLHoverFor(nedTypeHovered);
+			return getHoverText(hoveredElement, word, dottedWord);
 		} 
 		catch (BadLocationException e) {
 			NedEditorPlugin.logError(e);
@@ -75,12 +73,55 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 		}
 	}
 
-	protected static String makeHTMLHoverFor(INEDTypeInfo typeInfo) {
-		String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
+	protected static String getHoverText(INEDElement hoveredElement, String hoveredWord, String hoveredDottedWord) {
+		System.out.println("hovering "+hoveredDottedWord+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");
+
+		if (StringUtils.isEmpty(hoveredDottedWord))
+			return null; // nothing interesting here
+
+		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		
+		// try to interpret the hovered word as a NED type name
+		if (mayContainTypeName(hoveredElement)) {
+			INedTypeElement typeElement = hoveredElement.getEnclosingTypeElement();
+			INedTypeLookupContext context = typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : 
+				typeElement!=null ? typeElement.getParentLookupContext() : 
+					hoveredElement.getContainingNedFileElement();
+			INEDTypeInfo typeInfo = res.lookupNedType(hoveredDottedWord, context);
+			if (typeInfo != null)
+				return getHoverTextFor(typeInfo);
+		}
+		
+		if (hoveredElement instanceof ParamElementEx) {
+			ParamElementEx paramElement = (ParamElementEx)hoveredElement;
+			INEDTypeInfo declaringType;
+			if (hoveredElement.getParentWithTag(NEDElementTags.NED_SUBMODULE) != null)
+				declaringType = ((SubmoduleElementEx)hoveredElement.getParentWithTag(NEDElementTags.NED_SUBMODULE)).getNEDTypeInfo();
+			else
+				declaringType = hoveredElement.getEnclosingTypeElement().getNEDTypeInfo();
+			if (declaringType != null) {
+				ParamElementEx paramDecl = declaringType.getParamDeclarations().get(paramElement.getName());
+				if (paramDecl != null) {
+//					return getH
+				}
+			}
+		}
+		//FIXME finish...
+		return null;
+	}
+
+	protected static boolean mayContainTypeName(INEDElement element) {
+		return element instanceof ImportElement || 
+				element instanceof ExtendsElement || element instanceof InterfaceNameElement ||
+				element instanceof SubmoduleElement || element instanceof ChannelSpecElement;
+	}
+
+	protected static String getHoverTextFor(INEDTypeInfo typeInfo) {
+		String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
+
 		String comment = typeInfo.getNEDElement().getComment();
 		if (StringUtils.isNotEmpty(comment))
-				text += "<br/>" + StringUtils.makeHtmlDocu(comment);
+			text += "<br/>" + StringUtils.makeHtmlDocu(comment);
 
 		return HoverSupport.addHTMLStyleSheet(text);
 	}

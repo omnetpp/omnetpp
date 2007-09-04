@@ -384,10 +384,10 @@ opt_inheritance
         ;
 
 extendsname
-        : NAME
+        : dottedname
                 {
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.component);
-                  ps.extends->setName(toString(@1));
+                  ps.extends->setName(removeSpaces(@1).c_str());
                   storePos(ps.extends, @$);
                 }
         ;
@@ -398,10 +398,10 @@ likenames
         ;
 
 likename
-        : NAME
+        : dottedname
                 {
                   ps.interfacename = (InterfaceNameNode *)createNodeWithTag(NED_INTERFACE_NAME, ps.component);
-                  ps.interfacename->setName(toString(@1));
+                  ps.interfacename->setName(removeSpaces(@1).c_str());
                   storePos(ps.interfacename, @$);
                 }
         ;

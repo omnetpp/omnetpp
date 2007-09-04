@@ -40,7 +40,7 @@ const char *NEDParser::getBuiltInDeclarations()
 {
     return
         "package ned;\n"
-
+        "\n"
         "channel cBasicChannel\n"
         "{\n"
         "    bool disabled = false;\n"
@@ -48,19 +48,19 @@ const char *NEDParser::getBuiltInDeclarations()
         "    double error = 0;\n"
         "    double datarate = 0 @unit(bps);\n"
         "}\n"
-
+        "\n"
         "channel cIdealChannel\n"
         "{\n"
         "}\n"
-
-        "interface IBidirectionalChannel\n"
+        "\n"
+        "moduleinterface IBidirectionalChannel\n"
         "{\n"
         "    gates:\n"
         "        inout a;\n"
         "        inout b;\n"
         "}\n"
-
-        "interface IUnidirectionalChannel\n"
+        "\n"
+        "moduleinterface IUnidirectionalChannel\n"
         "{\n"
         "    gates:\n"
         "        input i;\n"
