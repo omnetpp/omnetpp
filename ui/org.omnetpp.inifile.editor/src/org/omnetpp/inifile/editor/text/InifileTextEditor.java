@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.text;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -61,21 +62,28 @@ public class InifileTextEditor extends TextEditor {
 
 		a = new AddInifileKeysAction();
 		setAction("AddMissingKeys", a);
-}
-	
+	}
+
+	/**
+	 * Returns the text document.
+	 */
+	public IDocument getDocument() {
+		return getDocumentProvider().getDocument(getEditorInput());
+	}
+
 	/**
 	 * Sets the content of the text editor with the given string
 	 * @param content
 	 */
 	public void setText(String content) {
-		getDocumentProvider().getDocument(getEditorInput()).set(content);
+		getDocument().set(content);
 	}
-	
+
 	/**
-	 * @return The content of the text editor
+	 * Returns the content of the text editor
 	 */
 	public String getText() {
-		return getDocumentProvider().getDocument(getEditorInput()).get();
+		return getDocument().get();
 	}
 
 	/*

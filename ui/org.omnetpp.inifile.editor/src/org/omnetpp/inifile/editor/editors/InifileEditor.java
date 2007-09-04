@@ -84,7 +84,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	public InifileFormEditor getFormEditor() {
 		return formEditor;
 	}
-	
+
 	/**
 	 * Creates the text editor page of the multi-page editor.
 	 */
