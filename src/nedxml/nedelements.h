@@ -438,7 +438,7 @@ class NEDXML_API PropertyDeclNode : public NEDElement
  * <pre>
  * <!ELEMENT extends (comment*)>
  * <!ATTLIST extends
- *      name               NMTOKEN   #REQUIRED>
+ *      name               CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -483,7 +483,7 @@ class NEDXML_API ExtendsNode : public NEDElement
  * <pre>
  * <!ELEMENT interface-name (comment*)>
  * <!ATTLIST interface-name
- *      name               NMTOKEN   #REQUIRED>
+ *      name               CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data

@@ -85,7 +85,6 @@ void NEDDTDValidator::validateElement(ExtendsNode *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(InterfaceNameNode *node)
@@ -95,7 +94,6 @@ void NEDDTDValidator::validateElement(InterfaceNameNode *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(SimpleModuleNode *node)

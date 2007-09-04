@@ -41,12 +41,11 @@
 
 <!ELEMENT extends (comment*)>
 <!ATTLIST extends
-     name               NMTOKEN   #REQUIRED>
+     name               CDATA     #REQUIRED>
 
-<!--XXX rename to "like-name" ? -->
 <!ELEMENT interface-name (comment*)>
 <!ATTLIST interface-name
-     name               NMTOKEN   #REQUIRED>
+     name               CDATA     #REQUIRED>
 
 <!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)>
 <!ATTLIST simple-module

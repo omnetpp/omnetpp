@@ -199,12 +199,12 @@ void NEDSyntaxValidator::validateElement(PropertyDeclNode *node)
 
 void NEDSyntaxValidator::validateElement(ExtendsNode *node)
 {
-    //FIXME revise
+    checkDottedNameAttribute(node, "name", false);
 }
 
 void NEDSyntaxValidator::validateElement(InterfaceNameNode *node)
 {
-    //FIXME revise
+    checkDottedNameAttribute(node, "name", false);
 }
 
 void NEDSyntaxValidator::validateElement(SimpleModuleNode *node)
