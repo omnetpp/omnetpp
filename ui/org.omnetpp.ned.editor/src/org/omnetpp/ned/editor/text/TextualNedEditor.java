@@ -30,6 +30,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.DelayedJob;
@@ -39,6 +40,9 @@ import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
+import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
+import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
+import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -53,22 +57,23 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * @author rhornig
  */
 public class TextualNedEditor extends TextEditor implements INEDChangeListener {
-	
+
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
+    public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.nedEditor" };
 
 	private static boolean pushingChanges;
 
 	private static TemplateStore fStore;
-    
+
     /** The context type registry. */
     private static ContributionContextTypeRegistry fRegistry;
 
     /** The outline page */
 	private NedContentOutlinePage fOutlinePage;
-	
+
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
-    
+
 	private String lastContent;
 
 	private DelayedJob pullChangesJob;
@@ -78,13 +83,15 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	 */
 	public TextualNedEditor() {
 		super();
-		
+
 		// delay update to avoid concurrent access to document
 		pullChangesJob = new DelayedJob(500) {
     		public void run() {
 				pullChangesFromNEDResources();
     		}
         };
+
+        setKeyBindingScopes(KEY_BINDING_SCOPES);
 	}
 
     /**
@@ -125,14 +132,37 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
 		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", a);
+		setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
 
-		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this);
-		setAction("DefineFoldingRegion", a);
+		a = new DefineFoldingRegionAction(this);
+		setAction(a.getId(), a);
 
-        a= new ConvertToNewFormatAction(NedEditorMessages.getResourceBundle(), "ConvertToNewFormat.", this);
-        setAction("ConvertToNewFormat", a);
+        a = new ConvertToNewFormatAction(this);
+        setAction(a.getId(), a);
+
+        a = new FormatSourceAction(this);
+        setAction(a.getId(), a);
+
+        a = new OrganizeImportsAction(this);
+        setAction(a.getId(), a);
+
+        a = new ToggleCommentAction(this);
+        setAction(a.getId(), a);
 	}
+
+    /*
+     * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
+     */
+    @Override
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {
+        super.editorContextMenuAboutToShow(menu);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, DefineFoldingRegionAction.ID);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
+    }
 
 	/** The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method performs any extra
@@ -222,17 +252,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 
-	/*
-	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
-	 */
-	@Override
-    protected void editorContextMenuAboutToShow(IMenuManager menu) {
-		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat");
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal");
-		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");
-	}
-
 	/**
 	 * The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method gets
@@ -261,7 +280,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
 		return super.getAdapter(required);
 	}
-	
+
 	/* (non-Javadoc)
 	 * Method declared on AbstractTextEditor
 	 */
@@ -320,9 +339,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
      // TODO: revise do we need it now ???
     /**
-     * Marks the current editor content state, so we will be able to detect 
+     * Marks the current editor content state, so we will be able to detect
      * changes in the editor.
-     *  
+     *
      * @see hasContentChanged()
      */
     public void markContent() {
@@ -331,7 +350,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
      // TODO: revise do we need it now ???
     /**
-     * Returns whether the content of the editor has changed since the last 
+     * Returns whether the content of the editor has changed since the last
      * markContent() call.
      */
     public boolean hasContentChanged() {
@@ -360,7 +379,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	public synchronized void pushChangesIntoNEDResources() {
 		pushChangesIntoNEDResources(true);
 	}
-    
+
 	/**
 	 * Pushes down text changes from document into NEDResources.
 	 */
@@ -371,9 +390,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 				if (evenIfEditorIsInactive || isActive()) {
 					try {
 						// this must be static, because we may have several text editors open
-						// (via Window|New Editor) which are internally synced to each other 
+						// (via Window|New Editor) which are internally synced to each other
 						// by the platform -- so we need to block *all* reconcilers from running.
-						// Being static causes no problems with multiple reconcilers, because 
+						// Being static causes no problems with multiple reconcilers, because
 						// the access is serialized through asyncExec.
 						pushingChanges = true;
 						// perform parsing (of full text, we ignore the changed region)
@@ -386,7 +405,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 			}
 		});
 	}
-	
+
 	/**
 	 * Pulls changes from NEDResources and applies to document as text changes.
 	 */

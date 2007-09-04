@@ -6,7 +6,7 @@ import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.actions.GNEDActionBarContributor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned.editor.text.actions.TextualNedEditorActionContributor;
+import org.omnetpp.ned.editor.text.TextualNedEditorActionContributor;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -24,7 +24,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
      */
     public MultiPageNedEditorActionContributor() {
         super();
-        // create the multi page editor's own acions (if any)
+        // create the multi page editor's own actions (if any)
         graphContrib = new GNEDActionBarContributor();
         textContrib = new TextualNedEditorActionContributor();
     }
@@ -51,7 +51,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
 
         // set the new active editor
         activeEditorPart = part;
-        
+
         // first remove the old global and local action handlers
         // then add the ones for the new editor
         if (part instanceof GraphicalNedEditor) {

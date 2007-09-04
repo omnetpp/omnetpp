@@ -11,8 +11,8 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
- * Factory to create corresponding controller objects for the modell objects.
- * Only model objects ecplicitly handled here will have a controleer and a visulal
+ * Factory to create corresponding controller objects for the model objects.
+ * Only model objects explicitly handled here will have a controller and a visual
  * counterpart in the editor
  *
  * @author rhornig
@@ -21,6 +21,9 @@ public class NedEditPartFactory implements EditPartFactory {
 
     public EditPart createEditPart(EditPart context, Object model) {
         EditPart child = null;
+
+        if (model == null)
+            return null;
 
         if (model instanceof NedFileElementEx)
         	child = new NedFileEditPart();

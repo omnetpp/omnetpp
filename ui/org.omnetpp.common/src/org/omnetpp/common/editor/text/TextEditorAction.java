@@ -1,7 +1,6 @@
 package org.omnetpp.common.editor.text;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorExtension;
 import org.eclipse.ui.texteditor.ITextEditorExtension2;
@@ -10,7 +9,7 @@ import org.eclipse.ui.texteditor.IUpdate;
 /**
  * This is a copy of TextEditorAction, except that we don't want labels etc
  * to be read from a resource file, so this one doesn't extend ResourceAction.
- * 
+ *
  * The action is initially associated with a text editor via the constructor,
  * but can subsequently be changed using <code>setEditor</code>.
  * Subclasses must implement the <code>run</code> method and if
@@ -24,23 +23,23 @@ import org.eclipse.ui.texteditor.IUpdate;
  * </p>
  */
 public abstract class TextEditorAction extends Action implements IUpdate {
-	private TextEditor fTextEditor;
+	private ITextEditor fTextEditor;
 
-	public TextEditorAction(TextEditor textEditor) {
+	public TextEditorAction(ITextEditor textEditor) {
 		fTextEditor = textEditor;
 	}
-	
+
 	/**
 	 * Returns the action's text editor.
 	 */
-	protected TextEditor getTextEditor() {
+	protected ITextEditor getTextEditor() {
 		return fTextEditor;
 	}
 
 	/**
 	 * Retargets this action to the given editor.
 	 */
-	public void setEditor(TextEditor editor) {
+	public void setEditor(ITextEditor editor) {
 		fTextEditor = editor;
 	}
 

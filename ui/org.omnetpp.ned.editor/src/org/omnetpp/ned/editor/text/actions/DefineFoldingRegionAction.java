@@ -1,7 +1,5 @@
 package org.omnetpp.ned.editor.text.actions;
 
-import java.util.ResourceBundle;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
@@ -11,24 +9,31 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.ui.texteditor.TextEditorAction;
+
+import org.omnetpp.common.editor.text.TextEditorAction;
 
 /**
- * Allows to define a folding region in the ned file 
+ * Allows to define a folding region in the ned file
  *
  * @author rhornig
  */
-//FIXME use our own "TextEditorAction" which doesn't use resource files
 public class DefineFoldingRegionAction extends TextEditorAction {
 
-    public DefineFoldingRegionAction(ResourceBundle bundle, String prefix, ITextEditor editor) {
-		super(bundle, prefix, editor);
+    public static final String ID = "org.omnetpp.ned.editor.text.DefineFoldingRegion";
+
+    public DefineFoldingRegionAction(ITextEditor editor) {
+		super(editor);
+        setId(ID);
+        setActionDefinitionId(ID);
+        setText("Define Folding Region");
+        setDescription("Define a folding region in the source");
+        setToolTipText(getDescription());
     }
-        
+
 	private IAnnotationModel getAnnotationModel(ITextEditor editor) {
 		return (IAnnotationModel) editor.getAdapter(ProjectionAnnotationModel.class);
 	}
-	
+
     @Override
     public void update() {
         ITextEditor editor= getTextEditor();
@@ -41,10 +46,10 @@ public class DefineFoldingRegionAction extends TextEditorAction {
                 return;
             }
         }
-        
+
         setEnabled(true);
     }
-    
+
 	/*
 	 * @see org.eclipse.jface.action.Action#run()
 	 */
@@ -57,10 +62,10 @@ public class DefineFoldingRegionAction extends TextEditorAction {
 			if (!textSelection.isEmpty()) {
 				IAnnotationModel model= getAnnotationModel(editor);
 				if (model != null) {
-					
+
 					int start= textSelection.getStartLine();
 					int end= textSelection.getEndLine();
-					
+
 					try {
 						IDocument document= editor.getDocumentProvider().getDocument(editor.getEditorInput());
 						int offset= document.getLineOffset(start);

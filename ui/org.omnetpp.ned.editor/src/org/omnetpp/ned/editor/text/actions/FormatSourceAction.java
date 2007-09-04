@@ -15,15 +15,22 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author andras
  */
 public class FormatSourceAction extends TextEditorAction {
+    public static final String ID = "org.omnetpp.ned.editor.text.FormatSource";
+
     public FormatSourceAction(TextualNedEditor editor) {
         super(editor);
+        setId(ID);
+        setActionDefinitionId(ID);
+        setText("Format Source");
+        setDescription("Format the NED source file");
+        setToolTipText(getDescription());
     }
 
     @Override
 	public void update() {
     	setEnabled(getTextEditor() != null && !getNedFileElement().hasSyntaxError());
 	}
-    
+
     @Override
     public void run() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();

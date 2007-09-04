@@ -9,21 +9,22 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 
 /**
- * This action converts the ned model to new format (if it is in old format cuurently)
+ * This action converts the ned model to new format (if it is in old format currently)
  *
  * @author rhornig
  */
 public class ConvertToNewFormatAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
     public static final String ID = "ConvertToNewFormat";
-    public static final String MENUNAME = "Convert to OMNeT++ 4.0 format";
-    public static final String TOOLTIP = "Converts the NED file into the new OMNeT++ 4.0 format";
+    public static final String MENUNAME = "Convert to 4.0 Format";
+    public static final String DESCRIPTION = "Converts the NED file into the new OMNeT++ 4.0 format";
 
     public ConvertToNewFormatAction(IWorkbenchPart part) {
         super(part);
         setText(MENUNAME);
         setId(ID);
-        setToolTipText(TOOLTIP);
+        setDescription(DESCRIPTION);
+        setToolTipText(DESCRIPTION);
     }
 
     @Override

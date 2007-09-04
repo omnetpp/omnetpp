@@ -4,6 +4,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
+
 import org.omnetpp.common.editor.text.TextEditorAction;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
@@ -13,11 +14,15 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  * @author andras
  */
 public class ToggleCommentAction extends TextEditorAction {
-	public ToggleCommentAction(TextualNedEditor editor) {
+	public static final String ID = "org.omnetpp.ned.editor.text.ToggleComment";
+
+    public ToggleCommentAction(TextualNedEditor editor) {
 		super(editor);
+		setId(ID);
+		setActionDefinitionId(ID);
         setText("Toggle Comment");
-        setDescription("Toggle Comment");
-        setToolTipText("Toggle Comment");
+        setDescription("Comment/Uncomment the selected lines");
+        setToolTipText(getDescription());
 	}
 
 	@Override
@@ -39,7 +44,8 @@ public class ToggleCommentAction extends TextEditorAction {
 				if (!allLinesAreComments) {
 					// add "//"
 					for (int i = startLine; i <= endLine; i++)
-						replacement += getLine(doc,i).replaceFirst("([^\\s])", "//$1");
+//						replacement += getLine(doc,i).replaceFirst("([^\\s])", "//$1");
+                        replacement += "//"+getLine(doc,i);
 				}
 				else {
 					// remove "//"
@@ -47,8 +53,8 @@ public class ToggleCommentAction extends TextEditorAction {
 						replacement += getLine(doc,i).replaceFirst("//", "");
 				}
 
-				doc.replace(doc.getLineOffset(startLine), doc.getLineOffset(endLine+1), replacement);
-			} 
+				doc.replace(doc.getLineOffset(startLine), doc.getLineOffset(endLine+1)-doc.getLineOffset(startLine), replacement);
+			}
 			catch (BadLocationException e) {
 			}
 		}

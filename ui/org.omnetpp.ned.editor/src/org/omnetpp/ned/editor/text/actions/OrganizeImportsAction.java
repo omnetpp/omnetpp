@@ -26,11 +26,15 @@ import org.omnetpp.ned.model.interfaces.IHasType;
  * @author andras
  */
 public class OrganizeImportsAction extends TextEditorAction {
+    public static final String ID = "org.omnetpp.ned.editor.text.OrganizeImports";
+
     public OrganizeImportsAction(TextualNedEditor editor) {
         super(editor);
-        setText("Organize imports");
-        setDescription("Organize imports");
-        setToolTipText("Organize imports");
+        setId(ID);
+        setActionDefinitionId(ID);
+        setText("Organize Imports");
+        setDescription("Organize the import statements in the NED source file");
+        setToolTipText(getDescription());
     }
 
     @Override
@@ -43,7 +47,7 @@ public class OrganizeImportsAction extends TextEditorAction {
         NedFileElementEx nedFileElement = getNedFileElement();
         if (nedFileElement.hasSyntaxError())
         	return; // don't mess with the source while it has syntax error
-        
+
         // collect names to import
         Set<String> unqualifiedTypeNames = collectUnqualifiedTypeNames(nedFileElement);
 
@@ -58,7 +62,7 @@ public class OrganizeImportsAction extends TextEditorAction {
         Collections.sort(imports);
         for (String importSpec : imports)
         	nedFileElement.addImport(importSpec);
-        
+
         // update text editor
         ((TextualNedEditor)getTextEditor()).setText(nedFileElement.getNEDSource());
     }
@@ -72,7 +76,7 @@ public class OrganizeImportsAction extends TextEditorAction {
      * Collect those names from the NED file that need imports.
      */
 	protected Set<String> collectUnqualifiedTypeNames(NedFileElementEx nedFileElement) {
-		final Set<String> result = new HashSet<String>(); 
+		final Set<String> result = new HashSet<String>();
 		NEDElementUtilEx.visitNedTree(nedFileElement, new NEDElementUtilEx.INEDElementVisitor() {
 			public void visit(INEDElement element) {
 				if (element instanceof IHasType) {
@@ -103,22 +107,22 @@ public class OrganizeImportsAction extends TextEditorAction {
 		if (potentialMatches.size() == 0)
 			return; // not found, sorry
 		if (potentialMatches.size() == 1) {
-			imports.add(potentialMatches.get(0)); 
+			imports.add(potentialMatches.get(0));
 			return;
 		}
 
 
 		// if there's an import for one of them already, use that
 		for (String potentialMatch : potentialMatches) {
-			if (oldImports.contains(potentialMatch)) {  
-				imports.add(potentialMatch); 
+			if (oldImports.contains(potentialMatch)) {
+				imports.add(potentialMatch);
 				return;
 			}
 			// oldImports may contain wildcards, so try with regex as well
 			for (String oldImport : oldImports)
 				if (oldImport.contains("*"))
 					if (potentialMatch.matches(NEDElementUtilEx.importToRegex(oldImport))) {
-						imports.add(potentialMatch); 
+						imports.add(potentialMatch);
 						return;
 					}
 		}

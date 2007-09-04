@@ -55,4 +55,8 @@ public class TypesEditPart extends AbstractGraphicalEditPart implements IModelPr
             ((AbstractGraphicalEditPart)child).refresh();
     }
 
+    @Override
+    public boolean isSelectable() {
+        return false;
+    }
 }

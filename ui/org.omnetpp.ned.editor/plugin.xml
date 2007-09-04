@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?> 
 <?eclipse version="3.0"?>
 <plugin>
 
@@ -79,5 +79,53 @@
             class="org.omnetpp.ned.editor.text.assist.NedContextType"
             id="org.omnetpp.ned.editor.text.default"
             name="NED File global context"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.ned.editor.text.ToggleComment"
+            contextId="org.omnetpp.context.nedEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+/">
+      </key>
+      <key
+            commandId="org.omnetpp.ned.editor.text.FormatSource"
+            contextId="org.omnetpp.context.nedEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
+      </key>
+      <key
+            commandId="org.omnetpp.ned.editor.text.OrganizeImports"
+            contextId="org.omnetpp.context.nedEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+O">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <context
+            description="OMNEST/OMNeT++ NED File Editor"
+            id="org.omnetpp.context.nedEditor"
+            name="Editing NED Source"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Comment/Uncomment the selected lines"
+            id="org.omnetpp.ned.editor.text.ToggleComment"
+            name="Toggle Comment">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Format the NED source file"
+            id="org.omnetpp.ned.editor.text.FormatSource"
+            name="Format NED Source">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Organizes the import statements in a NED source file"
+            id="org.omnetpp.ned.editor.text.OrganizeImports"
+            name="Organize Imports">
+      </command>
    </extension>
 </plugin>
