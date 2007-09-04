@@ -29,12 +29,6 @@ public class NedFileEditPart extends NedEditPart {
     protected void createEditPolicies() {
         super.createEditPolicies();
 
-        // NedFile cannot be connected to anything via connections
-        installEditPolicy(EditPolicy.NODE_ROLE, null);
-        //
-        installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
-        // nedfile cannot be selected
-        installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
         // this is a root edit part, so it cannot be deleted
         installEditPolicy(EditPolicy.COMPONENT_ROLE, null);
         // install a layout edit policy, this one provides also the creation commands

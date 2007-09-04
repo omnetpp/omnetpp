@@ -19,6 +19,7 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.SubmodulesElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * TODO add documentation
@@ -69,6 +70,21 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(NEDElement.displayStringOf(getFirstExtendsRef()));
     	return displayString;
+    }
+
+    /**
+     * Returns all inner types contained in THIS module.
+     */
+    public List<INedTypeElement> getOwnInnerTypes() {
+        List<INedTypeElement> result = new ArrayList<INedTypeElement>();
+
+        TypesElement typesElement = getFirstTypesChild();
+        if (typesElement != null)
+            for (INEDElement currChild : typesElement)
+                if (currChild instanceof INedTypeElement)
+                    result.add((INedTypeElement)currChild);
+
+        return result;
     }
 
     // submodule related methods

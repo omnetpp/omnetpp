@@ -1,13 +1,14 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
+
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Factory to create corresponding controller objects for the modell objects.
@@ -19,8 +20,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 public class NedEditPartFactory implements EditPartFactory {
 
     public EditPart createEditPart(EditPart context, Object model) {
-        if (model == null) return null;
-
         EditPart child = null;
 
         if (model instanceof NedFileElementEx)
@@ -33,10 +32,11 @@ public class NedEditPartFactory implements EditPartFactory {
             child = new ModuleConnectionEditPart();
         else if (model instanceof INedTypeElement)
             child = new NedTypeEditPart();
-        else {
-            Assert.isTrue(false,"Unknown model element: "+model.getClass().getName());
-            return null;
-        }
+        else if (model instanceof TypesElement)
+            child = new TypesEditPart();
+        else
+            throw new IllegalArgumentException("Unknown model element: "+model);
+
         child.setModel(model);
         return child;
     }

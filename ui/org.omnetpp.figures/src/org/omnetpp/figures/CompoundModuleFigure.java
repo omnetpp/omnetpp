@@ -37,6 +37,7 @@ public class CompoundModuleFigure extends NedFigure
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 
 	private Layer submoduleLayer;
+    private Figure innerTypeContainer;
     private ScrollPane mainContainer;
     private LayeredPane layeredPane;
     private Image backgroundImage;
@@ -133,6 +134,24 @@ public class CompoundModuleFigure extends NedFigure
 
     }
 
+    /**
+     * Used at the left inner types compartment.
+     *
+     */
+    class InnerTypesBorder extends MarginBorder {
+        InnerTypesBorder(int t, int l, int b, int r) {
+            super(t, l, b, r);
+        }
+
+        @Override
+        public void paint(IFigure f, Graphics g, Insets i) {
+            Rectangle r = getPaintRectangle(f, i);
+            g.setForegroundColor(ColorConstants.buttonDarker);
+            int x = r.x + insets.left/4;
+            g.drawLine(x, r.y, x, r.bottom());
+        }
+    }
+
     public CompoundModuleFigure() {
         super();
 
@@ -146,6 +165,15 @@ public class CompoundModuleFigure extends NedFigure
         nameHelperLayer.add(nameFigure, new Rectangle(0,0,-1,-1));
         nameHelperLayer.add(problemMarkerFigure, new Rectangle(-1,0,16,16));
         add(nameHelperLayer);
+
+        // create the container for the inner types
+        innerTypeContainer = new Figure();
+        ToolbarLayout typesLayout = new ToolbarLayout();
+        typesLayout.setStretchMinorAxis(false);
+        typesLayout.setSpacing(5);
+        innerTypeContainer.setBorder(new InnerTypesBorder(0, 20, 0, 0 ));
+        innerTypeContainer.setLayoutManager(typesLayout);
+        add(innerTypeContainer);
 
         // contains all layers used inside a compound modules submodule area
         layeredPane = new FreeformLayeredPane();
@@ -200,6 +228,11 @@ public class CompoundModuleFigure extends NedFigure
     public IFigure getSubmoduleContainer() {
         // this is the figure which is used to add submodule children by the editpart
         return submoduleLayer;
+    }
+
+    public IFigure getInnerTypeContainer() {
+        // this is the figure which is used to add inner types
+        return innerTypeContainer;
     }
 
     /**

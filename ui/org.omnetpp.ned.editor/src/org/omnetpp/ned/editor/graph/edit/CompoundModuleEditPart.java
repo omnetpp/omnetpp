@@ -9,14 +9,7 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.AutoexposeHelper;
-import org.eclipse.gef.CompoundSnapToHelper;
-import org.eclipse.gef.ConnectionEditPart;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.ExposeHelper;
-import org.eclipse.gef.MouseWheelHelper;
-import org.eclipse.gef.SnapToGeometry;
-import org.eclipse.gef.SnapToHelper;
+import org.eclipse.gef.*;
 import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
@@ -30,7 +23,7 @@ import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Edit part controlling the appearance of the compound module figure. Note that this
@@ -85,10 +78,25 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     public IFigure getContentPane() {
-        // FIXME remove this method and add the figures directly to the main figure
-        // the add method inside the compoundModuleFigure should be overridden
-        // and it should add the figure to the appropriate part (submoduleContainer or innerTypeContainer)
         return getCompoundModuleFigure().getSubmoduleContainer();
+    }
+
+    // overridden so submodules are added to the contentPane while TypesEditPart is never added as a child
+    // TypesEdit part is always associated with the innerTypesCompartment of the CompoundModuleFigure
+    @Override
+    protected void addChildVisual(EditPart childEditPart, int index) {
+        IFigure child = ((GraphicalEditPart)childEditPart).getFigure();
+        if (!(childEditPart instanceof TypesEditPart))
+            getContentPane().add(child);
+    }
+
+    // overridden so child figures are always removed from their parent
+    @Override
+    protected void removeChildVisual(EditPart childEditPart) {
+        IFigure child = ((GraphicalEditPart)childEditPart).getFigure();
+        // never throw away the types compartment figure
+        if (!(childEditPart instanceof TypesEditPart))
+            child.getParent().remove(child);
     }
 
     @Override
@@ -116,9 +124,16 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     @Override
-    protected List<SubmoduleElementEx> getModelChildren() {
+    protected List<INEDElement> getModelChildren() {
+        List<INEDElement> result = new ArrayList<INEDElement>();
+        // add the innerTypes element (if exists)
+        TypesElement typesElement = getCompoundModuleModel().getFirstTypesChild();
+        if (typesElement != null)
+            result.add(typesElement);
+
         // return all submodule including inherited ones
-    	return getCompoundModuleModel().getSubmodules();
+        result.addAll(getCompoundModuleModel().getSubmodules());
+    	return result;
     }
 
     /**
