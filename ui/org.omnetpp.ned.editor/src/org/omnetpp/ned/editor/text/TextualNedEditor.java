@@ -39,6 +39,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
+import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
 import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
@@ -148,6 +149,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
         a = new ToggleCommentAction(this);
         setAction(a.getId(), a);
+
+        a = new CorrectIndentationAction(this);
+        setAction(a.getId(), a);
 	}
 
     /*
@@ -162,6 +166,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
         addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
     }
 
 	/** The <code>TextualNedEditor</code> implementation of this

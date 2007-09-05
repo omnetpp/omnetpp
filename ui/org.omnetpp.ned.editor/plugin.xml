@@ -100,6 +100,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+O">
       </key>
+      <key
+            commandId="org.omnetpp.ned.editor.text.CorrectIndentation"
+            contextId="org.omnetpp.context.nedEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+I">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -126,6 +132,12 @@
             description="Organizes the import statements in a NED source file"
             id="org.omnetpp.ned.editor.text.OrganizeImports"
             name="Organize Imports">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Reindent selected lines of the NED source"
+            id="org.omnetpp.ned.editor.text.CorrectIndentation"
+            name="Correct Indentation">
       </command>
    </extension>
 </plugin>
