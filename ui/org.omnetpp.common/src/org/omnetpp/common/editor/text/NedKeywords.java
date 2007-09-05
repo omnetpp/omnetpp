@@ -23,20 +23,24 @@ public class NedKeywords {
 	
 	public final static String[] PARAM_TYPE_MODIFIERS = { "volatile" };
 
-	public final static String[] TYPES = concat(GATE_TYPES, PARAM_TYPES, PARAM_TYPE_MODIFIERS);
+	public final static String[] TYPE_KEYWORDS = concat(GATE_TYPES, PARAM_TYPES, PARAM_TYPE_MODIFIERS);
 
-	public final static String[] SPECIAL = { "-->", "<--", "<-->", ".." };
+	public final static String[] SPECIAL_KEYWORDS = { "-->", "<--", "<-->", ".." };
 
-	public final static String[] KEYWORDS = { "allowunconnected", "channel", "channelinterface",
-			"connections", "extends", "for", "gates", "if", "import", "moduleinterface", "like",
-			"module", "network", "package", "parameters", "property", "simple", "submodules",
-			"types" };
+	public final static String[] NEDTYPE_KEYWORDS = { "channel", "channelinterface", "simple", "module", "network", "moduleinterface" };
+	
+	public final static String[] SECTION_KEYWORDS = { "parameters", "gates", "types", "submodules", "connections" };
 
-	public final static String[] EXPRESSION_KEYWORDS = { "sizeof", "const", "default", "this", "index",
-			"typename", "xmldoc" };
+	public final static String[] OTHER_KEYWORDS = { "allowunconnected", "extends", "for", "if", "import", "like", "package", "property" };
+
+	public final static String[] NONEXPR_KEYWORDS = concat(NEDTYPE_KEYWORDS, SECTION_KEYWORDS, OTHER_KEYWORDS);
+
+	public final static String[] EXPR_KEYWORDS = { "sizeof", "const", "default", "this", "index", "typename", "xmldoc" };
 
 	public final static String[] CONSTANTS = { "false", "true" };
 
+	public final static String[] RESERVED_WORDS = concat(TYPE_KEYWORDS, SPECIAL_KEYWORDS, NONEXPR_KEYWORDS, EXPR_KEYWORDS, CONSTANTS);
+	
 	public final static String[] FUNCTIONS = { "acos", "asin", "atan", "atan2", "bernoulli",
 			"beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp",
 			"exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential",

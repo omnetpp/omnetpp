@@ -22,7 +22,7 @@ public final class NedCompletionHelper {
     public final static String[] proposedNedTopLevelKeywords = { "import", "network", "package", "property"};
     public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channelinterface", "moduleinterface", "module", "simple"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedOtherExpressionKeywords = NedKeywords.EXPRESSION_KEYWORDS;
+    public final static String[] proposedNedOtherExpressionKeywords = NedKeywords.EXPR_KEYWORDS;
     public final static String[] proposedConstants = NedKeywords.CONSTANTS;
 
 

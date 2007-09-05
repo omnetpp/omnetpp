@@ -18,9 +18,9 @@ public class NedSyntaxHighlightHelper {
 	public final static String[] highlightPrivateDocTodo = NedKeywords.DOC_TODO;
 	public final static String[] highlightDocTags = NedKeywords.DOC_TAGS;
 	public final static String[] highlightDocKeywords = NedKeywords.DOC_KEYWORDS;
-	public final static String[] highlightNedTypes = NedKeywords.TYPES;
-	public final static String[] highlightNedSpecialKeywords = NedKeywords.SPECIAL;
-	public final static String[] highlightNedKeywords = NedKeywords.concat(NedKeywords.KEYWORDS, NedKeywords.EXPRESSION_KEYWORDS);
+	public final static String[] highlightNedTypes = NedKeywords.TYPE_KEYWORDS;
+	public final static String[] highlightNedSpecialKeywords = NedKeywords.SPECIAL_KEYWORDS;
+	public final static String[] highlightNedKeywords = NedKeywords.concat(NedKeywords.NONEXPR_KEYWORDS, NedKeywords.EXPR_KEYWORDS);
 	public final static String[] highlightNedFunctions = NedKeywords.FUNCTIONS;
 	public final static String[] highlightConstants = NedKeywords.CONSTANTS;
 
