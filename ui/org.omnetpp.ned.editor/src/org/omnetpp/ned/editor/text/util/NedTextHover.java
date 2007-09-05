@@ -102,7 +102,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 			if (declaringType != null) {
 				ParamElementEx paramDecl = declaringType.getParamDeclarations().get(paramElement.getName());
 				if (paramDecl != null) {
-//					return getH
+					//TODO...
 				}
 			}
 		}

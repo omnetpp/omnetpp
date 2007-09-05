@@ -6,6 +6,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.editor.text.NedKeywords;
 import org.omnetpp.common.editor.text.TextEditorAction;
+import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
@@ -49,6 +50,7 @@ public class CorrectIndentationAction extends TextEditorAction {
 				String prevLineIndent = getIndent(prevLine);
 				boolean prevLineContainsSectionKeyword = containsSectionKeyword(prevLine);
 
+				// collect reindented lines
 				String replacement = "";
 				for (int i = startLine; i <= endLine; i++) {
 					String line = getLine(doc,i);
@@ -73,7 +75,8 @@ public class CorrectIndentationAction extends TextEditorAction {
 					prevLineContainsSectionKeyword = lineContainsSectionKeyword;
 				}
 
-				doc.replace(doc.getLineOffset(startLine), doc.getLineOffset(endLine+1)-doc.getLineOffset(startLine), replacement);
+				// put back into the document
+				TextEditorUtil.replaceRangeAndSelect(getTextEditor(), doc.getLineOffset(startLine), doc.getLineOffset(endLine+1) , replacement, true);
 			}
 			catch (BadLocationException e) {
 			}
