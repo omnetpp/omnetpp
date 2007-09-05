@@ -10,7 +10,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
- * Comments or uncomments lines in the selected region.
+ * Corrects the indentation level of lines in the selected region of the NED source.
  *
  * @author andras
  */
@@ -36,18 +36,14 @@ public class CorrectIndentationAction extends TextEditorAction {
 				int startLine = textSelection.getStartLine();
 				int endLine = textSelection.getEndLine();
 
-				// Algorithm to find the indentation for any line:
-				//  1. find the line of the previous (unpaired) "{"
-				//  2. check the line to be indented:
-				//      a. if it starts with "}": use same indent as "{" line
-				//      b. if it is a "section keyword" line, use indent of "{" line + 4 spaces
-				//      c. if it is some other line, use indent of "{" line + 8 spaces
-				//      d. if there's no "{" line, use zero spaces as indent
+				//
+				// After "{", indent section keyword lines ("gates:") one level, and
+				// and other lines two levels.
 				//
 
 				// find first non-blank line above our region to pick up indent level 
 				String prevLine = "\n";
-				for (int i = startLine-1; i >= 0 && StringUtils.isBlank(prevLine); i--)
+				for (int i = startLine-1; i >= 0 && StringUtils.isBlank(removeCommentsAndStrings(prevLine)); i--)
 					prevLine = getLine(doc, i);
 				int prevLineBraceCount = getBraceCount(prevLine);
 				String prevLineIndent = getIndent(prevLine);
@@ -62,12 +58,12 @@ public class CorrectIndentationAction extends TextEditorAction {
 					String indent = prevLineIndent;
 					if (prevLineBraceCount > 0)
 						indent = modifyIndentLevel(indent, 2);
-					else if (braceCount < 0)
+					if (prevLineContainsSectionKeyword)
+						indent = modifyIndentLevel(indent, 1);
+					if (braceCount < 0)
 						indent = modifyIndentLevel(indent, -2);
 					if (lineContainsSectionKeyword)
 						indent = modifyIndentLevel(indent, -1);
-					if (prevLineContainsSectionKeyword)
-						indent = modifyIndentLevel(indent, 1);
 
 					replacement += replaceIndent(line, indent);
 
@@ -98,13 +94,13 @@ public class CorrectIndentationAction extends TextEditorAction {
 	}
 
 	private String removeCommentsAndStrings(String line) {
-		line = line.replaceFirst("//.*", "");  // remove comments
 		line = line.replaceAll("\"[^\"]*\"", "\"\"");  // zap string literals (roughly - we ignore backslash escaping here)
+		line = line.replaceFirst("//.*", "");  // remove comments
 		return line;
 	}
 
 	private String getIndent(String line) {
-		return StringUtils.isBlank(line) ? "" : line.replaceFirst("(?s)^([ \t]*).*", "$1");
+		return line.replaceFirst("(?s)^([ \t]*).*", "$1");
 	}
 
 	private String modifyIndentLevel(String indent, int level) {
