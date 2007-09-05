@@ -6,6 +6,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 
 import org.omnetpp.common.editor.text.TextEditorAction;
+import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
@@ -44,7 +45,7 @@ public class ToggleCommentAction extends TextEditorAction {
 				if (!allLinesAreComments) {
 					// add "//"
 					for (int i = startLine; i <= endLine; i++)
-//						replacement += getLine(doc,i).replaceFirst("([^\\s])", "//$1");
+						//replacement += getLine(doc,i).replaceFirst("([^\\s])", "//$1");
                         replacement += "//"+getLine(doc,i);
 				}
 				else {
@@ -53,7 +54,8 @@ public class ToggleCommentAction extends TextEditorAction {
 						replacement += getLine(doc,i).replaceFirst("//", "");
 				}
 
-				doc.replace(doc.getLineOffset(startLine), doc.getLineOffset(endLine+1)-doc.getLineOffset(startLine), replacement);
+				// put back into the document
+				TextEditorUtil.replaceRangeAndSelect(getTextEditor(), doc.getLineOffset(startLine), doc.getLineOffset(endLine+1), replacement, true);
 			}
 			catch (BadLocationException e) {
 			}
