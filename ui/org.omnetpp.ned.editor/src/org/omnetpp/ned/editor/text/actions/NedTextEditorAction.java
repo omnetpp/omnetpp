@@ -10,7 +10,7 @@ public class NedTextEditorAction extends TextEditorAction {
 
     /**
      * Special action that uses the provided id to set the actionDefinitionId, the Id and
-     * the label, icon,tooltip, description fields (from the resource boundle) the id is used as a prefix
+     * the label, icon,tooltip, description fields (from the resource bundle) the id is used as a prefix
      * in the property file
      */
     public NedTextEditorAction(String id, ITextEditor editor) {
