@@ -27,17 +27,17 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	private IAction addInifileKeysAction = new AddInifileKeysAction();
 	private RetargetAction undoAction;
 	private RetargetAction redoAction;
-	//private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID); 
+	//private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID);
 	//private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID);
 
-	
+
 	/**
 	 * Creates a multi-page contributor.
 	 */
 	public InifileEditorContributor() {
 		super();
 	}
-	
+
 	/* (non-JavaDoc)
 	 * Method declared in AbstractMultiPageEditorActionBarContributor.
 	 */
@@ -50,7 +50,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 
 		IActionBars actionBars = getActionBars();
 		if (actionBars==null)
-			return; 
+			return;
 
 		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
 		if (textEditor != null) {
@@ -107,6 +107,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	@Override
 	public void contributeToMenu(IMenuManager manager) {
 		IMenuManager editMenu = manager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
+		// FIXME create a top level source menu and add the ections there
 		editMenu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, addInifileKeysAction);
 	}
 
@@ -122,7 +123,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
     	undoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
     	redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
     	redoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO_DISABLED));
-    	
+
     	manager.add(undoAction);
     	manager.add(redoAction);
 
@@ -130,9 +131,9 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
     	getPage().addPartListener(redoAction);
 
 		manager.add(addInifileKeysAction);
-    	
+
 	}
-	
+
     @Override
     public void dispose() {
         getPage().removePartListener(undoAction);
@@ -140,5 +141,5 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
         undoAction.dispose();
         redoAction.dispose();
     }
-	
+
 }

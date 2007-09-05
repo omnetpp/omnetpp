@@ -1,7 +1,5 @@
 package org.omnetpp.inifile.editor.text.actions;
 
-import java.util.ResourceBundle;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
@@ -11,17 +9,17 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.ui.texteditor.TextEditorAction;
 
 
 /**
  * Implements the "Define Folding Region" command, shown in the context
  * menu of the text editor.
  */
-public class DefineFoldingRegionAction extends TextEditorAction {
+public class DefineFoldingRegionAction extends InifileTextEditorAction {
+    public static final String ID = "DefineFoldingRegion";
 
-	public DefineFoldingRegionAction(ResourceBundle bundle, String prefix, ITextEditor editor) {
-		super(bundle, prefix, editor);
+	public DefineFoldingRegionAction(ITextEditor editor) {
+		super(ID, editor);
 	}
 
 	private IAnnotationModel getAnnotationModel(ITextEditor editor) {

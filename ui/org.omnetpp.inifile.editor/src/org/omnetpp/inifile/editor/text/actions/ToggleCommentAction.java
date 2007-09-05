@@ -5,7 +5,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.omnetpp.common.editor.text.TextEditorAction;
+
 import org.omnetpp.common.editor.text.TextEditorUtil;
 
 /**
@@ -13,16 +13,11 @@ import org.omnetpp.common.editor.text.TextEditorUtil;
  *
  * @author andras
  */
-public class ToggleCommentAction extends TextEditorAction {
-	public static final String ID = "org.omnetpp.inifile.editor.text.ToggleComment";
+public class ToggleCommentAction extends InifileTextEditorAction {
+	public static final String ID = "ToggleComment";
 
     public ToggleCommentAction(ITextEditor editor) {
-		super(editor);
-		setId(ID);
-		setActionDefinitionId(ID);
-        setText("Toggle Comment");
-        setDescription("Comment/Uncomment the selected lines");
-        setToolTipText(getDescription());
+		super(ID, editor);
 	}
 
 	@Override
@@ -37,7 +32,7 @@ public class ToggleCommentAction extends TextEditorAction {
 
 				boolean allLinesAreComments = true;
 				for (int i = startLine; i <= endLine; i++)
-					if (!getLine(doc,i).trim().startsWith("//"))
+					if (!getLine(doc,i).trim().startsWith("#"))
 						allLinesAreComments = false;
 
 				String replacement = "";

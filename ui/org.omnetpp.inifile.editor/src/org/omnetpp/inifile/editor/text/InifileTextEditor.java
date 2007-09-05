@@ -15,9 +15,11 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
+
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
+import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
 
 
 /**
@@ -35,32 +37,33 @@ public class InifileTextEditor extends TextEditor {
 	public InifileTextEditor(InifileEditor parentEditor) {
 		super();
 
-		// Note: we should actually override initializeEditor() and place the 
-		// setSourceViewerConfiguration() call there. Problem is, parentEditor 
+		// Note: we should actually override initializeEditor() and place the
+		// setSourceViewerConfiguration() call there. Problem is, parentEditor
 		// is not yet available at that point.
 		setSourceViewerConfiguration(new InifileSourceViewerConfiguration(parentEditor.getEditorData()));
 	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method extend the 
+
+	/** The <code>TextualNedEditor</code> implementation of this
+	 * <code>AbstractTextEditor</code> method extend the
 	 * actions to add those specific to the receiver
 	 */
 	@Override
 	protected void createActions() {
 		super.createActions();
-		
+
 		IAction a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", a); 
-		
-		a = new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);
-		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
-		setAction("ContentAssistTip", a);
-		
-		a = new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this);
-		setAction("DefineFoldingRegion", a);
+		setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
 
-		a = new AddInifileKeysAction();
+		a = new DefineFoldingRegionAction(this);
+		setAction(a.getId(), a);
+		markAsSelectionDependentAction(a.getId(), true);
+
+        a = new ToggleCommentAction(this);
+        setAction(a.getId(), a);
+        markAsSelectionDependentAction(a.getId(), true);
+
+        a = new AddInifileKeysAction();
 		setAction("AddMissingKeys", a);
 	}
 
@@ -86,21 +89,17 @@ public class InifileTextEditor extends TextEditor {
 		return getDocument().get();
 	}
 
-	/*
-	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
-	 */
-	@Override
-	protected void editorContextMenuAboutToShow(IMenuManager menu) {
-		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); 
-		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal");
-		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");
-		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "AddMissingKeys");
-	}
-	
-	/** 
+    @Override
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {
+        super.editorContextMenuAboutToShow(menu);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, DefineFoldingRegionAction.ID);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
+        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "AddMissingKeys");
+    }
+	/**
 	 * Return projection support for the editor.
-	 */ 
+	 */
 	@Override
     @SuppressWarnings("unchecked")
 	public Object getAdapter(Class required) {
@@ -109,26 +108,26 @@ public class InifileTextEditor extends TextEditor {
 			if (adapter != null)
 				return adapter;
 		}
-		
+
 		return super.getAdapter(required);
 	}
-		
+
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
 	@Override
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		
+
 		fAnnotationAccess = createAnnotationAccess();
 		fOverviewRuler = createOverviewRuler(getSharedColors());
-		
+
 		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 
 		return viewer;
 	}
-	
+
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
@@ -162,7 +161,7 @@ public class InifileTextEditor extends TextEditor {
 	}
 
 	/**
-	 * Returns the line number where the cursor is currently located. 
+	 * Returns the line number where the cursor is currently located.
 	 */
 	public int getCursorLine() {
 		String pos = super.getCursorPosition();  // "12 : 45"
@@ -172,7 +171,7 @@ public class InifileTextEditor extends TextEditor {
 			return 1;
 		}
 	}
-	
+
 	/*
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
 	 */
