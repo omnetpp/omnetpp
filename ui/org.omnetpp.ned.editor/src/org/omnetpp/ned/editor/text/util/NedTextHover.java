@@ -111,7 +111,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 	}
 
 	protected static boolean mayContainTypeName(INEDElement element) {
-		return element instanceof ImportElement || 
+		return element instanceof INedTypeElement || element instanceof ImportElement || 
 				element instanceof ExtendsElement || element instanceof InterfaceNameElement ||
 				element instanceof SubmoduleElement || element instanceof ChannelSpecElement;
 	}
