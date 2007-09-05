@@ -10,24 +10,17 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import org.omnetpp.common.editor.text.TextEditorAction;
-
 /**
  * Allows to define a folding region in the ned file
  *
  * @author rhornig
  */
-public class DefineFoldingRegionAction extends TextEditorAction {
+public class DefineFoldingRegionAction extends NedTextEditorAction {
 
-    public static final String ID = "org.omnetpp.ned.editor.text.DefineFoldingRegion";
+    public static final String ID = "DefineFoldingRegion";
 
     public DefineFoldingRegionAction(ITextEditor editor) {
-		super(editor);
-        setId(ID);
-        setActionDefinitionId(ID);
-        setText("Define Folding Region");
-        setDescription("Define a folding region in the source");
-        setToolTipText(getDescription());
+		super(ID, editor);
     }
 
 	private IAnnotationModel getAnnotationModel(ITextEditor editor) {

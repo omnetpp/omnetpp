@@ -27,27 +27,10 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.AddFilterToDatasetAction;
-import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
-import org.omnetpp.scave.actions.ChartMouseModeAction;
-import org.omnetpp.scave.actions.CopyChartToClipboardAction;
-import org.omnetpp.scave.actions.CopyToClipboardAction;
-import org.omnetpp.scave.actions.CreateChartTemplateAction;
-import org.omnetpp.scave.actions.CreateTempChartAction;
-import org.omnetpp.scave.actions.EditAction;
-import org.omnetpp.scave.actions.ExportDataAction;
-import org.omnetpp.scave.actions.GotoChartDefinitionAction;
-import org.omnetpp.scave.actions.GroupAction;
-import org.omnetpp.scave.actions.IScaveAction;
-import org.omnetpp.scave.actions.OpenAction;
-import org.omnetpp.scave.actions.RefreshChartAction;
-import org.omnetpp.scave.actions.RemoveAction;
-import org.omnetpp.scave.actions.SelectAllAction;
-import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
-import org.omnetpp.scave.actions.UngroupAction;
-import org.omnetpp.scave.actions.ZoomChartAction;
+import org.omnetpp.scave.actions.*;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 import org.omnetpp.scave.views.DatasetView;
 
@@ -58,7 +41,7 @@ import org.omnetpp.scave.views.DatasetView;
  */
 public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private static ScaveEditorContributor instance;
-	
+
 //	public IAction addResultFileAction;
 //	public IAction addWildcardResultFileAction;
 //	public IAction removeAction;
@@ -70,7 +53,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private RetargetAction undoRetargetAction;
 	private RetargetAction redoRetargetAction;
 	private RetargetAction deleteRetargetAction;
-	
+
 	// generic actions
 	private IAction openAction;
 	private IAction editAction;
@@ -78,7 +61,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction ungroupAction;
 	private IScaveAction deleteAction; // action handler of deleteRetargetAction
 	private IAction selectAllAction;
-	
+
 	// ChartPage actions
 //XXX
 //	private IAction zoomInXAction;
@@ -101,7 +84,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction createTempChartAction;
 	private IAction showVectorBrowserViewAction;
 	private Map<String,IAction> exportActions;
-	
+
 	/**
 	 * This action opens the Dataset view.
 	 */
@@ -117,7 +100,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 				}
 			}
 		};
-	
+
 	/**
 	 * Creates a multi-page contributor.
 	 */
@@ -126,14 +109,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		if (instance==null) instance = this;
 	}
 
-	public void init(IActionBars bars, IWorkbenchPage page) {
+	@Override
+    public void init(IActionBars bars, IWorkbenchPage page) {
         openAction = registerAction(page, new OpenAction());
         editAction = registerAction(page, new EditAction());
         groupAction = registerAction(page, new GroupAction());
         ungroupAction = registerAction(page, new UngroupAction());
         selectAllAction = registerAction(page, new SelectAllAction());
 
-        // replacement of the inherited deleteAction 
+        // replacement of the inherited deleteAction
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
         deleteAction = registerAction(page, new RemoveAction());
         deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
@@ -164,7 +148,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     	copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
     	createTempChartAction = registerAction(page, new CreateTempChartAction());
         showVectorBrowserViewAction = registerAction(page, new ShowVectorBrowserViewAction());
-        
+
 //      addResultFileAction = registerAction(page, new AddResultFileAction());
 //      addWildcardResultFileAction = registerAction(page, new AddWildcardResultFileAction());
 //      openAction = registerAction(page, new OpenAction());
@@ -174,7 +158,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //		createDatasetAction = registerAction(page, new CreateDatasetAction());
 //		createChartAction = registerAction(page, new CreateChartAction());
         super.init(bars, page);
-        
+
         bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
         bars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
 	}
@@ -191,25 +175,28 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public static ScaveEditorContributor getDefault() {
 		return instance;
 	}
-	
-	public void dispose() {
-		super.dispose();
 
+	@Override
+    public void dispose() {
+		super.dispose();
+		// FIXME remove the selection listener from the other actions
         getPage().removePartListener(undoRetargetAction);
         getPage().removePartListener(redoRetargetAction);
         getPage().removePartListener(deleteRetargetAction);
         undoRetargetAction.dispose();
         redoRetargetAction.dispose();
         deleteRetargetAction.dispose();
-        
+
         instance = null;
     }
 
-	public void contributeToMenu(IMenuManager manager) {
+	@Override
+    public void contributeToMenu(IMenuManager manager) {
 		// super.contributeToMenu(manager);
 	}
 
-	public void contributeToToolBar(IToolBarManager manager) {
+	@Override
+    public void contributeToToolBar(IToolBarManager manager) {
 		super.contributeToToolBar(manager);
 
 		undoRetargetAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
@@ -227,14 +214,14 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     	getPage().addPartListener(undoRetargetAction);
     	getPage().addPartListener(redoRetargetAction);
     	getPage().addPartListener(deleteRetargetAction);
-    	
+
     	manager.add(undoRetargetAction);
     	manager.add(redoRetargetAction);
     	manager.add(deleteRetargetAction);
 
     	manager.add(openAction);
     	manager.add(editAction);
-		
+
 		manager.insertBefore("scavemodel-additions", createTempChartAction);
 
 //XXX
@@ -252,7 +239,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		manager.insertBefore("scavemodel-additions", createChartTemplateAction);
 	}
 
-	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
+	@Override
+    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
 		super.contributeToStatusLine(statusLineManager);
 	}
 
@@ -274,39 +262,42 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 			menuManager.remove(deleteActionItem);
 			menuManager.insertBefore("additions-end", deleteAction);
 		}
-		
+
 		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
-		
+
 		menuManager.insertBefore("edit", groupAction);
 		menuManager.insertBefore("edit", ungroupAction);
 		menuManager.insertBefore("edit", new Separator());
 		menuManager.insertBefore("edit", createExportMenu());
 	}
 
-	public void shareGlobalActions(IPage page, IActionBars actionBars)
+	@Override
+    public void shareGlobalActions(IPage page, IActionBars actionBars)
 	{
 		super.shareGlobalActions(page, actionBars);
-		
+
 		// replace inherited deleteAction
 		if (!(page instanceof IPropertySheetPage))
 			actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
 	}
-	
+
 	@Override
 	protected void addGlobalActions(IMenuManager menuManager) {
 		menuManager.insertAfter("additions-end", new Separator("ui-actions"));
 		menuManager.insertAfter("ui-actions", showPropertiesViewAction);
 		menuManager.insertAfter("ui-actions", showDatasetViewAction);
-		refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());		
+		refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());
 		menuManager.insertAfter("ui-actions", refreshViewerAction);
 	}
 
-	public void update()
+	@Override
+    public void update()
 	{
 		super.update();
-		
-		ISelectionProvider selectionProvider = 
+		// FIXME explain the intention of the code below
+
+		ISelectionProvider selectionProvider =
 			activeEditor instanceof ISelectionProvider ?
 				(ISelectionProvider)activeEditor :
 					activeEditor.getEditorSite().getSelectionProvider();
@@ -320,11 +311,11 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 			deleteAction.selectionChanged(structuredSelection);
 		}
 	}
-	
+
 	public IAction getOpenAction() {
 		return openAction;
 	}
-	
+
 	public IAction getEditAction() {
 		return editAction;
 	}

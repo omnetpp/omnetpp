@@ -1,8 +1,10 @@
 package org.omnetpp.ned.editor;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
+
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.actions.GNEDActionBarContributor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
@@ -35,6 +37,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
 
     @Override
     public void init(IActionBars bars) {
+        System.out.println("multi.init");
         super.init(bars);
         graphContrib.init(bars, getPage());
         textContrib.init(bars, getPage());
@@ -46,6 +49,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
      */
     @Override
 	public void setActivePage(IEditorPart part) {
+        System.out.println("multi.setActivePage"+part);
         if (activeEditorPart == part)
             return;
 
@@ -65,5 +69,16 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
             return;
 
         getActionBars().updateActionBars();
+    }
+
+    @Override
+    public void contributeToMenu(IMenuManager menuManager) {
+        System.out.println("multi.contributeToMenu");
+    }
+
+    @Override
+    public void dispose() {
+        System.out.println("multi.dispose");
+        super.dispose();
     }
 }

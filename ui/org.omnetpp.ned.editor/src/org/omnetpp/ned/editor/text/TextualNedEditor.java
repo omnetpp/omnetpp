@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.text;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -131,27 +132,34 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
     protected void createActions() {
 		super.createActions();
 
-		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
+		ResourceBundle bundle = NedEditorMessages.getResourceBundle();
+		IAction a= new TextOperationAction(bundle, "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
 
 		a = new DefineFoldingRegionAction(this);
 		setAction(a.getId(), a);
+		markAsSelectionDependentAction(a.getId(), true);
 
         a = new ConvertToNewFormatAction(this);
         setAction(a.getId(), a);
+        markAsContentDependentAction(a.getId(), true);
 
         a = new FormatSourceAction(this);
         setAction(a.getId(), a);
+        markAsContentDependentAction(a.getId(), true);
 
         a = new OrganizeImportsAction(this);
         setAction(a.getId(), a);
+        markAsContentDependentAction(a.getId(), true);
 
         a = new ToggleCommentAction(this);
         setAction(a.getId(), a);
+        markAsSelectionDependentAction(a.getId(), true);
 
         a = new CorrectIndentationAction(this);
         setAction(a.getId(), a);
+        markAsSelectionDependentAction(a.getId(), true);
 	}
 
     /*
@@ -168,6 +176,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
         addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
     }
+
 
 	/** The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method performs any extra

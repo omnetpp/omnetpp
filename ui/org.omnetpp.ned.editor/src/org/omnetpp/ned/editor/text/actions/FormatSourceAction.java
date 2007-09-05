@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.text.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.common.editor.text.TextEditorAction;
+
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -14,16 +14,11 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  *
  * @author andras
  */
-public class FormatSourceAction extends TextEditorAction {
-    public static final String ID = "org.omnetpp.ned.editor.text.FormatSource";
+public class FormatSourceAction extends NedTextEditorAction {
+    public static final String ID = "FormatSource";
 
     public FormatSourceAction(TextualNedEditor editor) {
-        super(editor);
-        setId(ID);
-        setActionDefinitionId(ID);
-        setText("Format Source");
-        setDescription("Format the NED source file");
-        setToolTipText(getDescription());
+        super(ID, editor);
     }
 
     @Override

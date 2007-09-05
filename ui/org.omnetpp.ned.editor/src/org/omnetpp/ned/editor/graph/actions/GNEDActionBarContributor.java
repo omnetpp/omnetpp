@@ -27,12 +27,11 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 
 /**
  * Adds Graphical ned editor actions to the action bar.
+ * It is a copy of the original GEF ActionBarContributor because of the NPE issue if a non GEF editor
+ * gets activated. once it is fixed in GEF their class can be derived from ActionBarContributor
  *
  * @author rhornig
  */
-//FIXME why doesn't this comment go into the normal class comment? --Andras
-// is its a copy of the original GEF ActionBarContributor because of the NPE issue if a non GEF editor
-// gets activated. once it is fixed in GEF their class can be derived from ActionBarContributor
 public class GNEDActionBarContributor extends EditorActionBarContributor {
 
     private ActionRegistry registry = new ActionRegistry();
@@ -210,6 +209,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
      */
     @Override
     public void contributeToMenu(IMenuManager menubar) {
+
         MenuManager viewMenu = new MenuManager("View");
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));

@@ -12,7 +12,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.common.editor.text.TextEditorAction;
+import org.eclipse.ui.texteditor.ITextEditor;
+
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -25,16 +26,11 @@ import org.omnetpp.ned.model.interfaces.IHasType;
  *
  * @author andras
  */
-public class OrganizeImportsAction extends TextEditorAction {
-    public static final String ID = "org.omnetpp.ned.editor.text.OrganizeImports";
+public class OrganizeImportsAction extends NedTextEditorAction {
+    public static final String ID = "OrganizeImports";
 
-    public OrganizeImportsAction(TextualNedEditor editor) {
-        super(editor);
-        setId(ID);
-        setActionDefinitionId(ID);
-        setText("Organize Imports");
-        setDescription("Organize the import statements in the NED source file");
-        setToolTipText(getDescription());
+    public OrganizeImportsAction(ITextEditor editor) {
+        super(ID, editor);
     }
 
     @Override

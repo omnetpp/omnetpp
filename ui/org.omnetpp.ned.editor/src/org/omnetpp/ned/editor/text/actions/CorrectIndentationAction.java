@@ -5,7 +5,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.common.editor.text.NedKeywords;
-import org.omnetpp.common.editor.text.TextEditorAction;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
@@ -15,16 +14,11 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  *
  * @author andras
  */
-public class CorrectIndentationAction extends TextEditorAction {
-	public static final String ID = "org.omnetpp.ned.editor.text.CorrectIndentation";
+public class CorrectIndentationAction extends NedTextEditorAction {
+	public static final String ID = "CorrectIndentation";
 
 	public CorrectIndentationAction(TextualNedEditor editor) {
-		super(editor);
-		setId(ID);
-		setActionDefinitionId(ID);
-		setText("Correct Indentation");
-		setDescription("Correct Indentation");
-		setToolTipText(getDescription());
+		super(ID, editor);
 	}
 
 	@Override
@@ -42,7 +36,7 @@ public class CorrectIndentationAction extends TextEditorAction {
 				// and other lines two levels.
 				//
 
-				// find first non-blank line above our region to pick up indent level 
+				// find first non-blank line above our region to pick up indent level
 				String prevLine = "\n";
 				for (int i = startLine-1; i >= 0 && StringUtils.isBlank(removeCommentsAndStrings(prevLine)); i--)
 					prevLine = getLine(doc, i);
@@ -84,7 +78,7 @@ public class CorrectIndentationAction extends TextEditorAction {
 	}
 
 	/**
-	 * Return the sum of braces on the line, "{" counting as +1 and "}" as -1. 
+	 * Return the sum of braces on the line, "{" counting as +1 and "}" as -1.
 	 */
 	private int getBraceCount(String line) {
 		line = removeCommentsAndStrings(line);

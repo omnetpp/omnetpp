@@ -5,7 +5,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 
-import org.omnetpp.common.editor.text.TextEditorAction;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
@@ -14,16 +13,11 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
  *
  * @author andras
  */
-public class ToggleCommentAction extends TextEditorAction {
-	public static final String ID = "org.omnetpp.ned.editor.text.ToggleComment";
+public class ToggleCommentAction extends NedTextEditorAction {
+	public static final String ID = "ToggleComment";
 
     public ToggleCommentAction(TextualNedEditor editor) {
-		super(editor);
-		setId(ID);
-		setActionDefinitionId(ID);
-        setText("Toggle Comment");
-        setDescription("Comment/Uncomment the selected lines");
-        setToolTipText(getDescription());
+		super(ID, editor);
 	}
 
 	@Override
