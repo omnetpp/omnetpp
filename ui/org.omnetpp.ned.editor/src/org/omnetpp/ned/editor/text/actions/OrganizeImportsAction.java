@@ -58,6 +58,8 @@ public class OrganizeImportsAction extends NedTextEditorAction {
         Collections.sort(imports);
         for (String importSpec : imports)
         	nedFileElement.addImport(importSpec);
+        if (!imports.isEmpty())
+        	nedFileElement.getLastImportChild().appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n\n"));
 
         // update text editor
         ((TextualNedEditor)getTextEditor()).setText(nedFileElement.getNEDSource());

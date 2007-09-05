@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -315,4 +316,10 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 			visitNedTree(child, visitor);
 	}
 
+	public static CommentElement createCommentElement(String locId, String content) {
+		CommentElement comment = (CommentElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_COMMENT);
+		comment.setLocid(locId);
+		comment.setContent(content);
+		return comment;
+	}
 }

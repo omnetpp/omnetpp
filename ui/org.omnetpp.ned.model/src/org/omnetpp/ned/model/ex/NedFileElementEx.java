@@ -66,11 +66,17 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		return StringUtils.isEmpty(getPackage()) ? "" : getPackage() + ".";
 	}
 	
+	/**
+	 * Returns the package name (from the PackageElement child), or null
+	 */
 	public String getPackage() {
 		PackageElement packageElement = getFirstPackageChild();
 		return packageElement == null ? null : packageElement.getName();
 	}
 
+	/**
+	 * Sets the package name; creates a PackageElement child if necessary.
+	 */
 	public void setPackage(String packageName) {
 		PackageElement packageElement = getFirstPackageChild();
 		if (packageElement == null) {
@@ -98,10 +104,7 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		ImportElement importElement = (ImportElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_IMPORT);
 		importElement.setImportSpec(importSpec);
 
-		INEDElement lastImport = null;
-		for (INEDElement element : this)
-			if (element instanceof ImportElement)
-				lastImport = element; 
+		INEDElement lastImport = getLastImportChild(); 
 		INEDElement insertionPoint = lastImport!=null ? lastImport.getNextSibling() : 
 			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() :
 				getFirstChild();
@@ -110,8 +113,22 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		return importElement;
 	}
 
+	/**
+	 * Removes all ImportElements from this NED file.
+	 */
 	public void removeImports() {
 		while (getFirstImportChild() != null)
 			getFirstImportChild().removeFromParent();
+	}
+
+	/**
+	 * Returns the last import child in this NED file, or null
+	 */
+	public ImportElement getLastImportChild() {
+		ImportElement lastImport = null;
+		for (INEDElement element : this)
+			if (element instanceof ImportElement)
+				lastImport = (ImportElement)element;
+		return lastImport;
 	}
 }
