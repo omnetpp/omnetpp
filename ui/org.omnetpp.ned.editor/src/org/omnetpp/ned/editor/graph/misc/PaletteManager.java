@@ -8,11 +8,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.gef.palette.*;
+import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
+import org.eclipse.gef.palette.ConnectionCreationToolEntry;
+import org.eclipse.gef.palette.MarqueeToolEntry;
+import org.eclipse.gef.palette.PaletteContainer;
+import org.eclipse.gef.palette.PaletteDrawer;
+import org.eclipse.gef.palette.PaletteEntry;
+import org.eclipse.gef.palette.PaletteGroup;
+import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.palette.PaletteSeparator;
+import org.eclipse.gef.palette.PaletteStack;
+import org.eclipse.gef.palette.PanningSelectionToolEntry;
+import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IFileEditorInput;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.DelayedJob;
@@ -24,7 +34,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
+import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
@@ -196,7 +206,7 @@ public class PaletteManager implements INEDChangeListener {
         for (INEDElement element : NEDResourcesPlugin.getNEDResources().getNedFileElement(file))
             if (element instanceof INedTypeElement)
             	for (INedTypeElement typeElement : ((INedTypeElement)element).getNEDTypeInfo().getInnerTypes().values())
-            		if ((typeElement instanceof IModuleTypeElement) || (typeElement instanceof ModuleInterfaceElement))
+            		if (typeElement instanceof IModuleKindTypeElement)
             			addToolEntry(typeElement, MRU_GROUP, entries);
         return entries;
     }
