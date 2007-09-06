@@ -67,7 +67,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
 		ContentAssistant assistant= new ContentAssistant();
 		assistant.setDocumentPartitioning(NedContentAssistPartitionScanner.PARTITIONING_ID);
-		assistant.setContentAssistProcessor(new NedCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setContentAssistProcessor(new NedCompletionProcessor(editor), IDocument.DEFAULT_CONTENT_TYPE);
         assistant.setContentAssistProcessor(new NedDocCompletionProcessor(), NedContentAssistPartitionScanner.NED_DOC);
         assistant.setContentAssistProcessor(new NedPrivateDocCompletionProcessor(), NedContentAssistPartitionScanner.NED_PRIVATE_DOC);
         

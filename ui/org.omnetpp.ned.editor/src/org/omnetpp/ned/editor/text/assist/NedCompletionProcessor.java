@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.text.assist;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,26 +16,28 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
+// TODO completion within inner types
 // TODO a better structure is needed for storing the completion proposals
 // TODO context help can be supported, to show the documentation of the proposed keyword
-// TODO if we want F4 "Open Declaration": see
-//    action org.eclipse.jdt.ui.edit.text.java.open.editor
-//    org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds
-//    org.eclipse.jdt.internal.ui.infoviews.SourceView
-//    org.eclipse.jdt.ui.actions.OpenEditorActionGroup
-//TODO completion for imports
+// TODO F4 "Open Declaration"
+// TODO completion for imports
 /**
  * NED completion processor.
  *
- * @author rhornig
+ * @author andras
  */
 public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
@@ -46,7 +47,6 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
      * TODO implement correctly the context information
 	 */
 	protected static class Validator implements IContextInformationValidator, IContextInformationPresenter {
-
 		protected int fInstallOffset;
 
 		/*
@@ -89,9 +89,14 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		public String submoduleTypeName;
 	}
 
-	protected IContextInformationValidator fValidator= new Validator();
+	protected IContextInformationValidator fValidator = new Validator();
+	protected ITextEditor editor;
 
-    @Override
+    public NedCompletionProcessor(ITextEditor editor) {
+    	this.editor = editor;
+	}
+
+	@Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		// long startMillis = System.currentTimeMillis(); // measure time
 
@@ -100,14 +105,20 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		// find out where we are: in which module, submodule, which section etc.
 		CompletionInfo info = computeCompletionInfo(viewer, documentOffset);
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
+		NedFileElementEx nedFileElement = res.getNedFileElement(((IFileEditorInput)editor.getEditorInput()).getFile());
 
 		String line = info.linePrefixTrimmed;
 		INEDTypeInfo parentComponent = null;
-		if (info.componentName!=null)
-			parentComponent = res.lookupNedType(info.componentName, null); // hopefully autobuilder (reconciler) has already run on current source
+		INedTypeLookupContext context = nedFileElement;
+		if (info.componentName!=null) {
+			parentComponent = res.lookupNedType(info.componentName, nedFileElement);
+			if (parentComponent instanceof CompoundModuleElementEx)
+				context = (CompoundModuleElementEx)parentComponent;
+		}
 		INEDTypeInfo submoduleType = null;
-		if (info.submoduleTypeName!=null)
-			submoduleType = res.lookupNedType(info.submoduleTypeName, null);
+		if (info.submoduleTypeName!=null) {
+			submoduleType = res.lookupNedType(info.submoduleTypeName, context);
+		}
 
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
@@ -215,7 +226,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
 					// System.out.println(" offering params of type "+submodTypeName);
-					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, null);
+					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
 							addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
@@ -293,7 +304,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
 					// System.out.println(" offering gates of type "+submodTypeName);
-					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, null);
+					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 					if (submodType!=null)
 						addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
 	    		}
