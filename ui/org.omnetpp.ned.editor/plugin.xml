@@ -109,12 +109,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.commands">
-      <context
-            description="OMNEST/OMNeT++ NED File Editor"
-            id="org.omnetpp.context.nedEditor"
-            name="Editing NED Source"
-            parentId="org.eclipse.ui.textEditorScope">
-      </context>
       <command
             categoryId="org.eclipse.ui.category.textEditor"
             description="Comment/Uncomment the selected lines"
@@ -139,5 +133,14 @@
             id="org.omnetpp.ned.editor.text.CorrectIndentation"
             name="Correct Indentation">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="OMNEST/OMNeT++ NED File Editor"
+            id="org.omnetpp.context.nedEditor"
+            name="Editing NED Source"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
    </extension>
 </plugin>

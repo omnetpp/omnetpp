@@ -41,7 +41,6 @@ import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
-import org.omnetpp.ned.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
 import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
@@ -137,10 +136,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
 
-		a = new DefineFoldingRegionAction(this);
-		setAction(a.getId(), a);
-		markAsSelectionDependentAction(a.getId(), true);
-
         a = new ConvertToNewFormatAction(this);
         setAction(a.getId(), a);
         markAsContentDependentAction(a.getId(), true);
@@ -168,13 +163,12 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
     @Override
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
         super.editorContextMenuAboutToShow(menu);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, DefineFoldingRegionAction.ID);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
     }
 
 
