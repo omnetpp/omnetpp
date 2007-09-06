@@ -7,6 +7,9 @@
          point="org.eclipse.core.resources.markers">
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
       <attribute
             name="nedelement-id">
       </attribute> 
@@ -17,6 +20,9 @@
          point="org.eclipse.core.resources.markers">
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
       <attribute
             name="nedelement-id">
       </attribute> 

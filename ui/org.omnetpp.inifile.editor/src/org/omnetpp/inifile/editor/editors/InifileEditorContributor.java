@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.editors;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -15,7 +16,13 @@ import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.eclipse.ui.texteditor.RetargetTextEditorAction;
+
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
+import org.omnetpp.inifile.editor.text.InifileEditorMessages;
+import org.omnetpp.inifile.editor.text.actions.InifileTextEditorAction;
+import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -24,34 +31,39 @@ import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
 	private IEditorPart activeEditorPart;
-	private IAction addInifileKeysAction = new AddInifileKeysAction();
+	private IAction addInifileKeysAction;
 	private RetargetAction undoAction;
 	private RetargetAction redoAction;
+    private RetargetTextEditorAction fContentAssistProposal;
+    private RetargetTextEditorAction fToggleCommentAction;
 	//private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID);
 	//private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID);
-
 
 	/**
 	 * Creates a multi-page contributor.
 	 */
 	public InifileEditorContributor() {
 		super();
+        fContentAssistProposal= new RetargetTextEditorAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
+        fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        fToggleCommentAction = createRetargetAction(ToggleCommentAction.ID);
+        addInifileKeysAction =  new AddInifileKeysAction();
 	}
 
-	/* (non-JavaDoc)
+    /* (non-JavaDoc)
 	 * Method declared in AbstractMultiPageEditorActionBarContributor.
 	 */
 	@Override
 	public void setActivePage(IEditorPart part) {
 		if (activeEditorPart == part)
 			return;
-
 		activeEditorPart = part;
 
 		IActionBars actionBars = getActionBars();
 		if (actionBars==null)
 			return;
 
+		// FIXME simplify this
 		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
 		if (textEditor != null) {
 			actionBars.setGlobalActionHandler(
@@ -101,23 +113,33 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 			actionBars.setGlobalActionHandler(ActionFactory.FIND.getId(), null);
 			actionBars.setGlobalActionHandler(IDEActionFactory.BOOKMARK.getId(), null);
 		}
+        fContentAssistProposal.setAction(getAction(textEditor, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS));
+        fToggleCommentAction.setAction(getAction(textEditor, ToggleCommentAction.ID));
 		actionBars.updateActionBars();
 	}
 
+
 	@Override
-	public void contributeToMenu(IMenuManager manager) {
-		IMenuManager editMenu = manager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
-		// FIXME create a top level source menu and add the ections there
-		editMenu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, addInifileKeysAction);
+	public void contributeToMenu(IMenuManager menuManager) {
+	    super.contributeToMenu(menuManager);
+	    MenuManager sourceMenu = new MenuManager("Source");
+	    sourceMenu.add(fToggleCommentAction);
+	    sourceMenu.add(new Separator());
+	    sourceMenu.add(fContentAssistProposal);
+	    sourceMenu.add(new Separator());
+	    sourceMenu.add(addInifileKeysAction);
+	    menuManager.insertAfter(IWorkbenchActionConstants.M_EDIT, sourceMenu);
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
 
+		// FIXME use the utility function (createReaargetAction)
 		undoAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
 		redoAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
 
+		// fixme get it from resources
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
     	undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
     	undoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
@@ -131,7 +153,6 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
     	getPage().addPartListener(redoAction);
 
 		manager.add(addInifileKeysAction);
-
 	}
 
     @Override
@@ -142,4 +163,20 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
         redoAction.dispose();
     }
 
+    private static RetargetTextEditorAction createRetargetAction(String id) {
+        RetargetTextEditorAction action = new RetargetTextEditorAction(InifileEditorMessages.getResourceBundle(), id+".");
+        action.setActionDefinitionId(InifileTextEditorAction.ACTION_DEFINITION_PREFIX + id);
+        return action;
+    }
+
+    /**
+     * Returns the action registered with the given text editor.
+     *
+     * @param editor the editor, or <code>null</code>
+     * @param actionId the action id
+     * @return the action, or <code>null</code> if none
+     */
+    protected final IAction getAction(ITextEditor editor, String actionId) {
+        return (editor == null || actionId == null ? null : editor.getAction(actionId));
+    }
 }

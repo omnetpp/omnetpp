@@ -18,7 +18,6 @@ import org.eclipse.ui.texteditor.TextOperationAction;
 
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
 import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
 
 
@@ -27,7 +26,8 @@ import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
  */
 //XXX status bar does not show cursor position etc!!!
 public class InifileTextEditor extends TextEditor {
-	/** The projection support */
+    public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.inifileEditor" };
+    /** The projection support */
 	private ProjectionSupport projectionSupport;
 	private Runnable cursorPositionChangedJob;
 
@@ -37,6 +37,7 @@ public class InifileTextEditor extends TextEditor {
 	public InifileTextEditor(InifileEditor parentEditor) {
 		super();
 
+        setKeyBindingScopes(KEY_BINDING_SCOPES);
 		// Note: we should actually override initializeEditor() and place the
 		// setSourceViewerConfiguration() call there. Problem is, parentEditor
 		// is not yet available at that point.
@@ -53,21 +54,27 @@ public class InifileTextEditor extends TextEditor {
 
 		IAction a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
-
-		a = new DefineFoldingRegionAction(this);
+		a.setId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction(a.getId(), a);
-		markAsSelectionDependentAction(a.getId(), true);
 
         a = new ToggleCommentAction(this);
         setAction(a.getId(), a);
         markAsSelectionDependentAction(a.getId(), true);
 
         a = new AddInifileKeysAction();
-		setAction("AddMissingKeys", a);
+		setAction(a.getId(), a);
 	}
 
-	/**
+    @Override
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {
+        super.editorContextMenuAboutToShow(menu);
+
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, AddInifileKeysAction.ID);
+    }
+
+    /**
 	 * Returns the text document.
 	 */
 	public IDocument getDocument() {
@@ -89,14 +96,6 @@ public class InifileTextEditor extends TextEditor {
 		return getDocument().get();
 	}
 
-    @Override
-    protected void editorContextMenuAboutToShow(IMenuManager menu) {
-        super.editorContextMenuAboutToShow(menu);
-        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, DefineFoldingRegionAction.ID);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
-        addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "AddMissingKeys");
-    }
 	/**
 	 * Return projection support for the editor.
 	 */

@@ -62,10 +62,6 @@
            icon="icons/full/eview16/modulehierarchy.png"
            id="org.omnetpp.inifile.ModuleHierarchy"
            name="Module Hierarchy"/>
-  </extension>
-
-  <extension
-        point="org.eclipse.ui.views">
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.inifile.editor.views.ModuleParametersView"
@@ -73,5 +69,44 @@
            id="org.omnetpp.inifile.ModuleParameters"
            name="NED Parameters"/>
   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.inifile.editor.text.ToggleComment"
+            contextId="org.omnetpp.context.inifileEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+/">
+      </key>
+      <key
+            commandId="org.omnetpp.inifile.editor.text.AddMissingKeys"
+            contextId="org.omnetpp.context.inifileEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+O">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Comment/Uncomment the selected lines"
+            id="org.omnetpp.inifile.editor.text.ToggleComment"
+            name="Toggle Comment">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Add missing keys to the INI file"
+            id="org.omnetpp.inifile.editor.text.AddMissingKeys"
+            name="Add Missing Keys">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="OMNEST/OMNeT++ INI File Editor"
+            id="org.omnetpp.context.inifileEditor"
+            name="Editing INI File"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+   </extension>
 
 </plugin>
