@@ -6,8 +6,8 @@ import java.util.Map;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
+import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
@@ -20,7 +20,7 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
  *
  * @author rhornig
  */
-public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements IInterfaceTypeElement, IHasGates {
+public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements IModuleKindTypeElement, IInterfaceTypeElement {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
@@ -28,7 +28,6 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
     protected ModuleInterfaceElementEx() {
 		super();
 		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
-
 	}
 
     protected ModuleInterfaceElementEx(INEDElement parent) {

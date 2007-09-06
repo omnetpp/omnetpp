@@ -3,10 +3,10 @@ package org.omnetpp.inifile.editor.model;
 import java.util.Stack;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 
 /**
@@ -29,10 +29,10 @@ public class NEDTreeTraversal {
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
-	public void traverse(String moduleTypeName) {
-		INEDTypeInfo moduleType = nedResources.lookupNedType(moduleTypeName, null);
+	public void traverse(String fullyQualifiedModuleTypeName) {
+		INEDTypeInfo moduleType = nedResources.getNedType(fullyQualifiedModuleTypeName);
 		if (moduleType==null)
-			visitor.unresolvedType(null, moduleTypeName);
+			visitor.unresolvedType(null, fullyQualifiedModuleTypeName);
 		else
 			traverse(moduleType);
 	}
@@ -48,35 +48,37 @@ public class NEDTreeTraversal {
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
-	public void traverse(SubmoduleElement submodule) {
+	public void traverse(SubmoduleElementEx submodule) {
 		visitedTypes.clear();
-		String submoduleTypeName = resolveTypeName(submodule);
-		INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.lookupNedType(submoduleTypeName, null);
+		String submoduleTypeName = resolveEffectiveTypeName(submodule);
+		INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.lookupNedType(submoduleTypeName, submodule.getCompoundModule());
 		if (submoduleType == null)
 			visitor.unresolvedType(submodule, submoduleTypeName);
 		else
 			doTraverse(submodule, submoduleType);
 	}
 
-	protected void doTraverse(SubmoduleElement module, INEDTypeInfo moduleType) {
+	protected void doTraverse(SubmoduleElementEx module, INEDTypeInfo moduleEffectiveType) {
 		// enter module
-		visitedTypes.push(moduleType);
-		visitor.enter(module, moduleType);
+		visitedTypes.push(moduleEffectiveType);
+		visitor.enter(module, moduleEffectiveType);
 
 		// traverse submodules
-		for (INEDElement node : moduleType.getSubmodules().values()) {
-			// dig out type info (NED declaration)
-			SubmoduleElement submodule = (SubmoduleElement) node;
-			String submoduleTypeName = resolveTypeName(submodule);
-			INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.lookupNedType(submoduleTypeName, null);
+		if (moduleEffectiveType.getNEDElement() instanceof CompoundModuleElementEx) {
+			CompoundModuleElementEx moduleAsCompound = (CompoundModuleElementEx)moduleEffectiveType.getNEDElement();
+			for (SubmoduleElementEx submodule : moduleEffectiveType.getSubmodules().values()) {
+				// dig out type info (NED declaration)
+				String submoduleTypeName = resolveEffectiveTypeName(submodule);
+				INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : nedResources.lookupNedType(submoduleTypeName, moduleAsCompound);
 
-			// recursive call
-			if (submoduleType == null)
-				visitor.unresolvedType(submodule, submoduleTypeName);
-			else if (visitedTypes.contains(submoduleType)) // circle detection
-				visitor.recursiveType(submodule, submoduleType);
-			else
-				doTraverse(submodule, submoduleType);
+				// recursive call
+				if (submoduleType == null)
+					visitor.unresolvedType(submodule, submoduleTypeName);
+				else if (visitedTypes.contains(submoduleType)) // cycle detection
+					visitor.recursiveType(submodule, submoduleType);
+				else
+					doTraverse(submodule, submoduleType);
+			}
 		}
 
 		// leave module
@@ -84,13 +86,16 @@ public class NEDTreeTraversal {
 		visitedTypes.pop();
 	}
 
-	protected String resolveTypeName(SubmoduleElement submodule) {
+	/**
+	 * The returned type name can be null or empty, and can be a short name which
+	 * needs to be looked up in the enclosing compound module's context.
+	 */
+	protected String resolveEffectiveTypeName(SubmoduleElementEx submodule) {
 		String submoduleTypeName = submodule.getType();
 		if (StringUtils.isEmpty(submoduleTypeName)) {
 			submoduleTypeName = visitor.resolveLikeType(submodule);
-			if (submoduleTypeName==null) {
-				submoduleTypeName = submodule.getLikeType(); //XXX why???? use the interface if actual module type is not available
-			}
+			if (submoduleTypeName == null)
+				submoduleTypeName = submodule.getLikeType();
 		}
 		return submoduleTypeName;
 	}

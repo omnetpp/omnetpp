@@ -49,8 +49,8 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 
 /**
@@ -341,8 +341,8 @@ public class ModuleParametersView extends AbstractModuleView {
 		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
 			ParamResolution[] pars = null;
-			if (module instanceof SubmoduleElement)
-				pars = InifileAnalyzer.collectParameters((SubmoduleElement)module).toArray(new ParamResolution[]{});
+			if (module instanceof SubmoduleElementEx)
+				pars = InifileAnalyzer.collectParameters((SubmoduleElementEx)module).toArray(new ParamResolution[]{});
 			else if (module instanceof INedTypeElement)
 				pars = InifileAnalyzer.collectParameters(((INedTypeElement)module).getNEDTypeInfo()).toArray(new ParamResolution[]{});
 			if (pars == null) {

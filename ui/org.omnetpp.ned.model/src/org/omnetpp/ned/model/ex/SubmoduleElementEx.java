@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
+import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -80,7 +80,7 @@ public class SubmoduleElementEx extends SubmoduleElement
      *
      * @param submoduleType  a CompoundModuleElementEx or a SimpleModuleElementEx
      */
-    public DisplayString getDisplayString(IModuleTypeElement submoduleType) {
+    public DisplayString getDisplayString(IModuleKindTypeElement submoduleType) {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
     	displayString.setFallbackDisplayString(submoduleType.getDisplayString());
@@ -88,7 +88,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     }
 
 	/**
-	 * Returns the compound module containing the definition of this connection
+	 * Returns the compound module containing the definition of this submodule
 	 */
 	public CompoundModuleElementEx getCompoundModule() {
         INEDElement parent = getParent();
@@ -131,7 +131,7 @@ public class SubmoduleElementEx extends SubmoduleElement
 	public INEDTypeInfo getNEDTypeInfo() {
     	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
     	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
-		return (typeElement instanceof IModuleTypeElement || typeElement instanceof ModuleInterfaceElementEx) ? typeInfo : null;
+		return (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
     }
 
     public INedTypeElement getEffectiveTypeRef() {

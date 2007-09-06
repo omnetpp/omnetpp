@@ -308,10 +308,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext context) {
 		rehashIfNeeded();
-		if (context == null) {
-			NEDResourcesPlugin.logError(new IllegalArgumentException("lookupNedType(): called with context==null!!!"));
-			return components.get(name); //FIXME temp fix, remove it!!!!
-		}
+		Assert.isTrue(context!=null, "lookupNedType() cannot be called with context==null");
 
 		// context is a compound module, so it may be an inner type
 		if (context instanceof CompoundModuleElementEx) {

@@ -9,6 +9,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
@@ -225,7 +226,7 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
     public INEDTypeInfo getNEDTypeInfo() {
     	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
     	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
-		return (typeElement instanceof ChannelElementEx || typeElement instanceof ChannelInterfaceElementEx) ? typeInfo : null;
+		return (typeElement instanceof IChannelKindTypeElement) ? typeInfo : null;
     }
 
     public INedTypeElement getEffectiveTypeRef() {

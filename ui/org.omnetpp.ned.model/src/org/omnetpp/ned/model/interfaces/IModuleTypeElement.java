@@ -6,5 +6,5 @@ package org.omnetpp.ned.model.interfaces;
  *
  * @author Andras
  */
-public interface IModuleTypeElement extends INedTypeElement, IHasGates {
+public interface IModuleTypeElement extends IModuleKindTypeElement {
 }

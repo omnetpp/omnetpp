@@ -42,7 +42,6 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * This is a layer above IInifileDocument, and contains info about the
@@ -634,7 +633,7 @@ public class InifileAnalyzer {
 	/**
 	 * Collects parameters of a submodule subtree, *without* an inifile present.  
 	 */
-	public static List<ParamResolution> collectParameters(SubmoduleElement submodule) {
+	public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
@@ -644,14 +643,14 @@ public class InifileAnalyzer {
 
 	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final ArrayList<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
 		return new IModuleTreeVisitor() {
-			Stack<SubmoduleElement> pathModules = new Stack<SubmoduleElement>();
+			Stack<SubmoduleElementEx> pathModules = new Stack<SubmoduleElementEx>();
 			Stack<String> fullPathStack = new Stack<String>();
 
-			public void enter(SubmoduleElement submodule, INEDTypeInfo submoduleType) {
+			public void enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);
 				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
 				String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
-				SubmoduleElement[] pathModulesArray = pathModules.toArray(new SubmoduleElement[]{});
+				SubmoduleElementEx[] pathModulesArray = pathModules.toArray(new SubmoduleElementEx[]{});
 				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, doc);
 			}
 			public void leave() {
@@ -659,11 +658,11 @@ public class InifileAnalyzer {
 				pathModules.pop();
 			}
 
-			public void unresolvedType(SubmoduleElement submodule, String submoduleTypeName) {}
+			public void unresolvedType(SubmoduleElementEx submodule, String submoduleTypeName) {}
 
-			public void recursiveType(SubmoduleElement submodule, INEDTypeInfo submoduleType) {}
+			public void recursiveType(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {}
 
-			public String resolveLikeType(SubmoduleElement submodule) {
+			public String resolveLikeType(SubmoduleElementEx submodule) {
 				// Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
 				// resolveLikeParam() relies on the data structure we are currently building
 
@@ -693,7 +692,7 @@ public class InifileAnalyzer {
 		};
 	}
 
-	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleElement[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		SubmoduleElementEx submodule = (SubmoduleElementEx) pathModules[pathModules.length-1];
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
 			ParamElement paramDeclNode = moduleType.getParamDeclarations().get(paramName);
@@ -714,7 +713,7 @@ public class InifileAnalyzer {
 	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl?
 	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
 	 */
-	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode, String[] sectionChain, IInifileDocument doc) {
+	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleElementEx[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
 		String nedValue = paramValueNode==null ? null : paramValueNode.getValue();
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
@@ -18,7 +19,7 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  *
  * @author rhornig
  */
-public class ChannelElementEx extends ChannelElement implements INedTypeElement {
+public class ChannelElementEx extends ChannelElement implements IChannelKindTypeElement {
 
 	private INEDTypeInfo typeInfo;
 	protected DisplayString displayString = null;
