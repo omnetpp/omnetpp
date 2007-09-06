@@ -89,32 +89,42 @@ public interface INEDTypeResolver {
     public INEDElement getNedElementAt(INEDElement parent, int line, int column);
     
     /**
-	 * Returns all components in the NED files.
+	 * Returns all toplevel (non-inner) types in the NED files, excluding 
+	 * duplicate names.
 	 */
 	public Collection<INEDTypeInfo> getAllNedTypes();
 
     /**
-     * Returns all VALID component names in the NED files.
-	 * Returned names are fully qualified.
+     * Returns all toplevel (non-inner) type names in the NED files, excluding 
+     * duplicate names. Returned names are fully qualified.
      */
     public Set<String> getAllNedTypeQNames();
 
     /**
-     * Returns all VALID component names in the NED files where the predicate matches.
+     * Returns all toplevel (non-inner) type names in the NED files where 
+     * the predicate matches, excluding duplicate names.
 	 * Returned names are fully qualified.
      */
     public Set<String> getNedTypeQNames(IPredicate predicate);
 
     /**
-     * Returns ALL component names in the NED files, including duplicates.
-	 * Returned names are fully qualified.
+     * Returns ALL toplevel (non-inner) type names in the NED files, 
+     * including duplicate names. This method can be used for generating
+     * unique type names. Returned names are fully qualified.
      */
     public Set<String> getReservedQNames();
 
     /**
-     * Return a NED type from its fully qualified name. Returns null if not found.
+     * Return a NED type from its fully qualified name. Inner types are
+     * NOT recognized. Returns null if not found.
      */
     public INEDTypeInfo getNedType(String qualifiedName);
+
+	/**
+     * Return a NED type from its fully qualified name, whether toplevel
+     * or inner type. Returns null if not found.
+	 */
+    public INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName);
 
     /**
 	 * Looks up the name in the given context, and returns the NED type info,
@@ -127,43 +137,44 @@ public interface INEDTypeResolver {
 
 	/**
 	 * Return all NED type names visible in the given context without
-	 * fully qualifying them. Returned names are short names (NOT fully qualified).
+	 * fully qualifying them, including inner types. 
+	 * Returned names are short names (NOT qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context);
 
 	/**
 	 * Return all NED type names matching the predicate, and visible in the given
-	 * context without fully qualifying them. Returned names are short names
-	 * (NOT fully qualified).
+	 * context without fully qualifying them, including inner types. 
+	 * Returned names are short names (NOT qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
 
     /**
-	 * Returns all module names in the NED files.
+	 * Returns all valid toplevel (non-inner) module names in the NED files.
 	 * Returned names are fully qualified.
 	 */
 	public Set<String> getModuleQNames();
 
     /**
-	 * Returns all network names in the NED files.
+	 * Returns all valid toplevel (non-inner) network names in the NED files.
 	 * Returned names are fully qualified.
 	 */
 	public Set<String> getNetworkQNames();
 
 	/**
-	 * Returns all channel names in the NED files.
+	 * Returns all valid toplevel (non-inner) channel names in the NED files.
 	 * Returned names are fully qualified.
 	 */
 	public Set<String> getChannelQNames();
 
 	/**
-	 * Returns all module interface names in the NED files.
+	 * Returns all valid toplevel (non-inner) module interface names in the NED files.
 	 * Returned names are fully qualified.
 	 */
 	public Set<String> getModuleInterfaceQNames();
 
 	/**
-	 * Returns all channel interface names in the NED files.
+	 * Returns all valid toplevel (non-inner) channel interface names in the NED files.
 	 * Returned names are fully qualified.
 	 */
 	public Set<String> getChannelInterfaceQNames();

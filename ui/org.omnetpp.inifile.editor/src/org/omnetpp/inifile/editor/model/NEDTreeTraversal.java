@@ -30,7 +30,7 @@ public class NEDTreeTraversal {
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
 	public void traverse(String fullyQualifiedModuleTypeName) {
-		INEDTypeInfo moduleType = nedResources.getNedType(fullyQualifiedModuleTypeName);
+		INEDTypeInfo moduleType = nedResources.getToplevelOrInnerNedType(fullyQualifiedModuleTypeName);
 		if (moduleType==null)
 			visitor.unresolvedType(null, fullyQualifiedModuleTypeName);
 		else

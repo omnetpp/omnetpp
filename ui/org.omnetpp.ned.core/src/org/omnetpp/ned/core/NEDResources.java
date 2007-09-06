@@ -306,6 +306,21 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return components.get(qualifiedName);
 	}
 
+	public synchronized INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName) {
+		rehashIfNeeded();
+		INEDTypeInfo typeInfo = components.get(qualifiedName); // try as toplevel type 
+		if (typeInfo == null && qualifiedName.contains(".")) {
+			// try as inner type
+			INEDTypeInfo enclosingType = components.get(StringUtils.substringBeforeLast(qualifiedName, "."));
+			if (enclosingType != null) {
+				INedTypeElement innerType = enclosingType.getInnerTypes().get(StringUtils.substringAfterLast(qualifiedName, "."));
+				if (innerType != null)
+					typeInfo = innerType.getNEDTypeInfo();
+			}
+		}
+		return typeInfo;
+	}
+
     public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext context) {
 		rehashIfNeeded();
 		Assert.isTrue(context!=null, "lookupNedType() cannot be called with context==null");
