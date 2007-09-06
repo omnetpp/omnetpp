@@ -10,24 +10,41 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
 
 
 /**
- * Auto indent line strategy sensitive to brackets.
+ * Auto-indent strategy for the NED language.
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 	public NedAutoIndentStrategy() {
 	}
+
+//	@Override
+//	public void customizeDocumentCommand(IDocument doc, DocumentCommand command) {
+//		try {
+//			if (command.length != 0) return; // we ignore deletions/replacements
+//			if (endsWithDelimiter(doc, command.text)) {
+//			}
+//			if (command.text.endsWith("}") || command.text.endsWith(":")) {
+//				int line = doc.getLineOfOffset(command.offset);
+//				String indentedLine = CorrectIndentationAction.getReindentedLines(doc, line, line);
+//				String newIndent = CorrectIndentationAction.getIndent(indentedLine);
+//				command.addCommand(doc.getLineOffset(line), doc.getLineLength(line), indentedLine, null);
+//			}
+//		} catch (BadLocationException e) {
+//		}
+//	}
+
 	
 	/* (non-Javadoc)
 	 * Method declared on IAutoIndentStrategy
 	 */
 	@Override
-	public void customizeDocumentCommand(IDocument d, DocumentCommand c) {
-		if (c.length == 0 && c.text != null && endsWithDelimiter(d, c.text))
-			smartIndentAfterNewLine(d, c);
-		else if ("}".equals(c.text)) { 
-			smartInsertAfterBracket(d, c);
+	public void customizeDocumentCommand(IDocument doc, DocumentCommand command) {
+		if (command.length == 0 && command.text != null && endsWithDelimiter(doc, command.text))
+			smartIndentAfterNewLine(doc, command);
+		else if ("}".equals(command.text)) { 
+			smartInsertAfterBracket(doc, command);
 		}
 	}
 	

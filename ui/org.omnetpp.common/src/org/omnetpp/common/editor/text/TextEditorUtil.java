@@ -6,6 +6,8 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
+import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
@@ -14,20 +16,44 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @author Andras
  */
 public class TextEditorUtil {
+	/** 
+	 * Returns the document for the given text editor.
+	 */
 	public static IDocument getDocument(ITextEditor editor) {
 		return editor.getDocumentProvider().getDocument(editor.getEditorInput());
 	}
 	
+	/**
+	 * Replaces the given region in the text editor's document, and optionally selects
+	 * the replaced region (if it's more than one line). Includes resetMarkerAnnotations().
+	 */
 	public static void replaceRangeAndSelect(ITextEditor editor, int startOffset, int endOffset, String replacement, boolean selectUnlessOneLine) throws BadLocationException {
 		// replace if differs
 		IDocument doc = getDocument(editor);
 		String text = doc.get(startOffset, endOffset-startOffset);
-		if (!text.equals(replacement))
+		if (!text.equals(replacement)) {
 			doc.replace(startOffset, endOffset-startOffset, replacement);
+			resetMarkerAnnotations(editor);  // or markers will disappear from replaced region
+		}
 
 		// select it unless it's one line only
 		if (selectUnlessOneLine && doc.getLineOfOffset(startOffset) != doc.getLineOfOffset(endOffset-1))
 			editor.selectAndReveal(startOffset, replacement.length());
+	}
+
+	/**
+	 * Needs to be called after modifying text editor contents via IDocument.replace(), 
+	 * otherwise marker annotations will disappear from replaced regions.
+     *
+	 * This function re-reads markers from the editor's underlying IFile, and synchronizes 
+	 * them onto the marker annotations of the text editor. 
+	 */
+	public static void resetMarkerAnnotations(ITextEditor editor) {
+		IAnnotationModel model = editor.getDocumentProvider().getAnnotationModel(editor.getEditorInput());
+		if (model instanceof AbstractMarkerAnnotationModel) {
+			AbstractMarkerAnnotationModel markerModel = (AbstractMarkerAnnotationModel) model;
+			markerModel.resetMarkers();
+		}
 	}
 
 	/**

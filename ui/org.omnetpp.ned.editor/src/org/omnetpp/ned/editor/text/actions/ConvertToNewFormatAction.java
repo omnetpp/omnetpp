@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.text.actions;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
 
+import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -37,7 +38,8 @@ public class ConvertToNewFormatAction extends NedTextEditorAction {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         NEDTreeUtil.cleanupPojoTree(model);
-        ((TextualNedEditor)getTextEditor()).setText(NEDTreeUtil.generateNedSource(model, false));
+        TextEditorUtil.getDocument(getTextEditor()).set(NEDTreeUtil.generateNedSource(model, false));
+        TextEditorUtil.resetMarkerAnnotations(getTextEditor());
     }
 
 }

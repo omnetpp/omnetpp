@@ -2,7 +2,6 @@ package org.omnetpp.ned.editor.text.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
-
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -31,7 +30,7 @@ public class FormatSourceAction extends NedTextEditorAction {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
         NEDTreeUtil.cleanupPojoTree(model);
-        ((TextualNedEditor)getTextEditor()).setText(model.getNEDSource());
+        ((TextualNedEditor)getTextEditor()).pullChangesFromNEDResources();
     }
 
     protected NedFileElementEx getNedFileElement() {

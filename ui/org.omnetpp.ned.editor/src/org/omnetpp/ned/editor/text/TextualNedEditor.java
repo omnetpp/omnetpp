@@ -31,9 +31,9 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
+import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -425,6 +425,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 				System.out.println("texteditor: pulling changes from NEDResources");
 				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
 						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getNEDSource());
+				TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing  
 				//XXX then parse in again, and update line numbers with the resulting tree?
 			}
 		});
