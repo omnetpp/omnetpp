@@ -2,52 +2,48 @@ package org.omnetpp.ide.properties;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
-import org.eclipse.ui.dialogs.ISelectionValidator;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
  * This property page is shown for OMNeT++ Projects (projects with the
- * omnetpp nature), and lets the user edit the contents of the ".nedpath" 
+ * omnetpp nature), and lets the user edit the contents of the ".nedfolders" 
  * file.
  *
  * @author Andras
  */
-//XXX rewrite the whole dialog to use a TableViewer ??
 public class NEDSourceFoldersPropertyPage extends PropertyPage {
-	private static final String NEDPATH_FILENAME = ".nedpath";
+	private static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
-	private List list;
-	private Button add;
-	private Button remove;
+	private CheckboxTreeViewer treeViewer;
 
 	/**
 	 * Constructor.
@@ -70,43 +66,38 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		label.setText("NED source folders in project " + project.getName() + ":");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 		
-		list = new List(composite, SWT.BORDER);
-		list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 2));
-		((GridData)list.getLayoutData()).heightHint = 150;
-
-		add = new Button(composite, SWT.NONE);
-		add.setText("Add");
-		add.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
-		add.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-						Display.getCurrent().getActiveShell(), 
-						project, false, "Select a folder as NED Source Folder:");
-				dialog.setValidator(new ISelectionValidator() {
-					public String isValid(Object selection) {
-						IContainer container = getContainer((IPath)selection);
-						return validate(container);
-					}
-				});
-				if (dialog.open() == Window.OK) {
-					Object result = dialog.getResult()[0];
-					IContainer container = getContainer((IPath)result);
-					String name = getProjectRelativePathOf(container);
-					list.add(name);
+		treeViewer = new CheckboxTreeViewer(composite, SWT.BORDER);
+		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		((GridData)treeViewer.getTree().getLayoutData()).heightHint = 300;
+		
+		treeViewer.setLabelProvider(new WorkbenchLabelProvider());
+		
+		treeViewer.setContentProvider(new WorkbenchContentProvider() {
+	        @Override
+	        public Object[] getChildren(Object element) {
+	            List<Object> filteredChildren = new ArrayList<Object>();
+	            for (Object child : super.getChildren(element)) {
+	                if (child==project || child instanceof IFolder)
+	                    filteredChildren.add(child);
+	            }
+	            return filteredChildren.toArray();
+	        }
+	    });
+	
+		treeViewer.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				if (event.getChecked()) {
+			        // when a folder is checked, uncheck its subtree and all parents up to the root  
+					IResource e = (IResource)event.getElement();
+					treeViewer.setSubtreeChecked(e, false);
+					treeViewer.setChecked(e, true);
+				    for (IResource current=e.getParent(); current!=null; current=current.getParent())
+				    	treeViewer.setChecked(current, false);
 				}
 			}
 		});
 
-		remove = new Button(composite, SWT.NONE);
-		remove.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
-		remove.setText("Remove");
-		remove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				list.remove(list.getSelectionIndices());
-			}
-		});
+		treeViewer.setInput(project.getParent());
 
 		loadNedPathFile();
 		
@@ -114,7 +105,6 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 	}
 
 	protected void performDefaults() {
-		list.removeAll();
 	}
 	
 	public boolean performOk() {
@@ -123,12 +113,23 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 	}
 
 	private void loadNedPathFile() {
-		String contents = "";
 		try {
 			IProject project = (IProject) getElement();
-			IFile nedpathFile = project.getFile(NEDPATH_FILENAME);
+			IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
+			String contents = "";
 			if (nedpathFile.exists())
 				contents = FileUtils.readTextFile(nedpathFile.getContents());
+
+			for (String line : StringUtils.splitToLines(contents)) {
+				if (!StringUtils.isBlank(line)) {
+					IFolder folder = project.getFolder(line.trim());
+					treeViewer.setChecked(folder, true);
+				    for (IResource current=folder.getParent(); current!=null; current=current.getParent())
+				    	treeViewer.setExpandedState(current, true);
+				}
+			}
+			if (treeViewer.getCheckedElements().length == 0)
+				treeViewer.setChecked(project, true);
 		} 
 		catch (IOException e) {
 			errorDialog("Cannot read NED Source Paths: ", e);
@@ -136,66 +137,39 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 			errorDialog("Cannot read NED Source Paths: ", e);
 		}
 		
-		for (String line : StringUtils.splitToLines(contents))
-			if (!StringUtils.isBlank(line))
-				list.add(line.trim().replaceAll("^/*(.*?)/*$", "$1/"));
 	}
 
 	private void saveNedPathFile() {
 		try {
+			// assemble file content to save
+			String content = "";
+			for (Object element : treeViewer.getCheckedElements())
+				content += getProjectRelativePathOf((IContainer)element) + "\n";
+			
+			// save it
 			IProject project = (IProject) getElement();
-			IFile nedpathFile = project.getFile(NEDPATH_FILENAME);
-			String contents = StringUtils.join(list.getItems(), "\n") + "\n";
+			IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
 			if (!nedpathFile.exists())
-				nedpathFile.create(new ByteArrayInputStream(contents.getBytes()), IFile.FORCE, null);
+				nedpathFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
 			else
-				nedpathFile.setContents(new ByteArrayInputStream(contents.getBytes()), IFile.FORCE, null);
+				nedpathFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
 		} 
 		catch (CoreException e) {
-			errorDialog("Cannot store NED Source Paths: ", e);
+			errorDialog("Cannot store NED Source Folder list: ", e);
 		}
 	} 
 
 	private void errorDialog(String message, Throwable e) {
-		IStatus status = new Status(IMarker.SEVERITY_ERROR, "", e.getMessage(), e); //XXX pluginID
+		IStatus status = new Status(IMarker.SEVERITY_ERROR, "org.omnetpp.main", e.getMessage(), e);
 		ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
 	}
 
-	private String validate(IContainer container) {
-		// validate if it's good for us
-		IProject project = (IProject) getElement();
-		if (container.getProject() != project)
-			return "Selection must be within project \"" + project.getName() + "\"";
-		
-		// overlap check.
-		// NOTE: this relies on trailing and leading "/"'s being exactly as they are now!
-		//FIXME check containment using the IResource API, not string comparison which is fragile!
-		String containerName = getProjectRelativePathOf(container);
-		for (String listItem : list.getItems())
-			if (containerName.startsWith(listItem) || (listItem).startsWith(containerName))
-				return "Selection overlaps with folder \"" + listItem + "\""; 
-
-		return null;
-	}
-
 	private String getProjectRelativePathOf(IContainer container) {
-		// IMPORTANT: if you change this, overlap checks (in validate()) MUST be tested again!
 		Assert.isTrue(container != null);
 		IProject project = (IProject) getElement();
 		if (container == project)
-			return "/";
+			return "";
 		else
 			return StringUtils.removeStart(container.getFullPath().toString(), project.getFullPath().toString()+"/") + "/";
 	}
-
-	private IContainer getContainer(IPath path) {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		if (path.segmentCount() == 0)
-			return root;
-		else if (path.segmentCount() == 1)
-			return root.getProject(path.segment(0));
-		else
-			return root.getFolder(path);
-	}
-
 }

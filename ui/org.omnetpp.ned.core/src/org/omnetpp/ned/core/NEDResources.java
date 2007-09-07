@@ -1,5 +1,6 @@
 package org.omnetpp.ned.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -23,6 +25,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INEDElement;
@@ -86,6 +89,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     };
 
     private static final String NED_EXTENSION = "ned";
+	private static final String NEDFOLDERS_FILENAME = ".nedpath";
 
     // list of objects that listen on *all* NED changes
     private NEDChangeListenerList nedModelChangeListenerList = null;
@@ -120,7 +124,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // NED Source Folders for each project (contents of the .nedpath files)
     //FIXME use it!
-    private Map<IProject,List<String>> projectNedSourceFolders = new HashMap<IProject,List<String>>(); 
+    private Map<IProject,List<IFolder>> projectNedSourceFolders = new HashMap<IProject,List<IFolder>>(); 
 
     
     private DelayedJob validationJob = new DelayedJob(400) {
@@ -702,6 +706,26 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             nedModelChanged(new NEDModelChangeEvent(null));
         }
     }
+
+//	//FIXME
+    protected List<IFolder> loadNedPathFileFor(IProject project) {
+		try {
+			List<IFolder> result = new ArrayList<IFolder>();
+			IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
+			if (nedpathFile.exists()) {
+				String contents = FileUtils.readTextFile(nedpathFile.getContents());
+				for (String line : StringUtils.splitToLines(contents))
+					if (!StringUtils.isBlank(line))
+						result.add(project.getFolder(line.trim()));
+			}
+			return result;
+		} 
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     // ******************* notification helpers ************************************
 
