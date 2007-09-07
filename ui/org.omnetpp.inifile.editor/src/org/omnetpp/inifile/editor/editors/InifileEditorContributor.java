@@ -9,13 +9,13 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
-import org.eclipse.ui.ide.IDEActionFactory;
+import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
@@ -30,7 +30,7 @@ import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
-	private IEditorPart activeEditorPart;
+    TextEditorActionContributor textEdContributor = new TextEditorActionContributor();
 	private IAction addInifileKeysAction;
 	private RetargetAction undoAction;
 	private RetargetAction redoAction;
@@ -50,72 +50,35 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
         addInifileKeysAction =  new AddInifileKeysAction();
 	}
 
+	@Override
+	public void init(IActionBars bars, IWorkbenchPage page) {
+	    super.init(bars, page);
+	    textEdContributor.init(bars, page);
+	    // start with disabled actions
+	    textEdContributor.setActiveEditor(null);
+	}
+
     /* (non-JavaDoc)
 	 * Method declared in AbstractMultiPageEditorActionBarContributor.
 	 */
 	@Override
 	public void setActivePage(IEditorPart part) {
-		if (activeEditorPart == part)
-			return;
-		activeEditorPart = part;
 
-		IActionBars actionBars = getActionBars();
-		if (actionBars==null)
-			return;
 
-		// FIXME simplify this
+		// the rest of actions are enabled only if the active editor is a text editor
 		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
-		if (textEditor != null) {
-			actionBars.setGlobalActionHandler(
-				ActionFactory.DELETE.getId(),
-				textEditor.getAction(ITextEditorActionConstants.DELETE));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.UNDO.getId(),
-				textEditor.getAction(ITextEditorActionConstants.UNDO));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.REDO.getId(),
-				textEditor.getAction(ITextEditorActionConstants.REDO));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.CUT.getId(),
-				textEditor.getAction(ITextEditorActionConstants.CUT));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.COPY.getId(),
-				textEditor.getAction(ITextEditorActionConstants.COPY));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.PASTE.getId(),
-				textEditor.getAction(ITextEditorActionConstants.PASTE));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.SELECT_ALL.getId(),
-				textEditor.getAction(ITextEditorActionConstants.SELECT_ALL));
-			actionBars.setGlobalActionHandler(
-				ActionFactory.FIND.getId(),
-				textEditor.getAction(ITextEditorActionConstants.FIND));
-			actionBars.setGlobalActionHandler(
-				IDEActionFactory.BOOKMARK.getId(),
-				textEditor.getAction(IDEActionFactory.BOOKMARK.getId()));
-		}
-		else {
-			// form page selected: activate text editor's undo/redo support here as well
-			InifileEditor multipageEditor = (InifileEditor) getPage().getActiveEditor();
-			actionBars.setGlobalActionHandler(
-					ActionFactory.UNDO.getId(),
-					multipageEditor.getTextEditor().getAction(ITextEditorActionConstants.UNDO));
-			actionBars.setGlobalActionHandler(
-					ActionFactory.REDO.getId(),
-					multipageEditor.getTextEditor().getAction(ITextEditorActionConstants.REDO));
+		textEdContributor.setActiveEditor(part);
 
-			// deactivate the others
-			actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), null);
-			actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), null);
-			actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), null);
-			actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), null);
-			actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), null);
-			actionBars.setGlobalActionHandler(ActionFactory.FIND.getId(), null);
-			actionBars.setGlobalActionHandler(IDEActionFactory.BOOKMARK.getId(), null);
+		// the UNDO/REDO is always redirected to the text editor
+		InifileEditor multipageEditor = (InifileEditor) getPage().getActiveEditor();
+		if (multipageEditor != null) {
+		    setTextEditorGlobalActionHandler(ActionFactory.UNDO.getId(), multipageEditor.getTextEditor());
+		    setTextEditorGlobalActionHandler(ActionFactory.REDO.getId(), multipageEditor.getTextEditor());
 		}
+
         fContentAssistProposal.setAction(getAction(textEditor, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS));
         fToggleCommentAction.setAction(getAction(textEditor, ToggleCommentAction.ID));
-		actionBars.updateActionBars();
+		getActionBars().updateActionBars();
 	}
 
 
@@ -135,11 +98,10 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
 
-		// FIXME use the utility function (createReaargetAction)
+		// FIXME maybe we could use the default Undo/redo
 		undoAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
 		redoAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
 
-		// fixme get it from resources
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
     	undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
     	undoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
@@ -163,6 +125,9 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
         redoAction.dispose();
     }
 
+    /**
+     * Creates a retargetable action based on the id (name and icon is taken from the resource bundle)
+     */
     private static RetargetTextEditorAction createRetargetAction(String id) {
         RetargetTextEditorAction action = new RetargetTextEditorAction(InifileEditorMessages.getResourceBundle(), id+".");
         action.setActionDefinitionId(InifileTextEditorAction.ACTION_DEFINITION_PREFIX + id);
@@ -179,4 +144,13 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
     protected final IAction getAction(ITextEditor editor, String actionId) {
         return (editor == null || actionId == null ? null : editor.getAction(actionId));
     }
+
+    /**
+     * Sets the globalActionHandler for the given action taken from the provided editor.
+     * If the editor is NULL the action handler will be removed
+     */
+    private void setTextEditorGlobalActionHandler(String id, ITextEditor editor) {
+        getActionBars().setGlobalActionHandler(id, getAction(editor, id));
+    }
+
 }

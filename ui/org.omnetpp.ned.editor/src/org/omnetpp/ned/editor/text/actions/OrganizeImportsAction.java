@@ -79,7 +79,7 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 			public void visit(INEDElement element) {
 				if (element instanceof IHasType) {
 					String effectiveType = ((IHasType)element).getEffectiveType();
-					if (!effectiveType.contains("."))
+					if (effectiveType != null && !effectiveType.contains("."))
 						result.add(effectiveType);
 				}
 			}
