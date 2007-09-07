@@ -61,17 +61,4 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+N"/>
    </extension>
-   <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            class="org.omnetpp.ned.core.properties.NEDSourceFoldersPropertyPage"
-            id="org.omnetpp.ned.core.properties.NEDSourceFolders"
-            name="NED Source Folders">
-         <enabledWhen>
-             <adapt type="org.eclipse.core.resources.IProject">
-                  <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
-             </adapt>         
-         </enabledWhen>
-      </page>
-   </extension>
 </plugin>
