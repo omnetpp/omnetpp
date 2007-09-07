@@ -41,6 +41,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//XXX rewrite the whole dialog to use a TableViewer ??
 public class NEDSourceFoldersPropertyPage extends PropertyPage {
 	private static final String NEDPATH_FILENAME = ".nedpath";
 
@@ -137,7 +138,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		
 		for (String line : StringUtils.splitToLines(contents))
 			if (!StringUtils.isBlank(line))
-				list.add(line.trim());
+				list.add(line.trim().replaceAll("^/*(.*?)/*$", "$1/"));
 	}
 
 	private void saveNedPathFile() {
@@ -168,6 +169,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		
 		// overlap check.
 		// NOTE: this relies on trailing and leading "/"'s being exactly as they are now!
+		//FIXME check containment using the IResource API, not string comparison which is fragile!
 		String containerName = getProjectRelativePathOf(container);
 		for (String listItem : list.getItems())
 			if (containerName.startsWith(listItem) || (listItem).startsWith(containerName))
@@ -181,7 +183,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		Assert.isTrue(container != null);
 		IProject project = (IProject) getElement();
 		if (container == project)
-			return ".";
+			return "/";
 		else
 			return StringUtils.removeStart(container.getFullPath().toString(), project.getFullPath().toString()+"/") + "/";
 	}
