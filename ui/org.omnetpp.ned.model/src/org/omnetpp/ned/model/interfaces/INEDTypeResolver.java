@@ -3,6 +3,7 @@ package org.omnetpp.ned.model.interfaces;
 import java.util.Collection;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.omnetpp.ned.model.INEDElement;
@@ -55,15 +56,14 @@ public interface INEDTypeResolver {
      */
 	public IFile getNedFile(NedFileElementEx nedFileElement);
 
-    /**
-     * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text
-     * if the file has parse errors; one can call containsNEDErrors() to find out
-     * if that is the case.
-     *
-     * @param file - must not be null
-     */
-    public String getNedFileText(IFile file);
-
+ 	/**
+	 * Returns the NED source folder for the given NED file. Returns null if the 
+	 * file is outside the project's NED source folders, or the project itself
+	 * does not have the OMNeT++ nature, or that nature is disabled (see 
+	 * IProject.isNatureEnabled() on why a nature might be disabled.)
+	 */
+    public IContainer getNedSourceFolderFor(IFile file);
+    
 	/**
 	 * Returns the markers for the given element and its subtree.
 	 *

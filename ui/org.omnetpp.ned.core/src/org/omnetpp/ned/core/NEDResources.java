@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -19,6 +20,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -58,38 +60,18 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
  * Parses all NED files in the workspace and makes them available for other
  * plugins for consistency checks among NED files etc.
  *
- * It listens to workspace resource changes and modifies it content based on
+ * It listens to workspace resource changes and modifies its content based on
  * change notifications.
  *
  * @author andras
  */
+//XXX listen on changes to the ".nedfolders" files!
+//XXX what should editors do when their input file is not (no longer) in a NED source folder (isNedFile()==false) ??
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
-
-    // filters for component access with getAllComponentsFilteredBy
-    public static class InstanceofPredicate implements IPredicate {
-    	private Class<? extends INedTypeElement> clazz;
-    	public InstanceofPredicate(Class<? extends INedTypeElement> clazz) {
-    		this.clazz = clazz;
-    	}
-        public boolean matches(INEDTypeInfo component) {
-            return clazz.isInstance(component.getNEDElement());
-        }
-    };
-    public static final IPredicate MODULE_FILTER = new InstanceofPredicate(IModuleTypeElement.class);
-    public static final IPredicate SIMPLE_MODULE_FILTER = new InstanceofPredicate(SimpleModuleElementEx.class);
-    public static final IPredicate COMPOUND_MODULE_FILTER = new InstanceofPredicate(CompoundModuleElementEx.class);
-    public static final IPredicate MODULEINTERFACE_FILTER = new InstanceofPredicate(ModuleInterfaceElementEx.class);
-    public static final IPredicate CHANNEL_FILTER = new InstanceofPredicate(ChannelElementEx.class);
-    public static final IPredicate CHANNELINTERFACE_FILTER = new InstanceofPredicate(ChannelInterfaceElementEx.class);
-    public static final IPredicate NETWORK_FILTER = new IPredicate() {
-        public boolean matches(INEDTypeInfo component) {
-            return component.getNEDElement() instanceof CompoundModuleElementEx &&
-                   ((CompoundModuleElementEx)component.getNEDElement()).getIsNetwork();
-        }
-    };
-
+	
+	private static final String OMNETPP_NATURE = "org.omnetpp.main.omnetppnature";
     private static final String NED_EXTENSION = "ned";
-	private static final String NEDFOLDERS_FILENAME = ".nedpath";
+	private static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
     // list of objects that listen on *all* NED changes
     private NEDChangeListenerList nedModelChangeListenerList = null;
@@ -122,11 +104,34 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private boolean nedModelChangeNotificationDisabled = false;
 
-    // NED Source Folders for each project (contents of the .nedpath files)
-    //FIXME use it!
+    // NED Source Folders for each project (contents of the .nedfolders files)
     private Map<IProject,List<IFolder>> projectNedSourceFolders = new HashMap<IProject,List<IFolder>>(); 
 
-    
+	
+    // utilities for predicate-based filtering of NED types using getAllNedTypes()
+    public static class InstanceofPredicate implements IPredicate {
+    	private Class<? extends INedTypeElement> clazz;
+    	public InstanceofPredicate(Class<? extends INedTypeElement> clazz) {
+    		this.clazz = clazz;
+    	}
+        public boolean matches(INEDTypeInfo component) {
+            return clazz.isInstance(component.getNEDElement());
+        }
+    };
+    public static final IPredicate MODULE_FILTER = new InstanceofPredicate(IModuleTypeElement.class);
+    public static final IPredicate SIMPLE_MODULE_FILTER = new InstanceofPredicate(SimpleModuleElementEx.class);
+    public static final IPredicate COMPOUND_MODULE_FILTER = new InstanceofPredicate(CompoundModuleElementEx.class);
+    public static final IPredicate MODULEINTERFACE_FILTER = new InstanceofPredicate(ModuleInterfaceElementEx.class);
+    public static final IPredicate CHANNEL_FILTER = new InstanceofPredicate(ChannelElementEx.class);
+    public static final IPredicate CHANNELINTERFACE_FILTER = new InstanceofPredicate(ChannelInterfaceElementEx.class);
+    public static final IPredicate NETWORK_FILTER = new IPredicate() {
+        public boolean matches(INEDTypeInfo component) {
+            return component.getNEDElement() instanceof CompoundModuleElementEx &&
+                   ((CompoundModuleElementEx)component.getNEDElement()).getIsNetwork();
+        }
+    };
+
+    // delayed validation job
     private DelayedJob validationJob = new DelayedJob(400) {
 		public void run() {
 			DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
@@ -137,6 +142,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
     };
 
+    // listener, so that we don't need to make our nedModelChanged() method public
     private INEDChangeListener nedModelChangeListener = new INEDChangeListener() {
     	public void modelChanged(NEDModelEvent event) {
     		nedModelChanged(event);
@@ -186,14 +192,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	Assert.isTrue(nedElementFiles.containsKey(nedFileElement) || nedFileElement==builtInDeclarationsFile, "NedFileElement is not in the resolver");
 		return nedElementFiles.get(nedFileElement);
 	}
-
-    /**
-     * Returns the textual (reformatted) content of the NED file, generated
-     * from the model that belongs to the given file.
-     */
-    public synchronized String getNedFileText(IFile file) {
-        return NEDTreeUtil.generateNedSource(getNedFileElement(file), true);
-    }
 
     /**
      * NED text editors should call this when editor content changes.
@@ -420,12 +418,35 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * Determines if a resource is a NED file, that is, if it should be parsed.
+     * It checks the file extension (".ned"), and whether the file is in one of
+     * the NED source folders designated for the project.
      */
-    public static boolean isNEDFile(IResource resource) {
-        // TODO should only regard files within a folder designated as "source
-        // folder" (persistent attribute!)
-        return resource instanceof IFile && NED_EXTENSION.equalsIgnoreCase(((IFile) resource).getFileExtension());
+    public boolean isNEDFile(IResource resource) {
+    	return (resource instanceof IFile && 
+    			NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) && 
+    			getNedSourceFolderFor((IFile)resource) != null);
     }
+
+    public IContainer getNedSourceFolderFor(IFile file) {
+		IProject project = file.getProject();
+		try {
+			if (!project.isNatureEnabled(OMNETPP_NATURE))
+				return null;  // missing project nature
+		} 
+		catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+		
+		List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
+    	if (nedSourceFolders == null || nedSourceFolders.isEmpty())
+    		return project;  // default source folder is the project
+    	
+    	for (IContainer container = file.getParent(); container != project; container = container.getParent())
+    		if (nedSourceFolders.contains(container))
+    			return container;
+
+    	return null;
+	}
 
     /**
      * NED editors should call this when they get opened.
@@ -468,6 +489,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private synchronized void readNEDFile(IFile file, ProblemMarkerSynchronizer markerSync) {
     	Assert.isTrue(!hasConnectedEditor(file));
+    	//Note: the following is a bad idea, because of undefined startup order: the editor calling us might run sooner than readAllNedFiles()
+    	//Assert.isTrue(isNEDFile(file), "file is outside the NED source folders, or not a NED file at all");
 
         System.out.println("reading from disk: " + file.toString());
 
@@ -687,7 +710,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // disable all ned model notifications until all files have been processed
             nedModelChangeNotificationDisabled = true;
             debugRehashCounter = 0;
-            IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+            IWorkspaceRoot wsroot = ResourcesPlugin.getWorkspace().getRoot();
+            
+            // read all .nedfolders files first (isNEDFile() relies on them)
+            projectNedSourceFolders.clear();
+            for (IProject project : wsroot.getProjects())
+            	projectNedSourceFolders.put(project, determineNedFoldersFor(project));
+            
+            // read NED files
             final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             wsroot.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
@@ -698,7 +728,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             });
             sync.runAsWorkspaceJob();
             rehashIfNeeded();
-        } catch (CoreException e) {
+        } 
+        catch (CoreException e) {
             NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
             nedModelChangeNotificationDisabled = false;
@@ -707,17 +738,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-//	//FIXME
-    protected List<IFolder> loadNedPathFileFor(IProject project) {
+    protected List<IFolder> determineNedFoldersFor(IProject project) {
 		try {
 			List<IFolder> result = new ArrayList<IFolder>();
-			IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
-			if (nedpathFile.exists()) {
-				String contents = FileUtils.readTextFile(nedpathFile.getContents());
+			IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
+			if (nedFoldersFile.exists()) {
+				String contents = FileUtils.readTextFile(nedFoldersFile.getContents());
 				for (String line : StringUtils.splitToLines(contents))
 					if (!StringUtils.isBlank(line))
 						result.add(project.getFolder(line.trim()));
 			}
+			System.out.println("Project "+ project.getName() + " NED source folders: " + StringUtils.join(result, ", "));
 			return result;
 		} 
 		catch (IOException e) {

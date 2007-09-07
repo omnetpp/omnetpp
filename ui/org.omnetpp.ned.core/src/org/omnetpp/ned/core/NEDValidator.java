@@ -2,7 +2,10 @@ package org.omnetpp.ned.core;
 
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
@@ -125,7 +128,39 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 	@Override
     protected void validateElement(NedFileElementEx node) {
+		// check it's in the right package
+		IFile file = resolver.getNedFile(node);
+		String expectedPackage = getExpectedPackageFor(file);
+		String declaredPackage = StringUtils.nullToEmpty(node.getPackage());
+		
+		if (expectedPackage != null && !expectedPackage.equals(declaredPackage)) {
+			INEDElement errorNode = node.getFirstPackageChild()!=null ? node.getFirstPackageChild() : node;
+			errors.addError(errorNode, "the declared package \""+declaredPackage+"\" does not match the expected package \"" + expectedPackage +"\"");
+		}
+		
 		validateChildren(node);
+	}
+
+	protected String getExpectedPackageFor(IFile file) {
+		IContainer sourceFolder = resolver.getNedSourceFolderFor(file);
+		if (sourceFolder == file.getParent() && file.getName().equals("package.ned"))
+			return null; // nothing is expected: this file defines the package
+		
+		// first half is the package declared in the root "package.ned" file 
+		String packagePrefix = "";
+		IFile packageNedFile = sourceFolder.getFile(new Path("package.ned"));
+		if (resolver.getNedFiles().contains(packageNedFile))
+			packagePrefix = resolver.getNedFileElement(packageNedFile).getQNameAsPrefix();
+		
+		// second half consists of the directories this file is down from the source folder
+		String fileFolderPath = StringUtils.join(file.getParent().getFullPath().segments(), ".");
+		String sourceFolderPath = StringUtils.join(sourceFolder.getFullPath().segments(), ".");
+		Assert.isTrue(fileFolderPath.startsWith(sourceFolderPath));
+		String packageSuffix = fileFolderPath.substring(sourceFolderPath.length());
+		if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.') 
+			packageSuffix = packageSuffix.substring(1);
+		
+		return packagePrefix + packageSuffix;
 	}
 
 	@Override
