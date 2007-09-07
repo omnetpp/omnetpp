@@ -191,17 +191,17 @@ startsymbol
  * Top-level components
  */
 nedfile
-        : packagedeclaration somedefinitions
-        | somedefinitions
+        : definitions
         ;
 
-somedefinitions
-        : somedefinitions definition
-        |
+definitions
+        : definitions definition
+        | definition
         ;
 
 definition
-        : import
+        : packagedeclaration
+        | import
         | propertydecl
         | fileproperty
         | channeldefinition
