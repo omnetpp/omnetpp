@@ -1,4 +1,4 @@
-package org.omnetpp.common.widget;
+package org.omnetpp.common.ui;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
@@ -31,11 +31,13 @@ public class EditableList extends Composite {
 
 		add = new Button(this, SWT.NONE);
 		add.setText("Add");
-		add.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		add.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		add.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), "Add element", "Please enter the data", "", null);
+				String addDialogTitle = "Add element";
+				String addDialogMessage = "Please enter the data";
+				InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", null);
 
 				if (dialog.open() == Window.OK) {
 					list.add(dialog.getValue());
@@ -44,7 +46,7 @@ public class EditableList extends Composite {
 		});
 
 		remove = new Button(this, SWT.NONE);
-		remove.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		remove.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		remove.setText("Remove");
 		remove.addSelectionListener(new SelectionAdapter() {
 			@Override

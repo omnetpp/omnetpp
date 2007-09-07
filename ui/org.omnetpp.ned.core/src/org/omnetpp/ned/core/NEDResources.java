@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -112,10 +113,16 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // to assert that the function is not called unnecessarily
     private int debugRehashCounter = 0;
 
+    // file element to contain built-in declarations (does not correspond to any physical file)
     private NedFileElementEx builtInDeclarationsFile;
 
     private boolean nedModelChangeNotificationDisabled = false;
 
+    // NED Source Folders for each project (contents of the .nedpath files)
+    //FIXME use it!
+    private Map<IProject,List<String>> projectNedSourceFolders = new HashMap<IProject,List<String>>(); 
+
+    
     private DelayedJob validationJob = new DelayedJob(400) {
 		public void run() {
 			DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
