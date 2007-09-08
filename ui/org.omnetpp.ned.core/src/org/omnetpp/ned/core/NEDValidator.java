@@ -455,7 +455,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			if (submoduleType == null)
 				errors.addError(node, "'"+likeTypeName+"': no such module interface type");
 			else if (!(submoduleType.getNEDElement() instanceof ModuleInterfaceElementEx))
-				errors.addError(node, "'"+typeName+"' is not a module interface type");
+				errors.addError(node, "'"+likeTypeName+"' is not a module interface type");
 		}
 		else {
 			errors.addError(node, "no type info for '"+name+"'");  // should never happen
@@ -586,7 +586,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			if (channelSpecType == null)
 				errors.addError(node, "'"+likeTypeName+"': no such channel or channel interface type");
 			else if (!(channelSpecType.getNEDElement() instanceof ChannelInterfaceElementEx))
-				errors.addError(node, "'"+typeName+"' is not a channel interface type");
+				errors.addError(node, "'"+likeTypeName+"' is not a channel interface type");
 		}
 		else {
 			// fallback: type is BasicChannel
