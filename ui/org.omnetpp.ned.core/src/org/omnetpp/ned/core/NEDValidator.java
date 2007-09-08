@@ -144,7 +144,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		
 		if (expectedPackage != null && !expectedPackage.equals(declaredPackage)) {
 			INEDElement errorNode = node.getFirstPackageChild()!=null ? node.getFirstPackageChild() : node;
-			errors.addError(errorNode, "the declared package \""+declaredPackage+"\" does not match the expected package \"" + expectedPackage +"\"");
+			errors.addError(errorNode, "declared package \""+declaredPackage+"\" does not match expected package \"" + expectedPackage +"\"");
 		}
 		
 		validateChildren(node);

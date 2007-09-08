@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -88,14 +89,22 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // number of editors connected to a given NED file
     private final Map<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 
-    // non-duplicate toplevel (non-inner) types; keys are fully qualified names
-    private final Map<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
+    static class ProjectData {
+    	// all projects we reference, directly or indirectly
+    	IProject[] referencedProjects;
+    	
+        // non-duplicate toplevel (non-inner) types; keys are fully qualified names
+        final Map<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
 
-    // duplicate toplevel (non-inner) types; keys are fully qualified names
-    private final Map<String, List<INedTypeElement>> duplicates = new HashMap<String, List<INedTypeElement>>();
+        // duplicate toplevel (non-inner) types; keys are fully qualified names
+        final Map<String, List<INedTypeElement>> duplicates = new HashMap<String, List<INedTypeElement>>();
 
-    // reserved (used) fully qualified names (contains all names including duplicates)
-    private final Set<String> reservedNames = new HashSet<String>();
+        // reserved (used) fully qualified names (contains all names including duplicates)
+        final Set<String> reservedNames = new HashSet<String>();
+    }
+    
+    // per-project tables 
+    private final Map<IProject,ProjectData> projects = new HashMap<IProject, ProjectData>();
 
     // if tables need to be rebuilt
     private boolean needsRehash = false;
@@ -270,10 +279,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized Collection<INEDTypeInfo> getAllNedTypes(IProject context) {
 		rehashIfNeeded();
-        return components.values();  //FIXME context!
+        ProjectData projectData = projects.get(context);
+		return projectData==null ? new ArrayList<INEDTypeInfo>() : projectData.components.values();
     }
 
-    public Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
+    public synchronized Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
         for (INEDTypeInfo typeInfo : getAllNedTypes(context))
             if (predicate.matches(typeInfo))
@@ -283,16 +293,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized Set<String> getAllNedTypeQNames(IProject context) {
 		rehashIfNeeded();
-        return components.keySet();  //FIXME context!
+        ProjectData projectData = projects.get(context);
+		return projectData==null ? new HashSet<String>() : projectData.components.keySet();
     }
 
     public synchronized Set<String> getReservedQNames(IProject context) {
 		rehashIfNeeded();
-        return reservedNames; //FIXME context!
+        ProjectData projectData = projects.get(context);
+		return projectData==null ? new HashSet<String>() : projectData.reservedNames;
     }
 
     public synchronized Set<String> getModuleQNames(IProject context) {
-		rehashIfNeeded();
     	return getNedTypeQNames(MODULE_FILTER, context);
     }
 
@@ -301,32 +312,35 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized Set<String> getChannelQNames(IProject context) {
-		rehashIfNeeded();
     	return getNedTypeQNames(CHANNEL_FILTER, context);
     }
 
     public synchronized Set<String> getModuleInterfaceQNames(IProject context) {
-		rehashIfNeeded();
     	return getNedTypeQNames(MODULEINTERFACE_FILTER, context);
     }
 
     public synchronized Set<String> getChannelInterfaceQNames(IProject context) {
-		rehashIfNeeded();
     	return getNedTypeQNames(CHANNELINTERFACE_FILTER, context);
     }
 
 	public synchronized INEDTypeInfo getToplevelNedType(String qualifiedName, IProject context) {
 		rehashIfNeeded();
-		return components.get(qualifiedName); //FIXME context
+		ProjectData projectData = projects.get(context);
+		return projectData==null ? null : projectData.components.get(qualifiedName);
 	}
 
 	public synchronized INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName, IProject context) {
 		rehashIfNeeded();
-		//FIXME context!
-		INEDTypeInfo typeInfo = components.get(qualifiedName); // try as toplevel type 
+		ProjectData projectData = projects.get(context);
+		if (projectData == null)
+			return null;
+		
+		// try as toplevel type
+		INEDTypeInfo typeInfo = projectData.components.get(qualifiedName);  
+
+		// if not found, try as inner type
 		if (typeInfo == null && qualifiedName.contains(".")) {
-			// try as inner type
-			INEDTypeInfo enclosingType = components.get(StringUtils.substringBeforeLast(qualifiedName, "."));
+			INEDTypeInfo enclosingType = projectData.components.get(StringUtils.substringBeforeLast(qualifiedName, "."));
 			if (enclosingType != null) {
 				INedTypeElement innerType = enclosingType.getInnerTypes().get(StringUtils.substringAfterLast(qualifiedName, "."));
 				if (innerType != null)
@@ -336,13 +350,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return typeInfo;
 	}
 
-    public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext context) {
+    public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext lookupContext) {
 		rehashIfNeeded();
-		Assert.isTrue(context!=null, "lookupNedType() cannot be called with context==null");
+		Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
 
 		// context is a compound module, so it may be an inner type
-		if (context instanceof CompoundModuleElementEx) {
-			INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)context).getNEDTypeInfo();
+		if (lookupContext instanceof CompoundModuleElementEx) {
+			INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNEDTypeInfo();
 			if (name.contains(".")) {
 				// inner type with fully qualified name?
 				String prefix = StringUtils.substringBeforeLast(name, ".");
@@ -361,60 +375,65 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
 
 		// not an inner type: look up as toplevel type
+		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
+		ProjectData projectData = projects.get(project);
 		if (name.contains(".")) {
 			// fully qualified name (as we don't accept partially qualified names)
-			if (components.get(name) != null)
-				return components.get(name);
+			if (projectData.components.get(name) != null)
+				return projectData.components.get(name);
 		}
 		else {
 			// name is an unqualified name (simple name). 
 
 			// from the same package?
-			String packagePrefix = context.getContainingNedFileElement().getQNameAsPrefix();
-			INEDTypeInfo samePackageType = components.get(packagePrefix + name);
+			String packagePrefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
+			INEDTypeInfo samePackageType = projectData.components.get(packagePrefix + name);
 			if (samePackageType != null)
 				return samePackageType;
 
 			// imported type?
 			// try a shortcut first: if the import doesn't contain wildcards
-			List<String> imports = context.getContainingNedFileElement().getImports();
+			List<String> imports = lookupContext.getContainingNedFileElement().getImports();
 			for (String importSpec : imports)
-				if (components.containsKey(importSpec) && importSpec.endsWith("." + name))
-					return components.get(importSpec);
+				if (projectData.components.containsKey(importSpec) && importSpec.endsWith("." + name))
+					return projectData.components.get(importSpec);
 
 			// try harder, using wildcards
 			for (String importSpec : imports) {
 				String importRegex = NEDElementUtilEx.importToRegex(importSpec);
-				for (String qualifiedName : components.keySet())
+				for (String qualifiedName : projectData.components.keySet())
 					if (qualifiedName.matches(importRegex) && qualifiedName.endsWith("." + name))
-						return components.get(qualifiedName);
+						return projectData.components.get(qualifiedName);
 			}
 		}
 		return null;
     }
 
-	public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext context) {
-		return getVisibleTypeNames(context, new IPredicate() {
+	public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext lookupContext) {
+		return getVisibleTypeNames(lookupContext, new IPredicate() {
 			public boolean matches(INEDTypeInfo typeInfo) {return true;}
 		});
 	}
 
-	public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate) {
+	public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext lookupContext, IPredicate predicate) {
 		rehashIfNeeded();
 
 		// types from the same package
-		String prefix = context.getQNameAsPrefix();
+		String prefix = lookupContext.getQNameAsPrefix();
 		String regex = prefix.replace(".", "\\.") + "[^.]+";
 		Set<String> result = new HashSet<String>();
-		for (INEDTypeInfo typeInfo : components.values())
+
+		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
+		ProjectData projectData = projects.get(project);
+		for (INEDTypeInfo typeInfo : projectData.components.values())
 			if (typeInfo.getFullyQualifiedName().matches(regex) && predicate.matches(typeInfo))
 				result.add(typeInfo.getName());
 
 		// imported types
-		List<String> imports = context.getContainingNedFileElement().getImports();
+		List<String> imports = lookupContext.getContainingNedFileElement().getImports();
 		for (String importSpec : imports) {
 			String importRegex = NEDElementUtilEx.importToRegex(importSpec);
-			for (INEDTypeInfo typeInfo : components.values())
+			for (INEDTypeInfo typeInfo : projectData.components.values())
 				if (typeInfo.getFullyQualifiedName().matches(importRegex) && predicate.matches(typeInfo))
 					result.add(typeInfo.getName());
 		}
@@ -434,7 +453,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public IContainer[] getNedSourceFolders(IProject project) {
-		if (!isOmnetppProject(project))
+		if (!isOpenOmnetppProject(project))
 			return new IContainer[0];
 		
 		//FIXME ensure ".nedfolders" is already loaded if exists!
@@ -447,7 +466,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public IContainer getNedSourceFolderFor(IFile file) {
 		IProject project = file.getProject();
-		if (isOmnetppProject(project)) {
+		if (isOpenOmnetppProject(project)) {
 			//FIXME ensure ".nedfolders" is already loaded if exists!
 			List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
 			if (nedSourceFolders == null || nedSourceFolders.isEmpty())
@@ -460,10 +479,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return null;
 	}
 
-	protected boolean isOmnetppProject(IProject project) {
+	protected boolean isOpenOmnetppProject(IProject project) {
 		try {
-			// nature is both set and feeling well
-			return project.isNatureEnabled(OMNETPP_NATURE);
+			// project is open, nature is set and also enabled
+			return project.isAccessible() && project.isNatureEnabled(OMNETPP_NATURE);
 		} 
 		catch (CoreException e) {
 			throw new RuntimeException(e);
@@ -481,7 +500,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		String packagePrefix = "";
 		IFile packageNedFile = sourceFolder.getFile(new Path(PACKAGE_NED_FILENAME));
 		if (getNedFiles().contains(packageNedFile))
-			packagePrefix = getNedFileElement(packageNedFile).getQNameAsPrefix();
+			packagePrefix = StringUtils.nullToEmpty(getNedFileElement(packageNedFile).getPackage());
 		
 		// second half consists of the directories this file is down from the source folder
 		String fileFolderPath = StringUtils.join(file.getParent().getFullPath().segments(), ".");
@@ -491,7 +510,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.') 
 			packageSuffix = packageSuffix.substring(1);
 		
-		return packagePrefix + packageSuffix;
+		// concatenate
+		String packageName = packagePrefix.length()>0 && packageSuffix.length()>0 ?
+				packagePrefix + "." + packageSuffix :
+					packagePrefix + packageSuffix;
+		return packageName;
 	}
 	
     /**
@@ -603,49 +626,66 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         needsRehash = false;
         debugRehashCounter++;
 
-        components.clear();
-        reservedNames.clear();
-        duplicates.clear();
+        projects.clear();
+        
+        IProject[] omnetppProjects = getOmnetppProjects();
 
-    	// re-register built-in declarations
-        for (INEDElement child : builtInDeclarationsFile) {
-    		if (child instanceof INedTypeElement) {
-    	        INEDTypeInfo typeInfo = ((INedTypeElement)child).getNEDTypeInfo();
-				components.put(typeInfo.getFullyQualifiedName(), typeInfo);
-    		}
-    	}
-        reservedNames.addAll(components.keySet());
-
-        // find NED types in each file, and register them
-        for (IFile file : nedFiles.keySet()) {
-
-        	// collect types (including inner types) from the NED file, and process them one by one
-        	for (INEDElement child : nedFiles.get(file)) {
+        // re-register built-in declarations for all projects
+        for (IProject project : omnetppProjects) {
+        	ProjectData projectData = new ProjectData();
+        	projectData.referencedProjects = getAllReferencedOmnetppProjects(project); //XXX may throw exception!
+        	projects.put(project, projectData);
+        	
+        	for (INEDElement child : builtInDeclarationsFile) {
         		if (child instanceof INedTypeElement) {
-        			INedTypeElement typeElement = (INedTypeElement) child;
-        			INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
-        			String qualifiedName = typeInfo.getFullyQualifiedName();
-
-        			if (reservedNames.contains(qualifiedName)) {
-        				if (!duplicates.containsKey(qualifiedName))
-        					duplicates.put(qualifiedName, new ArrayList<INedTypeElement>());
-        				duplicates.get(qualifiedName).add(typeElement);
-        			}
-        			else {
-        				// normal case: not duplicate. Add the type info to our tables.
-        				components.put(qualifiedName, typeInfo);
-        			}
-
-        			// add to the name list even if it was duplicate
-        			reservedNames.add(qualifiedName);
-                }
+        			INEDTypeInfo typeInfo = ((INedTypeElement)child).getNEDTypeInfo();
+					projectData.components.put(typeInfo.getFullyQualifiedName(), typeInfo);
+        		}
         	}
+        	projectData.reservedNames.addAll(projectData.components.keySet());
         }
 
-        // now we should remove all types that were duplicates
-        for (String name : duplicates.keySet()) {
-        	duplicates.get(name).add(components.get(name).getNEDElement());
-            components.remove(name);
+        // register NED types in all projects
+        for (IProject project : omnetppProjects) {
+        	ProjectData projectData = projects.get(project);
+
+        	// find NED types in each file, and register them
+        	for (IFile file : nedFiles.keySet()) {
+        		// file must be in this project or a referenced project
+        		if (file.getProject() == project || ArrayUtils.contains(projectData.referencedProjects, file.getProject())) {
+
+        			// collect toplevel types from the NED file, and process them one by one
+        			for (INEDElement child : nedFiles.get(file)) {
+        				if (child instanceof INedTypeElement) {
+        					INedTypeElement typeElement = (INedTypeElement) child;
+        					INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
+        					String qualifiedName = typeInfo.getFullyQualifiedName();
+
+        					if (projectData.reservedNames.contains(qualifiedName)) {
+        						if (!projectData.duplicates.containsKey(qualifiedName))
+        							projectData.duplicates.put(qualifiedName, new ArrayList<INedTypeElement>());
+        						projectData.duplicates.get(qualifiedName).add(typeElement);
+        					}
+        					else {
+        						// normal case: not duplicate. Add the type info to our tables.
+        						projectData.components.put(qualifiedName, typeInfo);
+        					}
+
+        					// add to the name list even if it was duplicate
+        					projectData.reservedNames.add(qualifiedName);
+        				}
+        			}
+        		}
+        	}
+
+        	// now we should remove all types that were duplicates
+        	for (String name : projectData.duplicates.keySet()) {
+        		projectData.duplicates.get(name).add(projectData.components.get(name).getNEDElement());
+        		projectData.components.remove(name);
+        	}
+
+        	System.out.println("types in project " + project.getName() + ": " + StringUtils.join(projectData.components.keySet(), ", ", " and "));
+
         }
 
         // invalidate all inherited members on all typeInfo objects
@@ -653,12 +693,43 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			invalidateTypeInfo(file);
 
         long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + components.size() + " registered types");
-        System.out.println("types: " + StringUtils.join(components.keySet(), ", ", " and "));
+        System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
 
         // schedule a validation
         validationJob.restartTimer();
     }
+
+    protected IProject[] getOmnetppProjects() {
+		List<IProject> omnetppProjects = new ArrayList<IProject>();
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
+        	if (isOpenOmnetppProject(project))
+        		omnetppProjects.add(project);
+        return omnetppProjects.toArray(new IProject[]{});
+	}
+
+    /**
+     * Returns the transitive closure of OMNeT++ projects referenced from the given project.
+     */
+    protected IProject[] getAllReferencedOmnetppProjects(IProject project) {
+    	Set<IProject> result = new HashSet<IProject>();
+    	collectAllReferencedOmnetppProjects(project, result);
+    	return result.toArray(new IProject[]{});
+    }
+
+	// helper for getAllReferencedOmnetppProjects()
+    private void collectAllReferencedOmnetppProjects(IProject project, Set<IProject> result) {
+		try {
+			for (IProject dependency : project.getReferencedProjects()) {
+				if (isOpenOmnetppProject(dependency)) {
+					result.add(dependency);
+					collectAllReferencedOmnetppProjects(dependency, result);
+				}
+			}
+		} 
+		catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	protected void invalidateTypeInfo(INEDElement parent) {
 		for (INEDElement element : parent) {
@@ -698,24 +769,27 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				nedFiles.get(file).clearConsistencyProblemMarkerSeverities();
 
 			// issue error message for duplicates
-			for (String name : duplicates.keySet()) {
-				List<INedTypeElement> duplicateList = duplicates.get(name);
-				for (int i = 0; i < duplicateList.size(); i++) {
-					INedTypeElement element = duplicateList.get(i);
-					INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
-					IFile file = getNedFile(element.getContainingNedFileElement());
-					IFile otherFile = getNedFile(otherElement.getContainingNedFileElement());
+			for (IProject project : projects.keySet()) {
+				ProjectData projectData = projects.get(project);
+				for (String name : projectData.duplicates.keySet()) {
+					List<INedTypeElement> duplicateList = projectData.duplicates.get(name);
+					for (int i = 0; i < duplicateList.size(); i++) {
+						INedTypeElement element = duplicateList.get(i);
+						INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
+						IFile file = getNedFile(element.getContainingNedFileElement());
+						IFile otherFile = getNedFile(otherElement.getContainingNedFileElement());
 
-					NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
-					if (otherFile == null) {
-						errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
-					}
-					else {
-						// add error message to both files
-						String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
-						errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
-						NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
-						otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
+						NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
+						if (otherFile == null) {
+							errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
+						}
+						else {
+							// add error message to both files
+							String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
+							errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
+							NEDMarkerErrorStore otherErrorStore = new NEDMarkerErrorStore(otherFile, markerSync);
+							otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
+						}
 					}
 				}
 			}
@@ -827,7 +901,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (event instanceof NEDModelChangeEvent) {
             // NOTE: the rehash causes NEDMarkerChangeEvent
             rehash();
-
         }
 
         // notify generic listeners (like NedFileEditParts who refresh themselves

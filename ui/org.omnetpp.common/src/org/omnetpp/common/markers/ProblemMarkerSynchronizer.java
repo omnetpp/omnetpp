@@ -154,18 +154,20 @@ public class ProblemMarkerSynchronizer {
 	protected void addRemoveMarkers() throws CoreException {
 	    // process each file registered
 		for (IFile file : markerTable.keySet()) {
-			List<MarkerData> list = markerTable.get(file);
+			if (file.exists()) {
+				List<MarkerData> list = markerTable.get(file);
 
-			// add markers that aren't on IFile yet
-			for (MarkerData markerData : list)
-				if (!fileContainsMarker(file, markerData))
-					createMarker(file, markerData);
+				// add markers that aren't on IFile yet
+				for (MarkerData markerData : list)
+					if (!fileContainsMarker(file, markerData))
+						createMarker(file, markerData);
 
-			// remove IFile markers which aren't in our table
-			IMarker[] markers = file.findMarkers(markerBaseType, true, 0);
-			for (IMarker marker : markers)
-				if (!listContainsMarker(list, marker))
-					{marker.delete(); markersRemoved++;}
+				// remove IFile markers which aren't in our table
+				IMarker[] markers = file.findMarkers(markerBaseType, true, 0);
+				for (IMarker marker : markers)
+					if (!listContainsMarker(list, marker))
+						{marker.delete(); markersRemoved++;}
+			}
 		}
 
 		// debug
