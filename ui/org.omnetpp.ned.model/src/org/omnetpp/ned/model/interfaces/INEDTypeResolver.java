@@ -6,6 +6,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 
@@ -15,7 +16,8 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author Andras
  */
 public interface INEDTypeResolver {
-
+	public static final IProject FIXME_INSERT_CONTEXTPROJECT_HERE = null; //FIXME eliminate all occurrences from everywhere!!!
+	
     public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
 
@@ -65,6 +67,15 @@ public interface INEDTypeResolver {
     public IContainer getNedSourceFolderFor(IFile file);
     
 	/**
+	 * Returns the expected package name for the given file. "" means the
+	 * default package. Returns null for the toplevel "package.ned" file 
+	 * (which in fact is used to *define* the package, so it has no "expected" 
+	 * package name), and for files outside the NED source folders defined 
+	 * for the project (i.e. for which getNedSourceFolder() returns null.)
+	 */
+    public String getExpectedPackageFor(IFile file);
+    
+	/**
 	 * Returns the markers for the given element and its subtree.
 	 *
 	 * IMPORTANT: Do NOT use this method to check whether an element actually
@@ -89,42 +100,46 @@ public interface INEDTypeResolver {
     public INEDElement getNedElementAt(INEDElement parent, int line, int column);
     
     /**
-	 * Returns all toplevel (non-inner) types in the NED files, excluding 
-	 * duplicate names.
+	 * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,
+	 * from the given project and its dependent projects.
 	 */
-	public Collection<INEDTypeInfo> getAllNedTypes();
+	public Collection<INEDTypeInfo> getAllNedTypes(IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files, excluding 
-     * duplicate names. Returned names are fully qualified.
+     * duplicate names, from the given project and its dependent projects. 
+     * Returned names are fully qualified.
      */
-    public Set<String> getAllNedTypeQNames();
+    public Set<String> getAllNedTypeQNames(IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files where 
-     * the predicate matches, excluding duplicate names.
-	 * Returned names are fully qualified.
+     * the predicate matches, excluding duplicate names, from the given project 
+     * and its dependent projects. Returned names are fully qualified.
      */
-    public Set<String> getNedTypeQNames(IPredicate predicate);
+    public Set<String> getNedTypeQNames(IPredicate predicate, IProject context);
 
     /**
-     * Returns ALL toplevel (non-inner) type names in the NED files, 
-     * including duplicate names. This method can be used for generating
-     * unique type names. Returned names are fully qualified.
+     * Returns ALL toplevel (non-inner) type names in the NED files, including 
+     * duplicate names, from the given project and its dependent projects. 
+     * This method can be used for generating unique type names. Returned names 
+     * are fully qualified.
      */
-    public Set<String> getReservedQNames();
+    public Set<String> getReservedQNames(IProject context);
 
     /**
-     * Return a NED type from its fully qualified name. Inner types are
-     * NOT recognized. Returns null if not found.
+     * Return a NED type from its fully qualified name, from the given project 
+     * and its dependent projects. Inner types are NOT recognized. 
+     * Returns null if not found.
      */
-    public INEDTypeInfo getToplevelNedType(String qualifiedName);
+    public INEDTypeInfo getToplevelNedType(String qualifiedName, IProject context);
 
 	/**
      * Return a NED type from its fully qualified name, whether toplevel
-     * or inner type. Returns null if not found.
+     * or inner type, from the given project and its dependent projects.
+     * Returns null if not found.
 	 */
-    public INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName);
+    public INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName, IProject context);
 
     /**
 	 * Looks up the name in the given context, and returns the NED type info,
@@ -150,32 +165,38 @@ public interface INEDTypeResolver {
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
 
     /**
-	 * Returns all valid toplevel (non-inner) module names in the NED files.
+	 * Returns all valid toplevel (non-inner) module names in the NED files,
+	 * from the given project and its dependent projects.
 	 * Returned names are fully qualified.
 	 */
-	public Set<String> getModuleQNames();
+	public Set<String> getModuleQNames(IProject context);
 
     /**
-	 * Returns all valid toplevel (non-inner) network names in the NED files.
+	 * Returns all valid toplevel (non-inner) network names in the NED files,
+	 * from the given project and its dependent projects.
 	 * Returned names are fully qualified.
 	 */
-	public Set<String> getNetworkQNames();
+	public Set<String> getNetworkQNames(IProject context);
 
 	/**
-	 * Returns all valid toplevel (non-inner) channel names in the NED files.
+	 * Returns all valid toplevel (non-inner) channel names in the NED files,
+	 * from the given project and its dependent projects.
 	 * Returned names are fully qualified.
 	 */
-	public Set<String> getChannelQNames();
+	public Set<String> getChannelQNames(IProject context);
 
 	/**
-	 * Returns all valid toplevel (non-inner) module interface names in the NED files.
+	 * Returns all valid toplevel (non-inner) module interface names in the NED files,
+	 * from the given project and its dependent projects.
 	 * Returned names are fully qualified.
 	 */
-	public Set<String> getModuleInterfaceQNames();
+	public Set<String> getModuleInterfaceQNames(IProject context);
 
 	/**
-	 * Returns all valid toplevel (non-inner) channel interface names in the NED files.
+	 * Returns all valid toplevel (non-inner) channel interface names in the NED files,
+	 * from the given project and its dependent projects.
 	 * Returned names are fully qualified.
 	 */
-	public Set<String> getChannelInterfaceQNames();
+	public Set<String> getChannelInterfaceQNames(IProject context);
 }
+

@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.model;
 
 import java.util.Stack;
 
+import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -29,8 +30,8 @@ public class NEDTreeTraversal {
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
-	public void traverse(String fullyQualifiedModuleTypeName) {
-		INEDTypeInfo moduleType = nedResources.getToplevelOrInnerNedType(fullyQualifiedModuleTypeName);
+	public void traverse(String fullyQualifiedModuleTypeName, IProject contextProject) {
+		INEDTypeInfo moduleType = nedResources.getToplevelOrInnerNedType(fullyQualifiedModuleTypeName, contextProject);
 		if (moduleType==null)
 			visitor.unresolvedType(null, fullyQualifiedModuleTypeName);
 		else

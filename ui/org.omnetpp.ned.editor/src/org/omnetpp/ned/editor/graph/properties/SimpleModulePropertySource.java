@@ -20,6 +20,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * TODO add documentation
@@ -101,7 +102,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames());
+              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
               Collections.sort(moduleNames);
               return moduleNames;
             }

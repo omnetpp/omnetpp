@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
@@ -22,6 +23,7 @@ import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -179,19 +181,24 @@ public class PaletteManager implements INEDChangeListener {
     }
 
     private Map<String, PaletteEntry> createPaletteModel() {
+        Map<String, PaletteEntry> result = new LinkedHashMap<String, PaletteEntry>();
+
+        IEditorInput input = hostingEditor.getEditorInput();
+        if (!(input instanceof IFileEditorInput))
+        	return result; // sorry
+        IFile file = ((IFileEditorInput)input).getFile();
+        IProject contextProject = file.getProject();
+        
     	// connection and type creation tools 
-        Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
-        entries.putAll(createChannelsStackEntries());
-        entries.putAll(createTypesEntries());
+        result.putAll(createChannelsStackEntries(contextProject));
+        result.putAll(createTypesEntries());
         
         // submodule creation tools
-        IFileEditorInput editorInput = ((IFileEditorInput)hostingEditor.getEditorInput());
-        if (editorInput != null)
-            entries.putAll(createInnerTypes(editorInput.getFile()));
-        entries.put("separator", new PaletteSeparator());
-        entries.putAll(createSubmodules());
+        result.putAll(createInnerTypes(file));
+        result.put("separator", new PaletteSeparator());
+        result.putAll(createSubmodules(contextProject));
 
-        return entries;
+        return result;
     }
 
     /**
@@ -214,18 +221,19 @@ public class PaletteManager implements INEDChangeListener {
     /**
      * Creates several submodule drawers using currently parsed types,
      * and using the GROUP property as the drawer name.
+     * @param contextProject TODO
      */
-    private static Map<String, ToolEntry> createSubmodules() {
+    private static Map<String, ToolEntry> createSubmodules(IProject contextProject) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         // get all the possible type names in alphabetical order
         List<String> typeNames = new ArrayList<String>();
-        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleQNames());
-        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleInterfaceQNames());
+        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleQNames(contextProject));
+        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleInterfaceQNames(contextProject));
         Collections.sort(typeNames, StringUtils.dictionaryComparator);
 
         for (String name : typeNames) {
-            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelNedType(name).getNEDElement();
+            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelNedType(name, contextProject).getNEDElement();
 
             // skip this type if it is a top level network
             if (typeElement instanceof CompoundModuleElementEx &&
@@ -281,7 +289,7 @@ public class PaletteManager implements INEDChangeListener {
         entries.put(key, toolEntry);
     }
 
-    private static Map<String, ToolEntry> createChannelsStackEntries() {
+    private static Map<String, ToolEntry> createChannelsStackEntries(IProject contextProject) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         ConnectionCreationToolEntry defaultConnectionTool = new ConnectionCreationToolEntry(
@@ -304,12 +312,12 @@ public class PaletteManager implements INEDChangeListener {
 
         // get all the possible type names in alphabetical order
         List<String> channelNames = new ArrayList<String>();
-        channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelQNames());
-        channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelInterfaceQNames());
+        channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelQNames(contextProject));
+        channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelInterfaceQNames(contextProject));
         Collections.sort(channelNames, StringUtils.dictionaryComparator);
 
         for (String fullyQualifiedName : channelNames) {
-            INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getToplevelNedType(fullyQualifiedName);
+            INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getToplevelNedType(fullyQualifiedName, contextProject);
             INEDElement modelElement = typeInfo.getNEDElement();
             boolean isInterface = modelElement instanceof ChannelInterfaceElement;
 

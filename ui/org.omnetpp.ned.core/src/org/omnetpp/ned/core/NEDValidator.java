@@ -2,10 +2,9 @@ package org.omnetpp.ned.core;
 
 import java.util.HashMap;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
@@ -85,29 +84,39 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
 //FIXME validate like-param: must me a string parameter, etc!
 public class NEDValidator extends AbstractNEDValidatorEx {
 
-	INEDTypeResolver resolver;
+	private static final String DEFAULT_CHANNEL_TYPE = "ned.cBasicChannel";
 
-	INEDErrorStore errors;
+	private INEDTypeResolver resolver;
 
+	private INEDErrorStore errors;
+
+	// the project in whose context fully qualified type names should be visible
+	private IProject contextProject;
+	
 	// the component currently being validated
-	INedTypeElement componentNode;
+	private INedTypeElement componentNode;
 
 	// non-null while we're validating a submodule
-	SubmoduleElementEx submoduleNode;
-	INEDTypeInfo submoduleType; // may be null; valid while submoduleNode!=null
+	private SubmoduleElementEx submoduleNode;
+	private INEDTypeInfo submoduleType; // may be null; valid while submoduleNode!=null
 
 	// non-null while we're validating a channel spec of a connection
-	ChannelSpecElement channelSpecElement;
-	INEDTypeInfo channelSpecType; // may be null; valid while channelSpecElement!=null
+	private ChannelSpecElement channelSpecElement;
+	private INEDTypeInfo channelSpecType; // may be null; valid while channelSpecElement!=null
 
 	// members of the component currently being validated
-	HashMap<String, INEDElement> members = new HashMap<String, INEDElement>();
+	private HashMap<String, INEDElement> members = new HashMap<String, INEDElement>();
 
 	// contents of the "types:" section of the component currently being validated
-	HashMap<String, INEDTypeInfo> innerTypes = new HashMap<String, INEDTypeInfo>();
+	private HashMap<String, INEDTypeInfo> innerTypes = new HashMap<String, INEDTypeInfo>();
 
-	public NEDValidator(INEDTypeResolver resolver, INEDErrorStore errors) {
+	
+	/**
+	 * Constructor.
+	 */
+	public NEDValidator(INEDTypeResolver resolver, IProject context, INEDErrorStore errors) {
 		this.resolver = resolver;
+		this.contextProject = context;
 		this.errors = errors;
 	}
 
@@ -130,7 +139,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
     protected void validateElement(NedFileElementEx node) {
 		// check it's in the right package
 		IFile file = resolver.getNedFile(node);
-		String expectedPackage = getExpectedPackageFor(file);
+		String expectedPackage = resolver.getExpectedPackageFor(file);
 		String declaredPackage = StringUtils.nullToEmpty(node.getPackage());
 		
 		if (expectedPackage != null && !expectedPackage.equals(declaredPackage)) {
@@ -139,28 +148,6 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 		
 		validateChildren(node);
-	}
-
-	protected String getExpectedPackageFor(IFile file) {
-		IContainer sourceFolder = resolver.getNedSourceFolderFor(file);
-		if (sourceFolder == file.getParent() && file.getName().equals("package.ned"))
-			return null; // nothing is expected: this file defines the package
-		
-		// first half is the package declared in the root "package.ned" file 
-		String packagePrefix = "";
-		IFile packageNedFile = sourceFolder.getFile(new Path("package.ned"));
-		if (resolver.getNedFiles().contains(packageNedFile))
-			packagePrefix = resolver.getNedFileElement(packageNedFile).getQNameAsPrefix();
-		
-		// second half consists of the directories this file is down from the source folder
-		String fileFolderPath = StringUtils.join(file.getParent().getFullPath().segments(), ".");
-		String sourceFolderPath = StringUtils.join(sourceFolder.getFullPath().segments(), ".");
-		Assert.isTrue(fileFolderPath.startsWith(sourceFolderPath));
-		String packageSuffix = fileFolderPath.substring(sourceFolderPath.length());
-		if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.') 
-			packageSuffix = packageSuffix.substring(1);
-		
-		return packagePrefix + packageSuffix;
 	}
 
 	@Override
@@ -179,14 +166,14 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		String name = node.getImportSpec();
 		if (!name.contains("*")) {
 			// not a wildcard import: must match a type
-			if (resolver.getToplevelNedType(name) == null)
+			if (resolver.getToplevelNedType(name, contextProject) == null)
 				errors.addError(node, "imported NED type not found: '" + name+"'");
 		}
 		else {
 			// wildcard import: check if it matches anything
 			String regex = NEDElementUtilEx.importToRegex(name);
 			boolean found = false;
-			for (String qualifiedName : resolver.getAllNedTypeQNames())
+			for (String qualifiedName : resolver.getAllNedTypeQNames(contextProject))
 				if (qualifiedName.matches(regex))
 					{found = true; break;}
 			if (!found)
@@ -434,7 +421,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		for (INEDElement child : node) {
 			if (child instanceof INedTypeElement) {
 				INedTypeElement typeElement = (INedTypeElement)child;
-				new NEDValidator(resolver, errors).validate(child);
+				new NEDValidator(resolver, contextProject, errors).validate(child);
 				String name = typeElement.getName();
 				innerTypes.put(name, typeElement.getNEDTypeInfo()); //FIXME typeInfo already stores this
 				members.put(name, child);
@@ -603,7 +590,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 		else {
 			// fallback: type is BasicChannel
-			channelSpecType = resolver.getToplevelNedType("ned.cBasicChannel");
+			channelSpecType = resolver.getToplevelNedType(DEFAULT_CHANNEL_TYPE, contextProject);
 			Assert.isTrue(channelSpecType!=null);
 		}
 

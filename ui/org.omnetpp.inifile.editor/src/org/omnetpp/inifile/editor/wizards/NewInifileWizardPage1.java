@@ -23,6 +23,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -68,7 +69,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// fill network combo
-		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames();
+		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE);
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);

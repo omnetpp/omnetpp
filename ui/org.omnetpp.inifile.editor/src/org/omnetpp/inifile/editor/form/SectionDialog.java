@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -137,7 +138,8 @@ public class SectionDialog extends TitleAreaDialog {
 		}
 
 		// fill network combo
-		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames();
+		IProject contextProject = doc.getDocumentFile().getProject();		
+		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(contextProject);
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);

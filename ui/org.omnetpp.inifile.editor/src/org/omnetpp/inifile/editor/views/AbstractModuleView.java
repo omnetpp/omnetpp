@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -302,7 +303,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 					showMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
 					return;
 				}
-                INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getToplevelNedType(networkName);
+				IProject contextProject = doc.getDocumentFile().getProject();
+				INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getToplevelNedType(networkName, contextProject);
                 if (networkType == null) {
                     showMessage("No such NED network: "+networkName);
                     return;

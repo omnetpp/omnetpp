@@ -10,6 +10,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -57,7 +58,7 @@ public class CloneCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
         INedTypeElement newNode = (INedTypeElement)oldNode.deepDup();
         // set a unique name
-        Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames();
+        Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE);
         newNode.setName(NEDElementUtilEx.getUniqueNameFor(newNode, context));
 
     	// insert into the parent at the correct position

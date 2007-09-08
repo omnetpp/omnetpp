@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.UnitConversion;
@@ -337,7 +338,8 @@ public class InifileAnalyzer {
 			// note: we do not validate "extends=" here -- that's all done in validateSections()!
 		}
 		else if (e==CFGID_NETWORK) {
-			INEDTypeInfo network = ned.getToplevelNedType(value);
+			IProject contextProject = doc.getDocumentFile().getProject();
+			INEDTypeInfo network = ned.getToplevelNedType(value, contextProject);
 			if (network == null) {
 				addError(section, key, "No such NED network: "+value);
 				return;
@@ -614,8 +616,9 @@ public class InifileAnalyzer {
 
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+		IProject contextProject = doc.getDocumentFile().getProject();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
-		treeTraversal.traverse(networkName);
+		treeTraversal.traverse(networkName, contextProject);
 		return list;
 	}
 

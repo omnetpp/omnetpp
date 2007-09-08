@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.views;
 import java.util.Stack;
 import java.util.WeakHashMap;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -411,6 +412,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
     	}
 
     	INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+    	IProject contextProject = nedResources.getNedFile(module.getContainingNedFileElement()).getProject();
     	NEDTreeTraversal iterator = new NEDTreeTraversal(nedResources, new TreeBuilder());
         if (module instanceof SubmoduleElementEx) {
             SubmoduleElementEx submodule = (SubmoduleElementEx)module;
@@ -418,11 +420,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
         else if (module instanceof CompoundModuleElementEx){
         	CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)module;
-            iterator.traverse(compoundModule.getNEDTypeInfo().getFullyQualifiedName());
+            iterator.traverse(compoundModule.getNEDTypeInfo().getFullyQualifiedName(), contextProject);
         }
         else if (module instanceof SimpleModuleElementEx){
         	SimpleModuleElementEx simpleModule = (SimpleModuleElementEx)module;
-            iterator.traverse(simpleModule.getNEDTypeInfo().getFullyQualifiedName());
+            iterator.traverse(simpleModule.getNEDTypeInfo().getFullyQualifiedName(), contextProject);
         }
         else {
         	showMessage("Please select a submodule, compound module or simple module");

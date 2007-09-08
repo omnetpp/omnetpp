@@ -12,6 +12,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.*;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * TODO add documentation
@@ -98,7 +99,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames());
+              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
               Collections.sort(moduleNames);
               return moduleNames;
             }

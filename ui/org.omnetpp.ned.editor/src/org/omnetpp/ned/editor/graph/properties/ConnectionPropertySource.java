@@ -16,6 +16,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * TODO add documentation
@@ -107,7 +108,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
         mergePropertySource(new TypePropertySource(connectionNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames());
+                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
                 Collections.sort(channelNames);
               return channelNames;
             }

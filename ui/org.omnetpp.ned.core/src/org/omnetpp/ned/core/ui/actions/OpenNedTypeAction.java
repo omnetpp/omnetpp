@@ -13,6 +13,7 @@ import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Action to open a NED type selection dialog.
@@ -47,7 +48,7 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
             }
             
         }); 
-        dialog.setElements(ned.getAllNedTypes().toArray());
+        dialog.setElements(ned.getAllNedTypes(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE).toArray());
         dialog.setMessage("Select NED type to open:");
         dialog.setTitle("Open NED Type");
         if (dialog.open() == ListDialog.OK) {

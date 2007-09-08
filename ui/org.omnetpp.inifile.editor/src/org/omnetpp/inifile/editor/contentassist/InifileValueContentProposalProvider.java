@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
@@ -31,6 +32,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -123,9 +125,12 @@ s	 * before getting presented to the user.
 		}
 
 		if (entry==CFGID_NETWORK) {
+			IProject contextProject = doc.getDocumentFile().getProject();
 			NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-			for (String networkName : nedResources.getNetworkQNames())
-				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(nedResources.getToplevelNedType(networkName).getNEDElement().getComment())));
+			for (String networkName : nedResources.getNetworkQNames(contextProject)) {
+				INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
+				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(network.getComment())));
+			}
 			sort(p);
 		}
 		else if (entry==CFGID_PRELOAD_NED_FILES) {

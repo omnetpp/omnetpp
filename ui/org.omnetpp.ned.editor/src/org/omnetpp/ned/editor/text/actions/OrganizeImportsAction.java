@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
@@ -14,6 +15,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
@@ -91,13 +93,16 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 	 * Find the fully qualified type for the given simple name, and add it to the imports list.
 	 */
 	protected void resolveImport(String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
+		NEDResources res = NEDResourcesPlugin.getNEDResources();
+		IProject contextProject = res.getNedFile(getNedFileElement()).getProject();
+		
 		// name is in the same package as this file, no need to add an import
-		if (NEDResourcesPlugin.getNEDResources().getToplevelNedType(packagePrefix + unqualifiedTypeName) != null)
+		if (res.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
 			return;
 
 		// find all potential types
         List<String> potentialMatches = new ArrayList<String>();
-		for (String qualifiedName : NEDResourcesPlugin.getNEDResources().getAllNedTypeQNames())
+		for (String qualifiedName : res.getAllNedTypeQNames(contextProject))
 			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
 				potentialMatches.add(qualifiedName);
 

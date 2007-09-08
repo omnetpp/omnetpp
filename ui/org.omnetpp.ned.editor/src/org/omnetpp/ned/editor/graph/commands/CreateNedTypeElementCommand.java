@@ -8,6 +8,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -48,7 +49,7 @@ public class CreateNedTypeElementCommand extends Command {
             if (namedChild.getName() == null || "".equals(namedChild.getName()))
                 namedChild.setName("unnamed");
             // make the name unique
-            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames();
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE);
             namedChild.setName(NEDElementUtilEx.getUniqueNameFor(namedChild, context));
         }
 

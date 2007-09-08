@@ -24,6 +24,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
@@ -67,8 +68,11 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
  */
 //XXX listen on changes to the ".nedfolders" files!
 //XXX what should editors do when their input file is not (no longer) in a NED source folder (isNedFile()==false) ??
+//XXX comments around "package" can get lost
+//XXX New NED File Wizard should generate "package" line into the file
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	
+	private static final String PACKAGE_NED_FILENAME = "package.ned";
 	private static final String OMNETPP_NATURE = "org.omnetpp.main.omnetppnature";
     private static final String NED_EXTENSION = "ned";
 	private static final String NEDFOLDERS_FILENAME = ".nedfolders";
@@ -263,60 +267,61 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return parent.getSourceRegion() != null && parent.getSourceRegion().contains(line, column) ? parent : null;
     }
 
-    public synchronized Collection<INEDTypeInfo> getAllNedTypes() {
+    public synchronized Collection<INEDTypeInfo> getAllNedTypes(IProject context) {
 		rehashIfNeeded();
-        return components.values();
+        return components.values();  //FIXME context!
     }
 
-    public Set<String> getNedTypeQNames(IPredicate predicate) {
+    public Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
-        for (INEDTypeInfo typeInfo : getAllNedTypes())
+        for (INEDTypeInfo typeInfo : getAllNedTypes(context))
             if (predicate.matches(typeInfo))
                 result.add(typeInfo.getFullyQualifiedName());
         return result;
     }
 
-    public synchronized Set<String> getAllNedTypeQNames() {
+    public synchronized Set<String> getAllNedTypeQNames(IProject context) {
 		rehashIfNeeded();
-        return components.keySet();
+        return components.keySet();  //FIXME context!
     }
 
-    public synchronized Set<String> getReservedQNames() {
+    public synchronized Set<String> getReservedQNames(IProject context) {
 		rehashIfNeeded();
-        return reservedNames;
+        return reservedNames; //FIXME context!
     }
 
-    public synchronized Set<String> getModuleQNames() {
+    public synchronized Set<String> getModuleQNames(IProject context) {
 		rehashIfNeeded();
-    	return getNedTypeQNames(MODULE_FILTER);
+    	return getNedTypeQNames(MODULE_FILTER, context);
     }
 
-    public synchronized Set<String> getNetworkQNames() {
-    	return getNedTypeQNames(NETWORK_FILTER);
+    public synchronized Set<String> getNetworkQNames(IProject context) {
+    	return getNedTypeQNames(NETWORK_FILTER, context);
     }
 
-    public synchronized Set<String> getChannelQNames() {
+    public synchronized Set<String> getChannelQNames(IProject context) {
 		rehashIfNeeded();
-    	return getNedTypeQNames(CHANNEL_FILTER);
+    	return getNedTypeQNames(CHANNEL_FILTER, context);
     }
 
-    public synchronized Set<String> getModuleInterfaceQNames() {
+    public synchronized Set<String> getModuleInterfaceQNames(IProject context) {
 		rehashIfNeeded();
-    	return getNedTypeQNames(MODULEINTERFACE_FILTER);
+    	return getNedTypeQNames(MODULEINTERFACE_FILTER, context);
     }
 
-    public synchronized Set<String> getChannelInterfaceQNames() {
+    public synchronized Set<String> getChannelInterfaceQNames(IProject context) {
 		rehashIfNeeded();
-    	return getNedTypeQNames(CHANNELINTERFACE_FILTER);
+    	return getNedTypeQNames(CHANNELINTERFACE_FILTER, context);
     }
 
-	public synchronized INEDTypeInfo getToplevelNedType(String qualifiedName) {
+	public synchronized INEDTypeInfo getToplevelNedType(String qualifiedName, IProject context) {
 		rehashIfNeeded();
-		return components.get(qualifiedName);
+		return components.get(qualifiedName); //FIXME context
 	}
 
-	public synchronized INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName) {
+	public synchronized INEDTypeInfo getToplevelOrInnerNedType(String qualifiedName, IProject context) {
 		rehashIfNeeded();
+		//FIXME context!
 		INEDTypeInfo typeInfo = components.get(qualifiedName); // try as toplevel type 
 		if (typeInfo == null && qualifiedName.contains(".")) {
 			// try as inner type
@@ -448,6 +453,30 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return null;
 	}
 
+	public String getExpectedPackageFor(IFile file) {
+		IContainer sourceFolder = getNedSourceFolderFor(file);
+		if (sourceFolder == null)
+			return null; // bad NED file
+		if (sourceFolder == file.getParent() && file.getName().equals(PACKAGE_NED_FILENAME))
+			return null; // nothing is expected: this file defines the package
+		
+		// first half is the package declared in the root "package.ned" file 
+		String packagePrefix = "";
+		IFile packageNedFile = sourceFolder.getFile(new Path(PACKAGE_NED_FILENAME));
+		if (getNedFiles().contains(packageNedFile))
+			packagePrefix = getNedFileElement(packageNedFile).getQNameAsPrefix();
+		
+		// second half consists of the directories this file is down from the source folder
+		String fileFolderPath = StringUtils.join(file.getParent().getFullPath().segments(), ".");
+		String sourceFolderPath = StringUtils.join(sourceFolder.getFullPath().segments(), ".");
+		Assert.isTrue(fileFolderPath.startsWith(sourceFolderPath));
+		String packageSuffix = fileFolderPath.substring(sourceFolderPath.length());
+		if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.') 
+			packageSuffix = packageSuffix.substring(1);
+		
+		return packagePrefix + packageSuffix;
+	}
+	
     /**
      * NED editors should call this when they get opened.
      */
@@ -680,7 +709,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				markerSync.registerFile(file);
 				INEDErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
 				//INEDErrorStore errorStore = new INEDErrorStore.SysoutNedErrorStore(); // for debugging
-				new NEDValidator(this, errorStore).validate(nedFileElement);
+				new NEDValidator(this, file.getProject(), errorStore).validate(nedFileElement);
 			}
 
 			// we need to do the synchronization in a background job, to avoid deadlocks

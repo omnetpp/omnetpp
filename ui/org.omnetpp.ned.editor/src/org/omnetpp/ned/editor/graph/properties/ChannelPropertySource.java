@@ -16,6 +16,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Property source for channels
@@ -32,13 +33,12 @@ public class ChannelPropertySource extends MergedPropertySource {
             this.model = model;
             setDisplayString(model.getDisplayString());
             // define which properties should be displayed in the property sheet
-            // we do not support all properties currently, just colow, width ans style
+            // we do not support all properties currently, just color, width and style
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL,
                     								 DisplayString.Prop.CONNECTION_STYLE));
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);
         }
-
     }
 
     /**
@@ -52,7 +52,7 @@ public class ChannelPropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames());
+              List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
               Collections.sort(names);
               return names;
             }

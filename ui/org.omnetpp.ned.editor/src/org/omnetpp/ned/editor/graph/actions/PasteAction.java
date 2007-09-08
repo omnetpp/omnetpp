@@ -39,6 +39,7 @@ import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -160,7 +161,7 @@ public class PasteAction extends SelectionAction {
 			EditPart toplevelEditPart = getGraphicalViewer().getContents();
 			parent = (INEDElement) toplevelEditPart.getModel();
 			beforeElement = (primarySelectionElement != null && primarySelectionElement.getParent() == parent) ? primarySelectionElement : null;
-			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedQNames());
+			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
 		}
 
 		// insert stuff into parent
