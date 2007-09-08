@@ -192,6 +192,7 @@ startsymbol
  */
 nedfile
         : definitions
+        |
         ;
 
 definitions
