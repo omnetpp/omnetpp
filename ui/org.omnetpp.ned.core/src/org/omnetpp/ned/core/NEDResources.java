@@ -70,6 +70,7 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 //XXX what should editors do when their input file is not (no longer) in a NED source folder (isNedFile()==false) ??
 //XXX comments around "package" can get lost
 //XXX New NED File Wizard should generate "package" line into the file
+//XXX launcher should set NEDPATH env var
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
@@ -432,25 +433,41 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     			getNedSourceFolderFor((IFile)resource) != null);
     }
 
+    public IContainer[] getNedSourceFolders(IProject project) {
+		if (!isOmnetppProject(project))
+			return new IContainer[0];
+		
+		//FIXME ensure ".nedfolders" is already loaded if exists!
+		List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
+    	if (nedSourceFolders == null || nedSourceFolders.isEmpty())
+    		return new IContainer[] { project };  // default source folder is the project
+    	else
+    		return nedSourceFolders.toArray(new IContainer[]{});
+    }
+
     public IContainer getNedSourceFolderFor(IFile file) {
 		IProject project = file.getProject();
+		if (isOmnetppProject(project)) {
+			//FIXME ensure ".nedfolders" is already loaded if exists!
+			List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
+			if (nedSourceFolders == null || nedSourceFolders.isEmpty())
+				return project;  // default source folder is the project
+
+			for (IContainer container = file.getParent(); container != project; container = container.getParent())
+				if (nedSourceFolders.contains(container))
+					return container;
+		}
+    	return null;
+	}
+
+	protected boolean isOmnetppProject(IProject project) {
 		try {
-			if (!project.isNatureEnabled(OMNETPP_NATURE))
-				return null;  // missing project nature
+			// nature is both set and feeling well
+			return project.isNatureEnabled(OMNETPP_NATURE);
 		} 
 		catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
-		
-		List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
-    	if (nedSourceFolders == null || nedSourceFolders.isEmpty())
-    		return project;  // default source folder is the project
-    	
-    	for (IContainer container = file.getParent(); container != project; container = container.getParent())
-    		if (nedSourceFolders.contains(container))
-    			return container;
-
-    	return null;
 	}
 
 	public String getExpectedPackageFor(IFile file) {

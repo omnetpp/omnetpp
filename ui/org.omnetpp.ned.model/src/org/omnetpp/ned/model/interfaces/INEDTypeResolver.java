@@ -58,7 +58,16 @@ public interface INEDTypeResolver {
      */
 	public IFile getNedFile(NedFileElementEx nedFileElement);
 
- 	/**
+    /**
+     * Returns the NED source folders for the given project. This is
+     * the list of folders in the ".nedfolders" file, or the project
+     * alone if ".nedfolders" does not exist or empty. An empty array 
+     * is returned if the project is not an OMNeT++ project (does not 
+     * have the omnetpp nature, or it is not enabled for some reason). 
+     */
+	public IContainer[] getNedSourceFolders(IProject project);
+
+    /**
 	 * Returns the NED source folder for the given NED file. Returns null if the 
 	 * file is outside the project's NED source folders, or the project itself
 	 * does not have the OMNeT++ nature, or that nature is disabled (see 
