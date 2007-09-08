@@ -179,7 +179,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		String name = node.getImportSpec();
 		if (!name.contains("*")) {
 			// not a wildcard import: must match a type
-			if (resolver.getNedType(name) == null)
+			if (resolver.getToplevelNedType(name) == null)
 				errors.addError(node, "imported NED type not found: '" + name+"'");
 		}
 		else {
@@ -603,7 +603,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 		else {
 			// fallback: type is BasicChannel
-			channelSpecType = resolver.getNedType("ned.cBasicChannel");
+			channelSpecType = resolver.getToplevelNedType("ned.cBasicChannel");
 			Assert.isTrue(channelSpecType!=null);
 		}
 

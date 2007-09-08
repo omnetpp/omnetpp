@@ -310,7 +310,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return getNedTypeQNames(CHANNELINTERFACE_FILTER);
     }
 
-	public synchronized INEDTypeInfo getNedType(String qualifiedName) {
+	public synchronized INEDTypeInfo getToplevelNedType(String qualifiedName) {
 		rehashIfNeeded();
 		return components.get(qualifiedName);
 	}

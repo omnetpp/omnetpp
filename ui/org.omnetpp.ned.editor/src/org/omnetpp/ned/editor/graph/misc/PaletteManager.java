@@ -225,7 +225,7 @@ public class PaletteManager implements INEDChangeListener {
         Collections.sort(typeNames, StringUtils.dictionaryComparator);
 
         for (String name : typeNames) {
-            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getNedType(name).getNEDElement();
+            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelNedType(name).getNEDElement();
 
             // skip this type if it is a top level network
             if (typeElement instanceof CompoundModuleElementEx &&
@@ -309,7 +309,7 @@ public class PaletteManager implements INEDChangeListener {
         Collections.sort(channelNames, StringUtils.dictionaryComparator);
 
         for (String fullyQualifiedName : channelNames) {
-            INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getNedType(fullyQualifiedName);
+            INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getToplevelNedType(fullyQualifiedName);
             INEDElement modelElement = typeInfo.getNEDElement();
             boolean isInterface = modelElement instanceof ChannelInterfaceElement;
 

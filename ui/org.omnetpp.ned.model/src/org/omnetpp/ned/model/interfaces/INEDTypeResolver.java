@@ -52,7 +52,7 @@ public interface INEDTypeResolver {
 	public NedFileElementEx getNedFileElement(IFile file);
 
     /**
-     * XXX todo
+     * Returns the file this NED element is in.
      */
 	public IFile getNedFile(NedFileElementEx nedFileElement);
 
@@ -118,7 +118,7 @@ public interface INEDTypeResolver {
      * Return a NED type from its fully qualified name. Inner types are
      * NOT recognized. Returns null if not found.
      */
-    public INEDTypeInfo getNedType(String qualifiedName);
+    public INEDTypeInfo getToplevelNedType(String qualifiedName);
 
 	/**
      * Return a NED type from its fully qualified name, whether toplevel

@@ -92,7 +92,7 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 	 */
 	protected void resolveImport(String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
 		// name is in the same package as this file, no need to add an import
-		if (NEDResourcesPlugin.getNEDResources().getNedType(packagePrefix + unqualifiedTypeName) != null)
+		if (NEDResourcesPlugin.getNEDResources().getToplevelNedType(packagePrefix + unqualifiedTypeName) != null)
 			return;
 
 		// find all potential types
