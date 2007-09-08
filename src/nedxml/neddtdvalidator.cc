@@ -32,8 +32,7 @@ void NEDDTDValidator::validateElement(NedFileNode *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
-        {{NED_PACKAGE, NED_NULL}, '?'},
-        {{NED_IMPORT, NED_PROPERTY_DECL, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
+        {{NED_PACKAGE, NED_IMPORT, NED_PROPERTY_DECL, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 

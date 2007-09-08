@@ -206,18 +206,25 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
     *d = '\0';
 
     // Only in NED2 are curly braces {} and "@" allowed and widely used.
-    // If a NED2 source doesn't contain none of those, it might only contain
-    // imports (but what for?), and may as well be parsed as old NED.
-    // Note: searching for keywords would not be a bulletproof solution because
-    // old NED keywords are not reserved in NED2; moreover we'd have to search
-    // "whole words only" so strstr() is no good.
+    //
+    bool containsNED2Chars = strchr(buf,'{') || strchr(buf,'}') || strchr(buf,'@');
 
-    bool isNewSyntax = whitespaceOnly || strchr(buf,'{') || strchr(buf,'}') || strchr(buf,'@');
+    // If needed, check whether it contains the keyword "package";
+    // it is only used in NED2. We have to search "whole words only",
+    // so plain strstr() is not enough.
+    // Note: this is not bulletproof, because NED2 keywords were not
+    // reserved in NED1.
+    //
+    bool containsPackageKeyword=false;
+    if (!containsNED2Chars)
+        for (const char *s = strstr(buf,"package"); s!=NULL; s = strstr(s+1,"package"))
+            if (isspace(s[strlen("package")]) && (s==buf || isspace(s[-1])))
+                {containsPackageKeyword=true; break;}
 
     // cleanup
     delete [] buf;
 
-    return isNewSyntax;
+    return whitespaceOnly || containsNED2Chars || containsPackageKeyword;
 }
 
 void NEDParser::error(const char *msg, int line)

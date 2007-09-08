@@ -59,9 +59,10 @@ public class SimulationLauncherJob extends Job {
     protected IStatus run(IProgressMonitor monitor) {
         SubMonitor smon;
         try {
-                smon = SubMonitor.convert(monitor, "", 1);
-                launchSimulation(configuration, launch, smon.newChild(1), runNo);
-        } catch (CoreException e) {
+        	smon = SubMonitor.convert(monitor, "", 1);
+        	launchSimulation(configuration, launch, smon.newChild(1), runNo);
+        } 
+        catch (CoreException e) {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();

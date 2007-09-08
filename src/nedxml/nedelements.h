@@ -188,7 +188,7 @@ class NEDXML_API FilesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ned-file (comment*, package?, (import|property-decl|property|channel|
+ * <!ELEMENT ned-file (comment*, (package|import|property-decl|property|channel|
  *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
