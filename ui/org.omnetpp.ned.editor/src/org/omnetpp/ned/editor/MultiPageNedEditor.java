@@ -41,11 +41,10 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Multi-page NED editor.
- * MultiPageNedEditor binds the two separate NED based editor together. Both the text and the graphical
- * editor maintains its own model independent of each other. The two model should be synchronized during
- * page change / or save operation. Additionally the model should be put back into the NEDResources, so
- * name lookup and other services will work correctly. Save is done by delegation to the Text editor's save
- * method (i.e. The graphical editor itself cannot save its model, the multipage editor must first obtain
+ * MultiPageNedEditor binds the two separate NED-based editors together. Both the text and the graphical
+ * editor maintain their own models independent of each other.
+ * Saving is done by delegation to the text editor's save method (i.e. the graphical
+ * editor itself cannot save its model, the multipage editor must first obtain
  * the model from the graphical editor, convert to text and pass it to the Text based editor and then
  * call the Text editor to save its content. When setting the input of the multipage editor both
  * embedded editor should be notified (i.e. setInput must be delegated)
@@ -114,6 +113,10 @@ public class MultiPageNedEditor
     protected void setInput(IEditorInput newInput) {
 		//System.out.println("setInput()");
 
+    	//FIXME it should be checked that the file is a valid NED file (inside an 
+    	// OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it. 
+    	// Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
+    	
 		IEditorInput oldInput = getEditorInput();
 		if (ObjectUtils.equals(oldInput, newInput))
             return; // no change
