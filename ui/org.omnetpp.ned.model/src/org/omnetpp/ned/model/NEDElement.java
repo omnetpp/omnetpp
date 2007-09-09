@@ -641,6 +641,14 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		return consistencyProblemMaxCumulatedSeverity;
 	}
 
+    public boolean hasSyntaxError() {
+    	return getSyntaxProblemMaxCumulatedSeverity() == IMarker.SEVERITY_ERROR;
+	}
+
+    public boolean hasConsistencyError() {
+    	return getConsistencyProblemMaxCumulatedSeverity() == IMarker.SEVERITY_ERROR;
+	}
+
 	public int getMaxProblemSeverity() {
     	return Math.max(getSyntaxProblemMaxCumulatedSeverity(), getConsistencyProblemMaxCumulatedSeverity());
     }

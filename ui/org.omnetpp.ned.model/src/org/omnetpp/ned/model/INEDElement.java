@@ -369,6 +369,18 @@ public interface INEDElement extends Iterable<INEDElement> {
     public void setConsistencyProblemMaxLocalSeverity(int severity);
 
     /**
+     * Convenience method: returns true if this element or any element below
+     * contains a syntax error. Based on getSyntaxProblemMaxCumulatedSeverity().
+     */
+    public boolean hasSyntaxError();
+
+    /**
+     * Convenience method: returns true if this element or any element below
+     * contains a consistency error. Based on getConsistencyProblemMaxCumulatedSeverity().
+     */
+    public boolean hasConsistencyError();
+    
+    /**
      * Convenience method: returns the maximum severity of NED or NED consistency
      * problems on this element or any element below.
      */

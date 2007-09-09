@@ -3,7 +3,6 @@ package org.omnetpp.ned.model.ex;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
@@ -31,17 +30,21 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 		super(parent);
 	}
     
+    /**
+     * Returns true if this NED file element has the readonly bit set.
+     * Any change within the tree of a read-only NED file element will 
+     * cause an assertion error.
+     */
     public boolean isReadOnly() {
     	return readOnly;
 	}
     
+    /**
+     * Sets the readonly bit on this NED file element.
+     */
     public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
 		fireModelEvent(new NEDModelReadOnlyEvent(this, readOnly));
-	}
-    
-    public boolean hasSyntaxError() {
-    	return getSyntaxProblemMaxCumulatedSeverity() == IMarker.SEVERITY_ERROR;
 	}
 
 	/**
