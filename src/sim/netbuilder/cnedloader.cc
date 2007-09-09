@@ -36,6 +36,10 @@
 #include "cdynamicchanneltype.h"
 #include "cdisplaystring.h"
 
+#include "stringutil.h"
+#include "fileutil.h"
+#include "fileglobber.h"
+
 cNEDLoader *cNEDLoader::instance_;
 
 cNEDLoader *cNEDLoader::instance()
@@ -163,6 +167,9 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
 
 void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
 {
+    if (getFile(nedfname))
+        return;  // already loaded
+
     // parse file
     NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
 
@@ -172,10 +179,48 @@ void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
     }
     catch (NEDException& e)
     {
-        throw cRuntimeError("NED error: %s", e.what()); // FIXME or something
+        throw cRuntimeError("NED error: %s", e.what());
     }
 }
 
+int cNEDLoader::loadNedSourceFolder(const char *foldername)
+{
+    try
+    {
+        //FIXME somehow store what's the NED source folder with each file, so we can check if everything is in the right package?
+        return doLoadNedSourceFolder(foldername);
+    }
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Error loading NED sources from `%s': %s", foldername, e.what());
+    }
+}
+
+int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
+{
+    PushDir pushDir(foldername);
+    int count = 0;
+
+    FileGlobber globber("*");
+    const char *filename;
+    while ((filename=globber.getNext())!=NULL)
+    {
+        if (filename[0] == '.')
+        {
+            continue;  // ignore ".", "..", and dotfiles
+        }
+        if (isDirectory(filename))
+        {
+            count += doLoadNedSourceFolder(filename);
+        }
+        else if (opp_stringendswith(filename, ".ned"))
+        {
+            loadNedFile(filename, false);
+            count++;
+        }
+    }
+    return count;
+}
 
 bool cNEDLoader::areDependenciesResolved(NEDElement *node)
 {

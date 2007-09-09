@@ -206,6 +206,20 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     void loadNedFile(const char *nedfile, bool isXML=false);
 
     /**
+     * Load all NED files from a NED source folder. This involves visiting
+     * each subdirectory, and loading all "*.ned" files from there.
+     * The given folder is assumed to be the root of the NED package hierarchy.
+     * The return value is the number of NED files loaded.
+     *
+     * These functions delegate to the netbuilder part of the simulation kernel,
+     * and they are present so that cEnvir and other libs outside the simkernel
+     * don't need to directly depend on nedxml or netbuilder classes, and
+     * conditional compilation (#ifdef WITH_NETBUILDER) can be limited to the
+     * simkernel.
+     */
+    int loadNedSourceFolder(const char *folder);
+
+    /**
      * Should be called after the last loadNedFile() call. This method warns
      * if there are still NED components which could not be fully resolved
      * due to missing super types or interfaces.

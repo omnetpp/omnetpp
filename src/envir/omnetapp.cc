@@ -79,6 +79,13 @@
 
 #endif
 
+#ifdef _WIN32
+#define PATH_SEPARATOR   ";"
+#else
+#define PATH_SEPARATOR   ":;"
+#endif
+
+
 using std::ostream;
 
 
@@ -107,6 +114,7 @@ Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "
 Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", CFG_BOOL, "false", "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
 Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
+Register_GlobalConfigEntry(CFGID_NED_PATH, "ned-path", CFG_STRING, "", "A semicolon-separated list of directories which will be appended to the NEDPATH environment variable. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from the subdirectories under them.");
 
 Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.");
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
@@ -287,7 +295,27 @@ void TOmnetApp::setup()
 #endif
          }
 
-         // preload NED files
+         // load NED files from folders in the NEDPATH environment variable and
+         // the "ned-path=" config entry
+         const char *nedpath1 = getenv("NEDPATH");
+         if (!nedpath1) nedpath1 = ".";
+         std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
+         std::string nedpath = std::string(nedpath1) + ";" + nedpath2;
+         StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
+         std::set<std::string> foldersloaded;
+         while (tokenizer.hasMoreTokens())
+         {
+             const char *folder = tokenizer.nextToken();
+             if (foldersloaded.find(folder)==foldersloaded.end())
+             {
+                 ev.printf("Loading NED files from %s:", folder); ev.flush();
+                 int count = simulation.loadNedSourceFolder(folder);
+                 ev.printf(" %d\n", count);
+                 foldersloaded.insert(folder);
+             }
+         }
+
+         // load NED files from the (obsolete) "preload-ned-files=" config entry
          std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
          if (!nedfiles.empty())
          {

@@ -58,6 +58,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
     cNEDDeclaration *buildNEDDeclaration(const char *qname, NEDElement *node);
+    int doLoadNedSourceFolder(const char *foldername);
 
     // constructor is protected, because we want only one instance
     cNEDLoader();
@@ -91,6 +92,14 @@ class SIM_API cNEDLoader : public NEDResourceCache
      * Invokes base class's addNEDFile() internally.
      */
     void loadNedFile(const char *nedfname, bool isXML);
+
+    /**
+     * Load all NED files from a NED source folder. This involves visiting
+     * each subdirectory, and loading all "*.ned" files from there.
+     * The given folder is assumed to be the root of the NED package hierarchy.
+     * Returns the number of files loaded.
+     */
+    int loadNedSourceFolder(const char *foldername);
 
     /**
      * Issues errors for components that are still unresolved because of

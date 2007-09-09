@@ -249,6 +249,16 @@ void cSimulation::loadNedFile(const char *nedfile, bool isXML)
 #endif
 }
 
+int cSimulation::loadNedSourceFolder(const char *folder)
+{
+#ifdef WITH_NETBUILDER
+    return cNEDLoader::instance()->loadNedSourceFolder(folder);
+#else
+    throw cRuntimeError("cannot load NED files from `%s': simulation kernel was compiled without "
+                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
+#endif
+}
+
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
