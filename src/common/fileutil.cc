@@ -19,8 +19,13 @@
 #else
 #include <unistd.h>
 #endif
+#include <sys/stat.h>
+#include <string>
+#include <vector>
 
 #include "fileutil.h"
+#include "stringtokenizer.h"
+#include "exception.h"
 
 void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
@@ -60,30 +65,60 @@ std::string directoryOf(const char *pathname)
 
 std::string tidyFilename(const char *pathname, bool slashes)
 {
-    char *buf = new char[strlen(pathname)+1];
 #ifdef _WIN32
-    const char DELIM= slashes ? '/' : '\\';
+    const char *DELIM = slashes ? "/" : "\\";
 #else
-    const char DELIM='/';
+    const char *DELIM = "/";
 #endif
-    const char *s = pathname;
-    char *d = buf;
-    while (*s)
+    // remove any prefix that needs to be treated specially: leading "/", drive letter etc.
+    std::string prefix;
+    int prefixlen = 0;
+    if ((pathname[0]=='/' || pathname[0]=='\\') && (pathname[1]=='/' || pathname[1]=='\\')) {
+        prefix = std::string(DELIM) + DELIM;
+        prefixlen = 2;
+    }
+    else if (pathname[0]=='/' || pathname[0]=='\\') {
+        prefix = DELIM;
+        prefixlen = 1;
+    }
+    else if (pathname[0] && pathname[1]==':' && (pathname[2]=='/' || pathname[2]=='\\')) {
+        prefix = std::string(pathname, 2) + DELIM;
+        prefixlen = 3;
+    }
+    else if (pathname[0] && pathname[1]==':') {
+        prefix = std::string(pathname, 2);
+        prefixlen = 2;
+    }
+
+    // split it to segments, so that we can normalize ".."'s
+    // Note: tokenizer will also swallow multiple slashes
+    std::vector<std::string> segments;
+    StringTokenizer tokenizer(pathname+prefixlen, "/\\");
+    while (tokenizer.hasMoreTokens())
     {
-        if (*s=='\\' || *s=='/')
-        {
-            do {s++;} while (*s=='\\' || *s=='/');
-            *d++ = DELIM;
+        const char *segment = tokenizer.nextToken();
+        if (!strcmp(segment, "."))
+            continue; // ignore "."
+        if (!strcmp(segment, "..")) {
+            const char *lastsegment = segments.empty() ? NULL : segments.back().c_str();
+            bool canPop = lastsegment!=NULL &&
+                          strcmp(lastsegment, "..")!=0 &&  // don't pop ".."
+                          strchr(lastsegment, ':')==NULL;  // hostname prefix or something, don't pop
+            if (canPop)
+                segments.pop_back();
+            else
+                segments.push_back(segment);
         }
-        else
-        {
-            *d++ = *s++;
+        else {
+            segments.push_back(segment);
         }
     }
-    *d = '\0';
-    std::string ret = buf;
-    delete [] buf;
-    return ret;
+
+    // reassemble from segments
+    std::string result = prefix + (segments.empty() ? "." : segments[0]);
+    for (int i=1; i<(int)segments.size(); i++)
+        result = result + DELIM + segments[i];
+    return result;
 }
 
 std::string absolutePath(const char *pathname)
@@ -148,4 +183,34 @@ std::string concatDirAndFile(const char *basedir, const char *pathname)
 #endif
 }
 
+bool isDirectory(const char *pathname)
+{
+    struct stat statbuf;
+    if (stat(pathname, &statbuf) != 0)
+        throw opp_runtime_error("cannot stat file '%s': %s", pathname, _strerror(NULL));
+    return statbuf.st_mode & _S_IFDIR;
+}
+
+//----
+
+PushDir::PushDir(const char *changetodir)
+{
+    if (!changetodir)
+        return;
+    char buf[1024];
+    if (!getcwd(buf,1024))
+        throw opp_runtime_error("cannot get the name of current directory");
+    if (chdir(changetodir))
+        throw opp_runtime_error("cannot temporarily change to directory `%s' (does it exist?)", changetodir);
+    olddir = buf;
+}
+
+PushDir::~PushDir()
+{
+    if (!olddir.empty())
+    {
+        if (chdir(olddir.c_str()))
+            throw opp_runtime_error("cannot change back to directory `%s'", olddir.c_str());
+    }
+}
 

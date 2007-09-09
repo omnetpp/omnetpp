@@ -45,7 +45,7 @@ StringTokenizer::~StringTokenizer()
 void StringTokenizer::setDelimiter(const char *delim)
 {
     if (!delim || !*delim)
-        delim = " ";
+        delim = " \t\n\r\f";
     delimiter = delim;
 }
 
