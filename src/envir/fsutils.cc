@@ -22,27 +22,6 @@
 #include "onstartup.h"
 #include "cexception.h"
 
-PushDir::PushDir(const char *changetodir)
-{
-    if (!changetodir)
-        return;
-    olddir.reserve(1024);
-    if (!getcwd(olddir.buffer(),1024))
-        throw cRuntimeError("Cannot get the name of current directory");
-    if (chdir(changetodir))
-        throw cRuntimeError("Cannot temporarily change to directory `%s' (does it exist?)", changetodir);
-}
-
-PushDir::~PushDir()
-{
-    if (!olddir.empty())
-    {
-        if (chdir(olddir.c_str()))
-            throw cRuntimeError("Cannot change back to directory `%s'", olddir.c_str());
-    }
-}
-
-//------------
 
 void loadExtensionLibrary(const char *lib)
 {

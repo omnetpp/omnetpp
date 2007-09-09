@@ -20,23 +20,6 @@
 #define __FSUTILS_H
 
 #include "util.h"
-#include "opp_string.h"
-
-//FIXME move to "common" lib
-
-/**
- * Utility class for temporary change of directory. Changes back to
- * original dir when goes out of scope. Does nothing if NULL is passed
- * to the constructor.
- */
-class ENVIR_API PushDir
-{
-  private:
-    opp_string olddir;
-  public:
-    PushDir(const char *changetodir);
-    ~PushDir();
-};
 
 /**
  * Utility function: dynamically loads a DLL (Windows) or shared object
