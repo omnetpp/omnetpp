@@ -37,6 +37,7 @@
 //XXX #include "nedcompiler.h"
 #include "fileglobber.h"
 #include "fileutil.h"
+#include "stringutil.h"
 #include "platmisc.h"   // getcwd, chdir
 #include "../utils/ver.h"
 
@@ -175,13 +176,13 @@ bool processFile(const char *fname, NEDErrorStore *errors)
     int ftype = opt_nextfiletype;
     if (ftype==UNKNOWN_FILE)
     {
-        if (!strcmp(".ned", fname+strlen(fname)-4))
+        if (opp_stringendswith(fname, ".ned"))
             ftype=NED_FILE;
-        if (!strcmp(".msg", fname+strlen(fname)-4))
+        else if (opp_stringendswith(fname, ".msg"))
             ftype=MSG_FILE;
-        if (!strcmp(".xml", fname+strlen(fname)-4))
+        else if (opp_stringendswith(fname, ".xml"))
             ftype=XML_FILE;
-        if (ftype==UNKNOWN_FILE)
+        else
             ftype=NED_FILE;
     }
 

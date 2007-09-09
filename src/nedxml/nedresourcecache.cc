@@ -17,6 +17,7 @@
 #include <string.h>
 #include "nederror.h"
 #include "nedresourcecache.h"
+#include "fileutil.h"
 
 
 NEDResourceCache::NEDResourceCache()
@@ -31,22 +32,24 @@ NEDResourceCache::~NEDResourceCache()
         delete i->second;
 }
 
-bool NEDResourceCache::addFile(const char *name, NEDElement *node)
+bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
 {
-    NEDFileMap::iterator it = files.find(name);
+    std::string key = tidyFilename(absolutePath(fname).c_str());
+    NEDFileMap::iterator it = files.find(key);
     if (it!=files.end())
-        return false;
+        return false; // already added
 
-    files[name] = node;
+    files[key] = node;
 
     collectComponents(node, "");
     return true;
 }
 
-NEDElement *NEDResourceCache::getFile(const char *name)
+NEDElement *NEDResourceCache::getFile(const char *fname)
 {
     // hash table lookup
-    NEDFileMap::iterator i = files.find(name);
+    std::string key = tidyFilename(absolutePath(fname).c_str());
+    NEDFileMap::iterator i = files.find(key);
     return i==files.end() ? NULL : i->second;
 }
 
@@ -84,3 +87,4 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
         }
     }
 }
+

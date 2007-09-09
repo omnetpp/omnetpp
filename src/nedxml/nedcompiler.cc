@@ -24,6 +24,7 @@
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedsemanticvalidator.h"
+#include "stringutil.h"
 
 
 // luckily, "/" satisfies windows too :)
@@ -44,7 +45,7 @@ NEDElement *NEDClassicImportResolver::loadImport(const char *import)
     std::string fname = import;
 
     // add ".ned" suffix if it doesn't have one
-    if (strlen(import)<4 || strcmp(import+strlen(import)-4, ".ned"))
+    if (!opp_stringendswith(import, ".ned"))
         fname += ".ned";
 
     // try to find import file: first in local dir

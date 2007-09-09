@@ -66,10 +66,10 @@ class NEDXML_API NEDResourceCache
      * was already added, no processing takes place and the function
      * returns false; otherwise it returns true.
      */
-    virtual bool addFile(const char *name, NEDElement *node);
+    virtual bool addFile(const char *fname, NEDElement *node);
 
     /** Get a file (represented as object tree) from the cache */
-    virtual NEDElement *getFile(const char *name);
+    virtual NEDElement *getFile(const char *fname);
 
     /** Get a component by fully qualified name from the cache */
     virtual NEDComponent *lookup(const char *qname) const;
