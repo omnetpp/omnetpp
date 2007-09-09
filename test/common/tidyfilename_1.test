@@ -1,0 +1,77 @@
+%description:
+Tests tidyFilename() h function
+
+%global:
+#include "fileutil.h"
+
+static void tidy(const char *fname, bool slashes=true)
+{
+    ev << fname << " -> " << tidyFilename(fname, slashes) << "\n";
+}
+
+%activity:
+tidy(".");
+tidy("..");
+tidy("../../.");
+tidy("./../../.");
+
+tidy("dir");
+tidy("dir//");
+tidy("./dir");
+tidy("../dir");
+tidy("dir/..");
+tidy("dir1/dir2/..");
+tidy("dir1/../dir2");
+tidy("dir1/../..");
+tidy("dir1/../../..");
+
+tidy("c:dir");
+tidy("c:./dir");
+tidy("c:../dir");
+tidy("c:dir/..");
+tidy("c:dir1/dir2/..");
+tidy("c:dir1/../dir2");
+tidy("c:dir1/../..");
+tidy("c:dir1/../../..");
+
+tidy("/usr");
+tidy("/usr/bin");
+tidy("/usr/bin/..");
+tidy("/usr/bin/../..");
+tidy("/usr/bin/../../..");
+tidy("/usr/.///");
+
+tidy("c:/tmp/queuenet/node.ned");
+tidy("c://tmp/queuenet//node.ned");
+tidy("c:/./tmp/queuenet/./node.ned");
+tidy("c:/./tmp/../queuenet/node.ned");
+tidy("c:/./tmp/../queuenet/../node.ned");
+tidy("c:/./tmp/queuenet/../../node.ned");
+tidy("c:/./tmp/queuenet/../../../node.ned");
+ev << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+. ->
+.. -> ..
+../../. ->
+./../../. ->
+dir -> dir
+./dir -> dir
+../dir -> ..\dir
+dir/.. ->
+dir1/dir2/.. -> dir1
+dir1/../dir2 -> dir2
+
+
+c:/tmp/queuenet/node.ned -> c:\tmp\queuenet\node.ned
+c://tmp/queuenet//node.ned -> c:\tmp\queuenet\node.ned
+c:/./tmp/queuenet/./node.ned -> c:\tmp\queuenet\node.ned
+c:/./tmp/../queuenet/node.ned -> c:\queuenet\node.ned
+c:/./tmp/../queuenet/../node.ned -> c:\node.ned
+c:/./tmp/queuenet/../../node.ned -> c:\node.ned
+c:/./tmp/queuenet/../../../node.ned -> c:\..\node.ned
+.
+.
+
