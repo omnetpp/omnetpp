@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -194,11 +196,18 @@ public class LaunchPlugin extends AbstractUIPlugin {
      *
      * @param configuration
      * @param additionalArgs extra command line arguments to be prepended to the command line
+     * @param requestInfo Seting it to true runs the process in "INFO" mode (replaces the -c arg width -x)
      * @return The created process object,
      * @throws CoreException if process is not started correctly
      */
-    public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
+    public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, boolean requestInfo) throws CoreException {
         String[] cmdLine = createCommandLine(configuration, additionalArgs);
+
+        if (requestInfo) {
+            int i = ArrayUtils.indexOf(cmdLine, "-c");
+            Assert.isTrue(i >= 0);
+            cmdLine[i] = "-x";
+        }
 
         IStringVariableManager varman2 = VariablesPlugin.getDefault().getStringVariableManager();
         String wdAttr = LaunchPlugin.getWorkingDirectoryPath(configuration).toString();
@@ -232,7 +241,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
      */
     public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
         try {
-        	 Process proc = LaunchPlugin.startSimulationProcess(configuration, "-u Cmdenv -n -g");
+        	 Process proc = LaunchPlugin.startSimulationProcess(configuration, "-u Cmdenv -g", true);
              final int BUFFERSIZE = 8192;
              byte bytes[] = new byte[BUFFERSIZE];
              StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);

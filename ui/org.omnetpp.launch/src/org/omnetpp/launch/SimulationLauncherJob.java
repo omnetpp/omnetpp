@@ -61,7 +61,7 @@ public class SimulationLauncherJob extends Job {
         try {
         	smon = SubMonitor.convert(monitor, "", 1);
         	launchSimulation(configuration, launch, smon.newChild(1), runNo);
-        } 
+        }
         catch (CoreException e) {
             return Status.CANCEL_STATUS;
         } finally {
@@ -82,7 +82,7 @@ public class SimulationLauncherJob extends Job {
         monitor.subTask("run #"+runNo+" - Initializing...");
         monitor.setWorkRemaining(100);
 
-        Process process = LaunchPlugin.startSimulationProcess(configuration, " -r "+runNo);
+        Process process = LaunchPlugin.startSimulationProcess(configuration, " -r "+runNo, false);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
         iprocess.setAttribute(IProcess.ATTR_CMDLINE, StringUtils.join(LaunchPlugin.createCommandLine(configuration, " -r "+runNo)," "));
         // if we don't want to wait for finishing the process, just exit
