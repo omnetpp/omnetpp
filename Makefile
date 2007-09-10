@@ -127,4 +127,5 @@ makefiles:
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f)); \
 	done
+	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
