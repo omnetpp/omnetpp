@@ -7,6 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
+import org.omnetpp.samples.queueing.Queue;
+import org.omnetpp.samples.queueing.Sink;
+import org.omnetpp.samples.queueing.Source;
 
 //
 // This is queueing network consists of several queues, connected in tandem.
@@ -19,19 +22,19 @@ network TandemQueue
     submodules:
         source: Source {
             @display("p=32.0,74.0");
-        };
+        }
         queue: Queue {
             @display("p=127.0,74.0");
-        };
+        }
         queue1: Queue {
             @display("p=227.0,74.0");
-        };
+        }
         queue2: Queue {
             @display("p=328.0,74.0");
-        };
+        }
         sink: Sink {
             @display("p=430.0,74.0");
-        };
+        }
     connections:
         source.out --> queue.in++;
         queue.out --> queue1.in++;

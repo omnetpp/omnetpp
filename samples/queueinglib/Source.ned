@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
+package org.omnetpp.samples.queueing;
 
 //
 // A module that generates messages. You can set the number of messages to be genereated,

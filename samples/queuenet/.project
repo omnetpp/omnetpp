@@ -3,6 +3,7 @@
 	<name>queuenet</name>
 	<comment></comment>
 	<projects>
+		<project>queueinglib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

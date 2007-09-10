@@ -7,6 +7,14 @@
 // `license' for details on this and other legal matters.
 //
 
+import org.omnetpp.samples.queueing.Classifier;
+import org.omnetpp.samples.queueing.Delay;
+import org.omnetpp.samples.queueing.PQueue;
+import org.omnetpp.samples.queueing.Router;
+import org.omnetpp.samples.queueing.Server;
+import org.omnetpp.samples.queueing.Sink;
+import org.omnetpp.samples.queueing.Source;
+
 
 //
 // A call center simulation.
@@ -18,48 +26,48 @@ network CallCenter
     submodules:
         hangingUp: Sink {
             @display("p=131.0,330.0");
-        };
+        }
         switchingDelay: Delay {
             @display("p=282.0,323.0");
-        };
+        }
         router: Router {
             @display("p=490.0,236.0");
             gates:
                 out[2];
-        };
+        }
         callServed: Sink {
             @display("p=559.0,134.0");
-        };
+        }
         operator1: Server {
             @display("p=366.0,26.0");
-        };
+        }
         billing: PQueue {
             @display("p=225.0,27.0");
-        };
+        }
         classifier: Classifier {
             @display("p=130.0,236.0");
-        };
+        }
         incomingCall: Source {
             @display("p=34.0,236.0");
-        };
+        }
         marketing: PQueue {
             @display("p=225.0,104.0");
-        };
+        }
         techicalSupport: PQueue {
             @display("p=225.0,169.0");
-        };
+        }
         internal: PQueue {
             @display("p=225.0,236.0");
-        };
+        }
         operator2: Server {
             @display("p=366.0,104.0");
-        };
+        }
         operator3: Server {
             @display("p=366.0,169.0");
-        };
+        }
         operator4: Server {
             @display("p=366.0,236.0");
-        };
+        }
     connections:
         incomingCall.out --> classifier.in++;
         classifier.out++ --> billing.in++;

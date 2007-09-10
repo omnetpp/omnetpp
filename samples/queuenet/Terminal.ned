@@ -7,6 +7,12 @@
 // `license' for details on this and other legal matters.
 //
 
+import org.omnetpp.samples.queueing.Classifier;
+import org.omnetpp.samples.queueing.Delay;
+import org.omnetpp.samples.queueing.PQueue;
+import org.omnetpp.samples.queueing.Server;
+import org.omnetpp.samples.queueing.Sink;
+import org.omnetpp.samples.queueing.Source;
 
 //
 // The model demonstrates a queueing network. While the model is an abstract
@@ -58,37 +64,37 @@ network Terminal
     submodules:
         clerk: Server {
             @display("p=448.0,132.0");
-        };
+        }
         toOtherTerminal: Sink {
             @display("p=124.0,225.0");
-        };
+        }
         firstClass: PQueue {
             @display("p=329.0,39.0");
-        };
+        }
         businessClass: PQueue {
             @display("p=329.0,132.0");
-        };
+        }
         economyClass: PQueue {
             @display("p=329.0,225.0");
-        };
+        }
         delay1: Delay {
             @display("p=222.0,39.0");
-        };
+        }
         delay2: Delay {
             @display("p=222.0,132.0");
-        };
+        }
         delay3: Delay {
             @display("p=222.0,225.0");
-        };
+        }
         classifier: Classifier {
             @display("p=124.0,132.0");
-        };
+        }
         boarding: Sink {
             @display("p=546.0,132.0;i=block/departure");
-        };
+        }
         arrival: Source {
             @display("p=32.0,132.0;i=block/arrival");
-        };
+        }
     connections:
         arrival.out --> classifier.in++;
         classifier.out++ --> delay1.in++;

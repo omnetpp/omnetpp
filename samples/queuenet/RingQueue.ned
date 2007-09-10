@@ -8,6 +8,10 @@
 //
 
 
+import org.omnetpp.samples.queueing.Queue;
+import org.omnetpp.samples.queueing.Source;
+
+
 //
 // This is a closed ring network.
 // Based on the idea from Nicky van Foreest (vanforeest@gmail.com)
@@ -17,30 +21,30 @@ network RingQueue
     parameters:
         @display("i=device/lan-ring");
     gates:
-    	input in[5];
-    	output out[5];
+        input in[5];
+        output out[5];
     submodules:
         source1: Source {
             @display("p=370.0,36.0");
-        };
+        }
         source: Source {
             @display("p=54.0,45.0");
-        };
+        }
         queue: Queue {
             @display("p=110.0,124.0");
-        };
+        }
         queue1: Queue {
             @display("p=139.0,241.0");
-        };
+        }
         queue2: Queue {
             @display("p=282.0,251.0");
-        };
+        }
         queue3: Queue {
             @display("p=327.0,134.0");
-        };
+        }
         queue4: Queue {
             @display("p=232.0,64.0");
-        };
+        }
     connections:
         queue4.out --> queue.in++;
         queue.out --> queue1.in++;

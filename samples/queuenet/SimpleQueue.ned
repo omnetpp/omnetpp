@@ -7,6 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
+import org.omnetpp.samples.queueing.Queue;
+import org.omnetpp.samples.queueing.Sink;
+import org.omnetpp.samples.queueing.Source;
 
 //
 // This simple queueing network only contains a source, a FIFO queue and a sink.
@@ -18,13 +21,13 @@ network SimpleQueue
     submodules:
         sink: Sink {
             @display("p=276.0,79.0");
-        };
+        }
         queue: Queue {
             @display("p=165.0,79.0");
-        };
+        }
         source: Source {
             @display("p=50.0,79.0");
-        };
+        }
     connections:
         source.out --> queue.in++;
         queue.out --> sink.in++;
