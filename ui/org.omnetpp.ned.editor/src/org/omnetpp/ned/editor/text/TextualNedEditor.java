@@ -22,8 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
@@ -92,8 +94,79 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
     		}
         };
 
+	}
+
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	    super.init(site, input);
+        // listen on NED model changes
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+	}
+
+	@Override
+	protected void initializeKeyBindingScopes() {
         setKeyBindingScopes(KEY_BINDING_SCOPES);
 	}
+
+    /** The <code>TextualNedEditor</code> implementation of this
+     * <code>AbstractTextEditor</code> method performs any extra
+     * disposal actions required by the ned editor.
+     */
+    @Override
+    public void dispose() {
+        if (fOutlinePage != null)
+            fOutlinePage.setInput(null);
+        if (pullChangesJob != null)
+            pullChangesJob.cancel();
+
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
+        super.dispose();
+    }
+
+    /* (non-Javadoc)
+     * Method declared on AbstractTextEditor
+     */
+    @Override
+    protected void initializeEditor() {
+        super.initializeEditor();
+        //XXX for now NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
+     */
+    @Override
+    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+        fAnnotationAccess= createAnnotationAccess();
+        fOverviewRuler= createOverviewRuler(getSharedColors());
+
+        ISourceViewer viewer= new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+        // ensure decoration support has been created and configured.
+        getSourceViewerDecorationSupport(viewer);
+
+        return viewer;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+        ProjectionViewer viewer= (ProjectionViewer) getSourceViewer();
+        fProjectionSupport= new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
+        fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error");
+        fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning");
+        fProjectionSupport.install();
+        viewer.doOperation(ProjectionViewer.TOGGLE);
+        // we should set the selection provider as late as possible because the outer multipage editor overrides it
+        // during editor initialization
+        // install a selection provider that provides StructuredSelection of NEDModel elements in getSelection
+        // instead of ITestSelection
+        getSite().setSelectionProvider(new NedSelectionProvider(this));
+    }
 
     /**
      * Returns this plug-in's template store.
@@ -174,20 +247,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
 	/** The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method performs any extra
-	 * disposal actions required by the ned editor.
-	 */
-	@Override
-    public void dispose() {
-		if (fOutlinePage != null)
-			fOutlinePage.setInput(null);
-        if (pullChangesJob != null)
-        	pullChangesJob.cancel();
-        //XXX NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
-		super.dispose();
-	}
-
-	/** The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method performs any extra
 	 * revert behavior required by the ned editor.
 	 */
 	@Override
@@ -223,12 +282,10 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
 	@Override
     public void doSetInput(IEditorInput input) throws CoreException {
+        Assert.isNotNull(input, "Text editor cannot display NULL input");
 		super.doSetInput(input);
 		if (fOutlinePage != null)
 			fOutlinePage.setInput(input);
-		NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
-		if (input != null)
-			NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
 	}
 
 	/**
@@ -242,7 +299,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	 * Returns the content of the text editor
 	 */
 	public String getText() {
-		return getDocument().get();
+		return getDocument() != null ?  getDocument().get() : null;
 	}
 
     /**
@@ -256,7 +313,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		return ((IFileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileElementEx getNEDFileModelFromNEDResourcesPlugin() {
+	protected NedFileElementEx getModel() {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 
@@ -289,49 +346,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		return super.getAdapter(required);
 	}
 
-	/* (non-Javadoc)
-	 * Method declared on AbstractTextEditor
-	 */
-	@Override
-    protected void initializeEditor() {
-		super.initializeEditor();
-        //XXX for now NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
-		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
-	 */
-	@Override
-    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		fAnnotationAccess= createAnnotationAccess();
-		fOverviewRuler= createOverviewRuler(getSharedColors());
-
-		ISourceViewer viewer= new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
-		// ensure decoration support has been created and configured.
-		getSourceViewerDecorationSupport(viewer);
-
-		return viewer;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-    public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
-		ProjectionViewer viewer= (ProjectionViewer) getSourceViewer();
-		fProjectionSupport= new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error");
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning");
-		fProjectionSupport.install();
-		viewer.doOperation(ProjectionViewer.TOGGLE);
-        // we should set the selection provider as late as possible because the outer multipage editor overrides it
-        // during editor initialization
-        // install a selection provider that provides StructuredSelection of NEDModel elements in getSelection
-        // instead of ITestSelection
-        getSite().setSelectionProvider(new NedSelectionProvider(this));
-	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
@@ -379,7 +393,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
     	if (event.getSource() != null && !(event instanceof NEDMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
 			INEDElement nedFileElement = event.getSource().getContainingNedFileElement();
 
-			if (nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
+			if (nedFileElement == getModel())
 				pullChangesJob.restartTimer();
     	}
     }
@@ -424,8 +438,8 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 				Assert.isTrue(Display.getCurrent() != null);
 				System.out.println("texteditor: pulling changes from NEDResources");
 				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
-						getDocument(), getNEDFileModelFromNEDResourcesPlugin().getNEDSource());
-				TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing  
+						getDocument(), getModel().getNEDSource());
+				TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
 				//XXX then parse in again, and update line numbers with the resulting tree?
 			}
 		});

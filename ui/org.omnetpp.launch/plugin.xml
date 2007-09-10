@@ -40,5 +40,14 @@
          </placement>
       </tab>
    </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="description"
+            name="ned_source_path"
+            resolver="org.omnetpp.launch.NedSourcePathVariableResolver"
+            supportsArgument="false">
+      </variable>
+   </extension>
 
 </plugin>

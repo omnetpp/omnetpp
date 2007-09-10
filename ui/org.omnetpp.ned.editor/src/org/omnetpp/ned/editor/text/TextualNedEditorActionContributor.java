@@ -40,11 +40,11 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.");
 		fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 
-		fConvertToNewFormatAction = createRetargetAction("ConvertToNewFormat");
-		fFormatSourceAction = createRetargetAction("FormatSource");
-		fOrganizeImportsAction = createRetargetAction("OrganizeImports");
-		fToggleCommentAction = createRetargetAction("ToggleComment");
-		fCorrectIndentationAction = createRetargetAction("CorrectIndentation");
+		fConvertToNewFormatAction = createRetargetAction(ConvertToNewFormatAction.ID);
+		fFormatSourceAction = createRetargetAction(FormatSourceAction.ID);
+		fOrganizeImportsAction = createRetargetAction(OrganizeImportsAction.ID);
+		fToggleCommentAction = createRetargetAction(ToggleCommentAction.ID);
+		fCorrectIndentationAction = createRetargetAction(CorrectIndentationAction.ID);
 	}
 
 	private static RetargetTextEditorAction createRetargetAction(String id) {

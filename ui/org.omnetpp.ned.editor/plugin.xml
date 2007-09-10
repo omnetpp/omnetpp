@@ -3,15 +3,21 @@
 <plugin>
 
      <extension
-         point="org.eclipse.ui.editors">
+         point="org.eclipse.ui.editors"> 
       <editor
-            class="org.omnetpp.ned.editor.MultiPageNedEditor"
-            contributorClass="org.omnetpp.ned.editor.MultiPageNedEditorActionContributor"
             default="true"
             extensions="ned"
             icon="icons/nedfile.gif"
-            id="org.omnetpp.ned.editor"
+            id="org.omnetpp.ned.editor.launcher"
+            launcher="org.omnetpp.ned.editor.NedEditorLauncher"
             name="NED Editor">
+      </editor> 
+      <editor
+            class="org.omnetpp.ned.editor.MultiPageNedEditor"
+            contributorClass="org.omnetpp.ned.editor.MultiPageNedEditorActionContributor"
+            icon="icons/nedfile.gif"
+            id="org.omnetpp.ned.editor"
+            name="NED Graphical Editor">
       </editor>
    </extension>
 

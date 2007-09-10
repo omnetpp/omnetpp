@@ -196,7 +196,11 @@ public class LaunchPlugin extends AbstractUIPlugin {
      *
      * @param configuration
      * @param additionalArgs extra command line arguments to be prepended to the command line
+<<<<<<< .mine
+     * @param requestInfo Setting it to true runs the process in "INFO" mode (replaces the -c arg with -x)
+=======
      * @param requestInfo Setting it to true runs the process in "INFO" mode (replaces the -c arg width -x)
+>>>>>>> .r5465
      * @return The created process object,
      * @throws CoreException if process is not started correctly
      */
@@ -226,6 +230,8 @@ public class LaunchPlugin extends AbstractUIPlugin {
         String projAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
         String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
         String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
+        // add the NED source path at the end of the command line
+        argAttr += " -n ${ned_source_path:"+getWorkingDirectoryPath(configuration)+"}";
         String expandedProj = varman.performStringSubstitution(projAttr);
         String expandedProg = varman.performStringSubstitution(progAttr);
         String expandedArg = varman.performStringSubstitution(argAttr);

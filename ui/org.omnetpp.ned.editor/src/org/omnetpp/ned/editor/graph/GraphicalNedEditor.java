@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -56,10 +57,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
 import org.eclipse.ui.part.FileEditorInput;
@@ -76,7 +79,6 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.actions.*;
@@ -240,7 +242,7 @@ public class GraphicalNedEditor
     private NedOutlinePage outlinePage;
     private NedPropertySheetPage propertySheetPage;
     private boolean editorSaving = false;
-    private NedFileElementEx nedFileModel;  //TODO can be eliminated
+//    private NedFileElementEx nedFileModel;  //TODO can be eliminated
     private SelectionSynchronizer synchronizer;
 
     // last state of the command stack (used to detect changes since last page switch)
@@ -255,14 +257,12 @@ public class GraphicalNedEditor
 
     public GraphicalNedEditor() {
         paletteManager = new PaletteManager(this);
-        // attach the palette manager as a listener to the resource manager plugin
-        // so it will be notified if the palette should be updated
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(paletteManager);
 
         DefaultEditDomain editDomain = new DefaultEditDomain(this);
         editDomain.setCommandStack(new CommandStack() {
         	private boolean isModelEditable() {
-        		return !nedFileModel.isReadOnly() && !nedFileModel.hasSyntaxError();
+        	    NedFileElementEx model = getModel();
+        		return !model.isReadOnly() && !model.hasSyntaxError();
         	}
 
         	@Override
@@ -297,10 +297,19 @@ public class GraphicalNedEditor
     }
 
     @Override
+    public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+        super.init(site, input);
+        // attach the palette manager as a listener to the resource manager plugin
+        // so it will be notified if the palette should be updated
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(paletteManager);
+        // we listen on changes too
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+    }
+
+    @Override
     public void dispose() {
-        NEDResources resources = NEDResourcesPlugin.getNEDResources();
-		resources.removeNEDModelChangeListener(paletteManager);
-		resources.removeNEDModelChangeListener(this);
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(paletteManager);
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         super.dispose();
     }
 
@@ -565,7 +574,7 @@ public class GraphicalNedEditor
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileElementEx getNEDFileModelFromNEDResourcesPlugin() {
+	protected NedFileElementEx getModel() {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 
@@ -577,43 +586,29 @@ public class GraphicalNedEditor
 
     @Override
     public void setInput(IEditorInput input) {
-        super.setInput(input);
-
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
-
-        if (input == null) {
-        	setModel(null);
-        }
-        else {
-        	Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
-        	Assert.isTrue(NEDResourcesPlugin.getNEDResources().getConnectCount(getFile())>0);  // must be already connected
-        	NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
-        	setModel(getNEDFileModelFromNEDResourcesPlugin());
-        	paletteManager.refresh();
-        }
-    }
-
-    public NedFileElementEx getModel() {
-        return nedFileModel;
-    }
-
-    public void setModel(NedFileElementEx nedModel) {
-        if (nedFileModel == nedModel)
+        Assert.isNotNull(input, "Graphical editor cannot display NULL input");
+        // no change -- skip
+        if (ObjectUtils.equals(input, getEditorInput()))
             return;
 
-        nedFileModel = nedModel;
-        // flush the stack so if a new model was added we cannot redo/undo anything
+        super.setInput(input);
+
+        Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
+        Assert.isTrue(NEDResourcesPlugin.getNEDResources().getConnectCount(getFile())>0);  // must be already connected
+
         getCommandStack().flush();
+        NedFileElementEx model = getModel();
 
         if (!editorSaving) {
             if (getGraphicalViewer() != null) {
-                getGraphicalViewer().setContents(getModel());
+                getGraphicalViewer().setContents(model);
                 loadProperties();
             }
             if (outlinePage != null) {
                 outlinePage.setContents(getModel());
             }
         }
+        paletteManager.refresh();
     }
 
     // XXX HACK OVERRIDDEN because selection does not work if the editor is embedded in a multipage editor
@@ -632,8 +627,6 @@ public class GraphicalNedEditor
     }
 
     public void modelChanged(final NEDModelEvent event) {
-    	Assert.isTrue(getModel() == getNEDFileModelFromNEDResourcesPlugin());
-
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
@@ -641,7 +634,7 @@ public class GraphicalNedEditor
 		    	if (event.getSource() != null) {
 					INEDElement nedFileElement = event.getSource().getContainingNedFileElement();
 
-					if (nedFileElement == getNEDFileModelFromNEDResourcesPlugin())
+					if (nedFileElement == getModel())
 						updateExternalCommand(event);
 		    	}
 

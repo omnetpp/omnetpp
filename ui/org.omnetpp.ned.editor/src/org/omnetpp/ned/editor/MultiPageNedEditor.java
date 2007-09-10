@@ -8,8 +8,11 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -28,6 +31,7 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
+
 import org.omnetpp.common.IConstants;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -55,6 +59,8 @@ public class MultiPageNedEditor
 	extends MultiPageEditorPart
 	implements IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource
 {
+    public static final String ID = "org.omnetpp.ned.editor";
+
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
@@ -67,6 +73,12 @@ public class MultiPageNedEditor
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type (only workspace files can be opened): " + editorInput);
+
+		// TODO create a nicer dialog for error reporting
+		if (NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor(((FileEditorInput)editorInput).getFile()) == null) {
+		    IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNEST/OMNeT++ Project, and cannot be opened with this editor.", null);
+		    throw new PartInitException(status);
+		}
 
 		super.init(site, editorInput);
 
@@ -82,7 +94,7 @@ public class MultiPageNedEditor
 			public void partActivated(IWorkbenchPart part) {
 			    if (getEditorInput() != null) {
 			        // when switching from another editor to this, we need to immediately pull the changes
-			        NedFileElementEx nedFileElement = getNEDFileElement();
+			        NedFileElementEx nedFileElement = getModel();
 			        if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
 			            textEditor.pullChangesFromNEDResources();
 			    }
@@ -105,54 +117,49 @@ public class MultiPageNedEditor
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
 
         // disconnect the editor from the ned resources plugin
-        setInput(null);
+        if (getEditorInput() != null)
+            NEDResourcesPlugin.getNEDResources().disconnect(getFile());
+
         super.dispose();
     }
 
     @Override
     protected void setInput(IEditorInput newInput) {
 		//System.out.println("setInput()");
+        Assert.isNotNull(newInput, "input should not be null");
 
-    	//FIXME it should be checked that the file is a valid NED file (inside an 
-    	// OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it. 
+    	//FIXME it should be checked that the file is a valid NED file (inside an
+    	// OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it.
     	// Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
-    	
+
 		IEditorInput oldInput = getEditorInput();
 		if (ObjectUtils.equals(oldInput, newInput))
             return; // no change
 
-        if (oldInput != null) {
-        	// disconnect() must be *after* setInput(null)
-            super.setInput(null);
-            if (graphEditor != null)
-                graphEditor.setInput(null);
-            if (textEditor != null)
-                textEditor.setInput(null);
+		// disconnect from the old file (if there was any)
+        if (oldInput != null)
+            NEDResourcesPlugin.getNEDResources().disconnect(getFile());
 
-            IFile oldFile = ((IFileEditorInput) oldInput).getFile();
-            NEDResourcesPlugin.getNEDResources().disconnect(oldFile);
-        }
+        // connect() must take place *before* setInput()
+        IFile newFile = ((IFileEditorInput) newInput).getFile();
+        NEDResourcesPlugin.getNEDResources().connect(newFile);
 
-        if (newInput != null) {
-        	// connect() must take place *before* setInput()
-        	IFile newFile = ((IFileEditorInput) newInput).getFile();
-        	NEDResourcesPlugin.getNEDResources().connect(newFile);
+        // set the new input
+        super.setInput(newInput);
+        if (graphEditor != null)
+            graphEditor.setInput(newInput);
+        if (textEditor != null)
+            textEditor.setInput(newInput);
 
-        	super.setInput(newInput);
-        	if (graphEditor != null)
-        		graphEditor.setInput(newInput);
-        	if (textEditor != null)
-        		textEditor.setInput(newInput);
-        	setPartName(newFile.getName());
-        }
+        setPartName(getFile().getName());
     }
 
 	@Override
 	protected void createPages() {
 		//System.out.println("createPages()");
 
-		graphEditor = new GraphicalNedEditor();
-		textEditor = new TextualNedEditor();
+        graphEditor = new GraphicalNedEditor();
+        textEditor = new TextualNedEditor();
 
 		try {
             // setup graphical editor
@@ -185,7 +192,7 @@ public class MultiPageNedEditor
 	 * (Consistency errors are allowed).
 	 */
 	protected boolean maySwitchToGraphicalEditor() {
-		return getNEDFileElement().getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
+		return getModel().getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
 	}
 
 	@Override
@@ -237,7 +244,7 @@ public class MultiPageNedEditor
 		// switch from graphics to text:
         if (newPageIndex == textPageIndex) {
         	// generate text representation from the model NOW
-            NedFileElementEx nedFileElement = getNEDFileElement();
+            NedFileElementEx nedFileElement = getModel();
             if (graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
                 textEditor.pullChangesFromNEDResources();
                 textEditor.markContent();
@@ -281,7 +288,7 @@ public class MultiPageNedEditor
      * If we are in a graphical mode it generates the text version and puts it into the text editor.
      */
     private void prepareForSave() {
-        NedFileElementEx nedFileElement = getNEDFileElement();
+        NedFileElementEx nedFileElement = getModel();
 		if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
             textEditor.pullChangesFromNEDResources();
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
@@ -444,7 +451,7 @@ public class MultiPageNedEditor
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
 
-    public NedFileElementEx getNEDFileElement() {
+    public NedFileElementEx getModel() {
     	return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
     }
 
