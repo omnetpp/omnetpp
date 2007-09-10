@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  */
 public interface INEDTypeResolver {
 	public static final IProject FIXME_INSERT_CONTEXTPROJECT_HERE = null; //FIXME eliminate all occurrences from everywhere!!!
-	
+
     public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
 
@@ -61,29 +61,34 @@ public interface INEDTypeResolver {
     /**
      * Returns the NED source folders for the given project. This is
      * the list of folders in the ".nedfolders" file, or the project
-     * alone if ".nedfolders" does not exist or empty. An empty array 
-     * is returned if the project is not an OMNeT++ project (does not 
-     * have the omnetpp nature, or it is not enabled for some reason). 
+     * alone if ".nedfolders" does not exist or empty. An empty array
+     * is returned if the project is not an OMNeT++ project (does not
+     * have the omnetpp nature, or it is not enabled for some reason).
      */
 	public IContainer[] getNedSourceFolders(IProject project);
 
     /**
-	 * Returns the NED source folder for the given NED file. Returns null if the 
+	 * Returns the NED source folder for the given NED file. Returns null if the
 	 * file is outside the project's NED source folders, or the project itself
-	 * does not have the OMNeT++ nature, or that nature is disabled (see 
+	 * does not have the OMNeT++ nature, or that nature is disabled (see
 	 * IProject.isNatureEnabled() on why a nature might be disabled.)
 	 */
     public IContainer getNedSourceFolderFor(IFile file);
-    
+
+    /**
+     * Checks whether the the provided project is open and has an OMNET++ nature
+     */
+    public boolean isOpenOmnetppProject(IProject project);
+
 	/**
 	 * Returns the expected package name for the given file. "" means the
-	 * default package. Returns null for the toplevel "package.ned" file 
-	 * (which in fact is used to *define* the package, so it has no "expected" 
-	 * package name), and for files outside the NED source folders defined 
+	 * default package. Returns null for the toplevel "package.ned" file
+	 * (which in fact is used to *define* the package, so it has no "expected"
+	 * package name), and for files outside the NED source folders defined
 	 * for the project (i.e. for which getNedSourceFolder() returns null.)
 	 */
     public String getExpectedPackageFor(IFile file);
-    
+
 	/**
 	 * Returns the markers for the given element and its subtree.
 	 *
@@ -96,18 +101,18 @@ public interface INEDTypeResolver {
 
     /**
      * Returns a INEDElement at the given file/line/column. Returns null if no
-     * NED element was found at that position (that may be caused by 
+     * NED element was found at that position (that may be caused by
      * missing source region info.)
      */
     public INEDElement getNedElementAt(IFile file, int line, int column);
 
     /**
-     * Returns a INEDElement within the given parent at the given line/column. 
-     * Returns null if no NED element was found at that position (that may be 
+     * Returns a INEDElement within the given parent at the given line/column.
+     * Returns null if no NED element was found at that position (that may be
      * caused by missing source region info.)
      */
     public INEDElement getNedElementAt(INEDElement parent, int line, int column);
-    
+
     /**
 	 * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,
 	 * from the given project and its dependent projects.
@@ -115,30 +120,30 @@ public interface INEDTypeResolver {
 	public Collection<INEDTypeInfo> getAllNedTypes(IProject context);
 
     /**
-     * Returns all toplevel (non-inner) type names in the NED files, excluding 
-     * duplicate names, from the given project and its dependent projects. 
+     * Returns all toplevel (non-inner) type names in the NED files, excluding
+     * duplicate names, from the given project and its dependent projects.
      * Returned names are fully qualified.
      */
     public Set<String> getAllNedTypeQNames(IProject context);
 
     /**
-     * Returns all toplevel (non-inner) type names in the NED files where 
-     * the predicate matches, excluding duplicate names, from the given project 
+     * Returns all toplevel (non-inner) type names in the NED files where
+     * the predicate matches, excluding duplicate names, from the given project
      * and its dependent projects. Returned names are fully qualified.
      */
     public Set<String> getNedTypeQNames(IPredicate predicate, IProject context);
 
     /**
-     * Returns ALL toplevel (non-inner) type names in the NED files, including 
-     * duplicate names, from the given project and its dependent projects. 
-     * This method can be used for generating unique type names. Returned names 
+     * Returns ALL toplevel (non-inner) type names in the NED files, including
+     * duplicate names, from the given project and its dependent projects.
+     * This method can be used for generating unique type names. Returned names
      * are fully qualified.
      */
     public Set<String> getReservedQNames(IProject context);
 
     /**
-     * Return a NED type from its fully qualified name, from the given project 
-     * and its dependent projects. Inner types are NOT recognized. 
+     * Return a NED type from its fully qualified name, from the given project
+     * and its dependent projects. Inner types are NOT recognized.
      * Returns null if not found.
      */
     public INEDTypeInfo getToplevelNedType(String qualifiedName, IProject context);
@@ -161,14 +166,14 @@ public interface INEDTypeResolver {
 
 	/**
 	 * Return all NED type names visible in the given context without
-	 * fully qualifying them, including inner types. 
+	 * fully qualifying them, including inner types.
 	 * Returned names are short names (NOT qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context);
 
 	/**
 	 * Return all NED type names matching the predicate, and visible in the given
-	 * context without fully qualifying them, including inner types. 
+	 * context without fully qualifying them, including inner types.
 	 * Returned names are short names (NOT qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
