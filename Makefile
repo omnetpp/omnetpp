@@ -25,7 +25,7 @@ components: base jnilibs samples
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
-SAMPLES=aloha cqn dyna fifo hcube hist neddemo queuenet routing tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hcube hist neddemo queueinglib queuenet routing tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 
 #
@@ -127,6 +127,4 @@ makefiles:
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f)); \
 	done
-	cd $(OMNETPP_SAMPLES_DIR)/queuenet/lib && (opp_makemake -f -o queuenet)
-	cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -r -n)
 
