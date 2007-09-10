@@ -4,9 +4,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.ui.IDebugUIConstants;
+
 import org.omnetpp.common.project.ProjectUtils;
 
 /**
@@ -18,11 +23,11 @@ public class NedPathResolver implements IDynamicVariableResolver {
 
 	public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
 		if (argument == null)
-			throw new IllegalArgumentException("nedpath resolver requires an argument");
-		
+			abort("${ned_path} requires an argument", null);
+
 		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
 		if (resource == null)
-			throw new IllegalArgumentException("argument to nedpath resolver needs to be an existing file, folder, or project");
+			abort("argument to ${ned_path} needs to be an existing file, folder, or project", null);
 
 		IProject project = resource.getProject();
 		String result = project.getLocation().toOSString();
@@ -31,4 +36,7 @@ public class NedPathResolver implements IDynamicVariableResolver {
 		return result;
 	}
 
+    protected void abort(String message, Throwable exception) throws CoreException {
+        throw new CoreException(new Status(IStatus.ERROR, DebugUIPlugin.getUniqueIdentifier(), IDebugUIConstants.INTERNAL_ERROR, message, exception));
+    }
 }

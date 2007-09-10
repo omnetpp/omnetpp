@@ -55,6 +55,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	protected Text fInifileText;
 	protected Combo fConfigCombo;
     protected Text fRunText;
+    protected Text fNedPathText;
     protected Spinner fParallelismSpinner;
     protected Button fDefaultEnvButton;
     protected Button fCmdEnvButton;
@@ -189,6 +190,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 		createIniGroup(comp, 1);
         createConfigGroup(comp, 1);
         createUIGroup(comp, 1);
+        createNedPathGroup(comp, 1);
         createAdditionalGroup(comp, 1);
         setControl(comp);
 	}
@@ -207,6 +209,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             @Override
             public void focusLost(FocusEvent e) {
                 updateConfigCombo();
+                updateNedPathText();
             }
 		});
 
@@ -304,6 +307,17 @@ public class SimulationTab extends OmnetppLaunchTab  {
         });
     }
 
+    protected void createNedPathGroup(Composite parent, int colSpan) {
+        Composite comp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)comp.getLayout();
+        ld.marginHeight = 1;
+
+        SWTFactory.createLabel(comp, "NED Source Path:", 1);
+        fNedPathText = SWTFactory.createSingleText(comp, 1);
+        fNedPathText.setToolTipText("Specify the directories where NED files read from");
+        fNedPathText.addModifyListener(this);
+    }
+
     protected void createAdditionalGroup(Composite parent, int colSpan) {
         Composite comp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
         GridLayout ld = (GridLayout)comp.getLayout();
@@ -319,7 +333,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	 *
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
-    private enum ArgType {INI, CONFIG, RUN, UI, LIB, UNKNOWN};
+    private enum ArgType {INI, CONFIG, RUN, UI, LIB, NEDPATH, UNKNOWN};
 	@Override
     public void initializeFrom(ILaunchConfiguration config) {
 	    super.initializeFrom(config);
@@ -327,7 +341,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             ArgType nextType = ArgType.UNKNOWN;
             String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING));
             String restArgs = "";        // the rest of the arguments we cannot recognize
-            String iniArgs = "", libArgs = "", configArg="", runArg="", uiArg ="";
+            String iniArgs = "", libArgs = "", configArg="", runArg="", uiArg ="", nedPathArg ="";
             for (int i=0; i<args.length; ++i) {
                 switch (nextType) {
                     case INI:
@@ -350,6 +364,10 @@ public class SimulationTab extends OmnetppLaunchTab  {
                         uiArg = args[i];
                         nextType = ArgType.UNKNOWN;
                         continue;
+                    case NEDPATH:
+                        nedPathArg = args[i];
+                        nextType = ArgType.UNKNOWN;
+                        continue;
                 }
 
                 if ("-f".equals(args[i]))
@@ -362,6 +380,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
                     nextType = ArgType.UI;
                 else if ("-l".equals(args[i]))
                     nextType = ArgType.LIB;
+                else if ("-n".equals(args[i]))
+                    nextType = ArgType.NEDPATH;
                 else {
                     nextType = ArgType.UNKNOWN;
                     restArgs += args[i]+" ";
@@ -372,6 +392,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             fInifileText.setText(iniArgs.trim());
             fLibraryText.setText(libArgs.trim());
             fAdditionalText.setText(restArgs.trim());
+            fNedPathText.setText(nedPathArg.trim());
             fOtherEnvText.setText("");
             if ("".equals(uiArg)) {
                 fDefaultEnvButton.setSelection(true);
@@ -408,6 +429,12 @@ public class SimulationTab extends OmnetppLaunchTab  {
         }
 	}
 
+    private void updateNedPathText() {
+        String nedPath = fNedPathText.getText();
+        nedPath = nedPath.replaceFirst("\\$\\{ned_path:.*?\\}", "\\$\\{ned_path:"+fInifileText.getText()+"\\}");
+        fNedPathText.setText(nedPath);
+    }
+
     protected void updateConfigCombo() {
         IFile[] inifiles = getIniFiles();
         if (inifiles == null)
@@ -425,16 +452,18 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
         String arg = "";
-        if (!"".equals(fInifileText.getText()))
+        if (StringUtils.isNotBlank(fInifileText.getText()))
             arg += "-f "+ StringUtils.join(StringUtils.split(fInifileText.getText())," -f ")+" ";
-        if (!"".equals(fLibraryText.getText()))
+        if (StringUtils.isNotBlank(fLibraryText.getText()))
             arg += "-l "+ StringUtils.join(StringUtils.split(fLibraryText.getText())," -l ")+" ";
-        if (!"".equals(getConfigName()))
+        if (StringUtils.isNotBlank(getConfigName()))
             arg += "-c "+getConfigName()+" ";
+        if (StringUtils.isNotBlank(fNedPathText.getText()))
+            arg += "-n "+StringUtils.trimToEmpty(fNedPathText.getText())+" ";
         // if we are contributed to the CDT launch dialog, we should store the run parameter into the command line
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
         if (cdtContributed) {
-            if (!"".equals(fRunText.getText()))
+            if (StringUtils.isNotBlank(fRunText.getText()))
                 arg += "-r "+strippedRun+" ";
         }
         else {

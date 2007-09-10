@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
 
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 
@@ -26,7 +27,7 @@ public class NedEditorLauncher implements IEditorLauncher {
         try {
             IFile file = getNedFile(filePath);
             NEDResources res = NEDResourcesPlugin.getNEDResources();
-            if (!res.isOpenOmnetppProject(file.getProject())) {
+            if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
                 IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                 MessageDialog.openInformation(workbenchWindow.getShell(),
                         "Not an OMNEST/OMNeT++ Project",
