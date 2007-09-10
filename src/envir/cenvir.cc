@@ -132,7 +132,7 @@ void cEnvir::setup(int argc, char *argv[])
         verifyIntTypes();
 
         // args
-        args = new ArgList(argc, argv, "hf:u:l:c:r:p:q:ngG");
+        args = new ArgList(argc, argv, "hf:u:l:c:r:p:q:n:x:gG");
         args->checkArgs();
 
         //

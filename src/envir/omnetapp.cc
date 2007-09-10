@@ -295,10 +295,12 @@ void TOmnetApp::setup()
 #endif
          }
 
-         // load NED files from folders in the NEDPATH environment variable and
-         // the "ned-path=" config entry
-         const char *nedpath1 = getenv("NEDPATH");
-         if (!nedpath1) nedpath1 = ".";
+         // load NED files from folders on the NED path. Note: NED path is taken
+         // from the "-n" command-line option or the NEDPATH variable ("-n" takes
+         // precedence), and the "ned-path=" config entry gets appended to it.
+         const char *nedpath1 = args->optionValue('n',0);
+         if (nedpath1==NULL) nedpath1 = getenv("NEDPATH");
+         if (nedpath1==NULL) nedpath1 = ".";
          std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
          std::string nedpath = std::string(nedpath1) + ";" + nedpath2;
          StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
@@ -355,6 +357,7 @@ void TOmnetApp::printHelp()
     ev << "                and Tkenv. To make a user interface available, you need\n";
     ev << "                to link the simulation executable with the cmdenv/tkenv\n";
     ev << "                library, or load it as shared library via the -l option.\n";
+    ev << "  -n <nedpath>  When present, overrides the NEDPATH environment variable.\n";
     ev << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
     ev << "                The file name should be given without the .so or .dll suffix\n";
     ev << "                (it will be appended automatically.) The loaded module may\n";

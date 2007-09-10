@@ -144,9 +144,6 @@ void TCmdenvApp::setup()
     if (!initialized)
         return;
 
-    // '-n' option: print number of runs in the given scenario, and exit
-    opt_printnumruns = args->optionGiven('n');
-
     // '-c' and '-r' option: configuration or scenario to activate,
     // and run numbers to run. Both command-line options take precedence
     // over inifile settings. (NOTE: inifile settings *already* got read
@@ -165,6 +162,12 @@ void TCmdenvApp::setup()
     // '-g'/'-G' options: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
     opt_printconfigdetails = args->optionGiven('g');
     opt_printconfigdetails2 = args->optionGiven('G');
+
+    // '-x' option: print number of runs in the given scenario, and exit (overrides configname)
+    const char *xoption = args->optionValue('x');
+    opt_printnumruns = xoption!=NULL;
+    if (xoption)
+        opt_configname = xoption;
 }
 
 void TCmdenvApp::signalHandler(int signum)
@@ -593,7 +596,7 @@ void TCmdenvApp::simulationEvent(cMessage *msg)
 void TCmdenvApp::printUISpecificHelp()
 {
     ev << "Cmdenv-specific options:\n";
-    ev << "  -n <configname>\n";
+    ev << "  -x <configname>\n";
     ev << "                Print the number of runs in the given configuration, and exit.\n";
     ev << "  -c <configname>\n";
     ev << "                Select a given configuration for execution. With inifile-based\n";
