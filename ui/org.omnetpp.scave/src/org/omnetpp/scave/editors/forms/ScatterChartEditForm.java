@@ -17,7 +17,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
@@ -48,9 +48,10 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		updateLineNames(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		if (dataset != null) {
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL); 
-			moduleNames = ScaveModelUtil.getScalarFields(idlist, ScalarFields.MODULE, manager);
-			dataNames = ScaveModelUtil.getScalarFields(idlist, ScalarFields.NAME, manager);
+			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+			idlist.merge(DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL));
+			moduleNames = ScaveModelUtil.getFieldValues(idlist, ResultItemFields.MODULE, manager);
+			dataNames = ScaveModelUtil.getFieldValues(idlist, ResultItemFields.NAME, manager);
 		}
 	}
 	

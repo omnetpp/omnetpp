@@ -22,7 +22,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       xyplotnode.obj indexedvectorfile.obj \
       vectorfileindexer.obj indexfile.obj scaveutils.obj \
       scaveexception.obj enumtype.obj export.obj teenode.obj \
-      indexedvectorfilereader.obj
+      indexedvectorfilereader.obj xyarray.obj
 
 #
 # Automatic rules

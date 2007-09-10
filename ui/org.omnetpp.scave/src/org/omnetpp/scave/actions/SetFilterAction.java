@@ -1,7 +1,7 @@
 package org.omnetpp.scave.actions;
 
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.ui.GenericTreeNode;

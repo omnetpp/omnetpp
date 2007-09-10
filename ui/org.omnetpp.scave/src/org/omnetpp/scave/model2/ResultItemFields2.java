@@ -12,7 +12,7 @@ import org.omnetpp.scave.engine.ResultItem;
  *
  * @author tomi
  */
-public class ResultItemFields {
+public class ResultItemFields2 {
 
 	public static final String FIELD_FILENAME = "file";
 	public static final String FIELD_RUNNAME = "run";
@@ -25,7 +25,7 @@ public class ResultItemFields {
 		List<String> fields = new ArrayList<String>();
 		fields.addAll(Arrays.asList(new String[] {FIELD_FILENAME, FIELD_RUNNAME, FIELD_MODULENAME, FIELD_DATANAME}));
 		fields.addAll(Arrays.asList(RunAttribute.getNames()));
-		ResultItemFields.fieldNames = fields.toArray(new String[fields.size()]);
+		ResultItemFields2.fieldNames = fields.toArray(new String[fields.size()]);
 	}
 
 	public static String[] getFieldNames() {

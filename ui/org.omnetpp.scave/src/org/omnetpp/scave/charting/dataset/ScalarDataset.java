@@ -1,13 +1,13 @@
 package org.omnetpp.scave.charting.dataset;
 
-import static org.omnetpp.scave.engine.ScalarFields.ALL;
-import static org.omnetpp.scave.engine.ScalarFields.EXPERIMENT;
-import static org.omnetpp.scave.engine.ScalarFields.FILE;
-import static org.omnetpp.scave.engine.ScalarFields.MEASUREMENT;
-import static org.omnetpp.scave.engine.ScalarFields.MODULE;
-import static org.omnetpp.scave.engine.ScalarFields.NAME;
-import static org.omnetpp.scave.engine.ScalarFields.REPLICATION;
-import static org.omnetpp.scave.engine.ScalarFields.RUN;
+import static org.omnetpp.scave.engine.ResultItemFields.ALL;
+import static org.omnetpp.scave.engine.ResultItemFields.EXPERIMENT;
+import static org.omnetpp.scave.engine.ResultItemFields.FILE;
+import static org.omnetpp.scave.engine.ResultItemFields.MEASUREMENT;
+import static org.omnetpp.scave.engine.ResultItemFields.MODULE;
+import static org.omnetpp.scave.engine.ResultItemFields.NAME;
+import static org.omnetpp.scave.engine.ResultItemFields.REPLICATION;
+import static org.omnetpp.scave.engine.ResultItemFields.RUN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarDataSorter;
-import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.XYDataset;
 
 /**
@@ -25,7 +25,7 @@ import org.omnetpp.scave.engine.XYDataset;
  */
 public class ScalarDataset implements IScalarDataset {
 	
-	private static ScalarFields defaultGrouping = new ScalarFields(ALL, MODULE);
+	private static ResultItemFields defaultGrouping = new ResultItemFields(ALL, MODULE);
 
 	/** The row keys. */
     private List<String> rowKeys;
@@ -51,7 +51,7 @@ public class ScalarDataset implements IScalarDataset {
      * determines the columns. 
      */
     public ScalarDataset(IDList idlist, int groupingFields, ResultFileManager manager) {
-    	this(idlist, new ScalarFields(groupingFields), null, manager);
+    	this(idlist, new ResultItemFields(groupingFields), null, manager);
     }
     
     /**
@@ -59,7 +59,7 @@ public class ScalarDataset implements IScalarDataset {
      * Groups are formed by {@code groupingFields}, other fields
      * determines the columns. 
      */
-    public ScalarDataset(IDList idlist, ScalarFields rowFields, ScalarFields columnFields, ResultFileManager manager) {
+    public ScalarDataset(IDList idlist, ResultItemFields rowFields, ResultItemFields columnFields, ResultFileManager manager) {
     	if (rowFields == null)
     		rowFields = defaultGrouping;
     	if (columnFields == null)
@@ -129,7 +129,7 @@ public class ScalarDataset implements IScalarDataset {
     private static final int[] allFields = new int[] {FILE, RUN, MODULE, NAME, EXPERIMENT, MEASUREMENT, REPLICATION };
     private static final char separator = ';';
     
-    private static List<String> computeRowKeys(XYDataset data, ScalarFields rowFields) {
+    private static List<String> computeRowKeys(XYDataset data, ResultItemFields rowFields) {
     	List<String> keys = new ArrayList<String>(data.getRowCount());
     	for (int i = 0; i < data.getRowCount(); ++i) {
         	StringBuffer sb = new StringBuffer();
@@ -144,7 +144,7 @@ public class ScalarDataset implements IScalarDataset {
     	return keys;
     }
     
-    private static List<String> computeColumnKeys(XYDataset data, ScalarFields columnFields) {
+    private static List<String> computeColumnKeys(XYDataset data, ResultItemFields columnFields) {
     	int count = data.getColumnCount();
     	List<String> keys = new ArrayList<String>(count);
     	for (int i = 0; i < count; ++i) {

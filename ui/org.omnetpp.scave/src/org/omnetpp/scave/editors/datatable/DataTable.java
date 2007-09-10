@@ -1,9 +1,9 @@
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
 import static org.omnetpp.scave.model2.RunAttribute.CONFIG;
 import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;

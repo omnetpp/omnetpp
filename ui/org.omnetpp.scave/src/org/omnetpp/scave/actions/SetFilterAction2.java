@@ -6,7 +6,7 @@ import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterUtil;
-import org.omnetpp.scave.model2.ResultItemFields;
+import org.omnetpp.scave.model2.ResultItemFields2;
 
 /**
  * Sets the filter of a filtered data panel.
@@ -38,7 +38,7 @@ public class SetFilterAction2 extends Action
 			DataTable table = panel.getTable();
 			item = table.getSelectedItem();
 			field = table.getSelectedField();
-			value = ResultItemFields.getFieldValue(item, field);
+			value = ResultItemFields2.getFieldValue(item, field);
 
 			if (field != null && value != null) {
 				setText(String.format("Set filter: %s=%s", field, value));

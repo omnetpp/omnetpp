@@ -1,9 +1,9 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
 import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
 
 import java.util.Arrays;

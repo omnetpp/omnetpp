@@ -1,9 +1,9 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields.FIELD_RUNNAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
+import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ public class ResultItemFormatter {
 	
 	static {
 		formatters = new HashMap<String,IResultItemFormatter>();
-		for (String field : ResultItemFields.getFieldNames()) {
+		for (String field : ResultItemFields2.getFieldNames()) {
 			IResultItemFormatter formatter = null;
 			if (field.equals(FIELD_FILENAME))
 				formatter = new FileNameFormatter();

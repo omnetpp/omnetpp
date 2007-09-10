@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.ResultItemFields;
+import org.omnetpp.scave.model2.ResultItemFields2;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -68,9 +68,9 @@ public class FilteringPanel extends Composite {
 	}
 
 	public void setFilterHints(FilterHints hints) {
-		runCombo.setItems(hints.getHints(ResultItemFields.FIELD_RUNNAME));
-		moduleCombo.setItems(hints.getHints(ResultItemFields.FIELD_MODULENAME));
-		dataCombo.setItems(hints.getHints(ResultItemFields.FIELD_DATANAME));
+		runCombo.setItems(hints.getHints(ResultItemFields2.FIELD_RUNNAME));
+		moduleCombo.setItems(hints.getHints(ResultItemFields2.FIELD_MODULENAME));
+		dataCombo.setItems(hints.getHints(ResultItemFields2.FIELD_DATANAME));
 		advancedFilter.setFilterHints(hints);
 	}
 

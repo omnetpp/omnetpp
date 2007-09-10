@@ -37,7 +37,7 @@ typedef std::vector<ID> IDVector;
 typedef std::vector<IDVector> IDVectorVector;
 typedef std::vector<std::string> StringVector;
 
-class ScalarFields
+class SCAVE_API ResultItemFields
 {
     public:
         static const int FILE      = 0x01;
@@ -53,27 +53,26 @@ class ScalarFields
     public:
         static StringVector getFieldNames();
 
-        ScalarFields(int fields) : fields(fields) {}
-        ScalarFields(int fields, int except) : fields(fields & ~except) {};
-        ScalarFields(const StringVector &fieldNames);
+        ResultItemFields(int fields) : fields(fields) {}
+        ResultItemFields(int fields, int except) : fields(fields & ~except) {};
+        ResultItemFields(const StringVector &fieldNames);
         
-        ScalarFields complement() { return ScalarFields(ALL, fields); }
+        ResultItemFields complement() { return ResultItemFields(ALL, fields); }
         bool hasField(int field) const { return (fields & field) == field; }
         
         bool less(ID id1, ID id2, ResultFileManager *manager);
-        bool less(const ScalarResult &d1, const ScalarResult &d2) const;
+        bool less(const ResultItem &d1, const ResultItem &d2) const;
         bool equal(ID id1, ID id2, ResultFileManager *manager);
-        bool equal(const ScalarResult& d1, const ScalarResult& d2);
+        bool equal(const ResultItem& d1, const ResultItem& d2);
 
-        std::string getField(const ScalarResult &d);
+        std::string getField(const ResultItem &d);
 };
 
-
-struct ScalarFieldsLess : public std::binary_function<ScalarResult, ScalarResult, bool>
+struct ResultItemFieldsLess : public std::binary_function<ResultItem, ResultItem, bool>
 {
-    ScalarFields fields;
-    ScalarFieldsLess(const ScalarFields fields) : fields(fields) {}
-    bool operator()(const ScalarResult &d1, const ScalarResult &d2) const { return fields.less(d1, d2); }
+    ResultItemFields fields;
+    ResultItemFieldsLess(const ResultItemFields fields) : fields(fields) {}
+    bool operator()(const ResultItem &d1, const ResultItem &d2) const { return fields.less(d1, d2); }
 };
 
 /**
@@ -93,11 +92,11 @@ class XYDataset
         };
 
         typedef const ScalarResult Key;
-        typedef std::map<Key, int, ScalarFieldsLess> KeyToIndexMap;
+        typedef std::map<Key, int, ResultItemFieldsLess> KeyToIndexMap;
         typedef std::vector<Mean> Row;
 
-        ScalarFields rowFields;            // data in each row has the same value of these fields
-        ScalarFields columnFields;         // data in each column has the same value of these fields
+        ResultItemFields rowFields;            // data in each row has the same value of these fields
+        ResultItemFields columnFields;         // data in each column has the same value of these fields
         KeyToIndexMap rowKeyToIndexMap;    // row field values -> row index
         KeyToIndexMap columnKeyToIndexMap; // column field values -> column index
         std::vector<Key> rowKeys;
@@ -106,10 +105,10 @@ class XYDataset
         std::vector<int> rowOrder;         // permutation of a subset of rows
         std::vector<int> columnOrder;      // permutation of a subset of columns
     public:
-        XYDataset(ScalarFields rowFields, ScalarFields columnFields)
+        XYDataset(ResultItemFields rowFields, ResultItemFields columnFields)
             : rowFields(rowFields), columnFields(columnFields),
-            rowKeyToIndexMap(ScalarFieldsLess(rowFields)),
-            columnKeyToIndexMap(ScalarFieldsLess(columnFields)) {};
+            rowKeyToIndexMap(ResultItemFieldsLess(rowFields)),
+            columnKeyToIndexMap(ResultItemFieldsLess(columnFields)) {};
         void add(const ScalarResult &d);
         void swapRows(int row1, int row2);
         void sortColumnsAccordingToFirstRow();
@@ -118,8 +117,8 @@ class XYDataset
 
         int getRowCount() { return rowOrder.size(); }
         int getColumnCount() { return columnOrder.size(); }
-        ScalarFields getRowFields() { return rowFields; }
-        ScalarFields getColumnFields() { return columnFields; }
+        ResultItemFields getRowFields() { return rowFields; }
+        ResultItemFields getColumnFields() { return columnFields; }
         std::string getRowField(int row, int fieldID);
         std::string getColumnField(int column, int fieldID);
         double getValue(int row, int column);
@@ -129,14 +128,14 @@ inline std::string XYDataset::getRowField(int row, int fieldID)
 {
     if (row < 0 || row >= getRowCount() || !rowFields.hasField(fieldID))
         return "";
-    return ScalarFields(fieldID).getField(rowKeys[rowOrder[row]]);
+    return ResultItemFields(fieldID).getField(rowKeys[rowOrder[row]]);
 }
 
 inline std::string XYDataset::getColumnField(int column, int fieldID)
 {
     if (column < 0 || column >= getColumnCount() || !columnFields.hasField(fieldID))
         return "";
-    return ScalarFields(fieldID).getField(columnKeys[columnOrder[column]]);
+    return ResultItemFields(fieldID).getField(columnKeys[columnOrder[column]]);
 }
 
 inline double XYDataset::getValue(int row, int column)
@@ -217,7 +216,7 @@ class SCAVE_API ScalarDataSorter
      * so that every group is of same length, and the same indices contain
      * the same values of the non-grouping fields.
      */
-    IDVectorVector groupByFields(const IDList& idlist, ScalarFields fields);
+    IDVectorVector groupByFields(const IDList& idlist, ResultItemFields fields);
 
     /**
      * Form rows from data of given idlist by grouping according to rowFields.
@@ -225,7 +224,7 @@ class SCAVE_API ScalarDataSorter
      * Compute the mean of the values in each cell and align the cells into a table.
      * If no data for a row/column combination, NaN will be inserted into the cell.
      */
-    XYDataset groupAndAggregate(const IDList& idlist, ScalarFields rowFields, ScalarFields columnFields);
+    XYDataset groupAndAggregate(const IDList& idlist, ResultItemFields rowFields, ResultItemFields columnFields);
 
     /**
      * Group and align data for a scatter plot. The first vector will contain the
@@ -240,7 +239,7 @@ class SCAVE_API ScalarDataSorter
      * by x coordinate. For missing points in y1, y2, etc, the row contains NaN.
      */
     XYDataset prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
-                                    ScalarFields rowFields, ScalarFields columnFields);
+                                    ResultItemFields rowFields, ResultItemFields columnFields);
 
     /**
      * Looks at the data given by their Id, and returns a subset of them

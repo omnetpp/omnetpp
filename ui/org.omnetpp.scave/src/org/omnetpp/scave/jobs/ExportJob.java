@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Status;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScaveExport;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
@@ -27,11 +27,11 @@ public class ExportJob extends WorkspaceJob
 	private ScaveExport exporter;
 	private ResultFileManager manager;
 	private IDList scalars, vectors, histograms;
-	private ScalarFields scalarsGroupBy;
+	private ResultItemFields scalarsGroupBy;
 	
 	public ExportJob(String fileName, ScaveExport exporter,
 			IDList scalars, IDList vectors, IDList histograms,
-			ScalarFields scalarsGroupBy, ResultFileManager manager) {
+			ResultItemFields scalarsGroupBy, ResultFileManager manager) {
 		super("Data Export");
 		this.fileName = fileName;
 		this.exporter = exporter;

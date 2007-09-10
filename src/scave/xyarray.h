@@ -36,6 +36,7 @@ class SCAVE_API XYArray
         double getY(int i) const  {return (i>=0 && i<len) ? y[i] : 0;}
         BigDecimal getPreciseX(int i) const {return ((xp != NULL && i>=0 && i < len) ? xp[i] : BigDecimal::Nil);}
         long getEventNumber(int i) const {return ((evec != NULL && i>=0 && i<len) ? evec[i] : -1);}
+        void sortByX();
 };
 
 #endif

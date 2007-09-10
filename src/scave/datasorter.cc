@@ -33,10 +33,10 @@ using namespace std;
 ResultFileManager *ScalarDataSorter::tmpScalarMgr;
 
 /*----------------------------------------
- *              ScalarFields
+ *              ResultItemFields
  *----------------------------------------*/
 
-StringVector ScalarFields::getFieldNames()
+StringVector ResultItemFields::getFieldNames()
 {
     StringVector names = StringVector();
     names.push_back("file");
@@ -49,7 +49,7 @@ StringVector ScalarFields::getFieldNames()
     return names;
 }
 
-ScalarFields::ScalarFields(const StringVector &fieldNames)
+ResultItemFields::ResultItemFields(const StringVector &fieldNames)
 {
     fields = 0;
     for (StringVector::const_iterator it = fieldNames.begin(); it != fieldNames.end(); ++it)
@@ -71,20 +71,20 @@ static int strcmp_safe(const char *s1, const char *s2)
     return strcmp(s1, s2);
 }
 
-inline const char *getAttribute(const ScalarResult &d, const char *attrName)
+inline const char *getAttribute(const ResultItem &d, const char *attrName)
 {
     return d.fileRunRef->runRef->getAttribute(attrName);
 }
 
-bool ScalarFields::equal(ID id1, ID id2, ResultFileManager *manager)
+bool ResultItemFields::equal(ID id1, ID id2, ResultFileManager *manager)
 {
     if (id1==-1 || id2==-1) return id1==id2;
-    const ScalarResult& d1 = manager->getScalar(id1);
-    const ScalarResult& d2 = manager->getScalar(id2);
+    const ResultItem& d1 = manager->getItem(id1);
+    const ResultItem& d2 = manager->getItem(id2);
     return equal(d1, d2);
 }
 
-bool ScalarFields::equal(const ScalarResult& d1, const ScalarResult& d2)
+bool ResultItemFields::equal(const ResultItem& d1, const ResultItem& d2)
 {
     if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
     if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
@@ -96,15 +96,15 @@ bool ScalarFields::equal(const ScalarResult& d1, const ScalarResult& d2)
     return true;
 }
 
-bool ScalarFields::less(ID id1, ID id2, ResultFileManager *manager)
+bool ResultItemFields::less(ID id1, ID id2, ResultFileManager *manager)
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ScalarResult& d1 = manager->getScalar(id1);
-    const ScalarResult& d2 = manager->getScalar(id2);
+    const ResultItem& d1 = manager->getItem(id1);
+    const ResultItem& d2 = manager->getItem(id2);
     return less(d1, d2);
 }
 
-bool ScalarFields::less(const ScalarResult &d1, const ScalarResult &d2) const
+bool ResultItemFields::less(const ResultItem &d1, const ResultItem &d2) const
 {
     int cmp;
 
@@ -121,7 +121,7 @@ bool ScalarFields::less(const ScalarResult &d1, const ScalarResult &d2) const
     return false; // ==
 }
 
-string ScalarFields::getField(const ScalarResult& d)
+string ResultItemFields::getField(const ResultItem& d)
 {
     if (fields == FILE)
         return d.fileRunRef->fileRef->filePath;
@@ -244,12 +244,12 @@ template<class T>
 class MemberGroupingFunc
 {
     private:
-        typedef bool (T::*GroupingFunc)(const ScalarResult&, const ScalarResult&);
+        typedef bool (T::*GroupingFunc)(const ResultItem&, const ResultItem&);
         T &object;
         GroupingFunc func;
     public:
         MemberGroupingFunc(T &object, GroupingFunc func) : object(object), func(func) {}
-        bool operator()(const ScalarResult& d1, const ScalarResult& d2) { return (object.*func)(d1, d2); }
+        bool operator()(const ResultItem& d1, const ResultItem& d2) { return (object.*func)(d1, d2); }
 };
 
 bool ScalarDataSorter::sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2)
@@ -441,13 +441,13 @@ IDVectorVector ScalarDataSorter::groupByModuleAndName(const IDList& idlist)
     return vv;
 }
 
-IDVectorVector ScalarDataSorter::groupByFields(const IDList& idlist, ScalarFields fields)
+IDVectorVector ScalarDataSorter::groupByFields(const IDList& idlist, ResultItemFields fields)
 {
-    IDVectorVector vv = doGrouping(idlist, MemberGroupingFunc<ScalarFields>(fields, &ScalarFields::equal));
+    IDVectorVector vv = doGrouping(idlist, MemberGroupingFunc<ResultItemFields>(fields, &ResultItemFields::equal));
 
     sortAndAlign(vv,
-        MemberCompareFunc<ScalarFields>(fields.complement(), &ScalarFields::less, resultFileMgr),
-        MemberCompareFunc<ScalarFields>(fields.complement(), &ScalarFields::equal, resultFileMgr));
+        MemberCompareFunc<ResultItemFields>(fields.complement(), &ResultItemFields::less, resultFileMgr),
+        MemberCompareFunc<ResultItemFields>(fields.complement(), &ResultItemFields::equal, resultFileMgr));
     return vv;
 }
 
@@ -469,7 +469,7 @@ static bool isMissing(const IDVectorVector &vv, int j)
     return !foundY;
 }
 
-XYDataset ScalarDataSorter::groupAndAggregate(const IDList& idlist, ScalarFields rowFields, ScalarFields columnFields)
+XYDataset ScalarDataSorter::groupAndAggregate(const IDList& idlist, ResultItemFields rowFields, ResultItemFields columnFields)
 {
     XYDataset dataset(rowFields, columnFields);
 
@@ -560,7 +560,7 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
 }
 
 XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
-                                                ScalarFields rowFields, ScalarFields columnFields)
+                                                ResultItemFields rowFields, ResultItemFields columnFields)
 {
     XYDataset dataset = groupAndAggregate(idlist, rowFields, columnFields);
     
@@ -568,10 +568,10 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
     int row;
     for (row = 0; row < dataset.getRowCount(); ++row)
     {
-        std::string moduleName = dataset.getRowField(row, ScalarFields::MODULE);
-        std::string dataName = dataset.getRowField(row, ScalarFields::NAME);
-        if (dataset.getRowField(row, ScalarFields::MODULE) == moduleName &&
-            dataset.getRowField(row, ScalarFields::NAME) == scalarName)
+        std::string moduleName = dataset.getRowField(row, ResultItemFields::MODULE);
+        std::string dataName = dataset.getRowField(row, ResultItemFields::NAME);
+        if (dataset.getRowField(row, ResultItemFields::MODULE) == moduleName &&
+            dataset.getRowField(row, ResultItemFields::NAME) == scalarName)
             break;
     }
     if (row < dataset.getRowCount())

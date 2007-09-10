@@ -32,7 +32,7 @@ import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.ScalarChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -51,7 +51,7 @@ public class BarChartEditForm extends ChartEditForm {
 		pkg.getChart_Properties(),
 	};
 	
-	private static final String[] fieldNames = ScalarFields.getFieldNames().toArray();
+	private static final String[] fieldNames = ResultItemFields.getFieldNames().toArray();
 
 	// Main
 	//private Button[] groupByCheckboxes;

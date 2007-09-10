@@ -301,7 +301,7 @@ int filterCommand(int argc, char **argv)
                     // write scalars
                     if (!scalarIDList.isEmpty())
                         exporter->saveScalars("scalars", "scalar desc", scalarIDList,
-                            ScalarFields(ScalarFields::ALL, ScalarFields::NAME), resultFileManager);
+                            ResultItemFields(ResultItemFields::ALL, ResultItemFields::NAME), resultFileManager);
 
                     exporter->close();
                     delete exporter;

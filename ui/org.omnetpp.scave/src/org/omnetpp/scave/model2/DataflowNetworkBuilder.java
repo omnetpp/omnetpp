@@ -1,10 +1,12 @@
 package org.omnetpp.scave.model2;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
@@ -102,6 +104,12 @@ public class DataflowNetworkBuilder {
 		 */
 		public Port createPort(PortWrapper port) {
 			return node.nodeType().getPort(node, port.name);
+		}
+		
+		public PortWrapper getIntputPortFor(PortWrapper outputPort)
+		{
+			Assert.isTrue(inPorts.size() <= 1);
+			return inPorts.size() == 0 ? null : inPorts.get(0);
 		}
 	}
 	
@@ -216,7 +224,7 @@ public class DataflowNetworkBuilder {
 		PortWrapper xPort;
 		
 		public XYPlotNode() {
-			super("xyplotnode", EMPTY_ATTRS);
+			super("xyplot", EMPTY_ATTRS);
 			addInputPort(xPort = new PortWrapper(-1, "x"));
 		}
 		
@@ -237,8 +245,25 @@ public class DataflowNetworkBuilder {
 			else {
 				int index = inPorts.indexOf(in) - 1;
 				Assert.isTrue(index >= 0);
-				idToOutputPortMap.put(in.id, outPorts.get(index));
+				PortWrapper outPort = outPorts.get(index);
+				outPort.id = in.id;
+				idToOutputPortMap.put(in.id, outPort);
 			}
+		}
+
+		@Override
+		public Port createPort(PortWrapper port) {
+			int index = outPorts.indexOf(port);
+			if (index >= 0)
+				super.createPort(inPorts.get(index+1));
+			return super.createPort(port);
+		}
+
+		@Override
+		public PortWrapper getIntputPortFor(PortWrapper outPort) {
+			int index = outPorts.indexOf(outPort);
+			Assert.isLegal(index >= 0);
+			return inPorts.get(index + 1);
 		}
 	}
 	
@@ -274,6 +299,7 @@ public class DataflowNetworkBuilder {
 	class ChannelWrapper {
 		PortWrapper out;
 		PortWrapper in;
+		boolean created;
 		
 		public ChannelWrapper(PortWrapper out, PortWrapper in) {
 			this.out = out;
@@ -315,8 +341,10 @@ public class DataflowNetworkBuilder {
 	
 	public IDList getDisplayedIDs() {
 		IDList idlist = new IDList();
-		for (SinkNode node : sinkNodes)
+		for (SinkNode node : sinkNodes) {
+			Assert.isTrue(node.inPort.id != -1);
 			idlist.add(node.inPort.id);
+		}
 		return idlist;
 	}
 	
@@ -421,7 +449,7 @@ public class DataflowNetworkBuilder {
 
 					// select x data
 					String moduleName = chart.getXDataModule();
-					String dataName = chart.getXDataModule();
+					String dataName = chart.getXDataName();
 					if (!StringUtils.isEmpty(moduleName) && !StringUtils.isEmpty(dataName)) {
 						IDList xData = resultfileManager.filterIDList(displayedIds, null, moduleName, dataName);
 						for (int i = 0; i < xData.size(); ++i) {
@@ -505,31 +533,37 @@ public class DataflowNetworkBuilder {
 				NodeType nodeType = NodeTypeRegistry.instance().getNodeType(sinkNode.type);
 				sinkNode.node = nodeType.create(dataflowManager, sinkNode.attrs);
 				
-				ChannelWrapper channel = sinkNode.inPort.channel;
 				// follow the channels backwards
 				// until a source node or a previously created node reached
-				while (channel != null) {
-					NodeWrapper newNode = channel.out.owner.node == null ? channel.out.owner : null;
-
-					// create new node
-					if (newNode != null) {
-						Assert.isLegal(NodeTypeRegistry.instance().exists(newNode.type),
-											"Unknown node type: " + newNode.type);
-						nodeType = NodeTypeRegistry.instance().getNodeType(newNode.type);
-						newNode.node = nodeType.create(dataflowManager, newNode.attrs);
+				Queue<ChannelWrapper> pendingChannels = new ArrayDeque<ChannelWrapper>();
+				pendingChannels.offer(sinkNode.inPort.channel);
+				
+				while (!pendingChannels.isEmpty()) {
+					ChannelWrapper channel = pendingChannels.poll();
+					
+					NodeWrapper fromNode = channel.out.owner;
+					NodeWrapper toNode = channel.in.owner;
+					
+					// create fromNode if needed
+					if ((fromNode.node == null)) {
+						Assert.isLegal(NodeTypeRegistry.instance().exists(fromNode.type),
+											"Unknown node type: " + fromNode.type);
+						nodeType = NodeTypeRegistry.instance().getNodeType(fromNode.type);
+						fromNode.node = nodeType.create(dataflowManager, fromNode.attrs);
 					}
 
 					// create ports and connect them
-					Port inPort = channel.in.owner.createPort(channel.in);
-					Port outPort = channel.out.owner.createPort(channel.out); 
-					dataflowManager.connect(outPort, inPort);
-
-					if (newNode != null && newNode.inPorts.size() > 0) {
-						Assert.isTrue(newNode.inPorts.size() == 1); // TODO multiple input nodes
-						channel = newNode.inPorts.get(0).channel;
+					if (!channel.created) {
+						dataflowManager.connect(fromNode.createPort(channel.out), toNode.createPort(channel.in));
+						channel.created = true;
+	
+						// continue with the corresponding input port's channel
+						for (PortWrapper inPort : fromNode.inPorts)
+							pendingChannels.offer(inPort.channel);
 					}
-					else // channel already created or reached source node
-						break;
+						
+//					PortWrapper inPort = fromNode.getIntputPortFor(channel.out);
+//					channel = inPort != null ? inPort.channel : null;
 				}
 			}
 			return dataflowManager;

@@ -1,7 +1,7 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.XYDataset;
 
 /**
@@ -61,8 +61,8 @@ public class ScalarScatterPlotDataset implements IXYDataset {
 		// name the lines after their Y data
 		String[] keys = new String[data.getRowCount()-1];
 		for (int i=0; i<keys.length; ++i) {
-			keys[i] = data.getRowField(i+1, ScalarFields.MODULE) + " " +
-					   data.getRowField(i+1, ScalarFields.NAME);
+			keys[i] = data.getRowField(i+1, ResultItemFields.MODULE) + " " +
+					   data.getRowField(i+1, ResultItemFields.NAME);
 		}
 		return keys;
 	}

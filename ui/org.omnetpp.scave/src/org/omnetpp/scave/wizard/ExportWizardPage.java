@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.editors.ui.FileSelectionPanel;
-import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.ResultItemFields;
 
 /**
  * Abstract base class for data export pages.
@@ -51,7 +51,7 @@ public abstract class ExportWizardPage extends WizardPage {
 		fileSelectionPanel.setFileName(fileName);
 	}
 
-	protected ScalarFields getGroupBy() {
+	protected ResultItemFields getGroupBy() {
 		int fields = 0;
 		for (Button radio : groupByCheckboxes)
 			if (radio.getSelection()) {
@@ -59,7 +59,7 @@ public abstract class ExportWizardPage extends WizardPage {
 				fields |= field;
 			}
 				
-		return new ScalarFields(fields);
+		return new ResultItemFields(fields);
 	}
 	
 	protected int getPrecision() {
@@ -91,10 +91,10 @@ public abstract class ExportWizardPage extends WizardPage {
 		group.setText("Scalars grouped by");
 		groupByCheckboxes = new Button[4];
 		int i = 0;
-		groupByCheckboxes[i++] = createCheckboxForField(group, "file name", ScalarFields.FILE);
-		groupByCheckboxes[i++] = createCheckboxForField(group, "run name", ScalarFields.RUN);
-		groupByCheckboxes[i++] = createCheckboxForField(group, "module name", ScalarFields.MODULE);
-		groupByCheckboxes[i++] = createCheckboxForField(group, "scalar name", ScalarFields.NAME);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "file name", ResultItemFields.FILE);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "run name", ResultItemFields.RUN);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "module name", ResultItemFields.MODULE);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "scalar name", ResultItemFields.NAME);
 	}
 	
 	protected Button createCheckboxForField(Composite parent, String name, int field) {
