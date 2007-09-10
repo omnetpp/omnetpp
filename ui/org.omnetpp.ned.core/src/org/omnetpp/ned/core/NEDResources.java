@@ -10,22 +10,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
@@ -73,7 +62,7 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 //XXX New NED File Wizard should generate "package" line into the file
 //XXX launcher should set NEDPATH env var
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
-	
+
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
 	private static final String OMNETPP_NATURE = "org.omnetpp.main.omnetppnature";
     private static final String NED_EXTENSION = "ned";
@@ -92,7 +81,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     static class ProjectData {
     	// all projects we reference, directly or indirectly
     	IProject[] referencedProjects;
-    	
+
         // non-duplicate toplevel (non-inner) types; keys are fully qualified names
         final Map<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
 
@@ -102,8 +91,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // reserved (used) fully qualified names (contains all names including duplicates)
         final Set<String> reservedNames = new HashSet<String>();
     }
-    
-    // per-project tables 
+
+    // per-project tables
     private final Map<IProject,ProjectData> projects = new HashMap<IProject, ProjectData>();
 
     // if tables need to be rebuilt
@@ -119,9 +108,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private boolean nedModelChangeNotificationDisabled = false;
 
     // NED Source Folders for each project (contents of the .nedfolders files)
-    private Map<IProject,List<IFolder>> projectNedSourceFolders = new HashMap<IProject,List<IFolder>>(); 
+    private Map<IProject,List<IFolder>> projectNedSourceFolders = new HashMap<IProject,List<IFolder>>();
 
-	
+
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
     public static class InstanceofPredicate implements IPredicate {
     	private Class<? extends INedTypeElement> clazz;
@@ -334,9 +323,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		ProjectData projectData = projects.get(context);
 		if (projectData == null)
 			return null;
-		
+
 		// try as toplevel type
-		INEDTypeInfo typeInfo = projectData.components.get(qualifiedName);  
+		INEDTypeInfo typeInfo = projectData.components.get(qualifiedName);
 
 		// if not found, try as inner type
 		if (typeInfo == null && qualifiedName.contains(".")) {
@@ -383,7 +372,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				return projectData.components.get(name);
 		}
 		else {
-			// name is an unqualified name (simple name). 
+			// name is an unqualified name (simple name).
 
 			// from the same package?
 			String packagePrefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
@@ -447,15 +436,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * the NED source folders designated for the project.
      */
     public boolean isNEDFile(IResource resource) {
-    	return (resource instanceof IFile && 
-    			NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) && 
+    	return (resource instanceof IFile &&
+    			NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
     			getNedSourceFolderFor((IFile)resource) != null);
     }
 
     public IContainer[] getNedSourceFolders(IProject project) {
 		if (!isOpenOmnetppProject(project))
 			return new IContainer[0];
-		
+
 		//FIXME ensure ".nedfolders" is already loaded if exists!
 		List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
     	if (nedSourceFolders == null || nedSourceFolders.isEmpty())
@@ -479,11 +468,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return null;
 	}
 
-	protected boolean isOpenOmnetppProject(IProject project) {
+	public boolean isOpenOmnetppProject(IProject project) {
 		try {
 			// project is open, nature is set and also enabled
 			return project.isAccessible() && project.isNatureEnabled(OMNETPP_NATURE);
-		} 
+		}
 		catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -495,28 +484,28 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			return null; // bad NED file
 		if (sourceFolder == file.getParent() && file.getName().equals(PACKAGE_NED_FILENAME))
 			return null; // nothing is expected: this file defines the package
-		
-		// first half is the package declared in the root "package.ned" file 
+
+		// first half is the package declared in the root "package.ned" file
 		String packagePrefix = "";
 		IFile packageNedFile = sourceFolder.getFile(new Path(PACKAGE_NED_FILENAME));
 		if (getNedFiles().contains(packageNedFile))
 			packagePrefix = StringUtils.nullToEmpty(getNedFileElement(packageNedFile).getPackage());
-		
+
 		// second half consists of the directories this file is down from the source folder
 		String fileFolderPath = StringUtils.join(file.getParent().getFullPath().segments(), ".");
 		String sourceFolderPath = StringUtils.join(sourceFolder.getFullPath().segments(), ".");
 		Assert.isTrue(fileFolderPath.startsWith(sourceFolderPath));
 		String packageSuffix = fileFolderPath.substring(sourceFolderPath.length());
-		if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.') 
+		if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.')
 			packageSuffix = packageSuffix.substring(1);
-		
+
 		// concatenate
 		String packageName = packagePrefix.length()>0 && packageSuffix.length()>0 ?
 				packagePrefix + "." + packageSuffix :
 					packagePrefix + packageSuffix;
 		return packageName;
 	}
-	
+
     /**
      * NED editors should call this when they get opened.
      */
@@ -627,7 +616,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         debugRehashCounter++;
 
         projects.clear();
-        
+
         IProject[] omnetppProjects = getOmnetppProjects();
 
         // re-register built-in declarations for all projects
@@ -635,7 +624,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         	ProjectData projectData = new ProjectData();
         	projectData.referencedProjects = getAllReferencedOmnetppProjects(project); //XXX may throw exception!
         	projects.put(project, projectData);
-        	
+
         	for (INEDElement child : builtInDeclarationsFile) {
         		if (child instanceof INedTypeElement) {
         			INEDTypeInfo typeInfo = ((INedTypeElement)child).getNEDTypeInfo();
@@ -725,7 +714,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 					collectAllReferencedOmnetppProjects(dependency, result);
 				}
 			}
-		} 
+		}
 		catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -831,12 +820,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             nedModelChangeNotificationDisabled = true;
             debugRehashCounter = 0;
             IWorkspaceRoot wsroot = ResourcesPlugin.getWorkspace().getRoot();
-            
+
             // read all .nedfolders files first (isNEDFile() relies on them)
             projectNedSourceFolders.clear();
             for (IProject project : wsroot.getProjects())
             	projectNedSourceFolders.put(project, determineNedFoldersFor(project));
-            
+
             // read NED files
             final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             wsroot.accept(new IResourceVisitor() {
@@ -848,7 +837,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             });
             sync.runAsWorkspaceJob();
             rehashIfNeeded();
-        } 
+        }
         catch (CoreException e) {
             NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
@@ -870,7 +859,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			}
 			System.out.println("Project "+ project.getName() + " NED source folders: " + StringUtils.join(result, ", "));
 			return result;
-		} 
+		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (CoreException e) {
