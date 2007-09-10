@@ -89,18 +89,18 @@ tests: check-env base
 
 check-env:
 	@probefile=__probe__; \
-	if (echo '' >/home/rhornig/work/omnetpp/omnetpp/bin/$$probefile && \
-	    chmod +x /home/rhornig/work/omnetpp/omnetpp/bin/$$probefile) 2>/dev/null; then \
+	if (echo '' >$(OMNETPP_BIN_DIR)/$$probefile && \
+	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \
 	  if $$probefile >/dev/null 2>/dev/null; then :; else \
-	    echo '  *** Warning: /home/rhornig/work/omnetpp/omnetpp/bin is not in the path, some components may not build!'; \
+	    echo '  *** Warning: $(OMNETPP_BIN_DIR) is not in the path, some components may not build!'; \
 	  fi; \
 	else \
-	  echo '  *** Warning: Cannot write to /home/rhornig/work/omnetpp/omnetpp/bin, does it exist?'; \
+	  echo '  *** Warning: Cannot write to $(OMNETPP_BIN_DIR), does it exist?'; \
 	fi; \
-	rm -f /home/rhornig/work/omnetpp/omnetpp/bin/$$probefile; \
+	rm -f $(OMNETPP_BIN_DIR)/$$probefile; \
 	if uname | grep "CYGWIN" >/dev/null; then :; else \
-	  if echo $$LD_LIBRARY_PATH | grep "/home/rhornig/work/omnetpp/omnetpp/lib" >/dev/null; then :; else \
-	    echo '  *** Warning: Looks like /home/rhornig/work/omnetpp/omnetpp/lib is not in LD_LIBRARY_PATH, shared libs may not work!'; \
+	  if echo $$LD_LIBRARY_PATH | grep "$(OMNETPP_LIB_DIR)" >/dev/null; then :; else \
+	    echo '  *** Warning: Looks like $(OMNETPP_LIB_DIR) is not in LD_LIBRARY_PATH, shared libs may not work!'; \
 	  fi; \
 	fi
 
