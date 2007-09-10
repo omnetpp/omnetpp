@@ -1,17 +1,15 @@
 package org.omnetpp.ide.properties;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -30,8 +28,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.ide.Activator;
 
 /**
  * This property page is shown for OMNeT++ Projects (projects with the
@@ -41,8 +39,6 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class NEDSourceFoldersPropertyPage extends PropertyPage {
-	private static final String NEDFOLDERS_FILENAME = ".nedfolders";
-
 	private CheckboxTreeViewer treeViewer;
 
 	/**
@@ -99,34 +95,31 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 
 		treeViewer.setInput(project.getParent());
 
-		loadNedPathFile();
+		loadNedFoldersFile();
 		
 		return composite;
 	}
 
 	protected void performDefaults() {
+		treeViewer.setAllChecked(false);
+		IProject project = (IProject) getElement();
+		treeViewer.setChecked(project, true);
 	}
 	
 	public boolean performOk() {
-		saveNedPathFile();
+		saveNedFoldersFile();
 		return true;
 	}
 
-	private void loadNedPathFile() {
+	private void loadNedFoldersFile() {
 		try {
 			IProject project = (IProject) getElement();
-			IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
-			String contents = "";
-			if (nedpathFile.exists())
-				contents = FileUtils.readTextFile(nedpathFile.getContents());
+			IContainer[] folders = ProjectUtils.readNedFoldersFile(project);
 
-			for (String line : StringUtils.splitToLines(contents)) {
-				if (!StringUtils.isBlank(line)) {
-					IFolder folder = project.getFolder(line.trim());
-					treeViewer.setChecked(folder, true);
-				    for (IResource current=folder.getParent(); current!=null; current=current.getParent())
-				    	treeViewer.setExpandedState(current, true);
-				}
+			for (IContainer folder : folders) {
+				treeViewer.setChecked(folder, true);
+				for (IResource current=folder.getParent(); current!=null; current=current.getParent())
+					treeViewer.setExpandedState(current, true);
 			}
 			if (treeViewer.getCheckedElements().length == 0)
 				treeViewer.setChecked(project, true);
@@ -139,20 +132,11 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		
 	}
 
-	private void saveNedPathFile() {
+	private void saveNedFoldersFile() {
 		try {
-			// assemble file content to save
-			String content = "";
-			for (Object element : treeViewer.getCheckedElements())
-				content += getProjectRelativePathOf((IContainer)element) + "\n";
-			
-			// save it
-			IProject project = (IProject) getElement();
-			IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
-			if (!nedpathFile.exists())
-				nedpathFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-			else
-				nedpathFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+			IProject project = (IProject)getElement();
+			IContainer[] folders = (IContainer[]) ArrayUtils.addAll(new IContainer[]{}, treeViewer.getCheckedElements());
+			ProjectUtils.saveNedFoldersFile(project, folders);
 		} 
 		catch (CoreException e) {
 			errorDialog("Cannot store NED Source Folder list: ", e);
@@ -160,16 +144,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 	} 
 
 	private void errorDialog(String message, Throwable e) {
-		IStatus status = new Status(IMarker.SEVERITY_ERROR, "org.omnetpp.main", e.getMessage(), e);
+		IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
 		ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
-	}
-
-	private String getProjectRelativePathOf(IContainer container) {
-		Assert.isTrue(container != null);
-		IProject project = (IProject) getElement();
-		if (container == project)
-			return "";
-		else
-			return StringUtils.removeStart(container.getFullPath().toString(), project.getFullPath().toString()+"/") + "/";
 	}
 }

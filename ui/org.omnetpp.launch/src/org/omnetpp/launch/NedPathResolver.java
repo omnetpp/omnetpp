@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
+import org.omnetpp.common.project.ProjectUtils;
 
 /**
  * Assembles the value of the NEDPATH environment variable. Argument
@@ -23,10 +24,10 @@ public class NedPathResolver implements IDynamicVariableResolver {
 		if (resource == null)
 			throw new IllegalArgumentException("argument to nedpath resolver needs to be an existing file, folder, or project");
 
-		IProject mainProject = resource.getProject();
-		String result = mainProject.getLocation().toOSString();
-		for (IProject project : mainProject.getReferencedProjects())
-			result += ";" + project.getLocation().toOSString();
+		IProject project = resource.getProject();
+		String result = project.getLocation().toOSString();
+		for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
+			result += ";" + p.getLocation().toOSString();
 		return result;
 	}
 

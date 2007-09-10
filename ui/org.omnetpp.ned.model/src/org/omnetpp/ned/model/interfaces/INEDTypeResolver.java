@@ -75,11 +75,6 @@ public interface INEDTypeResolver {
 	 */
     public IContainer getNedSourceFolderFor(IFile file);
 
-    /**
-     * Checks whether the the provided project is open and has an OMNET++ nature
-     */
-    public boolean isOpenOmnetppProject(IProject project);
-
 	/**
 	 * Returns the expected package name for the given file. "" means the
 	 * default package. Returns null for the toplevel "package.ned" file

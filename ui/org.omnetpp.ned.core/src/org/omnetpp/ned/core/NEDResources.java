@@ -10,15 +10,25 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INEDElement;
@@ -64,9 +74,7 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
-	private static final String OMNETPP_NATURE = "org.omnetpp.main.omnetppnature";
     private static final String NED_EXTENSION = "ned";
-	private static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
     // list of objects that listen on *all* NED changes
     private NEDChangeListenerList nedModelChangeListenerList = null;
@@ -108,7 +116,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private boolean nedModelChangeNotificationDisabled = false;
 
     // NED Source Folders for each project (contents of the .nedfolders files)
-    private Map<IProject,List<IFolder>> projectNedSourceFolders = new HashMap<IProject,List<IFolder>>();
+    private Map<IProject,IContainer[]> projectNedSourceFolders = new HashMap<IProject,IContainer[]>();
 
 
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
@@ -442,40 +450,30 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public IContainer[] getNedSourceFolders(IProject project) {
-		if (!isOpenOmnetppProject(project))
+		if (!ProjectUtils.isOpenOmnetppProject(project))
 			return new IContainer[0];
 
 		//FIXME ensure ".nedfolders" is already loaded if exists!
-		List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
-    	if (nedSourceFolders == null || nedSourceFolders.isEmpty())
+		IContainer[] nedSourceFolders = projectNedSourceFolders.get(project);
+    	if (nedSourceFolders == null || nedSourceFolders.length==0)
     		return new IContainer[] { project };  // default source folder is the project
     	else
-    		return nedSourceFolders.toArray(new IContainer[]{});
+    		return nedSourceFolders;
     }
 
     public IContainer getNedSourceFolderFor(IFile file) {
 		IProject project = file.getProject();
-		if (isOpenOmnetppProject(project)) {
+		if (ProjectUtils.isOpenOmnetppProject(project)) {
 			//FIXME ensure ".nedfolders" is already loaded if exists!
-			List<IFolder> nedSourceFolders = projectNedSourceFolders.get(project);
-			if (nedSourceFolders == null || nedSourceFolders.isEmpty())
+			IContainer[] nedSourceFolders = projectNedSourceFolders.get(project);
+			if (nedSourceFolders == null || nedSourceFolders.length==0)
 				return project;  // default source folder is the project
 
 			for (IContainer container = file.getParent(); container != project; container = container.getParent())
-				if (nedSourceFolders.contains(container))
+				if (ArrayUtils.contains(nedSourceFolders, container))
 					return container;
 		}
     	return null;
-	}
-
-	public boolean isOpenOmnetppProject(IProject project) {
-		try {
-			// project is open, nature is set and also enabled
-			return project.isAccessible() && project.isNatureEnabled(OMNETPP_NATURE);
-		}
-		catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public String getExpectedPackageFor(IFile file) {
@@ -617,12 +615,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         projects.clear();
 
-        IProject[] omnetppProjects = getOmnetppProjects();
+        IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
 
         // re-register built-in declarations for all projects
         for (IProject project : omnetppProjects) {
         	ProjectData projectData = new ProjectData();
-        	projectData.referencedProjects = getAllReferencedOmnetppProjects(project); //XXX may throw exception!
+        	projectData.referencedProjects = ProjectUtils.getAllReferencedOmnetppProjects(project); //XXX may throw exception!
         	projects.put(project, projectData);
 
         	for (INEDElement child : builtInDeclarationsFile) {
@@ -687,38 +685,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // schedule a validation
         validationJob.restartTimer();
     }
-
-    protected IProject[] getOmnetppProjects() {
-		List<IProject> omnetppProjects = new ArrayList<IProject>();
-        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
-        	if (isOpenOmnetppProject(project))
-        		omnetppProjects.add(project);
-        return omnetppProjects.toArray(new IProject[]{});
-	}
-
-    /**
-     * Returns the transitive closure of OMNeT++ projects referenced from the given project.
-     */
-    protected IProject[] getAllReferencedOmnetppProjects(IProject project) {
-    	Set<IProject> result = new HashSet<IProject>();
-    	collectAllReferencedOmnetppProjects(project, result);
-    	return result.toArray(new IProject[]{});
-    }
-
-	// helper for getAllReferencedOmnetppProjects()
-    private void collectAllReferencedOmnetppProjects(IProject project, Set<IProject> result) {
-		try {
-			for (IProject dependency : project.getReferencedProjects()) {
-				if (isOpenOmnetppProject(dependency)) {
-					result.add(dependency);
-					collectAllReferencedOmnetppProjects(dependency, result);
-				}
-			}
-		}
-		catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	protected void invalidateTypeInfo(INEDElement parent) {
 		for (INEDElement element : parent) {
@@ -824,7 +790,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // read all .nedfolders files first (isNEDFile() relies on them)
             projectNedSourceFolders.clear();
             for (IProject project : wsroot.getProjects())
-            	projectNedSourceFolders.put(project, determineNedFoldersFor(project));
+            	projectNedSourceFolders.put(project, ProjectUtils.readNedFoldersFile(project)); //XXX handle IOException here gracefully?
 
             // read NED files
             final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
@@ -840,32 +806,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
         catch (CoreException e) {
             NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
-        } finally {
+        } catch (IOException e) {
+            NEDResourcesPlugin.logError("Error during workspace refresh: ",e);
+		} finally {
             nedModelChangeNotificationDisabled = false;
             Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readAllNedFilesInWorkspace()");
             nedModelChanged(new NEDModelChangeEvent(null));
         }
     }
-
-    protected List<IFolder> determineNedFoldersFor(IProject project) {
-		try {
-			List<IFolder> result = new ArrayList<IFolder>();
-			IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
-			if (nedFoldersFile.exists()) {
-				String contents = FileUtils.readTextFile(nedFoldersFile.getContents());
-				for (String line : StringUtils.splitToLines(contents))
-					if (!StringUtils.isBlank(line))
-						result.add(project.getFolder(line.trim()));
-			}
-			System.out.println("Project "+ project.getName() + " NED source folders: " + StringUtils.join(result, ", "));
-			return result;
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
     // ******************* notification helpers ************************************
 
