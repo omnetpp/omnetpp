@@ -196,7 +196,7 @@ public class LaunchPlugin extends AbstractUIPlugin {
      *
      * @param configuration
      * @param additionalArgs extra command line arguments to be prepended to the command line
-     * @param requestInfo Seting it to true runs the process in "INFO" mode (replaces the -c arg width -x)
+     * @param requestInfo Setting it to true runs the process in "INFO" mode (replaces the -c arg width -x)
      * @return The created process object,
      * @throws CoreException if process is not started correctly
      */
@@ -205,8 +205,10 @@ public class LaunchPlugin extends AbstractUIPlugin {
 
         if (requestInfo) {
             int i = ArrayUtils.indexOf(cmdLine, "-c");
-            Assert.isTrue(i >= 0);
-            cmdLine[i] = "-x";
+            if (i >= 0)
+            	cmdLine[i] = "-x";
+            else
+            	cmdLine = (String[]) ArrayUtils.addAll(cmdLine, new String[] {"-x", "General"});
         }
 
         IStringVariableManager varman2 = VariablesPlugin.getDefault().getStringVariableManager();
