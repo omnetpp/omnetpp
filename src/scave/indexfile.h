@@ -17,6 +17,7 @@
 
 #include <float.h>
 #include <map>
+#include <vector>
 #include "scavedefs.h"
 #include "commonutil.h"
 #include "statistics.h"
