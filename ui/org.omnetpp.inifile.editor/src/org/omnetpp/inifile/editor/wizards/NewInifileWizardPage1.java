@@ -6,8 +6,13 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,9 +26,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
+
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -41,7 +46,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 	public NewInifileWizardPage1(IWorkbench aWorkbench, IStructuredSelection selection) {
 		super("page1", selection);
 		setTitle("Create an ini file");
-		setDescription("This wizard allows you to create a new OMNeT++/OMNEST simulation configuration file.");
+		setDescription("This wizard allows you to create a new OMNEST/OMNeT++ simulation configuration file.");
 		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
 		workbench = aWorkbench;
 
@@ -67,21 +72,35 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 		createLabel(group, "NED Network:", parent.getFont());
 		networkCombo = new Combo(group, SWT.BORDER);
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		networkCombo.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(getContainerFullPath());
+                if (container == null) {
+                    networkCombo.removeAll();
+                }
+                else {
+                    // fill network combo
+                    IProject project = container.getProject();
+                    Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(project);
+                    String[] networkNames = networkNameSet.toArray(new String[]{});
+                    Arrays.sort(networkNames);
+                    networkCombo.setItems(networkNames);
+                    networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
+                }
+            }
 
-		// fill network combo
-		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE);
-		String[] networkNames = networkNameSet.toArray(new String[]{});
-		Arrays.sort(networkNames);
-		networkCombo.setItems(networkNames);
-		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
+            public void focusLost(FocusEvent e) {
+            }
+		});
+
 		//XXX set combo to a NED network in the current directory
 
 // ADDITIONAL STUFF: probably not needed, would just confuse a novice user
-//		
+//
 //		final Button addParamsCheckbox = new Button(group, SWT.CHECK);
 //		addParamsCheckbox.setText("Add entries to set module parameters");
 //		addParamsCheckbox.setSelection(true);
-//		
+//
 //		final Composite group2 = new Composite(group, SWT.NONE);
 //		group2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 //		group2.setLayout(new GridLayout(1,false));
@@ -101,7 +120,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 //		final Button b4 = createRadioButton(group3, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
 //		b2.setSelection(true);
 //		keyType = KeyType.MODULE_AND_PARAM; // must agree with selected radiobutton
-//        
+//
 //		// checkboxes
 //		addParamsCheckbox.addSelectionListener(new SelectionAdapter() {
 //			public void widgetSelected(SelectionEvent e) {
@@ -115,7 +134,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 //		});
 
 		//new Label(composite, SWT.NONE);
-		
+
 		setPageComplete(validatePage());
 	}
 
@@ -138,14 +157,13 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 //		});
 //		return rb;
 //	}
-	
+
 	@Override
 	protected InputStream getInitialContents() {
 		String networkName = networkCombo.getText().trim();
 
-		String contents = 
+		String contents =
 			"[General]\n" +
-			"preload-ned-files = *.ned\n" +
 			"network = "+networkName+"\n";
 
 		return new ByteArrayInputStream(contents.getBytes());
