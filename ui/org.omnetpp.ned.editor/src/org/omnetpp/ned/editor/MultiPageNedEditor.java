@@ -16,7 +16,18 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
@@ -27,8 +38,8 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
-
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -97,11 +108,19 @@ public class MultiPageNedEditor
     protected INEDChangeListener nedModelListener = new INEDChangeListener() {
         public void modelChanged(NEDModelEvent event) {
             if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile())) {
+                boolean dirty = isDirty(); // this must be called before closeEditor
                 // FIXME IMPORTANT
                 String oldContent = getTextEditor().getText();
                 IFile file = getFile();
-                closeEditor(false);
-                if (file.isAccessible()) {
+                // NOTE: danger, this is not deadlock safe, but we have no better idea
+                // the problem is that workspace changes don't happen in the UI thread
+                // so we switch to it and call close from there
+                DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
+        			public void run() {
+        				closeEditor(false);
+					}
+        		});
+                if (file.isAccessible() && dirty) {
                     IWorkbench workbench = PlatformUI.getWorkbench();
                     IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
                     IWorkbenchPage page = workbenchWindow.getActivePage();
@@ -141,11 +160,12 @@ public class MultiPageNedEditor
         getSite().getPage().removePartListener(partListener);
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedModelListener);
 
+        // super must be called before disconnect to let the children editors remove their listeners
+        super.dispose();
+
         // disconnect the editor from the ned resources plugin
         if (getEditorInput() != null)
             NEDResourcesPlugin.getNEDResources().disconnect(getFile());
-
-        super.dispose();
     }
 
     @Override
