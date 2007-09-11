@@ -22,6 +22,8 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.pojo.ExtendsElement;
+import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 
 /**
  * Organize "import" lines in a NED file.
@@ -79,11 +81,17 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 		final Set<String> result = new HashSet<String>();
 		NEDElementUtilEx.visitNedTree(nedFileElement, new NEDElementUtilEx.INEDElementVisitor() {
 			public void visit(INEDElement element) {
-				if (element instanceof IHasType) {
-					String effectiveType = ((IHasType)element).getEffectiveType();
-					if (effectiveType != null && !effectiveType.contains("."))
-						result.add(effectiveType);
-				}
+				if (element instanceof IHasType)
+					collect(result, ((IHasType)element).getEffectiveType());
+				else if (element instanceof ExtendsElement)
+					collect(result, ((ExtendsElement)element).getName());
+				else if (element instanceof InterfaceNameElement)
+					collect(result, ((InterfaceNameElement)element).getName());
+			}
+
+			private void collect(Set<String> result, String typeName) {
+				if (typeName != null && !typeName.contains("."))
+					result.add(typeName);
 			}
 		});
 		return result;
@@ -102,7 +110,7 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 
 		// find all potential types
         List<String> potentialMatches = new ArrayList<String>();
-		for (String qualifiedName : res.getAllNedTypeQNames(contextProject))
+		for (String qualifiedName : res.getNedTypeQNames(contextProject))
 			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
 				potentialMatches.add(qualifiedName);
 

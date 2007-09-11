@@ -173,7 +173,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			// wildcard import: check if it matches anything
 			String regex = NEDElementUtilEx.importToRegex(name);
 			boolean found = false;
-			for (String qualifiedName : resolver.getAllNedTypeQNames(contextProject))
+			for (String qualifiedName : resolver.getNedTypeQNames(contextProject))
 				if (qualifiedName.matches(regex))
 					{found = true; break;}
 			if (!found)

@@ -16,9 +16,8 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author Andras
  */
 public interface INEDTypeResolver {
-    public static final IProject FIXME_INSERT_CONTEXTPROJECT_HERE = null;
 
-    public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
+	public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
 
     /**
@@ -109,17 +108,24 @@ public interface INEDTypeResolver {
     public INEDElement getNedElementAt(INEDElement parent, int line, int column);
 
     /**
+	 * Returns all toplevel (non-inner) types from NED files in all projects,
+	 * including duplicate types. This method is useful for implementing the
+	 * Open NED Type dialog, and for not much else.
+	 */
+	public Collection<INEDTypeInfo> getNedTypesFromAllProjects();
+
+    /**
 	 * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,
 	 * from the given project and its dependent projects.
 	 */
-	public Collection<INEDTypeInfo> getAllNedTypes(IProject context);
+	public Collection<INEDTypeInfo> getNedTypes(IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files, excluding
      * duplicate names, from the given project and its dependent projects.
      * Returned names are fully qualified.
      */
-    public Set<String> getAllNedTypeQNames(IProject context);
+    public Set<String> getNedTypeQNames(IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files where

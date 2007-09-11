@@ -13,7 +13,6 @@ import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Action to open a NED type selection dialog.
@@ -43,12 +42,17 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
             @Override
             public String getText(Object element) {
                 INEDTypeInfo nedType = (INEDTypeInfo) element;
+                String simpleName = nedType.getName();
+                String fullyQualifiedName = nedType.getFullyQualifiedName();
                 String typeName = nedType.getNEDElement().getReadableTagName();
-                return nedType.getName() + " -- " + typeName;
+                if (simpleName.equals(fullyQualifiedName))
+                	return nedType.getName() + " -- " + typeName;
+                else
+                	return nedType.getName() + " -- " + typeName + " (" + fullyQualifiedName + ")";
             }
             
         }); 
-        dialog.setElements(ned.getAllNedTypes(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE).toArray());
+        dialog.setElements(ned.getNedTypesFromAllProjects().toArray());
         dialog.setMessage("Select NED type to open:");
         dialog.setTitle("Open NED Type");
         if (dialog.open() == ListDialog.OK) {

@@ -265,7 +265,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return parent.getSourceRegion() != null && parent.getSourceRegion().contains(line, column) ? parent : null;
     }
 
-    public synchronized Collection<INEDTypeInfo> getAllNedTypes(IProject context) {
+	public synchronized Collection<INEDTypeInfo> getNedTypesFromAllProjects() {
+		// return everything from everywhere, including duplicates
+		List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
+		for (IFile file : nedFiles.keySet())
+			for (INEDElement child : nedFiles.get(file))
+				if (child instanceof INedTypeElement)
+					result.add(((INedTypeElement)child).getNEDTypeInfo());
+		return result;
+	}
+
+    public synchronized Collection<INEDTypeInfo> getNedTypes(IProject context) {
 		rehashIfNeeded();
         ProjectData projectData = projects.get(context);
 		return projectData==null ? new ArrayList<INEDTypeInfo>() : projectData.components.values();
@@ -273,13 +283,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
-        for (INEDTypeInfo typeInfo : getAllNedTypes(context))
+        for (INEDTypeInfo typeInfo : getNedTypes(context))
             if (predicate.matches(typeInfo))
                 result.add(typeInfo.getFullyQualifiedName());
         return result;
     }
 
-    public synchronized Set<String> getAllNedTypeQNames(IProject context) {
+    public synchronized Set<String> getNedTypeQNames(IProject context) {
 		rehashIfNeeded();
         ProjectData projectData = projects.get(context);
 		return projectData==null ? new HashSet<String>() : projectData.components.keySet();
@@ -465,7 +475,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		IContainer sourceFolder = getNedSourceFolderFor(file);
 		if (sourceFolder == null)
 			return null; // bad NED file
-		if (sourceFolder == file.getParent() && file.getName().equals(PACKAGE_NED_FILENAME))
+		if (sourceFolder.equals(file.getParent()) && file.getName().equals(PACKAGE_NED_FILENAME))
 			return null; // nothing is expected: this file defines the package
 
 		// first half is the package declared in the root "package.ned" file
@@ -631,7 +641,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         	// find NED types in each file, and register them
         	for (IFile file : nedFiles.keySet()) {
         		// file must be in this project or a referenced project
-        		if (file.getProject() == project || ArrayUtils.contains(projectData.referencedProjects, file.getProject())) {
+        		if (file.getProject().equals(project) || ArrayUtils.contains(projectData.referencedProjects, file.getProject())) {
 
         			// collect toplevel types from the NED file, and process them one by one
         			for (INEDElement child : nedFiles.get(file)) {

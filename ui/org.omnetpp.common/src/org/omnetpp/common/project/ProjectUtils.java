@@ -95,9 +95,13 @@ public class ProjectUtils {
 		IFile nedFoldersFile = project.getFile(ProjectUtils.NEDFOLDERS_FILENAME);
 		if (nedFoldersFile.exists()) {
 			String contents = FileUtils.readTextFile(nedFoldersFile.getContents());
-			for (String line : StringUtils.splitToLines(contents))
-				if (!StringUtils.isBlank(line))
-					result.add(project.getFolder(line.trim()));
+			for (String line : StringUtils.splitToLines(contents)) {
+				line = line.trim();
+				if (line.equals("."))
+					result.add(project);
+				else if (line.length()>0)
+					result.add(project.getFolder(line)); 
+			}
 		}
 		if (result.isEmpty())
 			result.add(project); // this is the default
@@ -123,7 +127,7 @@ public class ProjectUtils {
 
 	private static String getProjectRelativePathOf(IProject project, IContainer container) {
 		Assert.isTrue(container != null);
-		if (container == project)
+		if (container.equals(project))
 			return ".";
 		else
 			return StringUtils.removeStart(container.getFullPath().toString(), project.getFullPath().toString()+"/");
