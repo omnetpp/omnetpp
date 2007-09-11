@@ -26,6 +26,7 @@ import org.eclipse.ui.ide.IDE;
  *
  * @author rhornig
  */
+//XXX New NED File Wizard should generate "package" line into the file
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
     private static String[] NEDFILE_TEMPLATES = {
@@ -44,8 +45,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
     private Button networkButton = null;
 	private int modelSelected = 0;
 
-	public NewNEDFileWizardPage1(IWorkbench aWorkbench,
-			IStructuredSelection selection) {
+	public NewNEDFileWizardPage1(IWorkbench aWorkbench, IStructuredSelection selection) {
 		super("page1", selection);
 		setTitle("Create a NED file");
 		setDescription("This wizard allows you to create a new network description file");

@@ -72,9 +72,6 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
  *
  * @author andras
  */
-//XXX what should editors do when their input file is not (no longer) in a NED source folder (isNedFile()==false) ??
-//XXX comments around "package" can get lost
-//XXX New NED File Wizard should generate "package" line into the file
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
@@ -456,12 +453,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public IContainer[] getNedSourceFolders(IProject project) {
 		ProjectData projectData = projects.get(project);
-		if (projectData == null)
-			return new IContainer[0];
-    	if (projectData.nedSourceFolders == null || projectData.nedSourceFolders.length==0)
-    		return new IContainer[] { project };  // default source folder is the project;  //FIXME return exactly what's in there!
-    	else
-    		return projectData.nedSourceFolders;
+		return projectData == null ? new IContainer[0] : projectData.nedSourceFolders;
     }
 
     public IContainer getNedSourceFolderFor(IFile file) {
@@ -471,8 +463,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			return null;
 		
 		IContainer[] nedSourceFolders = projectData.nedSourceFolders;
-		if (nedSourceFolders == null || nedSourceFolders.length==0) //FIXME this should not be needed
-			return project;  // default source folder is the project
+		if (nedSourceFolders.length == 1 && nedSourceFolders[0] == project) // shortcut
+			return project;
 
 		for (IContainer container = file.getParent(); container != project; container = container.getParent())
 			if (ArrayUtils.contains(nedSourceFolders, container))
@@ -820,7 +812,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		// we'll need rehash() too
 		invalidate();
 		
-		//FIXME optimize notifications? (e.g.begin/end)
+		//FIXME optimize notifications? (e.g. add begin/end)
 		nedModelChanged(new NEDModelChangeEvent(null));  // "anything might have changed"
 	
 		scheduleReadMissingNedFiles();
@@ -930,7 +922,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                     	IFile file = (IFile)resource;
                     	switch (delta.getKind()) {
                     	case IResourceDelta.REMOVED:
-                    		forgetNEDFile(file); //FIXME fire some NED notification now?
+                    		forgetNEDFile(file);
                     		invalidate();
                     		break;
                     	case IResourceDelta.ADDED:

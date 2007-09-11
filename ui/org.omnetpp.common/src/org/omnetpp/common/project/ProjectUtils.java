@@ -97,8 +97,10 @@ public class ProjectUtils {
 			String contents = FileUtils.readTextFile(nedFoldersFile.getContents());
 			for (String line : StringUtils.splitToLines(contents))
 				if (!StringUtils.isBlank(line))
-					result.add(project.getFolder(line.trim())); //FIXME what notation is the project itself?
+					result.add(project.getFolder(line.trim()));
 		}
+		if (result.isEmpty())
+			result.add(project); // this is the default
 		return result.toArray(new IContainer[]{});
 	}
     
@@ -109,7 +111,7 @@ public class ProjectUtils {
     	// assemble file content to save
     	String content = "";
     	for (IContainer element : folders)
-    		content += getProjectRelativePathOf(project, element) + "\n"; //FIXME what notation is the project itself?
+    		content += getProjectRelativePathOf(project, element) + "\n";
 
     	// save it
     	IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
@@ -122,7 +124,7 @@ public class ProjectUtils {
 	private static String getProjectRelativePathOf(IProject project, IContainer container) {
 		Assert.isTrue(container != null);
 		if (container == project)
-			return "";
+			return ".";
 		else
 			return StringUtils.removeStart(container.getFullPath().toString(), project.getFullPath().toString()+"/");
 	}
