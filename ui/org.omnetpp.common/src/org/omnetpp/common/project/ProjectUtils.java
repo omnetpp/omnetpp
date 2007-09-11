@@ -10,6 +10,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -80,6 +81,12 @@ public class ProjectUtils {
 		}
 	}
 
+	public static boolean isNedFoldersFile(IResource resource) {
+		return (resource instanceof IFile && 
+				resource.getParent() instanceof IProject && 
+				resource.getName().equals(NEDFOLDERS_FILENAME));
+	}
+	
 	/**
 	 * Reads the ".nedfolders" file from the given OMNeT++ project.
 	 */
@@ -92,7 +99,6 @@ public class ProjectUtils {
 				if (!StringUtils.isBlank(line))
 					result.add(project.getFolder(line.trim())); //FIXME what notation is the project itself?
 		}
-		System.out.println("Project "+ project.getName() + " NED source folders: " + StringUtils.join(result, ", "));
 		return result.toArray(new IContainer[]{});
 	}
     

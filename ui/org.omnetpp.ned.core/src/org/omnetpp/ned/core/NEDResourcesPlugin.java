@@ -2,13 +2,9 @@ package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
@@ -53,21 +49,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
         PLUGIN_ID = getBundle().getSymbolicName();
         // System.out.println("NEDResourcesPlugin started");
 
-        // do the reading/parsing of ned files in a separate job to cut down plugin startup time
-        WorkspaceJob startupJob = new WorkspaceJob("Parsing NED files...") {
-            @Override
-            public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-                // System.out.println("reading all ned files");
-                getNEDResources().readAllNedFilesInWorkspace();
-                // System.out.println("attaching resource change listener");
-                ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
-                return Status.OK_STATUS;
-            }
-        };
-        startupJob.setRule(ResourcesPlugin.getWorkspace().getRoot());
-        startupJob.setPriority(Job.INTERACTIVE);
-        startupJob.setSystem(true);
-        startupJob.schedule();
+        resources.rebuildProjectsTable();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 	}
 
 	/**
