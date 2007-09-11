@@ -37,5 +37,6 @@ public class NedEditorUtils
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 		multiPageEditorPart.activatePage("Graphical");
 		multiPageEditorPart.activatePage("Text");
+		multiPageEditorPart.activatePage("Graphical");
 	}
 }
