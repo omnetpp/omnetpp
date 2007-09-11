@@ -1,6 +1,8 @@
 package org.omnetpp.ned.model.notification;
 
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.SafeRunner;
 
 
 /**
@@ -32,9 +34,18 @@ public class NEDChangeListenerList extends ListenerList {
      * If change notifications are enabled, fires a model change event
      * to all listeners; otherwise it does nothing.
      */
-    public void fireModelChanged(NEDModelEvent event) {
-        if (enabled)
-            for (Object listener : getListeners())
-            	((INEDChangeListener)listener).modelChanged(event);
+    public void fireModelChanged(final NEDModelEvent event) {
+        if (enabled) {
+            for (final Object listener : getListeners()) {
+				SafeRunner.run(new ISafeRunnable() {
+					public void handleException(Throwable e) {
+						// exception logged in SafeRunner#run
+					}
+					public void run() throws Exception {
+						((INEDChangeListener)listener).modelChanged(event);
+					}
+				});
+            }
+        }
     }
 }
