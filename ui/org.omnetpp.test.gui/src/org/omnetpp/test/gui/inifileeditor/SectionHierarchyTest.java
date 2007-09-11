@@ -6,22 +6,16 @@ import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.ViewPartAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.core.GUITestCase;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
 import org.omnetpp.test.gui.util.WorkspaceUtils;
 
-public class SectionHierarchyTest extends GUITestCase 
+public class SectionHierarchyTest
+	extends IniFileTestCase 
 {
-	protected String projectName = "test-project";
-
-	protected String fileName = "tmp.ini";
-
-	protected String filePath = projectName + "/" + fileName;
-
 	@Override
-	protected void setUp() throws Exception {
+	protected void setUpInternal() throws Exception {
+		super.setUpInternal();
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceUtils.createFileWithContent(filePath, "");
 		WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 		workbenchWindow.findEditorPartByTitle(fileName); //TODO .assertClass(InifileEditor.class)

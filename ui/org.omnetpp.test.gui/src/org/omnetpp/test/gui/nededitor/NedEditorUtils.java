@@ -32,14 +32,10 @@ public class NedEditorUtils
 		styledText.typeIn(nedSource);
 	}
 
-	public static void assertNoErrorInNedSource(String fileName, String nedSource) {
-		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
-		WorkbenchUtils.assertNoErrorMessageInProblemsView();
-	}
-
-	public static void assertErrorInNedSource(String fileName, String nedSource, String errorText) {
-		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
-		WorkbenchUtils.assertErrorMessageInProblemsView(errorText);
-		//TODO: do something in the graphical editor: check error markers are there, etc
+	public static void assertBothEditorsAreAccessible(String fileName) {
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+		multiPageEditorPart.activatePage("Graphical");
+		multiPageEditorPart.activatePage("Text");
 	}
 }

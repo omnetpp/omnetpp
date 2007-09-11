@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.nededitor;
 
+import org.omnetpp.test.gui.util.WorkbenchUtils;
+
 
 public class SimpleModuleTest
 	extends NedFileTestCase
@@ -36,5 +38,22 @@ public class SimpleModuleTest
 
 	public void testExtendsCycle3() throws Throwable {
 		assertErrorInNedSource("simple A extends B {}\nsimple B extends C {}\nsimple C extends A {}", ".*cycle.*");
+	}
+	
+	@Override
+	protected void setUpInternal() throws Exception {
+		super.setUpInternal();
+		NedEditorUtils.createNewNedFileByWizard(projectName, fileName);
+	}
+
+	protected void assertNoErrorInNedSource(String nedSource) {
+		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
+		WorkbenchUtils.assertNoErrorMessageInProblemsView();
+	}
+
+	protected void assertErrorInNedSource(String nedSource, String errorText) {
+		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
+		WorkbenchUtils.assertErrorMessageInProblemsView(errorText);
+		//TODO: do something in the graphical editor: check error markers are there, etc
 	}
 }

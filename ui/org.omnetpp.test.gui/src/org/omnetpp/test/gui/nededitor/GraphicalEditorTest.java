@@ -29,4 +29,10 @@ public class GraphicalEditorTest
 		compoundModuleEditPart.createConnectionWithPalette("node1", "node2", ".*g.*");
 		multiPageEditorPart.saveWithHotKey();
 	}
+	
+	@Override
+	protected void setUpInternal() throws Exception {
+		super.setUpInternal();
+		NedEditorUtils.createNewNedFileByWizard(projectName, fileName);
+	}
 }
