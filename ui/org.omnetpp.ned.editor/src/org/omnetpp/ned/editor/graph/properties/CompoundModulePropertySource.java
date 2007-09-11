@@ -5,14 +5,15 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
+
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.*;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * TODO add documentation
@@ -90,7 +91,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
     }
 
     // constructor
-    public CompoundModulePropertySource(CompoundModuleElementEx nodeModel) {
+    public CompoundModulePropertySource(final CompoundModuleElementEx nodeModel) {
         super(nodeModel);
         // create a nested displayPropertySource
         mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
@@ -99,9 +100,10 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
-              Collections.sort(moduleNames);
-              return moduleNames;
+                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
+                List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(project));
+                Collections.sort(moduleNames);
+                return moduleNames;
             }
         });
         // interfaces

@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -16,7 +18,6 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * TODO add documentation
@@ -100,7 +101,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
     }
 
     // constructor
-    public ConnectionPropertySource(ConnectionElementEx connectionNodeModel) {
+    public ConnectionPropertySource(final ConnectionElementEx connectionNodeModel) {
         super(connectionNodeModel);
         // create a nested displayPropertySources
         mergePropertySource(new BasePropertySource(connectionNodeModel));
@@ -108,9 +109,10 @@ public class ConnectionPropertySource extends MergedPropertySource {
         mergePropertySource(new TypePropertySource(connectionNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
+                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(connectionNodeModel.getContainingNedFileElement()).getProject();
+                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(project));
                 Collections.sort(channelNames);
-              return channelNames;
+                return channelNames;
             }
         });
         mergePropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));

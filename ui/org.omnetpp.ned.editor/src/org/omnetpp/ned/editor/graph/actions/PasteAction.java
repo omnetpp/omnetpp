@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -25,6 +26,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
+
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
@@ -39,7 +41,6 @@ import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -81,15 +82,15 @@ public class PasteAction extends SelectionAction {
 		Object contents = Clipboard.getDefault().getContents();
 		if (!(contents instanceof INEDElement[]))
 			return;
-		
+
 		// we'll paste a *duplicate* of the elements on the clipboard
 		List<INEDElement> elements = new ArrayList<INEDElement>();
 		for (INEDElement element : (INEDElement[])contents)
 			elements.add(element.deepDup());
 
 		// sort the collection so named elements will be pasted in dictionary
-		// order, so that numbering after renaming the duplicates will be consistent 
-		// with the original order (i.e. pasting node1, node2, node3 will result in 
+		// order, so that numbering after renaming the duplicates will be consistent
+		// with the original order (i.e. pasting node1, node2, node3 will result in
 		// node4, node5, node6 in *that* order)
 		Collections.sort(elements, new Comparator<INEDElement>() {
 			public int compare(INEDElement o1, INEDElement o2) {
@@ -115,14 +116,14 @@ public class PasteAction extends SelectionAction {
 		// warn for elements that could not be pasted
 		elements.removeAll(pastedElements);
 		if (elements.size() > 0) {
-			System.out.println("don't know how to paste: " + StringUtils.join(elements, ", "));  
+			System.out.println("don't know how to paste: " + StringUtils.join(elements, ", "));
 			Display.getCurrent().beep();
 		}
 
 		// execute the command
 		compoundCommand.setLabel("Paste " + StringUtils.formatCounted(pastedElements.size(), "object"));
 		execute(compoundCommand);
-		
+
 		// select newly pasted stuff in the editor
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		graphicalViewer.getRootEditPart().refresh();
@@ -146,14 +147,14 @@ public class PasteAction extends SelectionAction {
 		INEDElement parent;
 		INEDElement beforeElement;
 		Set<String> usedNedTypeNames = new HashSet<String>();
-		
+
 		// find insertion point
 		INEDElement primarySelectionElement = getPrimarySelectionElement();
 		if (primarySelectionElement instanceof CompoundModuleElementEx) {
 			// paste as inner type
 			CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)primarySelectionElement;
 			parent = findOrCreateSection(compoundModule, NED_TYPES, compoundCommand);
-			beforeElement = null;  // =append 
+			beforeElement = null;  // =append
 			usedNedTypeNames.addAll(compoundModule.getNEDTypeInfo().getInnerTypes().keySet());
 		}
 		else {
@@ -161,7 +162,8 @@ public class PasteAction extends SelectionAction {
 			EditPart toplevelEditPart = getGraphicalViewer().getContents();
 			parent = (INEDElement) toplevelEditPart.getModel();
 			beforeElement = (primarySelectionElement != null && primarySelectionElement.getParent() == parent) ? primarySelectionElement : null;
-			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
+            IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(parent.getContainingNedFileElement()).getProject();
+			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedQNames(project));
 		}
 
 		// insert stuff into parent
@@ -275,7 +277,7 @@ public class PasteAction extends SelectionAction {
 		}
 		return sectionElement;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected CompoundModuleElementEx getTargetCompoundModule() {
 		// return the selected compound module or the compound module of the first selected submodule

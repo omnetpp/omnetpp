@@ -19,7 +19,7 @@ public abstract class ExtendsPropertySource implements IPropertySource2 {
         protected INedTypeElement model;
         EditableComboBoxPropertyDescriptor extendsProp;
 
-        public ExtendsPropertySource(INedTypeElement nodeModel) {
+        public ExtendsPropertySource(final INedTypeElement nodeModel) {
             model = nodeModel;
 
             // set up property descriptors

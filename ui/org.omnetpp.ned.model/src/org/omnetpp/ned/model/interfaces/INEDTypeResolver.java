@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author Andras
  */
 public interface INEDTypeResolver {
-	public static final IProject FIXME_INSERT_CONTEXTPROJECT_HERE = null; //FIXME eliminate all occurrences from everywhere!!!
+    public static final IProject FIXME_INSERT_CONTEXTPROJECT_HERE = null;
 
     public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";

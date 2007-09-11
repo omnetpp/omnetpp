@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -16,7 +18,6 @@ import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * TODO add documentation
@@ -39,7 +40,7 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
     }
 
-    public SubmodulePropertySource(SubmoduleElementEx submoduleNodeModel) {
+    public SubmodulePropertySource(final SubmoduleElementEx submoduleNodeModel) {
         super(submoduleNodeModel);
         // create a nested displayPropertySource
         // name
@@ -49,9 +50,10 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new TypePropertySource(submoduleNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
-              Collections.sort(moduleNames);
-              return moduleNames;
+                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(submoduleNodeModel.getContainingNedFileElement()).getProject();
+                List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleQNames(project));
+                Collections.sort(moduleNames);
+                return moduleNames;
             }
         });
         // parameters

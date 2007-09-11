@@ -2,13 +2,14 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.commands.Command;
+
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -49,7 +50,8 @@ public class CreateNedTypeElementCommand extends Command {
             if (namedChild.getName() == null || "".equals(namedChild.getName()))
                 namedChild.setName("unnamed");
             // make the name unique
-            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE);
+            IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(parent.getContainingNedFileElement()).getProject();
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames(project);
             namedChild.setName(NEDElementUtilEx.getUniqueNameFor(namedChild, context));
         }
 

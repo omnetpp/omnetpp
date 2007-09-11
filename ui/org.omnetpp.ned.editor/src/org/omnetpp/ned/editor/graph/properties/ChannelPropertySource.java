@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -16,11 +18,8 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
-/**
- * Property source for channels
- *
+/*
  * @author rhornig
  */
 public class ChannelPropertySource extends MergedPropertySource {
@@ -45,16 +44,17 @@ public class ChannelPropertySource extends MergedPropertySource {
      * Constructor
      * @param nodeModel
      */
-    public ChannelPropertySource(ChannelElementEx nodeModel) {
+    public ChannelPropertySource(final ChannelElementEx nodeModel) {
     	super(nodeModel);
         mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
         // extends
         mergePropertySource(new ExtendsPropertySource(nodeModel) {
             @Override
             protected List<String> getPossibleValues() {
-              List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(INEDTypeResolver.FIXME_INSERT_CONTEXTPROJECT_HERE));
-              Collections.sort(names);
-              return names;
+                IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
+                List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelQNames(project));
+                Collections.sort(names);
+                return names;
             }
         });
         // interfaces

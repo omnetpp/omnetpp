@@ -114,8 +114,7 @@ public class ConnectionCommand extends Command {
             // just store the NEXT sibling so we can put it back during undo to the right place
             connNodeNextSibling = (ConnectionElementEx)connModel.getNextConnectionSibling();
             // store the parent too so we now where to put it back during undo
-            // FIXME this does not work if connections are placed in connection groups
-            parent = (CompoundModuleElementEx)connModel.getParent().getParent();
+            parent = connModel.getCompoundModule();
             // and remove from the parent too
             parentEditPart.getCompoundModuleModel().removeConnection(connModel);
             return;
