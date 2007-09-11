@@ -14,7 +14,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
@@ -48,6 +48,12 @@ public class OrganizeImportsAction extends NedTextEditorAction {
         if (nedFileElement.hasSyntaxError())
         	return; // don't mess with the source while it has syntax error
 
+        // fix the package as a bonus
+        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        String expectedPackage = res.getExpectedPackageFor(getFile());
+		if (!StringUtils.equals(nedFileElement.getPackage(), expectedPackage))
+			nedFileElement.setPackage(expectedPackage);  //XXX ask permission?
+        
         // collect names to import
         Set<String> unqualifiedTypeNames = collectUnqualifiedTypeNames(nedFileElement);
 
@@ -70,8 +76,11 @@ public class OrganizeImportsAction extends NedTextEditorAction {
     }
 
 	protected NedFileElementEx getNedFileElement() {
-		IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
-        return NEDResourcesPlugin.getNEDResources().getNedFileElement(file);
+        return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
+	}
+
+	protected IFile getFile() {
+		return ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
 	}
 
     /**
