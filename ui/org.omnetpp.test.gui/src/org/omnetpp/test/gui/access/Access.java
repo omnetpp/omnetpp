@@ -93,8 +93,11 @@ public class Access
 
 	@InUIThread
 	public static void postEvent(Event event) {
-		Assert.assertTrue(getDisplay().getActiveShell() != null);
-		
+		Shell activeShell = getDisplay().getActiveShell();
+		if (debug)
+			System.out.println("Active shell at post event is " + activeShell);
+		Assert.assertTrue(activeShell != null);
+
 		if (debug)
 			System.out.println("Posting event: " + event);
 

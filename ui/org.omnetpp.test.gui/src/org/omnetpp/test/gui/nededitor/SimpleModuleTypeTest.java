@@ -3,13 +3,17 @@ package org.omnetpp.test.gui.nededitor;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
 
 
-public class SimpleModuleTest
+public class SimpleModuleTypeTest
 	extends NedFileTestCase
 {
 	//TODO: same thing with "module" and "channel" instead of "simple" in a separate class
 
 	public void testSimple1() throws Throwable {
 		assertNoErrorInNedSource("simple A {}");
+	}
+
+	public void testDuplicate1() throws Throwable {
+		assertErrorInNedSource("simple A {} simple A {}", ".*duplicate.*A.*");
 	}
 
 	public void testExtends1() throws Throwable {

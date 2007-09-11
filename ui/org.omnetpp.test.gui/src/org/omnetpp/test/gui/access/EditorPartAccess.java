@@ -21,6 +21,11 @@ public class EditorPartAccess
 	}
 
 	@InUIThread
+	public void closeWithHotKey() {
+		pressKey(SWT.CONTROL + SWT.F4);
+	}
+
+	@InUIThread
 	public StyledTextAccess findStyledText() {
 		return getComposite().findStyledText();
 	}

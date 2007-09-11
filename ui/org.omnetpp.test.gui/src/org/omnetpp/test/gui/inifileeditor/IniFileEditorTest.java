@@ -2,23 +2,20 @@ package org.omnetpp.test.gui.inifileeditor;
 
 import junit.framework.Assert;
 
-import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.TextEditorAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.core.GUITestCase;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
 import org.omnetpp.test.gui.util.WorkspaceUtils;
 
-public class IniFileEditorTest extends GUITestCase
+public class IniFileEditorTest
+	extends IniFileTestCase
 {
-	protected String projectName = "test-project";
-
-	protected String fileName = "omnetpp.ini";
-
-	protected void prepareForTest() throws CoreException {
+	@Override
+	protected void setUpInternal() throws Exception {
+		super.setUpInternal();
 		// Test setup: close all editors, delete the file left over from previous runs
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
@@ -26,7 +23,6 @@ public class IniFileEditorTest extends GUITestCase
 	}
 
 	public void testCreateIniFile() throws Throwable {
-		prepareForTest();
 		IniFileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
@@ -39,8 +35,6 @@ public class IniFileEditorTest extends GUITestCase
 	}
 
 	public void testWizardResult() throws Throwable {
-		//WorkbenchAccess.startTracingEvents();
-		prepareForTest();
 		IniFileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
@@ -58,8 +52,6 @@ public class IniFileEditorTest extends GUITestCase
 	}
 
 	public void testWrongNetwork() throws Throwable {
-		//WorkbenchAccess.startTracingEvents();
-		prepareForTest();
 		IniFileEditorUtils.createNewIniFileByWizard2(projectName, fileName, null);
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();

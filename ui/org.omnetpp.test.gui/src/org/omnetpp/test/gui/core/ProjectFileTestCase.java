@@ -16,6 +16,10 @@ public class ProjectFileTestCase
 	protected String filePath;
 
 	public ProjectFileTestCase(String fileName) {
+		setFileName(fileName);
+	}
+	
+	public void setFileName(String fileName) {
 		this.fileName = fileName;
 		this.filePath = projectName + "/" + fileName;
 	}
@@ -26,6 +30,10 @@ public class ProjectFileTestCase
 	
 	protected void openFileFromProjectExplorerView() {
 		WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
+	}
+
+	protected void assertFileExists() {
+		WorkspaceUtils.assertFileExists(filePath);
 	}
 
 	@Override
