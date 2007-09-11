@@ -14,6 +14,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <set>
+#include <vector>
+
 #include "exception.h"
 #include "resultfilemanager.h"
 #include "idlist.h"
@@ -24,6 +27,7 @@
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
 #include "arraybuilder.h"
+#include "testutil.h"
 
 using namespace std;
 
@@ -120,3 +124,46 @@ void testReaderBuilder(const char *inputfile, const char *outputfile)
     }
     out.close();
 }
+
+void testReader(const char *inputfile, int *vectorIds, int count)
+{
+    NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+    NodeType *readerType = registry->getNodeType("vectorfilereader");
+    NodeType *builderType = registry->getNodeType("arraybuilder");
+    
+    ResultFileManager resultfilemanager;
+    resultfilemanager.loadFile(inputfile);
+    set<int> vectorIdSet(vectorIds, vectorIds+count);
+    IDList vectors = resultfilemanager.getAllVectors();
+    IDList vectorsToBeRead; 
+    for (int i = 0; i < vectors.size(); ++i)
+    {
+    	ID id = vectors.get(i);
+    	const VectorResult &vector = resultfilemanager.getVector(id);
+    	if (vectorIdSet.find(vector.vectorId) != vectorIdSet.end())
+    		vectorsToBeRead.add(id);
+    }
+
+    DataflowManager manager;
+    StringMap attrs;
+    attrs["filename"] = inputfile;
+    VectorFileReaderNode *reader = (VectorFileReaderNode *)readerType->create(&manager, attrs);
+
+    attrs.clear();
+    char vectorIdStr[12];
+    
+    for (int i = 0; i < vectorsToBeRead.size(); ++i)
+    {
+    	const VectorResult &vector = resultfilemanager.getVector(vectorsToBeRead.get(i));
+        Node *builder = builderType->create(&manager, attrs);
+        Port *src = reader->addVector(vector);
+        Port *dest = builderType->getPort(builder, "in");
+        manager.connect(src, dest);
+    }
+    
+    {
+    	MeasureTime m;
+    	manager.execute();
+    }
+}
+

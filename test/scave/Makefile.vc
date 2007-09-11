@@ -13,7 +13,9 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep -I../../src/scave \
       /Fd"vectorfilereadertest.pdb"
 
-OBJS= main.obj vectorfilereadertest.obj resultfilemanagertest.obj
+OBJS= main.obj vectorfilereadertest.obj resultfilemanagertest.obj \
+      vectorfileindexertest.obj indexedvectorfilereadertest.obj
+      
 LIBS= ../../lib/common.lib ../../lib/scave.lib
 
 #

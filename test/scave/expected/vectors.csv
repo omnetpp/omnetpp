@@ -1,4 +1,4 @@
-X,Y
+time,Net.subnet[0].offered load
 0.1,30
 0.2,40
 0.3,10
@@ -19,7 +19,7 @@ X,Y
 1.8,180
 1.9,190
 2,200
-X,Y
+time,Net.subnet[0].throughput (%)
 0.1,35.11
 0.2,45.06
 0.3,8.12
@@ -40,7 +40,7 @@ X,Y
 1.8,74.87
 1.9,68.77
 2,57.16
-X,Y
+time,Net.subnet[0].frames dropped (%)
 0.1,0
 0.21,0
 0.31,0

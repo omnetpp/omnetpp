@@ -24,7 +24,7 @@ sub matchFiles
    return 1;
 }
 
-sub test
+sub testReader
 {
    my($testname, $fileName) = @_;
    local($suffix, $resultFileName,$expectedResultFileName);
@@ -70,14 +70,93 @@ sub testExport
   }
 }
 
+sub generateVectorFile
+{
+  my($fileName,$numOfVectors,$numOfLines,$linesPerBlock) = @_;
+  local ($simtime,$vectorId,$lineCount,$value);
+
+  if (-e $fileName) {
+    return;
+  }
+
+  open (OUT, ">$fileName") || die "Can not open file '$fileName' for output";
+
+  $simtime = 0.0;
+  $vectorId = 1;
+  $lineCount = 0;
+
+  HEADER:
+  for ($id = 1; $id <= $numOfVectors; $id++) {
+    print OUT "vector $id\t\"module\"\t\"vector $id\"\t\"TV\"\n";    
+  }
+
+  DATA:
+  while (1) {
+    for ($id = 1; $id <= $numOfVectors; $id++) {
+      for ($j = 0; $j < $linesPerBlock; $j++) {
+        last DATA if ($lineCount >= $numOfLines);
+        $value = rand();
+        print OUT "$id\t$simtime\t$value\n";
+        $lineCount++;
+        $simtime += 0.1;
+      }
+    }
+  }
+
+  close(OUT);
+}
+
+sub testIndexer
+{
+  my($fileName) = @_;
+  local($indexFileName);
+
+  $indexFileName = $fileName;
+  $indexFileName =~ s/^(.*)\.(.*)$/\1\.vci/;
+
+  if (-e $indexFileName) {
+    unlink $indexFileName;
+  }
+
+  print("Testing indexer on $fileName...\n");
+  $expectedResultFileName = $indexFileName;
+  $expectedResultFileName =~ s/^(.*)\//expected\//;
+
+  if (system("test indexer $fileName") == 0  && matchFiles($resultFileName, $expectedResultFileName))
+  {
+     print("PASS: Indexer test on $fileName\n\n");
+  }
+  else
+  {
+     print("FAIL: Indexer test on $fileName\n\n");
+  }
+}
+
+sub testReader2
+{
+  my($readerName, $fileName, $vectors) = @_;
+
+  print("Testing $readerName on $fileName...\n");
+
+  if (system("test $readerName $fileName $vectors") == 0)
+  {
+     print("PASS: $readerName test on $fileName\n\n");
+  }
+  else
+  {
+     print("FAIL: $readerName test on $fileName\n\n");
+  }
+
+}
+
 
 mkdir("result");
 
-test("reader-builder", "testfiles/omnetpp1.vec");
-test("reader-builder", "testfiles/simtime_test.vec");
+testReader("reader-builder", "testfiles/omnetpp1.vec");
+testReader("reader-builder", "testfiles/simtime_test.vec");
 
-test("reader-writer", "testfiles/omnetpp1.vec");
-test("reader-writer", "testfiles/simtime_test.vec");
+testReader("reader-writer", "testfiles/omnetpp1.vec");
+testReader("reader-writer", "testfiles/simtime_test.vec");
 
 testExport("testfiles/scalars.sca", "matlab");
 testExport("testfiles/scalars.sca", "octave");
@@ -85,3 +164,9 @@ testExport("testfiles/scalars.sca", "csv");
 testExport("testfiles/vectors.vec", "matlab");
 testExport("testfiles/vectors.vec", "octave");
 testExport("testfiles/vectors.vec", "csv");
+
+generateVectorFile("testfiles/big.vec", 1000, 1000000, 100);
+testIndexer("testfiles/big.vec");
+testReader2("indexedreader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
+testReader2("reader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
+
