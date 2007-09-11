@@ -652,7 +652,7 @@ public class GraphicalNedEditor
 				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
 
 				// record notification event as an external change iff it refers to our model and we are not the originator
-				if (event instanceof NEDModelChangeEvent &&
+				if (event instanceof NEDModelChangeEvent && event.getSource() != null && 
 					event.getSource().getContainingNedFileElement() == getModel() && !isActive()) 
 				{
 					if (pendingExternalChangeCommand == null)
