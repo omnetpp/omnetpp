@@ -114,7 +114,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 		fProgText = SWTFactory.createSingleText(mainComp, 1);
 		fProgText.addModifyListener(this);
 
-		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null); 
+		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null);
 		fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent evt) {
@@ -129,7 +129,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         GridLayout ld = (GridLayout)mainComp.getLayout();
         ld.marginHeight = 1;
 
-        fShowDebugViewButton = SWTFactory.createCheckButton(mainComp, "Show Debug View on Launch", null, false, 3); 
+        fShowDebugViewButton = SWTFactory.createCheckButton(mainComp, "Show Debug View on Launch", null, false, 3);
         fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent evt) {
@@ -142,7 +142,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
     public void initializeFrom(ILaunchConfiguration config) {
 	    super.initializeFrom(config);
         try {
-            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING));
+            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, ""));
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false));
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
@@ -200,8 +200,10 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 
     @Override
     public void modifyText(ModifyEvent e) {
-        if (e.getSource() == fProgText)
+        if (e.getSource() == fProgText) {
             workingDirBlock.setExecutableLocation(fProgText.getText().trim());
+            simulationBlock.updateNedPathText();
+        }
         super.modifyText(e);
     }
 

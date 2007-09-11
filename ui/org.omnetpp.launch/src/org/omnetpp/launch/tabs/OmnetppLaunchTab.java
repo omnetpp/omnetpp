@@ -24,8 +24,6 @@ import org.omnetpp.launch.LaunchPlugin;
 public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab implements
     SelectionListener, ModifyListener {
 
-    protected static final String EMPTY_STRING = "";
-
     protected OmnetppLaunchTab embeddingTab = null;
     /**
      * Config being modified
@@ -110,7 +108,7 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
         IFile exefile = null;
         String name;
         try {
-            name = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING);
+            name = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
             exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
         } catch (CoreException e) {
             LaunchPlugin.logError("Error getting program name from configuration", e);
@@ -127,9 +125,7 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
     }
 
     /**
-     * Utility function: constructs a path that is @param path
-     * @param relativeTo
-     * @return The provided path in relative form to the relativeTo path
+     * Utility function: constructs a path that is relative to the relativeTo.
      */
     protected static IPath makeRelativePathTo(IPath path, IPath relativeTo) {
 

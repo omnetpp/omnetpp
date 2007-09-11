@@ -34,6 +34,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -203,7 +204,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 		SWTFactory.createLabel(comp, "Initialization file(s):", 1);
 
 		fInifileText = SWTFactory.createSingleText(comp, 1);
-		fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini)");
+		fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini, relative to the working directory)");
 		fInifileText.addModifyListener(this);
 		fInifileText.addFocusListener(new FocusAdapter() {
             @Override
@@ -294,7 +295,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         SWTFactory.createLabel(comp, "Dynamically loaded libraries:", 1);
 
         fLibraryText = SWTFactory.createSingleText(comp, 1);
-        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension)");
+        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory)");
         fLibraryText.addModifyListener(this);
 
         Button browseLibrariesButton = SWTFactory.createPushButton(comp, "Browse...", null);
@@ -314,7 +315,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
         SWTFactory.createLabel(comp, "NED Source Path:", 1);
         fNedPathText = SWTFactory.createSingleText(comp, 1);
-        fNedPathText.setToolTipText("Specify the directories where NED files read from");
+        fNedPathText.setToolTipText("Specify the directories where NED files read from (relative to the first selected INI file)");
         fNedPathText.addModifyListener(this);
     }
 
@@ -339,7 +340,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	    super.initializeFrom(config);
         try {
             ArgType nextType = ArgType.UNKNOWN;
-            String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING));
+            String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""));
             String restArgs = "";        // the rest of the arguments we cannot recognize
             String iniArgs = "", libArgs = "", configArg="", runArg="", uiArg ="", nedPathArg ="";
             for (int i=0; i<args.length; ++i) {
@@ -419,7 +420,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 fRunText.setText(runArg.trim());
             else
                 // otherwise we get it from a separate attribute
-                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, EMPTY_STRING));
+                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""));
 
             if (fParallelismSpinner != null)
                 fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_PARALLELISM, 1));
@@ -429,9 +430,18 @@ public class SimulationTab extends OmnetppLaunchTab  {
         }
 	}
 
-    private void updateNedPathText() {
+    protected void updateNedPathText() {
+        // skip updating if not yet initialized
+        if (getCurrentLaunchConfiguration() == null)
+            return;
+        IFile[] inifiles = getIniFiles();
+
+        if (inifiles == null || inifiles.length == 0)
+            return;
+
+        String nedPathBase = inifiles[0].getProject().getFullPath().toPortableString();
         String nedPath = fNedPathText.getText();
-        nedPath = nedPath.replaceFirst("\\$\\{ned_path:.*?\\}", "\\$\\{ned_path:"+fInifileText.getText()+"\\}");
+        nedPath = nedPath.replaceFirst("\\$\\{ned_path:.*?\\}", "\\$\\{ned_path:"+nedPathBase+"\\}");
         fNedPathText.setText(nedPath);
     }
 
@@ -504,6 +514,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             }
             fInifileText.setText(inifiles.trim());
             updateConfigCombo();
+            updateNedPathText();
         }
 	}
 
@@ -585,6 +596,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy config) {
+        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/}");
 	}
 
 	@Override
