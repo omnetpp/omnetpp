@@ -39,12 +39,13 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     public void execute() {
         setLabel("Create " + child.getName());
 
+        redo();
+
         if (rect != null) {
             // get the scaling factor from the container module
             float scale = parent.getDisplayString().getScale();
             child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize(), scale);
         }
-        redo();
     }
 
     @Override
@@ -54,7 +55,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
         // insert
         parent.insertSubmodule(null, child);
-      
+
         // replace fully qualified type name with simple name + import
         importElement = NEDElementUtilEx.addImportFor(child); // note: overwrites "type" (or "like-type") attribute
     }
@@ -62,7 +63,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     @Override
     public void undo() {
         parent.removeSubmodule(child);
-        NEDElementUtilEx.setEffectiveType(child, fullyQualifiedTypeName); // restore original value (redo() will need it) 
+        NEDElementUtilEx.setEffectiveType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
         	importElement.removeFromParent();
     }

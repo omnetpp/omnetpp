@@ -102,6 +102,7 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDFileRemovedEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
@@ -299,16 +300,12 @@ public class GraphicalNedEditor
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
-        // attach the palette manager as a listener to the resource manager plugin
-        // so it will be notified if the palette should be updated
-        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(paletteManager);
         // we listen on changes too
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
     }
 
     @Override
     public void dispose() {
-        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(paletteManager);
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         super.dispose();
     }
@@ -627,6 +624,9 @@ public class GraphicalNedEditor
     }
 
     public void modelChanged(final NEDModelEvent event) {
+        // multi page editor will close us -> no need to do anything
+        if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile()))
+            return;
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
@@ -642,8 +642,10 @@ public class GraphicalNedEditor
             	reactToModelChanges(event);
 
 				// optimize refresh(): skip those between begin/end notifications
-            	if (nedBeginChangeCount == 0)
+            	if (nedBeginChangeCount == 0) {
             		getGraphicalViewer().getRootEditPart().refresh();
+            		paletteManager.refresh();
+            	}
             }
 
 			private void updateExternalCommand(final NEDModelEvent event) {

@@ -16,20 +16,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.*;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 
 import org.omnetpp.common.IConstants;
@@ -41,6 +37,9 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDFileRemovedEvent;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
@@ -69,7 +68,55 @@ public class MultiPageNedEditor
 	private int textPageIndex;
 	private boolean insidePageChange = false;
 
-	@Override
+    protected IPartListener partListener = new IPartListener() {
+        public void partOpened(IWorkbenchPart part) {
+        }
+
+        public void partClosed(IWorkbenchPart part) {
+        }
+
+        public void partActivated(IWorkbenchPart part) {
+            if (getEditorInput() != null) {
+                // when switching from another editor to this, we need to immediately pull the changes
+                NedFileElementEx nedFileElement = getModel();
+                if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
+                    textEditor.pullChangesFromNEDResources();
+            }
+        }
+
+        public void partDeactivated(IWorkbenchPart part) {
+            // when switching from one MultiPageNedEditor to another, we need to immediately push the changes
+            if (getActivePage() == textPageIndex && textEditor.hasContentChanged())
+                textEditor.pushChangesIntoNEDResources();
+        }
+
+        public void partBroughtToTop(IWorkbenchPart part) {
+        }
+    };
+
+    protected INEDChangeListener nedModelListener = new INEDChangeListener() {
+        public void modelChanged(NEDModelEvent event) {
+            if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile())) {
+                // FIXME IMPORTANT
+                String oldContent = getTextEditor().getText();
+                IFile file = getFile();
+                closeEditor(false);
+                if (file.isAccessible()) {
+                    IWorkbench workbench = PlatformUI.getWorkbench();
+                    IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+                    IWorkbenchPage page = workbenchWindow.getActivePage();
+                    try {
+                        ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
+                        editor.getDocumentProvider().getDocument(editor.getEditorInput()).set(oldContent);
+                    } catch (PartInitException e) {
+                        NedEditorPlugin.logError(e);
+                    }
+                }
+            }
+        }
+    };
+
+    @Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type (only workspace files can be opened): " + editorInput);
@@ -83,38 +130,16 @@ public class MultiPageNedEditor
 		super.init(site, editorInput);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
-
-		getSite().getPage().addPartListener(new IPartListener() {
-			public void partOpened(IWorkbenchPart part) {
-			}
-
-			public void partClosed(IWorkbenchPart part) {
-			}
-
-			public void partActivated(IWorkbenchPart part) {
-			    if (getEditorInput() != null) {
-			        // when switching from another editor to this, we need to immediately pull the changes
-			        NedFileElementEx nedFileElement = getModel();
-			        if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
-			            textEditor.pullChangesFromNEDResources();
-			    }
-			}
-
-			public void partDeactivated(IWorkbenchPart part) {
-				// when switching from one MultiPageNedEditor to another, we need to immediately push the changes
-				if (getActivePage() == textPageIndex && textEditor.hasContentChanged())
-					textEditor.pushChangesIntoNEDResources();
-			}
-
-			public void partBroughtToTop(IWorkbenchPart part) {
-			}
-		});
+        NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedModelListener);
+        getSite().getPage().addPartListener(partListener);
 	}
 
     @Override
     public void dispose() {
         // detach the editor file from the core plugin and do not set a new file
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
+        getSite().getPage().removePartListener(partListener);
+        NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedModelListener);
 
         // disconnect the editor from the ned resources plugin
         if (getEditorInput() != null)

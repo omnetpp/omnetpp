@@ -9,25 +9,14 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
-import org.eclipse.gef.palette.ConnectionCreationToolEntry;
-import org.eclipse.gef.palette.MarqueeToolEntry;
-import org.eclipse.gef.palette.PaletteContainer;
-import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.gef.palette.PaletteGroup;
-import org.eclipse.gef.palette.PaletteRoot;
-import org.eclipse.gef.palette.PaletteSeparator;
-import org.eclipse.gef.palette.PaletteStack;
-import org.eclipse.gef.palette.PanningSelectionToolEntry;
-import org.eclipse.gef.palette.ToolEntry;
+import org.eclipse.gef.palette.*;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -39,9 +28,6 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -53,7 +39,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  *
  * @author rhornig
  */
-public class PaletteManager implements INEDChangeListener {
+public class PaletteManager {
 	private static final String NBSP = "\u00A0";
     private static final String GROUP_PROPERTY = "group";
 
@@ -74,12 +60,6 @@ public class PaletteManager implements INEDChangeListener {
     protected Map<String, PaletteEntry> currentEntries = new HashMap<String, PaletteEntry>();
     protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
 
-    protected DelayedJob paletteUpdaterJob = new DelayedJob(200) {
-        public void run() {
-            synchronizePalette();
-        }
-    };
-
     public PaletteManager(GraphicalNedEditor hostingEditor) {
         super();
         this.hostingEditor = hostingEditor;
@@ -90,31 +70,18 @@ public class PaletteManager implements INEDChangeListener {
         typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
         defaultContainer = new PaletteDrawer("Submodules", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
 
-        synchronizePalette();
+        refresh();
     }
 
     public PaletteRoot getRootPalette() {
         return nedPalette;
     }
 
-    /* (non-Javadoc)
-     * @see org.omnetpp.ned.model.notification.INEDChangeListener#modelChanged(org.omnetpp.ned.model.notification.NEDModelEvent)
-     * Called when a change occurred in the module which forces palette redraw
-     * NOTE: this notification can arrive in any thread (even in a background thread)
-     */
-    public void modelChanged(NEDModelEvent event) {
-        if (event instanceof NEDModelChangeEvent)
-            refresh();
-    }
-
-    public void refresh() {
-        paletteUpdaterJob.restartTimer();
-    }
 
     /**
      * Builds the palette (all drawers)
      */
-    public void synchronizePalette() {
+    public void refresh() {
         nedPalette.getChildren().clear();
         nedPalette.add(toolsContainer);
         nedPalette.add(typesContainer);
@@ -127,7 +94,7 @@ public class PaletteManager implements INEDChangeListener {
 
         Map<String, PaletteEntry> newEntries = createPaletteModel();
         for (String id : newEntries.keySet()) {
-            // if the same tool already exist, use that object so the object identity 
+            // if the same tool already exist, use that object so the object identity
         	// will not change unnecessarily
             if (currentEntries.containsKey(id))
                 newEntries.put(id, currentEntries.get(id));
@@ -188,11 +155,11 @@ public class PaletteManager implements INEDChangeListener {
         	return result; // sorry
         IFile file = ((IFileEditorInput)input).getFile();
         IProject contextProject = file.getProject();
-        
-    	// connection and type creation tools 
+
+    	// connection and type creation tools
         result.putAll(createChannelsStackEntries(contextProject));
         result.putAll(createTypesEntries());
-        
+
         // submodule creation tools
         result.putAll(createInnerTypes(file));
         result.put("separator", new PaletteSeparator());
@@ -257,7 +224,7 @@ public class PaletteManager implements INEDChangeListener {
         String key = fullyQualifiedTypeName;
         if (StringUtils.isNotEmpty(group))
             key = group+GROUP_DELIMITER+key;
-        
+
         // set the default images for the palette entry
         ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
         ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
@@ -299,14 +266,14 @@ public class PaletteManager implements INEDChangeListener {
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
-        
+
         // sets the required connection tool
         defaultConnectionTool.setToolClass(NedConnectionCreationTool.class);
         entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"connection", defaultConnectionTool);
 
         // connection selection
         MarqueeToolEntry marquee = new MarqueeToolEntry("Connection"+NBSP+"selector", "Drag out an area to select connections in it");
-        marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
+        marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR,
                 MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED);
         entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"marquee", marquee);
 
@@ -388,4 +355,5 @@ public class PaletteManager implements INEDChangeListener {
 
         return entries;
     }
+
 }
