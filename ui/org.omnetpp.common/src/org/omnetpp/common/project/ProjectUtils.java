@@ -20,7 +20,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Utilities to manage OMNeT++ projects.
- * 
+ *
  * @author Andras
  */
 public class ProjectUtils {
@@ -30,7 +30,7 @@ public class ProjectUtils {
 	/**
 	 * Checks whether the the provided project is open, has the OMNeT++ nature,
 	 * and it is enabled.
-	 * 
+	 *
 	 * Potential CoreExceptions are re-thrown as RuntimeException.
 	 */
 	public static boolean isOpenOmnetppProject(IProject project) {
@@ -54,11 +54,11 @@ public class ProjectUtils {
         return omnetppProjects.toArray(new IProject[]{});
 	}
 
-	
+
 	/**
 	 * Returns the transitive closure of OMNeT++ projects referenced from the given project,
 	 * excluding the project itself.
-	 * 
+	 *
 	 * Potential CoreExceptions are re-thrown as RuntimeException.
 	 */
 	public static IProject[] getAllReferencedOmnetppProjects(IProject project) {
@@ -74,7 +74,7 @@ public class ProjectUtils {
 	// helper for getAllReferencedOmnetppProjects()
 	private static void collectAllReferencedOmnetppProjects(IProject project, Set<IProject> result) throws CoreException {
 		for (IProject dependency : project.getReferencedProjects()) {
-			if (isOpenOmnetppProject(dependency)) {
+			if (isOpenOmnetppProject(dependency) && !result.contains(dependency)) {
 				result.add(dependency);
 				collectAllReferencedOmnetppProjects(dependency, result);
 			}
@@ -82,11 +82,11 @@ public class ProjectUtils {
 	}
 
 	public static boolean isNedFoldersFile(IResource resource) {
-		return (resource instanceof IFile && 
-				resource.getParent() instanceof IProject && 
+		return (resource instanceof IFile &&
+				resource.getParent() instanceof IProject &&
 				resource.getName().equals(NEDFOLDERS_FILENAME));
 	}
-	
+
 	/**
 	 * Reads the ".nedfolders" file from the given OMNeT++ project.
 	 */
@@ -103,7 +103,7 @@ public class ProjectUtils {
 			result.add(project); // this is the default
 		return result.toArray(new IContainer[]{});
 	}
-    
+
 	/**
 	 * Saves the ".nedfolders" file in the given OMNeT++ project.
 	 */
@@ -119,8 +119,8 @@ public class ProjectUtils {
     		nedpathFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
     	else
     		nedpathFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-	} 
-    
+	}
+
 	private static String getProjectRelativePathOf(IProject project, IContainer container) {
 		Assert.isTrue(container != null);
 		if (container == project)
