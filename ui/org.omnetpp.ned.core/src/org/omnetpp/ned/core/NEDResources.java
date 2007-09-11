@@ -10,19 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.internal.events.ResourceDelta;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
@@ -103,9 +92,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // reserved (used) fully qualified names (contains all names including duplicates)
         final Set<String> reservedNames = new HashSet<String>();
     }
-    
+
     // per-project tables. key-set is kept *strictly* up to date with the OMNeT++ projects,
-    // so that projects.contains() should be used to determine whether a project is an OMNeT++ project 
+    // so that projects.contains() should be used to determine whether a project is an OMNeT++ project
     private final Map<IProject,ProjectData> projects = new HashMap<IProject, ProjectData>();
 
     // if tables need to be rebuilt
@@ -461,7 +450,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		ProjectData projectData = projects.get(project);
 		if (projectData == null)
 			return null;
-		
+
 		IContainer[] nedSourceFolders = projectData.nedSourceFolders;
 		if (nedSourceFolders.length == 1 && nedSourceFolders[0] == project) // shortcut
 			return project;
@@ -561,6 +550,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         Assert.isNotNull(tree);
 
         storeNEDFileModel(file, tree);
+        invalidate();
     }
 
     /**
@@ -576,7 +566,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             nedFiles.remove(file);
             nedElementFiles.remove(nedFileElement);
             invalidate();
-            
+
             // fire notification.
             nedModelChanged(new NEDFileRemovedEvent(file)); //XXX this involves immediate rehash() (??)
         }
@@ -781,9 +771,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	/**
 	 * To be called on project-level changes: project open/close, project description change
 	 * (i.e. nature & referred projects), ".nedfolders" file.
-	 * 
+	 *
 	 * Also needs to be invoked right on startup, to prevent race conditions with editors.
-	 * (When an editor starts, the projects table must already be up to date, otherwise 
+	 * (When an editor starts, the projects table must already be up to date, otherwise
 	 * the editor's input file might not qualify as "NED file" and that'll cause an error).
 	 */
 	//FIXME call from ctor?
@@ -797,24 +787,28 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         		projectData.referencedProjects = ProjectUtils.getAllReferencedOmnetppProjects(project);
 				projectData.nedSourceFolders = ProjectUtils.readNedFoldersFile(project);
 				projects.put(project, projectData);
-			} 
+			}
         	catch (Exception e) {
 				NEDResourcesPlugin.logError(e);
 			}
         }
 		dumpProjectsTable();
-		
+
+
 		// forget those files which are no longer in our projects or NED folders
+		List <IFile> trash = new ArrayList<IFile>();
 		for (IFile file : nedFiles.keySet())
 			if (!isNEDFile(file))
-				forgetNEDFile(file);
-		
+				trash.add(file);
+		for (IFile file : trash)
+		    forgetNEDFile(file);
+
 		// we'll need rehash() too
 		invalidate();
-		
+
 		//FIXME optimize notifications? (e.g. add begin/end)
 		nedModelChanged(new NEDModelChangeEvent(null));  // "anything might have changed"
-	
+
 		scheduleReadMissingNedFiles();
 	}
 
@@ -836,9 +830,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	}
 
 	/**
-     * Reads NED files that are not yet loaded (not in our nedFiles table). 
+     * Reads NED files that are not yet loaded (not in our nedFiles table).
      * This should be run on startup and after rebuildProjectsTable();
-     * individual file changes are handled by loadNedFile() calls from the 
+     * individual file changes are handled by loadNedFile() calls from the
      * workspace listener.
      */
     public synchronized void readMissingNedFiles() {
@@ -923,18 +917,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                     	switch (delta.getKind()) {
                     	case IResourceDelta.REMOVED:
                     		forgetNEDFile(file);
-                    		invalidate();
                     		break;
                     	case IResourceDelta.ADDED:
                     		readNEDFile(file, sync);
-                    		invalidate();
                     		break;
                     	case IResourceDelta.CHANGED:
                     		// we are only interested in content changes; ignore marker and property changes
-                    		if ((delta.getFlags() & IResourceDelta.CONTENT) != 0 && !hasConnectedEditor(file)) {
+                    		if ((delta.getFlags() & IResourceDelta.CONTENT) != 0 && !hasConnectedEditor(file))
                     			readNEDFile(file, sync);
-                    			invalidate();
-                    		}
                     		break;
                     	}
                     }
@@ -959,7 +949,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 }
             });
             sync.runAsWorkspaceJob();
-        } 
+        }
         catch (CoreException e) {
             NEDResourcesPlugin.logError("Error during workspace change notification: ", e);
         } finally {
