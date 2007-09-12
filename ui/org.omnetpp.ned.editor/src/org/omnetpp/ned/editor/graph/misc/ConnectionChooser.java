@@ -195,7 +195,7 @@ public class ConnectionChooser {
      * are unconnected currently
      */
     private static boolean isConnectionUnused(ConnectionCommand connCommand, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
-        CompoundModuleElementEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();
+        CompoundModuleElementEx compModule = connCommand.getCompoundModuleModel();
         // note that vector gates or any gate on a submodule vector should be treated always unconnected
         // because the user can connect the connection to different instances/indexes of the gate/submodule
         boolean isSrcSideAVector = srcGate.getIsVector() ||

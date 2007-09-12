@@ -4,8 +4,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
@@ -25,38 +23,39 @@ public class ConnectionCommand extends Command {
 
 	protected IConnectableElement oldSrcModule;
 	protected IConnectableElement oldDestModule;
-	protected ConnectionElement oldConn = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
+	protected ConnectionElement originalConnection = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 
     protected IConnectableElement srcModule;
     protected IConnectableElement destModule;
-	protected ConnectionElement newConn =(ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
+	protected ConnectionElement connectionTemplate =(ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
     protected ConnectionElementEx connModel;
     protected ConnectionElementEx connNodeNextSibling;
-    protected CompoundModuleElementEx parent;
-    private CompoundModuleEditPart parentEditPart;
+    protected CompoundModuleElementEx compoundModuleParent;
+    protected boolean creating;
 
     /**
      * Create, delete, or modify  a connection element
      * @param conn Connection Model
-     * @param compoundEditPart Connection's container's (compound module) controller object
+     * @param compoundModuleElement Connection's container (compound module) 
      */
-    public ConnectionCommand(ConnectionElementEx conn, CompoundModuleEditPart compoundEditPart) {
+    public ConnectionCommand(ConnectionElementEx conn, CompoundModuleElementEx compoundModuleElement) {
         super("Connection");
         this.connModel = conn;
-        this.parentEditPart = compoundEditPart;
+        this.compoundModuleParent = compoundModuleElement;
         this.oldSrcModule = connModel.getSrcModuleRef();
         this.oldDestModule = connModel.getDestModuleRef();
-        this.oldConn = (ConnectionElement)connModel.dup();
-        this.newConn = (ConnectionElement)connModel.dup();
+        this.originalConnection = (ConnectionElement)connModel.dup();
+        this.connectionTemplate = (ConnectionElement)connModel.dup();
+        // we are creating a new connection 
+        creating = (connModel.getParent() == null);
     }
 
     /**
      * Returns true if we are currently creating a new connection
      */
     public boolean isCreating() {
-        // new connections are not inserted into the model
-        return connModel.getParent() == null;
+        return creating;
     }
 
     /**
@@ -73,16 +72,6 @@ public class ConnectionCommand extends Command {
         return !isCreating() && destModule != oldDestModule;
     }
 
-    /**
-     * Handles which module can be connected to which. Both side must be in the same EDITPART
-     * otherwise we could connect 
-     */
-//    @Override
-//    public boolean canExecute() {
-//        return srcEditPart!=null && destEditPart!=null &&
-//           (srcEditPart.getCompoundModulePart() == destEditPart.getCompoundModulePart());
-//    }
-
     @Override
     public void execute() {
     	redo();
@@ -97,33 +86,30 @@ public class ConnectionCommand extends Command {
         if (oldSrcModule != srcModule)
             connModel.setSrcModuleRef(srcModule);
 
-        if (newConn.getSrcGate() != null && !newConn.getSrcGate().equals(oldConn.getSrcGate()))
-            connModel.setSrcGate(newConn.getSrcGate());
+        if (connectionTemplate.getSrcGate() != null && !connectionTemplate.getSrcGate().equals(originalConnection.getSrcGate()))
+            connModel.setSrcGate(connectionTemplate.getSrcGate());
 
         if (oldDestModule != destModule)
             connModel.setDestModuleRef(destModule);
 
-        if (newConn.getDestGate() != null && !newConn.getDestGate().equals(oldConn.getDestGate()))
-            connModel.setDestGate(newConn.getDestGate());
+        if (connectionTemplate.getDestGate() != null && !connectionTemplate.getDestGate().equals(originalConnection.getDestGate()))
+            connModel.setDestGate(connectionTemplate.getDestGate());
         // copy the rest of the connection data (notification will be generated)
-        copyConn(newConn, connModel);
+        copyConn(connectionTemplate, connModel);
 
         // if the connection is not yet added to the compound module, add it, so later change notification will be handled correctly
-        if (connModel.getParent() == null)
-            parentEditPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
+        if (isCreating())
+            compoundModuleParent.addConnection(connModel);
     }
 
     @Override
     public void undo() {
-        // if it was removed from the model, put it back
-        if (connModel.getParent() == null && parent != null)
-            parent.insertConnection(connNodeNextSibling, connModel);
 
         // attach to the original modules and gates
         connModel.setSrcModuleRef(oldSrcModule);
         connModel.setDestModuleRef(oldDestModule);
 
-        copyConn(oldConn, connModel);
+        copyConn(originalConnection, connModel);
     }
 
 	/**
@@ -148,51 +134,47 @@ public class ConnectionCommand extends Command {
         to.setArrowDirection(from.getArrowDirection());
 	}
 
-    public void setSrcModule(IConnectableElement newSrcModule) {
-        srcModule = newSrcModule;
-    }
-
-    public void setDestModule(IConnectableElement newDestModule) {
-        destModule = newDestModule;
-    }
-
-    public String getSrcGate() {
-    	return newConn.getSrcGate();
-    }
-
-    public void setSrcGate(String newSrcGate) {
-        newConn.setSrcGate(newSrcGate);
-    }
-
-    public String getDestGate() {
-    	return newConn.getDestGate();
-    }
-
-    public void setDestGate(String newDestGate) {
-        newConn.setDestGate(newDestGate);
-    }
-
-	public IConnectableElement getDestModule() {
-		return destModule;
-	}
-
-	public IConnectableElement getSrcModule() {
-		return srcModule;
-	}
-
     /**
      * Returns the connection node used as a template, for the command. If the command is executed
      * the model will have the same content as the template connection.
      */
     public ConnectionElement getConnectionTemplate() {
-    	return newConn;
+        return connectionTemplate;
     }
 
-    /**
-     * Returns the parent editPart of this connection
-     */
-    public CompoundModuleEditPart getParentEditPart() {
-        return parentEditPart;
+    public IConnectableElement getSrcModule() {
+        return srcModule;
+    }
+    
+    public void setSrcModule(IConnectableElement newSrcModule) {
+        srcModule = newSrcModule;
     }
 
+    public IConnectableElement getDestModule() {
+        return destModule;
+    }
+    
+    public void setDestModule(IConnectableElement newDestModule) {
+        destModule = newDestModule;
+    }
+
+    public String getSrcGate() {
+    	return connectionTemplate.getSrcGate();
+    }
+
+    public void setSrcGate(String newSrcGate) {
+        connectionTemplate.setSrcGate(newSrcGate);
+    }
+
+    public String getDestGate() {
+    	return connectionTemplate.getDestGate();
+    }
+
+    public void setDestGate(String newDestGate) {
+        connectionTemplate.setDestGate(newDestGate);
+    }
+
+    public CompoundModuleElementEx getCompoundModuleModel() {
+        return compoundModuleParent;
+    }
 }
