@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
 import org.omnetpp.ned.engine.NED2Generator;
-import org.omnetpp.ned.engine.NEDSyntaxValidator;
 import org.omnetpp.ned.engine.NEDDTDValidator;
 import org.omnetpp.ned.engine.NEDElement;
 import org.omnetpp.ned.engine.NEDElementCode;
@@ -15,17 +14,12 @@ import org.omnetpp.ned.engine.NEDErrorSeverity;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
+import org.omnetpp.ned.engine.NEDSyntaxValidator;
 import org.omnetpp.ned.engine.NEDTools;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
-import org.omnetpp.ned.model.pojo.ConnectionsElement;
-import org.omnetpp.ned.model.pojo.GatesElement;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
-import org.omnetpp.ned.model.pojo.ParametersElement;
-import org.omnetpp.ned.model.pojo.SubmodulesElement;
-import org.omnetpp.ned.model.pojo.TypesElement;
 import org.omnetpp.ned.model.ui.NedModelContentProvider;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
@@ -249,42 +243,6 @@ public class NEDTreeUtil {
 		if (swigTree != null) swigTree.delete();
 		return !errors.containsError();
 	}
-
-    /**
-     * The function allows the normalization of the node before converted to SWIG objects.
-     * Unnecessary nodes can be removed from the tree.
-     * (ie. empty channelSpec objects etc.)
-     * @param pojoNode Node to be filtered
-     */
-    public static void cleanupPojoTree(INEDElement pojoNode) {
-        // filter the child nodes first
-        for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling()) {
-            cleanupPojoTree(child);
-        }
-
-        // see if the current node can be filtered out
-
-        // skip a channel spec if it does not contain any meaningful information
-        if (pojoNode instanceof ChannelSpecElement) {
-            ChannelSpecElement cpn = (ChannelSpecElement) pojoNode;
-            if ((cpn.getType() == null || "".equals(cpn.getType()))
-                && (cpn.getLikeType() == null || "".equals(cpn.getLikeType()))
-                && !cpn.hasChildren()) {
-
-                // remove it from the parent if it does not matter
-                pojoNode.removeFromParent();
-            }
-        }
-        // check for empty types, parameters, gates, submodules, connections node
-        if ((pojoNode instanceof TypesElement
-                || pojoNode instanceof ParametersElement
-                || pojoNode instanceof GatesElement
-                || pojoNode instanceof SubmodulesElement
-                || pojoNode instanceof ConnectionsElement && !((ConnectionsElement)pojoNode).getAllowUnconnected())
-                                && !pojoNode.hasChildren()) {
-            pojoNode.removeFromParent();
-        }
-    }
 
 	/**
 	 * Converts a NEDElement tree to an XML-like textual format. Useful for debugging.

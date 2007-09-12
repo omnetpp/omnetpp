@@ -5,6 +5,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.refactoring.RefactoringTools;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -37,7 +38,7 @@ public class ConvertToNewFormatAction extends NedTextEditorAction {
     public void run() {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         INEDElement model = NEDResourcesPlugin.getNEDResources().getNedFileElement(ifile);
-        NEDTreeUtil.cleanupPojoTree(model);
+        RefactoringTools.cleanupTree(model);
         TextEditorUtil.getDocument(getTextEditor()).set(NEDTreeUtil.generateNedSource(model, false));
         TextEditorUtil.resetMarkerAnnotations(getTextEditor());
     }
