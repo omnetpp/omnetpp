@@ -448,10 +448,10 @@ public class DataflowNetworkBuilder {
 					removeSources(idlist);
 
 					// select x data
-					String moduleName = chart.getXDataModule();
-					String dataName = chart.getXDataName();
-					if (!StringUtils.isEmpty(moduleName) && !StringUtils.isEmpty(dataName)) {
-						IDList xData = resultfileManager.filterIDList(displayedIds, null, moduleName, dataName);
+					String xDataPattern = chart.getXDataPattern();
+					if (!StringUtils.isEmpty(xDataPattern)) {
+						
+						IDList xData = resultfileManager.filterIDList(displayedIds, xDataPattern);
 						for (int i = 0; i < xData.size(); ++i) {
 							long id = xData.get(i);
 							ResultItem item = resultfileManager.getItem(id);

@@ -420,6 +420,22 @@ public class ScaveModelUtil {
 		Arrays.sort(result);
 		return result;
 	}
+	
+
+	public static ModuleAndData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager) {
+		Set<ModuleAndData> values = new HashSet<ModuleAndData>();
+		for (int i = 0; i < idlist.size(); ++i) {
+			long id = idlist.get(i);
+			ResultItem item = manager.getItem(id);
+			ModuleAndData pair = new ModuleAndData(item.getModuleName(), item.getName());
+			if (pair.isValid())
+				values.add(pair);
+		}
+		ModuleAndData[] result = values.toArray(new ModuleAndData[values.size()]);
+		Arrays.sort(result);
+		return result;
+	}
+	
 
 	/**
 	 * Returns the default chart sheet.

@@ -249,8 +249,6 @@ public class DatasetManager {
 	}
 	
 	public static IXYDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor monitor) {
-		Assert.isLegal(chart.getXDataModule() != null, "Module name is not set");
-		Assert.isLegal(chart.getXDataName() != null, "Data name is not set");
 		
 		//TODO update progressMonitor
 		if (dataset == null)
@@ -261,8 +259,12 @@ public class DatasetManager {
 			
 			XYDataset xyScalars = null;
 			if (!scalars.isEmpty()) {
-				String xModuleName = chart.getXDataModule();
-				String xScalarName = chart.getXDataName();
+				ModuleAndData xData = ModuleAndData.fromFilterPattern(chart.getXDataPattern());
+				Assert.isLegal(xData.isValid(), "X data is not selected.");
+				
+				String xModuleName = xData.getModuleName();
+				String xScalarName = xData.getDataName();
+				List<String> isoPatterns = chart.getIsoDataPattern();
 				boolean averageReplications = chart.isAverageReplications();
 				
 				ScalarDataSorter sorter = new ScalarDataSorter(manager);

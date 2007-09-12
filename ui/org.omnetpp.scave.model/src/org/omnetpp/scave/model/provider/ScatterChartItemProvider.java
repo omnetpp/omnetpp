@@ -65,27 +65,27 @@ public class ScatterChartItemProvider
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addXDataModulePropertyDescriptor(object);
-			addXDataNamePropertyDescriptor(object);
+			addXDataPatternPropertyDescriptor(object);
+			addIsoDataPatternPropertyDescriptor(object);
 			addAverageReplicationsPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
 
 	/**
-	 * This adds a property descriptor for the XData Module feature.
+	 * This adds a property descriptor for the XData Pattern feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addXDataModulePropertyDescriptor(Object object) {
+	protected void addXDataPatternPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_ScatterChart_xDataModule_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_xDataModule_feature", "_UI_ScatterChart_type"),
-				 ScaveModelPackage.Literals.SCATTER_CHART__XDATA_MODULE,
+				 getString("_UI_ScatterChart_xDataPattern_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_xDataPattern_feature", "_UI_ScatterChart_type"),
+				 ScaveModelPackage.Literals.SCATTER_CHART__XDATA_PATTERN,
 				 true,
 				 false,
 				 false,
@@ -95,19 +95,19 @@ public class ScatterChartItemProvider
 	}
 
 	/**
-	 * This adds a property descriptor for the XData Name feature.
+	 * This adds a property descriptor for the Iso Data Pattern feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addXDataNamePropertyDescriptor(Object object) {
+	protected void addIsoDataPatternPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_ScatterChart_xDataName_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_xDataName_feature", "_UI_ScatterChart_type"),
-				 ScaveModelPackage.Literals.SCATTER_CHART__XDATA_NAME,
+				 getString("_UI_ScatterChart_isoDataPattern_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ScatterChart_isoDataPattern_feature", "_UI_ScatterChart_type"),
+				 ScaveModelPackage.Literals.SCATTER_CHART__ISO_DATA_PATTERN,
 				 true,
 				 false,
 				 false,
@@ -175,8 +175,8 @@ public class ScatterChartItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(ScatterChart.class)) {
-			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
-			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
+			case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+			case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
 			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;

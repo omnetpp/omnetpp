@@ -6,6 +6,8 @@
  */
 package org.omnetpp.scave.model;
 
+import org.eclipse.emf.common.util.EList;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -15,8 +17,8 @@ package org.omnetpp.scave.model;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.ScatterChart#getXDataModule <em>XData Module</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.ScatterChart#getXDataName <em>XData Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ScatterChart#getXDataPattern <em>XData Pattern</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ScatterChart#getIsoDataPattern <em>Iso Data Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ScatterChart#isAverageReplications <em>Average Replications</em>}</li>
  * </ul>
  * </p>
@@ -27,56 +29,46 @@ package org.omnetpp.scave.model;
  */
 public interface ScatterChart extends Chart {
 	/**
-	 * Returns the value of the '<em><b>XData Module</b></em>' attribute.
+	 * Returns the value of the '<em><b>XData Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>XData Module</em>' attribute isn't clear,
+	 * If the meaning of the '<em>XData Pattern</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>XData Module</em>' attribute.
-	 * @see #setXDataModule(String)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_XDataModule()
+	 * @return the value of the '<em>XData Pattern</em>' attribute.
+	 * @see #setXDataPattern(String)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_XDataPattern()
 	 * @model
 	 * @generated
 	 */
-	String getXDataModule();
+	String getXDataPattern();
 
 	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getXDataModule <em>XData Module</em>}' attribute.
+	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getXDataPattern <em>XData Pattern</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>XData Module</em>' attribute.
-	 * @see #getXDataModule()
+	 * @param value the new value of the '<em>XData Pattern</em>' attribute.
+	 * @see #getXDataPattern()
 	 * @generated
 	 */
-	void setXDataModule(String value);
+	void setXDataPattern(String value);
 
 	/**
-	 * Returns the value of the '<em><b>XData Name</b></em>' attribute.
+	 * Returns the value of the '<em><b>Iso Data Pattern</b></em>' attribute list.
+	 * The list contents are of type {@link java.lang.String}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>XData Name</em>' attribute isn't clear,
+	 * If the meaning of the '<em>Iso Data Pattern</em>' attribute list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>XData Name</em>' attribute.
-	 * @see #setXDataName(String)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_XDataName()
+	 * @return the value of the '<em>Iso Data Pattern</em>' attribute list.
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart_IsoDataPattern()
 	 * @model
 	 * @generated
 	 */
-	String getXDataName();
-
-	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.ScatterChart#getXDataName <em>XData Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>XData Name</em>' attribute.
-	 * @see #getXDataName()
-	 * @generated
-	 */
-	void setXDataName(String value);
+	EList<String> getIsoDataPattern();
 
 	/**
 	 * Returns the value of the '<em><b>Average Replications</b></em>' attribute.

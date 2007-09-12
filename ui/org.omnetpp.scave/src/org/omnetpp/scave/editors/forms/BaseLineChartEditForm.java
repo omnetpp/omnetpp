@@ -98,7 +98,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			Label label = new Label(panel, SWT.NONE);
 			label.setText("Select line(s) to apply changes to:");
 			linesTableViewer = new TableViewer(panel, SWT.BORDER | SWT.MULTI);
-			linesTableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+			int itemsVisible = Math.max(Math.min(lineNames.length, 15), 3);
+			gridData.heightHint =  itemsVisible * linesTableViewer.getTable().getItemHeight();
+			linesTableViewer.getTable().setLayoutData(gridData);
 			linesTableViewer.setLabelProvider(new LabelProvider());
 			linesTableViewer.setContentProvider(new ArrayContentProvider());
 			linesTableViewer.setInput(lineNames);

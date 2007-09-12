@@ -6,12 +6,15 @@
  */
 package org.omnetpp.scave.model.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -22,8 +25,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getXDataModule <em>XData Module</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getXDataName <em>XData Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getXDataPattern <em>XData Pattern</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getIsoDataPattern <em>Iso Data Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#isAverageReplications <em>Average Replications</em>}</li>
  * </ul>
  * </p>
@@ -32,44 +35,34 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	/**
-	 * The default value of the '{@link #getXDataModule() <em>XData Module</em>}' attribute.
+	 * The default value of the '{@link #getXDataPattern() <em>XData Pattern</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getXDataModule()
+	 * @see #getXDataPattern()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String XDATA_MODULE_EDEFAULT = null;
+	protected static final String XDATA_PATTERN_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getXDataModule() <em>XData Module</em>}' attribute.
+	 * The cached value of the '{@link #getXDataPattern() <em>XData Pattern</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getXDataModule()
+	 * @see #getXDataPattern()
 	 * @generated
 	 * @ordered
 	 */
-	protected String xDataModule = XDATA_MODULE_EDEFAULT;
+	protected String xDataPattern = XDATA_PATTERN_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getXDataName() <em>XData Name</em>}' attribute.
+	 * The cached value of the '{@link #getIsoDataPattern() <em>Iso Data Pattern</em>}' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getXDataName()
+	 * @see #getIsoDataPattern()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String XDATA_NAME_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getXDataName() <em>XData Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getXDataName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String xDataName = XDATA_NAME_EDEFAULT;
+	protected EList<String> isoDataPattern;
 
 	/**
 	 * The default value of the '{@link #isAverageReplications() <em>Average Replications</em>}' attribute.
@@ -115,8 +108,8 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getXDataModule() {
-		return xDataModule;
+	public String getXDataPattern() {
+		return xDataPattern;
 	}
 
 	/**
@@ -124,11 +117,11 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setXDataModule(String newXDataModule) {
-		String oldXDataModule = xDataModule;
-		xDataModule = newXDataModule;
+	public void setXDataPattern(String newXDataPattern) {
+		String oldXDataPattern = xDataPattern;
+		xDataPattern = newXDataPattern;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__XDATA_MODULE, oldXDataModule, xDataModule));
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN, oldXDataPattern, xDataPattern));
 	}
 
 	/**
@@ -136,20 +129,11 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getXDataName() {
-		return xDataName;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setXDataName(String newXDataName) {
-		String oldXDataName = xDataName;
-		xDataName = newXDataName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SCATTER_CHART__XDATA_NAME, oldXDataName, xDataName));
+	public EList<String> getIsoDataPattern() {
+		if (isoDataPattern == null) {
+			isoDataPattern = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN);
+		}
+		return isoDataPattern;
 	}
 
 	/**
@@ -181,10 +165,10 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
-				return getXDataModule();
-			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
-				return getXDataName();
+			case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+				return getXDataPattern();
+			case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+				return getIsoDataPattern();
 			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 				return isAverageReplications() ? Boolean.TRUE : Boolean.FALSE;
 		}
@@ -196,14 +180,16 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
-				setXDataModule((String)newValue);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+				setXDataPattern((String)newValue);
 				return;
-			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
-				setXDataName((String)newValue);
+			case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+				getIsoDataPattern().clear();
+				getIsoDataPattern().addAll((Collection<? extends String>)newValue);
 				return;
 			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 				setAverageReplications(((Boolean)newValue).booleanValue());
@@ -220,11 +206,11 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
-				setXDataModule(XDATA_MODULE_EDEFAULT);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+				setXDataPattern(XDATA_PATTERN_EDEFAULT);
 				return;
-			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
-				setXDataName(XDATA_NAME_EDEFAULT);
+			case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+				getIsoDataPattern().clear();
 				return;
 			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 				setAverageReplications(AVERAGE_REPLICATIONS_EDEFAULT);
@@ -241,10 +227,10 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case ScaveModelPackage.SCATTER_CHART__XDATA_MODULE:
-				return XDATA_MODULE_EDEFAULT == null ? xDataModule != null : !XDATA_MODULE_EDEFAULT.equals(xDataModule);
-			case ScaveModelPackage.SCATTER_CHART__XDATA_NAME:
-				return XDATA_NAME_EDEFAULT == null ? xDataName != null : !XDATA_NAME_EDEFAULT.equals(xDataName);
+			case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+				return XDATA_PATTERN_EDEFAULT == null ? xDataPattern != null : !XDATA_PATTERN_EDEFAULT.equals(xDataPattern);
+			case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+				return isoDataPattern != null && !isoDataPattern.isEmpty();
 			case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
 				return averageReplications != AVERAGE_REPLICATIONS_EDEFAULT;
 		}
@@ -261,10 +247,10 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (xDataModule: ");
-		result.append(xDataModule);
-		result.append(", xDataName: ");
-		result.append(xDataName);
+		result.append(" (xDataPattern: ");
+		result.append(xDataPattern);
+		result.append(", isoDataPattern: ");
+		result.append(isoDataPattern);
 		result.append(", averageReplications: ");
 		result.append(averageReplications);
 		result.append(')');
