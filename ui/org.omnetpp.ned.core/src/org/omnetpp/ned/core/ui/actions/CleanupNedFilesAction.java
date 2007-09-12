@@ -5,12 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -41,7 +43,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     }
     
     public void run(IAction action) {
-        //FIXME "Please save all files and close all editors" etc!!!
+        //FIXME tell user: "Please save all files and close all editors" etc.
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
         ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
         if (dialog.open() == ListDialog.OK) {
@@ -56,15 +58,17 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
                 new ProgressMonitorDialog(shell).run(true, true, op);
             } 
             catch (InvocationTargetException e) {
-                // XXX handle exception
-            } catch (InterruptedException e) {
-                // XXX handle cancellation
+                NEDResourcesPlugin.logError(e);
+                ErrorDialog.openError(shell, "Error", "Error during cleaning up NED files", new Status(IMarker.SEVERITY_ERROR, NEDResourcesPlugin.PLUGIN_ID, e.getMessage(), e));
+            } catch (InterruptedException e) { 
+                // nothing to do 
             }
         }
     }
 
     protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
+            NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
             container.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) throws CoreException {
                     if (NEDResourcesPlugin.getNEDResources().isNEDFile(resource)) {
@@ -83,6 +87,9 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
             NEDResourcesPlugin.logError(e);
             Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
             ErrorDialog.openError(shell, "Error", "An error occurred during cleaning up NED files. Not all of the selected files have been processed.", e.getStatus());
+        }
+        finally {
+            NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
         }
     }
 

@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
@@ -76,13 +75,16 @@ public class RefactoringTools {
         for (String typeName : unqualifiedTypeNames)
         	resolveImport(contextProject, typeName, nedFileElement.getQNameAsPrefix(), oldImports, imports);
 
-        // update model
-        nedFileElement.removeImports();
+        // update model if imports have changed
         Collections.sort(imports);
-        for (String importSpec : imports)
-        	nedFileElement.addImport(importSpec);
-        if (!imports.isEmpty())
-        	nedFileElement.getLastImportChild().appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n\n"));
+        Collections.sort(oldImports);
+        if (!imports.equals(oldImports)) {
+            nedFileElement.removeImports();
+            for (String importSpec : imports)
+                nedFileElement.addImport(importSpec);
+            if (!imports.isEmpty())
+                nedFileElement.getLastImportChild().appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n\n"));
+        }
     }
 
     /**

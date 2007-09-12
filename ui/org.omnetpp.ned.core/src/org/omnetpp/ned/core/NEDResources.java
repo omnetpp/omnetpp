@@ -72,6 +72,8 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
  *
  * @author andras
  */
+//XXX is "element" argument to NEDBeginModelChangeEvent useful...? we don't use it in editors/views
+//XXX remove "source" from plain NEDModelChangeEvent too (and turn "anything might have changed" event into a separate class)
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
@@ -594,7 +596,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             invalidate();
 
             // fire notification.
-            nedModelChanged(new NEDFileRemovedEvent(file)); //XXX this involves immediate rehash() (??)
+            nedModelChanged(new NEDFileRemovedEvent(file));
         }
     }
 
@@ -734,7 +736,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		// refresh on each notification, which can be a disaster performance-wise.
 
 		// fake a begin change event, then "finally" an end change event
-		nedModelChanged(new NEDBeginModelChangeEvent(null));
+		fireBeginChangeEvent();
 		System.out.println("Validation started");
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
@@ -782,7 +784,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		}
         finally {
-            nedModelChanged(new NEDEndModelChangeEvent(null));
+            fireEndChangeEvent();
         }
 
         long dt = System.currentTimeMillis() - startMillis;
@@ -790,6 +792,23 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         System.out.println("typeinfo: refreshLocalCount:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NEDTypeInfo.debugRefreshInheritedCount);
 	}
 
+    public synchronized void fireBeginChangeEvent() {
+        nedModelChanged(new NEDBeginModelChangeEvent(null));
+    }
+
+    public synchronized void fireEndChangeEvent() {
+        nedModelChanged(new NEDEndModelChangeEvent(null));
+    }
+
+	//XXX method not currently used
+    public synchronized void runWithBeginEndNotification(Runnable runnable) {
+	    fireBeginChangeEvent();
+	    try {
+	        runnable.run();
+	    } finally {
+	        fireEndChangeEvent();
+	    }
+	}
 
 	public synchronized void invalidate() {
 		needsRehash = true;
@@ -805,37 +824,40 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	 */
 	//FIXME call from ctor?
 	public synchronized void rebuildProjectsTable() {
-		// rebuild table
-		projects.clear();
-		IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
-		for (IProject project : omnetppProjects) {
-        	try {
-        		ProjectData projectData = new ProjectData();
-        		projectData.referencedProjects = ProjectUtils.getAllReferencedOmnetppProjects(project);
-				projectData.nedSourceFolders = ProjectUtils.readNedFoldersFile(project);
-				projects.put(project, projectData);
-			}
-        	catch (Exception e) {
-				NEDResourcesPlugin.logError(e);
-			}
-        }
-		dumpProjectsTable();
+	    // rebuild table
+	    projects.clear();
+	    IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
+	    for (IProject project : omnetppProjects) {
+	        try {
+	            ProjectData projectData = new ProjectData();
+	            projectData.referencedProjects = ProjectUtils.getAllReferencedOmnetppProjects(project);
+	            projectData.nedSourceFolders = ProjectUtils.readNedFoldersFile(project);
+	            projects.put(project, projectData);
+	        }
+	        catch (Exception e) {
+	            NEDResourcesPlugin.logError(e); //XXX anything else? asyncExec errorDialog?
+	        }
+	    }
+	    dumpProjectsTable();
 
+	    // forget those files which are no longer in our projects or NED folders
+	    // Note: use "trash" list to avoid ConcurrentModificationException in nedFiles
+	    List <IFile> trash = new ArrayList<IFile>();
+	    for (IFile file : nedFiles.keySet())
+	        if (!isNEDFile(file))
+	            trash.add(file);
+	    try {
+	        fireBeginChangeEvent();
+	        for (IFile file : trash)
+	            forgetNEDFile(file);
+	    } finally {
+	        fireEndChangeEvent();
+	    }
 
-		// forget those files which are no longer in our projects or NED folders
-		List <IFile> trash = new ArrayList<IFile>();
-		for (IFile file : nedFiles.keySet())
-			if (!isNEDFile(file))
-				trash.add(file);
-		for (IFile file : trash)
-		    forgetNEDFile(file);
-
-		invalidate();
-
-		//FIXME optimize notifications? (e.g. add begin/end)
-		nedModelChanged(new NEDModelChangeEvent(null));  // "anything might have changed"
-
-		scheduleReadMissingNedFiles();
+	    // invalidate because project dependencies might have changed, even if there was no NED change
+	    invalidate();
+	    nedModelChanged(new NEDModelChangeEvent(null));  // "anything might have changed"
+	    scheduleReadMissingNedFiles();
 	}
 
 	/**
