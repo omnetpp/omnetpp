@@ -87,50 +87,52 @@ public class MultiPageNedEditor
         }
 
         public void partActivated(IWorkbenchPart part) {
-            if (getEditorInput() != null) {
+            if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
                 // when switching from another editor to this, we need to immediately pull the changes
                 NedFileElementEx nedFileElement = getModel();
-                if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
+                if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() &&
+                	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
                     textEditor.pullChangesFromNEDResources();
             }
         }
 
         public void partDeactivated(IWorkbenchPart part) {
             // when switching from one MultiPageNedEditor to another, we need to immediately push the changes
-            if (getActivePage() == textPageIndex && textEditor.hasContentChanged())
+            if (getActivePage() == textPageIndex && textEditor.hasContentChanged() &&
+                NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
                 textEditor.pushChangesIntoNEDResources();
         }
 
-        public void partBroughtToTop(IWorkbenchPart part) {
+		public void partBroughtToTop(IWorkbenchPart part) {
         }
     };
 
     protected INEDChangeListener nedModelListener = new INEDChangeListener() {
         public void modelChanged(NEDModelEvent event) {
             if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile())) {
-                boolean dirty = isDirty(); // this must be called before closeEditor
+                final boolean dirty = isDirty(); // this must be called before closeEditor
                 // FIXME IMPORTANT
-                String oldContent = getTextEditor().getText();
-                IFile file = getFile();
+                final String oldContent = getTextEditor().getText();
+                final IFile file = getFile();
                 // NOTE: danger, this is not deadlock safe, but we have no better idea
                 // the problem is that workspace changes don't happen in the UI thread
                 // so we switch to it and call close from there
-                DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
+                DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
         			public void run() {
-        				closeEditor(false);
+        			    closeEditor(false);
+                        if (file.isAccessible() && dirty) {
+                            IWorkbench workbench = PlatformUI.getWorkbench();
+                            IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+                            IWorkbenchPage page = workbenchWindow.getActivePage();
+                            try {
+                                ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
+                                editor.getDocumentProvider().getDocument(editor.getEditorInput()).set(oldContent);
+                            } catch (PartInitException e) {
+                                NedEditorPlugin.logError(e);
+                            }
+                        }
 					}
         		});
-                if (file.isAccessible() && dirty) {
-                    IWorkbench workbench = PlatformUI.getWorkbench();
-                    IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
-                    IWorkbenchPage page = workbenchWindow.getActivePage();
-                    try {
-                        ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
-                        editor.getDocumentProvider().getDocument(editor.getEditorInput()).set(oldContent);
-                    } catch (PartInitException e) {
-                        NedEditorPlugin.logError(e);
-                    }
-                }
             }
         }
     };

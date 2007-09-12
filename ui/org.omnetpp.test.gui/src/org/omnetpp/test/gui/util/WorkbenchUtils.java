@@ -1,6 +1,5 @@
 package org.omnetpp.test.gui.util;
 
-import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.ShellAccess;
@@ -29,21 +28,27 @@ public class WorkbenchUtils
 		return (ViewPartAccess) workbenchWindow.getActivePart();
 	}
 
+    public static ViewPartAccess ensureViewActivated(String viewCategory, String viewLabel) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        if (workbenchWindow.collectViewPartsByTitle(viewLabel, false).size() == 0)
+            return chooseViewFromDialog(viewCategory, viewLabel);
+        else {
+            workbenchWindow.findViewPartByTitle(viewLabel).activateWithMouseClick();
+            return (ViewPartAccess) workbenchWindow.getActivePart();
+        }
+    }
+
 	public static TreeItemAccess findInProjectExplorerView(String path) {
 		//ViewPartAccess projectExplorerView = workbenchWindow.findViewPartByTitle("Project Explorer", true);
-		ViewPartAccess projectExplorerView = chooseViewFromDialog("General", "Project Explorer");
+		ViewPartAccess projectExplorerView = ensureViewActivated("General", "Project Explorer");
 		TreeAccess tree = projectExplorerView.findTree();
 		tree.assertHasFocus();
-
-		// Note that findTreeItemByContent() does deep search, so this code won't work
-		// if any segment is not fully unique in the tree!
-
-		// open project and folder tree nodes
-		for (String pathSegment : new Path(path).removeLastSegments(1).segments()) {
-			tree.findTreeItemByContent(pathSegment).reveal().click();
-			tree.pressKey(SWT.ARROW_RIGHT);
-		}
-		return tree.findTreeItemByContent(new Path(path).lastSegment()).reveal();
+		return tree.findTreeItemByPath(path);
+	}
+	
+	public static ShellAccess openProjectPropertiesFromProjectExplorerView(String projectName) {
+        findInProjectExplorerView(projectName).activateContextMenuWithMouseClick().findMenuItemByLabel(".*Properties.*").activateWithMouseClick();
+        return WorkbenchWindowAccess.findShellByTitle("Properties.*" + projectName + ".*");
 	}
 
 	public static void assertNoErrorMessageInProblemsView() {

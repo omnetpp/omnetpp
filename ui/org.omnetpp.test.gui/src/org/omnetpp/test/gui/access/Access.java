@@ -32,6 +32,13 @@ import org.omnetpp.test.gui.core.NotInUIThread;
 public class Access
 {
 	protected final static boolean debug = true;
+	
+	public static double delayBetweenPostEvents;
+	
+	static {
+	    String value = System.getProperty("org.omnetpp.test.gui.DelayBetweenPostEvents");
+	    delayBetweenPostEvents = value == null ? 0 : Double.parseDouble(value);
+	}
 
 	public final static int LEFT_MOUSE_BUTTON = 1;
 	public final static int MIDDLE_MOUSE_BUTTON = 2;
@@ -102,6 +109,15 @@ public class Access
 			System.out.println("Posting event: " + event);
 
 		Assert.assertTrue(getDisplay().post(event));
+
+		if (event.type != SWT.MouseDown && event.type != SWT.MouseUp) {
+            try {
+                Thread.sleep((long)(delayBetweenPostEvents * 1000));
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+		}
 	}
 
 	@InUIThread
@@ -315,6 +331,29 @@ public class Access
 		});
 	}
 	
+	public interface IValue {
+	    public double valueOf(Object object);
+	}
+
+    @InUIThread
+    public static Control findControlMaximizing(List<Control> controls, IValue valueFunction) {
+        Control result = null;
+        double max = Double.NEGATIVE_INFINITY;
+        
+        for (Control control : controls) {
+            double value = valueFunction.valueOf(control);
+
+            if (value > max) {
+                max = value;
+                result = control;
+            }
+            else
+                Assert.assertTrue(value != max);
+        }
+
+        return result;
+    }
+
 	@InUIThread
 	public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
 		return theOnlyFigure(collectDescendantFigures(figure, new IPredicate() {

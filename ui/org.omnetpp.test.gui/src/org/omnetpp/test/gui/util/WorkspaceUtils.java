@@ -79,4 +79,10 @@ public class WorkspaceUtils
 		if (file.exists())
 			file.delete(true, null);
 	}
+
+    public static void ensureFolderExists(String projectName, String directoryName) throws CoreException {
+        IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFolder(directoryName);
+        if (!folder.exists())
+            folder.create(true, false, null);
+    }
 }

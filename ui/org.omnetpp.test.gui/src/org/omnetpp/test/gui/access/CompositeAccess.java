@@ -25,17 +25,17 @@ public class CompositeAccess extends ControlAccess
 	}
 
 	@InUIThread
-	public Control findChildControl(Class<? extends Control> clazz) {
+	public Control findDescendantControl(Class<? extends Control> clazz) {
 		return findDescendantControl(getComposite(), clazz);
 	}
 
 	@InUIThread
-	public Control findChildControl(IPredicate predicate) {
+	public Control findDescendantControl(IPredicate predicate) {
 		return findDescendantControl(getComposite(), predicate);
 	}
 
 	@InUIThread
-	public List<Control> collectChildControls(IPredicate predicate) {
+	public List<Control> collectDescendantControls(IPredicate predicate) {
 		return collectDescendantControls(getComposite(), predicate);
 	}
 

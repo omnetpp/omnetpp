@@ -5,6 +5,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.core.runtime.Path;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.util.IPredicate;
@@ -23,6 +25,18 @@ public class TreeAccess extends ControlAccess
 	@InUIThread
 	public void assertEmpty() {
 		Assert.assertTrue(getTree().getItemCount() == 0);
+	}
+	
+    @InUIThread
+	public TreeItemAccess findTreeItemByPath(String path) {
+        for (String pathSegment : new Path(path).removeLastSegments(1).segments()) {
+            // Note that findTreeItemByContent() does deep search, so this code won't work
+            // if any segment is not fully unique in the tree!
+            findTreeItemByContent(pathSegment).reveal().click();
+            pressKey(SWT.ARROW_RIGHT);
+        }
+
+        return findTreeItemByContent(new Path(path).lastSegment()).reveal();
 	}
 
 	@InUIThread

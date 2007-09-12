@@ -10,6 +10,8 @@ public class NedEditorTestSuite
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
 		suite.addTestSuite(OpenFileTest.class);
+        suite.addTestSuite(SaveFileTest.class);
+        suite.addTestSuite(NedPathTest.class);
 		suite.addTestSuite(SimpleModuleTypeTest.class);
 		suite.addTestSuite(GraphicalEditorTest.class);
 		return suite;

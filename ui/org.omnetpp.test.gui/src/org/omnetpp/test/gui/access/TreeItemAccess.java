@@ -37,4 +37,12 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	protected Menu getContextMenu() {
 		return (Menu)getTreeItem().getParent().getMenu();
 	}
+
+    @InUIThread
+    public void ensureChecked() {
+        if (!getTreeItem().getChecked()) {
+            click();
+            pressKey(' ');
+        }
+    }
 }

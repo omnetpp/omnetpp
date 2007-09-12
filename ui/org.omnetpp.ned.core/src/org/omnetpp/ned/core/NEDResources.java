@@ -10,7 +10,19 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.internal.events.ResourceDelta;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -18,7 +30,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
@@ -183,6 +194,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized Set<IFile> getNedFiles() {
         return nedFiles.keySet();
+    }
+
+    public synchronized boolean containsNedFileElement(IFile file) {
+        return nedFiles.containsKey(file);
     }
 
     public synchronized NedFileElementEx getNedFileElement(IFile file) {
@@ -532,7 +547,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return connectCount.containsKey(file) ? connectCount.get(file) : 0;
 	}
 
-    protected boolean hasConnectedEditor(IFile file) {
+    public boolean hasConnectedEditor(IFile file) {
         return connectCount.containsKey(file);
 	}
 

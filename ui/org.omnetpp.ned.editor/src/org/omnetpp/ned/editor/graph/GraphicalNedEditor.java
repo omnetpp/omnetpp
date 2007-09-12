@@ -639,6 +639,11 @@ public class GraphicalNedEditor
         // multi page editor will close us -> no need to do anything
         if (event instanceof NEDFileRemovedEvent && ((NEDFileRemovedEvent)event).getFile().equals(getFile()))
             return;
+        
+        // ignore event when closing the editor and the file has already been removed from the NEDResources
+        if (!NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
+        	return;
+        
     	// we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
     	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {

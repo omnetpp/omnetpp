@@ -1,11 +1,18 @@
 package org.omnetpp.test.gui.nededitor;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Tree;
+import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.ShellAccess;
 import org.omnetpp.test.gui.access.StyledTextAccess;
 import org.omnetpp.test.gui.access.TextEditorAccess;
+import org.omnetpp.test.gui.access.TreeAccess;
 import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
 import org.omnetpp.test.gui.util.WorkbenchUtils;
 import org.omnetpp.test.gui.util.WorkspaceUtils;
@@ -31,6 +38,28 @@ public class NedEditorUtils
 		styledText.pressKey('A', SWT.CTRL); // "Select all"
 		styledText.typeIn(nedSource);
 	}
+
+    public static void setDefaultNedPath(String projectName) {
+        setNedPath(projectName, null);
+    }
+    
+    public static void setNedPath(String projectName, String path) {
+        ShellAccess shell = WorkbenchUtils.openProjectPropertiesFromProjectExplorerView(projectName);
+        List<Control> trees = shell.collectDescendantControls(new InstanceofPredicate(Tree.class));
+        final TreeAccess panelSelectorTree = new TreeAccess((Tree)Access.findControlMaximizing(trees, new Access.IValue() {
+            public double valueOf(Object object) {
+                return -((Control)object).getBounds().x;
+            }
+        }));
+        panelSelectorTree.findTreeItemByContent("NED Source Folders").click();
+        TreeAccess nedPathTree = new TreeAccess((Tree)shell.findDescendantControl(new IPredicate() {
+            public boolean matches(Object object) {
+                return object instanceof Tree && object != panelSelectorTree.getWidget();
+            }
+        }));
+        nedPathTree.findTreeItemByPath(path == null ? projectName : projectName + "/" + path).ensureChecked();
+        shell.findButtonWithLabel("OK").click();
+    }
 
 	public static void assertBothEditorsAreAccessible(String fileName) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();

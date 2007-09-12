@@ -37,26 +37,39 @@ public class ProjectFileTestCase
 	}
 
 	@Override
+	/**
+	 * These must be advised exactly once.
+	 */
 	protected void setUp() throws Exception {
 		super.setUp();
 		setUpInternal();
 	}
 	
 	@Override
+    /**
+     * These must be advised exactly once.
+     */
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		tearDownInternal();
 	}
 
+	/**
+	 * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
+	 */
 	protected void setUpInternal() throws Exception {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}
 	
+    /**
+     * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
+     */
 	protected void tearDownInternal() throws Exception {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
+		if (workbenchWindow.hasEditorPartWithTitle(fileName))
+		    workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}

@@ -1,6 +1,7 @@
 package org.omnetpp.test.gui.access;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorPart;
@@ -12,6 +13,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
@@ -65,18 +67,32 @@ public class WorkbenchWindowAccess extends Access {
 
 	@InUIThread
 	public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
-		ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
-
-		for (IWorkbenchPage page : workbenchWindow.getPages()) {
-			for (IViewReference viewReference : page.getViewReferences()) {
-				System.out.println("  checking viewpart: " + viewReference.getPartName());
-				if (viewReference.getPartName().matches(title))
-					result.add(new ViewPartAccess((ViewPart)viewReference.getView(restore)));
-			}
-		}
-
-		return (ViewPartAccess)theOnlyObject(result);
+		return (ViewPartAccess)theOnlyObject(collectViewPartsByTitle(title, restore));
 	}
+
+	@InUIThread
+    public List<ViewPartAccess> collectViewPartsByTitle(final String title, boolean restore) {
+        return collectViewParts(new IPredicate() {
+            public boolean matches(Object object) {
+                return ((IViewReference)object).getPartName().matches(title);
+            }
+        }, restore);
+    }
+
+    @InUIThread
+    public List<ViewPartAccess> collectViewParts(IPredicate predicate, boolean restore) {
+        ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
+
+        for (IWorkbenchPage page : workbenchWindow.getPages()) {
+            for (IViewReference viewReference : page.getViewReferences()) {
+                System.out.println("  checking viewpart: " + viewReference.getPartName());
+                if (predicate.matches(viewReference))
+                    result.add(new ViewPartAccess((ViewPart)viewReference.getView(restore)));
+            }
+        }
+
+        return result;
+    }
 
 	@InUIThread
 	public EditorPartAccess findEditorPartByTitle(String title) {
@@ -89,18 +105,43 @@ public class WorkbenchWindowAccess extends Access {
 	}
 	
 	@InUIThread
-	public EditorPartAccess findEditorPartByTitle(String title, boolean restore) {
-		ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
-
-		for (IWorkbenchPage page : workbenchWindow.getPages()) {
-			for (IEditorReference editorReference : page.getEditorReferences()) {
-				System.out.println("  checking editorpart: " + editorReference.getTitle());
-				if (editorReference.getTitle().matches(title))
-					result.add((EditorPartAccess)createAccess(editorReference.getEditor(restore)));
-			}
-		}
-		return (EditorPartAccess)theOnlyObject(result);
+	public EditorPartAccess findEditorPartByTitle(final String title, boolean restore) {
+		return (EditorPartAccess)theOnlyObject(collectEditorPartsByTitle(title, restore));
 	}
+
+	@InUIThread
+    public boolean hasEditorPartWithTitle(String title) {
+	    return hasEditorPartByTitle(title, false);
+	}
+
+    @InUIThread
+    public boolean hasEditorPartByTitle(String title, boolean restore) {
+        return collectEditorPartsByTitle(title, restore).size() == 1;
+    }
+
+    @InUIThread
+    public List<EditorPartAccess> collectEditorPartsByTitle(final String title, boolean restore) {
+        return collectEditorParts(new IPredicate() {
+            public boolean matches(Object object) {
+                return ((IEditorReference)object).getTitle().matches(title);
+            }
+        }, restore);
+    }
+	
+    @InUIThread
+    public List<EditorPartAccess> collectEditorParts(IPredicate predicate, boolean restore) {
+        ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
+
+        for (IWorkbenchPage page : workbenchWindow.getPages()) {
+            for (IEditorReference editorReference : page.getEditorReferences()) {
+                System.out.println("  checking editorpart: " + editorReference.getTitle());
+                if (predicate.matches(editorReference))
+                    result.add((EditorPartAccess)createAccess(editorReference.getEditor(restore)));
+            }
+        }
+
+        return result;
+    }
 
 	@InUIThread
 	public void closeAllEditorPartsWithHotKey() {
