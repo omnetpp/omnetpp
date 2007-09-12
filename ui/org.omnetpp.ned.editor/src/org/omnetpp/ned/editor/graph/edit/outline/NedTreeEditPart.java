@@ -29,8 +29,9 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
+import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
@@ -44,6 +45,8 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     private IPropertySource propertySource;
     protected DirectEditManager manager;
 
+    // open NEDBeginChangeEvent notifications
+    private int nedBeginChangeCount = 0;
 
     /**
      * Constructor initializes this with the given model.
@@ -125,13 +128,21 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     }
 
     public void modelChanged(NEDModelEvent event) {
+        // count begin/end nesting
+        if (event instanceof NEDBeginModelChangeEvent)
+            nedBeginChangeCount++;
+        else if (event instanceof NEDEndModelChangeEvent)
+            nedBeginChangeCount--;
+
         // we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
-    	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-            public void run() {
-                refresh();
-            }
-        });
+        if (nedBeginChangeCount == 0) {
+        	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+                public void run() {
+                    refresh();
+                }
+            });
+        }
     }
 
     /**

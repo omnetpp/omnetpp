@@ -412,10 +412,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 					return projectData.components.get(importSpec);
 
 			// try harder, using wildcards
+			String nameWithDot = "." + name;
 			for (String importSpec : imports) {
 				String importRegex = NEDElementUtilEx.importToRegex(importSpec);
 				for (String qualifiedName : projectData.components.keySet())
-					if (qualifiedName.matches(importRegex) && qualifiedName.endsWith("." + name))
+					if (qualifiedName.endsWith(nameWithDot) && qualifiedName.matches(importRegex))
 						return projectData.components.get(qualifiedName);
 			}
 		}
@@ -734,6 +735,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		// fake a begin change event, then "finally" an end change event
 		nedModelChanged(new NEDBeginModelChangeEvent(null));
+		System.out.println("Validation started");
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
 			// clear consistency error markers from the ned tree
