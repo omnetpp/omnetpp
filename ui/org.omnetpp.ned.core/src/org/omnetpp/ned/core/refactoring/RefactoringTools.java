@@ -42,7 +42,8 @@ public class RefactoringTools {
      * Replaces package declaration with the expected package.
      */
     public static void fixupPackageDeclaration(NedFileElementEx nedFileElement) {
-        Assert.isTrue(!nedFileElement.hasSyntaxError());
+        if (nedFileElement.hasSyntaxError())
+            return;
 
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         IFile file = res.getNedFile(nedFileElement);
@@ -59,7 +60,8 @@ public class RefactoringTools {
      */
     //XXX factor out UI part (dialog), and pass it in as lambda?
     public static void organizeImports(NedFileElementEx nedFileElement) {
-        Assert.isTrue(!nedFileElement.hasSyntaxError());
+        if (nedFileElement.hasSyntaxError())
+            return;
 
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         IFile file = res.getNedFile(nedFileElement);
