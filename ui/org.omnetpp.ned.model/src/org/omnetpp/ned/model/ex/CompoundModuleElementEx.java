@@ -307,17 +307,6 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 		snode.insertChildBefore(insertBefore, conn);
 	}
 
-    /**
-     * Removes the connection from the model
-     */
-	public void removeConnection(ConnectionElementEx conn) {
-		conn.removeFromParent();
-
-		ConnectionsElement snode = getFirstConnectionsChild();
-		if (snode != null && !snode.hasChildren() && !snode.getAllowUnconnected())
-			snode.removeFromParent();
-	}
-
     // "extends" support
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);

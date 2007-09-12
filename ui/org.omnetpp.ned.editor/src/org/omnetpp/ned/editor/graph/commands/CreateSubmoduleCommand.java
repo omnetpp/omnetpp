@@ -2,6 +2,8 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.commands.Command;
+
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
@@ -13,7 +15,7 @@ import org.omnetpp.ned.model.pojo.ImportElement;
  *
  * @author rhornig, andras
  */
-public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
+public class CreateSubmoduleCommand extends Command {
 	private String fullyQualifiedTypeName;
     private SubmoduleElementEx child;
     private Rectangle rect;

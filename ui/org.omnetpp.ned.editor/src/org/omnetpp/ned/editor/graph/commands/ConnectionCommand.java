@@ -1,6 +1,9 @@
 package org.omnetpp.ned.editor.graph.commands;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
+
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -32,22 +35,16 @@ public class ConnectionCommand extends Command {
     protected ConnectionElementEx connNodeNextSibling;
     protected CompoundModuleElementEx parent;
     private CompoundModuleEditPart parentEditPart;
-    private ModuleEditPart srcEditPart;
-    private ModuleEditPart destEditPart;
 
     /**
      * Create, delete, or modify  a connection element
      * @param conn Connection Model
      * @param compoundEditPart Connection's container's (compound module) controller object
-     * @param sourceEditPart
-     * @param targetEditPart
      */
-    public ConnectionCommand(ConnectionElementEx conn, CompoundModuleEditPart compoundEditPart,
-                                ModuleEditPart sourceEditPart, ModuleEditPart targetEditPart) {
+    public ConnectionCommand(ConnectionElementEx conn, CompoundModuleEditPart compoundEditPart) {
+        super("Connection");
         this.connModel = conn;
         this.parentEditPart = compoundEditPart;
-        this.srcEditPart = sourceEditPart;
-        this.destEditPart = targetEditPart;
         this.oldSrcModule = connModel.getSrcModuleRef();
         this.oldDestModule = connModel.getDestModuleRef();
         this.oldConn = (ConnectionElement)connModel.dup();
@@ -63,43 +60,28 @@ public class ConnectionCommand extends Command {
     }
 
     /**
-     * Returns true if we are deleting the given connection
-     */
-    public boolean isDeleting() {
-        // deleting if both src and dest module is null
-        return destModule == null && srcModule == null;
-    }
-
-    /**
      * Returns true if we are reconnecting the source end
      */
     public boolean isSrcMoving() {
-        return !isCreating() && !isDeleting() && srcModule != oldSrcModule;
+        return !isCreating() && srcModule != oldSrcModule;
     }
 
     /**
      * Returns true if we are reconnecting the source end
      */
     public boolean isDestMoving() {
-        return !isCreating() && !isDeleting() && destModule != oldDestModule;
-    }
-
-    @Override
-    public String getLabel() {
-        if (connModel != null && isDeleting())
-            return "Delete connection";
-
-        return "Connect";
+        return !isCreating() && destModule != oldDestModule;
     }
 
     /**
-     * Handles which module can be connected to which
+     * Handles which module can be connected to which. Both side must be in the same EDITPART
+     * otherwise we could connect 
      */
-    @Override
-    public boolean canExecute() {
-        return srcEditPart!=null && destEditPart!=null &&
-           (srcEditPart.getCompoundModulePart() == destEditPart.getCompoundModulePart());
-    }
+//    @Override
+//    public boolean canExecute() {
+//        return srcEditPart!=null && destEditPart!=null &&
+//           (srcEditPart.getCompoundModulePart() == destEditPart.getCompoundModulePart());
+//    }
 
     @Override
     public void execute() {
@@ -108,25 +90,17 @@ public class ConnectionCommand extends Command {
 
     @Override
     public void redo() {
-        // if both src and dest module should be detached then remove it
-        // from the model totally (i.e. delete it)
-        if (srcModule == null && destModule == null) {
-            // just store the NEXT sibling so we can put it back during undo to the right place
-            connNodeNextSibling = (ConnectionElementEx)connModel.getNextConnectionSibling();
-            // store the parent too so we now where to put it back during undo
-            parent = connModel.getCompoundModule();
-            // and remove from the parent too
-            parentEditPart.getCompoundModuleModel().removeConnection(connModel);
-            return;
-        }
+        
+        Assert.isTrue(srcModule != null && destModule != null, "Modules cannot be empty");
+        Assert.isTrue(StringUtils.isNotBlank(getSrcGate()) && StringUtils.isNotBlank(getDestGate()));
 
-        if (srcModule != null && oldSrcModule != srcModule)
+        if (oldSrcModule != srcModule)
             connModel.setSrcModuleRef(srcModule);
 
         if (newConn.getSrcGate() != null && !newConn.getSrcGate().equals(oldConn.getSrcGate()))
             connModel.setSrcGate(newConn.getSrcGate());
 
-        if (destModule != null && oldDestModule != destModule)
+        if (oldDestModule != destModule)
             connModel.setDestModuleRef(destModule);
 
         if (newConn.getDestGate() != null && !newConn.getDestGate().equals(oldConn.getDestGate()))
@@ -220,22 +194,5 @@ public class ConnectionCommand extends Command {
     public CompoundModuleEditPart getParentEditPart() {
         return parentEditPart;
     }
-
-    public ModuleEditPart getDestEditPart() {
-        return destEditPart;
-    }
-
-    public void setDestEditPart(ModuleEditPart destEditPart) {
-        this.destEditPart = destEditPart;
-    }
-
-    public ModuleEditPart getSrcEditPart() {
-        return srcEditPart;
-    }
-
-    public void setSrcEditPart(ModuleEditPart srcEditPart) {
-        this.srcEditPart = srcEditPart;
-    }
-
 
 }

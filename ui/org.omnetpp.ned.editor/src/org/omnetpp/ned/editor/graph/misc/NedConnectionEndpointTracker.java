@@ -29,9 +29,9 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	    	if (connCommand == null)
 	    	    return false;
             // depending on which side we are reconnecting, we offer a full gate list on that side
-            if (getCommandName() == RequestConstants.REQ_RECONNECT_TARGET)
+            if (RequestConstants.REQ_RECONNECT_TARGET.equals(getCommandName()))
                 connCommand.setDestGate(null);
-            if (getCommandName() == RequestConstants.REQ_RECONNECT_SOURCE)
+            if (RequestConstants.REQ_RECONNECT_SOURCE.equals(getCommandName()))
                 connCommand.setSrcGate(null);
 
 	    	// ask the user about which gates should be connected

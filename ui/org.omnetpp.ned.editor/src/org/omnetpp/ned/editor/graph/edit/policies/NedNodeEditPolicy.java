@@ -35,8 +35,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionElementEx conn = (ConnectionElementEx)request.getNewObject();
-        ModuleEditPart srcEP = (ModuleEditPart)request.getTargetEditPart();
-        ConnectionCommand command = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(), srcEP, null);
+        ConnectionCommand command = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart());
         command.setSrcModule(getGraphNodeModel());
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null)
@@ -46,12 +45,11 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return command;
     }
 
-    // called when clicked on the second node durnig connection creation
+    // called when clicked on the second node during connection creation
     @Override
     protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
         ConnectionCommand command = (ConnectionCommand) request.getStartCommand();
         command.setDestModule(getGraphNodeModel());
-        command.setDestEditPart((ModuleEditPart)request.getTargetEditPart());
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
         if (anchor == null)
         	return UnexecutableCommand.INSTANCE;
@@ -61,11 +59,14 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     @Override
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
-    	ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
         ModuleEditPart srcEP = (ModuleEditPart)request.getConnectionEditPart().getSource();
         ModuleEditPart targetEP = (ModuleEditPart)request.getTarget();
-        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(),
-                                                      srcEP, targetEP);
+        // allow the reconnection only inside the same compound module
+        if (srcEP.getCompoundModulePart() != targetEP.getCompoundModulePart())
+            return UnexecutableCommand.INSTANCE;
+
+        ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
+        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
         if (anchor == null)
@@ -78,11 +79,14 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
-    	ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
         ModuleEditPart targetEP = (ModuleEditPart)request.getConnectionEditPart().getTarget();
         ModuleEditPart srcEP = (ModuleEditPart)request.getTarget();
-        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(),
-                                                      srcEP, targetEP);
+        // allow the reconnection only inside the same compound module
+        if (srcEP.getCompoundModulePart() != targetEP.getCompoundModulePart())
+            return UnexecutableCommand.INSTANCE;
+        
+        ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
+        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null)

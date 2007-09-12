@@ -51,12 +51,16 @@ public class DeleteCommand extends Command {
     		label += " "+((IHasName)elementUndoItem.node).getName();
         setLabel(label);
 
-        primExecute();
+        redo();
     }
 
     @Override
     public void redo() {
-        primExecute();
+        // check if the element is a submodule, because its connections should be deleted too
+        if (elementUndoItem.node instanceof SubmoduleElementEx)
+            deleteConnections((SubmoduleElementEx)elementUndoItem.node);
+
+        elementUndoItem.node.removeFromParent();
     }
 
     @Override
@@ -96,14 +100,6 @@ public class DeleteCommand extends Command {
             // remove it from the model too
            	wire.removeFromParent();
         }
-    }
-
-    protected void primExecute() {
-    	// check if the element is a submodule, because its connections should be deleted too
-    	if (elementUndoItem.node instanceof SubmoduleElementEx)
-    		deleteConnections((SubmoduleElementEx)elementUndoItem.node);
-
-        elementUndoItem.node.removeFromParent();
     }
 
     private void restoreConnections() {
