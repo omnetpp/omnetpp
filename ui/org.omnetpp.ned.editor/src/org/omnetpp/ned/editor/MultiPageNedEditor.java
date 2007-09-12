@@ -71,7 +71,7 @@ public class MultiPageNedEditor
 {
     public static final String ID = "org.omnetpp.ned.editor";
 
-    private GraphicalNedEditor graphEditor;
+    private GraphicalNedEditor graphicalEditor;
 	private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
 
@@ -90,10 +90,13 @@ public class MultiPageNedEditor
             if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
                 // when switching from another editor to this, we need to immediately pull the changes
                 NedFileElementEx nedFileElement = getModel();
-                if (getActivePage() == textPageIndex && graphEditor.hasContentChanged() &&
+                if (getActivePage() == textPageIndex && graphicalEditor.hasContentChanged() &&
                 	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
                     textEditor.pullChangesFromNEDResources();
             }
+
+            if (getControl(getActivePage()).isVisible())
+                graphicalEditor.refresh();
         }
 
         public void partDeactivated(IWorkbenchPart part) {
@@ -193,8 +196,8 @@ public class MultiPageNedEditor
 
         // set the new input
         super.setInput(newInput);
-        if (graphEditor != null)
-            graphEditor.setInput(newInput);
+        if (graphicalEditor != null)
+            graphicalEditor.setInput(newInput);
         if (textEditor != null)
             textEditor.setInput(newInput);
 
@@ -205,13 +208,13 @@ public class MultiPageNedEditor
 	protected void createPages() {
 		//System.out.println("createPages()");
 
-        graphEditor = new GraphicalNedEditor();
+        graphicalEditor = new GraphicalNedEditor();
         textEditor = new TextualNedEditor();
 
 		try {
             // setup graphical editor
-            graphPageIndex = addPage(graphEditor, getEditorInput());
-            graphEditor.markContent();
+            graphPageIndex = addPage(graphicalEditor, getEditorInput());
+            graphicalEditor.markContent();
             setPageText(graphPageIndex, "Graphical");
 
             // setup text editor
@@ -292,14 +295,14 @@ public class MultiPageNedEditor
         if (newPageIndex == textPageIndex) {
         	// generate text representation from the model NOW
             NedFileElementEx nedFileElement = getModel();
-            if (graphEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
+            if (graphicalEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
                 textEditor.pullChangesFromNEDResources();
                 textEditor.markContent();
             }
 
             // keep the current selection between the two editors
             INEDElement currentNEDElementSelection = null;
-            Object object = ((IStructuredSelection)graphEditor.getSite()
+            Object object = ((IStructuredSelection)graphicalEditor.getSite()
                     .getSelectionProvider().getSelection()).getFirstElement();
             if (object != null)
                 currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
@@ -310,7 +313,7 @@ public class MultiPageNedEditor
 		else if (newPageIndex == graphPageIndex) {
 		    if (textEditor.hasContentChanged()) {
 		    	textEditor.pushChangesIntoNEDResources();
-    		    graphEditor.markContent();
+    		    graphicalEditor.markContent();
 		    }
 
             // keep the current selection between the two editors
@@ -338,7 +341,7 @@ public class MultiPageNedEditor
         NedFileElementEx nedFileElement = getModel();
 		if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
             textEditor.pullChangesFromNEDResources();
-            graphEditor.getEditDomain().getCommandStack().markSaveLocation();
+            graphicalEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
     }
 
@@ -347,14 +350,14 @@ public class MultiPageNedEditor
         prepareForSave();
         // delegate the save task to the TextEditor's save method
         textEditor.doSave(monitor);
-        graphEditor.markSaved();
+        graphicalEditor.markSaved();
     }
 
     @Override
     public void doSaveAs() {
         prepareForSave();
         textEditor.doSaveAs();
-        graphEditor.markSaved();
+        graphicalEditor.markSaved();
         setInput(textEditor.getEditorInput());
     }
 
@@ -454,7 +457,7 @@ public class MultiPageNedEditor
 
         if (mode == Mode.GRAPHICAL) {
             setActivePage(graphPageIndex);
-            graphEditor.reveal(model);
+            graphicalEditor.reveal(model);
         }
         else {
             setActivePage(textPageIndex);
@@ -487,7 +490,7 @@ public class MultiPageNedEditor
     }
 
     public GraphicalNedEditor getGraphEditor() {
-        return graphEditor;
+        return graphicalEditor;
     }
 
     public TextualNedEditor getTextEditor() {

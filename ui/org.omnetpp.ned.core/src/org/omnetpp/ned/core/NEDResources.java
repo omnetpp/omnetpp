@@ -240,7 +240,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		        // perform marker synchronization in a background job, to avoid deadlocks
 		        markerSync.runAsWorkspaceJob();
 
-		        // force rehash now, so that validation errors appear immediately
+		        // force rehash now, so that validation errors appear soon
 		        rehash();
 	        }
         }
@@ -738,7 +738,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		System.out.println("Validation started");
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
-			// clear consistency error markers from the ned tree
+            // clear consistency error markers from the ned tree
 			for (IFile file : nedFiles.keySet())
 				nedFiles.get(file).clearConsistencyProblemMarkerSeverities();
 
@@ -830,7 +830,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		for (IFile file : trash)
 		    forgetNEDFile(file);
 
-		// we'll need rehash() too
 		invalidate();
 
 		//FIXME optimize notifications? (e.g. add begin/end)
@@ -911,8 +910,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             return;
 
         if (event instanceof NEDModelChangeEvent) {
-            // NOTE: the rehash causes NEDMarkerChangeEvent
-            rehash();
+            invalidate();
+            validationJob.restartTimer();
         }
 
         // notify generic listeners (like NedFileEditParts who refresh themselves

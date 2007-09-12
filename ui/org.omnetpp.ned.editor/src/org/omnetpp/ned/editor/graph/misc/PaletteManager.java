@@ -82,6 +82,8 @@ public class PaletteManager {
      * Builds the palette (all drawers)
      */
     public void refresh() {
+        long startMillis = System.currentTimeMillis();
+
         nedPalette.getChildren().clear();
         nedPalette.add(toolsContainer);
         nedPalette.add(typesContainer);
@@ -106,6 +108,9 @@ public class PaletteManager {
         // TODO sort the containers by name
         for (PaletteContainer container : currentContainers.values())
             nedPalette.add(container);
+
+        long dt = System.currentTimeMillis() - startMillis;
+        System.out.println("paletteManager refresh(): " + dt + "ms");
     }
 
     /**

@@ -54,6 +54,7 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -75,6 +76,7 @@ import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -267,6 +269,15 @@ public class GraphicalNedEditor
     // open NEDBeginChangeEvent notifications
     private int nedBeginChangeCount = 0;
 
+    private DelayedJob paletteRefreshJob = new DelayedJob(100) {
+        public void run() {
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    paletteManager.refresh();
+                }
+            });
+        }
+    };
 
     public GraphicalNedEditor() {
         paletteManager = new PaletteManager(this);
@@ -319,6 +330,7 @@ public class GraphicalNedEditor
     @Override
     public void dispose() {
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
+        paletteRefreshJob.cancel();
         super.dispose();
     }
 
@@ -693,15 +705,18 @@ public class GraphicalNedEditor
 		    	}
 
 				// optimize refresh(): skip those between begin/end notifications
-            	if (nedBeginChangeCount == 0) {
-            		getGraphicalViewer().getRootEditPart().refresh();
-            		paletteManager.refresh();
-            	}
+            	if (nedBeginChangeCount == 0 && getGraphicalControl().isVisible())
+            		refresh();
             }
         });
     }
 
-	/**
+    public void refresh() {
+        getGraphicalViewer().getRootEditPart().refresh();
+        paletteRefreshJob.restartTimer();
+    }
+
+    /**
      * Reveals a model element in the editor (or its nearest ancestor which
      * has an associated editPart)
      */
