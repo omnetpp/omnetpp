@@ -832,13 +832,12 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             fileRunRef = addFileRun(fileRef, runRef);
 
             runRef->runNumber = atoi(vec[1]);
-            runRef->attributes["runNumber"] = vec[1];
+            runRef->attributes["run-number"] = vec[1];
             if (numTokens>=3)
-                runRef->attributes["networkName"] = vec[2];
+                runRef->attributes["network"] = vec[2];
             if (numTokens>=4)
                 runRef->attributes["dateTime"] = vec[3];
 
-            /*
             // assemble a probably-unique runName
             std::stringstream os;
             os << fileRef->fileName << ":" << lineNum << "-#" << vec[1];
@@ -847,7 +846,6 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             if (numTokens>=4)
                 os << "-" << vec[3];
             runRef->runName = os.str();
-            */
         }
         else
         {
