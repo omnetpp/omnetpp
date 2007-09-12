@@ -1,6 +1,7 @@
 package org.omnetpp.ned.core.ui.actions;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -8,8 +9,12 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -36,23 +41,43 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     }
     
     public void run(IAction action) {
+        //FIXME "Please save all files and close all editors" etc!!!
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
         ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
         if (dialog.open() == ListDialog.OK) {
-            IContainer container = (IContainer) dialog.getResult()[0];
-            cleanupNedFilesIn(container);
+            IPath path = (IPath) dialog.getResult()[0];
+            final IContainer container = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+
+            try {
+                IRunnableWithProgress op = new IRunnableWithProgress() {
+                    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                        cleanupNedFilesIn(container, monitor);
+                    }};
+                new ProgressMonitorDialog(shell).run(true, true, op);
+            } 
+            catch (InvocationTargetException e) {
+                // XXX handle exception
+            } catch (InterruptedException e) {
+                // XXX handle cancellation
+            }
         }
     }
 
-    protected void cleanupNedFilesIn(IContainer container) {
+    protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
             container.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) throws CoreException {
-                    if (NEDResourcesPlugin.getNEDResources().isNEDFile(resource))
+                    if (NEDResourcesPlugin.getNEDResources().isNEDFile(resource)) {
+                        monitor.subTask(resource.getFullPath().toString());
                         cleanupNedFile((IFile)resource);
+                        monitor.worked(1);
+                    }
+                    if (monitor.isCanceled())
+                        return false;
                     return true;
                 }
             });
+            monitor.done();
         }
         catch (CoreException e) {
             NEDResourcesPlugin.logError(e);

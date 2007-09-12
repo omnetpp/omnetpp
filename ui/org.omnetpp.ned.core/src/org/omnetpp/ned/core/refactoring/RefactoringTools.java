@@ -49,7 +49,7 @@ public class RefactoringTools {
 
         String expectedPackage = res.getExpectedPackageFor(file);
 
-        if (!StringUtils.equals(nedFileElement.getPackage(), expectedPackage))
+        if (expectedPackage != null && !StringUtils.equals(nedFileElement.getPackage(), expectedPackage))
             nedFileElement.setPackage(expectedPackage);
     }
 

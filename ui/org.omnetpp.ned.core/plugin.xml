@@ -44,6 +44,13 @@
                style="push"
                toolbarPath="org.eclipse.search.searchActionSet/Search"
                tooltip="Open NED Type"/>
+         <action
+               class="org.omnetpp.ned.core.ui.actions.CleanupNedFilesAction"
+               definitionId="org.omnetpp.ned.cleanupNedFiles"
+               id="cleanupNedFiles"
+               label="Clean Up NED Files..."
+               menubarPath="navigate/open.ext2"
+               tooltip="Clean Up NED Files"/>
       </actionSet>
    </extension>
    <extension
