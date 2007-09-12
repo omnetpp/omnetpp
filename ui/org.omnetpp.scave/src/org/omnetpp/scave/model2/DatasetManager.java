@@ -268,7 +268,7 @@ public class DatasetManager {
 				ScalarDataSorter sorter = new ScalarDataSorter(manager);
 				ResultItemFields rowFields = new ResultItemFields(ResultItemFields.MODULE | ResultItemFields.NAME);
 				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT | MEASUREMENT) :
-					                                              new ResultItemFields(EXPERIMENT | MEASUREMENT | REPLICATION);
+					                                              new ResultItemFields(ResultItemFields.RUN | EXPERIMENT | MEASUREMENT | REPLICATION);
 				xyScalars = sorter.prepareScatterPlot2(scalars, xModuleName, xScalarName, rowFields, columnFields);
 			}
 			
