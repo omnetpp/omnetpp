@@ -25,14 +25,18 @@ public class EditorUtil {
      * @return the editor, or null
      */
     public static IEditorPart openEditor(IFile file, boolean activate) throws PartInitException {
-        IEditorDescriptor edesc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
-        if (edesc==null) {
+        IEditorDescriptor editorDescription = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
+        if (editorDescription == null) {
         	MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error", 
         			"Cannot open "+file.toString()+": no editor registered for this file type.");
         	return null;
         }
 
     	IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		return activePage.openEditor(new FileEditorInput(file), edesc.getId(), activate);
+		FileEditorInput editorInput = new FileEditorInput(file);
+		// Note: findEditor() is needed because openEditor() returns null for the NED editor, because it is started via a launcher
+        activePage.openEditor(editorInput, editorDescription.getId(), activate); 
+		IEditorPart editor = activePage.findEditor(editorInput);
+        return editor;
     }
 }
