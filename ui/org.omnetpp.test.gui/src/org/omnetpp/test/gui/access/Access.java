@@ -101,10 +101,11 @@ public class Access
 
 	@InUIThread
 	public static void postEvent(Event event) {
-		Shell activeShell = getDisplay().getActiveShell();
+        Shell activeShell = getDisplay().getActiveShell();
 		if (debug)
 			System.out.println("Active shell at post event is " + activeShell);
 		Assert.assertTrue(activeShell != null);
+        activeShell.forceActive();
 
 		if (debug)
 			System.out.println("Posting event: " + event);
@@ -269,7 +270,7 @@ public class Access
 	}
 
     @InUIThread
-    public static Object hasObject(List<Object> objects, IPredicate predicate) {
+    public static boolean hasObject(List<Object> objects, IPredicate predicate) {
         return collectObjects(objects, predicate).size() != 0;
     }
 
