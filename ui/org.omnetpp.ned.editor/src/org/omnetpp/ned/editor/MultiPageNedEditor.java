@@ -87,23 +87,33 @@ public class MultiPageNedEditor
         }
 
         public void partActivated(IWorkbenchPart part) {
-            if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
-                // when switching from another editor to this, we need to immediately pull the changes
-                NedFileElementEx nedFileElement = getModel();
-                if (getActivePage() == textPageIndex && graphicalEditor.hasContentChanged() &&
-                	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
-                    textEditor.pullChangesFromNEDResources();
+            if (part == MultiPageNedEditor.this) {
+                if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
+                    // when switching from another MultiPageNedEditor to this one for the same file
+                    // we need to immediately pull the changes, because editing in this editor
+                    // can be done correctly only if it is synchronized with NEDResources
+                    // synchronization is normally done in a delayed job and here we enforce to happen it right now
+                    NedFileElementEx nedFileElement = getModel();
+                    if (getActivePage() == textPageIndex && graphicalEditor.hasContentChanged() &&
+                    	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
+                        textEditor.pullChangesFromNEDResources();
+                }
+    
+                if (getControl(getActivePage()).isVisible())
+                    graphicalEditor.refresh();
             }
-
-            if (getControl(getActivePage()).isVisible())
-                graphicalEditor.refresh();
         }
 
         public void partDeactivated(IWorkbenchPart part) {
-            // when switching from one MultiPageNedEditor to another, we need to immediately push the changes
-            if (getActivePage() == textPageIndex && textEditor.hasContentChanged() &&
-                NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
-                textEditor.pushChangesIntoNEDResources();
+            if (part == MultiPageNedEditor.this) {
+                // when switching from one MultiPageNedEditor to another for the same file
+                // we need to immediately push the changes, because editing in the other editor
+                // can be done correctly only if it is synchronized with the one just being deactivated
+                // synchronization is normally done in a delayed job and here we enforce to happen it right now
+                if (getActivePage() == textPageIndex && textEditor.hasContentChanged() &&
+                    NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
+                    textEditor.pushChangesIntoNEDResources();
+            }
         }
 
 		public void partBroughtToTop(IWorkbenchPart part) {
@@ -117,7 +127,6 @@ public class MultiPageNedEditor
                 // FIXME IMPORTANT
                 final String oldContent = getTextEditor().getText();
                 final IFile file = getFile();
-                // NOTE: danger, this is not deadlock safe, but we have no better idea
                 // the problem is that workspace changes don't happen in the UI thread
                 // so we switch to it and call close from there
                 DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {

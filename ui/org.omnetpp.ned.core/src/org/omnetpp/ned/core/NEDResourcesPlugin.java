@@ -45,7 +45,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	@Override
     public void start(BundleContext context) throws Exception {
 		super.start(context);
-
+		
         PLUGIN_ID = getBundle().getSymbolicName();
         // System.out.println("NEDResourcesPlugin started");
 

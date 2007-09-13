@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Display;
  */
 abstract public class DelayedJob implements Runnable {
 	private int delayMillis;
+	
+	private boolean scheduled;
 
 	/**
 	 * Creates the object, but does not start the timer yet.
@@ -20,6 +22,10 @@ abstract public class DelayedJob implements Runnable {
 	public DelayedJob(int delayMillis) {
 		this.delayMillis = delayMillis;
 	}
+	
+	public boolean isScheduled() {
+        return scheduled;
+    }
 
 	/**
 	 * Starts or re-starts the timer.
@@ -29,6 +35,7 @@ abstract public class DelayedJob implements Runnable {
 		if (Display.getCurrent() != null) {
 			Display.getDefault().timerExec(-1, this);
 			Display.getDefault().timerExec(delayMillis, this);
+			scheduled = true;
 		}
 		else {
 			Display.getDefault().asyncExec(new Runnable() {
@@ -46,6 +53,7 @@ abstract public class DelayedJob implements Runnable {
 		// Alas, timerExec() may only be invoked from the UI thread 
 		if (Display.getCurrent() != null) {
 			Display.getDefault().timerExec(-1, this);
+			scheduled = false;
 		}
 		else {
 			Display.getDefault().asyncExec(new Runnable() {

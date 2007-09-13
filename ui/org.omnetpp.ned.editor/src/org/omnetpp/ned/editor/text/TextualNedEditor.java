@@ -96,7 +96,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
 	}
 
-
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 	    super.init(site, input);
@@ -412,7 +411,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 				if (evenIfEditorIsInactive || isActive()) {
 					try {
 						// this must be static, because we may have several text editors open
-						// (via Window|New Editor) which are internally synced to each other
+						// (via Window|New Editor) which are internally synchronized to each other
 						// by the platform -- so we need to block *all* reconcilers from running.
 						// Being static causes no problems with multiple reconcilers, because
 						// the access is serialized through asyncExec.
@@ -432,16 +431,20 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	 * Pulls changes from NEDResources and applies to document as text changes.
 	 */
 	public synchronized void pullChangesFromNEDResources() {
-		pullChangesJob.cancel();
-		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-			public synchronized void run() {
-				Assert.isTrue(Display.getCurrent() != null);
-				System.out.println("texteditor: pulling changes from NEDResources");
-				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
-						getDocument(), getModel().getNEDSource());
-				TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
-				//XXX then parse in again, and update line numbers with the resulting tree?
-			}
-		});
+	    // if the job is not scheduled then there are no changes at all and we don't pull
+	    // because that would only pretty print the source
+	    if (pullChangesJob.isScheduled()) {
+    		pullChangesJob.cancel();
+    		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+    			public synchronized void run() {
+    				Assert.isTrue(Display.getCurrent() != null);
+    				System.out.println("texteditor: pulling changes from NEDResources");
+    				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
+    						getDocument(), getModel().getNEDSource());
+    				TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
+    				// TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
+    			}
+    		});
+	    }
 	}
 }

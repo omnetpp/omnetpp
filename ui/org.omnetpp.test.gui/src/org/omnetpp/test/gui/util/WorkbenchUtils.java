@@ -54,6 +54,7 @@ public class WorkbenchUtils
 	public static void assertNoErrorMessageInProblemsView() {
 		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
 		problemsView.activateWithMouseClick();
+		// TODO: how do we know that validation has already taken place?
 		problemsView.findTree().assertEmpty();
 	}
 
