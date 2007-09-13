@@ -888,11 +888,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // disable all ned model notifications until all files have been processed
             nedModelChangeNotificationDisabled = true;
             debugRehashCounter = 0;
-            IWorkspaceRoot wsroot = ResourcesPlugin.getWorkspace().getRoot();
 
             // read NED files that are not yet loaded
             final ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
-            wsroot.accept(new IResourceVisitor() {
+            IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+            workspaceRoot.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
                     if (!nedFiles.containsKey(resource) && isNEDFile(resource))
                         readNEDFile((IFile)resource, sync);

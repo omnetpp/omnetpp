@@ -24,8 +24,6 @@ import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.gef.commands.CommandStackEvent;
-import org.eclipse.gef.commands.CommandStackEventListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -283,12 +281,43 @@ public class GraphicalNedEditor
         paletteManager = new PaletteManager(this);
 
         DefaultEditDomain editDomain = new DefaultEditDomain(this);
+        
         editDomain.setCommandStack(new CommandStack() {
+            boolean insideBeginEnd = false;
+            
+            // override notifyListeners() methods, so we can surround command execution 
+            // with begin/end. "begin" must be fired before all PRE listeners,
+            // and "end" must be fired before all normal commandStackListeners and
+            // POST listeners. See super.execute() for why the code look like this.
+            protected void notifyListeners(Command command, int state) {
+                if (state==POST_EXECUTE || state==POST_UNDO || state==POST_REDO) {
+                    NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
+                    Assert.isTrue(insideBeginEnd); // no nested PRE/POST notifications in GEF
+                    insideBeginEnd = false;
+                    notifyListeners();  // do postponed notifyListeners() now
+                }
+
+                super.notifyListeners(command, state);
+
+                if (state==PRE_EXECUTE || state==PRE_UNDO || state==PRE_REDO) {
+                    NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
+                    insideBeginEnd = true;
+                }
+                
+            }
+            
+            protected void notifyListeners() {
+                if (!insideBeginEnd)
+                    super.notifyListeners(); // postpone to top of POST_EXECUTE
+            }
+
         	private boolean isModelEditable() {
         	    NedFileElementEx model = getModel();
         		return !model.isReadOnly() && !model.hasSyntaxError();
         	}
 
+        	// override execute(), canUndo() and canRedo() methods to make readonly models uneditable. 
+        	
         	@Override
         	public void execute(Command command) {
         		if (isModelEditable())
@@ -306,18 +335,6 @@ public class GraphicalNedEditor
         	}
         });
         setEditDomain(editDomain);
-
-        // surround commands with begin/end notifications, so that refreshes can be optimized
-        CommandStack commandStack = getEditDomain().getCommandStack();
-        commandStack.addCommandStackEventListener(new CommandStackEventListener() {
-			public void stackChanged(CommandStackEvent event) {
-				//System.out.println((event.isPreChangeEvent() ? "begin" : event.isPostChangeEvent() ? "end" : "?") + " surrounding command with begin/end");
-				if (event.isPreChangeEvent())
-					getModel().fireModelEvent(new NEDBeginModelChangeEvent(getModel()));
-				else if (event.isPostChangeEvent())
-					getModel().fireModelEvent(new NEDEndModelChangeEvent(getModel()));
-			}
-        });
     }
 
     @Override

@@ -215,3 +215,4 @@ foldable
 reindented
 uncheck
 nedfolders
+uneditable
