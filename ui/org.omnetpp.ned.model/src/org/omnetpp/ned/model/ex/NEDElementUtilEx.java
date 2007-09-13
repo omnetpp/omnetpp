@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -13,6 +14,7 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
@@ -188,9 +190,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
     /**
      * Calculates a unique name for the provided model element.
      */
-    public static String getUniqueNameFor(IHasName namedElement, Set<String> contextCollection) {
-
-        String currentName = namedElement.getName();
+    public static String getUniqueNameFor(String currentName, Set<String> contextCollection) {
         // if there is no name in the context with the same name we don't have to change the name
         if (!contextCollection.contains(currentName))
             return currentName;
@@ -217,9 +217,21 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
         for (IHasName sm : contextCollection)
             if (sm != namedElement)
                 nameSet.add(sm.getName());
-        return getUniqueNameFor(namedElement, nameSet);
+        return getUniqueNameFor(namedElement.getName(), nameSet);
     }
 
+    /**
+     * Selects a name for a toplevel type, ensuring that the name will be unique in the package.
+     */
+    public static String getUniqueNameForToplevelType(String currentName, NedFileElementEx nedFile) {
+        INEDTypeResolver res = NEDElement.getDefaultTypeResolver();
+        IProject project = res.getNedFile(nedFile).getProject();
+        Set<String> reservedNames = res.getReservedQNames(project);
+        String currentQName = nedFile.getQNameAsPrefix() + currentName;
+        String uniqueQName = getUniqueNameFor(currentQName, reservedNames);
+        return uniqueQName.contains(".") ? StringUtils.substringAfterLast(uniqueQName, ".") : uniqueQName;
+    }
+    
     /**
      * Checks whether the provided string is a valid NED identifier
      */

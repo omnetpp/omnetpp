@@ -1,15 +1,9 @@
 package org.omnetpp.ned.editor.graph.commands;
 
-import java.util.Set;
-
-import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.commands.Command;
-
-import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -43,18 +37,17 @@ public class CreateNedTypeElementCommand extends Command {
 
     @Override
     public void redo() {
+        INedTypeElement namedChild = child;
 
-        if ((child instanceof IHasName) && (child instanceof INedTypeElement)) {
-            IHasName namedChild = child;
-            // if no name is present set to default
-            if (namedChild.getName() == null || "".equals(namedChild.getName()))
-                namedChild.setName("unnamed");
-            // make the name unique
-            IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(parent.getContainingNedFileElement()).getProject();
-            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames(project);
-            namedChild.setName(NEDElementUtilEx.getUniqueNameFor(namedChild, context));
-        }
+        // if no name is present set to default
+        if (namedChild.getName() == null || "".equals(namedChild.getName()))
+            namedChild.setName("Unnamed");
 
+        // make the name unique
+        NedFileElementEx nedFile = parent.getContainingNedFileElement();
+        namedChild.setName(NEDElementUtilEx.getUniqueNameForToplevelType(namedChild.getName(), nedFile));
+
+        // insert
         parent.insertChildBefore(insertBefore, child);
     }
 

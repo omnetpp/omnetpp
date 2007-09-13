@@ -172,7 +172,12 @@ public class PasteAction extends SelectionAction {
 				INedTypeElement typeElement = (INedTypeElement) element;
 
 				// ensure name will be unique
-				String newName = NEDElementUtilEx.getUniqueNameFor(typeElement, usedNedTypeNames);
+				//FIXME like this?
+				// NedFileElementEx nedFile = parent.getContainingNedFileElement();
+				// namedChild.setName(NEDElementUtilEx.getUniqueNameForToplevelType(namedChild.getName(), nedFile));
+
+				String currentName = parent.getContainingNedFileElement().getQNameAsPrefix() + typeElement.getName(); //FIXME getEnclosingLookupContext or something!!! otherwise it won't work for inner types!!!
+				String newName = NEDElementUtilEx.getUniqueNameFor(currentName, usedNedTypeNames);
 				typeElement.setName(newName);
 				usedNedTypeNames.add(newName);
 
@@ -199,7 +204,7 @@ public class PasteAction extends SelectionAction {
 				SubmoduleElementEx submodule = (SubmoduleElementEx) element;
 
 				// generate unique name if needed
-				String newName = NEDElementUtilEx.getUniqueNameFor(submodule, usedSubmoduleNames);
+				String newName = NEDElementUtilEx.getUniqueNameFor(submodule.getName(), usedSubmoduleNames);
 				usedSubmoduleNames.add(newName);
 				if (!newName.equals(submodule.getName())) {
 					submoduleNameMap.put(submodule.getName(), newName);

@@ -2,12 +2,8 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.commands.Command;
-
-import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -18,6 +14,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  *
  * @author rhornig
  */
+//FIXME rename to CloneToplevelTypesCommand. what about inner types?
 public class CloneCommand extends Command {
 
     private List<INedTypeElement> newNodes;
@@ -57,10 +54,10 @@ public class CloneCommand extends Command {
     protected INedTypeElement cloneElement(INedTypeElement oldNode) {
         // duplicate the subtree but do not add to the new parent yet
         INedTypeElement newNode = (INedTypeElement)oldNode.deepDup();
+
         // set a unique name
-        IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(oldNode.getContainingNedFileElement()).getProject();
-        Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedQNames(project);
-        newNode.setName(NEDElementUtilEx.getUniqueNameFor(newNode, context));
+        NedFileElementEx nedFile = oldNode.getContainingNedFileElement();
+        newNode.setName(NEDElementUtilEx.getUniqueNameForToplevelType(newNode.getName(), nedFile));
 
     	// insert into the parent at the correct position
         parent.insertChildBefore(insertBefore, newNode);
