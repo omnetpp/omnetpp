@@ -111,6 +111,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private final Map<IProject,ProjectData> projects = new HashMap<IProject, ProjectData>();
 
     // if tables need to be rebuilt
+    // DO NOT SET THIS DIRECTLY! Use invalidate().
     private boolean needsRehash = false;
 
     // We use this counter to increment whenever a rehash occurred. Checks can be made
@@ -695,10 +696,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         }
 
-        // invalidate all inherited members on all typeInfo objects
-        for (NedFileElementEx file : nedElementFiles.keySet())
-			invalidateTypeInfo(file);
-
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
 
@@ -812,6 +809,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	public synchronized void invalidate() {
 		needsRehash = true;
+
+		// invalidate all inherited members on all typeInfo objects
+        for (NedFileElementEx file : nedElementFiles.keySet())
+            invalidateTypeInfo(file);
     }
 
 	/**

@@ -213,7 +213,6 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      */
     public static String getUniqueNameFor(IHasName namedElement, Collection<? extends IHasName> contextCollection) {
         Set<String> nameSet = new HashSet<String>(contextCollection.size());
-        // create a string set from the sibling submodules (except the node we want to make unique)
         for (IHasName sm : contextCollection)
             if (sm != namedElement)
                 nameSet.add(sm.getName());
