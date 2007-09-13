@@ -143,6 +143,14 @@ public interface INEDTypeResolver {
     public Set<String> getReservedQNames(IProject context);
 
     /**
+     * Returns ALL toplevel (non-inner) type names in the given package, including
+     * duplicate names, from the given project and its dependent projects.
+     * This method can be used for generating unique type names. Returned names
+     * are simple names (i.e. package name has been removed).
+     */
+    public Set<String> getReservedNames(IProject context, String packageName);
+    
+    /**
      * Return a NED type from its fully qualified name, from the given project
      * and its dependent projects. Inner types are NOT recognized.
      * Returns null if not found.

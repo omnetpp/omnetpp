@@ -146,6 +146,7 @@ public class PasteAction extends SelectionAction {
 
 		INEDElement parent;
 		INEDElement beforeElement;
+		String namePrefix;
 		Set<String> usedNedTypeNames = new HashSet<String>();
 
 		// find insertion point
@@ -155,6 +156,7 @@ public class PasteAction extends SelectionAction {
 			CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)primarySelectionElement;
 			parent = findOrCreateSection(compoundModule, NED_TYPES, compoundCommand);
 			beforeElement = null;  // =append
+			namePrefix = "";
 			usedNedTypeNames.addAll(compoundModule.getNEDTypeInfo().getInnerTypes().keySet());
 		}
 		else {
@@ -163,6 +165,7 @@ public class PasteAction extends SelectionAction {
 			parent = (INEDElement) toplevelEditPart.getModel();
 			beforeElement = (primarySelectionElement != null && primarySelectionElement.getParent() == parent) ? primarySelectionElement : null;
             IProject project = NEDResourcesPlugin.getNEDResources().getNedFile(parent.getContainingNedFileElement()).getProject();
+            namePrefix = parent.getContainingNedFileElement().getQNameAsPrefix();
 			usedNedTypeNames.addAll(NEDResourcesPlugin.getNEDResources().getReservedQNames(project));
 		}
 
@@ -171,14 +174,9 @@ public class PasteAction extends SelectionAction {
 			if (element instanceof INedTypeElement) {
 				INedTypeElement typeElement = (INedTypeElement) element;
 
-				// ensure name will be unique
-				//FIXME like this?
-				// NedFileElementEx nedFile = parent.getContainingNedFileElement();
-				// namedChild.setName(NEDElementUtilEx.getUniqueNameForToplevelType(namedChild.getName(), nedFile));
-
-				String currentName = parent.getContainingNedFileElement().getQNameAsPrefix() + typeElement.getName(); //FIXME getEnclosingLookupContext or something!!! otherwise it won't work for inner types!!!
-				String newName = NEDElementUtilEx.getUniqueNameFor(currentName, usedNedTypeNames);
-				typeElement.setName(newName);
+				// generate unique name
+				String newName = NEDElementUtilEx.getUniqueNameFor(namePrefix + typeElement.getName(), usedNedTypeNames);
+				typeElement.setName(newName.contains(".") ? StringUtils.substringAfterLast(newName, ".") : newName);
 				usedNedTypeNames.add(newName);
 
 				// paste it

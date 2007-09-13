@@ -216,3 +216,4 @@ reindented
 uncheck
 nedfolders
 uneditable
+misc

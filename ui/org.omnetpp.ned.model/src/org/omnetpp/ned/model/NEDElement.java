@@ -466,6 +466,13 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		return (NedFileElementEx) getParentWithTag(NEDElementTags.NED_NED_FILE);
 	}
 
+    public INedTypeLookupContext getEnclosingLookupContext() {
+        INEDElement node = getParent();
+        while (node != null && !(node instanceof INedTypeLookupContext))
+            node = node.getParent();
+        return (INedTypeLookupContext) node;
+    }
+
     /**
      * Returns the listener list attached to this element
      */

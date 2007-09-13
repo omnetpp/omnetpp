@@ -21,19 +21,9 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.ParamElementEx;
-import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
-import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.ImportElement;
-import org.omnetpp.ned.model.pojo.InterfaceNameElement;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * NED text hover. Currently it displays fully qualified name and the documentation 
@@ -79,41 +69,13 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 		if (StringUtils.isEmpty(hoveredDottedWord))
 			return null; // nothing interesting here
 
-		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-		
-		// try to interpret the hovered word as a NED type name
-		if (mayContainTypeName(hoveredElement)) {
-			INedTypeElement typeElement = hoveredElement.getEnclosingTypeElement();
-			INedTypeLookupContext context = typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : 
-				typeElement!=null ? typeElement.getParentLookupContext() : 
-					hoveredElement.getContainingNedFileElement();
-			INEDTypeInfo typeInfo = res.lookupNedType(hoveredDottedWord, context);
-			if (typeInfo != null)
-				return getHoverTextFor(typeInfo);
-		}
-		
-		if (hoveredElement instanceof ParamElementEx) {
-			ParamElementEx paramElement = (ParamElementEx)hoveredElement;
-			INEDTypeInfo declaringType;
-			if (hoveredElement.getParentWithTag(NEDElementTags.NED_SUBMODULE) != null)
-				declaringType = ((SubmoduleElementEx)hoveredElement.getParentWithTag(NEDElementTags.NED_SUBMODULE)).getNEDTypeInfo();
-			else
-				declaringType = hoveredElement.getEnclosingTypeElement().getNEDTypeInfo();
-			if (declaringType != null) {
-				ParamElementEx paramDecl = declaringType.getParamDeclarations().get(paramElement.getName());
-				if (paramDecl != null) {
-					//TODO...
-				}
-			}
-		}
-		//FIXME finish...
-		return null;
-	}
+		INEDElement element = NedTextUtils.findDeclaration(hoveredElement, hoveredDottedWord, hoveredWord);
+		if (element == null)
+		    return null;
+		if (element instanceof INedTypeElement)
+		    return getHoverTextFor(((INedTypeElement)element).getNEDTypeInfo());
 
-	protected static boolean mayContainTypeName(INEDElement element) {
-		return element instanceof INedTypeElement || element instanceof ImportElement || 
-				element instanceof ExtendsElement || element instanceof InterfaceNameElement ||
-				element instanceof SubmoduleElement || element instanceof ChannelSpecElement;
+		return HoverSupport.addHTMLStyleSheet(element.toString() + "<br/>" + "<pre>" + element.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
 	}
 
 	protected static String getHoverTextFor(INEDTypeInfo typeInfo) {

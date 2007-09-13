@@ -2,6 +2,7 @@ package org.omnetpp.ned.model;
 
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
@@ -326,6 +327,12 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * Returns the (nearest) NedFileElementEx parent of this element, or null.
 	 */
 	public NedFileElementEx getContainingNedFileElement();
+
+    /**
+     * Returns the nearest INedTypeLookupContext parent of the element. This will
+     * be the containing compound module, or the NED file.
+     */
+	public INedTypeLookupContext getEnclosingLookupContext();
 
 	/**
 	 * Adds a new NED change listener to the element. The

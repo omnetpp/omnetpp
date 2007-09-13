@@ -319,6 +319,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return projectData==null ? new HashSet<String>() : projectData.reservedNames;
     }
 
+    public synchronized Set<String> getReservedNames(IProject context, String packageName) {
+        rehashIfNeeded();
+        ProjectData projectData = projects.get(context);
+        Set<String> result = new HashSet<String>();
+        if (projectData != null) {
+            String packagePrefix = StringUtils.isEmpty(packageName) ? "" : packageName + ".";
+            for (String qualifiedName : projectData.reservedNames)
+                if (qualifiedName.startsWith(packagePrefix))
+                    result.add(StringUtils.removeStart(qualifiedName, packagePrefix));
+        }
+        return result;
+    }
+
     public synchronized Set<String> getModuleQNames(IProject context) {
     	return getNedTypeQNames(MODULE_FILTER, context);
     }
