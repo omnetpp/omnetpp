@@ -30,7 +30,7 @@ public class ConnectionCommand extends Command {
      */
     public ConnectionCommand(ConnectionElementEx conn, CompoundModuleElementEx compoundModuleElement) {
         this.modelConn = conn;
-        this.newConn = (ConnectionElementEx)conn.dup();
+        this.newConn = (ConnectionElementEx)conn.deepDup();
         this.originalConn = (ConnectionElementEx)conn.dup();
         srcModule = originalSrcModule = conn.getSrcModuleRef();
         destModule = originalDestModule = conn.getDestModuleRef();

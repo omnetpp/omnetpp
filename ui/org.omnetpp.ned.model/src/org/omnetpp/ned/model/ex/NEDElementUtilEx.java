@@ -275,11 +275,15 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      * (I.e. it returns null as well if an existing import already covered this type.)
      */
 	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
+	    String effectiveType = submoduleOrConnection.getEffectiveType();
+        if (StringUtils.isEmpty(effectiveType))
+	            return null;
+        
 		ImportElement theImport = null;
 		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 		
-		if (submoduleOrConnection.getEffectiveType().contains(".")) {
-			String fullyQualifiedTypeName = submoduleOrConnection.getEffectiveType();
+		if (effectiveType.contains(".")) {
+			String fullyQualifiedTypeName = effectiveType;
         	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
 			INEDTypeInfo existingSimilarType = NEDElement.getDefaultTypeResolver().lookupNedType(simpleTypeName, parent);
 			if (existingSimilarType == null) {
