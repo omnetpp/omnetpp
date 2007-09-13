@@ -235,12 +235,20 @@ public class GraphicalNedEditor
         getGraphicalViewer().setContents(getModel());
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
-	@Override
+	@Override @SuppressWarnings({ "unchecked", "deprecation" })
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
+        // Kludge: override getSelection() to remove invalid EditParts from the returned
+        // selection. This is needed because during refreshChildren(), editPart.removeNotify()
+        // gets called and fires a selection change. Receivers of the selection change
+        // would find invalid editParts in the selection (editParts whose NEDElement is no 
+        // longer in the model), because refreshChildren() has not completed yet.
+        // Ideally, GEF should arrange that selection change only gets fired when the graphical
+        // editor is already in a consistent state; here the workaround is to manually remove
+        // those editParts from the returned selection.
+        //
         viewer.setSelectionManager(new SelectionManager() {
             @Override
             public ISelection getSelection() {
@@ -257,6 +265,7 @@ public class GraphicalNedEditor
             }
         });
         
+        // ScalableRootEditPart's refreshChildren() does nothing by default; override it
         ScalableRootEditPart root = new ScalableRootEditPart() {
         	@Override
         	protected void refreshChildren() {

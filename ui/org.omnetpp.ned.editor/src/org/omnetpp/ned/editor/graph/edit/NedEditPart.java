@@ -12,7 +12,6 @@ import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.ui.views.properties.IPropertySource;
-
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.NedFigure;
 import org.omnetpp.figures.misc.IDirectEditSupport;
