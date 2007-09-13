@@ -173,8 +173,10 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(new MatchWidthRetargetAction());
         addRetargetAction(new MatchHeightRetargetAction());
 
-        addRetargetAction(new RetargetAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY,
-                "Snap to geometry", IAction.AS_CHECK_BOX));
+        addRetargetAction(retAction = new RetargetAction(GNEDToggleSnapToGeometryAction.ID, GNEDToggleSnapToGeometryAction.MENUNAME,
+                IAction.AS_CHECK_BOX));
+        retAction.setToolTipText(GNEDToggleSnapToGeometryAction.TOOLTIP);
+        retAction.setImageDescriptor(GNEDToggleSnapToGeometryAction.IMAGE);
 
     }
 
@@ -214,7 +216,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
         viewMenu.add(new Separator());
-        viewMenu.add(getAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY));
+        viewMenu.add(getAction(GNEDToggleSnapToGeometryAction.ID));
         viewMenu.add(new Separator());
         viewMenu.add(getAction(GEFActionConstants.ALIGN_LEFT));
         viewMenu.add(getAction(GEFActionConstants.ALIGN_CENTER));

@@ -139,6 +139,12 @@
             id="org.omnetpp.ned.editor.text.CorrectIndentation"
             name="Correct Indentation">
       </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Convert the NED source to the OMNEST/OMNeT++ 4.0 format"
+            id="org.omnetpp.ned.editor.text.ConvertToNewFormat"
+            name="Convert to 4.0 Format">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">

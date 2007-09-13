@@ -118,7 +118,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, submenu);
 
-        action = getActionRegistry().getAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY);
+        action = getActionRegistry().getAction(GNEDToggleSnapToGeometryAction.ID);
         manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(GEFActionConstants.ZOOM_IN);

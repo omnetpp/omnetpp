@@ -5,6 +5,9 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.internal.GEFMessages;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
+
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
@@ -18,8 +21,13 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
  */
 public class GNEDToggleSnapToGeometryAction extends Action {
 
-	private static final String ICON = "icons/full/etool16/snaptogeometry.png";
+    public static final String ID = "ToggleSnap";
+    public static final String MENUNAME = GEFMessages.ToggleSnapToGeometry_Label;
+    public static final String TOOLTIP = GEFMessages.ToggleSnapToGeometry_Tooltip;
+    public static final ImageDescriptor IMAGE = NedEditorPlugin.getImageDescriptor("icons/full/etool16/snaptogeometry.png");
+
     private GraphicalViewer diagramViewer;
+    
 
     /**
      * Constructor
@@ -29,12 +37,11 @@ public class GNEDToggleSnapToGeometryAction extends Action {
      *            toggled
      */
     public GNEDToggleSnapToGeometryAction(GraphicalViewer diagramViewer) {
-        super(GEFMessages.ToggleSnapToGeometry_Label, AS_CHECK_BOX);
+        super(MENUNAME, AS_CHECK_BOX);
         this.diagramViewer = diagramViewer;
-        setToolTipText(GEFMessages.ToggleSnapToGeometry_Tooltip);
-        setId(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY);
-        setActionDefinitionId(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY);
-		setImageDescriptor(NedEditorPlugin.getImageDescriptor(ICON));
+        setToolTipText(TOOLTIP);
+        setId(ID);
+		setImageDescriptor(IMAGE);
         setChecked(isSnapEnabled());
     }
 
