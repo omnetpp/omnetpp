@@ -28,7 +28,7 @@ public class TooltipFigure extends FlowPage {
         textFlow.setLayoutManager(new ParagraphTextLayout(textFlow, ParagraphTextLayout.WORD_WRAP_SOFT));
         setMaximumSize(new Dimension(120,60));
         add(textFlow);
-        setHorizontalAligment(PositionConstants.RIGHT);
+        setHorizontalAligment(PositionConstants.LEFT);
     }
 
     /**
