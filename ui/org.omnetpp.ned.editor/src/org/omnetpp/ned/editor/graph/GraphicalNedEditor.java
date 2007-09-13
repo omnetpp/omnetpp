@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -24,7 +22,6 @@ import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
@@ -35,25 +32,17 @@ import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
-import org.eclipse.gef.ui.parts.AbstractEditPartViewer;
-import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
-import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -63,20 +52,16 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.part.CellEditorActionHandler;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
@@ -96,11 +81,9 @@ import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
-import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
-import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider;
-import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
+import org.omnetpp.ned.editor.graph.properties.NedPropertySheetPage;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -134,121 +117,6 @@ public class GraphicalNedEditor
 {
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
     public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
-
-    /**
-     * Outline viewer for graphical ned editor
-     */
-    class NedOutlinePage extends ContentOutlinePage {
-        public NedOutlinePage(EditPartViewer viewer) {
-            super(viewer);
-        }
-
-        @Override
-        public void init(IPageSite pageSite) {
-            super.init(pageSite);
-            // register actions for the editor
-            ActionRegistry registry = getActionRegistry();
-            IActionBars bars = pageSite.getActionBars();
-            String id = ActionFactory.UNDO.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            id = ActionFactory.REDO.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            id = ActionFactory.DELETE.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-
-            id = ActionFactory.CUT.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            id = ActionFactory.COPY.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            id = ActionFactory.PASTE.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            bars.updateActionBars();
-        }
-
-        @Override
-        public void createControl(Composite parent) {
-        	// TODO KLUDGE: This block removes the drag source and drop targets so that dragging will work when switch back and forth
-        	//              between the text and graphical editors. See comment in MultiPageNedEditor in pageChange.
-        	//              Both the drag source and the drag target are disposed by their corresponding setter methods.
-        	Method method = ReflectionUtils.getMethod(AbstractEditPartViewer.class, "setDragSource", DragSource.class);
-        	ReflectionUtils.setAccessible(method);
-        	ReflectionUtils.invokeMethod(method, getViewer(), (DragSource)null);
-        	method = ReflectionUtils.getMethod(AbstractEditPartViewer.class, "setDropTarget", DropTarget.class);
-        	ReflectionUtils.setAccessible(method);
-        	ReflectionUtils.invokeMethod(method, getViewer(), (DropTarget)null);
-        	// KLUDGE END
-
-        	super.createControl(parent);
-            getViewer().setEditDomain(getEditDomain());
-            getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-            ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), getActionRegistry());
-            getViewer().setContextMenu(provider);
-            getViewer().setKeyHandler(getCommonKeyHandler());
-            getViewer().addDropTargetListener((TransferDropTargetListener)
-                    new TemplateTransferDropTargetListener(getViewer()));
-            getSelectionSynchronizer().addViewer(getViewer());
-            setContents(getModel());
-        }
-
-        @Override
-        public void dispose() {
-            getSelectionSynchronizer().removeViewer(getViewer());
-            super.dispose();
-        }
-
-        public void setContents(Object contents) {
-            getViewer().setContents(contents);
-        }
-
-    }
-
-    /**
-     * Ned Property sheet page for the graphical ned editor
-     */
-    public class NedPropertySheetPage extends PropertySheetPage {
-
-        @Override
-        public void init(IPageSite pageSite) {
-            super.init(pageSite);
-            // set a sorter that places the Base group at the beginning. The rest
-            // is alphabetically sorted
-            setSorter(new BasePreferrerPropertySheetSorter());
-            // integrates the GEF undo/redo stack
-            setRootEntry(new UndoablePropertySheetEntry(getCommandStack()));
-        }
-
-        @Override
-        public void createControl(Composite parent) {
-            super.createControl(parent);
-            // source provider for editparts
-            // we should not call this in the init method, because it causes NPE
-            // BUG see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=159747
-            setPropertySourceProvider(new NedEditPartPropertySourceProvider());
-
-            // set up a context menu with undo/redo items
-        }
-
-        @Override
-        public void setActionBars(IActionBars actionBars) {
-            super.setActionBars(actionBars);
-            // hook the editor's global undo/redo action to the cell editor
-            getCellEditorActionHandler().setUndoAction(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
-            getCellEditorActionHandler().setRedoAction(getActionRegistry().getAction(ActionFactory.REDO.getId()));
-        }
-
-        /**
-         * In Eclipse, there is no accessor for the private field so it is not possible to override
-         * the setActionBars method. Once it is fixed remove this method.
-         *
-         * See BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=185081
-         *
-         * @return The private cell editor handler, so it is possible to override set action bars.
-         */
-        private CellEditorActionHandler getCellEditorActionHandler() {
-            return (CellEditorActionHandler)ReflectionUtils.getFieldValue(this, "cellEditorActionHandler");
-        }
-
-    }
 
     private KeyHandler sharedKeyHandler;
     private PaletteManager paletteManager;
@@ -467,6 +335,12 @@ public class GraphicalNedEditor
     }
 
     @Override
+    public ActionRegistry getActionRegistry() {
+        // overridden to make it visible
+        return super.getActionRegistry();
+    }
+
+    @Override
     public void doSave(final IProgressMonitor progressMonitor) {
         Assert.isTrue(false, "save is not implemented");
     }
@@ -480,13 +354,13 @@ public class GraphicalNedEditor
     public Object getAdapter(Class type) {
         if (type == IPropertySheetPage.class) {
             if (propertySheetPage == null )
-                propertySheetPage = new NedPropertySheetPage();
+                propertySheetPage = new NedPropertySheetPage(this); 
             return propertySheetPage;
         }
 
         if (type == IContentOutlinePage.class) {
             if (outlinePage == null)
-                outlinePage = new NedOutlinePage(new TreeViewer());
+                outlinePage = new NedOutlinePage(this, new TreeViewer());
             return outlinePage;
         }
         if (type == ZoomManager.class)
@@ -842,5 +716,6 @@ public class GraphicalNedEditor
     	for (Object child : editPart.getChildren())
     		dumpEditPartHierarchy((EditPart)child, indent+"  ");
     }
+    
 }
 
