@@ -20,6 +20,7 @@ import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.SelectionManager;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
@@ -39,6 +40,8 @@ import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
@@ -56,6 +59,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -65,19 +69,7 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.MultiPageNedEditor;
-import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
-import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
-import org.omnetpp.ned.editor.graph.actions.CopyAction;
-import org.omnetpp.ned.editor.graph.actions.CutAction;
-import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
-import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
-import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
-import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
-import org.omnetpp.ned.editor.graph.actions.PasteAction;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
+import org.omnetpp.ned.editor.graph.actions.*;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -249,6 +241,22 @@ public class GraphicalNedEditor
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
+        viewer.setSelectionManager(new SelectionManager() {
+            @Override
+            public ISelection getSelection() {
+                List sel = ((IStructuredSelection)super.getSelection()).toList();
+                List newSel = new ArrayList();
+                for (Object o : sel) {
+                    if (o instanceof IModelProvider) {
+                        INEDElement nedElement = ((IModelProvider)o).getNEDModel();
+                        if (nedElement.getContainingNedFileElement() != null)
+                            newSel.add(o);
+                    }
+                }
+                return new StructuredSelection(newSel);
+            }
+        });
+        
         ScalableRootEditPart root = new ScalableRootEditPart() {
         	@Override
         	protected void refreshChildren() {

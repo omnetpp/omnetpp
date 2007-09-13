@@ -40,12 +40,12 @@ public class DeleteCommand extends Command {
     public DeleteCommand(INEDElement toBeDeleted) {
     	super();
     	elementUndoItem.node = toBeDeleted;
-    	elementUndoItem.parent = toBeDeleted.getParent();
-    	elementUndoItem.nextSibling = toBeDeleted.getNextSibling();
     }
 
     @Override
     public void execute() {
+        elementUndoItem.parent = elementUndoItem.node.getParent();
+        elementUndoItem.nextSibling = elementUndoItem.node.getNextSibling();
     	String label = "Delete";
     	if (elementUndoItem.node instanceof IHasName)
     		label += " "+((IHasName)elementUndoItem.node).getName();

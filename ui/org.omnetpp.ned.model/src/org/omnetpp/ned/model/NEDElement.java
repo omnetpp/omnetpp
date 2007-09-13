@@ -300,6 +300,7 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 			appendChild(inode);
 			return;
 		}
+		Assert.isTrue(iwhere.getParent() == this);
 		NEDElement node = (NEDElement) inode;
 		NEDElement where = (NEDElement) iwhere;
 		if (node.parent!=null)
