@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.test.gui.core.EventTracer;
@@ -185,25 +186,8 @@ public class Access
 	public void pressKey(char character, int keyCode, int modifierKeys) {
 		Event event;
 
-		if (modifierKeys != 0) {
-			if ((modifierKeys & SWT.SHIFT) != 0) {
-				event = newEvent(SWT.KeyDown);
-				event.keyCode = SWT.SHIFT;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.CONTROL) != 0) {
-				event = newEvent(SWT.KeyDown);
-				event.keyCode = SWT.CONTROL;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.ALT) != 0) {
-				event = newEvent(SWT.KeyDown);
-				event.keyCode = SWT.ALT;
-				postEvent(event);
-			}
-		}
+		if (modifierKeys != 0)
+			holdDownModifiers(modifierKeys);
 
 		event = newEvent(SWT.KeyDown);
 		event.character = character;
@@ -215,26 +199,55 @@ public class Access
 		event.character = (char)keyCode;
 		postEvent(event);
 
-		if (modifierKeys != 0) {
-			if ((modifierKeys & SWT.SHIFT) != 0) {
-				event = newEvent(SWT.KeyUp);
-				event.keyCode = SWT.SHIFT;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.CONTROL) != 0) {
-				event = newEvent(SWT.KeyUp);
-				event.keyCode = SWT.CONTROL;
-				postEvent(event);
-			}
-
-			if ((modifierKeys & SWT.ALT) != 0) {
-				event = newEvent(SWT.KeyUp);
-				event.keyCode = SWT.ALT;
-				postEvent(event);
-			}
-		}
+		if (modifierKeys != 0)
+			releaseUpModifiers(modifierKeys);
 	}
+
+    @InUIThread
+    public void holdDownModifiers(int modifierKeys) {
+        Event event;
+        
+        if ((modifierKeys & SWT.SHIFT) != 0) {
+        	event = newEvent(SWT.KeyDown);
+        	event.keyCode = SWT.SHIFT;
+        	postEvent(event);
+        }
+
+        if ((modifierKeys & SWT.CONTROL) != 0) {
+        	event = newEvent(SWT.KeyDown);
+        	event.keyCode = SWT.CONTROL;
+        	postEvent(event);
+        }
+
+        if ((modifierKeys & SWT.ALT) != 0) {
+        	event = newEvent(SWT.KeyDown);
+        	event.keyCode = SWT.ALT;
+        	postEvent(event);
+        }
+    }
+
+    @InUIThread
+    public void releaseUpModifiers(int modifierKeys) {
+        Event event;
+
+        if ((modifierKeys & SWT.SHIFT) != 0) {
+            event = newEvent(SWT.KeyUp);
+            event.keyCode = SWT.SHIFT;
+            postEvent(event);
+        }
+
+        if ((modifierKeys & SWT.CONTROL) != 0) {
+            event = newEvent(SWT.KeyUp);
+            event.keyCode = SWT.CONTROL;
+            postEvent(event);
+        }
+
+        if ((modifierKeys & SWT.ALT) != 0) {
+            event = newEvent(SWT.KeyUp);
+            event.keyCode = SWT.ALT;
+            postEvent(event);
+        }
+    }
 
 	protected void postMouseEvent(int type, int button, int x, int y) {
 		Event event = newEvent(type); // e.g. SWT.MouseMove
@@ -255,6 +268,16 @@ public class Access
 		return theOnlyObject(collectObjects(objects, predicate));
 	}
 
+    @InUIThread
+    public static Object hasObject(List<Object> objects, IPredicate predicate) {
+        return collectObjects(objects, predicate).size() != 0;
+    }
+
+    @InUIThread
+    public static Object hasObject(Object[] objects, IPredicate predicate) {
+        return collectObjects(objects, predicate).size() != 0;
+    }
+
 	@InUIThread
 	public static List<Object> collectObjects(List<Object> objects, IPredicate predicate) {
 		return collectObjects(objects.toArray(new Object[0]), predicate);
@@ -273,17 +296,18 @@ public class Access
 
 	@InUIThread
 	public static Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
-		return theOnlyControl(collectDescendantControls(composite, new IPredicate() {
-			public boolean matches(Object control) {
-				return clazz.isInstance(control);
-			}
-		}));
+		return findDescendantControl(composite, new InstanceofPredicate(clazz));
 	}
 
 	@InUIThread
 	public static Control findDescendantControl(Composite composite, IPredicate predicate) {
 		return theOnlyControl(collectDescendantControls(composite, predicate));
 	}
+
+    @InUIThread
+    public static boolean hasDescendantControl(Composite composite, IPredicate predicate) {
+        return collectDescendantControls(composite, predicate).size() != 0;
+    }
 
 	@InUIThread
 	public static List<Control> collectDescendantControls(Composite composite, IPredicate predicate) {
@@ -356,17 +380,18 @@ public class Access
 
 	@InUIThread
 	public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
-		return theOnlyFigure(collectDescendantFigures(figure, new IPredicate() {
-			public boolean matches(Object Figure) {
-				return clazz.isInstance(Figure);
-			}
-		}));
+		return findDescendantFigure(figure, new InstanceofPredicate(clazz));
 	}
 
 	@InUIThread
 	public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {
 		return theOnlyFigure(collectDescendantFigures(figure, predicate));
 	}
+
+    @InUIThread
+    public static boolean hasDescendantFigure(IFigure figure, IPredicate predicate) {
+        return collectDescendantFigures(figure, predicate).size() != 0;
+    }
 
 	@InUIThread
 	public static List<IFigure> collectDescendantFigures(IFigure figure, IPredicate predicate) {
@@ -387,17 +412,18 @@ public class Access
 	
 	@InUIThread
 	public static EditPart findDescendantEditPart(EditPart editPart, final Class<? extends EditPart> clazz) {
-		return theOnlyEditPart(collectDescendantEditParts(editPart, new IPredicate() {
-			public boolean matches(Object EditPart) {
-				return clazz.isInstance(EditPart);
-			}
-		}));
+	    return findDescendantEditPart(editPart, new InstanceofPredicate(clazz));
 	}
 
 	@InUIThread
 	public static EditPart findDescendantEditPart(EditPart editPart, IPredicate predicate) {
 		return theOnlyEditPart(collectDescendantEditParts(editPart, predicate));
 	}
+
+    @InUIThread
+    public static boolean hasDescendantEditPart(EditPart editPart, IPredicate predicate) {
+        return collectDescendantEditParts(editPart, predicate).size() != 0;
+    }
 
 	@InUIThread
 	public static List<EditPart> collectDescendantEditParts(EditPart editPart, IPredicate predicate) {

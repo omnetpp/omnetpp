@@ -1,7 +1,5 @@
 package org.omnetpp.test.gui.nededitor;
 
-import org.omnetpp.test.gui.inifileeditor.IniFileEditorTestSuite;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
