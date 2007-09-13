@@ -82,7 +82,6 @@ public class ModuleAndData implements Comparable<ModuleAndData>
 		return ObjectUtils.equals(this.moduleName, other.moduleName) && ObjectUtils.equals(this.dataName, other.dataName);
 	}
 
-	@Override
 	public int compareTo(ModuleAndData other) {
 		int result = StringUtils.dictionaryCompare(this.moduleName, other.moduleName);
 		if (result == 0)
