@@ -11,7 +11,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
-import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
+import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -156,7 +156,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected Command validateCommand(Command command) {
         // connection creation is allowed even if the submodule is non editable (but the containing
         // compound module is editable)
-        if (command instanceof ConnectionCommand && getCompoundModulePart().isEditable())
+        if (command instanceof ReconnectCommand && getCompoundModulePart().isEditable())
             return command;
 
         return super.validateCommand(command);

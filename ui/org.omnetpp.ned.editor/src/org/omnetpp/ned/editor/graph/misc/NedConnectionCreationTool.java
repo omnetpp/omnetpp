@@ -6,7 +6,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
 
-import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
+import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
+import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
@@ -47,10 +48,10 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 	@Override
 	protected boolean handleCreateConnection() {
 		Command command = getCommand();
-		if (command == null || !(command instanceof ConnectionCommand))
-		    return false;
+		if (command == null || !(command instanceof CreateConnectionCommand))
+		    return false; 
 
-		ConnectionCommand endCommand = (ConnectionCommand)command;
+		CreateConnectionCommand endCommand = (CreateConnectionCommand)command;
     	setCurrentCommand(endCommand);
 
         endCommand.setDestGate(null);
@@ -66,8 +67,8 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 			return false;
 
 		// copy the selected connection attributes to the command
-    	ConnectionElement templateConn = endCommand.getConnectionTemplate();
-		ConnectionCommand.copyConn(selectedConn, templateConn);
+    	ConnectionElement templateConn = endCommand.getConnection();
+		ReconnectCommand.copyConn(selectedConn, templateConn);
 		// execute the command
     	executeCurrentCommand();
     	return true;

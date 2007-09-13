@@ -5,7 +5,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.tools.ConnectionEndpointTracker;
-import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
+import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
@@ -25,7 +25,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	@Override
 	protected boolean handleButtonUp(int button) {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
-			ConnectionCommand connCommand = (ConnectionCommand)getCommand();
+			ReconnectCommand connCommand = (ReconnectCommand)getCommand();
 	    	if (connCommand == null)
 	    	    return false;
             // depending on which side we are reconnecting, we offer a full gate list on that side
@@ -47,8 +47,8 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 				return false;
 
 			// copy the selected connection attributes to the command
-	    	ConnectionElement templateConn = connCommand.getConnectionTemplate();
-			ConnectionCommand.copyConn(selectedConn, templateConn);
+	    	ConnectionElement templateConn = connCommand.getConnection();
+			ReconnectCommand.copyConn(selectedConn, templateConn);
 
 			// execute the command
 	    	setCurrentCommand(connCommand);

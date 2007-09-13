@@ -9,9 +9,10 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+
 import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
+import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
+import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
@@ -31,16 +32,22 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 		return cf;
 	}
 
+    /**
+     * Feedback should be added to the scaled feedback layer.
+     *
+     * @see org.eclipse.gef.editpolicies.GraphicalEditPolicy#getFeedbackLayer()
+     */
+    @Override
+    protected IFigure getFeedbackLayer() {
+        return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
+    }
+
 	// called during connection creation on the first click
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionElementEx conn = (ConnectionElementEx)request.getNewObject();
-        ConnectionCommand command = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
+        CreateConnectionCommand command = new CreateConnectionCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
         command.setSrcModule(getGraphNodeModel());
-        GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
-        if (anchor == null)
-        	return UnexecutableCommand.INSTANCE;
-
         request.setStartCommand(command);
         return command;
     }
@@ -48,12 +55,8 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     // called when clicked on the second node during connection creation
     @Override
     protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
-        ConnectionCommand command = (ConnectionCommand) request.getStartCommand();
+        CreateConnectionCommand command = (CreateConnectionCommand)request.getStartCommand();
         command.setDestModule(getGraphNodeModel());
-        GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
-        if (anchor == null)
-        	return UnexecutableCommand.INSTANCE;
-
         return command;
     }
 
@@ -66,12 +69,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
             return UnexecutableCommand.INSTANCE;
 
         ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
-
-        GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
-        if (anchor == null)
-        	return UnexecutableCommand.INSTANCE;
-
+        ReconnectCommand cmd = new ReconnectCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
         cmd.setDestModule(getGraphNodeModel());
         cmd.setSrcModule(conn.getSrcModuleRef());
         return cmd;
@@ -86,25 +84,10 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
             return UnexecutableCommand.INSTANCE;
         
         ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
-
-        GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
-        if (anchor == null)
-        	return UnexecutableCommand.INSTANCE;
-
+        ReconnectCommand cmd = new ReconnectCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
         cmd.setSrcModule(getGraphNodeModel());
         cmd.setDestModule(conn.getDestModuleRef());
         return cmd;
-    }
-
-    /**
-     * Feedback should be added to the scaled feedback layer.
-     *
-     * @see org.eclipse.gef.editpolicies.GraphicalEditPolicy#getFeedbackLayer()
-     */
-    @Override
-    protected IFigure getFeedbackLayer() {
-        return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
     protected ModuleEditPart getModuleEditPart() {
