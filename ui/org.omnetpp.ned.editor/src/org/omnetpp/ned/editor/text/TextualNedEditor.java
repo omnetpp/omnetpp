@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.Region;
@@ -43,6 +44,7 @@ import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
+import org.omnetpp.ned.editor.text.actions.FindTextInNedFilesActionDelegate;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
 import org.omnetpp.ned.editor.text.actions.GotoDeclarationAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
@@ -239,6 +241,10 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         a = new CorrectIndentationAction(this);
         setAction(a.getId(), a);
         markAsSelectionDependentAction(a.getId(), true);
+
+        a = new FindTextInNedFilesActionDelegate();
+        setAction(a.getId(), a);
+        //markAsSelectionDependentAction(a.getId(), true);
 	}
 
     /*
@@ -250,10 +256,11 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
-        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, GotoDeclarationAction.ID); //XXX here?
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, GotoDeclarationAction.ID);  //XXX wrong place
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FindTextInNedFilesActionDelegate.ID);  //XXX wrong place
     }
 
 

@@ -8,6 +8,7 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.omnetpp.common.util.StringUtils;
 
 /** 
  * Provides annotation hover support for NED editors. Annotations include 
@@ -15,6 +16,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
  *
  * @author rhornig
  */
+//XXX currently unused, DefaultAnnotationHover is installed instead
 public class NedAnnotationHover implements IAnnotationHover {
 
     /* (non-Javadoc)
@@ -38,12 +40,17 @@ public class NedAnnotationHover implements IAnnotationHover {
                 int offset = currPos.offset;
                 int annLine = sourceViewer.getDocument().getLineOfOffset(offset);
                 if (lineNumber == annLine ) {
-                    if (!"".equals(annotationText)) annotationText += "\n";
-                    annotationText += ann.getText();
+                    String text = ann.getText();
+                    if (StringUtils.isNotEmpty(text)) {
+                        if (annotationText.length()>0) 
+                            annotationText += "\n";
+                        annotationText += text;
+                    }
                 }
             }
             return annotationText;
-        } catch (BadLocationException e) {
+        } 
+		catch (BadLocationException e) {
         }
 
 		return null;

@@ -16,6 +16,7 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -28,7 +29,6 @@ import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.editor.text.util.NEDHyperlinkDetector;
-import org.omnetpp.ned.editor.text.util.NedAnnotationHover;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
 import org.omnetpp.ned.editor.text.util.NedTextHover;
@@ -48,7 +48,8 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	
 	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new NedAnnotationHover();
+		return new DefaultAnnotationHover();
+		//return new NedAnnotationHover();   XXX why did we need our own one?
 	}
 
     @Override

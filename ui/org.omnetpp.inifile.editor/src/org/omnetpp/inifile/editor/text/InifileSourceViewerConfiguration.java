@@ -16,6 +16,7 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -24,7 +25,6 @@ import org.omnetpp.inifile.editor.text.assist.InifileCompletionProcessor;
 import org.omnetpp.inifile.editor.text.highlight.InifileCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.InifileCommentColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
-import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.InifileHyperlinkDetector;
 import org.omnetpp.inifile.editor.text.util.InifileTextHover;
 
@@ -40,7 +40,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 	
 	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new InifileAnnotationHover();
+		return new DefaultAnnotationHover();
 	}
 		
 	@Override

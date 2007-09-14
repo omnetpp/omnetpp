@@ -406,7 +406,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	char lastChar = noun.charAt(len - 1);
     	if (lastChar == 'y')
     		return noun.substring(0, len-1) + "ies";
-    	if (lastChar == 's')
+    	if (lastChar == 's' || (lastChar == 'h' && !noun.endsWith("th")))
     		return noun + "es";
     	else
     		return noun + "s";

@@ -118,6 +118,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+I">
       </key>
+      <key 
+            commandId="org.omnetpp.ned.editor.text.performTextSearchWorkspace" 
+            contextId="org.omnetpp.context.nedEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"  
+            sequence="M1+M2+G"> 
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -156,6 +162,12 @@
             description="Convert the NED source to the OMNEST/OMNeT++ 4.0 format"
             id="org.omnetpp.ned.editor.text.ConvertToNewFormat"
             name="Convert to 4.0 Format">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Perform text search in workspace NED files"
+            id="org.omnetpp.ned.editor.text.performTextSearchWorkspace"
+            name="Search Text in NED Files">
       </command>
    </extension>
    <extension

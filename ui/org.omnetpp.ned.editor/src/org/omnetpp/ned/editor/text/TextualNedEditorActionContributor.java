@@ -13,6 +13,7 @@ import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
+import org.omnetpp.ned.editor.text.actions.FindTextInNedFilesActionDelegate;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
 import org.omnetpp.ned.editor.text.actions.GotoDeclarationAction;
 import org.omnetpp.ned.editor.text.actions.NedTextEditorAction;
@@ -32,6 +33,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
     private RetargetTextEditorAction fOrganizeImportsAction;
     private RetargetTextEditorAction fToggleCommentAction;
     private RetargetTextEditorAction fCorrectIndentationAction;
+    private RetargetTextEditorAction fFindTextInNedFilesAction;
 
 	/**
 	 * Default constructor.
@@ -48,6 +50,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 		fOrganizeImportsAction = createRetargetAction(OrganizeImportsAction.ID);
 		fToggleCommentAction = createRetargetAction(ToggleCommentAction.ID);
 		fCorrectIndentationAction = createRetargetAction(CorrectIndentationAction.ID);
+		fFindTextInNedFilesAction = createRetargetAction(FindTextInNedFilesActionDelegate.ID);
 	}
 
 	private static RetargetTextEditorAction createRetargetAction(String id) {
@@ -75,6 +78,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
         fOrganizeImportsAction.setAction(getAction(editor, OrganizeImportsAction.ID));
         fToggleCommentAction.setAction(getAction(editor, ToggleCommentAction.ID));
         fCorrectIndentationAction.setAction(getAction(editor, CorrectIndentationAction.ID));
+        fFindTextInNedFilesAction.setAction(getAction(editor, FindTextInNedFilesActionDelegate.ID));
 	}
 
 	@Override
