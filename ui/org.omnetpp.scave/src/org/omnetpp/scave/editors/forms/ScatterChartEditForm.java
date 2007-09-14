@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -103,25 +104,27 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		super.populateTabItem(item);
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
+		Group group;
+		GridData gridData;
 		if (TAB_CONTENT.equals(name)) {
-			Group group = createGroup("Choose variable for X axis", panel);
-			group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
 			// x data
+			group = createGroup("X data", panel, 2, 2);
+			createLabel("Select the scalar whose values displayed on the X axis.",
+					group, 2);
 			String[] items = new String [data.length];
 			for (int i = 0; i < items.length; ++i)
 				items[i] = data[i].asListItem();
-			xModuleAndDataCombo = createComboField("X data", group, items);
-			
+			xModuleAndDataCombo = createComboField("", group, items);
 			if (items.length > 0)
 				xModuleAndDataCombo.setText(items[0]);
 			
 			// iso data
-			Label label = new Label(group, SWT.NONE);
-			label.setText("Iso data");
+			group = createGroup("Iso lines", panel, 2, 1);
+			createLabel("Select scalars whose values must be equal on data points connected by lines.",
+					group, 1);
 			isoModuleAndDataTable = new Table(group,
 					SWT.BORDER | SWT.CHECK | SWT.HIDE_SELECTION | SWT.V_SCROLL);
-			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			int itemsVisible = Math.max(Math.min(data.length, 15), 3);
 			gridData.heightHint = itemsVisible * isoModuleAndDataTable.getItemHeight();
 			isoModuleAndDataTable.setLayoutData(gridData);
@@ -132,10 +135,22 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 				tableItem.setData(data[i].asFilterPattern());
 			}
 			
+			group = createGroup("Average replications", panel, 2, 1);
+			createLabel("Check if the values that are the replications of the same measurement must be averaged.", group, 1);
 			avgReplicationsCheckbox = createCheckboxField("average replications", group);
 			avgReplicationsCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			avgReplicationsCheckbox.setSelection(true);
 		}
+	}
+	
+	private Label createLabel(String text, Composite parent, int columns) {
+		Composite panel = new Composite(parent, SWT.NONE);
+		panel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, columns, 1));
+		panel.setLayout(new RowLayout(SWT.VERTICAL));
+		
+		Label label = new Label(panel, SWT.WRAP); // XXX WRAP does not work
+		label.setText(text);
+		return label;
 	}
 	
 	@Override

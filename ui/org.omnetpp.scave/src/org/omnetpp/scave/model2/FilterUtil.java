@@ -1,10 +1,10 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
-import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,9 +56,9 @@ public class FilterUtil {
 	}
 
 	public FilterUtil(String runName, String moduleName, String dataName) {
-		setField(FIELD_RUNNAME, runName);
-		setField(FIELD_MODULENAME, moduleName);
-		setField(FIELD_DATANAME, dataName);
+		setField(RUN, runName);
+		setField(MODULE, moduleName);
+		setField(NAME, dataName);
 	}
 
 	public FilterUtil(ResultItem item, String[] runidFields) {
@@ -67,11 +67,11 @@ public class FilterUtil {
 		if (runidFields==null) {
 			if (run.getRunName().length()>0) {
 				// default: identify run with runName
-				setField(FIELD_RUNNAME, run.getRunName());
+				setField(RUN, run.getRunName());
 			}
 			else {
 				// fallback for old files that don't have runName yet
-				setField(FIELD_FILENAME, file.getFilePath());
+				setField(FILE, file.getFilePath());
 				String runNumber = run.getAttribute(RUNNUMBER);
 				if (runNumber != null)
 					setField(RUNNUMBER, runNumber);
@@ -80,20 +80,20 @@ public class FilterUtil {
 		else {
 			// explicit selection of run identification fields
 			for (String field : runidFields) {
-				if (field == FIELD_FILENAME)
+				if (field == FILE)
 					setField(field, file.getFilePath());
-				else if (field == FIELD_RUNNAME)
+				else if (field == RUN)
 					setField(field, run.getRunName());
 				else // run attribute
 					setField(field, run.getAttribute(field));
 			}
 		}
-		setField(FIELD_MODULENAME, item.getModuleName());
-		setField(FIELD_DATANAME, item.getName());
+		setField(MODULE, item.getModuleName());
+		setField(NAME, item.getName());
 	}
 
 	public static String getDefaultField() {
-		return FIELD_DATANAME;
+		return NAME;
 	}
 
 	public String getFilterPattern() {

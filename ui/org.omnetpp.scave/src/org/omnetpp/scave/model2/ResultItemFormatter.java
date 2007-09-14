@@ -1,9 +1,9 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ResultItemFields;
 
 /**
  * Formatting tool for generating legend labels and
@@ -36,17 +37,17 @@ public class ResultItemFormatter {
 	
 	static {
 		formatters = new HashMap<String,IResultItemFormatter>();
-		for (String field : ResultItemFields2.getFieldNames()) {
+		for (String field : ResultItemFields.getFieldNames().toArray()) {
 			IResultItemFormatter formatter = null;
-			if (field.equals(FIELD_FILENAME))
+			if (field.equals(FILE))
 				formatter = new FileNameFormatter();
-			else if (field.equals(FIELD_RUNNAME))
+			else if (field.equals(RUN))
 				formatter = new RunNameFormatter();
-			else if (field.equals(FIELD_MODULENAME))
+			else if (field.equals(MODULE))
 				formatter = new ModuleNameFormatter();
-			else if (field.equals(FIELD_DATANAME))
+			else if (field.equals(NAME))
 				formatter = new DataNameFormatter();
-			else if (RunAttribute.isRunAttribute(field))
+			else
 				formatter = new RunAttributeFormatter(field);
 			if (formatter != null)
 				formatters.put(field, formatter);

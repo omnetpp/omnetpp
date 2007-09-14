@@ -300,8 +300,11 @@ int filterCommand(int argc, char **argv)
                     }
                     // write scalars
                     if (!scalarIDList.isEmpty())
+                    {
+                    	ResultItemFields fields(ResultItemField::NAME);
                         exporter->saveScalars("scalars", "scalar desc", scalarIDList,
-                            ResultItemFields(ResultItemFields::ALL, ResultItemFields::NAME), resultFileManager);
+                            fields.complement(), resultFileManager);
+                    }
 
                     exporter->close();
                     delete exporter;

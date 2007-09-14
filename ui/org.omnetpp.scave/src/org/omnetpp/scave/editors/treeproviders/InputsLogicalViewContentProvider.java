@@ -1,8 +1,8 @@
 package org.omnetpp.scave.editors.treeproviders;
 
-import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.model2.RunAttribute.getRunAttribute;
 
 import org.omnetpp.common.ui.CachedTreeContentProvider;

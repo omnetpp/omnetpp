@@ -18,6 +18,7 @@
 #endif
 
 #include <algorithm>
+#include <utility>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,121 +32,6 @@ using namespace std;
 
 
 ResultFileManager *ScalarDataSorter::tmpScalarMgr;
-
-/*----------------------------------------
- *              ResultItemFields
- *----------------------------------------*/
-
-StringVector ResultItemFields::getFieldNames()
-{
-    StringVector names = StringVector();
-    names.push_back("file");
-    names.push_back("run");
-    names.push_back("module");
-    names.push_back("name");
-    names.push_back("experiment");
-    names.push_back("measurement");
-    names.push_back("replication");
-    return names;
-}
-
-ResultItemFields::ResultItemFields(const StringVector &fieldNames)
-{
-    fields = 0;
-    for (StringVector::const_iterator it = fieldNames.begin(); it != fieldNames.end(); ++it)
-    {
-        if (*it == "file") fields |= FILE;
-        else if (*it == "run") fields |= RUN;
-        else if (*it == "module") fields |= MODULE;
-        else if (*it == "name") fields |= NAME;
-        else if (*it == "experiment") fields |= EXPERIMENT;
-        else if (*it == "measurement") fields |= MEASUREMENT;
-        else if (*it == "replication") fields |= REPLICATION;
-    }
-}
-
-static int strcmp_safe(const char *s1, const char *s2)
-{
-    if (s1 == NULL || s2 == NULL)
-        return (s1 == NULL && s2 == NULL) ? 0 : (s1 == NULL ? 1 : -1);
-    return strcmp(s1, s2);
-}
-
-inline const char *getAttribute(const ResultItem &d, const char *attrName)
-{
-    return d.fileRunRef->runRef->getAttribute(attrName);
-}
-
-bool ResultItemFields::equal(ID id1, ID id2, ResultFileManager *manager)
-{
-    if (id1==-1 || id2==-1) return id1==id2;
-    const ResultItem& d1 = manager->getItem(id1);
-    const ResultItem& d2 = manager->getItem(id2);
-    return equal(d1, d2);
-}
-
-bool ResultItemFields::equal(const ResultItem& d1, const ResultItem& d2)
-{
-    if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
-    if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
-    if (hasField(MODULE) && d1.moduleNameRef != d2.moduleNameRef) return false;
-    if (hasField(NAME) && d1.nameRef != d2.nameRef) return false;
-    if (hasField(EXPERIMENT) && strcmp_safe(getAttribute(d1, "experiment"), getAttribute(d2, "experiment")) != 0) return false;
-    if (hasField(MEASUREMENT) && strcmp_safe(getAttribute(d1, "measurement"), getAttribute(d2, "measurement")) != 0) return false;
-    if (hasField(REPLICATION) && strcmp_safe(getAttribute(d1, "replication"), getAttribute(d2, "replication")) != 0) return false;
-    return true;
-}
-
-bool ResultItemFields::less(ID id1, ID id2, ResultFileManager *manager)
-{
-    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ResultItem& d1 = manager->getItem(id1);
-    const ResultItem& d2 = manager->getItem(id2);
-    return less(d1, d2);
-}
-
-bool ResultItemFields::less(const ResultItem &d1, const ResultItem &d2) const
-{
-    int cmp;
-
-#define CMP(field,cmp_fun, f1,f2)   if (hasField(field)) { cmp = cmp_fun(f1,f2); if (cmp) return cmp < 0; }
-
-    CMP(FILE, strdictcmp, d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
-    CMP(RUN, strdictcmp, d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
-    CMP(MODULE, strdictcmp, d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str());
-    CMP(NAME, strdictcmp, d1.nameRef->c_str(), d2.nameRef->c_str());
-    CMP(EXPERIMENT, strcmp_safe, getAttribute(d1, "experiment"), getAttribute(d2, "experiment"));
-    CMP(MEASUREMENT, strcmp_safe, getAttribute(d1, "measurement"), getAttribute(d2, "measurement"));
-    CMP(REPLICATION, strcmp_safe, getAttribute(d1, "replication"), getAttribute(d2, "replication"));
-
-    return false; // ==
-}
-
-string ResultItemFields::getField(const ResultItem& d)
-{
-    if (fields == FILE)
-        return d.fileRunRef->fileRef->filePath;
-    else if (fields == RUN)
-        return d.fileRunRef->runRef->runName;
-    else if (fields == MODULE)
-        return *d.moduleNameRef;
-    else if (fields == NAME)
-        return *d.nameRef;
-    else if (fields == EXPERIMENT) {
-        const char *value = getAttribute(d, "experiment");
-        return value != NULL ? value : "";
-    }
-    else if (fields == MEASUREMENT) {
-        const char *value = getAttribute(d, "measurement");
-        return value != NULL ? value : "";
-    }
-    else if (fields == REPLICATION) {
-        const char *value = getAttribute(d, "replication");
-        return value != NULL ? value : "";
-    }
-    else
-        return "";
-}
 
 /*----------------------------------------
  *              XYDataset
@@ -240,18 +126,6 @@ void XYDataset::sortColumnsAccordingToFirstRow()
 /*
  * Grouping functions
  */
-template<class T>
-class MemberGroupingFunc
-{
-    private:
-        typedef bool (T::*GroupingFunc)(const ResultItem&, const ResultItem&);
-        T &object;
-        GroupingFunc func;
-    public:
-        MemberGroupingFunc(T &object, GroupingFunc func) : object(object), func(func) {}
-        bool operator()(const ResultItem& d1, const ResultItem& d2) { return (object.*func)(d1, d2); }
-};
-
 bool ScalarDataSorter::sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2)
 {
     return d1.fileRunRef==d2.fileRunRef && d1.nameRef==d2.nameRef;
@@ -270,20 +144,6 @@ bool ScalarDataSorter::sameGroupFileRunModule(const ScalarResult& d1, const Scal
 /*
  * Compare functions
  */
-template<class T>
-class MemberCompareFunc
-{
-    private:
-        typedef bool (T::*CompareFunc)(ID id1, ID id2, ResultFileManager *manager);
-        ResultFileManager *manager;
-        T &object;
-        CompareFunc func;
-    public:
-        MemberCompareFunc(T &object, CompareFunc func, ResultFileManager *manager)
-            : object(object), func(func), manager(manager) {}
-        bool operator()(ID id1, ID id2) { return (object.*func)(id1, id2, manager); }
-};
-
 bool ScalarDataSorter::lessByModuleRef(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
@@ -443,11 +303,11 @@ IDVectorVector ScalarDataSorter::groupByModuleAndName(const IDList& idlist)
 
 IDVectorVector ScalarDataSorter::groupByFields(const IDList& idlist, ResultItemFields fields)
 {
-    IDVectorVector vv = doGrouping(idlist, MemberGroupingFunc<ResultItemFields>(fields, &ResultItemFields::equal));
+    IDVectorVector vv = doGrouping(idlist, ResultItemFieldsEqual(fields));
 
     sortAndAlign(vv,
-        MemberCompareFunc<ResultItemFields>(fields.complement(), &ResultItemFields::less, resultFileMgr),
-        MemberCompareFunc<ResultItemFields>(fields.complement(), &ResultItemFields::equal, resultFileMgr));
+        IDFieldsLess(fields.complement(), resultFileMgr),
+        IDFieldsEqual(fields.complement(), resultFileMgr));
     return vv;
 }
 
@@ -560,7 +420,7 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
 }
 
 XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
-                                                ResultItemFields rowFields, ResultItemFields columnFields)
+            ResultItemFields rowFields, ResultItemFields columnFields)
 {
     XYDataset dataset = groupAndAggregate(idlist, rowFields, columnFields);
     
@@ -568,10 +428,10 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
     int row;
     for (row = 0; row < dataset.getRowCount(); ++row)
     {
-        std::string moduleName = dataset.getRowField(row, ResultItemFields::MODULE);
-        std::string dataName = dataset.getRowField(row, ResultItemFields::NAME);
-        if (dataset.getRowField(row, ResultItemFields::MODULE) == moduleName &&
-            dataset.getRowField(row, ResultItemFields::NAME) == scalarName)
+        std::string moduleName = dataset.getRowField(row, ResultItemField(ResultItemField::MODULE));
+        std::string dataName = dataset.getRowField(row, ResultItemField(ResultItemField::NAME));
+        if (dataset.getRowField(row, ResultItemField(ResultItemField::MODULE)) == moduleName &&
+            dataset.getRowField(row, ResultItemField(ResultItemField::NAME)) == scalarName)
             break;
     }
     if (row < dataset.getRowCount())
@@ -588,6 +448,103 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
     return dataset;
 }
 
+struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
+{
+	typedef map<Run*, vector<double> > RunIsoValueMap;
+	typedef map<pair<string, string>, int> IsoAttrIndexMap; 
+	RunIsoValueMap map;
+	
+	IsoGroupingFn() {}
+	IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager);
+	bool operator()(const ResultItem &d1, const ResultItem &d2) const;
+};
+
+IDList IsoGroupingFn::init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager)
+{
+	//assert(moduleNames.size() == scalarNames.size());
+	int numOfIsoValues = scalarNames.size();
+	IDList result;
+	
+	// build iso (module,scalar) -> index map
+	IsoAttrIndexMap indexMap;
+	for (int i = 0; i < numOfIsoValues; ++i)
+	{
+		pair<string,string> key = make_pair(moduleNames[i], scalarNames[i]);
+		indexMap[key] = i;
+	}
+	
+	// build run -> iso values map
+	int sz = idlist.size();
+	for (int i = 0; i < sz; ++i)
+	{
+		ID id = idlist.get(i);
+		const ScalarResult &scalar = manager->getScalar(id);
+		pair<string,string> key = make_pair(*scalar.moduleNameRef, *scalar.nameRef);
+		IsoAttrIndexMap::iterator it = indexMap.find(key);
+		if (it != indexMap.end())
+		{
+			int index = it->second;
+			Run *run = scalar.fileRunRef->runRef;
+			RunIsoValueMap::iterator it2 = map.find(run);
+			if (it2 == map.end())
+			{
+				it2 = map.insert(make_pair(run, vector<double>(numOfIsoValues, dblNaN))).first;
+			}
+			it2->second[index] = scalar.value;
+		}
+		else
+			result.add(id);
+	}
+	
+	return result;
+}
+
+bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
+{
+	if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
+		return true;
+
+    if (map.empty())
+        return true;
+	
+	RunIsoValueMap::const_iterator it1 = map.find(d1.fileRunRef->runRef);
+	RunIsoValueMap::const_iterator it2 = map.find(d2.fileRunRef->runRef);
+	if (it1 == map.end() || it2 == map.end())
+		return false;
+	
+	const vector<double> &v1 = it1->second;
+	const vector<double> &v2 = it2->second;
+	
+	assert(v1.size() == v2.size());
+	
+	for (int i = 0; i < v1.size(); ++i)
+		if(v1[i] != v2[i])
+			return false;
+	
+	return true;
+}
+
+XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
+        ResultItemFields rowFields, ResultItemFields columnFields,
+        const StringVector isoModuleNames, const StringVector isoScalarNames)
+{
+	// group data according to iso fields
+	IsoGroupingFn grouping;
+	IDList nonIsoScalars = grouping.init(idlist, isoModuleNames, isoScalarNames, resultFileMgr);
+	IDVectorVector groupedScalars = doGrouping(nonIsoScalars, grouping);
+	
+	XYDatasetVector datasets;
+	for (IDVectorVector::iterator group = groupedScalars.begin(); group != groupedScalars.end(); ++group)
+	{
+		IDList groupAsIDList;
+		for (IDVector::iterator id = group->begin(); id != group->end(); id++)
+			groupAsIDList.add(*id);
+		XYDataset dataset = prepareScatterPlot2(groupAsIDList, moduleName, scalarName, rowFields, columnFields);
+		datasets.push_back(dataset);
+	}
+	
+	return datasets;
+}
 
 IDList ScalarDataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)
 {

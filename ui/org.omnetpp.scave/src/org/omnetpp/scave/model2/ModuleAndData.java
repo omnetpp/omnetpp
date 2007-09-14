@@ -3,8 +3,8 @@
  */
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -46,8 +46,8 @@ public class ModuleAndData implements Comparable<ModuleAndData>
 		FilterUtil filter = pattern != null ? new FilterUtil(pattern, true) : null;
 		return filter == null || filter.isLossy() ?
 				new ModuleAndData() :
-				new ModuleAndData(filter.getField(FIELD_MODULENAME),
-								  filter.getField(FIELD_DATANAME));
+				new ModuleAndData(filter.getField(MODULE),
+								  filter.getField(NAME));
 	}
 	
 	public String asListItem() {
@@ -56,8 +56,8 @@ public class ModuleAndData implements Comparable<ModuleAndData>
 	
 	public String asFilterPattern() {
 		FilterUtil filter = new FilterUtil();
-		filter.setField(ResultItemFields2.FIELD_MODULENAME, moduleName);
-		filter.setField(ResultItemFields2.FIELD_DATANAME, dataName);
+		filter.setField(MODULE, moduleName);
+		filter.setField(NAME, dataName);
 		return filter.getFilterPattern();
 	}
 

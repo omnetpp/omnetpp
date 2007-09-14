@@ -31,49 +31,11 @@
 #include "commonutil.h"
 #include "patternmatcher.h"
 #include "scaveutils.h"
-
+#include "fields.h"
 
 typedef std::vector<ID> IDVector;
 typedef std::vector<IDVector> IDVectorVector;
 typedef std::vector<std::string> StringVector;
-
-class SCAVE_API ResultItemFields
-{
-    public:
-        static const int FILE      = 0x01;
-        static const int RUN       = 0x02;
-        static const int MODULE    = 0x04;
-        static const int NAME      = 0x08;
-        static const int EXPERIMENT  = 0x10;
-        static const int MEASUREMENT = 0x20;
-        static const int REPLICATION = 0x40;
-        static const int ALL       = FILE | RUN | MODULE | NAME | EXPERIMENT | MEASUREMENT | REPLICATION;
-    private:
-        int fields;
-    public:
-        static StringVector getFieldNames();
-
-        ResultItemFields(int fields) : fields(fields) {}
-        ResultItemFields(int fields, int except) : fields(fields & ~except) {};
-        ResultItemFields(const StringVector &fieldNames);
-        
-        ResultItemFields complement() { return ResultItemFields(ALL, fields); }
-        bool hasField(int field) const { return (fields & field) == field; }
-        
-        bool less(ID id1, ID id2, ResultFileManager *manager);
-        bool less(const ResultItem &d1, const ResultItem &d2) const;
-        bool equal(ID id1, ID id2, ResultFileManager *manager);
-        bool equal(const ResultItem& d1, const ResultItem& d2);
-
-        std::string getField(const ResultItem &d);
-};
-
-struct ResultItemFieldsLess : public std::binary_function<ResultItem, ResultItem, bool>
-{
-    ResultItemFields fields;
-    ResultItemFieldsLess(const ResultItemFields fields) : fields(fields) {}
-    bool operator()(const ResultItem &d1, const ResultItem &d2) const { return fields.less(d1, d2); }
-};
 
 /**
  * Values arranged in a two dimensional array.
@@ -105,6 +67,7 @@ class XYDataset
         std::vector<int> rowOrder;         // permutation of a subset of rows
         std::vector<int> columnOrder;      // permutation of a subset of columns
     public:
+    	XYDataset() {};
         XYDataset(ResultItemFields rowFields, ResultItemFields columnFields)
             : rowFields(rowFields), columnFields(columnFields),
             rowKeyToIndexMap(ResultItemFieldsLess(rowFields)),
@@ -119,23 +82,25 @@ class XYDataset
         int getColumnCount() { return columnOrder.size(); }
         ResultItemFields getRowFields() { return rowFields; }
         ResultItemFields getColumnFields() { return columnFields; }
-        std::string getRowField(int row, int fieldID);
-        std::string getColumnField(int column, int fieldID);
+        std::string getRowField(int row, ResultItemField field);
+        std::string getColumnField(int column, ResultItemField field);
         double getValue(int row, int column);
 };
 
-inline std::string XYDataset::getRowField(int row, int fieldID)
+typedef std::vector<XYDataset> XYDatasetVector;
+
+inline std::string XYDataset::getRowField(int row, ResultItemField field)
 {
-    if (row < 0 || row >= getRowCount() || !rowFields.hasField(fieldID))
+    if (row < 0 || row >= getRowCount() || !rowFields.hasField(field))
         return "";
-    return ResultItemFields(fieldID).getField(rowKeys[rowOrder[row]]);
+    return field.getFieldValue(rowKeys[rowOrder[row]]);
 }
 
-inline std::string XYDataset::getColumnField(int column, int fieldID)
+inline std::string XYDataset::getColumnField(int column, ResultItemField field)
 {
-    if (column < 0 || column >= getColumnCount() || !columnFields.hasField(fieldID))
+    if (column < 0 || column >= getColumnCount() || !columnFields.hasField(field))
         return "";
-    return ResultItemFields(fieldID).getField(columnKeys[columnOrder[column]]);
+    return field.getFieldValue(columnKeys[columnOrder[column]]);
 }
 
 inline double XYDataset::getValue(int row, int column)
@@ -178,7 +143,7 @@ class SCAVE_API ScalarDataSorter
      */
     template<class GroupingFn>
     IDVectorVector doGrouping(const IDList& idlist, GroupingFn sameGroup);
-
+    
     /**
      * Sort every group (IDVectors) in place by the sorting function given
      * and aligns.
@@ -238,8 +203,16 @@ class SCAVE_API ScalarDataSorter
      * x coordinates, further rows the y1, y2, etc series. Points are sorted
      * by x coordinate. For missing points in y1, y2, etc, the row contains NaN.
      */
-    XYDataset prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
-                                    ResultItemFields rowFields, ResultItemFields columnFields);
+    XYDataset prepareScatterPlot2(const IDList& idlist, const char *xModuleName, const char *xScalarName,
+    		ResultItemFields rowFields, ResultItemFields columnFields);
+    
+    /**
+     * TODO
+     */
+    XYDatasetVector prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
+            ResultItemFields rowFields, ResultItemFields columnFields,
+            const StringVector isoModuleNames, const StringVector isoScalarNames);
+
 
     /**
      * Looks at the data given by their Id, and returns a subset of them

@@ -28,7 +28,7 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
@@ -43,6 +43,7 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -162,6 +163,8 @@ public class ScaveModelUtil {
 			return ResultType.VECTOR_LITERAL;
 		else if (chart instanceof HistogramChart)
 			return ResultType.HISTOGRAM_LITERAL;
+		else if (chart instanceof ScatterChart)
+			return ResultType.SCALAR_LITERAL; // XXX vectors and histograms can be displayed too
 
 		Assert.isTrue(false, "Unknown chart type: " + chart.getClass().getName());
 		return ResultType.SCALAR_LITERAL;
@@ -406,13 +409,12 @@ public class ScaveModelUtil {
 	 * Returns an ordered array of distinct values of the {@code field} attribute
 	 * of the result items found in {@code idlist}. 
 	 */
-	public static String[] getFieldValues(IDList idlist, int field, ResultFileManager manager) {
-		ResultItemFields fields = new ResultItemFields(field);
+	public static String[] getFieldValues(IDList idlist, ResultItemField field, ResultFileManager manager) {
 		Set<String> values = new HashSet<String>();
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
 			ResultItem item = manager.getItem(id);
-			String value = fields.getField(item);
+			String value = field.getFieldValue(item);
 			if (!StringUtils.isEmpty(value))
 				values.add(value);
 		}

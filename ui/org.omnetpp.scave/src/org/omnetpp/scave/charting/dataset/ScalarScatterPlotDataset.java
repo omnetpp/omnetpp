@@ -1,7 +1,7 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.XYDataset;
 
 /**
@@ -19,8 +19,8 @@ import org.omnetpp.scave.engine.XYDataset;
  */
 public class ScalarScatterPlotDataset implements IXYDataset {
 	
-	private XYDataset scalars; 	// first row contains X values,
-	                        	// other rows contain Y values (NaN if missing)
+	private XYDataset scalars;      // first rows contains X values,
+	                        		// other rows contain Y values (NaN if missing)
 	private String[] keys;
 	
 	public ScalarScatterPlotDataset(XYDataset scalars) {
@@ -56,13 +56,16 @@ public class ScalarScatterPlotDataset implements IXYDataset {
 		return new BigDecimal(getY(series, item));
 	}
 	
+	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);
+	private static final ResultItemField NAME = new ResultItemField(ResultItemField.NAME);
+	
 	private static String[] computeKeys(XYDataset data) {
 		// first row contains the common X coordinates
 		// name the lines after their Y data
 		String[] keys = new String[data.getRowCount()-1];
 		for (int i=0; i<keys.length; ++i) {
-			keys[i] = data.getRowField(i+1, ResultItemFields.MODULE) + " " +
-					   data.getRowField(i+1, ResultItemFields.NAME);
+			keys[i] = data.getRowField(i+1, MODULE) + " " +
+					   data.getRowField(i+1, NAME);
 		}
 		return keys;
 	}

@@ -1,5 +1,9 @@
 package org.omnetpp.scave.editors.datatable;
 
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
@@ -11,7 +15,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.ResultItemFields2;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -68,9 +71,9 @@ public class FilteringPanel extends Composite {
 	}
 
 	public void setFilterHints(FilterHints hints) {
-		runCombo.setItems(hints.getHints(ResultItemFields2.FIELD_RUNNAME));
-		moduleCombo.setItems(hints.getHints(ResultItemFields2.FIELD_MODULENAME));
-		dataCombo.setItems(hints.getHints(ResultItemFields2.FIELD_DATANAME));
+		runCombo.setItems(hints.getHints(RUN));
+		moduleCombo.setItems(hints.getHints(MODULE));
+		dataCombo.setItems(hints.getHints(NAME));
 		advancedFilter.setFilterHints(hints);
 	}
 

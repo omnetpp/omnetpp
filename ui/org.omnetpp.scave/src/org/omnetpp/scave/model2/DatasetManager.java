@@ -1,13 +1,13 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.engine.ResultItemFields.EXPERIMENT;
-import static org.omnetpp.scave.engine.ResultItemFields.MEASUREMENT;
-import static org.omnetpp.scave.engine.ResultItemFields.REPLICATION;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
-import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +29,12 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.engine.XYDataset;
+import org.omnetpp.scave.engine.XYDatasetVector;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
@@ -257,7 +258,7 @@ public class DatasetManager {
 			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
 			
-			XYDataset xyScalars = null;
+			XYDatasetVector xyScalars = null;
 			if (!scalars.isEmpty()) {
 				ModuleAndData xData = ModuleAndData.fromFilterPattern(chart.getXDataPattern());
 				Assert.isLegal(xData.isValid(), "X data is not selected.");
@@ -267,11 +268,23 @@ public class DatasetManager {
 				List<String> isoPatterns = chart.getIsoDataPattern();
 				boolean averageReplications = chart.isAverageReplications();
 				
+				StringVector isoModuleNames = new StringVector();
+				StringVector isoScalarNames = new StringVector();
+				for (String pattern : isoPatterns) {
+					ModuleAndData moduleAndData = ModuleAndData.fromFilterPattern(pattern);
+					if (moduleAndData.isValid()) {
+						isoModuleNames.add(moduleAndData.getModuleName());
+						isoScalarNames.add(moduleAndData.getDataName());
+					}
+				}
+				
 				ScalarDataSorter sorter = new ScalarDataSorter(manager);
-				ResultItemFields rowFields = new ResultItemFields(ResultItemFields.MODULE | ResultItemFields.NAME);
-				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT | MEASUREMENT) :
-					                                              new ResultItemFields(ResultItemFields.RUN | EXPERIMENT | MEASUREMENT | REPLICATION);
-				xyScalars = sorter.prepareScatterPlot2(scalars, xModuleName, xScalarName, rowFields, columnFields);
+				ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
+				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
+					                                              new ResultItemFields(RUN, EXPERIMENT, MEASUREMENT, REPLICATION);
+				xyScalars = sorter.prepareScatterPlot3(scalars,
+								xModuleName, xScalarName, rowFields, columnFields,
+								isoModuleNames, isoScalarNames);
 			}
 			
 			XYArray[] xyVectors = null;
@@ -293,16 +306,23 @@ public class DatasetManager {
 			}
 			
 			if (xyScalars != null && xyVectors == null)
-				return new ScalarScatterPlotDataset(xyScalars);
+				return createScatterPlotDataset(xyScalars);
 			else if (xyScalars == null && xyVectors != null)
 				return new VectorScatterPlotDataset(yVectors, xyVectors, manager);
 			else if (xyScalars != null && xyVectors != null)
 				return new CompoundXYDataset(
-								new ScalarScatterPlotDataset(xyScalars),
-								new VectorScatterPlotDataset(yVectors, xyVectors, manager));
+						createScatterPlotDataset(xyScalars),
+						new VectorScatterPlotDataset(yVectors, xyVectors, manager));
 			
 		}
 		return null;
+	}
+	
+	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets) {
+		IXYDataset[] datasets = new IXYDataset[(int)xydatasets.size()];
+		for (int i = 0; i < datasets.length; ++i)
+			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i));
+		return new CompoundXYDataset(datasets);
 	}
 	
 	public static IXYDataset createXYDataset(Chart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor monitor) {
@@ -322,6 +342,14 @@ public class DatasetManager {
 		return ResultItemFormatter.formatResultItems(format, items);
 	}
 	
+	private static final ResultItemField[] FIELDS_OF_LINENAMES = new ResultItemField[] {
+		new ResultItemField(FILE), new ResultItemField(RUN),
+		new ResultItemField(RUNNUMBER), new ResultItemField(MODULE),
+		new ResultItemField(NAME), new ResultItemField(EXPERIMENT),
+		new ResultItemField(MEASUREMENT), new ResultItemField(REPLICATION)
+	};
+
+	
 	/**
 	 * Returns the default format string for names of the lines in {@code items}.
 	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
@@ -335,15 +363,13 @@ public class DatasetManager {
 		
 		StringBuffer sbFormat = new StringBuffer();
 		char separator = ' ';
-		String[] fields = new String[] {FIELD_FILENAME, FIELD_RUNNAME, RUNNUMBER, FIELD_MODULENAME, FIELD_DATANAME,
-										RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION};
-		for (String field : fields) {
-			String firstValue = ResultItemFields2.getFieldValue(items[0], field);
+		for (ResultItemField field : FIELDS_OF_LINENAMES) {
+			String firstValue = field.getFieldValue(items[0]);
 			
 			for (int i = 1; i < items.length; ++i) {
-				String value = ResultItemFields2.getFieldValue(items[i], field);
+				String value = field.getFieldValue(items[i]);
 				if (!ObjectUtils.equals(firstValue, value)) {
-					sbFormat.append('{').append(field).append('}').append(separator);
+					sbFormat.append('{').append(field.getName()).append('}').append(separator);
 					break;
 				}
 			}

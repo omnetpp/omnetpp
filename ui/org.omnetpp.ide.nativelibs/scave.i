@@ -7,6 +7,7 @@
 #include "enumtype.h"
 #include "idlist.h"
 #include "resultfilemanager.h"
+#include "fields.h"
 #include "datasorter.h"
 #include "stringutil.h"   // strdictcmp
 #include "indexfile.h"
@@ -156,6 +157,8 @@ namespace std {
 
    %template(IntVector) vector<int>;
 
+   specialize_std_vector(XYDataset);
+   %template(XYDatasetVector) vector<XYDataset>;
 };
 
 %ignore EnumType::insert;
@@ -400,11 +403,13 @@ namespace std {
 %ignore IndexedVectorFileWriterNodeType;
 %include "indexedvectorfile.h"
 
+/* ------------- vectorfilereader.h  ----------------- */
 %extend VectorFileReaderNode {
 	static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
 };
 
 %ignore VectorFileReaderNodeType;
+%ignore parseColumns;
 %include "vectorfilereader.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
@@ -414,6 +419,42 @@ namespace std {
 %extend IndexedVectorFileReaderNode {
 	static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
 };
+
+/* ------------------ fields.h --------------------- */
+%ignore ResultItemFieldsEqual;
+%ignore ResultItemFieldsLess;
+%ignore IDFieldsEqual;
+%ignore IDFieldsLess;
+%ignore getAttribute;
+
+%typemap(javacode) ResultItemField %{
+
+  public static final String FILE   = getFILE();
+  public static final String RUN    = getRUN();
+  public static final String MODULE = getMODULE();
+  public static final String NAME   = getNAME();
+%}
+
+%typemap(javacode) RunAttribute %{
+
+  public static final String EXPERIMENT  = getEXPERIMENT();
+  public static final String MEASUREMENT = getMEASUREMENT();
+  public static final String REPLICATION = getREPLICATION();
+  public static final String CONFIG      = getCONFIG();
+  public static final String RUNNUMBER   = getRUNNUMBER();
+  public static final String NETWORKNAME = getNETWORKNAME();
+  public static final String DATETIME    = getDATETIME();
+
+%}
+
+%typemap(javacode) ResultItemFields %{
+
+  public ResultItemFields(String... fieldNames) {
+    this(StringVector.fromArray(fieldNames));
+  }
+%}
+
+%include "fields.h"
 
 /* ------------------ datasorter.h --------------------- */
 %include "datasorter.h"

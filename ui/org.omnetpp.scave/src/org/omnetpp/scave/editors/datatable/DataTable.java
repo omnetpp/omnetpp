@@ -1,14 +1,14 @@
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_DATANAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_MODULENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
-import static org.omnetpp.scave.model2.RunAttribute.CONFIG;
-import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
-import static org.omnetpp.scave.model2.RunAttribute.RUNNUMBER;
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.engine.RunAttribute.CONFIG;
+import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +43,6 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.RunAttribute;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of
@@ -95,12 +94,12 @@ public class DataTable extends Table {
 	}
 
 	private static final Column COL_DIRECTORY = new Column("Directory", null, 60, true);
-	private static final Column COL_FILE = new Column("File name", FIELD_FILENAME,100, true);
+	private static final Column COL_FILE = new Column("File name", FILE,100, true);
 	private static final Column COL_CONFIG = new Column("Config name", CONFIG, 100, true);
 	private static final Column COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true);
-	private static final Column COL_RUN_ID = new Column("Run id", FIELD_RUNNAME, 100, true);
-	private static final Column COL_MODULE = new Column("Module", FIELD_MODULENAME, 160, true);
-	private static final Column COL_DATA = new Column("Name", FIELD_DATANAME, 100, true);
+	private static final Column COL_RUN_ID = new Column("Run id", RUN, 100, true);
+	private static final Column COL_MODULE = new Column("Module", MODULE, 160, true);
+	private static final Column COL_DATA = new Column("Name", NAME, 100, true);
 	private static final Column COL_VALUE = new Column("Value", null, 80, true);
 	private static final Column COL_COUNT = new Column("Count", null, 50, true);
 	private static final Column COL_MEAN = new Column("Mean", null, 60, true);
@@ -334,9 +333,9 @@ public class DataTable extends Table {
 		else if (COL_FILE.equals(column))
 			idlist.sortByFileName(manager, ascending);
 		else if (COL_CONFIG.equals(column))
-			idlist.sortByRunAttribute(manager, RunAttribute.CONFIG, ascending);
+			idlist.sortByRunAttribute(manager, CONFIG, ascending);
 		else if (COL_RUNNUMBER.equals(column))
-			idlist.sortByRunAttribute(manager, RunAttribute.RUNNUMBER, ascending);
+			idlist.sortByRunAttribute(manager, RUNNUMBER, ascending);
 		else if (COL_RUN_ID.equals(column))
 			idlist.sortByRun(manager, ascending);
 		else if (COL_MODULE.equals(column))
@@ -356,11 +355,11 @@ public class DataTable extends Table {
 		else if (COL_MAX.equals(column))
 			idlist.sortVectorsByMax(manager, ascending);
 		else if (COL_EXPERIMENT.equals(column))
-			idlist.sortByRunAttribute(manager, RunAttribute.EXPERIMENT, ascending);
+			idlist.sortByRunAttribute(manager, EXPERIMENT, ascending);
 		else if (COL_MEASUREMENT.equals(column))
-			idlist.sortByRunAttribute(manager, RunAttribute.MEASUREMENT, ascending);
+			idlist.sortByRunAttribute(manager, MEASUREMENT, ascending);
 		else if (COL_REPLICATION.equals(column))
-			idlist.sortByRunAttribute(manager, RunAttribute.REPLICATION, ascending);
+			idlist.sortByRunAttribute(manager, REPLICATION, ascending);
 		// TODO: min,max,mean,count,stddev
 	}
 
@@ -399,11 +398,11 @@ public class DataTable extends Table {
 				item.setText(i, fileName);
 			}
 			else if (COL_CONFIG.equals(column)) {
-				String config = result.getFileRun().getRun().getAttribute(RunAttribute.CONFIG);
+				String config = result.getFileRun().getRun().getAttribute(CONFIG);
 				item.setText(i, config != null ? config : "n.a.");
 			}
 			else if (COL_RUNNUMBER.equals(column)) {
-				String runNumber = result.getFileRun().getRun().getAttribute(RunAttribute.RUNNUMBER);
+				String runNumber = result.getFileRun().getRun().getAttribute(RUNNUMBER);
 				item.setText(i, runNumber != null ? runNumber : "n.a.");
 			}
 			else if (COL_RUN_ID.equals(column))
@@ -413,15 +412,15 @@ public class DataTable extends Table {
 			else if (COL_DATA.equals(column))
 				item.setText(i, result.getName());
 			else if (COL_EXPERIMENT.equals(column)) {
-				String experiment = result.getFileRun().getRun().getAttribute(RunAttribute.EXPERIMENT);
+				String experiment = result.getFileRun().getRun().getAttribute(EXPERIMENT);
 				item.setText(i, experiment != null ? experiment : "n.a.");
 			}
 			else if (COL_MEASUREMENT.equals(column)) {
-				String measurement = result.getFileRun().getRun().getAttribute(RunAttribute.MEASUREMENT);
+				String measurement = result.getFileRun().getRun().getAttribute(MEASUREMENT);
 				item.setText(i, measurement != null ? measurement : "n.a.");
 			}
 			else if (COL_REPLICATION.equals(column)) {
-				String replication = result.getFileRun().getRun().getAttribute(RunAttribute.REPLICATION);
+				String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
 				item.setText(i, replication != null ? replication : "n.a.");
 			}
 			else if (type == ResultType.SCALAR_LITERAL) {
@@ -473,11 +472,11 @@ public class DataTable extends Table {
 				writer.addField(fileName);
 			}
 			else if (COL_CONFIG.equals(column)) {
-				String config = result.getFileRun().getRun().getAttribute(RunAttribute.CONFIG);
+				String config = result.getFileRun().getRun().getAttribute(CONFIG);
 				writer.addField(config != null ? config : "n.a.");
 			}
 			else if (COL_RUNNUMBER.equals(column)) {
-				String config = result.getFileRun().getRun().getAttribute(RunAttribute.RUNNUMBER);
+				String config = result.getFileRun().getRun().getAttribute(RUNNUMBER);
 				writer.addField(config != null ? config : "n.a.");
 			}
 			else if (COL_RUN_ID.equals(column))
@@ -487,15 +486,15 @@ public class DataTable extends Table {
 			else if (COL_DATA.equals(column))
 				writer.addField(result.getName());
 			else if (COL_EXPERIMENT.equals(column)) {
-				String experiment = result.getFileRun().getRun().getAttribute(RunAttribute.EXPERIMENT);
+				String experiment = result.getFileRun().getRun().getAttribute(EXPERIMENT);
 				writer.addField(experiment != null ? experiment : "n.a.");
 			}
 			else if (COL_MEASUREMENT.equals(column)) {
-				String measurement = result.getFileRun().getRun().getAttribute(RunAttribute.MEASUREMENT);
+				String measurement = result.getFileRun().getRun().getAttribute(MEASUREMENT);
 				writer.addField(measurement != null ? measurement : "n.a.");
 			}
 			else if (COL_REPLICATION.equals(column)) {
-				String replication = result.getFileRun().getRun().getAttribute(RunAttribute.REPLICATION);
+				String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
 				writer.addField(replication != null ? replication : "n.a.");
 			}
 			else if (type == ResultType.SCALAR_LITERAL) {

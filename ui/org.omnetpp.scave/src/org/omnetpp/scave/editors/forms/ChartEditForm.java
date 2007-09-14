@@ -275,7 +275,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		label.setText(text);
 		return label;
 	}
-
+	
 	protected Text createTextField(String labelText, Composite parent) {
 		if (labelText != null)
 			createLabel(labelText, parent);

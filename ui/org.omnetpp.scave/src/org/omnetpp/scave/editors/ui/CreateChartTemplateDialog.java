@@ -1,10 +1,10 @@
 package org.omnetpp.scave.editors.ui;
 
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_FILENAME;
-import static org.omnetpp.scave.model2.ResultItemFields2.FIELD_RUNNAME;
-import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -96,8 +96,8 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
 		int i = 0;
 		runidButtons = new Button[5];
-		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", FIELD_RUNNAME);
-		runidButtons[i++] = createCheckbox(group, "file name", FIELD_FILENAME);
+		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", RUN);
+		runidButtons[i++] = createCheckbox(group, "file name", FILE);
 		label = new Label(group, SWT.NONE); // placeholder
 		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", EXPERIMENT);
 		Button measurementCb = runidButtons[i++] = createCheckbox(group, "measurement", MEASUREMENT);

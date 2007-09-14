@@ -4,9 +4,9 @@ import org.eclipse.jface.action.Action;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterUtil;
-import org.omnetpp.scave.model2.ResultItemFields2;
 
 /**
  * Sets the filter of a filtered data panel.
@@ -18,7 +18,7 @@ public class SetFilterAction2 extends Action
 {
 	FilteredDataPanel panel;
 	ResultItem item;
-	String field;
+	ResultItemField field;
 	String value;
 	
 	public SetFilterAction2() {
@@ -37,14 +37,17 @@ public class SetFilterAction2 extends Action
 
 			DataTable table = panel.getTable();
 			item = table.getSelectedItem();
-			field = table.getSelectedField();
-			value = ResultItemFields2.getFieldValue(item, field);
-
-			if (field != null && value != null) {
-				setText(String.format("Set filter: %s=%s", field, value));
-				setEnabled(true);
-				return;
+			if (table.getSelectedField() != null) {
+				field = new ResultItemField(table.getSelectedField());
+				value = field.getFieldValue(item);
+				
+				if (value != null) {
+					setText(String.format("Set filter: %s=%s", field, value));
+					setEnabled(true);
+					return;
+				}
 			}
+
 		}
 		setText("Set filter");
 		setEnabled(false);
@@ -54,7 +57,7 @@ public class SetFilterAction2 extends Action
 	public void run() {
 		if (panel != null && field != null && value != null) {
 			FilterUtil filter = new FilterUtil();
-			filter.setField(field, value);
+			filter.setField(field.getName(), value);
 			panel.setFilterParams(new Filter(filter.getFilterPattern()));
 		}
 	}

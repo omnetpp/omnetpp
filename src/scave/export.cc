@@ -88,10 +88,10 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
     scalars = sorter.groupByFields(idlist, groupBy);
 
     // add a column for each grouping field
-    if (groupBy.hasField(ResultItemFields::FILE))   header.push_back(Column("File", STRING));
-    if (groupBy.hasField(ResultItemFields::RUN))    header.push_back(Column("Run", STRING));
-    if (groupBy.hasField(ResultItemFields::MODULE)) header.push_back(Column("Module", STRING));
-    if (groupBy.hasField(ResultItemFields::NAME))   header.push_back(Column("Name", STRING));
+    if (groupBy.hasField(ResultItemField::FILE))   header.push_back(Column("File", STRING));
+    if (groupBy.hasField(ResultItemField::RUN))    header.push_back(Column("Run", STRING));
+    if (groupBy.hasField(ResultItemField::MODULE)) header.push_back(Column("Module", STRING));
+    if (groupBy.hasField(ResultItemField::NAME))   header.push_back(Column("Name", STRING));
 
     // add a column for each column in scalars headed by the non-grouping fields
     const IDVector firstRow = scalars[0]; // XXX empty idlist?
@@ -106,10 +106,10 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
         {
             const ScalarResult &scalar = manager.getScalar(id);
             string name;
-            if (!groupBy.hasField(ResultItemFields::FILE))   name += scalar.fileRunRef->fileRef->filePath+"_";
-            if (!groupBy.hasField(ResultItemFields::RUN))    name += scalar.fileRunRef->runRef->runName+"_";
-            if (!groupBy.hasField(ResultItemFields::MODULE)) name += *scalar.moduleNameRef+"_";
-            if (!groupBy.hasField(ResultItemFields::NAME))   name += *scalar.nameRef+"_";
+            if (!groupBy.hasField(ResultItemField::FILE))   name += scalar.fileRunRef->fileRef->filePath+"_";
+            if (!groupBy.hasField(ResultItemField::RUN))    name += scalar.fileRunRef->runRef->runName+"_";
+            if (!groupBy.hasField(ResultItemField::MODULE)) name += *scalar.moduleNameRef+"_";
+            if (!groupBy.hasField(ResultItemField::NAME))   name += *scalar.nameRef+"_";
             if (!name.empty()) name.erase(name.end()-1); // remove last '_'
             header.push_back(Column(name, DOUBLE));
         }

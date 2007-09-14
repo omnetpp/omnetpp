@@ -22,7 +22,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       xyplotnode.obj indexedvectorfile.obj \
       vectorfileindexer.obj indexfile.obj scaveutils.obj \
       scaveexception.obj enumtype.obj export.obj teenode.obj \
-      indexedvectorfilereader.obj xyarray.obj
+      indexedvectorfilereader.obj xyarray.obj fields.obj
 
 #
 # Automatic rules
@@ -151,7 +151,8 @@ datasorter.obj: datasorter.cc \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   scaveutils.h \
-  ../common/patternmatcher.h
+  ../common/patternmatcher.h \
+  fields.h
 diffquot.obj: diffquot.cc \
   channel.h \
   diffquot.h \
@@ -186,7 +187,23 @@ export.obj: export.cc \
   ../common/commonutil.h \
   statistics.h \
   scaveutils.h \
-  ../common/patternmatcher.h
+  ../common/patternmatcher.h \
+  fields.h \
+  ../common/stringutil.h
+fields.obj: fields.cc \
+  ../common/commonutil.h \
+  ../common/stringutil.h \
+  fields.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  resultfilemanager.h \
+  ../common/patternmatcher.h \
+  scaveutils.h \
+  idlist.h \
+  enumtype.h \
+  statistics.h \
+  scavedefs.h \
+  ../common/bigdecimal.h
 filewriter.obj: filewriter.cc \
   channel.h \
   filewriter.h \
@@ -397,7 +414,8 @@ scavetool.obj: scavetool.cc \
   commonnodes.h \
   xyarray.h \
   datasorter.h \
-  ../common/patternmatcher.h
+  ../common/patternmatcher.h \
+  fields.h
 scaveutils.obj: scaveutils.cc \
   scaveutils.h \
   scavedefs.h \
@@ -506,6 +524,12 @@ windowavg.obj: windowavg.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
+xyarray.obj: xyarray.cc \
+  xyarray.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  ../common/commondefs.h \
+  ../common/exception.h
 xyplotnode.obj: xyplotnode.cc \
   channel.h \
   xyplotnode.h \

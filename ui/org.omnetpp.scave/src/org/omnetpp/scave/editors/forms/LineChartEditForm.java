@@ -15,11 +15,11 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
-import org.omnetpp.scave.model2.ResultItemFields2;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class LineChartEditForm extends BaseLineChartEditForm {
@@ -49,7 +49,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 		String name = item.getText();
 		if (TAB_MAIN.equals(name)) {
 			lineNamePattern = createTextField("Line names:", nameGroup);
-			new ResultItemNamePatternField(lineNamePattern, ResultItemFields2.getFieldNames());
+			new ResultItemNamePatternField(lineNamePattern, ResultItemFields.getFieldNames().toArray());
 		}
 		else if (TAB_LINES.equals(name)) {
 			TabFolder tabfolder = item.getParent();

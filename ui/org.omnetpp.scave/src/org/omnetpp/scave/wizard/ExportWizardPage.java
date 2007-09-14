@@ -1,5 +1,10 @@
 package org.omnetpp.scave.wizard;
 
+import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+
 import java.io.File;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -18,6 +23,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.editors.ui.FileSelectionPanel;
 import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.StringVector;
 
 /**
  * Abstract base class for data export pages.
@@ -52,12 +58,10 @@ public abstract class ExportWizardPage extends WizardPage {
 	}
 
 	protected ResultItemFields getGroupBy() {
-		int fields = 0;
+		StringVector fields = new StringVector();
 		for (Button radio : groupByCheckboxes)
-			if (radio.getSelection()) {
-				int field = (Integer)radio.getData(DATA_KEY);
-				fields |= field;
-			}
+			if (radio.getSelection())
+				fields.add((String)radio.getData(DATA_KEY));
 				
 		return new ResultItemFields(fields);
 	}
@@ -91,13 +95,13 @@ public abstract class ExportWizardPage extends WizardPage {
 		group.setText("Scalars grouped by");
 		groupByCheckboxes = new Button[4];
 		int i = 0;
-		groupByCheckboxes[i++] = createCheckboxForField(group, "file name", ResultItemFields.FILE);
-		groupByCheckboxes[i++] = createCheckboxForField(group, "run name", ResultItemFields.RUN);
-		groupByCheckboxes[i++] = createCheckboxForField(group, "module name", ResultItemFields.MODULE);
-		groupByCheckboxes[i++] = createCheckboxForField(group, "scalar name", ResultItemFields.NAME);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "file name", FILE);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "run name", RUN);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "module name", MODULE);
+		groupByCheckboxes[i++] = createCheckboxForField(group, "scalar name", NAME);
 	}
 	
-	protected Button createCheckboxForField(Composite parent, String name, int field) {
+	protected Button createCheckboxForField(Composite parent, String name, String field) {
 		Button checkbox = new Button(parent, SWT.CHECK);
 		checkbox.setText(name);
 		checkbox.setData(DATA_KEY, field);
@@ -165,7 +169,7 @@ public abstract class ExportWizardPage extends WizardPage {
 			settings.put(FILENAME_KEY, getFileName());
 			settings.put(PRECISION_KEY, precisionCombo.getText());
 			for (Button cb : groupByCheckboxes) {
-				int field = (Integer)cb.getData(DATA_KEY);
+				String field = (String)cb.getData(DATA_KEY);
 				settings.put(GROUPBY_KEY+"."+field, cb.getSelection());
 			}
 		}
@@ -181,7 +185,7 @@ public abstract class ExportWizardPage extends WizardPage {
 			if (precision != null && !precision.equals(""))
 				precisionCombo.setText(precision);
 			for (Button cb : groupByCheckboxes) {
-				int field = (Integer)cb.getData(DATA_KEY);
+				String field = (String)cb.getData(DATA_KEY);
 				boolean selected = settings.getBoolean(GROUPBY_KEY+"."+field);
 				cb.setSelection(selected);
 			}

@@ -1,39 +1,15 @@
 package org.omnetpp.scave.model2;
 
-import java.util.Arrays;
-
 import org.omnetpp.scave.engine.Run;
 
 public class RunAttribute {
 	
-	// Note: these field names must be kept consistent with resultfilemanager.cc
-	// XXX or: merge all these into one place? 
-	public static final String EXPERIMENT = "experiment";
-	public static final String MEASUREMENT = "measurement";
-	public static final String REPLICATION = "replication";
-	public static final String CONFIG = "config";
-	public static final String RUNNUMBER = "run-number";
-	public static final String NETWORKNAME = "network";
-	public static final String DATETIME = "dateTime";
-	
-	private static final String[] ALL = new String[] {
-		EXPERIMENT, MEASUREMENT, REPLICATION, CONFIG, RUNNUMBER, NETWORKNAME, DATETIME,
-	};
-
 	private String name;
 	private String value;
 	
 	public RunAttribute(String name, String value) {
 		this.name = name;
 		this.value = value;
-	}
-	
-	public static String[] getNames() {
-		return ALL;
-	}
-	
-	public static boolean isRunAttribute(String name) {
-		return Arrays.asList(ALL).contains(name);
 	}
 	
 	public String getName() {

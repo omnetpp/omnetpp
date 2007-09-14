@@ -1,5 +1,9 @@
 package org.omnetpp.scave.editors.datatable;
 
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+import static org.omnetpp.scave.engine.ResultItemField.RUN;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -15,7 +19,6 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterUtil;
-import org.omnetpp.scave.model2.ResultItemFields2;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -202,16 +205,16 @@ public class FilteredDataPanel extends Composite {
 				return false;  // user cancelled
 		}
 
-		String[] supportedFields = new String[] {ResultItemFields2.FIELD_RUNNAME, ResultItemFields2.FIELD_MODULENAME, ResultItemFields2.FIELD_DATANAME};
+		String[] supportedFields = new String[] {RUN, MODULE, NAME};
 		if (!filterUtil.containsOnly(supportedFields)) {
 			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
 			if (!ok)
 				return false;  // user cancelled
 		}
 
-		filterPanel.getRunNameCombo().setText(filterUtil.getField(ResultItemFields2.FIELD_RUNNAME));
-		filterPanel.getModuleNameCombo().setText(filterUtil.getField(ResultItemFields2.FIELD_MODULENAME));
-		filterPanel.getNameCombo().setText(filterUtil.getField(ResultItemFields2.FIELD_DATANAME));
+		filterPanel.getRunNameCombo().setText(filterUtil.getField(RUN));
+		filterPanel.getModuleNameCombo().setText(filterUtil.getField(MODULE));
+		filterPanel.getNameCombo().setText(filterUtil.getField(NAME));
 
 		filterPanel.showSimpleFilter();
 		runFilter();
