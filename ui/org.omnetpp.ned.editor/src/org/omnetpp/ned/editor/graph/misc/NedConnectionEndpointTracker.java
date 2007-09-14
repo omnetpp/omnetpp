@@ -3,12 +3,14 @@ package org.omnetpp.ned.editor.graph.misc;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
-import org.eclipse.gef.RequestConstants;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.tools.ConnectionEndpointTracker;
+
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
-import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
  * Special drag tracker for connection handles that requests gate names if the source or
@@ -25,19 +27,18 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	@Override
 	protected boolean handleButtonUp(int button) {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
-			ReconnectCommand connCommand = (ReconnectCommand)getCommand();
-	    	if (connCommand == null)
-	    	    return false;
-            // depending on which side we are reconnecting, we offer a full gate list on that side
-            if (RequestConstants.REQ_RECONNECT_TARGET.equals(getCommandName()))
-                connCommand.setDestGate(null);
-            if (RequestConstants.REQ_RECONNECT_SOURCE.equals(getCommandName()))
-                connCommand.setSrcGate(null);
+		    Command cmd = getCommand();
+		    if (cmd == null || !(cmd instanceof ReconnectCommand)) 
+		        return false;
+			ReconnectCommand connCommand = (ReconnectCommand)cmd;
 
-	    	// ask the user about which gates should be connected
-			ConnectionElement selectedConn
-				= ConnectionChooser.open(connCommand);
-
+			ModuleConnectionEditPart connPart = (ModuleConnectionEditPart)getConnectionEditPart();
+	        CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getCompoundModuleModel(); 
+	        // ask the user about which gates should be connected, ask for both source and destination gates
+	        // FIXME we should extract the direction (src/dest) locally and not from the command 
+	        ConnectionElementEx selectedConn = ConnectionChooser.open(compoundMod, connCommand.getTemplateConnection(), 
+	                    !connCommand.isDestReconnect(), connCommand.isDestReconnect());
+			
 			eraseSourceFeedback();
 			eraseTargetFeedback();
 
@@ -46,8 +47,8 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
                 // revert the connection change (user cancel - do not execute the command)
 				return false;
 
+			ConnectionElementEx templateConn = connCommand.getTemplateConnection();
 			// copy the selected connection attributes to the command
-	    	ConnectionElement templateConn = connCommand.getConnection();
 			ReconnectCommand.copyConn(selectedConn, templateConn);
 
 			// execute the command

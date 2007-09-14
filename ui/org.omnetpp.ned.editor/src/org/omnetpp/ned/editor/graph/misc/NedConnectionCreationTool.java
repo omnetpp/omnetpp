@@ -10,7 +10,8 @@ import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
  * Special connection tool that requests additional information regarding gate association at the
@@ -18,7 +19,7 @@ import org.omnetpp.ned.model.pojo.ConnectionElement;
  *
  * @author rhornig
  */
-// CHECKME we can use ConnectionDragCreationTool for a dran'n drop type behvior
+// CHECKME we can use ConnectionDragCreationTool for a dran'n drop type behavior
 public class NedConnectionCreationTool extends ConnectionCreationTool {
 
 	// override the method to fix a GEF BUGFIX
@@ -43,7 +44,8 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		return true;
 	}
 
-	// overridden to enable a popup menu during connection creation asking the user
+
+    // overridden to enable a popup menu during connection creation asking the user
 	// which gates should be connected
 	@Override
 	protected boolean handleCreateConnection() {
@@ -52,24 +54,21 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		    return false; 
 
 		CreateConnectionCommand endCommand = (CreateConnectionCommand)command;
-    	setCurrentCommand(endCommand);
-
-        endCommand.setDestGate(null);
-        endCommand.setSrcGate(null);
+        ModuleEditPart destMod = (ModuleEditPart)getTargetEditPart(); 
+        CompoundModuleElementEx compoundMod = destMod.getCompoundModulePart().getCompoundModuleModel(); 
     	// ask the user about which gates should be connected, ask for both source and destination gates
-		ConnectionElement selectedConn = ConnectionChooser.open(endCommand);
+		ConnectionElementEx templateConn = ConnectionChooser.open(compoundMod, endCommand.getConnection(), true, true);
 
     	eraseSourceFeedback();
 
     	// if no selection was made, cancel the command
-		if (selectedConn == null)
+		if (templateConn == null)
             // revert the connection change (user cancel - do not execute the command)
 			return false;
 
-		// copy the selected connection attributes to the command
-    	ConnectionElement templateConn = endCommand.getConnection();
-		ReconnectCommand.copyConn(selectedConn, templateConn);
-		// execute the command
+        ReconnectCommand.copyConn(templateConn, endCommand.getConnection());
+        
+        setCurrentCommand(endCommand);
     	executeCurrentCommand();
     	return true;
 	}

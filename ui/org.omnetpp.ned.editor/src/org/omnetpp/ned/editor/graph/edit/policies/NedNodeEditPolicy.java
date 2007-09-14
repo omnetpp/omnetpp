@@ -14,6 +14,7 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 
@@ -42,12 +43,22 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
+    
+    /**
+     * Returns either the module name or "" if the module is a compound
+     */
+    private static String getModuleNameForConnection(IConnectableElement connectable) {
+        if (connectable instanceof CompoundModuleElementEx)
+            return "";
+        return connectable.getName();
+    }
+    
 	// called during connection creation on the first click
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionElementEx conn = (ConnectionElementEx)request.getNewObject();
+        conn.setSrcModule(getModuleNameForConnection(getGraphNodeModel()));
         CreateConnectionCommand command = new CreateConnectionCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
-        command.setSrcModule(getGraphNodeModel());
         request.setStartCommand(command);
         return command;
     }
@@ -56,7 +67,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
         CreateConnectionCommand command = (CreateConnectionCommand)request.getStartCommand();
-        command.setDestModule(getGraphNodeModel());
+        command.getConnection().setDestModule(getModuleNameForConnection(getGraphNodeModel()));
         return command;
     }
 
@@ -68,11 +79,10 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         if (srcEP.getCompoundModulePart() != targetEP.getCompoundModulePart())
             return UnexecutableCommand.INSTANCE;
 
-        ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
-        ReconnectCommand cmd = new ReconnectCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
-        cmd.setDestModule(getGraphNodeModel());
-        cmd.setSrcModule(conn.getSrcModuleRef());
-        return cmd;
+        ConnectionElementEx conn = (ConnectionElementEx)request.getConnectionEditPart().getModel();
+        ReconnectCommand command = new ReconnectCommand(conn, true);
+        command.getTemplateConnection().setDestModule(getModuleNameForConnection(getGraphNodeModel()));
+        return command;
     }
 
     @Override
@@ -83,11 +93,10 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         if (srcEP.getCompoundModulePart() != targetEP.getCompoundModulePart())
             return UnexecutableCommand.INSTANCE;
         
-        ConnectionElementEx conn = (ConnectionElementEx) request.getConnectionEditPart().getModel();
-        ReconnectCommand cmd = new ReconnectCommand(conn, getModuleEditPart().getCompoundModulePart().getCompoundModuleModel());
-        cmd.setSrcModule(getGraphNodeModel());
-        cmd.setDestModule(conn.getDestModuleRef());
-        return cmd;
+        ConnectionElementEx conn = (ConnectionElementEx)request.getConnectionEditPart().getModel();
+        ReconnectCommand command = new ReconnectCommand(conn, false);
+        command.getTemplateConnection().setSrcModule(getModuleNameForConnection(getGraphNodeModel()));
+        return command;
     }
 
     protected ModuleEditPart getModuleEditPart() {

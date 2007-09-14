@@ -1,46 +1,53 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.gef.commands.Command;
 
-import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.pojo.ConnectionElement;
 
 /**
- * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
- * model (to the compound module's connections section) (or removes it if both the new source and destination is NULL)
+ * (Re)assigns a Connection to a different module/gate
  *
  * @author rhornig
  */
 // TODO handling of subgates $i and $o is missing
-//FIXME import the channel type used: see CreateSubmoduleCommand and NEDElementUtilEx.addImportFor()
-public class ReconnectCommand extends ConnectionCommand {
+public class ReconnectCommand extends Command {
+    
+    // contains the provided original ConnectionElement
+    protected ConnectionElementEx modelConn;
+    protected ConnectionElementEx oldConn;
+    protected ConnectionElementEx templateConn;
+    protected boolean isDestReconnect;
+
     /**
-     * Create, delete, or modify  a connection element
-     * @param conn Connection Model
-     * @param compoundModuleElement Connection's container (compound module) 
+     * @param conn Connection to be reconnected
+     * @param destIsConnecting Whether the destination side should be reconnected (or the source if false)
+     * @param newModuleName The name of the newly assigned module
      */
-    public ReconnectCommand(ConnectionElementEx conn, CompoundModuleElementEx compoundModuleElement) {
-        super(conn, compoundModuleElement);
+    public ReconnectCommand(ConnectionElementEx conn, boolean destIsConnecting) {
+        Assert.isNotNull(conn, "Connection must be specified");
+        
+        this.modelConn = conn;
+        this.isDestReconnect = destIsConnecting;
+        templateConn = (ConnectionElementEx)conn.dup();
         setLabel("Reconnect");
     }
+    
 
     @Override
+    public void execute() {
+        oldConn = (ConnectionElementEx)modelConn.dup();
+        redo();
+    }
+    
+    @Override
     public void redo() {
-        Assert.isTrue(getSrcModule() != null || getDestModule() != null, "Modules cannot be empty");
-        Assert.isTrue(StringUtils.isNotBlank(getSrcGate()) && StringUtils.isNotBlank(getDestGate()));
-
-        copyConn(newConn, modelConn);
-        modelConn.setSrcModuleRef(srcModule);
-        modelConn.setDestModuleRef(destModule);
+        copyConn(templateConn, modelConn);
     }
 
     @Override
     public void undo() {
-        copyConn(originalConn, modelConn);
-        modelConn.setSrcModuleRef(originalSrcModule);
-        modelConn.setDestModuleRef(originalDestModule);
+        copyConn(oldConn, modelConn);
     }
 
 	/**
@@ -49,7 +56,8 @@ public class ReconnectCommand extends ConnectionCommand {
 	 * @param from
 	 * @param to
 	 */
-	public static void copyConn(ConnectionElement from, ConnectionElement to) {
+    // TODO move it somewhere else
+	public static void copyConn(ConnectionElementEx from, ConnectionElementEx to) {
 	    to.setSrcModule(from.getSrcModule());
 		to.setSrcModuleIndex(from.getSrcModuleIndex());
         to.setSrcGate(from.getSrcGate());
@@ -66,5 +74,20 @@ public class ReconnectCommand extends ConnectionCommand {
 
         to.setArrowDirection(from.getArrowDirection());
 	}
+
+    /**
+     * Returns the connection node used as a template, for the command. If the command is executed
+     * this Connection elements attribute values will be set in the model connection.
+     */
+    public ConnectionElementEx getTemplateConnection() {
+        return templateConn;
+    }
+
+    /**
+     * Tells whether the command reconnects the destination side of the connection 
+     */
+    public boolean isDestReconnect() {
+        return isDestReconnect;
+    }
 
 }
