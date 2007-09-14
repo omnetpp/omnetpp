@@ -44,6 +44,7 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
+import org.omnetpp.ned.editor.text.actions.GotoDeclarationAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
 import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
@@ -194,6 +195,13 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         }
         return fRegistry;
     }
+    
+    /**
+     * Makes getSourceViewer() public. (Name differs because original method is final.)
+     */
+    public ISourceViewer getSourceViewerPublic() {
+        return super.getSourceViewer();
+    }
 
 	/** The <code>TextualNedEditor</code> implementation of this
 	 * <code>AbstractTextEditor</code> method extend the
@@ -213,6 +221,10 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         markAsContentDependentAction(a.getId(), true);
 
         a = new FormatSourceAction(this);
+        setAction(a.getId(), a);
+        markAsContentDependentAction(a.getId(), true);
+
+        a = new GotoDeclarationAction(this);
         setAction(a.getId(), a);
         markAsContentDependentAction(a.getId(), true);
 
@@ -238,6 +250,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, GotoDeclarationAction.ID); //XXX here?
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);

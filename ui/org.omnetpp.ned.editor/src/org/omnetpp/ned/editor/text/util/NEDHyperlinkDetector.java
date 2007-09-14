@@ -8,7 +8,6 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * TODO add documentation

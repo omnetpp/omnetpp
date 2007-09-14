@@ -101,6 +101,12 @@
             sequence="M1+M2+F">
       </key>
       <key
+            commandId="org.omnetpp.ned.editor.text.GotoDeclaration"
+            contextId="org.omnetpp.context.nedEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3">
+      </key>
+      <key
             commandId="org.omnetpp.ned.editor.text.OrganizeImports"
             contextId="org.omnetpp.context.nedEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
@@ -126,6 +132,12 @@
             description="Format the NED source file"
             id="org.omnetpp.ned.editor.text.FormatSource"
             name="Format NED Source">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Go to declaration of NED element"
+            id="org.omnetpp.ned.editor.text.GotoDeclaration"
+            name="Goto Declaration">
       </command>
       <command
             categoryId="org.eclipse.ui.category.textEditor"
