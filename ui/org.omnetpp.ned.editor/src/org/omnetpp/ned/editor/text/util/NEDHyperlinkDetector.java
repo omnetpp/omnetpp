@@ -15,11 +15,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
  * TODO add documentation
@@ -36,32 +32,29 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
 		try {
 			IRegion wordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
-			String word = TextEditorUtil.get(textViewer, wordRegion);
-			if (StringUtils.isEmpty(word))
+			String word1 = TextEditorUtil.get(textViewer, wordRegion);
+			if (StringUtils.isEmpty(word1))
 				return null;
 
-			// find hovered NED element
-			//FIXME same code as in NedTextHover, factor out common parts!
-			IFile file = ((FileEditorInput)editor.getEditorInput()).getFile();
-			IDocument doc = textViewer.getDocument();
-			int line = doc.getLineOfOffset(region.getOffset());
-			int column = region.getOffset() - doc.getLineOffset(line);
+            // find which NED element was hovered
+            IFile file = ((FileEditorInput)editor.getEditorInput()).getFile();
+            IDocument doc = textViewer.getDocument();
+            int line = doc.getLineOfOffset(region.getOffset());
+            int column = region.getOffset() - doc.getLineOffset(line);
 
-			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-			INEDElement hoveredElement = res.getNedElementAt(file, line+1, column);
-			if (hoveredElement == null)
-				return null;
-			
-			INedTypeElement typeElement = hoveredElement.getEnclosingTypeElement();
-			INedTypeLookupContext context = typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : 
-				typeElement!=null ? typeElement.getParentLookupContext() : 
-					hoveredElement.getContainingNedFileElement();
-			INEDTypeInfo nedTypeUnderCursor = NEDResourcesPlugin.getNEDResources().lookupNedType(word, context);
-			if (nedTypeUnderCursor != null)
-				return new IHyperlink[] {new NEDHyperlink(wordRegion, nedTypeUnderCursor.getNEDElement())};
+            INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+            INEDElement element = res.getNedElementAt(file, line+1, column);
+            if (element == null)
+                return null; // we don't know what's there
 
-			// if not found among the components, we do not create a hyperlink
-			return null;
+            // get words under mouse
+            String dottedWord = TextEditorUtil.getWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
+            String word = TextEditorUtil.getWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedWordDetector());
+
+            INEDElement declElement = NedTextUtils.findDeclaration(element, dottedWord, word);
+            if (declElement == null)
+                return null;
+            return new IHyperlink[] {new NEDHyperlink(wordRegion, declElement)};
 
 		} catch (BadLocationException e) {
 			NEDResourcesPlugin.logError(e);
