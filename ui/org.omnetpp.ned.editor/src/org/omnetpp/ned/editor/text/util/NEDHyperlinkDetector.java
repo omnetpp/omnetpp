@@ -22,7 +22,7 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
     }
 
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-        Info info = NedTextUtils.getNedHoverContext((ITextEditor)editor, textViewer, region);
+        Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, region);
         if (info == null)
             return null;
 

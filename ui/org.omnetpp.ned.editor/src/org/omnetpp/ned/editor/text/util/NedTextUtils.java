@@ -50,7 +50,7 @@ public class NedTextUtils {
         public INEDElement referredElement;  // the jump target, usually the declaration of the gate/param/submodule/type
     }
     
-    public static Info getNedHoverContext(ITextEditor textEditor, ITextViewer textViewer, IRegion region) {
+    public static Info getNedReferenceFromSource(ITextEditor textEditor, ITextViewer textViewer, IRegion region) {
         try {
             IRegion wordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedWordDetector());
             IRegion dottedWordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());

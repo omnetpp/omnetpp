@@ -31,7 +31,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-	    Info info = NedTextUtils.getNedHoverContext((ITextEditor)editor, textViewer, hoverRegion);
+	    Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, hoverRegion);
 	    if (info == null)
 	        return null;
 

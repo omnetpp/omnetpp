@@ -30,7 +30,7 @@ public class GotoDeclarationAction extends NedTextEditorAction {
     public void run() {
         ISourceViewer viewer = ((TextualNedEditor)getTextEditor()).getSourceViewerPublic();
         IRegion region = new Region(viewer.getSelectedRange().x, viewer.getSelectedRange().y); 
-        Info info = NedTextUtils.getNedHoverContext(getTextEditor(), viewer, region);
+        Info info = NedTextUtils.getNedReferenceFromSource(getTextEditor(), viewer, region);
         if (info != null && info.referredElement != null)
             NEDResourcesPlugin.openNEDElementInEditor(info.referredElement, IGotoNedElement.Mode.TEXT);
     }
