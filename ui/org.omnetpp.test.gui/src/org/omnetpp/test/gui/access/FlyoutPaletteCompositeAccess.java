@@ -21,18 +21,32 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 	}
 	
 	@InUIThread
-	public void clickButtonWithLabel(final String label) {
-		ensureExpanded();
-		PaletteViewer paletteViewer = (PaletteViewer)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "pViewer");
-		IFigure rootFigure = (IFigure)ReflectionUtils.getFieldValue(paletteViewer, "rootFigure");
-		IFigure figure = findDescendantFigure(rootFigure, new IPredicate() {
-			public boolean matches(Object object) {
-				return object instanceof TextFlow && ((TextFlow)object).getText().matches(label);
-			}
-		});
-		
-		new FigureAccess(figure).click(LEFT_MOUSE_BUTTON);
+	public void clickButtonFigureWithLabel(final String label) {
+		findButtonFigureWithLabel(label).click(LEFT_MOUSE_BUTTON);
 	}
+
+    @InUIThread
+    public FigureAccess findButtonFigureWithLabel(final String label) {
+        ensureExpanded();
+        return new FigureAccess(findDescendantFigure(getRootFigure(getPaletteViewer()), new IPredicate() {
+            public boolean matches(Object object) {
+                return object instanceof TextFlow && ((TextFlow)object).getText().matches(label);
+            }
+        }));
+    }
+
+    @InUIThread
+    public boolean hasButtonFigureWithLabel(final String label) {
+        ensureExpanded();
+        IFigure rootFigure = getRootFigure(getPaletteViewer());
+        IPredicate predicate = new IPredicate() {
+            public boolean matches(Object object) {
+                return object instanceof TextFlow && ((TextFlow)object).getText().matches(label);
+            }
+        };
+
+        return hasDescendantFigure(rootFigure, predicate) && findDescendantFigure(rootFigure, predicate).isVisible();
+    }
 
 	@InUIThread
 	public void ensureExpanded() {
@@ -45,6 +59,14 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 	public void clickFlyoutControlButton() {
 		Control sash = (Control)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "sash");
 		Canvas button = (Canvas)ReflectionUtils.getFieldValue(sash, "button");
-		click(LEFT_MOUSE_BUTTON, sash.toDisplay(getCenter(button.getBounds())));
+		clickAbsolute(LEFT_MOUSE_BUTTON, sash.toDisplay(getCenter(button.getBounds())));
 	}
+
+    private IFigure getRootFigure(PaletteViewer paletteViewer) {
+        return (IFigure)ReflectionUtils.getFieldValue(paletteViewer, "rootFigure");
+    }
+
+    private PaletteViewer getPaletteViewer() {
+        return (PaletteViewer)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "pViewer");
+    }
 }

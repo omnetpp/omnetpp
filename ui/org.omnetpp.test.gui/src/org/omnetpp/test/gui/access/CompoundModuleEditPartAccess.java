@@ -6,6 +6,7 @@ import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -31,7 +32,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 
 	@NotInUIThread
 	public void createSubModuleWithPalette(String type, String name, int x, int y) {
-		getFlyoutPaletteComposite().clickButtonWithLabel(type);
+		getFlyoutPaletteComposite().clickButtonFigureWithLabel(type);
 		clickBackground(x, y);
 		String namePattern = Character.toLowerCase(type.charAt(0)) + type.substring(1) + ".*";
 		renameSubmodule(namePattern, name);
@@ -40,7 +41,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 	@InUIThread
 	public void clickBackground(int x, int y) {
 		FigureAccess figureAccess = new FigureAccess(getFigure());
-		figureAccess.click(LEFT_MOUSE_BUTTON, figureAccess.toDisplay(x, y));
+		figureAccess.clickAbsolute(LEFT_MOUSE_BUTTON, figureAccess.toDisplay(x, y));
 	}
 
 	@NotInUIThread
@@ -78,11 +79,30 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 
 	@NotInUIThread
     public void createConnectionWithPalette(String channel, String name1, String name2, String connectionOptionLabel) {
-        getFlyoutPaletteComposite().clickButtonWithLabel(channel);
+	    FlyoutPaletteCompositeAccess flyoutPaletteComposite = getFlyoutPaletteComposite();
+        flyoutPaletteComposite.clickButtonFigureWithLabel(channel);
         clickSubmoduleFigureWithName(name1);
         clickSubmoduleFigureWithName(name2);
         clickConnectionOption(connectionOptionLabel);
 	}
+
+	@InUIThread
+    public void fuck(FigureAccess figureAccess, String channel) {
+	    xxx(figureAccess.getCanvas());
+	    MenuAccess menuAccess = new MenuAccess(getDisplay().getActiveShell().getMenu());
+	    Access.dumpMenu(menuAccess.getMenu());
+        menuAccess.activateMenuItemWithMouse(channel);
+    }
+	
+	private void xxx(Control control) {
+        System.out.println("************");
+        while (control != null) {
+            System.out.println(control);
+            if (control.getMenu() != null)
+                Access.dumpMenu(control.getMenu());
+            control = control.getParent();
+        }
+    }
 
 	@InUIThread
 	protected void clickConnectionOption(String label) {

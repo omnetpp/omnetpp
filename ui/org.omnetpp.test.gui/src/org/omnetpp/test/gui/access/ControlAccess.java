@@ -37,7 +37,7 @@ public class ControlAccess extends ClickableWidgetAccess
 	}
 
 	@Override
-	protected Point getPointToClick() {
+	protected Point getAbsolutePointToClick() {
 		return getControl().getParent().toDisplay(getCenter(getControl().getBounds()));
 	}
 

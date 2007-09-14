@@ -74,7 +74,7 @@ public class MenuAccess extends WidgetAccess {
 			if (bounds.width > 200) {
 				int x = bounds.x + bounds.width - 150; // click on the right side, to avoid menus which are usually on the left
 				int y = bounds.y + 1;  // top edge of caption bar ("trimmings")
-				new ShellAccess(workbenchWindow).click(Access.LEFT_MOUSE_BUTTON, x, y);
+				new ShellAccess(workbenchWindow).clickAbsolute(Access.LEFT_MOUSE_BUTTON, x, y);
 			}
 		}
 	}

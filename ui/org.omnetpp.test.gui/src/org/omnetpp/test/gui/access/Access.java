@@ -272,12 +272,12 @@ public class Access
 
     @InUIThread
     public static boolean hasObject(List<Object> objects, IPredicate predicate) {
-        return collectObjects(objects, predicate).size() != 0;
+        return collectObjects(objects, predicate).size() == 1;
     }
 
     @InUIThread
     public static Object hasObject(Object[] objects, IPredicate predicate) {
-        return collectObjects(objects, predicate).size() != 0;
+        return collectObjects(objects, predicate).size() == 1;
     }
 
 	@InUIThread
@@ -308,7 +308,7 @@ public class Access
 
     @InUIThread
     public static boolean hasDescendantControl(Composite composite, IPredicate predicate) {
-        return collectDescendantControls(composite, predicate).size() != 0;
+        return collectDescendantControls(composite, predicate).size() == 1;
     }
 
 	@InUIThread
@@ -392,7 +392,7 @@ public class Access
 
     @InUIThread
     public static boolean hasDescendantFigure(IFigure figure, IPredicate predicate) {
-        return collectDescendantFigures(figure, predicate).size() != 0;
+        return collectDescendantFigures(figure, predicate).size() == 1;
     }
 
 	@InUIThread
@@ -424,7 +424,7 @@ public class Access
 
     @InUIThread
     public static boolean hasDescendantEditPart(EditPart editPart, IPredicate predicate) {
-        return collectDescendantEditParts(editPart, predicate).size() != 0;
+        return collectDescendantEditParts(editPart, predicate).size() == 1;
     }
 
 	@InUIThread
@@ -531,6 +531,10 @@ public class Access
 				dumpWidgetHierarchy(child, level+1);
 	}
 
+    public static void dumpMenu(Menu menu) {
+        dumpMenu(menu, 0);
+    }
+	
 	protected static void dumpMenu(Menu menu, int level) {
 		for (MenuItem menuItem : menu.getItems()) {
 			System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());

@@ -16,6 +16,10 @@ public class FigureAccess
 	public FigureAccess(IFigure figure) {
 		this.figure = figure;
 	}
+	
+	public IFigure getFigure() {
+        return figure;
+    }
 
 	public IFigure getRootFigure() {
 		IFigure currentFigure = figure;
@@ -34,11 +38,24 @@ public class FigureAccess
 
 	@InUIThread
 	public void click(int button) {
-		Canvas canvas = getCanvas();
-		Rectangle r = figure.getBounds().getCopy();
-		figure.translateToAbsolute(r);
-		click(button, canvas.toDisplay(getCenter(r)));
+	    click(button, getCenter(getAbsoluteBounds()));
 	}
+	
+    @InUIThread
+    public void click(int button, org.eclipse.swt.graphics.Point point) {
+        click(button, point.x, point.y);
+    }
+
+    @InUIThread
+    public void click(int button, int x, int y) {
+        clickAbsolute(button, getCanvas().toDisplay(x, y));
+    }	
+
+    public Rectangle getAbsoluteBounds() {
+        Rectangle r = figure.getBounds().getCopy();
+		figure.translateToAbsolute(r);
+        return r;
+    }
 
 	protected org.eclipse.swt.graphics.Point toDisplay(Point point) {
 		return toDisplay(point.x, point.y);

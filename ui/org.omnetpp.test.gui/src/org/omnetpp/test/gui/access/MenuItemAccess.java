@@ -35,7 +35,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	}
 
 	@Override
-	protected Point getPointToClick() {
+	protected Point getAbsolutePointToClick() {
 		Rectangle parentRectangle = (Rectangle)ReflectionUtils.invokeMethod(getMenuItem().getParent(), "getBounds");
 		Rectangle rectangle = (Rectangle)ReflectionUtils.invokeMethod(getMenuItem(), "getBounds");
 		rectangle.x = rectangle.x + parentRectangle.x;

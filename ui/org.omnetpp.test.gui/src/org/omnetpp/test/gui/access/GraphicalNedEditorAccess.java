@@ -58,7 +58,7 @@ public class GraphicalNedEditorAccess
 
     @NotInUIThread
 	public void renameElement(String oldName, String newName) {
-		cliclLabelFigure(oldName);
+		clickLabelFigure(oldName);
 		typeInNewName(newName);
 	}
 
@@ -73,7 +73,7 @@ public class GraphicalNedEditorAccess
 	}
 
 	@InUIThread
-	public void cliclLabelFigure(final String name) {
+	public void clickLabelFigure(final String name) {
 		IFigure labelFigure = findDescendantFigure(getRootFigure(), new IPredicate() {
 			public boolean matches(Object object) {
 				return object instanceof Label && ((Label)object).getText().matches(name);
@@ -85,7 +85,7 @@ public class GraphicalNedEditorAccess
 
     @SuppressWarnings("unchecked")
     @InUIThread
-    public void cliclConnectionFigure(final String label1, final String label2) {
+    public void clickConnectionFigure(final String label1, final String label2) {
         final IPredicate predicate = new IPredicate() {
             public boolean matches(Object object) {
                 if (object instanceof ModuleConnectionEditPart) {
@@ -118,12 +118,12 @@ public class GraphicalNedEditorAccess
 
 	@InUIThread
 	public void clickBackground() {
-		getComposite().click(LEFT_MOUSE_BUTTON, getCompositeInternal().toDisplay(1, 1));
+		getComposite().clickAbsolute(LEFT_MOUSE_BUTTON, getCompositeInternal().toDisplay(1, 1));
 	}
 
 	@InUIThread
 	public void clickPaletteItem(String label) {
-		getFlyoutPaletteComposite().clickButtonWithLabel(label);
+		getFlyoutPaletteComposite().clickButtonFigureWithLabel(label);
 	}
 
     @NotInUIThread

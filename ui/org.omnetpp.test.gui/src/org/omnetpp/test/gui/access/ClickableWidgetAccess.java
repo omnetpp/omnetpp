@@ -6,19 +6,20 @@ import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
-public abstract class ClickableWidgetAccess extends WidgetAccess
+public abstract class ClickableWidgetAccess
+    extends WidgetAccess
 {
 	public ClickableWidgetAccess(Widget widget) {
 		super(widget);
 	}
 
-	protected abstract Point getPointToClick();
+	protected abstract Point getAbsolutePointToClick();
 
 	protected abstract Menu getContextMenu();
 
 	@InUIThread
 	public void click(int button) {
-		click(button, getPointToClick());
+		clickAbsolute(button, getAbsolutePointToClick());
 	}
 
 	@InUIThread
@@ -33,7 +34,7 @@ public abstract class ClickableWidgetAccess extends WidgetAccess
 
 	@InUIThread
 	public void doubleClick() {
-		doubleClick(LEFT_MOUSE_BUTTON, getPointToClick());
+		doubleClickAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick());
 	}
 
 	@InUIThread

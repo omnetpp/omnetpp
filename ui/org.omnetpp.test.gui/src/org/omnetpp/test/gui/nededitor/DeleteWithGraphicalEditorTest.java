@@ -9,30 +9,30 @@ public class DeleteWithGraphicalEditorTest
     private GraphicalNedEditorAccess graphicalNedEditor;
 
     public void testDeleteSimpleModule() {
-        graphicalNedEditor.cliclLabelFigure("TestSimple");
+        graphicalNedEditor.clickLabelFigure("TestSimple");
         graphicalNedEditor.pressKey(SWT.DEL);
     }
     
     public void testDeleteCompoundModule() {
-        graphicalNedEditor.cliclLabelFigure("TestCompound");
+        graphicalNedEditor.clickLabelFigure("TestCompound");
         graphicalNedEditor.pressKey(SWT.DEL);
     }
     
     public void testDeleteSubmodule() {
-        graphicalNedEditor.cliclLabelFigure("test");
+        graphicalNedEditor.clickLabelFigure("test");
         graphicalNedEditor.pressKey(SWT.DEL);
     }
     
     public void testDeleteConnection() {
-        graphicalNedEditor.cliclConnectionFigure("test1", "test2");
+        graphicalNedEditor.clickConnectionFigure("test1", "test2");
         graphicalNedEditor.pressKey(SWT.DEL);
     }
     
     public void testDeleteMultipleSubmodules() {
         graphicalNedEditor.holdDownModifiers(SWT.CONTROL);
-        graphicalNedEditor.cliclLabelFigure("test");
-        graphicalNedEditor.cliclLabelFigure("test1");
-        graphicalNedEditor.cliclLabelFigure("test2");
+        graphicalNedEditor.clickLabelFigure("test");
+        graphicalNedEditor.clickLabelFigure("test1");
+        graphicalNedEditor.clickLabelFigure("test2");
         graphicalNedEditor.releaseUpModifiers(SWT.CONTROL);
         graphicalNedEditor.pressKey(SWT.DEL);
     }

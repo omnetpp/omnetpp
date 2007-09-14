@@ -20,7 +20,7 @@ public class CTabItemAccess extends ClickableWidgetAccess
 	}
 
 	@Override
-	protected Point getPointToClick() {
+	protected Point getAbsolutePointToClick() {
 		return getCTabItem().getParent().toDisplay(getCenter(getCTabItem().getBounds()));
 	}
 }

@@ -9,46 +9,46 @@ public class ClickableAccess
 	extends Access 
 {
 	@InUIThread
-	public void moveMouse(Point p) {
-		moveMouse(p.x, p.y);
+	public void moveMouseAbsolute(Point p) {
+		moveMouseAbsolute(p.x, p.y);
 	}
 
 	@InUIThread
-	public void moveMouse(int x, int y) {
+	public void moveMouseAbsolute(int x, int y) {
 		postMouseEvent(SWT.MouseMove, 0, x, y);
 	}
 
 	@InUIThread
-	public void click(int button, Point point) {
-		click(button, point.x, point.y);
+	public void clickAbsolute(int button, Point point) {
+		clickAbsolute(button, point.x, point.y);
 	}
 
 	@InUIThread
-	public void click(int button, int x, int y) {
-		moveMouse(x, y);
+	public void clickAbsolute(int button, int x, int y) {
+		moveMouseAbsolute(x, y);
+		postMouseEvent(SWT.MouseDown, button, x, y);
+		postMouseEvent(SWT.MouseUp, button, x, y);
+	}
+
+    @InUIThread
+    public void clickCenterAbsolute(int button, Rectangle rectangle) {
+        clickAbsolute(button, getCenter(rectangle));
+    }
+
+	@InUIThread
+	public void doubleClickAbsolute(int button, int x, int y) {
+		clickAbsolute(button, x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
 
 	@InUIThread
-	public void doubleClick(int button, int x, int y) {
-		click(button, x, y);
-		postMouseEvent(SWT.MouseDown, button, x, y);
-		postMouseEvent(SWT.MouseUp, button, x, y);
+	public void doubleClickAbsolute(int button, Point point) {
+		doubleClickAbsolute(button, point.x, point.y);
 	}
 
 	@InUIThread
-	public void doubleClick(int button, Point point) {
-		doubleClick(button, point.x, point.y);
-	}
-
-	@InUIThread
-	public void clickCenter(int button, Rectangle rectangle) {
-		click(button, getCenter(rectangle));
-	}
-
-	@InUIThread
-	public void doubleClickCenter(int button, Rectangle rectangle) {
-		doubleClick(button, getCenter(rectangle));
+	public void doubleClickCenterAbsolute(int button, Rectangle rectangle) {
+		doubleClickAbsolute(button, getCenter(rectangle));
 	}
 }

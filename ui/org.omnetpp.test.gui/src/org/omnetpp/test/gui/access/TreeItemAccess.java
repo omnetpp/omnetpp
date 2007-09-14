@@ -29,7 +29,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	}
 	
 	@Override
-	protected Point getPointToClick() {
+	protected Point getAbsolutePointToClick() {
 		return getTreeItem().getParent().toDisplay(getCenter(getTreeItem().getBounds()));
 	}
 

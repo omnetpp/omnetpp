@@ -26,7 +26,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 	}
 
 	@Override
-	protected Point getPointToClick() {
+	protected Point getAbsolutePointToClick() {
 		return getTableItem().getParent().toDisplay(getCenter(getTableItem().getBounds()));
 	}
 
