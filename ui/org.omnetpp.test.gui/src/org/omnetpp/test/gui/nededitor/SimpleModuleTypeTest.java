@@ -13,7 +13,7 @@ public class SimpleModuleTypeTest
 	}
 
 	public void testDuplicate1() throws Throwable {
-		assertErrorInNedSource("simple A {} simple A {}", ".*duplicate.*A.*");
+		assertErrorInNedSource("simple A {} simple A {}", ".*A.*already defined.*");
 	}
 
 	public void testExtends1() throws Throwable {

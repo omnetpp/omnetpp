@@ -5,7 +5,7 @@ import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
 import org.omnetpp.test.gui.access.TextEditorAccess;
 
-public class GraphicalEditorTest
+public class CreateComplexModelWithGraphicalEditorTest
 	extends NedFileTestCase
 {
 	public void testCreateSimpleModel() throws Throwable {

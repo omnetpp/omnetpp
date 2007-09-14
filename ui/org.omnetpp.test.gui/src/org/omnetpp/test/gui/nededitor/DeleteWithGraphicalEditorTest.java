@@ -3,7 +3,7 @@ package org.omnetpp.test.gui.nededitor;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 
-public class DeleteFromGraphicalEditor
+public class DeleteWithGraphicalEditorTest
     extends NedFileTestCase
 {
     private GraphicalNedEditorAccess graphicalNedEditor;

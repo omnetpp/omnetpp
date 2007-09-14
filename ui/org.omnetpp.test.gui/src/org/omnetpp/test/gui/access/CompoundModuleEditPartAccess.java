@@ -71,12 +71,17 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 		new FigureAccess(labelFigure).click(LEFT_MOUSE_BUTTON);
 	}
 
+    @NotInUIThread
+    public void createConnectionWithPalette(String name1, String name2, String connectionOptionLabel) {
+        createConnectionWithPalette("Connection", name1, name2, connectionOptionLabel);
+    }
+
 	@NotInUIThread
-	public void createConnectionWithPalette(String name1, String name2, String connectionOptionLabel) {
-		getFlyoutPaletteComposite().clickButtonWithLabel("Connection");
-		clickSubmoduleFigureWithName(name1);
-		clickSubmoduleFigureWithName(name2);
-		clickConnectionOption(connectionOptionLabel);
+    public void createConnectionWithPalette(String channel, String name1, String name2, String connectionOptionLabel) {
+        getFlyoutPaletteComposite().clickButtonWithLabel(channel);
+        clickSubmoduleFigureWithName(name1);
+        clickSubmoduleFigureWithName(name2);
+        clickConnectionOption(connectionOptionLabel);
 	}
 
 	@InUIThread

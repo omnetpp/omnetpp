@@ -10,8 +10,8 @@ public class IDETestSuite
 	extends TestSuite
 {
     public IDETestSuite() {
-        addTest(new IniFileEditorTestSuite());
-        addTest(new NedEditorTestSuite());
+        addTest(IniFileEditorTestSuite.suite());
+        addTest(NedEditorTestSuite.suite());
     }
 
     public static Test suite() {

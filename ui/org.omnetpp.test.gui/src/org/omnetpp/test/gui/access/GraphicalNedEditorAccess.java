@@ -16,7 +16,6 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
-import org.omnetpp.ned.editor.graph.edit.NedTypeEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
@@ -38,17 +37,27 @@ public class GraphicalNedEditorAccess
 	}
 
 	@NotInUIThread
-	public NedTypeEditPart createSimpleModuleWithPalette(String name) {
-		clickPaletteItem(".*Simple.*module.*");
-		clickBackground();
-		renameModule("Unnamed.*", name);
-
-		// TODO:
-		return null;
+	public void createSimpleModuleWithPalette(String name) {
+		createElementWithPalette("Simple\u00A0Module", name);
 	}
 
-	@NotInUIThread
-	public void renameModule(String oldName, String newName) {
+    @NotInUIThread
+    public void createModuleInterfaceWithPalette(String name) {
+        createElementWithPalette("Module\u00A0Interface", name);
+    }
+
+    @NotInUIThread
+    public void createChannelWithPalette(String name) {
+        createElementWithPalette("Channel", name);
+    }
+
+    @NotInUIThread
+    public void createChannelInterfaceWithPalette(String name) {
+        createElementWithPalette("Channel\u00A0Interface", name);
+    }
+
+    @NotInUIThread
+	public void renameElement(String oldName, String newName) {
 		cliclLabelFigure(oldName);
 		typeInNewName(newName);
 	}
@@ -117,13 +126,29 @@ public class GraphicalNedEditorAccess
 		getFlyoutPaletteComposite().clickButtonWithLabel(label);
 	}
 
-    @InUIThread
+    @NotInUIThread
 	public CompoundModuleEditPartAccess createCompoundModuleWithPalette(String name) {
-		clickPaletteItem(".*Compound.*Module.*");
+		clickPaletteItem("Compound\u00A0Module");
 		clickBackground();
+		renameElement("Unnamed.*", name);
 
-		return new CompoundModuleEditPartAccess((CompoundModuleEditPart)findDescendantEditPart(getRootEditPart(), CompoundModuleEditPart.class));
+		return findCompoundModule(name);
 	}
+
+    @InUIThread
+    public CompoundModuleEditPartAccess findCompoundModule(final String name) {
+        return new CompoundModuleEditPartAccess((CompoundModuleEditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
+            public boolean matches(Object object) {
+                return object instanceof CompoundModuleEditPart && ((CompoundModuleEditPart)object).getNEDModel().getAttribute("name").matches(name);
+            }
+        }));
+    }
+
+    private void createElementWithPalette(String elementTypeName, String elementName) {
+        clickPaletteItem(elementTypeName);
+        clickBackground();
+        renameElement("Unnamed.*", elementName);
+    }
 
     private GraphicalViewer getGraphicalViewer() {
         GraphicalViewer graphicalViewer = (GraphicalViewer)ReflectionUtils.invokeMethod(getGraphicalNedEditor(), "getGraphicalViewer");

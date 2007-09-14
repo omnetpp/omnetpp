@@ -1,6 +1,8 @@
 package org.omnetpp.test.gui.util;
 
 import java.io.ByteArrayInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
@@ -59,12 +61,19 @@ public class WorkspaceUtils
 	}
 
 	@InUIThread
-	public static void assertFileExistsWithContent(String path, String content) throws Exception {
+	public static void assertFileExistsWithContent(String path, String expectedContent) throws Exception {
 		IFile file = assertFileExists(path);
 		String actualContent = FileUtils.readTextFile(file.getContents());
-		Assert.assertTrue("file content differs from expected", actualContent.equals(content));
+		Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, actualContent.equals(expectedContent));
 	}
 	
+    @InUIThread
+    public static void assertFileExistsWithRegexpContent(String path, String expectedRegexpContent) throws Exception {
+        IFile file = assertFileExists(path);
+        String actualContent = FileUtils.readTextFile(file.getContents());
+        Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedRegexpContent, matchesRegexp(actualContent, expectedRegexpContent));
+    }
+    
 	@NotInUIThread
 	public static void createFileWithContent(String path, String content) throws Exception {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
@@ -84,5 +93,11 @@ public class WorkspaceUtils
         IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFolder(directoryName);
         if (!folder.exists())
             folder.create(true, false, null);
+    }
+    
+    public static boolean matchesRegexp(String text, String regexp) {
+        Pattern pattern = Pattern.compile(regexp, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
     }
 }

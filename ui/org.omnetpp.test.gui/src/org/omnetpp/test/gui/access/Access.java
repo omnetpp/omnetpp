@@ -113,6 +113,7 @@ public class Access
 		Assert.assertTrue(getDisplay().post(event));
 
 		if (event.type != SWT.MouseDown && event.type != SWT.MouseUp) {
+		    // TODO: this is may not be the best way to slow down replay
             try {
                 Thread.sleep((long)(delayBetweenPostEvents * 1000));
             }

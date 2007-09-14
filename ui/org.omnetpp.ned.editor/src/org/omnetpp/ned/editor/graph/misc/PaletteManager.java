@@ -314,7 +314,7 @@ public class PaletteManager {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
-                "Simple"+NBSP+"module",
+                "Simple"+NBSP+"Module",
                 "Create a simple module type",
                 new ModelFactory(NEDElementTags.NED_SIMPLE_MODULE, IHasName.DEFAULT_TYPE_NAME),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
