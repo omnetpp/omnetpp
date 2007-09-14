@@ -1,9 +1,6 @@
 package org.omnetpp.ned.editor.text.util;
 
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
@@ -13,16 +10,11 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
-import org.omnetpp.common.editor.text.TextEditorUtil;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -39,43 +31,14 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		try {
-			// find which NED element was hovered
-			IFile file = ((FileEditorInput)editor.getEditorInput()).getFile();
-			IDocument doc = textViewer.getDocument();
-			int line = doc.getLineOfOffset(hoverRegion.getOffset());
-			int column = hoverRegion.getOffset() - doc.getLineOffset(line);
+	    Info info = NedTextUtils.getNedHoverContext((ITextEditor)editor, textViewer, hoverRegion);
+	    if (info == null)
+	        return null;
 
-			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
-			INEDElement hoveredElement = res.getNedElementAt(file, line+1, column);
-			if (hoveredElement == null)
-				return null; // we don't know what's there
+		if (info.referredElement instanceof INedTypeElement)
+		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNEDTypeInfo());
 
-			// get hover text for this
-			String dottedWord = TextEditorUtil.getWordRegion(textViewer, hoverRegion.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
-			String word = TextEditorUtil.getWordRegion(textViewer, hoverRegion.getOffset(), new NedSyntaxHighlightHelper.NedWordDetector());
-
-			return getHoverText(hoveredElement, word, dottedWord);
-		} 
-		catch (BadLocationException e) {
-			NedEditorPlugin.logError(e);
-			return null;
-		}
-	}
-
-	protected static String getHoverText(INEDElement hoveredElement, String hoveredWord, String hoveredDottedWord) {
-		System.out.println("hovering "+hoveredDottedWord+" in "+hoveredElement+" ("+hoveredElement.getSourceRegion()+")");
-
-		if (StringUtils.isEmpty(hoveredDottedWord))
-			return null; // nothing interesting here
-
-		INEDElement element = NedTextUtils.findDeclaration(hoveredElement, hoveredDottedWord, hoveredWord);
-		if (element == null)
-		    return null;
-		if (element instanceof INedTypeElement)
-		    return getHoverTextFor(((INedTypeElement)element).getNEDTypeInfo());
-
-		return HoverSupport.addHTMLStyleSheet(element.toString() + "<br/>" + "<pre>" + element.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
+		return HoverSupport.addHTMLStyleSheet(info.referredElement.toString() + "<br/>" + "<pre>" + info.referredElement.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
 	}
 
 	protected static String getHoverTextFor(INEDTypeInfo typeInfo) {

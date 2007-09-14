@@ -1,10 +1,20 @@
 package org.omnetpp.ned.editor.text.util;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.omnetpp.common.editor.text.NedKeywords;
+import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -14,6 +24,7 @@ import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -30,12 +41,58 @@ import org.omnetpp.ned.model.pojo.ParamElement;
  * @author andras
  */
 public class NedTextUtils {
+    /**
+     * Result of findNedContext()
+     */
+    public static class Info {
+        public INEDElement element; // the element being hovered/under cursor
+        public IRegion regionToHighlight; // range to highlight as link (word)
+        public INEDElement referredElement;  // the jump target, usually the declaration of the gate/param/submodule/type
+    }
+    
+    public static Info getNedHoverContext(ITextEditor textEditor, ITextViewer textViewer, IRegion region) {
+        try {
+            IRegion wordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedWordDetector());
+            IRegion dottedWordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
+            if (wordRegion.getLength() == 0)
+                return null;
+
+            String word = TextEditorUtil.get(textViewer, wordRegion);
+            String dottedWord = TextEditorUtil.get(textViewer, dottedWordRegion);
+            
+            // find which NED element was hovered
+            IFile file = ((FileEditorInput)textEditor.getEditorInput()).getFile();
+            IDocument doc = textViewer.getDocument();
+            int line = doc.getLineOfOffset(region.getOffset());
+            int column = region.getOffset() - doc.getLineOffset(line);
+
+            INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+            INEDElement element = res.getNedElementAt(file, line+1, column);
+            if (element == null)
+                return null; // we don't know what's there
+
+            INEDElement declElement = NedTextUtils.findJumpTarget(element, dottedWord, word);
+            if (declElement == null)
+                return null;
+
+            Info result = new Info();
+            result.element = element;
+            result.regionToHighlight = wordRegion; //FIXME or dottedWordRegion -- which one??
+            result.referredElement = declElement;
+            return result;
+        } 
+        catch (BadLocationException e) {
+            NedEditorPlugin.logError(e);
+            return null;
+        }
+        
+    }
     
     /**
      * Implements functionality for "F3 Goto Declaration", "ctrl+click hyperlink", 
      * and hover information.
      */
-    public static INEDElement findDeclaration(INEDElement element, String dottedWord, String word) {
+    public static INEDElement findJumpTarget(INEDElement element, String dottedWord, String word) {
         if (ArrayUtils.contains(NedKeywords.RESERVED_WORDS, word))
             return null;
         
