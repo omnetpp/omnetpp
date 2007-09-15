@@ -33,6 +33,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		outputfolder.addView(IPageLayout.ID_PROBLEM_VIEW);
 		outputfolder.addView(IConstants.MODULEHIERARCHY_VIEW_ID);
 		outputfolder.addView(IConstants.MODULEPARAMETERS_VIEW_ID);
+		outputfolder.addView(IConstants.NEDINHERITANCE_VIEW_ID);
 		// note: placeholders for our other views don't need to be listed here, 
 		// because they are contributed via perspectiveExtension extensions 
 		// in their plugin.xml's.
@@ -53,12 +54,13 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IProgressConstants.PROGRESS_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.MODULEPARAMETERS_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.MODULEHIERARCHY_VIEW_ID);
+		layout.addShowViewShortcut(IConstants.NEDINHERITANCE_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.DATASET_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.VECTORBROWSER_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.SEQUENCECHART_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.EVENTLOG_VIEW_ID);
 
-		
+	
         // TODO final strings needed here
 		// new actions - our wizards
 		layout.addNewWizardShortcut("org.omnetpp.ide.wizard.newProjectWizard");//$NON-NLS-1$ 

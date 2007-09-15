@@ -44,11 +44,11 @@ public interface INedTypeElement extends IHasName, IHasDisplayString, IHasParame
     public INedTypeElement getFirstExtendsRef();
 
     /**
-     * Returns the list of all ned elements that used as base (usually only a single element,
-     * but can be more than that)
+     * Returns the list of child elements that hold the "extends" names (usually only 
+     * a single element, but for interfaces it can be more)
      */
     public List<ExtendsElement> getAllExtends();
-    
+
     /**
      * For an inner type it returns the containing compound module type, and
      * for a toplevel type it returns the containing NED file. 

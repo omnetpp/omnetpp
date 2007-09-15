@@ -159,7 +159,7 @@ void TCmdenvApp::setup()
     if (runstoexec)
         opt_runstoexec = runstoexec;
 
-    // '-g'/'-G' options: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
+    // '-g'/'-G' options: modifies -x or -c: prints unrolled scenario, scenario variables, etc as well
     opt_printconfigdetails = args->optionGiven('g');
     opt_printconfigdetails2 = args->optionGiven('G');
 

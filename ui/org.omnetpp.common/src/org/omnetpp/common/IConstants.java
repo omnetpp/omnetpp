@@ -8,6 +8,7 @@ package org.omnetpp.common;
 public interface IConstants {
 	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ModuleParameters";
 	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
+    public static final String NEDINHERITANCE_VIEW_ID = "org.omnetpp.inifile.NedInheritance";
 	public static final String DATASET_VIEW_ID = "org.omnetpp.scave.DatasetView";
 	public static final String VECTORBROWSER_VIEW_ID = "org.omnetpp.scave.VectorBrowserView";
 	public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";

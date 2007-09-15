@@ -68,6 +68,13 @@
            icon="icons/full/eview16/moduleparameters.png"
            id="org.omnetpp.inifile.ModuleParameters"
            name="NED Parameters"/>
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.inifile.editor.views.NedInheritanceView"
+           icon="icons/full/eview16/inheritance.png"
+           id="org.omnetpp.inifile.NedInheritance"
+           name="NED Inheritance">
+     </view>
   </extension>
    <extension
          point="org.eclipse.ui.bindings">
