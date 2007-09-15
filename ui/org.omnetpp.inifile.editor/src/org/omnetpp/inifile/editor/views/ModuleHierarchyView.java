@@ -375,10 +375,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			treeViewer.getTree().setFocus();
 	}
 
-	public void buildContent(INEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
+	public void buildContent(INEDElement element, final InifileAnalyzer analyzer, final String section, String key) {
 		this.inifileAnalyzer = analyzer;
 		this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 
+		INEDElement module = findFirstModuleOrSubmoduleParent(element);
+		
 		// build tree
         final GenericTreeNode root = new GenericTreeNode("root");
     	class TreeBuilder implements IModuleTreeVisitor {

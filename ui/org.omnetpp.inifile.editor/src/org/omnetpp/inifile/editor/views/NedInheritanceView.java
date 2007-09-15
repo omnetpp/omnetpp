@@ -38,6 +38,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -181,18 +182,26 @@ public class NedInheritanceView extends AbstractModuleView {
 	}
 
 	public void buildContent(INEDElement selectedElement, final InifileAnalyzer analyzer, final String section, String key) {
-		// build tree
-        final GenericTreeNode root = new GenericTreeNode("root");
+	    INEDTypeInfo inputNedType = null;
 
-        if (!(selectedElement instanceof INedTypeElement)) 
-            selectedElement = selectedElement.getEnclosingTypeElement();
-        if (selectedElement == null) {
-        	showMessage("Please select a submodule, compound module or simple module");
+	    // find first usable parent
+        while (inputNedType == null && selectedElement != null) {
+            if (selectedElement instanceof INedTypeElement) 
+                inputNedType = ((INedTypeElement)selectedElement).getNEDTypeInfo();
+            else if (selectedElement instanceof IHasType) 
+                inputNedType = ((IHasType)selectedElement).getNEDTypeInfo();
+            selectedElement = selectedElement.getParent();
+        }
+
+        if (inputNedType == null) {
+        	showMessage("No NED type selected.");
         	return;
         }
-        INEDTypeInfo selectedNedType = ((INedTypeElement)selectedElement).getNEDTypeInfo();
+
+        // build tree
+        final GenericTreeNode root = new GenericTreeNode("root");
         
-        List<INEDTypeInfo> extendsChain = selectedNedType.getExtendsChain();
+        List<INEDTypeInfo> extendsChain = inputNedType.getExtendsChain();
         INEDTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
         buildInheritanceTreeOf(rootType, root, new HashSet<INEDTypeInfo>());
         
@@ -213,11 +222,9 @@ public class NedInheritanceView extends AbstractModuleView {
 		treeViewer.refresh();
 		
 		// update label
-		String text = selectedNedType.getName() + " - (" + StringUtils.capitalize(selectedElement.getReadableTagName()); 
-		if (StringUtils.isNotEmpty(selectedElement.getEnclosingLookupContext().getQNameAsPrefix()))
-		    text += " " + selectedNedType.getFullyQualifiedName();
+		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNEDElement().getReadableTagName()); 
 		if (getPinnedToEditor() != null)
-		    text += "), in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
+		    text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
 		setContentDescription(text);
 	}
 

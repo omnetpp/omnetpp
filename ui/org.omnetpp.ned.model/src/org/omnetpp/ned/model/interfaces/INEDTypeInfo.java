@@ -34,6 +34,11 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	 */
 	public String getFullyQualifiedName();
 
+	/** 
+	 * Returns the name prefix, i.e. the fully qualified name minus the simple name.
+	 */
+	public String getNamePrefix();
+
 	/**
 	 * Returns the underlying INEDElement subtree.
 	 */

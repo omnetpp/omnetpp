@@ -237,10 +237,11 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
 	/**
-     * Tries to find a NED element among the parents which may have
-     * parameters (simple module, compound module, channel, submodule).
+     * Utility function for subclasses: tries to find a NED element among the parents 
+     * which may have parameters (simple module, compound module, channel, submodule).
+     * Returns element itself if it already matches. Returns null if not found.
      */
-    private INEDElement findFirstModuleOrSubmodule(INEDElement element) {
+    protected static INEDElement findFirstModuleOrSubmoduleParent(INEDElement element) {
         while (element != null) {
             if (element instanceof CompoundModuleElement || element instanceof SimpleModuleElement ||
                     element instanceof SubmoduleElement || element instanceof ModuleInterfaceElement)
@@ -279,7 +280,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 				// with editparts in it. INEDElement can be extracted from editparts
 				// via IModelProvider.
 				//
-				INEDElement model = findFirstModuleOrSubmodule(((IModelProvider)element).getNEDModel());
+				INEDElement model = ((IModelProvider)element).getNEDModel();
 				if (model != null ) {
 					hideMessage();
 					buildContent(model, null, null, null);
@@ -320,9 +321,9 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
 	/**
-	 * Update view to display content that corresponds to the given module,
+	 * Update view to display content that corresponds to the NED element,
 	 * with the specified inifile as configuration.
-	 * @param module can be a toplevel type (Network, CompoundModule, SimpleModule), or Submodule
+	 * @param module can be any NED element (clients may take its enclosing Network/Module/Submodule etc if needed)
 	 * @param ana Ini file analyzer
 	 * @param key selected section
 	 * @param section selected key

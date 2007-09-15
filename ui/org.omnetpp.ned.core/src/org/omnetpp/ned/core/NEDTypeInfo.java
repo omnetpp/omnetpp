@@ -343,6 +343,10 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		return fullyQualifiedName;
 	}
 
+    public String getNamePrefix() {
+        return getNEDElement().getParentLookupContext().getQNameAsPrefix();
+    }
+
 	public INedTypeElement getNEDElement() {
 		return componentNode;
 	}
