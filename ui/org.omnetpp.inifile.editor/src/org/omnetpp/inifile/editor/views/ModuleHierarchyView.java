@@ -380,7 +380,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 
 		INEDElement module = findFirstModuleOrSubmoduleParent(element);
-		
+		if (module == null) {
+		    showMessage("No module element selected.");
+		    return;
+		}
+
 		// build tree
         final GenericTreeNode root = new GenericTreeNode("root");
     	class TreeBuilder implements IModuleTreeVisitor {

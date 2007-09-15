@@ -338,6 +338,10 @@ public class ModuleParametersView extends AbstractModuleView {
 	public void buildContent(INEDElement element, InifileAnalyzer analyzer, String section, String key) {
 
 	    INEDElement module = findFirstModuleOrSubmoduleParent(element);
+        if (module == null) {
+            showMessage("No module element selected.");
+            return;
+        }
 	    
 		//XXX factor out common part of the two "if" branches
 		//XXX why not unconditionally store analyzer and doc references???

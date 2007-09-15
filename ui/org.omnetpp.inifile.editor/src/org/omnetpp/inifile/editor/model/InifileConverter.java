@@ -80,6 +80,10 @@ public class InifileConverter {
 	    // cut off superfluous trailing ";" (optional, just cosmetics)
 	    text = text.replaceAll(MULTILINE+"^([^;#]*?);$", "$1");
 
+	    // replace ";" with "#" as comment mark, ignoring it inside string constants
+        text = text.replaceAll(MULTILINE+"^([^#;\"]*?);", "$1#");
+        text = text.replaceAll(MULTILINE+"^([^#]*);([^\"]*)$", "$1#$2");
+	    
 	    // merge several [General] sections into one
 	    String currentSection = "";
 	    StringBuilder tmp = new StringBuilder();
@@ -91,7 +95,7 @@ public class InifileConverter {
 	            	line = "";
 	            currentSection = thisSection;
 	        }
-	        if (line.matches("(?s)^\\s*[#;]\\s*\\[(.*?)\\].*"))
+	        if (line.matches("(?s)^\\s*#\\s*\\[(.*?)\\].*"))
 	        	line = "" ;
 	        tmp.append(line);
 	    }

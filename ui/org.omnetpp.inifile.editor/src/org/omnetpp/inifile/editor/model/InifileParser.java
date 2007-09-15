@@ -110,10 +110,14 @@ public class InifileParser {
 				// blank line
 				callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
 			}
-			else if (lineStart=='#' || lineStart==';') {
+			else if (lineStart=='#') {
 				// comment line
 				callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
 			}
+            else if (lineStart==';') {
+                // obsolete comment line
+                callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
+            }
 			else if (lineStart=='i' && line.matches("include\\s.*")) {
 				// include directive
 				String directive = "include";
@@ -129,7 +133,7 @@ public class InifileParser {
 			}
 			else if (lineStart=='[') {
 				// section heading
-				Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*?(\\s*[#;].*)?").matcher(line);
+				Matcher m = Pattern.compile("\\[([^#\"]+)\\]\\s*?(\\s*#.*)?").matcher(line);
 				if (!m.matches()) {
 					callback.parseError(lineNumber, numLines, "Syntax error in section heading");
 					continue;
@@ -165,7 +169,7 @@ public class InifileParser {
 
 	/**
 	 * Returns the position of the comment on the given line (i.e. the position of the
-	 * # or ; character), or line.length() if no comment is found. String literals
+	 * # character), or line.length() if no comment is found. String literals
 	 * are recognized and skipped properly.
 	 * 
 	 * Returns -1 if line contains an unterminated string literal.
@@ -186,7 +190,7 @@ public class InifileParser {
 					return -1; // meaning "unterminated string literal"
 				k++;
 				break;
-			case '#': case ';':
+			case '#':
 				// comment
 				while (k > 0 && Character.isWhitespace(line.charAt(k-1))) k--;
 				return k;

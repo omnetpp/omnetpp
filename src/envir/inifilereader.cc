@@ -138,9 +138,14 @@ void InifileReader::internalReadFile(const char *filename)
             // we don't support this backward compatibility feature any longer
             throw cRuntimeError(ERRPREFIX "old-wildcards mode (#%% old-wildcards syntax) no longer supported", filename, lineNumber);
         }
-        else if (!*line || *line=='#' || *line==';')
+        else if (!*line || *line=='#')
         {
             // blank or comment line, ignore
+        }
+        else if (*line==';')
+        {
+            // obsolete comment line
+            throw cRuntimeError(ERRPREFIX "semicolon is no longer a comment start character, please use hashmark ('#')", filename, lineNumber);
         }
         else if (*line=='i' && strncmp(line, "include", 7)==0 && isspace(line[7]))
         {
@@ -227,7 +232,7 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
 
 /**
  * Returns the position of the comment on the given line (i.e. the position of the
- * # or ; character), or line.length() if no comment is found. string literals
+ * # character), or line.length() if no comment is found. string literals
  * are recognized and skipped properly.
  */
 const char *InifileReader::findEndContent(const char *line, const char *filename, int lineNumber)
@@ -248,7 +253,7 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
                 throw cRuntimeError(ERRPREFIX "unterminated string constant", filename, lineNumber);
             s++;
             break;
-        case '#': case ';':
+        case '#':
             // comment; seek back to last non-space character
             while ((s-1)>line && isspace(*(s-1)))
                 s--;

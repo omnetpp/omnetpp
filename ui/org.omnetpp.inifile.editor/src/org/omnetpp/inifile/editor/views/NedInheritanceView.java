@@ -51,7 +51,7 @@ import org.omnetpp.ned.model.pojo.InterfaceNameElement;
  *
  * @author Andras
  */
-//XXX currently only invoked for modules (blame base class!) 
+//XXX currently doesn't show inner types 
 //XXX add tooltip (see fixme below)
 public class NedInheritanceView extends AbstractModuleView {
 	private TreeViewer treeViewer;
