@@ -1399,11 +1399,12 @@ opt_subgate
                        np->getErrors()->addError(currentLocation(), "invalid subgate spec `%s', must be `i' or `o'", toString(@2));
                 }
         |
-                {  ps.subgate = NED_SUBGATE_NONE; }
+                { ps.subgate = NED_SUBGATE_NONE; }
         ;
 
 channelspec
         : channelspec_header
+                { storePos(ps.chanspec, @$); }
         | channelspec_header '{'
                 {
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.chanspec);
