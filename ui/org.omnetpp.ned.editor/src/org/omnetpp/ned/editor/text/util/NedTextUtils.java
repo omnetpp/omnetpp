@@ -133,19 +133,17 @@ public class NedTextUtils {
                 ConnectionElementEx conn = (ConnectionElementEx)element;
                 CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)element.getEnclosingTypeElement();
 
-                // gate names are often the same on both side of the conn ("a.port++ <--> b.port++;"),
-                // so we need to parse a bit where the user was hovering exactly
-                //FIXME TODO
-                //IRegion connRegion = getElementRegion(doc, element);
-                
                 if (word.equals(conn.getSrcModule()) || word.equals(conn.getDestModule()))
                     return createInfo(element, wordRegion, compoundModule.getNEDTypeInfo().getSubmodules().get(word));
 
-                if (word.equals(conn.getSrcGate()) && word.equals(conn.getDestGate()))
-                    System.out.println("We're in trouble");  //FIXME find out how to fix this
-                if (word.equals(conn.getSrcGate()))
+                // gate names are often the same on both side of the conn ("a.port++ <--> b.port++;"),
+                // so we need to parse a bit where the user was hovering exactly
+                IRegion connRegion = getElementRegion(doc, element);
+                String textBeforeWord = TextEditorUtil.get(textViewer, new Region(connRegion.getOffset(), wordRegion.getOffset() - connRegion.getOffset()));
+                
+                if (!textBeforeWord.contains("--") && word.equals(conn.getSrcGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getSrcModule(), conn.getSrcGate()));
-                if (word.equals(conn.getDestGate()))
+                if (textBeforeWord.contains("--") && word.equals(conn.getDestGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getDestModule(), conn.getDestGate()));
             }
 
@@ -166,9 +164,9 @@ public class NedTextUtils {
         if (sourceRegion == null)
             return null;
         // the "+column" bit assumes there're no tabs on that line. This is reasonable, because NED
-        // code gets re-generated with spaces every now and then
-        int startOffset = doc.getLineOffset(sourceRegion.getStartLine()) + sourceRegion.getStartColumn();
-        int endOffset = doc.getLineOffset(sourceRegion.getEndLine()) + sourceRegion.getEndColumn();
+        // code gets re-generated with spaces every now and then. "line-1" because doc is 0-based.
+        int startOffset = doc.getLineOffset(sourceRegion.getStartLine()-1) + sourceRegion.getStartColumn();
+        int endOffset = doc.getLineOffset(sourceRegion.getEndLine()-1) + sourceRegion.getEndColumn();
         return new Region(startOffset, endOffset - startOffset);
     }
     
