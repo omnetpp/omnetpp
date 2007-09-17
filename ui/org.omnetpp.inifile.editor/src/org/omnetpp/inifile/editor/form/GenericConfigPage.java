@@ -47,7 +47,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLM
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRELOAD_NED_FILES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
@@ -169,7 +169,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(form, CFGID_NETWORK, "Network to simulate");
 			addSpacer(form);
 			Group group1 = createGroup(form, "Setup");
-			addTextFieldEditor(group1, CFGID_PRELOAD_NED_FILES, "NED files to load");
+			addTextFieldEditor(group1, CFGID_NED_PATH, "NED file path");
 			addTextFieldEditor(group1, CFGID_USER_INTERFACE, "User interface");
 			addSpacer(form);
 			Group group2 = createGroup(form, "Stopping condition");

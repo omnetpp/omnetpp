@@ -3,7 +3,7 @@ package org.omnetpp.inifile.editor.contentassist;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRELOAD_NED_FILES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -70,7 +70,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		if (keyType == KeyType.CONFIG) {
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
 			ConfigKey entry = ConfigRegistry.getEntry(key);
-			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_PRELOAD_NED_FILES || entry==CFGID_USER_INTERFACE)
+			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE)
 				return true;
 			if (entry == null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
 				return true;
@@ -132,9 +132,6 @@ s	 * before getting presented to the user.
 				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(network.getComment())));
 			}
 			sort(p);
-		}
-		else if (entry==CFGID_PRELOAD_NED_FILES) {
-			p.addAll(toProposals(new String[] {"*.ned"}));
 		}
 		else if (entry==CFGID_USER_INTERFACE) {
 			p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv"}));

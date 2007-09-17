@@ -368,9 +368,9 @@ public class ConfigRegistry {
         "Whether the simulation kernel should delete on network cleanup the " +
         "simulation objects not deleted by simple module destructors. Not " +
         "recommended.");
-    public static final ConfigKey CFGID_PRELOAD_NED_FILES = addGlobalEntry(
-        "preload-ned-files", CFG_FILENAMES, null,
-        "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
+    public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
+        "ned-path", CFG_FILENAMES, null,
+        "A path where NED files loaded from. One or more semicolon separated path entry.");
     public static final ConfigKey CFGID_PRINT_UNDISPOSED = addGlobalEntry(
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +
