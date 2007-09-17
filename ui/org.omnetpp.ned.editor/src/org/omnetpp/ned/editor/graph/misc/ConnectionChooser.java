@@ -54,35 +54,15 @@ public class ConnectionChooser {
         List<ConnectionElement> unusedList = new ArrayList<ConnectionElement>();
         List<ConnectionElement> usedList = new ArrayList<ConnectionElement>();
 
-//        if (chooseSrc && chooseDest) {
-            // gather unidirectional connections
-            for (GateElement srcOut : srcOutModuleGates)
-                for (GateElement destIn : destInModuleGates)
-                    accumlateConnection(srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, conn, unusedList, usedList);
+        // gather unidirectional connections
+        for (GateElement srcOut : srcOutModuleGates)
+            for (GateElement destIn : destInModuleGates)
+                accumlateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList);
 
-            // gather bidirectional connections
-            for (GateElement srcInOut : srcInOutModuleGates)
-                for (GateElement destInOut : destInOutModuleGates)
-                    accumlateConnection(srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, conn, unusedList, usedList);
-//        }
-//        else if (chooseSrc) {
-//            // gather unidirectional connections
-//            for (GateElement srcOut : srcOutModuleGates)
-//                accumlateConnection(srcMod, srcOut, destMod, null, conn, unusedList, usedList);
-//
-//            // gather bidirectional connections
-//            for (GateElement srcInOut : srcInOutModuleGates)
-//                accumlateConnection(srcMod, srcInOut, destMod, null, conn, unusedList, usedList);
-//        }
-//        else if (chooseDest) {
-//            // gather unidirectional connections
-//            for (GateElement destIn : destInModuleGates)
-//                accumlateConnection(srcMod, null, destMod, destIn, conn, unusedList, usedList);
-//
-//            // gather bidirectional connections
-//            for (GateElement destInOut : destInOutModuleGates)
-//                accumlateConnection(srcMod, null, destMod, destInOut, conn, unusedList, usedList);
-//        }
+        // gather bidirectional connections
+        for (GateElement srcInOut : srcInOutModuleGates)
+            for (GateElement destInOut : destInOutModuleGates)
+                accumlateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList);
 
         BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 
@@ -91,6 +71,15 @@ public class ConnectionChooser {
             createMenuItem(menu, unusedConn);
         }
 
+        // if the unused list was empty put a notification in the first line
+        if (unusedList.size() == 0) {
+            MenuItem mi = menu.addMenuItem(SWT.PUSH);
+            mi.setText("--- no free gates ---");
+            mi.setEnabled(false);
+            if (usedList.size() > 0)
+                menu.addMenuItem(SWT.SEPARATOR);
+        }
+        
         // add the used disabled items
         for (ConnectionElement usedConn : usedList) {
             MenuItem mi = createMenuItem(menu, usedConn);
@@ -112,7 +101,7 @@ public class ConnectionChooser {
         MenuItem mi = menu.addMenuItem(SWT.PUSH);
         // store the connection template in the widget's extra data
         mi.setData(conn);
-        String label = NEDTreeUtil.generateNedSource(conn, false).trim();
+        String label = StringUtils.removeEnd(NEDTreeUtil.generateNedSource(conn, false).trim(), ";");
         mi.setText(label);
         return mi;
     }
@@ -120,6 +109,7 @@ public class ConnectionChooser {
     /**
      * Creates a connection template form the parameters and adds is to either the used
      * or unused list. Used connection items should be displayed in disabled state.
+     * @param compound The compound module in which the current connection is/will be present
      * @param srcModule The source module used to create the connections
      * @param srcGate The source gate used to create the connections
      * @param chooseSrc Whether we want to choose from source gates (if not, the dest part will be copied from "connection") 
@@ -130,12 +120,12 @@ public class ConnectionChooser {
      * @param unusedList Connections that can be chosen
      * @param usedList Connections that are already connected
      */
-    private static void accumlateConnection(IConnectableElement srcModule, GateElement srcGate, boolean chooseSrc, 
+    private static void accumlateConnection(CompoundModuleElementEx compound, ConnectionElementEx connection,
+                                            IConnectableElement srcModule, GateElement srcGate, boolean chooseSrc, 
                                             IConnectableElement destModule, GateElement destGate, boolean chooseDest,
-                                            ConnectionElementEx connection, 
                                             List<ConnectionElement> unusedList, List<ConnectionElement> usedList) {
         // add the gate names to the menu item as additional widget data
-        ConnectionElement templateConn =  createTemplateConnection(srcModule, srcGate, destModule, destGate);
+        ConnectionElementEx templateConn =  createTemplateConnection(srcModule, srcGate, destModule, destGate);
         // we dont want to change src so we should use the current one from the model (connection)
         if (!chooseSrc) {
             templateConn.setSrcModule(connection.getSrcModule());
@@ -155,10 +145,10 @@ public class ConnectionChooser {
         }
         
         if (templateConn != null) {
-//            if (isConnectionUnused(conn, conn, srcGate, destGate))
+            if (isConnectionUnused(compound, templateConn, srcModule, srcGate, chooseSrc, destModule, destGate, chooseDest))
                 unusedList.add(templateConn);
-//            else
-//                usedList.add(conn);
+            else
+                usedList.add(templateConn);
         }
     }
     /**
@@ -167,11 +157,11 @@ public class ConnectionChooser {
 	 * If the gate is a vector uses either gate[0] or gate++ syntax depending whether the gate size was specified.
 	 * If the specified gates are incompatible (eg: labels do not match) it returns <code>null</code>
 	 */
-	private static ConnectionElement createTemplateConnection(
+	private static ConnectionElementEx createTemplateConnection(
 						IConnectableElement srcMod, GateElement srcGate,
 						IConnectableElement destMod, GateElement destGate) {
 
-		ConnectionElement conn = (ConnectionElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
+		ConnectionElementEx conn = (ConnectionElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_CONNECTION);
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodule name
@@ -181,7 +171,7 @@ public class ConnectionChooser {
 			if (StringUtils.isNotBlank(smodNode.getVectorSize()))
 					conn.setSrcModuleIndex(DEFAULT_INDEX);
 		} else
-			conn.setSrcModule(null);
+			conn.setSrcModule("");
 
 		if (destMod instanceof SubmoduleElementEx) {
 			SubmoduleElementEx dmodNode = (SubmoduleElementEx)destMod;
@@ -189,7 +179,7 @@ public class ConnectionChooser {
 			if (StringUtils.isNotBlank(dmodNode.getVectorSize()))
 					conn.setDestModuleIndex(DEFAULT_INDEX);
 		} else
-			conn.setDestModule(null);
+			conn.setDestModule("");
 
 		// set the possible gates
 		conn.setSrcGate(srcGate.getName());
@@ -238,6 +228,33 @@ public class ConnectionChooser {
         return result;
     }
 
+    private static boolean isConnectionUnused(CompoundModuleElementEx compound, ConnectionElementEx conn,
+                                              IConnectableElement srcMod, GateElement srcGate, boolean chooseSrc,
+                                              IConnectableElement destMod, GateElement destGate, boolean chooseDest) {
+        // note that vector gates or any gate on a submodule vector should be treated always unconnected
+        // because the user can connect the connection to different instances/indexes of the gate/submodule
+        boolean isSrcSideAVector = srcGate.getIsVector() ||
+                (srcMod instanceof SubmoduleElementEx &&
+                StringUtils.isNotEmpty(((SubmoduleElementEx)srcMod).getVectorSize()));
+        boolean isDestSideAVector = destGate.getIsVector() ||
+                (destMod instanceof SubmoduleElementEx &&
+                StringUtils.isNotEmpty(((SubmoduleElementEx)destMod).getVectorSize()));
+
+        boolean isSrcFree = true;
+        if (chooseSrc) 
+            isSrcFree = isSrcSideAVector || 
+            (compound.getConnections(conn.getSrcModule(), conn.getSrcGate(), null, null).isEmpty() &&
+             compound.getConnections(null, null, conn.getSrcModule(), conn.getSrcGate()).isEmpty());
+        
+        boolean isDestFree = true;
+        if (chooseDest) 
+            isDestFree = isDestSideAVector || 
+            (compound.getConnections(conn.getDestModule(), conn.getDestGate(), null, null).isEmpty() &&
+             compound.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty());
+        
+        return isSrcFree && isDestFree;
+    }
+    
     /**
      * Returns whether the connection is unused, that is, the gates we want to connect
      * are unconnected currently
