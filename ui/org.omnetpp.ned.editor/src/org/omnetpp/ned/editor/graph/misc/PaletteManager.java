@@ -246,18 +246,11 @@ public class PaletteManager {
         }
 
         // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
-
-        boolean isInterface = typeElement instanceof ModuleInterfaceElement;
-        String label = fullyQualifiedTypeName; // or: getName();
-        if (typeElement.getEnclosingTypeElement() != null)
-        	label += NBSP+"(in"+NBSP+typeElement.getEnclosingTypeElement().getName()+")";
-        if (isInterface)
-        	label += NBSP+"(interface)";
-
         String instanceName = StringUtils.toInstanceName(typeElement.getName());
 		CombinedTemplateCreationEntry toolEntry = new CombinedTemplateCreationEntry(
-                label, StringUtils.makeBriefDocu(typeElement.getComment(), 300),
-                new ModelFactory(NEDElementTags.NED_SUBMODULE, instanceName, fullyQualifiedTypeName, isInterface),
+                getLabelFor(typeElement.getNEDTypeInfo()), 
+                StringUtils.makeBriefDocu(typeElement.getComment(), 300),
+                new ModelFactory(NEDElementTags.NED_SUBMODULE, instanceName, fullyQualifiedTypeName, typeElement instanceof ModuleInterfaceElement),
                 imageDescNorm, imageDescLarge );
 
         entries.put(key, toolEntry);
@@ -292,13 +285,12 @@ public class PaletteManager {
 
         for (String fullyQualifiedName : channelNames) {
             INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getToplevelNedType(fullyQualifiedName, contextProject);
-            INEDElement modelElement = typeInfo.getNEDElement();
-            boolean isInterface = modelElement instanceof ChannelInterfaceElement;
-
+            INedTypeElement modelElement = typeInfo.getNEDElement();
+            
             ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
-                    fullyQualifiedName + (isInterface ? NBSP+"(interface)" : ""),
-                    StringUtils.makeBriefDocu(typeInfo.getNEDElement().getComment(), 300),
-                    new ModelFactory(NEDElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, isInterface),
+                    getLabelFor(typeInfo),
+                    StringUtils.makeBriefDocu(modelElement.getComment(), 300),
+                    new ModelFactory(NEDElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, modelElement instanceof ChannelInterfaceElement),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
             );
@@ -309,6 +301,25 @@ public class PaletteManager {
         return entries;
     }
 
+    /**
+     * A label used for the palette entry containing fully qualified name if needed, the containing compound module
+     * and the interface keyword.
+     */
+    private static String getLabelFor(INEDTypeInfo typeInfo) {
+        INedTypeElement modelElement = typeInfo.getNEDElement();
+        String fullyQualifiedName = typeInfo.getFullyQualifiedName();
+        boolean isInterface = modelElement instanceof ChannelInterfaceElement || modelElement instanceof ModuleInterfaceElement;
+        String label = modelElement.getName();
+        if (modelElement.getEnclosingTypeElement() != null)
+            label += NBSP+"in"+NBSP+modelElement.getEnclosingTypeElement().getName();
+        String details = isInterface ? "interface" : "";
+        if (!label.equals(fullyQualifiedName))      // display fully qualified name only if not in default package
+            details += (StringUtils.isNotEmpty(details) ? NBSP : "") + fullyQualifiedName;
+        if (StringUtils.isNotEmpty(details))
+            label += NBSP + "("+details+")";
+        return label;
+    }
+    
     /**
      * Builds a tool entry list containing base top level NED components like simple, module, channel etc.
      */
