@@ -23,10 +23,18 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	public void assertEnabled() {
 		if (!getMenuItem().isEnabled()) {
 	    	MenuAccess.closeMenus();
-	    	Assert.assertTrue("menu item is disabled", false);
+	    	Assert.assertTrue("menu item '"+getMenuItem().getText()+"' is disabled", false);
 		}
 	}
 	
+    @InUIThread
+    public void assertDisabled() {
+        if (getMenuItem().isEnabled()) {
+            MenuAccess.closeMenus();
+            Assert.assertTrue("menu item '"+getMenuItem().getText()+"' is enabled", false);
+        }
+    }
+    
 	@InUIThread
 	public MenuAccess activateWithMouseClick() {
 		assertEnabled();

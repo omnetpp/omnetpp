@@ -79,6 +79,18 @@ public class MenuAccess extends WidgetAccess {
 		}
 	}
 	
+    @InUIThread
+    public void assertMenuItemsEnabled(String[] labels) {
+        for (String label : labels) 
+            findMenuItemByLabel(label).assertEnabled();        
+    }
+
+    @InUIThread
+    public void assertMenuItemsDisabled(String[] labels) {
+        for (String label : labels) 
+            findMenuItemByLabel(label).assertDisabled();        
+    }
+    
 // the following code searches in the menus recursively -- retained just in case it might be needed somewhere...
 //	@InUIThread
 //	public MenuAccess activateMenuItemWithMouse_Recursive(String label) {
