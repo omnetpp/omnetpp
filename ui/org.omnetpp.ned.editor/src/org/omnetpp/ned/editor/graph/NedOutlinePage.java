@@ -24,9 +24,6 @@ import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
  * Outline viewer for graphical ned editor
  */
 class NedOutlinePage extends ContentOutlinePage {
-    /**
-     * 
-     */
     private final GraphicalNedEditor graphicalNedEditor;
 
     public NedOutlinePage(GraphicalNedEditor graphicalNedEditor, EditPartViewer viewer) {

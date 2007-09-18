@@ -412,7 +412,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				return projectData.components.get(name);
 		}
 		else {
-			// name is an unqualified name (simple name).
+			// name is an unqualified name (simple name), or from the default package
 
 			// from the same package?
 			String packagePrefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
@@ -424,16 +424,16 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			// try a shortcut first: if the import doesn't contain wildcards
 			List<String> imports = lookupContext.getContainingNedFileElement().getImports();
 			for (String importSpec : imports)
-				if (projectData.components.containsKey(importSpec) && importSpec.endsWith("." + name))
-					return projectData.components.get(importSpec);
+			    if (projectData.components.containsKey(importSpec) && (importSpec.endsWith("." + name) || importSpec.equals(name)))
+			        return projectData.components.get(importSpec);
 
 			// try harder, using wildcards
 			String nameWithDot = "." + name;
 			for (String importSpec : imports) {
-				String importRegex = NEDElementUtilEx.importToRegex(importSpec);
-				for (String qualifiedName : projectData.components.keySet())
-					if (qualifiedName.endsWith(nameWithDot) && qualifiedName.matches(importRegex))
-						return projectData.components.get(qualifiedName);
+			    String importRegex = NEDElementUtilEx.importToRegex(importSpec);
+			    for (String qualifiedName : projectData.components.keySet())
+			        if ((qualifiedName.endsWith(nameWithDot) || qualifiedName.equals(name)) && qualifiedName.matches(importRegex))
+			            return projectData.components.get(qualifiedName);
 			}
 		}
 		return null;

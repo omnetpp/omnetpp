@@ -78,16 +78,22 @@ public class NedFileElementEx extends NedFileElement implements INedTypeLookupCo
 	}
 
 	/**
-	 * Sets the package name; creates a PackageElement child if necessary.
+	 * Sets the package name; creates/removes PackageElement child as necessary.
 	 */
 	public void setPackage(String packageName) {
-		PackageElement packageElement = getFirstPackageChild();
-		if (packageElement == null) {
-			packageElement = (PackageElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PACKAGE);
-			insertChildBefore(getFirstChild(), packageElement);
-			packageElement.appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n"));
-		}
-		packageElement.setName(packageName);
+	    PackageElement packageElement = getFirstPackageChild();
+	    if (StringUtils.isEmpty(packageName)) {
+	        if (packageElement != null)
+	            removeChild(packageElement);
+	    }
+	    else {
+	        if (packageElement == null) {
+	            packageElement = (PackageElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PACKAGE);
+	            insertChildBefore(getFirstChild(), packageElement);
+	            packageElement.appendChild(NEDElementUtilEx.createCommentElement("right", "\n\n"));
+	        }
+	        packageElement.setName(packageName);
+	    }
 	}
 
 	/**

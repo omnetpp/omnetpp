@@ -58,10 +58,21 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 
 		final IProject project = (IProject) getElement();
 
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("NED source folders in project " + project.getName() + ":");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-		
+        createWrapLabel(composite, 
+                "NED Source Folders are root folders for the NED package hierarchy. " +
+                "A NED file with the package declaration 'org.foo.bar' must be in the " +
+                "'org/foo/bar' subdirectory, unless the NED Source Folder directly " +
+                "contains a 'package.ned' file with a package declaration. In the latter " +
+                "case, 'package.ned' defines what package the NED Source Folder root " +
+                "corresponds to. Other NED files in that folder and subfolders must be " +
+                "consistent with that declaratiobn (i.e. only the root 'package.ned' has " +
+                "special meaning.)", 
+                2, 300);
+
+        Label label = new Label(composite, SWT.NONE);
+        label.setText("&NED Source Folders for project '" + project.getName() + "':");
+        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        
 		treeViewer = new CheckboxTreeViewer(composite, SWT.BORDER);
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		((GridData)treeViewer.getTree().getLayoutData()).heightHint = 300;
@@ -98,6 +109,18 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		loadNedFoldersFile();
 		
 		return composite;
+	}
+
+	public static Label createWrapLabel(Composite parent, String text, int hspan, int wrapwidth) {
+	    // code from SWTFactory (debug.internal.ui)
+	    Label l = new Label(parent, SWT.NONE | SWT.WRAP);
+	    l.setFont(parent.getFont());
+	    l.setText(text);
+	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+	    gd.horizontalSpan = hspan;
+	    gd.widthHint = wrapwidth;
+	    l.setLayoutData(gd);
+	    return l;
 	}
 
 	protected void performDefaults() {

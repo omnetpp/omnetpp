@@ -435,10 +435,10 @@ public class MultiPageNedEditor
     }
 
 	protected void inputFileDeletedFromDisk() {
-		if (!isDirty())
-			closeEditor(false);
-		else
-			; //TODO ask user?
+		if (isDirty()) {
+		    ; //FIXME ask user!
+		}
+		closeEditor(false);
 	}
 
 	protected void inputFileMovedOrRenamedOnDisk(IFile newFile) {

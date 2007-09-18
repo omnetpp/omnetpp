@@ -126,7 +126,6 @@ public class GraphicalNedEditor
     private NedOutlinePage outlinePage;
     private NedPropertySheetPage propertySheetPage;
     private boolean editorSaving = false;
-//    private NedFileElementEx nedFileModel;  //TODO can be eliminated
     private SelectionSynchronizer synchronizer;
 
     // last state of the command stack (used to detect changes since last page switch)
@@ -158,7 +157,7 @@ public class GraphicalNedEditor
             boolean insideBeginEnd = false;
             
             // override notifyListeners() methods, so we can surround command execution 
-            // with begin/end. "begin" must be fired before all PRE listeners,
+            // with begin/end. "begin" must be fired after all PRE listeners,
             // and "end" must be fired before all normal commandStackListeners and
             // POST listeners. See super.execute() for why the code look like this.
             protected void notifyListeners(Command command, int state) {
@@ -178,6 +177,7 @@ public class GraphicalNedEditor
                 
             }
             
+            @SuppressWarnings("deprecation")
             protected void notifyListeners() {
                 if (!insideBeginEnd)
                     super.notifyListeners(); // postpone to top of POST_EXECUTE

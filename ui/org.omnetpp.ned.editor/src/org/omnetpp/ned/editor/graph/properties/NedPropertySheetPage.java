@@ -17,9 +17,6 @@ import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSo
  */
 public class NedPropertySheetPage extends PropertySheetPage {
 
-    /**
-     * 
-     */
     private final GraphicalNedEditor graphicalNedEditor;
 
     /**
