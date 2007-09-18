@@ -18,7 +18,6 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.GatesElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
@@ -259,43 +258,5 @@ public class ConnectionChooser {
         return isSrcFree && isDestFree;
     }
     
-    /**
-     * Returns whether the connection is unused, that is, the gates we want to connect
-     * are unconnected currently
-     */
-//    private static boolean isConnectionUnused(ConnectionCommand connCommand, ConnectionElement conn, GateElement srcGate, GateElement destGate) {
-//        // note that vector gates or any gate on a submodule vector should be treated always unconnected
-//        // because the user can connect the connection to different instances/indexes of the gate/submodule
-//        boolean isSrcSideAVector = srcGate.getIsVector() ||
-//            (srcGate.getParent().getParent() instanceof SubmoduleElementEx &&
-//                    !"".equals(((SubmoduleElementEx)srcGate.getParent().getParent()).getVectorSize()));
-//        boolean isDestSideAVector = destGate.getIsVector() ||
-//        (destGate.getParent().getParent() instanceof SubmoduleElementEx &&
-//                !"".equals(((SubmoduleElementEx)destGate.getParent().getParent()).getVectorSize()));
-//
-//        // if we are inserting a new connection
-//        CompoundModuleElementEx compModule = connCommand.getCompoundModuleParent();
-//        if (connCommand instanceof CreateConnectionCommand) {
-//            // if there are any connections with the same source or dest gate name, we should return invalid
-//            if (!compModule.getConnections(conn.getSrcModule(), conn.getSrcGate(), null, null).isEmpty()
-//                    && !isSrcSideAVector)
-//                return false;
-//            if (!compModule.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty()
-//                    && !isDestSideAVector)
-//                return false;
-//        }
-//        else if (connCommand instanceof ReconnectCommand){
-//            // if we are moving the source side connection we should filter only for that side
-//            if (!isSrcSideAVector && connCommand.getSrcGate() == null &&
-//                    !compModule.getConnections(conn.getSrcModule(), conn.getSrcGate(), null, null).isEmpty())
-//                return false;
-//            // if we are moving the dest side connection we should filter only for that side
-//            if (!isDestSideAVector && connCommand.getDestGate() == null &&
-//                    !compModule.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty())
-//                return false;
-//        }
-//        // the connection can be attached to the gate
-//        return true;
-//    }
 
 }
