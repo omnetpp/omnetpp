@@ -370,7 +370,7 @@ public class ConfigRegistry {
         "recommended.");
     public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
         "ned-path", CFG_FILENAMES, null,
-        "A path where NED files loaded from. One or more semicolon separated path entry.");
+        "A path where NED files loaded from. One or more semicolon separated path entry."); //FIXME this decripting must be re-generated from C++
     public static final ConfigKey CFGID_PRINT_UNDISPOSED = addGlobalEntry(
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +

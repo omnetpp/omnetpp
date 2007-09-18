@@ -39,6 +39,7 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 
         // update text editor
         ((TextualNedEditor)getTextEditor()).pullChangesFromNEDResources();
+        //((TextualNedEditor)getTextEditor()).setText(nedFileElement.getNEDSource());
     }
 
 	protected NedFileElementEx getNedFileElement() {

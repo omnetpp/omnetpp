@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.Region;
@@ -93,7 +92,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		// delay update to avoid concurrent access to document
 		pullChangesJob = new DelayedJob(500) {
     		public void run() {
-				pullChangesFromNEDResources();
+				pullChangesFromNEDResourcesWhenPending();
     		}
         };
 
@@ -448,23 +447,35 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	}
 
 	/**
-	 * Pulls changes from NEDResources and applies to document as text changes.
+	 * When a "pull changes from NEDResources" operation has been scheduled, do it now.
 	 */
-	public synchronized void pullChangesFromNEDResources() {
+	public synchronized void pullChangesFromNEDResourcesWhenPending() {
 	    // if the job is not scheduled then there are no changes at all and we don't pull
 	    // because that would only pretty print the source
 	    if (pullChangesJob.isScheduled()) {
     		pullChangesJob.cancel();
     		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
     			public synchronized void run() {
-    				Assert.isTrue(Display.getCurrent() != null);
-    				System.out.println("texteditor: pulling changes from NEDResources");
-    				TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
-    						getDocument(), getModel().getNEDSource());
-    				TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
-    				// TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
+    				pullChangesFromNEDResources();
     			}
     		});
 	    }
 	}
+
+    /**
+     * Unconditionally pulls changes from NEDResources and applies them to the 
+     * document as text changes. 
+     * 
+     * This needs to be called from all text editor actions that modify the 
+     * NED tree and want those changes to be reflected in the text editor.
+     * (e.g. reformat source, organize imports, etc). 
+     */
+    public void pullChangesFromNEDResources() {
+        Assert.isTrue(Display.getCurrent() != null);
+        System.out.println("texteditor: pulling changes from NEDResources");
+        TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
+        		getDocument(), getModel().getNEDSource());
+        TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
+        // TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
+    }
 }

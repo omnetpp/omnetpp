@@ -96,7 +96,7 @@ public class MultiPageNedEditor
                     NedFileElementEx nedFileElement = getModel();
                     if (getActivePage() == textPageIndex && graphicalEditor.hasContentChanged() &&
                     	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
-                        textEditor.pullChangesFromNEDResources();
+                        textEditor.pullChangesFromNEDResourcesWhenPending();
                 }
     
                 if (getControl(getActivePage()).isVisible())
@@ -305,7 +305,7 @@ public class MultiPageNedEditor
         	// generate text representation from the model NOW
             NedFileElementEx nedFileElement = getModel();
             if (graphicalEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
-                textEditor.pullChangesFromNEDResources();
+                textEditor.pullChangesFromNEDResourcesWhenPending();
                 textEditor.markContent();
             }
 
@@ -349,7 +349,7 @@ public class MultiPageNedEditor
     private void prepareForSave() {
         NedFileElementEx nedFileElement = getModel();
 		if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
-            textEditor.pullChangesFromNEDResources();
+            textEditor.pullChangesFromNEDResourcesWhenPending();
             graphicalEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
     }
