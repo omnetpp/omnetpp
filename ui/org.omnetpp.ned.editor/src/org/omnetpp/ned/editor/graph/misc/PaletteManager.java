@@ -2,10 +2,12 @@ package org.omnetpp.ned.editor.graph.misc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -49,6 +51,23 @@ public class PaletteManager {
     private static final String TYPES_GROUP = "!types";
     private static final String GROUP_DELIMITER = "~";
 
+    /**
+     * A comparator that uses dictionary ordering and the short name part of a fully qualified name to order
+     * (the part after the last . char)
+     */
+    private static final class ShortNameComparator implements Comparator<String> {
+        public int compare(String first, String second) {
+            String firstShortName = StringUtils.substringAfterLast(first, ".");
+            if (StringUtils.isEmpty(firstShortName))
+                firstShortName = first;
+            String secondShortName = StringUtils.substringAfterLast(second, ".");
+            if (StringUtils.isEmpty(secondShortName))
+                secondShortName = second;
+            return StringUtils.dictionaryCompare(firstShortName, secondShortName);
+        }
+    }
+    private static ShortNameComparator shortNameComparator = new ShortNameComparator();
+    
     // state
     protected GraphicalNedEditor hostingEditor;
     protected PaletteRoot nedPalette;
@@ -60,6 +79,9 @@ public class PaletteManager {
     protected Map<String, PaletteEntry> currentEntries = new HashMap<String, PaletteEntry>();
     protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
 
+    /**
+     *
+     */
     public PaletteManager(GraphicalNedEditor hostingEditor) {
         super();
         this.hostingEditor = hostingEditor;
@@ -181,14 +203,21 @@ public class PaletteManager {
      * defined in this file's top level modules.
      */
     private static Map<String, ToolEntry> createInnerTypes(IFile file) {
-        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
-
+        List<String> innerTypeNames = new ArrayList<String>();
+        
         // add module and module interface *inner* types of NED types in this file
         for (INEDElement element : NEDResourcesPlugin.getNEDResources().getNedFileElement(file))
             if (element instanceof INedTypeElement)
             	for (INedTypeElement typeElement : ((INedTypeElement)element).getNEDTypeInfo().getInnerTypes().values())
             		if (typeElement instanceof IModuleKindTypeElement)
-            			addToolEntry(typeElement, MRU_GROUP, entries);
+            		    innerTypeNames.add(typeElement.getNEDTypeInfo().getFullyQualifiedName());
+        Collections.sort(innerTypeNames, shortNameComparator);
+            		    
+        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
+        for(String fqName : innerTypeNames) {
+            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelOrInnerNedType(fqName, file.getProject()).getNEDElement();
+            addToolEntry(typeElement, MRU_GROUP, entries);
+        }
         return entries;
     }
 
@@ -204,7 +233,7 @@ public class PaletteManager {
         List<String> typeNames = new ArrayList<String>();
         typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleQNames(contextProject));
         typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleInterfaceQNames(contextProject));
-        Collections.sort(typeNames, StringUtils.dictionaryComparator);
+        Collections.sort(typeNames, shortNameComparator);
 
         for (String name : typeNames) {
             INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelNedType(name, contextProject).getNEDElement();
@@ -281,7 +310,7 @@ public class PaletteManager {
         List<String> channelNames = new ArrayList<String>();
         channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelQNames(contextProject));
         channelNames.addAll(NEDResourcesPlugin.getNEDResources().getChannelInterfaceQNames(contextProject));
-        Collections.sort(channelNames, StringUtils.dictionaryComparator);
+        Collections.sort(channelNames, shortNameComparator);
 
         for (String fullyQualifiedName : channelNames) {
             INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getToplevelNedType(fullyQualifiedName, contextProject);
