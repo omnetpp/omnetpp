@@ -18,6 +18,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
@@ -71,14 +72,17 @@ public class ConnectionChooser {
             createMenuItem(menu, unusedConn);
         }
 
-        // if the unused list was empty put a notification in the first line
-        if (unusedList.size() == 0) {
+        List<String> noGates = new ArrayList<String>();
+        if (srcMod.getGateDeclarations().size() == 0)   
+            noGates.add(srcMod.getName());
+        if (destMod.getGateDeclarations().size() == 0)   
+            noGates.add(destMod.getName());
+        if (noGates.size() > 0) {
             MenuItem mi = menu.addMenuItem(SWT.PUSH);
-            mi.setText("--- no free gates ---");
+            mi.setText(StringUtils.join(noGates, " and ")+ (noGates.size() > 1 ? " have no gates" : " has no gates"));
             mi.setEnabled(false);
-            if (usedList.size() > 0)
-                menu.addMenuItem(SWT.SEPARATOR);
         }
+        
         
         // add the used disabled items
         for (ConnectionElement usedConn : usedList) {
