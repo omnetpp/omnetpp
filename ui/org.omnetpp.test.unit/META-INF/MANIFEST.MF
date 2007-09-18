@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: UnitTest Plug-in
+Bundle-SymbolicName: org.omnetpp.test.unit
+Bundle-Version: 4.0.0
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.omnetpp.common,
+ org.omnetpp.eventlogtable,
+ org.omnetpp.figures,
+ org.omnetpp.ide.nativelibs,
+ org.omnetpp.inifile.editor,
+ org.omnetpp.launch,
+ org.omnetpp.main,
+ org.omnetpp.ned.core,
+ org.omnetpp.ned.editor,
+ org.omnetpp.ned.model,
+ org.omnetpp.scave,
+ org.omnetpp.scave.builder,
+ org.omnetpp.scave.model,
+ org.omnetpp.sequencechart
