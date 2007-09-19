@@ -321,12 +321,13 @@ public class GraphicalNedEditor
                 GraphicalEditPart epUnderMouse = (GraphicalEditPart)getGraphicalViewer().findObjectAt(new Point(x,y));
                 // check if the figure has its own tooltip in this case we do not provide our own information provider
                 IFigure figureUnderMouse = epUnderMouse.getFigure().findFigureAt(x, y);
-                // we do not show hover if a tooltip already set on the figure or we are inside a
-                // compound module figure (we display tooltips only over the border a title for
+                // we do not show hover if a tooltip already set on the figure 
+                if (figureUnderMouse != null && figureUnderMouse.getToolTip() != null)
+                    return null;
+                // or we are inside a compound module figure (we display tooltips only over the border a title for
                 // a compound module)
-                if (figureUnderMouse == null || figureUnderMouse.getToolTip() != null ||
-                        (epUnderMouse instanceof CompoundModuleEditPart &&
-                                !((CompoundModuleEditPart)epUnderMouse).getCompoundModuleFigure().isOnBorder(x, y)))
+                if (epUnderMouse instanceof CompoundModuleEditPart &&
+                        !((CompoundModuleEditPart)epUnderMouse).getCompoundModuleFigure().isOnBorder(x, y))
                     return null;
 
                 return getHTMLHoverTextFor(epUnderMouse, outPreferredSize);

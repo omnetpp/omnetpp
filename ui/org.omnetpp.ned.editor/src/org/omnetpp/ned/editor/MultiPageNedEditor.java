@@ -491,7 +491,8 @@ public class MultiPageNedEditor
                              IPageLayout.ID_OUTLINE,
                              IPageLayout.ID_RES_NAV,
                              IConstants.MODULEHIERARCHY_VIEW_ID,
-                             IConstants.MODULEPARAMETERS_VIEW_ID};
+                             IConstants.MODULEPARAMETERS_VIEW_ID,
+                             IConstants.NEDINHERITANCE_VIEW_ID};
     }
 
     public ShowInContext getShowInContext() {
