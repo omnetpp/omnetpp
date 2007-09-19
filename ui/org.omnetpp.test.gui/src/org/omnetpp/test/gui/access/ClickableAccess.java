@@ -3,11 +3,16 @@ package org.omnetpp.test.gui.access;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.test.gui.core.InUIThread;
 
 public class ClickableAccess
 	extends Access 
 {
+    public static boolean smoothMouseMovement = true;
+    public static int mouseMoveDurationMillis = 500;
+    public static int mouseMoveMaxSteps = 20;
+    
 	@InUIThread
 	public void moveMouseAbsolute(Point p) {
 		moveMouseAbsolute(p.x, p.y);
@@ -15,6 +20,18 @@ public class ClickableAccess
 
 	@InUIThread
 	public void moveMouseAbsolute(int x, int y) {
+	    if (smoothMouseMovement) {
+	        Point p = Display.getCurrent().getCursorLocation();
+	        int steps = Math.max(Math.abs(x-p.x), Math.abs(y-p.y));
+	        if (steps > mouseMoveMaxSteps) steps = mouseMoveMaxSteps;
+	        double dx = (x - p.x) / (double)steps; 
+            double dy = (y - p.y) / (double)steps;
+            int stepMillis = Math.max( (int)(mouseMoveDurationMillis / steps), 1);
+            for (int i=0; i<steps; i++) {
+                try { Thread.sleep(stepMillis); } catch (InterruptedException e) {}
+                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(i*dx), p.y + (int)(i*dy));
+            }
+	    }
 		postMouseEvent(SWT.MouseMove, 0, x, y);
 	}
 
