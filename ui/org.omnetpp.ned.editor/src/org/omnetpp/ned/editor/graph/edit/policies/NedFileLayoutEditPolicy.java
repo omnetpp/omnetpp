@@ -114,6 +114,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	    INedTypeElement newTypeElement = (INedTypeElement)element;
 		EditPart insertionPoint = getInsertionReference(request);
 		INEDElement where = insertionPoint != null ? (INEDElement)insertionPoint.getModel() : null;
+		// XXX FIXME class cast problem. for inner types it is NOT true
 		NedFileElementEx parent = (NedFileElementEx)getHost().getModel();
 		return new CreateNedTypeElementCommand(parent, where, newTypeElement);
 	}
