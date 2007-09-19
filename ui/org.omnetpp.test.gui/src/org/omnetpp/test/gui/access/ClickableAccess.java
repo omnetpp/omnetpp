@@ -20,19 +20,22 @@ public class ClickableAccess
 
 	@InUIThread
 	public void moveMouseAbsolute(int x, int y) {
-	    if (smoothMouseMovement) {
-	        Point p = Display.getCurrent().getCursorLocation();
-	        int steps = Math.max(Math.abs(x-p.x), Math.abs(y-p.y));
-	        if (steps > mouseMoveMaxSteps) steps = mouseMoveMaxSteps;
-	        double dx = (x - p.x) / (double)steps; 
-            double dy = (y - p.y) / (double)steps;
-            int stepMillis = Math.max( (int)(mouseMoveDurationMillis / steps), 1);
-            for (int i=0; i<steps; i++) {
-                try { Thread.sleep(stepMillis); } catch (InterruptedException e) {}
-                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(i*dx), p.y + (int)(i*dy));
-            }
+	    Point p = Display.getCurrent().getCursorLocation();
+	    if (p.x != x || p.y != y) {
+	        if (smoothMouseMovement) {
+	            System.out.println("moving mouse smoothly from "+p+" to "+new Point(x,y));
+	            int steps = Math.max(Math.abs(x-p.x), Math.abs(y-p.y));
+	            if (steps > mouseMoveMaxSteps) steps = mouseMoveMaxSteps;
+	            double dx = (x - p.x) / (double)steps; 
+	            double dy = (y - p.y) / (double)steps;
+	            int stepMillis = Math.max( (int)(mouseMoveDurationMillis / steps), 1);
+	            for (int i=0; i<steps; i++) {
+	                try { Thread.sleep(stepMillis); } catch (InterruptedException e) {}
+	                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(i*dx), p.y + (int)(i*dy));
+	            }
+	        }
+	        postMouseEvent(SWT.MouseMove, 0, x, y);
 	    }
-		postMouseEvent(SWT.MouseMove, 0, x, y);
 	}
 
 	@InUIThread
