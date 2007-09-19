@@ -23,7 +23,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	public void assertEnabled() {
 		if (!getMenuItem().isEnabled()) {
 	    	MenuAccess.closeMenus();
-	    	Assert.assertTrue("menu item '"+getMenuItem().getText()+"' is disabled", false);
+	    	Assert.assertTrue("menu item '"+getMenuItem().getText()+"' should be enabled", false);
 		}
 	}
 	
@@ -31,7 +31,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
     public void assertDisabled() {
         if (getMenuItem().isEnabled()) {
             MenuAccess.closeMenus();
-            Assert.assertTrue("menu item '"+getMenuItem().getText()+"' is enabled", false);
+            Assert.assertTrue("menu item '"+getMenuItem().getText()+"' should be disabled", false);
         }
     }
     
