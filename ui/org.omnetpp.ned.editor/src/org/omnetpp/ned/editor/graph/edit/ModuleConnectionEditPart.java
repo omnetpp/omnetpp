@@ -9,12 +9,11 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.eclipse.ui.views.properties.IPropertySource;
+
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
-import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -27,13 +26,11 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * @author rhornig
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart
-                    implements IReadOnlySupport,
-                               IPropertySourceSupport, IModelProvider {
+                    implements IReadOnlySupport, IModelProvider {
 
 	private EditPart sourceEditPartEx;
 	private EditPart targetEditPartEx;
     private boolean editable = true;
-    private IPropertySource propertySource;
 
 	@Override
     public void activate() {
@@ -212,14 +209,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         Map<Object,ConnectionEditPart> registry = getCompoundModulePart().getModelToConnectionPartsRegistry();
         if (registry.get(getModel()) == this)
             registry.remove(getModel());
-    }
-
-    public IPropertySource getPropertySource() {
-        return propertySource;
-    }
-
-    public void setPropertySource(IPropertySource propertySource) {
-        this.propertySource = propertySource;
     }
 
     public INEDElement getNEDModel() {

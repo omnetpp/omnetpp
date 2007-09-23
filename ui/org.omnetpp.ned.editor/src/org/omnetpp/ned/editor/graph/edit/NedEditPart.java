@@ -11,7 +11,7 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.ui.views.properties.IPropertySource;
+
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.NedFigure;
 import org.omnetpp.figures.misc.IDirectEditSupport;
@@ -19,7 +19,6 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
-import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -30,11 +29,9 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * @author rhornig
  */
 abstract public class NedEditPart
-	extends AbstractGraphicalEditPart
-	implements IReadOnlySupport, IPropertySourceSupport, IModelProvider
+	extends AbstractGraphicalEditPart implements IReadOnlySupport, IModelProvider
 {
     private boolean editable = true;
-    private IPropertySource propertySource;
     protected DirectEditManager manager;
     protected ICellEditorValidator renameValidator;
 
@@ -144,13 +141,6 @@ abstract public class NedEditPart
             manager.show();
     }
 
-    public IPropertySource getPropertySource() {
-        return propertySource;
-    }
-
-    public void setPropertySource(IPropertySource propertySource) {
-        this.propertySource = propertySource;
-    }
     /**
      * Returns the type name that must be opened if the user double clicks the module
      */

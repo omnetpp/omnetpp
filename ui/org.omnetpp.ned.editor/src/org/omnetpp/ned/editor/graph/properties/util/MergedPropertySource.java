@@ -22,9 +22,6 @@ public class MergedPropertySource implements IPropertySource2 {
     private boolean readOnly = false;
 
 	public MergedPropertySource(INEDElement model) {
-        // register the property source as a listener for the model so it will be notified
-        // once someone changes the underlying model
-//        model.getListeners().add(this);
     }
 
     /**
@@ -101,9 +98,6 @@ public class MergedPropertySource implements IPropertySource2 {
 		for (IPropertySource psrc : mergedList)
 			psrc.setPropertyValue(id, value);
 	}
-
-//    public void modelChanged(NEDModelEvent event) {
-//    }
 
     /**
      * Sets the property source's read only state

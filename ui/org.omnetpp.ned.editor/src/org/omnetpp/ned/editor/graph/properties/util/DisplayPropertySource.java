@@ -5,12 +5,12 @@ import java.util.EnumSet;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.EnumComboboxPropertyDescriptor;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 

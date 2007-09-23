@@ -12,12 +12,10 @@ import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.views.properties.IPropertySource;
 
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
-import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
@@ -34,11 +32,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * @author rhornig
  */
 // CHECK do we need the IPropertySourceSupport ?
-public class NedTreeEditPart extends AbstractTreeEditPart implements
-        IPropertySourceSupport, 
-        IModelProvider {
-
-    private IPropertySource propertySource;
+public class NedTreeEditPart extends AbstractTreeEditPart implements IModelProvider {
     protected DirectEditManager manager;
 
     /**
@@ -115,13 +109,5 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         for (Object child : getChildren())
             ((NedTreeEditPart)child).refresh();
 
-    }
-
-    public IPropertySource getPropertySource() {
-        return propertySource;
-    }
-
-    public void setPropertySource(IPropertySource propertySource) {
-        this.propertySource = propertySource;
     }
 }

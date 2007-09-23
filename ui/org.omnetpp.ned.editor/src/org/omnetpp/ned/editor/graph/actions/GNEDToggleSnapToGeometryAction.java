@@ -3,11 +3,9 @@ package org.omnetpp.ned.editor.graph.actions;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.internal.GEFMessages;
-import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**

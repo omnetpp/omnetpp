@@ -30,12 +30,6 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
         {
             // try to get the adapter from the model (if it was previously created)
             INEDElement nedModel = ((IModelProvider)object).getNEDModel();
-            // try to get the property source from the object directly
-            if (object instanceof IPropertySourceSupport) {
-                propSource = ((IPropertySourceSupport)object).getPropertySource(); 
-                if (propSource != null) 
-                    return propSource;
-            }
             
             // if no property source exists for this model object, create one
             if (nedModel instanceof SubmoduleElementEx) 
@@ -64,9 +58,6 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
                 ((MergedPropertySource)propSource).setReadOnly(
                         !((IReadOnlySupport)object).isEditable());
             
-            // store the created property source into the controller so we can reuse it later
-            if (propSource != null && object instanceof IPropertySourceSupport) 
-                ((IPropertySourceSupport)object).setPropertySource(propSource);
         }
         return propSource;
     }

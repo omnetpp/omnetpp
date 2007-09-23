@@ -33,7 +33,7 @@ public class NedPropertySheetPage extends PropertySheetPage {
         // is alphabetically sorted
         setSorter(new BasePreferrerPropertySheetSorter());
         // integrates the GEF undo/redo stack
-        setRootEntry(new UndoablePropertySheetEntry(this.graphicalNedEditor.getEditDomain().getCommandStack()));
+        setRootEntry(new UndoablePropertySheetEntry(graphicalNedEditor.getEditDomain().getCommandStack()));
     }
 
     @Override
@@ -51,8 +51,8 @@ public class NedPropertySheetPage extends PropertySheetPage {
     public void setActionBars(IActionBars actionBars) {
         super.setActionBars(actionBars);
         // hook the editor's global undo/redo action to the cell editor
-        getCellEditorActionHandler().setUndoAction(this.graphicalNedEditor.getActionRegistry().getAction(ActionFactory.UNDO.getId()));
-        getCellEditorActionHandler().setRedoAction(this.graphicalNedEditor.getActionRegistry().getAction(ActionFactory.REDO.getId()));
+        getCellEditorActionHandler().setUndoAction(graphicalNedEditor.getActionRegistry().getAction(ActionFactory.UNDO.getId()));
+        getCellEditorActionHandler().setRedoAction(graphicalNedEditor.getActionRegistry().getAction(ActionFactory.REDO.getId()));
     }
 
     /**
