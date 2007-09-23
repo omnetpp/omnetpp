@@ -174,7 +174,7 @@ public class MultiPageNedEditor
         getSite().getPage().removePartListener(partListener);
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedModelListener);
 
-        // super must be called before disconnect to let the children editors remove their listeners
+        // super must be called before disconnect to let the child editors remove their listeners
         super.dispose();
 
         // disconnect the editor from the ned resources plugin

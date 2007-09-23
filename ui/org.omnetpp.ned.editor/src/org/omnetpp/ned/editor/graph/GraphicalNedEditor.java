@@ -278,18 +278,7 @@ public class GraphicalNedEditor
         });
         
         // ScalableRootEditPart's refreshChildren() does nothing by default; override it
-        ScalableRootEditPart root = new ScalableRootEditPart() {
-        	@Override
-        	protected void refreshChildren() {
-                long startMillis = System.currentTimeMillis();
-
-                for (EditPart editPart : (List<EditPart>)getChildren())
-        			editPart.refresh();
-
-        		long dt = System.currentTimeMillis() - startMillis;
-                System.out.println("graphicalViewer refresh(): " + dt + "ms");
-        	}
-        };
+        ScalableRootEditPart root = new ScalableRootEditPart();
 
         List<String> zoomLevels = new ArrayList<String>(3);
         zoomLevels.add(ZoomManager.FIT_ALL);
@@ -632,8 +621,10 @@ public class GraphicalNedEditor
         });
     }
 
+    // refresh the whole content plus the outline page and the palette too
     public void refresh() {
-        getGraphicalViewer().getRootEditPart().refresh();
+        getGraphicalViewer().getContents().refresh();
+        outlinePage.refresh();
         paletteRefreshJob.restartTimer();
     }
 

@@ -67,20 +67,21 @@ class NedOutlinePage extends ContentOutlinePage {
     	// KLUDGE END
 
     	super.createControl(parent);
-        getViewer().setEditDomain(this.graphicalNedEditor.getEditDomain());
+    	
+        getViewer().setEditDomain(graphicalNedEditor.getEditDomain());
         getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), this.graphicalNedEditor.getActionRegistry());
+        ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry());
         getViewer().setContextMenu(provider);
         getViewer().setKeyHandler(this.graphicalNedEditor.getCommonKeyHandler());
         getViewer().addDropTargetListener((TransferDropTargetListener)
                 new TemplateTransferDropTargetListener(getViewer()));
-        this.graphicalNedEditor.getSelectionSynchronizer().addViewer(getViewer());
-        setContents(this.graphicalNedEditor.getModel());
+        graphicalNedEditor.getSelectionSynchronizer().addViewer(getViewer());
+        setContents(graphicalNedEditor.getModel());
     }
 
     @Override
     public void dispose() {
-        this.graphicalNedEditor.getSelectionSynchronizer().removeViewer(getViewer());
+        graphicalNedEditor.getSelectionSynchronizer().removeViewer(getViewer());
         super.dispose();
     }
 
@@ -88,4 +89,7 @@ class NedOutlinePage extends ContentOutlinePage {
         getViewer().setContents(contents);
     }
 
+    public void refresh() {
+        getViewer().getContents().refresh();
+    }
 }

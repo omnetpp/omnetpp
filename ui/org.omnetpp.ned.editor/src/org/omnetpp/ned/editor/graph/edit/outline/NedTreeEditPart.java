@@ -13,8 +13,7 @@ import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.ned.core.NEDResourcesPlugin;
+
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
@@ -28,45 +27,25 @@ import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDBeginModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDEndModelChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
  * EditPart for the NED Outline view.
  *
  * @author rhornig
  */
+// CHECK do we need the IPropertySourceSupport ?
 public class NedTreeEditPart extends AbstractTreeEditPart implements
-        INEDChangeListener, IPropertySourceSupport, IModelProvider {
+        IPropertySourceSupport, 
+        IModelProvider {
 
     private IPropertySource propertySource;
     protected DirectEditManager manager;
-
-    // open NEDBeginChangeEvent notifications
-    private int nedBeginChangeCount = 0;
 
     /**
      * Constructor initializes this with the given model.
      */
     public NedTreeEditPart(Object model) {
         super(model);
-    }
-
-    @Override
-    public void activate() {
-        super.activate();
-        if (getModel() instanceof NedFileElement)
-            NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
-    }
-
-    @Override
-    public void deactivate() {
-        if (getModel() instanceof NedFileElement)
-            NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
-        super.deactivate();
     }
 
     /**
@@ -125,24 +104,6 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         if (getWidget() instanceof Tree) return;
     	setWidgetImage(NEDTreeUtil.getNedModelLabelProvider().getImage(getModel()));
     	setWidgetText(NEDTreeUtil.getNedModelLabelProvider().getText(getModel()));
-    }
-
-    public void modelChanged(NEDModelEvent event) {
-        // count begin/end nesting
-        if (event instanceof NEDBeginModelChangeEvent)
-            nedBeginChangeCount++;
-        else if (event instanceof NEDEndModelChangeEvent)
-            nedBeginChangeCount--;
-
-        // we do a full refresh in response of a change
-        // if we are in a background thread, refresh later when UI thread is active
-        if (nedBeginChangeCount == 0) {
-        	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-                public void run() {
-                    refresh();
-                }
-            });
-        }
     }
 
     /**
