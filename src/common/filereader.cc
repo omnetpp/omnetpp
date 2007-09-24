@@ -54,7 +54,7 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 FileReader::~FileReader()
 {
     delete [] bufferBegin;
-    closeFile();
+    ensureFileClosed();
 }
 
 bool FileReader::isChanged()
@@ -72,18 +72,20 @@ void FileReader::synchronize()
     }
 }
 
-void FileReader::openFile()
+void FileReader::ensureFileOpen()
 {
-    // open file. Note: 'b' mode turns off CR/LF translation and might be faster
-    f = fopen(fileName.c_str(), "rb");
+    if (!f) {
+        // open file. Note: 'b' mode turns off CR/LF translation and might be faster
+        f = fopen(fileName.c_str(), "rb");
 
-    if (!f)
-        throw opp_runtime_error("Cannot open file `%s'", fileName.c_str());
+        if (!f)
+            throw opp_runtime_error("Cannot open file `%s'", fileName.c_str());
 
-    seekTo(0);
+        seekTo(0);
+    }
 }
 
-void FileReader::closeFile()
+void FileReader::ensureFileClosed()
 {
     if (f)
         fclose(f);
@@ -100,7 +102,7 @@ void FileReader::checkConsistence()
 
 void FileReader::fillBuffer(bool forward)
 {
-    if (!f) openFile();
+    ensureFileOpen();
 
     char *dataPointer;
     int dataLength;
@@ -263,7 +265,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 char *FileReader::getNextLineBufferPointer()
 {
     numReadLines++;
-    if (!f) openFile();
+    ensureFileOpen();
     Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
@@ -300,7 +302,7 @@ char *FileReader::getNextLineBufferPointer()
 char *FileReader::getPreviousLineBufferPointer()
 {
     numReadLines++;
-    if (!f) openFile();
+    ensureFileOpen();
     Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
@@ -378,7 +380,7 @@ int64 FileReader::getFileSize()
 
 int64 FileReader::getFileSizeInternal()
 {
-    if (!f) openFile();
+    ensureFileOpen();
 
     file_offset_t tmp = filereader_ftell(f);
     filereader_fseek(f, 0, SEEK_END);
@@ -398,7 +400,7 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
     if (fileOffset < 0 || fileOffset > getFileSize())
         throw opp_runtime_error("Invalid file offset: %lld", fileOffset);
 
-    if (!f) openFile();
+    ensureFileOpen();
 
     if (bufferFileOffset + ensureBufferSizeAround <= fileOffset &&
         fileOffset <= bufferFileOffset + bufferSize - ensureBufferSizeAround)

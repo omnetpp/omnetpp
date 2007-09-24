@@ -101,10 +101,6 @@ class COMMON_API FileReader
      */
     void fillBuffer(bool forward);
 
-    // opens the given file
-    void openFile();
-    void closeFile();
-
     // assert data structure consistence
     void checkConsistence();
 
@@ -132,6 +128,16 @@ class COMMON_API FileReader
      * Destructor.
      */
     ~FileReader();
+
+    /**
+     * This method is called automatically whenever the file is accessed.
+     */
+    void ensureFileOpen();
+
+    /**
+     * This method is called automatically from the destructor, but might be useful to release the file when it is not needed for a long period of time.
+     */
+    void ensureFileClosed();
 
     /**
      * Checks if file has been changed on disk.
