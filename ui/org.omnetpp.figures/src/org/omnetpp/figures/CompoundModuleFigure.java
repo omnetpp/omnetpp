@@ -136,7 +136,6 @@ public class CompoundModuleFigure extends NedFigure
 
     /**
      * Used at the left inner types compartment.
-     *
      */
     class InnerTypesBorder extends MarginBorder {
         InnerTypesBorder(int t, int l, int b, int r) {
@@ -158,6 +157,7 @@ public class CompoundModuleFigure extends NedFigure
         // set up the name and error marker figure
         ToolbarLayout tb = new ToolbarLayout();
         tb.setSpacing(2);
+        tb.setStretchMinorAxis(false);
         setLayoutManager(tb);
         // position the error marker above the problemMarker figure
         Layer nameHelperLayer = new Layer();
@@ -193,6 +193,7 @@ public class CompoundModuleFigure extends NedFigure
         mainContainer.setViewport(new FreeformViewport());
         mainContainer.setContents(layeredPane);
         mainContainer.setBorder(new CompoundModuleLineBorder());
+        mainContainer.setPreferredSize(DEFAULT_SIZE);
         add(mainContainer);
 
         // this effectively creates the following hierarchy:
@@ -269,12 +270,8 @@ public class CompoundModuleFigure extends NedFigure
 
     @Override
     public Dimension getPreferredSize(int w, int h) {
-    	// we are not sensitive to the external size hints
-        Dimension prefSize = super.getPreferredSize(-1, -1);
-        if (submoduleLayer.getChildren().size() == 0)
-            return DEFAULT_SIZE;
-
-        return prefSize;
+    	// IMPORTANT: we do not care about external size hints
+        return super.getPreferredSize(-1, -1);
     }
 
     /**
@@ -401,13 +398,17 @@ public class CompoundModuleFigure extends NedFigure
             layouter.requestAutoLayout();
         }
 
+        // size is manually set
         if (newSize.height > 0 || newSize.width > 0) {
             Insets borderInset = mainContainer.getBorder().getInsets(this);
             Dimension newPrefSize = newSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
             mainContainer.setPreferredSize(newPrefSize);
-        }
-        else {
+        } // not set manually and there are child submodules (can be calculated automatically y the layouter)
+        else if (submoduleLayer.getChildren().size() > 0) {
             mainContainer.setPreferredSize(null);
+        } // no manual size neither submodule children (set it to a default initial size)
+        else {
+            mainContainer.setPreferredSize(DEFAULT_SIZE);
         }
         invalidate();
 	}
