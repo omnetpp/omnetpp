@@ -3,25 +3,27 @@ package org.omnetpp.ned.editor.graph.commands;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
+
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Clones a set of INedTypeElement (only for toplevel types)
  *
  * @author rhornig
  */
-//FIXME rename to CloneToplevelTypesCommand. what about inner types?
 public class CloneCommand extends Command {
 
     private List<INedTypeElement> newNodes;
     // nodes that should be cloned by the command
     private List<INedTypeElement> nodes;
     // parent node where cloned nodes should go
-    private NedFileElementEx parent;
+    private INEDElement parent;
     // sibling node before the cloned nodes should be inserted (null means insertion at the end)
     private INEDElement insertBefore;
 
@@ -30,8 +32,9 @@ public class CloneCommand extends Command {
      * @param insertBefore A sibling in the parent before we should insert the cloned nodes
      *        <code>null</code> should be used to insert at the end of the child list
      */
-    public CloneCommand(NedFileElementEx parent, INEDElement insertBefore) {
+    public CloneCommand(INEDElement parent, INEDElement insertBefore) {
         super("Clone");
+        Assert.isTrue(parent instanceof NedFileElementEx || parent instanceof TypesElement, "The parent of a type must be a NedFile or a Types element");
         this.parent = parent;
         this.insertBefore = insertBefore;
         nodes = new LinkedList<INedTypeElement>();

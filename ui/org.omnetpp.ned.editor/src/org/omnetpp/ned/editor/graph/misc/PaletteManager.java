@@ -24,6 +24,7 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
@@ -98,6 +99,42 @@ public class PaletteManager {
 
     public PaletteRoot getRootPalette() {
         return nedPalette;
+    }
+
+    private Map<String, PaletteEntry> createPaletteModel() {
+        Map<String, PaletteEntry> result = new LinkedHashMap<String, PaletteEntry>();
+
+        IEditorInput input = hostingEditor.getEditorInput();
+        if (!(input instanceof IFileEditorInput))
+            return result; // sorry
+        IFile file = ((IFileEditorInput)input).getFile();
+        IProject contextProject = file.getProject();
+
+        // connection and type creation tools
+        result.putAll(createConnectionTools());
+        Map<String, ToolEntry> innerChannelTypes = createInnerTypes(file, false);
+        if (innerChannelTypes.size() > 0) {
+            result.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"separator1", new PaletteSeparator());
+            result.putAll(innerChannelTypes);
+        }
+        Map<String, ToolEntry> channelsStackEntries = createChannelsStackEntries(contextProject);
+        if (channelsStackEntries.size() > 0) {
+            result.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"separator2", new PaletteSeparator());
+            result.putAll(channelsStackEntries);
+        }
+
+        // type elements (simple/compound module/interfaces)
+        result.putAll(createTypesEntries());
+
+        // submodule creation tools
+        Map<String, ToolEntry> innerModuleTypes = createInnerTypes(file, true);
+        if (innerModuleTypes.size() > 0) {
+            result.putAll(innerModuleTypes);
+            result.put("separator", new PaletteSeparator());
+        }
+        result.putAll(createSubmodules(contextProject));
+
+        return result;
     }
 
 
@@ -175,47 +212,49 @@ public class PaletteManager {
         return controlGroup;
     }
 
-    private Map<String, PaletteEntry> createPaletteModel() {
-        Map<String, PaletteEntry> result = new LinkedHashMap<String, PaletteEntry>();
+    private static Map<String, ToolEntry> createConnectionTools() {
+        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
-        IEditorInput input = hostingEditor.getEditorInput();
-        if (!(input instanceof IFileEditorInput))
-        	return result; // sorry
-        IFile file = ((IFileEditorInput)input).getFile();
-        IProject contextProject = file.getProject();
+        ConnectionCreationToolEntry defaultConnectionTool = new ConnectionCreationToolEntry(
+                "Connection",
+                "Create connections between submodules, or submodule and parent module",
+                new ModelFactory(NEDElementTags.NED_CONNECTION),
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
+        );
 
-    	// connection and type creation tools
-        result.putAll(createChannelsStackEntries(contextProject));
-        result.putAll(createTypesEntries());
+        // sets the required connection tool
+        defaultConnectionTool.setToolClass(NedConnectionCreationTool.class);
+        entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"connection", defaultConnectionTool);
 
-        // submodule creation tools
-        result.putAll(createInnerTypes(file));
-        result.put("separator", new PaletteSeparator());
-        result.putAll(createSubmodules(contextProject));
-
-        return result;
+        // connection selection
+        MarqueeToolEntry marquee = new MarqueeToolEntry("Connection"+NBSP+"selector", "Drag out an area to select connections in it");
+        marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR,
+                MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED);
+        entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"marquee", marquee);
+        return entries;
     }
-
+    
     /**
-     * Iterates over all top level types in a NED file and gathers all NEDTypes from all components.
-     * Returns a Container containing all types in this file or NULL if there are no inner types
-     * defined in this file's top level modules.
+     * Iterates over all top level (module types) types in a NED file and gathers all NEDTypes from all components.
+     * Returns a Container containing all types in this file.
      */
-    private static Map<String, ToolEntry> createInnerTypes(IFile file) {
+    private static Map<String, ToolEntry> createInnerTypes(IFile file, boolean moduleTypes) {
         List<String> innerTypeNames = new ArrayList<String>();
         
         // add module and module interface *inner* types of NED types in this file
         for (INEDElement element : NEDResourcesPlugin.getNEDResources().getNedFileElement(file))
             if (element instanceof INedTypeElement)
             	for (INedTypeElement typeElement : ((INedTypeElement)element).getNEDTypeInfo().getInnerTypes().values())
-            		if (typeElement instanceof IModuleKindTypeElement)
+            		if (typeElement instanceof IModuleKindTypeElement && moduleTypes || typeElement instanceof IChannelKindTypeElement && !moduleTypes)
             		    innerTypeNames.add(typeElement.getNEDTypeInfo().getFullyQualifiedName());
         Collections.sort(innerTypeNames, shortNameComparator);
             		    
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
         for(String fqName : innerTypeNames) {
-            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelOrInnerNedType(fqName, file.getProject()).getNEDElement();
-            addToolEntry(typeElement, MRU_GROUP, entries);
+            INEDTypeInfo toplevelOrInnerNedTypeInfo = NEDResourcesPlugin.getNEDResources().getToplevelOrInnerNedType(fqName, file.getProject());
+            if (toplevelOrInnerNedTypeInfo != null)
+                addToolEntry(toplevelOrInnerNedTypeInfo.getNEDElement(), moduleTypes ? MRU_GROUP : CONNECTIONS_GROUP, entries);
         }
         return entries;
     }
@@ -223,7 +262,6 @@ public class PaletteManager {
     /**
      * Creates several submodule drawers using currently parsed types,
      * and using the GROUP property as the drawer name.
-     * @param contextProject TODO
      */
     private static Map<String, ToolEntry> createSubmodules(IProject contextProject) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
@@ -283,7 +321,7 @@ public class PaletteManager {
 
         entries.put(key, toolEntry);
     }
-
+    
     private static Map<String, ToolEntry> createChannelsStackEntries(IProject contextProject) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 

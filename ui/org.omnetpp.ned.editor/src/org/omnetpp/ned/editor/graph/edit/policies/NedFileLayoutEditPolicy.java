@@ -28,7 +28,6 @@ import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -77,7 +76,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 		EditPart iPoint = getInsertionReference(request);
 		INEDElement insertBeforeNode = iPoint != null ? (INEDElement)iPoint.getModel() : null;
-		NedFileElementEx parent = (NedFileElementEx)getHost().getModel();
+		INEDElement parent = (INEDElement)getHost().getModel();
 		CloneCommand cloneCmd = new CloneCommand(parent, insertBeforeNode);
 
 		// iterate through all involved editparts and add their model to the coning list
@@ -114,8 +113,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	    INedTypeElement newTypeElement = (INedTypeElement)element;
 		EditPart insertionPoint = getInsertionReference(request);
 		INEDElement where = insertionPoint != null ? (INEDElement)insertionPoint.getModel() : null;
-		// XXX FIXME class cast problem. for inner types it is NOT true
-		NedFileElementEx parent = (NedFileElementEx)getHost().getModel();
+		INEDElement parent = (INEDElement)getHost().getModel();
 		return new CreateNedTypeElementCommand(parent, where, newTypeElement);
 	}
 
