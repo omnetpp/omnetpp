@@ -1,3 +1,13 @@
+2007-09-14
+----------
+
+Additions:
+
+   + Scatter plots can be generated from data of vectors.
+
+   + It is possible connect the points by "iso" lines. Values of selected scalars are
+     on iso lines.
+
 2007-08-31
 ----------
 
