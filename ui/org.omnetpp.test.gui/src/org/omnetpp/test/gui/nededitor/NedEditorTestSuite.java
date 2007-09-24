@@ -11,6 +11,7 @@ public class NedEditorTestSuite
         addTestSuite(SaveFileTest.class);
         addTestSuite(NedPathTest.class);
 		addTestSuite(SimpleModuleTypeTest.class);
+		addTestSuite(NedOutlineViewTest.class);
 		addTest(GraphicalEditorTestSuite.suite());
 	}
 

@@ -26,7 +26,7 @@ public class SaveFileTest
 		workbenchWindow.chooseFromMainMenu("File|Save As.*");
 		ShellAccess shell = WorkbenchWindowAccess.findShellByTitle(".*Save As.*");
 		String newFileName = "Renamed.ned";
-		shell.typeIn(newFileName);
+		shell.findTextAfterLabel("File name:").typeIn(newFileName);
 		shell.pressKey(SWT.CR);
 		setFileName(newFileName);
 		assertFileExists();
