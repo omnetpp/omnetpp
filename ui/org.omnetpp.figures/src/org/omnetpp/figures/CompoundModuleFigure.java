@@ -33,18 +33,19 @@ public class CompoundModuleFigure extends NedFigure
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
     private static final int BORDER_SNAP_WIDTH = 3;
 
-	private Layer submoduleLayer;
     private Figure innerTypeContainer;
     private ScrollPane mainContainer;
     private LayeredPane layeredPane;
     private Image backgroundImage;
     private String backgroundImageArrangement = "fix";
+    private Dimension backgroundSize;
     private int gridTickDistance;
     private int gridNoOfMinorTics;
     private Color gridColor;
     private Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
     private Color moduleBorderColor = ERROR_BORDER_COLOR;
     private ConnectionLayer connectionLayer;
+    private Layer submoduleLayer;
     private FreeformLayer messageLayer;
     private SpringEmbedderLayout layouter;
 
@@ -234,7 +235,7 @@ public class CompoundModuleFigure extends NedFigure
         layeredPane.addLayerAfter(connectionLayer = new NedConnectionLayer(), LayerID.CONNECTION, LayerID.FRONT_DECORATION);
         layeredPane.addLayerAfter(messageLayer = new NonExtendableFreeformLayer(), LayerID.MESSAGE, LayerID.CONNECTION);
 
-        submoduleLayer.setLayoutManager(layouter = new SpringEmbedderLayout(submoduleLayer, connectionLayer));
+        submoduleLayer.setLayoutManager(layouter = new SpringEmbedderLayout(this));
 
         // the main container area (where submodules are displayed) of the compModule
         // create scroller and viewport to manage the scrollbars and scrolling
@@ -285,6 +286,9 @@ public class CompoundModuleFigure extends NedFigure
         return innerTypeContainer;
     }
 
+    public IFigure getConectionContainer() {
+        return connectionLayer;
+    }
     /**
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
@@ -438,7 +442,7 @@ public class CompoundModuleFigure extends NedFigure
         // otherwise getPreferredSize should return the size calculated from the children
         // we call the resizing last time because other parameters like the icon size or the border width
         // can affect the size of bounding box
-        Dimension newSize = dps.getCompoundSize(null);
+        backgroundSize = dps.getCompoundSize(null);
 
         long seed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
@@ -448,9 +452,9 @@ public class CompoundModuleFigure extends NedFigure
         }
 
         // size is manually set
-        if (newSize.height > 0 || newSize.width > 0) {
+        if (backgroundSize.height > 0 || backgroundSize.width > 0) {
             Insets borderInset = mainContainer.getBorder().getInsets(this);
-            Dimension newPrefSize = newSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
+            Dimension newPrefSize = backgroundSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
             mainContainer.setPreferredSize(newPrefSize);
         } 
         else { // size should be calculated by the layouter
@@ -500,5 +504,9 @@ public class CompoundModuleFigure extends NedFigure
 	public void removeMessageFigure(IFigure messageFigure) {
 		messageLayer.remove(messageFigure);
 	}
+
+    public Dimension getBackgroundSize() {
+        return backgroundSize;
+    }
 
 }

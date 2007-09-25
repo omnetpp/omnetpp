@@ -22,22 +22,20 @@ import org.omnetpp.figures.SubmoduleFigure;
 public class SpringEmbedderLayout extends XYLayout {
 
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
-	private static final int DEFAULT_MAX_WIDTH = 680;
-	private static final int DEFAULT_MAX_HEIGHT = 450;
-	protected IFigure edgeParent;
-	protected IFigure nodeParent;
+	private static final int DEFAULT_MAX_WIDTH = 740;
+	private static final int DEFAULT_MAX_HEIGHT = 500;
 	protected long algSeed = 1971;
     private boolean requestAutoLayout = true;
+    private CompoundModuleFigure compoundFigure;
 
 	/**
 	 *
 	 * @param nodeParent The parent figure of the nodes
 	 * @param connectionParent The parent figure of the connection figures
 	 */
-	public SpringEmbedderLayout(IFigure nodeParent, IFigure edgeParent) {
+	public SpringEmbedderLayout(CompoundModuleFigure compoundFigure) {
 		super();
-		this.nodeParent = nodeParent;
-		this.edgeParent = edgeParent;
+		this.compoundFigure = compoundFigure;
  	}
 
 	/**
@@ -46,14 +44,16 @@ public class SpringEmbedderLayout extends XYLayout {
 	 * @param edgeParent The parent figure of the connections (usually the ConnectionLayer)
 	 */
 	@SuppressWarnings("unchecked")
-	protected AbstractGraphLayoutAlgorithm createAutoLayouter(IFigure nodeParent, IFigure edgeParent) {
-        BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
+	protected AbstractGraphLayoutAlgorithm createAutoLayouter() {
+	    IFigure nodeParent = compoundFigure.getSubmoduleContainer(); 
+	    IFigure edgeParent = compoundFigure.getConectionContainer();
+	    BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
 		autoLayouter.setRepulsiveForce(500.0);
 		autoLayouter.setMaxIterations(500);
 		// set the layouting area
-		int width = nodeParent.getPreferredSize().width;
-		int height = nodeParent.getPreferredSize().height;
+		int width = compoundFigure.getBackgroundSize().width;
+		int height = compoundFigure.getBackgroundSize().height;
 		// if the size is not present, use a default size;
 		if (width <= 0) width = DEFAULT_MAX_WIDTH;
 		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
@@ -98,8 +98,6 @@ public class SpringEmbedderLayout extends XYLayout {
 				}
 
 			}
-
-
 		return autoLayouter;
 	}
 
@@ -118,7 +116,7 @@ public class SpringEmbedderLayout extends XYLayout {
         AbstractGraphLayoutAlgorithm alg = null;
         // find the place of movable nodes if auto-layout requested
         if (requestAutoLayout) {
-            alg = createAutoLayouter(nodeParent, edgeParent);
+            alg = createAutoLayouter();
             alg.setSeed((int)algSeed);
             alg.execute();
             requestAutoLayout = false;
