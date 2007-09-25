@@ -696,7 +696,7 @@ public class ColorFactory {
         if (img != null)
             return img;
 
-        ImageData idata = createColorImageData(value);
+        ImageData idata = createColorImageData(value, false);
         if (idata == null)
             return null;
         // store it for later use
@@ -744,8 +744,9 @@ public class ColorFactory {
      * RGB value. which is a 16 pixel square.
      *
      * @param colorId the colorId
+     * @param createNullImage if true creates an image with an 'X' when the color is not found
      */
-    private static ImageData createColorImageData(String colorId) {
+    private static ImageData createColorImageData(String colorId, boolean createNullImage) {
 
         int size = 11;
         int indent = 0;
@@ -760,26 +761,50 @@ public class ColorFactory {
 
         RGB black = new RGB(0, 0, 0);
         RGB color = ColorFactory.asRGB(colorId);
-        if (color == null)
-            return null;
+        PaletteData dataPalette;
+        
+        if (color == null) {
+        	if (createNullImage)
+        		dataPalette = new PaletteData(new RGB[] { black, black});
+        	else
+        		return null;
+        }
+        else
+            dataPalette = new PaletteData(new RGB[] { black, black, color });
 
-        PaletteData dataPalette
-            = new PaletteData(new RGB[] { black, black, color });
         ImageData data = new ImageData(width, height, 4, dataPalette);
         data.transparentPixel = 0;
+        int fillColor = color != null ? 2 : 0;
+        int lineColor = 1;
 
         int end = size - 1;
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
-                if (x == 0 || y == 0 || x == end || y == end) {
-                    data.setPixel(x + xoffset, y + yoffset, 1);
+                if (x == 0 || y == 0 || x == end || y == end ||
+                	(color == null && (y == x || y == size - x - 1))) {
+                	
+                    data.setPixel(x + xoffset, y + yoffset, lineColor);
                 }
                 else {
-                    data.setPixel(x + xoffset, y + yoffset, 2);
+                    data.setPixel(x + xoffset, y + yoffset, fillColor);
                 }
             }
         }
 
         return data;
+    }
+    
+    /**
+     * Creates an image without caching.
+     * @param colorId the colorId
+     * @param createNullImage if true creates an image with an 'X' when the color is not found
+     */
+    public static Image createColorImage(String colorId, boolean createNullImage) {
+    	ImageData imageData = createColorImageData(colorId, createNullImage);
+    	if (imageData != null) {
+    		return ImageDescriptor.createFromImageData(imageData).createImage();
+    	}
+    	else
+    		return null;
     }
 }
