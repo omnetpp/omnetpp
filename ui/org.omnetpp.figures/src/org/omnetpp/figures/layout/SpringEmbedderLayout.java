@@ -6,10 +6,12 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.SubmoduleFigure;
 
 
 /**
@@ -19,6 +21,7 @@ import org.omnetpp.figures.CompoundModuleFigure;
  */
 public class SpringEmbedderLayout extends XYLayout {
 
+    private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 	private static final int DEFAULT_MAX_WIDTH = 680;
 	private static final int DEFAULT_MAX_HEIGHT = 450;
 	protected IFigure edgeParent;
@@ -177,5 +180,38 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	public void requestAutoLayout() {
 	    requestAutoLayout = true;
+	}
+	
+	@Override
+	protected Dimension calculatePreferredSize(IFigure f, int hint, int hint2) {
+	    if (f.getChildren().size() == 0)
+	        return new Dimension(DEFAULT_SIZE);
+	    Rectangle rect = new Rectangle();
+	    for(IFigure child : (List<IFigure>)f.getChildren()) {
+	        Rectangle r = (Rectangle)constraints.get(child);
+	        if (r == null)
+	            continue;
+	        
+	        // translate the x,y as we use the center of the figure in the constraint
+	        r = r.getTranslated(-r.width/2, -r.height/2);
+
+	        if (r.width == -1 || r.height == -1) {
+	            Dimension preferredSize = child.getPreferredSize(r.width, r.height);
+	            r = r.getCopy();
+	            if (r.width == -1)
+	                r.width = preferredSize.width;
+	            if (r.height == -1)
+	                r.height = preferredSize.height;
+	        }
+	        
+	        if (child instanceof SubmoduleFigure) {
+	            // add the label bounds to it
+	            r.union(((SubmoduleFigure)child).getLabelBounds());
+	        }
+	        rect.union(r);
+	    }
+	    
+	    return new Dimension(rect.width + f.getInsets().getWidth(), rect.height + f.getInsets().getHeight()).
+	        union(getBorderPreferredSize(f));
 	}
 }

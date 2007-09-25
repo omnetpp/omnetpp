@@ -317,6 +317,12 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         return getBounds();
     }
 
+    /**
+     * The bounds of the name label figure
+     */
+    public Rectangle getLabelBounds() {
+        return nameFigure.getBounds();
+    }
 	/**
 	 * Adjusts the image properties using a displayString object (except the location and size)
 	 */

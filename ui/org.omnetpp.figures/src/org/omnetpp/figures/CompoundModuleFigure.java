@@ -16,8 +16,6 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
 import org.omnetpp.figures.misc.ILayerSupport;
-import org.omnetpp.figures.misc.NedConnectionLayer;
-import org.omnetpp.figures.misc.NonExtendableFreeformLayer;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
@@ -34,7 +32,6 @@ public class CompoundModuleFigure extends NedFigure
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
     private static final int BORDER_SNAP_WIDTH = 3;
-    private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 
 	private Layer submoduleLayer;
     private Figure innerTypeContainer;
@@ -134,6 +131,58 @@ public class CompoundModuleFigure extends NedFigure
 
     }
 
+    // main layer used to display submodules
+    class SubmoduleLayer extends FreeformLayer {
+        // we get the submodule size from the submodule layouter directly
+        @Override
+        public Rectangle getFreeformExtent() {
+            invalidate();
+            Rectangle rect = super.getFreeformExtent();
+            rect.setSize(layouter.getPreferredSize(this, -1, -1));
+            return rect;
+        }
+    }
+
+    /**
+     * A special layer used in compound module, for holding the connections. This
+     * layer overrides the getFreeFormExtent method, so the size of this layer will not be
+     * used during the calculation of compound module size.
+     *
+     * @author rhornig
+     */
+    class NedConnectionLayer extends ConnectionLayer {
+
+        /* (non-Javadoc)
+         * @see org.eclipse.draw2d.FreeformLayer#getFreeformExtent()
+         * This method is overridden so the size of a NEDConnecionLayer is not counted during
+         * compound module size calculation. This prevents showing the scrollbars if we move
+         * a connection end-point out of the compound module
+         */
+        @Override
+        public Rectangle getFreeformExtent() {
+            // the size of the figure is always smaller than it's parent (it's a point in the middle)
+            return getParent().getBounds().getCopy().scale(0);
+        }
+
+        @Override
+        public void paint(Graphics graphics) {
+            graphics.pushState();
+            // set antialiasing on content and child/derived figures
+            if (NedFileFigure.antialias != SWT.DEFAULT)
+                graphics.setAntialias(NedFileFigure.antialias);
+            super.paint(graphics);
+            graphics.popState();
+        }
+    }
+
+    class NonExtendableFreeformLayer extends FreeformLayer {
+        @Override
+        public Rectangle getFreeformExtent() {
+            // the size of the figure is always smaller than it's parent (it's a point in the middle of the parent figure)
+            return getParent().getBounds().getCopy().scale(0);
+        }
+    }
+    
     /**
      * Used at the left inner types compartment.
      */
@@ -180,8 +229,8 @@ public class CompoundModuleFigure extends NedFigure
         layeredPane.setLayoutManager(new StackLayout());
         layeredPane.addLayerAfter(new BackgroundLayer(), LayerID.BACKGROUND, null);
         layeredPane.addLayerAfter(new NonExtendableFreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
-        layeredPane.addLayerAfter(submoduleLayer = new FreeformLayer(), LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
+        layeredPane.addLayerAfter(submoduleLayer = new SubmoduleLayer(), LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
+        layeredPane.addLayerAfter(new NonExtendableFreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
         layeredPane.addLayerAfter(connectionLayer = new NedConnectionLayer(), LayerID.CONNECTION, LayerID.FRONT_DECORATION);
         layeredPane.addLayerAfter(messageLayer = new NonExtendableFreeformLayer(), LayerID.MESSAGE, LayerID.CONNECTION);
 
@@ -190,10 +239,10 @@ public class CompoundModuleFigure extends NedFigure
         // the main container area (where submodules are displayed) of the compModule
         // create scroller and viewport to manage the scrollbars and scrolling
         mainContainer = new ScrollPane();
+        mainContainer.setScrollBarVisibility(ScrollPane.NEVER);
         mainContainer.setViewport(new FreeformViewport());
         mainContainer.setContents(layeredPane);
         mainContainer.setBorder(new CompoundModuleLineBorder());
-        mainContainer.setPreferredSize(DEFAULT_SIZE);
         add(mainContainer);
 
         // this effectively creates the following hierarchy:
@@ -270,7 +319,7 @@ public class CompoundModuleFigure extends NedFigure
 
     @Override
     public Dimension getPreferredSize(int w, int h) {
-    	// IMPORTANT: we do not care about external size hints
+    	// IMPORTANT: we do not care about external size hints so we do not pass the downwards
         return super.getPreferredSize(-1, -1);
     }
 
@@ -403,12 +452,9 @@ public class CompoundModuleFigure extends NedFigure
             Insets borderInset = mainContainer.getBorder().getInsets(this);
             Dimension newPrefSize = newSize.getCopy().expand(borderInset.getWidth(), borderInset.getHeight());
             mainContainer.setPreferredSize(newPrefSize);
-        } // not set manually and there are child submodules (can be calculated automatically y the layouter)
-        else if (submoduleLayer.getChildren().size() > 0) {
+        } 
+        else { // size should be calculated by the layouter
             mainContainer.setPreferredSize(null);
-        } // no manual size neither submodule children (set it to a default initial size)
-        else {
-            mainContainer.setPreferredSize(DEFAULT_SIZE);
         }
         invalidate();
 	}
