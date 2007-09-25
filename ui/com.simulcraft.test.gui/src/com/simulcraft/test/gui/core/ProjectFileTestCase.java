@@ -2,6 +2,7 @@ package com.simulcraft.test.gui.core;
 
 
 import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
@@ -37,7 +38,12 @@ public class ProjectFileTestCase
 		WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 	}
 
-	protected void assertFileExists() {
+    protected EditorPartAccess findEditorPart() {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        return workbenchWindow.findEditorPartByTitle(fileName);
+    }
+
+    protected void assertFileExists() {
 		WorkspaceUtils.assertFileExists(filePath);
 	}
 

@@ -16,5 +16,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned.model,
  org.omnetpp.ned.editor,
  org.omnetpp.figures,
+ org.omnetpp.eventlogtable,
+ org.omnetpp.sequencechart,
  com.simulcraft.test.gui
 Bundle-Vendor: OpenSim Ltd.
