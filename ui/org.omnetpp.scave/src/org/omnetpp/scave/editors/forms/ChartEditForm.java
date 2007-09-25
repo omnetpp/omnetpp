@@ -19,6 +19,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -356,7 +357,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			this.label = label;
 			text.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
-					label.setImage(ColorFactory.asImage(text.getText()));
+					updateImageLabel();
 				}
 			});
 		}
@@ -367,7 +368,15 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		
 		public void setText(String color) {
 			text.setText(color);
-			label.setImage(ColorFactory.asImage(color));
+			updateImageLabel();
+		}
+		
+		private void updateImageLabel() {
+			Image image = ColorFactory.createColorImage(text.getText(), true);
+			Image oldImage = label.getImage();
+			label.setImage(image);
+			if (oldImage != null)
+				oldImage.dispose();
 		}
 	}
 	
@@ -376,11 +385,14 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		label.setText(labelText);
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		panel.setLayout(new GridLayout(3, false));
+		GridLayout layout = new GridLayout(3, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		panel.setLayout(layout);
 		Label imageLabel = new Label(panel, SWT.NONE);
 		imageLabel.setLayoutData(new GridData(16,16));
 		Text text = new Text(panel, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), new ColorContentProposalProvider(), 
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 		Button button = new Button(panel, SWT.NONE);
