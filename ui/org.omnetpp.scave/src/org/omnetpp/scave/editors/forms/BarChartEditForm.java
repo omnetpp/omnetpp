@@ -20,6 +20,7 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -43,6 +44,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 public class BarChartEditForm extends ChartEditForm {
+	
+	public static final String TAB_BARS = "Bars";
 
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
 		pkg.getChart_Name(),
@@ -58,6 +61,9 @@ public class BarChartEditForm extends ChartEditForm {
 	private List groupFieldsList;
 	private List barFieldsList;
 	private List averagingFieldsList;
+	
+	// Labels
+	private Button wrapLabelsCheckbox;
 
 	// Bars
 	private Text baselineText;
@@ -76,7 +82,7 @@ public class BarChartEditForm extends ChartEditForm {
 		super.populateTabItem(item);
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
-		if ("Main".equals(name)) {
+		if (TAB_MAIN.equals(name)) {
 			Group group = createGroup("Content", panel, 1, 3);
 			Label label = new Label(group, SWT.WRAP);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -89,7 +95,10 @@ public class BarChartEditForm extends ChartEditForm {
 			averagingFieldsList = createFieldsList(group);
 			barFieldsList.setItems(fieldNames);
 		}
-		else if ("Bars".equals(name)) {
+		else if (TAB_TITLES.equals(name)) {
+			wrapLabelsCheckbox = createCheckboxField("wrap labels", axisTitlesGroup);
+		}
+		else if (TAB_BARS.equals(name)) {
 			if (chart instanceof BarChart) {
 				baselineText = createTextField("Baseline", panel);
 				barPlacementCombo = createComboField("Bar placement", panel, BarPlacement.class, false);
@@ -208,6 +217,7 @@ public class BarChartEditForm extends ChartEditForm {
 		ScalarChartProperties props = (ScalarChartProperties)newProps;
 		props.setBarBaseline(baselineText.getText());
 		props.setBarPlacement(resolveEnum(barPlacementCombo.getText(), BarPlacement.class));
+		props.setWrapLabels(wrapLabelsCheckbox.getSelection());
 	}
 
 	@Override
@@ -216,5 +226,6 @@ public class BarChartEditForm extends ChartEditForm {
 		ScalarChartProperties scalarProps = (ScalarChartProperties)props;
 		baselineText.setText(scalarProps.getBarBaseline());
 		barPlacementCombo.setText(scalarProps.getBarPlacement()==null ? NO_CHANGE : scalarProps.getBarPlacement().toString());
+		wrapLabelsCheckbox.setSelection(scalarProps.getWrapLabels());
 	}
 }

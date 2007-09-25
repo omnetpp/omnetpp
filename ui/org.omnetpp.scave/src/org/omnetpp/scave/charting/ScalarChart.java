@@ -5,6 +5,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_OUTLINE_COLOR
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_WRAP_LABELS;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
@@ -14,6 +15,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
@@ -144,7 +146,9 @@ public class ScalarChart extends ChartCanvas {
 			setLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
 			setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
-		// Bars
+		else if (PROP_WRAP_LABELS.equals(name))
+			setWrapLabels(Converter.stringToBoolean(value));
+		// Bars	
 		else if (PROP_BAR_BASELINE.equals(name))
 			setBarBaseline(Converter.stringToDouble(value));
 		else if (PROP_BAR_PLACEMENT.equals(name))
@@ -213,6 +217,13 @@ public class ScalarChart extends ChartCanvas {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
 		domainAxis.rotation = Math.max(0, Math.min(90, angle));
+		chartChanged();
+	}
+	
+	public void setWrapLabels(Boolean value) {
+		if (value == null)
+			value = DEFAULT_WRAP_LABELS;
+		domainAxis.wrapLabels = value;
 		chartChanged();
 	}
 

@@ -14,6 +14,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
@@ -79,6 +80,7 @@ public class ChartDefaults {
 	public static final double DEFAULT_BAR_BASELINE = 0.0;
 	public static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
 	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
+	public static final boolean DEFAULT_WRAP_LABELS = true;
 
 	// lines
 	public static final boolean DEFAULT_DISPLAY_LINE = true;
@@ -115,6 +117,7 @@ public class ChartDefaults {
 		// TODO: AXIS_COLOR
 		defaults.put(PROP_LABEL_FONT, DEFAULT_LABELS_FONT);
 		defaults.put(PROP_X_LABELS_ROTATE_BY, DEFAULT_X_LABELS_ROTATED_BY);
+		defaults.put(PROP_WRAP_LABELS, DEFAULT_WRAP_LABELS);
 		
 		defaults.put(PROP_XY_GRID, DEFAULT_SHOW_GRID);
 		

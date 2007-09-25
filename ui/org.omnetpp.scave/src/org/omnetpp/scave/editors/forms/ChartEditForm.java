@@ -88,6 +88,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button antialiasCheckbox;
 	private Button cachingCheckbox;
 
+	protected Group axisTitlesGroup;
 	private Text graphTitleText;
 	private Text graphTitleFontText;
 	private Text xAxisTitleText;
@@ -199,12 +200,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			group = createGroup("Graph title", panel);
 			graphTitleText = createTextField("Graph title:", group);
 			graphTitleFontText = createTextField("Title font:", group);
-			group = createGroup("Axis titles", panel);
-			xAxisTitleText = createTextField("X axis title:", group);
-			yAxisTitleText = createTextField("Y axis title:", group);
-			axisTitleFontText = createTextField("Axis title font:", group);
-			labelFontText = createTextField("Label font:", group);
-			xLabelsRotateByCombo = createComboField("Rotate X labels by:", group, new String[] {"0", "30", "45", "60", "90"});
+			axisTitlesGroup = createGroup("Axis titles", panel);
+			xAxisTitleText = createTextField("X axis title:", axisTitlesGroup);
+			yAxisTitleText = createTextField("Y axis title:", axisTitlesGroup);
+			axisTitleFontText = createTextField("Axis title font:", axisTitlesGroup);
+			labelFontText = createTextField("Label font:", axisTitlesGroup);
+			xLabelsRotateByCombo = createComboField("Rotate X labels by:", axisTitlesGroup, new String[] {"0", "30", "45", "60", "90"});
 		}
 		else if (TAB_AXES.equals(name)) {
 			group = createGroup("Axis bounds", panel, 3);

@@ -51,6 +51,7 @@ public class ChartProperties extends PropertySource {
 		PROP_AXIS_TITLE_FONT	= "Axis.Title.Font",
 		PROP_LABEL_FONT			= "Label.Font",
 		PROP_X_LABELS_ROTATE_BY	= "X.Label.RotateBy",
+		PROP_WRAP_LABELS		= "X.Label.Wrap",
 		// Axes
 		PROP_X_AXIS_MIN			= "X.Axis.Min",
 		PROP_X_AXIS_MAX			= "X.Axis.Max",
@@ -468,6 +469,14 @@ public class ChartProperties extends PropertySource {
 		public ScalarChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 			super(chart, properties, manager);
 		}
+
+		/*======================================================================
+		 *                             Titles
+		 *======================================================================*/
+		@org.omnetpp.common.properties.Property(category="Titles",id=PROP_WRAP_LABELS)
+		public boolean getWrapLabels() { return getBooleanProperty(PROP_WRAP_LABELS); }
+		public void setWrapLabels(boolean wrap) { setProperty(PROP_WRAP_LABELS, wrap); }
+		public boolean defaultWrapLabels() { return ChartDefaults.DEFAULT_WRAP_LABELS; }
 
 		/*======================================================================
 		 *                             Bars
