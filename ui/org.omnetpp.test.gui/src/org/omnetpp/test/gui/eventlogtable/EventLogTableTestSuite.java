@@ -8,6 +8,12 @@ public class EventLogTableTestSuite
 {
     public EventLogTableTestSuite() {
         addTestSuite(OpenFileTest.class);
+        addTestSuite(MoveAroundTest.class);
+        addTestSuite(SearchTest.class);
+        addTestSuite(BookmarkTest.class);
+        addTestSuite(DisplayModeTest.class);
+        addTestSuite(FilterModeTest.class);
+        addTestSuite(FilterEventLogTest.class);
     }
 
     public static Test suite() {
