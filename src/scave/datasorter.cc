@@ -539,8 +539,15 @@ XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, cons
 		IDList groupAsIDList;
 		for (IDVector::iterator id = group->begin(); id != group->end(); id++)
 			groupAsIDList.add(*id);
-		XYDataset dataset = prepareScatterPlot2(groupAsIDList, moduleName, scalarName, rowFields, columnFields);
-		datasets.push_back(dataset);
+		
+		try
+		{
+			XYDataset dataset = prepareScatterPlot2(groupAsIDList, moduleName, scalarName, rowFields, columnFields);
+			datasets.push_back(dataset);
+		}
+		catch (opp_runtime_error &e) {
+			// no X data for some iso values -> omit from the result
+		}
 	}
 	
 	return datasets;
