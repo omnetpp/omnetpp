@@ -87,8 +87,10 @@ void FileReader::ensureFileOpen()
 
 void FileReader::ensureFileClosed()
 {
-    if (f)
+    if (f) {
         fclose(f);
+        f = NULL;
+    }
 }
 
 void FileReader::checkConsistence()

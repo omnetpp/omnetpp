@@ -26,6 +26,8 @@ static double zero = 0;
 
 static double NaN = zero / zero;
 
+inline bool isNaN(double x) { return x != x; }
+
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     timelineMode = NONLINEAR;
@@ -34,14 +36,14 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
     timelineCoordinateOriginSimulationTime = -1;
 
     nonLinearMinimumTimelineCoordinateDelta = 0.1;
-    nonLinearFocus = calculateNonLinearFocus();
+    setNonLinearFocus(calculateNonLinearFocus());
 }
 
 void SequenceChartFacade::synchronize()
 {
     EventLogFacade::synchronize();
 
-    nonLinearFocus = calculateNonLinearFocus();
+    setNonLinearFocus(calculateNonLinearFocus());
 
     if (timelineCoordinateOriginEventNumber != -1)
         relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
@@ -50,11 +52,20 @@ void SequenceChartFacade::synchronize()
 double SequenceChartFacade::calculateNonLinearFocus()
 {
     if (!eventLog->isEmpty()) {
-        double totalSimulationTimeDelta = eventLog->getLastEvent()->getSimulationTime().dbl() - eventLog->getFirstEvent()->getSimulationTime().dbl();
-        return totalSimulationTimeDelta / eventLog->getApproximateNumberOfEvents() / 10;
+        double lastEventSimulationTime = eventLog->getLastEvent()->getSimulationTime().dbl();
+        double firstEventSimulationTime = eventLog->getFirstEvent()->getSimulationTime().dbl();
+        double totalSimulationTimeDelta = lastEventSimulationTime - firstEventSimulationTime;
+
+        if (totalSimulationTimeDelta == 0)
+            totalSimulationTimeDelta = firstEventSimulationTime;
+
+        if (totalSimulationTimeDelta == 0)
+            return 1;
+        else
+            return totalSimulationTimeDelta / eventLog->getApproximateNumberOfEvents() / 10;
     }
     else
-        return -1;
+        return 1;
 }
 
 void SequenceChartFacade::setNonLinearMinimumTimelineCoordinateDelta(double value)
@@ -65,7 +76,7 @@ void SequenceChartFacade::setNonLinearMinimumTimelineCoordinateDelta(double valu
 
 void SequenceChartFacade::setNonLinearFocus(double nonLinearFocus)
 {
-    Assert(0 <= nonLinearFocus);
+    Assert(nonLinearFocus >= 0);
     this->nonLinearFocus = nonLinearFocus;
 }
 
@@ -96,6 +107,8 @@ double SequenceChartFacade::Event_getTimelineCoordinate(int64 ptr)
 
 double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelta)
 {
+    Assert(nonLinearFocus > 0);
+
     if (timelineMode == STEP)
         return 1;
     else
@@ -319,6 +332,8 @@ void SequenceChartFacade::extractSimulationTimesAndTimelineCoordinates(
 
 double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperLimit)
 {
+    Assert(!isNaN(timelineCoordinate));
+
     if (eventLog->isEmpty())
         return 0;
 
@@ -367,6 +382,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
             throw opp_runtime_error("Unknown timeline mode");
     }
 
+    Assert(!isNaN(simulationTime));
     Assert(simulationTime >= 0);
     Assert(simulationTime <= eventLog->getLastEvent()->getSimulationTime().dbl());
 
@@ -375,6 +391,8 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 
 double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime, bool upperLimit)
 {
+    Assert(!isNaN(simulationTime));
+
     if (eventLog->isEmpty())
         return 0;
 
@@ -422,6 +440,8 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
         default:
             throw opp_runtime_error("Unknown timeline mode");
     }
+
+    Assert(!isNaN(timelineCoordinate));
 
     return timelineCoordinate;
 }
