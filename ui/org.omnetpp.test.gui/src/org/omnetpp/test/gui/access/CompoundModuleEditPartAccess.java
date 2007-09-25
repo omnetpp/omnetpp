@@ -11,8 +11,6 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.test.gui.core.InUIThread;
-import org.omnetpp.test.gui.core.NotInUIThread;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditPartAccess;
@@ -20,6 +18,8 @@ import com.simulcraft.test.gui.access.FigureAccess;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
 import com.simulcraft.test.gui.access.TextAccess;
+import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
 
 public class CompoundModuleEditPartAccess extends EditPartAccess
 {

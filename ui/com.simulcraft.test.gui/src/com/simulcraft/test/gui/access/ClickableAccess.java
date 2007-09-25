@@ -7,9 +7,11 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.color.ColorFactory;
 
 import com.simulcraft.test.gui.core.InUIThread;
 
@@ -20,7 +22,7 @@ public class ClickableAccess
     public static int mouseMoveDurationMillis = 500;
     public static int mouseMoveMaxSteps = 30;
 
-    // mouse trajectory: two functions fx(t),fy(t) needed, both [0,1)->[0,1) and f(0)=0 and f(1)=1
+    // mouse trajectory: two functions fx(t),fy(t) needed, f(0)=0 and f(1)=1 for both, 0<=t<1
     interface Ft01 { double f(double t); };
     
     //private Ft01 xt = new Ft01() { public double f(double t) { return pow(t, 0.2); } };
@@ -52,7 +54,7 @@ public class ClickableAccess
 	            double dt = 1.0 / steps;
 	            for (double t = 0; t < 1.0; t += dt) {
 	                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(xt.f(t)*(x-p.x)), p.y + (int)(yt.f(t)*(y-p.y)));
-	                try { Thread.sleep(stepMillis); } catch (InterruptedException e) {}
+	                try { Thread.sleep(stepMillis); } catch (InterruptedException e) { break; }
 	            }
 	        }
 	        postMouseEvent(SWT.MouseMove, 0, x, y);
@@ -69,6 +71,8 @@ public class ClickableAccess
 		moveMouseAbsolute(x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
+		
+		animateClick(x, y);
 	}
 
     @InUIThread
@@ -81,6 +85,7 @@ public class ClickableAccess
 		clickAbsolute(button, x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
+        animateClick(x, y);
 	}
 
 	@InUIThread
@@ -92,4 +97,18 @@ public class ClickableAccess
 	public void doubleClickCenterAbsolute(int button, Rectangle rectangle) {
 		doubleClickAbsolute(button, getCenter(rectangle));
 	}
+
+    @SuppressWarnings("deprecation")
+    protected void animateClick(int x, int y) {
+        // draw inflating red circle (red=complement of cyan)
+        GC gc = new GC(Display.getCurrent());
+        gc.setForeground(ColorFactory.CYAN);
+        gc.setLineWidth(2);
+        gc.setXORMode(true); // won't work on Mac
+        for (int r = 2; r < 25; r++) {
+            gc.drawOval(x-r, y-r, 2*r, 2*r);
+            try { Thread.sleep(5); } catch (InterruptedException e) { break; }
+            gc.drawOval(x-r, y-r, 2*r, 2*r);
+        }
+    }
 }
