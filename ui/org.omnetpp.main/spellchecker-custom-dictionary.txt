@@ -218,3 +218,7 @@ nedfolders
 uneditable
 misc
 retargetable
+simulcraft
+com
+aspectj
+ltd

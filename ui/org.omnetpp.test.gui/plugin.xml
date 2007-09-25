@@ -2,14 +2,13 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         id="org.omnetpp.test.gui.application"
-         name="OMNeT++ IDE Product Test Application"
+         id="com.simulcraft.test.gui.application"
+         name="Simulcraft Product Test Application"
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.omnetpp.test.gui.core.TestApplication">
+               class="com.simulcraft.test.gui.core.TestApplication">
          </run>
       </application>
    </extension>
-
 </plugin>

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ Teszt
+Bundle-Name: OMNEST/OMNeT++ Test
 Bundle-SymbolicName: org.omnetpp.test.gui;singleton:=true
 Bundle-Version: 4.0.0
 Require-Bundle: org.eclipse.core.runtime,
@@ -10,10 +10,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide.application,
  org.eclipse.gef,
  org.junit,
- org.omnetpp.common,
  org.aspectj.runtime,
+ org.omnetpp.common,
  org.omnetpp.ned.core,
  org.omnetpp.ned.model,
  org.omnetpp.ned.editor,
- org.omnetpp.figures
+ org.omnetpp.figures,
+ com.simulcraft.test.gui
 Bundle-Vendor: OpenSim Ltd.

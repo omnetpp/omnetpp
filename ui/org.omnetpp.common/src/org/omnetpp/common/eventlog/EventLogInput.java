@@ -119,6 +119,9 @@ public class EventLogInput
 	public void dispose() {
 		if (eventLogWatcher != null)
 			eventLogWatcher.stop();
+		
+		if (eventLog != null)
+		    eventLog.getFileReader().ensureFileClosed();
 	}
 
 	@Override

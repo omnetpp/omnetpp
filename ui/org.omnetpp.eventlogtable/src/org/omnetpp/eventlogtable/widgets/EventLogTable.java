@@ -146,9 +146,10 @@ public class EventLogTable
 		else {
 			List<EventLogEntryReference> selectionElements = getSelectionElements();
 			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
-			
-			for (EventLogEntryReference selectionElement : selectionElements)
-				selectionEvents.add(eventLog.getEventForEventNumber(selectionElement.getEventNumber()));
+
+			if (selectionElements != null)
+    			for (EventLogEntryReference selectionElement : selectionElements)
+    				selectionEvents.add(eventLog.getEventForEventNumber(selectionElement.getEventNumber()));
 	
 			return new EventLogSelection(eventLogInput, selectionEvents);
 		}

@@ -27,7 +27,18 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -41,7 +52,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
-
 import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
@@ -56,7 +66,16 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
-import org.omnetpp.eventlog.engine.*;
+import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EventLogMessageEntry;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
+import org.omnetpp.eventlog.engine.FilteredMessageDependency;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.Int64Vector;
+import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
@@ -159,7 +178,7 @@ public class SequenceChart
 
 	private int fixPointViewportCoordinate; // the viewport coordinate of the coordinate system origin stored in the facade
 
-	private double pixelPerTimelineCoordinate = -1;
+	private double pixelPerTimelineCoordinate;
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private double axisSpacing = 1; // y distance between two axes, might be fractional pixels to have precise positioning for several axes
 	private AxisSpacingMode axisSpacingMode = AxisSpacingMode.AUTO;
@@ -345,7 +364,7 @@ public class SequenceChart
 	 * Set chart scale (number of pixels a "timeline unit" maps to).
 	 */
 	public void setPixelPerTimelineCoordinate(double pixelPerTimelineCoordinate) {
-		Assert.isTrue(pixelPerTimelineCoordinate >= 0);
+		Assert.isTrue(pixelPerTimelineCoordinate > 0);
 		this.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
 		clearCanvasCacheAndRedraw();
 	}
@@ -967,7 +986,6 @@ public class SequenceChart
 
 				if (fixPointEvent != null) {
 					setPixelPerTimelineCoordinate(sequenceChartState.pixelPerTimelineCoordinate);
-
 					setAxisModules(eventLogInput.getSelectedModules());
 
 					if (sequenceChartState.axisStates != null) {
@@ -1265,10 +1283,10 @@ public class SequenceChart
 	 * Calculates initial pixelPerTimelineUnit.
 	 */
 	private void calculatePixelPerTimelineUnit() {
-		if (pixelPerTimelineCoordinate == -1) {
+		if (pixelPerTimelineCoordinate == 0) {
 			int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
 
-			if (distance > 0) {
+			if (distance > 1) {
 				IEvent firstEvent = eventLog.getFirstEvent();
 				double firstEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(firstEvent);
 				double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(firstEvent, distance - 1));
@@ -1276,6 +1294,8 @@ public class SequenceChart
 				double value = timelineCoordinateDelta / getViewportWidth();
 				setPixelPerTimelineCoordinate(value);
 			}
+			else
+                setPixelPerTimelineCoordinate(1);
 		}
 	}
 
@@ -1302,7 +1322,7 @@ public class SequenceChart
 	}
 
 	private void calculateStuff() {
-		if (pixelPerTimelineCoordinate == -1)
+		if (pixelPerTimelineCoordinate == 0)
 			calculatePixelPerTimelineUnit();
 
 		if (invalidVirtualSize)
@@ -2528,6 +2548,7 @@ public class SequenceChart
 	 * Translates from viewport pixel x coordinate to timeline coordinate, using pixelPerTimelineCoordinate.
 	 */
 	public double getTimelineCoordinateForViewportCoordinate(int x) {
+	    Assert.isTrue(pixelPerTimelineCoordinate > 0);
 		return (x - fixPointViewportCoordinate) / pixelPerTimelineCoordinate;
 	}
 
@@ -2535,6 +2556,7 @@ public class SequenceChart
 	 * Translates from viewport pixel x coordinate to timeline coordinate, using pixelPerTimelineCoordinate.
 	 */
 	public double getTimelineCoordinateForViewportCoordinate(double x) {
+        Assert.isTrue(pixelPerTimelineCoordinate > 0);
 		return (x - fixPointViewportCoordinate) / pixelPerTimelineCoordinate;
 	}
 
