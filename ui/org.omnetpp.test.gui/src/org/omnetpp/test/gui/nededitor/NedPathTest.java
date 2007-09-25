@@ -2,9 +2,9 @@ package org.omnetpp.test.gui.nededitor;
 
 import junit.framework.Assert;
 
-import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
-import org.omnetpp.test.gui.access.TextEditorAccess;
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.access.TextEditorAccess;
 
 public class NedPathTest
     extends NedFileTestCase

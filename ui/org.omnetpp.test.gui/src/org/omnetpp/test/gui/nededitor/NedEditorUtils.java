@@ -7,15 +7,16 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
-import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
-import org.omnetpp.test.gui.access.ShellAccess;
-import org.omnetpp.test.gui.access.StyledTextAccess;
-import org.omnetpp.test.gui.access.TextEditorAccess;
-import org.omnetpp.test.gui.access.TreeAccess;
-import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.util.WorkbenchUtils;
-import org.omnetpp.test.gui.util.WorkspaceUtils;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
+import com.simulcraft.test.gui.access.StyledTextAccess;
+import com.simulcraft.test.gui.access.TextEditorAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class NedEditorUtils
 {

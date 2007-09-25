@@ -1,6 +1,7 @@
 package org.omnetpp.test.gui.nededitor;
 
-import org.omnetpp.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+
 
 
 public class SimpleModuleTypeTest

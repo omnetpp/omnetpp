@@ -1,6 +1,7 @@
 package org.omnetpp.test.gui.inifileeditor;
 
-import org.omnetpp.test.gui.core.ProjectFileTestCase;
+import com.simulcraft.test.gui.core.ProjectFileTestCase;
+
 
 public class IniFileTestCase
 	extends ProjectFileTestCase

@@ -1,13 +1,14 @@
 package org.omnetpp.test.gui.inifileeditor;
 
 import org.eclipse.swt.SWT;
-import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
-import org.omnetpp.test.gui.access.StyledTextAccess;
-import org.omnetpp.test.gui.access.ViewPartAccess;
-import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.util.WorkbenchUtils;
-import org.omnetpp.test.gui.util.WorkspaceUtils;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.access.StyledTextAccess;
+import com.simulcraft.test.gui.access.ViewPartAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class SectionHierarchyTest
 	extends IniFileTestCase 

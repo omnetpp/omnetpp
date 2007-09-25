@@ -1,9 +1,10 @@
 package org.omnetpp.test.gui.nededitor;
 
-import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
-import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.core.ProjectFileTestCase;
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.core.ProjectFileTestCase;
+
 
 public class NedFileTestCase
 	extends ProjectFileTestCase

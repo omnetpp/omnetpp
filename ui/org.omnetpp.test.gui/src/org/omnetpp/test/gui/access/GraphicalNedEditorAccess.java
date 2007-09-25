@@ -20,6 +20,12 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
 
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.EditorPartAccess;
+import com.simulcraft.test.gui.access.FigureAccess;
+import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
+import com.simulcraft.test.gui.access.TextAccess;
+
 
 public class GraphicalNedEditorAccess
 	extends EditorPartAccess

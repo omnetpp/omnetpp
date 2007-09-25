@@ -1,13 +1,14 @@
 package org.omnetpp.test.gui.inifileeditor;
 
 import org.eclipse.swt.SWT;
-import org.omnetpp.test.gui.access.Access;
-import org.omnetpp.test.gui.access.ShellAccess;
-import org.omnetpp.test.gui.access.TreeAccess;
-import org.omnetpp.test.gui.access.TreeItemAccess;
-import org.omnetpp.test.gui.access.WorkbenchWindowAccess;
-import org.omnetpp.test.gui.util.WorkbenchUtils;
-import org.omnetpp.test.gui.util.WorkspaceUtils;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.ShellAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.TreeItemAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class IniFileEditorUtils
 {

@@ -1,7 +1,8 @@
 package org.omnetpp.test.gui.nededitor;
 
-import org.omnetpp.test.gui.util.WorkbenchUtils;
-import org.omnetpp.test.gui.util.WorkspaceUtils;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
+
 
 /**
  * Delete a NED file which is open in a NED editor. 

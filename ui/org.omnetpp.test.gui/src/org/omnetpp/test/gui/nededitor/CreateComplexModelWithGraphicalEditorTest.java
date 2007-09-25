@@ -2,8 +2,9 @@ package org.omnetpp.test.gui.nededitor;
 
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
-import org.omnetpp.test.gui.access.MultiPageEditorPartAccess;
-import org.omnetpp.test.gui.access.TextEditorAccess;
+
+import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.access.TextEditorAccess;
 
 public class CreateComplexModelWithGraphicalEditorTest
 	extends NedFileTestCase

@@ -2,13 +2,14 @@ package org.omnetpp.test.gui.nededitor;
 
 import java.util.regex.Pattern;
 
-import org.omnetpp.test.gui.access.Access;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
-import org.omnetpp.test.gui.access.FlyoutPaletteCompositeAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
-import org.omnetpp.test.gui.access.MenuAccess;
 import org.omnetpp.test.gui.core.InUIThread;
 import org.omnetpp.test.gui.core.NotInUIThread;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
+import com.simulcraft.test.gui.access.MenuAccess;
 
 
 /**
