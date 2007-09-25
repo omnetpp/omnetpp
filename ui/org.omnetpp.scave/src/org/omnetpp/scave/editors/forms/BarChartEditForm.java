@@ -194,10 +194,11 @@ public class BarChartEditForm extends ChartEditForm {
 		for (String field : fields)
 			if (ArrayUtils.contains(otherFields, field))
 				otherList.remove(field);
+		otherFields = otherList.getItems();
 		
 		averagingFieldsList.removeAll();
 		for (String field : fieldNames)
-			if (!ArrayUtils.contains(fields, field) && !ArrayUtils.contains(otherFields, fields))
+			if (!ArrayUtils.contains(fields, field) && !ArrayUtils.contains(otherFields, field))
 				averagingFieldsList.add(field);
 	}
 	
