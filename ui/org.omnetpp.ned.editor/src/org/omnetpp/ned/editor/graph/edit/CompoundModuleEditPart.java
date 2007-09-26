@@ -33,7 +33,7 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  */
 public class CompoundModuleEditPart extends ModuleEditPart {
 
-    // stores  the connection model - connection controller mapping for the compound module
+    // stores  the connection model - connection editPart mapping for the compound module
     private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
 
     protected CompoundModuleGateAnchor gateAnchor;

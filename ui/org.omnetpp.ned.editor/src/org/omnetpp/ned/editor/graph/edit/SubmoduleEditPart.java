@@ -8,6 +8,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
@@ -111,7 +112,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     	// set module name and vector size
     	String nameToDisplay = submNode.getName();
     	// add [size] if it's a module vector
-    	if (submNode.getVectorSize() != null && !"".equals(submNode.getVectorSize()))
+    	if (StringUtils.isNotEmpty(submNode.getVectorSize()))
     		nameToDisplay += "["+submNode.getVectorSize()+"]";
     	getSubmoduleFigure().setName(nameToDisplay);
 

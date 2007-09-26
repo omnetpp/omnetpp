@@ -142,6 +142,13 @@ public class CompoundModuleFigure extends NedFigure
             rect.setSize(layouter.getPreferredSize(this, -1, -1));
             return rect;
         }
+        
+        @Override
+        public void add(IFigure child, Object constraint, int index) {
+            // request an auto-layout whenever a submodule is added 
+            layouter.requestAutoLayout();
+            super.add(child, constraint, index);
+        }
     }
 
     /**
