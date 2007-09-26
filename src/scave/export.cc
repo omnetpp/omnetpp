@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+#include "scaveutils.h"
 #include "export.h"
 
 using namespace std;
@@ -26,15 +27,6 @@ using namespace std;
 //using DataTable::Column;
 //using DataTable::ColumnType;
 
-/*
- */
-static double zero = 0.0;
-static double dblNaN = zero / zero;
-static double dblPositiveInfinity = 1 / zero;
-static double dblNegativeInfinity = -1 / zero;
-static inline bool isNaN(double d) { return d!=d; }
-static inline bool isPositiveInfinity(double d) { return d==dblPositiveInfinity; }
-static inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
 
 /*=====================
  *       Vectors

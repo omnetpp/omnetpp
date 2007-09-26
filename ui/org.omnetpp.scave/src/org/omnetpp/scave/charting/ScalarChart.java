@@ -613,9 +613,11 @@ public class ScalarChart extends ChartCanvas {
 				int row = rowColumn / numColumns;
 				int column = rowColumn % numColumns;
 				String key = (String) dataset.getColumnKey(column);
+				double value = dataset.getValue(row, column);
+				double halfInterval = dataset.getConfidenceInterval(row, column, CONFIDENCE_LEVEL);
 
 				String line1 = StringEscapeUtils.escapeHtml(key);
-				String line2 = "value: " + dataset.getValue(row, column);
+				String line2 = "value: " + formatValue(value, halfInterval);
 				int maxLength = Math.max(line1.length(), line2.length());
 				outSizeConstraint.preferredWidth = 20 + maxLength * 7;
 				outSizeConstraint.preferredHeight = 25 + 2 * 12;

@@ -80,6 +80,9 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	private static final boolean debug = false;
+	
+	// when displaying confidence intervals, XXX chart parameter?
+	protected static final double CONFIDENCE_LEVEL = 0.95;
 
 	protected boolean antialias = DEFAULT_ANTIALIAS;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
@@ -522,6 +525,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	protected void drawRubberband(GC gc) {
 		mouseSupport.drawRubberband(gc);
+	}
+	
+	protected String formatValue(double value, double halfInterval) {
+		return !Double.isNaN(halfInterval) && halfInterval > 0.0 ?
+				String.format("%.3g\u00b1%.3g", value, halfInterval) :
+				String.format("%g", value);
 	}
 	
 	/**

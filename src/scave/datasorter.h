@@ -31,6 +31,7 @@
 #include "commonutil.h"
 #include "patternmatcher.h"
 #include "scaveutils.h"
+#include "statistics.h"
 #include "fields.h"
 
 typedef std::vector<ID> IDVector;
@@ -43,19 +44,9 @@ typedef std::vector<std::string> StringVector;
 class XYDataset
 {
     private:
-        struct Mean
-        {
-            int count;
-            double sum;
-            Mean() : count(0), sum(0.0) {}
-            void accumulate(double value) { count++; sum += value; }
-            double value() { return count > 0 ? sum / count : dblNaN; }
-            bool isNaN() { return count == 0; }
-        };
-
         typedef const ScalarResult Key;
         typedef std::map<Key, int, ResultItemFieldsLess> KeyToIndexMap;
-        typedef std::vector<Mean> Row;
+        typedef std::vector<Statistics> Row;
 
         ResultItemFields rowFields;            // data in each row has the same value of these fields
         ResultItemFields columnFields;         // data in each column has the same value of these fields
@@ -74,7 +65,7 @@ class XYDataset
             columnKeyToIndexMap(ResultItemFieldsLess(columnFields)) {};
         void add(const ScalarResult &d);
         void swapRows(int row1, int row2);
-        void sortColumnsAccordingToFirstRow();
+        void sortColumnsAccordingToFirstRowMean();
         void sortRows();
         void sortColumns();
 
@@ -84,7 +75,7 @@ class XYDataset
         ResultItemFields getColumnFields() { return columnFields; }
         std::string getRowField(int row, ResultItemField field);
         std::string getColumnField(int column, ResultItemField field);
-        double getValue(int row, int column);
+        Statistics getValue(int row, int column);
 };
 
 typedef std::vector<XYDataset> XYDatasetVector;
@@ -103,11 +94,11 @@ inline std::string XYDataset::getColumnField(int column, ResultItemField field)
     return field.getFieldValue(columnKeys[columnOrder[column]]);
 }
 
-inline double XYDataset::getValue(int row, int column)
+inline Statistics XYDataset::getValue(int row, int column)
 {
     if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
-        return dblNaN;
-    return values.at(rowOrder[row]).at(columnOrder[column]).value(); 
+        return Statistics();
+    return values.at(rowOrder[row]).at(columnOrder[column]); 
 }
 
 /**

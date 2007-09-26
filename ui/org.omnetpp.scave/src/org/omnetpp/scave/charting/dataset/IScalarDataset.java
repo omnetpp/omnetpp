@@ -41,12 +41,23 @@ public interface IScalarDataset extends IDataset {
     public String getColumnKey(int column);
 
     /**
-     * Returns the value associated with the specified keys.
+     * Returns the value associated with the specified cell.
      *
-     * @param rowKey  the row key (<code>null</code> not permitted).
-     * @param columnKey  the column key (<code>null</code> not permitted).
+     * @param row  the row index
+     * @param column  the column index
      * @return The value.
      * @throws IndexOutOfBoundsException if <code>row</code> or <code>column</code> is out of bounds.
      */
     public double getValue(int row, int column);
+    
+    /**
+     * Returns the half length of the confidence interval for the
+     * value associated with the cell.
+     * 
+     * @param row  the row index
+     * @param column  the column index
+     * @param p  the confidence level
+     * @return the half interval length of NaN if not applicable
+     */
+    public double getConfidenceInterval(int row, int column, double p);
 }

@@ -72,7 +72,7 @@ public class VectorDataset implements IXYDataset {
 	public BigDecimal getPreciseX(int series, int item) {
 		return seriesData[series].getPreciseX(item);
 	}
-
+	
 	public double getY(int series, int item) {
 		return seriesData[series].getY(item);
 	}

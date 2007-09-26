@@ -25,6 +25,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
+import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
@@ -289,13 +290,21 @@ class CrossHair {
 	private String getText(DataPoint dataPoint) {
 		IXYDataset dataset = chart.getDataset();
 		//String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
-		BigDecimal xp = dataset.getPreciseX(dataPoint.series, dataPoint.index);
-		double x = dataset.getX(dataPoint.series, dataPoint.index);
-		double y = dataset.getY(dataPoint.series, dataPoint.index);
-		String coordinates = (xp != null ? xp.toString() : Double.toString(x))+", "+y;
-		String series = dataset.getSeriesKey(dataPoint.series).toString();
-		//series = StringUtils.abbreviate(series, series.length(), 25);
-		return coordinates + " - " + series;
+		int series = dataPoint.series;
+		int index = dataPoint.index;
+		BigDecimal xp = dataset.getPreciseX(series, index);
+		double x = dataset.getX(series, index);
+		double y = dataset.getY(series, index);
+		double xConf = Double.NaN, yConf = Double.NaN;
+		if (dataset instanceof IAveragedXYDataset) {
+			xConf = ((IAveragedXYDataset)dataset).getXConfidenceInterval(series, index, ChartCanvas.CONFIDENCE_LEVEL);
+			yConf = ((IAveragedXYDataset)dataset).getYConfidenceInterval(series, index, ChartCanvas.CONFIDENCE_LEVEL);
+		}
+		String xStr = (xp != null ? xp.toString() : chart.formatValue(x, xConf));
+		String yStr = chart.formatValue(y, yConf);
+		String seriesStr = dataset.getSeriesKey(series).toString();
+		//seriesStr = StringUtils.abbreviate(series, series.length(), 25);
+		return String.format("%s, %s - %s", xStr, yStr, seriesStr);
 	}
 
 	// XXX move this method into a VectorPlot class

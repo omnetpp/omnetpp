@@ -11,11 +11,13 @@ import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.common.util.StatUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYDataset;
 
@@ -124,8 +126,18 @@ public class ScalarDataset implements IScalarDataset {
      * @return The value.
      */
     public double getValue(int row, int column) {
-       	return data.getValue(row, column);
+       	return data.getValue(row, column).mean();
     }
+    
+	/**
+	 * Returns the confidence interval for a given row and column.
+	 * 
+	 * @see IScalarDataset#getConfidenceInterval(int, int, double)
+	 */
+    public double getConfidenceInterval(int row, int column, double p) {
+		Statistics stat = data.getValue(row, column);
+		return StatUtils.confidenceInterval(p, stat.stddev(), stat.count());
+	}
     
     private static final ResultItemField[] allFields = new ResultItemField[] {
     	new ResultItemField(FILE), new ResultItemField(RUN), new ResultItemField(MODULE),

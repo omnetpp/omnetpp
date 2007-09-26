@@ -48,7 +48,7 @@ void XYDataset::add(const ScalarResult &d)
     else // add new row
     {
         row = rowKeys.size();
-        values.push_back(vector<Mean>(columnKeys.size(), Mean()));
+        values.push_back(vector<Statistics>(columnKeys.size(), Statistics()));
         rowKeyToIndexMap[d] = row;
         rowKeys.push_back(d);
         rowOrder.push_back(row);
@@ -63,13 +63,13 @@ void XYDataset::add(const ScalarResult &d)
     {
         column = columnKeys.size();
         for (vector<Row>::iterator rowRef = values.begin(); rowRef != values.end(); ++rowRef)
-            rowRef->push_back(Mean());
+            rowRef->push_back(Statistics());
         columnKeyToIndexMap[d] = column;
         columnKeys.push_back(d);
         columnOrder.push_back(column);
     }
 
-    values.at(row).at(column).accumulate(d.value);
+    values.at(row).at(column).collect(d.value);
 }
 
 void XYDataset::swapRows(int row1, int row2)
@@ -104,15 +104,16 @@ struct ValueAndIndex
     bool operator<(const ValueAndIndex& other) { return this->value < other.value; }
 };
 
-void XYDataset::sortColumnsAccordingToFirstRow()
+void XYDataset::sortColumnsAccordingToFirstRowMean()
 {
     if (values.size() > 0)
     {
         vector<ValueAndIndex> vals;
         for (int i = 0; i < values[0].size(); ++i)
         {
-            if (!values[0][i].isNaN())
-                vals.push_back(ValueAndIndex(values[0][i].value(), i));
+        	double mean = values[0][i].mean();
+            if (!isNaN(mean))
+                vals.push_back(ValueAndIndex(mean, i));
         }
 
         sort(vals.begin(), vals.end());
@@ -443,7 +444,7 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
         throw opp_runtime_error("Data for X axis not found.");
     
     // sort columns so that X values are in ascending order
-    dataset.sortColumnsAccordingToFirstRow();
+    dataset.sortColumnsAccordingToFirstRowMean();
 
     return dataset;
 }

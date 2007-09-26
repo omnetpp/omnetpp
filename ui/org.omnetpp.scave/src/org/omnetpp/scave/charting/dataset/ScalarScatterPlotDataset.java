@@ -3,6 +3,7 @@ package org.omnetpp.scave.charting.dataset;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.XYDataset;
+import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * IXYDataset implementation for a scatter plot computed from a list of scalars.
@@ -17,7 +18,7 @@ import org.omnetpp.scave.engine.XYDataset;
  * 
  * @author tomi
  */
-public class ScalarScatterPlotDataset implements IXYDataset {
+public class ScalarScatterPlotDataset implements IAveragedXYDataset {
 	
 	private XYDataset scalars;      // first rows contains X values,
 	                        		// other rows contain Y values (NaN if missing)
@@ -41,19 +42,27 @@ public class ScalarScatterPlotDataset implements IXYDataset {
 	}
 
 	public double getX(int series, int item) {
-		return scalars.getValue(0, item);
+		return scalars.getValue(0, item).mean();
 	}
 	
 	public BigDecimal getPreciseX(int series, int item) {
 		return new BigDecimal(getX(series, item));
 	}
 
+	public double getXConfidenceInterval(int series, int item, double p) {
+		return StatUtils.confidenceInterval(scalars.getValue(0, item), p);
+	}
+
 	public double getY(int series, int item) {
-		return scalars.getValue(series+1, item);
+		return scalars.getValue(series+1, item).mean();
 	}
 
 	public BigDecimal getPreciseY(int series, int item) {
 		return new BigDecimal(getY(series, item));
+	}
+
+	public double getYConfidenceInterval(int series, int item, double p) {
+		return StatUtils.confidenceInterval(scalars.getValue(series+1, item), p);
 	}
 	
 	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);

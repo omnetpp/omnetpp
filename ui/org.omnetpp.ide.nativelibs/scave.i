@@ -5,6 +5,7 @@
 %{
 #include "scavedefs.h"
 #include "enumtype.h"
+#include "statistics.h"
 #include "idlist.h"
 #include "resultfilemanager.h"
 #include "fields.h"
@@ -360,6 +361,9 @@ FIX_STRING_MEMBER(VectorResult, columns, Columns);
 
 // Java doesn't appear to have dictionary sort, export it
 int strdictcmp(const char *s1, const char *s2);
+
+/* ------------- statistics.h  ----------------- */
+%include "statistics.h"
 
 /* ------------- idlist.h  ----------------- */
 %include "idlist.h"

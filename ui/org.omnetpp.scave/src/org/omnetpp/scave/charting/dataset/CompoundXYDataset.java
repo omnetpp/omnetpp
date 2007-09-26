@@ -2,11 +2,10 @@ package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
 
-public class CompoundXYDataset implements IXYDataset {
+public class CompoundXYDataset implements IAveragedXYDataset {
 
 	private IXYDataset[] seriesToDatasetMap;
 	private int[] seriesToOffsetMap;
-	
 	
 	public CompoundXYDataset(IXYDataset... datasets) {
 		int seriesCount = 0;
@@ -46,11 +45,25 @@ public class CompoundXYDataset implements IXYDataset {
 		return seriesToDatasetMap[series].getPreciseX(series - seriesToOffsetMap[series], item);
 	}
 
+	public double getXConfidenceInterval(int series, int item, double p) {
+		IXYDataset dataset = seriesToDatasetMap[series];
+		return dataset instanceof IAveragedXYDataset ?
+				((IAveragedXYDataset)dataset).getXConfidenceInterval(series - seriesToOffsetMap[series], item, p) :
+				Double.NaN;
+	}
+
 	public double getY(int series, int item) {
 		return seriesToDatasetMap[series].getY(series - seriesToOffsetMap[series], item);
 	}
 
 	public BigDecimal getPreciseY(int series, int item) {
 		return seriesToDatasetMap[series].getPreciseY(series - seriesToOffsetMap[series], item);
+	}
+
+	public double getYConfidenceInterval(int series, int item, double p) {
+		IXYDataset dataset = seriesToDatasetMap[series];
+		return dataset instanceof IAveragedXYDataset ?
+				((IAveragedXYDataset)dataset).getYConfidenceInterval(series - seriesToOffsetMap[series], item, p) :
+				Double.NaN;
 	}
 }

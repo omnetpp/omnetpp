@@ -49,7 +49,7 @@ public class RandomXYDataset implements IXYDataset {
 	public BigDecimal getPreciseX(int series, int item) {
 		return null;
 	}
-
+	
 	public double getY(int series, int item) {
 		return yCoords[series][item];
 	}
