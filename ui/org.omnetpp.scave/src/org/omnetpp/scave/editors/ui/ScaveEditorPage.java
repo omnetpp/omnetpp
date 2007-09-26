@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -95,12 +96,16 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * Creates palette for model object creation
 	 */
 	protected void createPalette(Composite parent, boolean wantDatasetAndChartsheet) {
-		Composite toolbar = new Composite(parent, SWT.BORDER);
+		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
+		scrolledComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, false, true));
+		scrolledComposite.setBackground(PALETTE_BG_COLOR);
+		Composite toolbar = new Composite(scrolledComposite, SWT.NONE);
+		scrolledComposite.setContent(toolbar);
 		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
 		((RowLayout)toolbar.getLayout()).fill = true;
-		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
 		toolbar.setBackground(PALETTE_BG_COLOR);
 		new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor, wantDatasetAndChartsheet);
+		toolbar.setSize(toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
 	
