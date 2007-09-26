@@ -11,15 +11,14 @@ import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omnetpp.common.util.StatUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
-import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYDataset;
+import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * Class storing the dataset of a scalar chart.
@@ -135,8 +134,7 @@ public class ScalarDataset implements IScalarDataset {
 	 * @see IScalarDataset#getConfidenceInterval(int, int, double)
 	 */
     public double getConfidenceInterval(int row, int column, double p) {
-		Statistics stat = data.getValue(row, column);
-		return StatUtils.confidenceInterval(p, stat.stddev(), stat.count());
+		return StatUtils.confidenceInterval(data.getValue(row, column), p);
 	}
     
     private static final ResultItemField[] allFields = new ResultItemField[] {
