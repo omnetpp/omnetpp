@@ -34,34 +34,47 @@ import com.simulcraft.test.gui.core.NotInUIThread;
 
 public class Access
 {
-	protected final static boolean debug = true;
+    public final static int LEFT_MOUSE_BUTTON = 1;
+    public final static int MIDDLE_MOUSE_BUTTON = 2;
+    public final static int RIGHT_MOUSE_BUTTON = 3;
 	
-	public static double delayBetweenPostEvents;
-	
+    public static double delayBetweenPostEvents;
+
+    protected final static boolean debug = true;
+    
+    protected static ArrayList<IAccessFactory> accessFactories = new ArrayList<IAccessFactory>();
+    
+    public interface IAccessFactory {
+        public Class<?> findAccessClass(Class<?> instanceClass) throws ClassNotFoundException;
+    }
+    
 	static {
 	    String value = System.getProperty("com.simulcraft.test.gui.DelayBetweenPostEvents");
 	    delayBetweenPostEvents = value == null ? 0 : Double.parseDouble(value);
+
+	    addAccessFactory(new IAccessFactory() {
+            public Class<?> findAccessClass(Class<?> instanceClass) throws ClassNotFoundException {
+                return Class.forName("com.simulcraft.test.gui.access." + instanceClass.getSimpleName() + "Access");
+            }
+	    });
+	}
+	
+	public static void addAccessFactory(IAccessFactory factory) {
+        accessFactories.add(factory);
 	}
 
-	public final static int LEFT_MOUSE_BUTTON = 1;
-	public final static int MIDDLE_MOUSE_BUTTON = 2;
-	public final static int RIGHT_MOUSE_BUTTON = 3;
-	
-	protected Access createAccess(Object instance) {
+	protected static Access createAccess(Object instance) {
 		Class<?> clazz = instance.getClass();
 
 		while (clazz != Object.class) {
-			try {
-				String lookupClassName = "com.simulcraft.test.gui.access." + clazz.getSimpleName() + "Access";
-				if (debug)
-					System.out.println("Looking up access class " + lookupClassName);
-		        Class<?> accessClass = Class.forName(lookupClassName);
-		        
-		        return (Access)ReflectionUtils.invokeConstructor(accessClass, instance);
-			} 
-			catch (ClassNotFoundException e) {
-				// skip this class
-			}
+            for (IAccessFactory factory : accessFactories) {
+                try {
+    		        return (Access)ReflectionUtils.invokeConstructor(factory.findAccessClass(clazz), instance);
+    			} 
+    			catch (ClassNotFoundException e) {
+    				// skip this class
+    			}
+            }
 			
 			clazz = clazz.getSuperclass();
 		}
