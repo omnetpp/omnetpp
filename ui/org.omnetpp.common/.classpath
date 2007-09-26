@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-math-1.1.jar" sourcepath="misc/commons-math-1.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/org.omnetpp.common/misc/commons-math-1.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.jar" sourcepath="misc/commons-collections-3.2-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.omnetpp.common/misc/commons-collections-3.2-javadoc.jar!/"/>
