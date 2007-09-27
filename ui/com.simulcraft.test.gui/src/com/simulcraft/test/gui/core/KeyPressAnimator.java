@@ -1,6 +1,5 @@
 package com.simulcraft.test.gui.core;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -21,11 +20,19 @@ import org.omnetpp.common.color.ColorFactory;
  * @author Andras
  */
 public class KeyPressAnimator implements Listener {
+    private int modifierState = 0;
+    
     public void handleEvent(Event e) {
-        Assert.isTrue(e.type==SWT.KeyDown);
-        String string = KeyStroke.getInstance(e.stateMask & SWT.KEY_MASK, e.keyCode).toString();
-        //String string = new NativeKeyFormatter().format(e.keyCode);
-        displayTextBox(string);
+        if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
+            // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
+            if (e.type==SWT.KeyDown) modifierState |= e.keyCode;
+            if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
+        }
+        else if (e.type==SWT.KeyDown) {
+            // animation
+            String string = KeyStroke.getInstance(modifierState, e.keyCode).toString();
+            displayTextBox(string);
+        }
     }
     
     protected void displayTextBox(String text) {

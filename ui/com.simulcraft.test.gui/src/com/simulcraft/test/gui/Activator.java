@@ -34,7 +34,9 @@ public class Activator extends AbstractUIPlugin {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
         
-        Display.getDefault().addFilter(SWT.KeyDown, new KeyPressAnimator());
+        KeyPressAnimator keyPressAnimator = new KeyPressAnimator();
+        Display.getDefault().addFilter(SWT.KeyDown, keyPressAnimator);
+        Display.getDefault().addFilter(SWT.KeyUp, keyPressAnimator);
     }
 
     /*
