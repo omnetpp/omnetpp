@@ -107,5 +107,8 @@ public class FigureAccess
 
 	    ((FigureCanvas)getCanvas()).scrollTo(finalLocation.x, finalLocation.y); 
 	}
-		
+
+    public Rectangle getBounds() {
+        return getFigure().getBounds();
+    }
 }

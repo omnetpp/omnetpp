@@ -69,15 +69,18 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 
 	@InUIThread
 	public void clickSubmoduleFigureWithName(final String name) {
-		IFigure compoundModuleFigure = getFigure();
-		IFigure labelFigure = findDescendantFigure(compoundModuleFigure, new IPredicate() {
+		findSubmoduleFigureByName(name).click(LEFT_MOUSE_BUTTON);
+	}
+
+    @InUIThread
+    public FigureAccess findSubmoduleFigureByName(final String name) {
+        IFigure compoundModuleFigure = getFigure();
+		return new FigureAccess(findDescendantFigure(compoundModuleFigure, new IPredicate() {
 			public boolean matches(Object object) {
 				return object instanceof Label && ((Label)object).getText().matches(name);
 			}
-		});
-
-		new FigureAccess(labelFigure).click(LEFT_MOUSE_BUTTON);
-	}
+		}));
+    }
 
     @NotInUIThread
     public void createConnectionWithPalette(String name1, String name2, String connectionOptionLabel) {

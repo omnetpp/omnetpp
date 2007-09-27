@@ -4,6 +4,7 @@ import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.RootEditPart;
@@ -14,11 +15,14 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
+import org.omnetpp.ned.editor.graph.edit.NedEditPart;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.EditPartAccess;
 import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.FigureAccess;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
@@ -142,12 +146,26 @@ public class GraphicalNedEditorAccess
 	}
 
     @InUIThread
-    public CompoundModuleEditPartAccess findCompoundModule(final String name) {
-        return new CompoundModuleEditPartAccess((CompoundModuleEditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
+    public EditPartAccess findModule(final String name, final Class<?> type) {
+        return (EditPartAccess)createAccess((EditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
             public boolean matches(Object object) {
-                return object instanceof CompoundModuleEditPart && ((CompoundModuleEditPart)object).getNEDModel().getAttribute("name").matches(name);
+                if (object instanceof NedEditPart) {
+                    INEDElement nedElement = ((NedEditPart)object).getNEDModel();
+
+                    return type.isInstance(nedElement) && nedElement.getAttribute("name").matches(name);
+                }
+                else
+                    return false;
             }
         }));
+    }
+
+    public EditPartAccess findSimpleModule(String name) {
+        return findModule(name, SimpleModuleElement.class);
+    }
+
+    public CompoundModuleEditPartAccess findCompoundModule(String name) {
+        return (CompoundModuleEditPartAccess)findModule(name, CompoundModuleElement.class);
     }
 
     private void createElementWithPalette(String elementTypeName, String elementName) {

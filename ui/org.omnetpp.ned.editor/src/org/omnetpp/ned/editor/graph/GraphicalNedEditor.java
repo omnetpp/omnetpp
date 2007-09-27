@@ -153,60 +153,7 @@ public class GraphicalNedEditor
 
         DefaultEditDomain editDomain = new DefaultEditDomain(this);
         
-        editDomain.setCommandStack(new CommandStack() {
-            boolean insideBeginEnd = false;
-            
-            // override notifyListeners() methods, so we can surround command execution 
-            // with begin/end. "begin" must be fired after all PRE listeners,
-            // and "end" must be fired before all normal commandStackListeners and
-            // POST listeners. See super.execute() for why the code look like this.
-            protected void notifyListeners(Command command, int state) {
-                if (state==POST_EXECUTE || state==POST_UNDO || state==POST_REDO) {
-                    NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
-                    Assert.isTrue(insideBeginEnd); // no nested PRE/POST notifications in GEF
-                    insideBeginEnd = false;
-                    notifyListeners();  // do postponed notifyListeners() now
-                }
-
-                super.notifyListeners(command, state);
-
-                if (state==PRE_EXECUTE || state==PRE_UNDO || state==PRE_REDO) {
-                    Assert.isTrue(!insideBeginEnd, "Nested execute is not allowed");
-                    NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
-                    insideBeginEnd = true;
-                }
-                
-            }
-            
-            @SuppressWarnings("deprecation")
-            protected void notifyListeners() {
-                if (!insideBeginEnd)
-                    super.notifyListeners(); // postpone to top of POST_EXECUTE
-            }
-
-        	private boolean isModelEditable() {
-        	    NedFileElementEx model = getModel();
-        		return !model.isReadOnly() && !model.hasSyntaxError();
-        	}
-
-        	// override execute(), canUndo() and canRedo() methods to make readonly models uneditable. 
-        	
-        	@Override
-        	public void execute(Command command) {
-        		if (isModelEditable())
-        			super.execute(command);
-        	}
-
-        	@Override
-        	public boolean canUndo() {
-        		return super.canUndo() && isModelEditable();
-        	}
-
-        	@Override
-        	public boolean canRedo() {
-        		return super.canRedo() && isModelEditable();
-        	}
-        });
+        editDomain.setCommandStack(new LocalCommandStack());
         setEditDomain(editDomain);
     }
 
@@ -580,7 +527,8 @@ public class GraphicalNedEditor
 
 				// record notification event as an external change iff it refers to our model and we are not the originator
 				if (event instanceof NEDModelChangeEvent && event.getSource() != null && 
-					event.getSource().getContainingNedFileElement() == getModel() && !isActive()) 
+					event.getSource().getContainingNedFileElement() == getModel() && !isActive() && // TODO: isActive is superfluous?!
+					!((LocalCommandStack)getCommandStack()).isInsideBeginEnd()) 
 				{
 					if (pendingExternalChangeCommand == null)
 						pendingExternalChangeCommand = new ExternalChangeCommand();
@@ -738,6 +686,64 @@ public class GraphicalNedEditor
     	for (Object child : editPart.getChildren())
     		dumpEditPartHierarchy((EditPart)child, indent+"  ");
     }
-    
+  
+    private class LocalCommandStack extends CommandStack {
+        boolean insideBeginEnd = false;
+        
+        public boolean isInsideBeginEnd() {
+            return insideBeginEnd;
+        }
+        
+        // override notifyListeners() methods, so we can surround command execution 
+        // with begin/end. "begin" must be fired after all PRE listeners,
+        // and "end" must be fired before all normal commandStackListeners and
+        // POST listeners. See super.execute() for why the code look like this.
+        protected void notifyListeners(Command command, int state) {
+            if (state==POST_EXECUTE || state==POST_UNDO || state==POST_REDO) {
+                NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
+                Assert.isTrue(insideBeginEnd); // no nested PRE/POST notifications in GEF
+                insideBeginEnd = false;
+                notifyListeners();  // do postponed notifyListeners() now
+            }
+
+            super.notifyListeners(command, state);
+
+            if (state==PRE_EXECUTE || state==PRE_UNDO || state==PRE_REDO) {
+                Assert.isTrue(!insideBeginEnd, "Nested execute is not allowed");
+                NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
+                insideBeginEnd = true;
+            }
+            
+        }
+        
+        @SuppressWarnings("deprecation")
+        protected void notifyListeners() {
+            if (!insideBeginEnd)
+                super.notifyListeners(); // postpone to top of POST_EXECUTE
+        }
+
+        private boolean isModelEditable() {
+            NedFileElementEx model = getModel();
+            return !model.isReadOnly() && !model.hasSyntaxError();
+        }
+
+        // override execute(), canUndo() and canRedo() methods to make readonly models uneditable. 
+        
+        @Override
+        public void execute(Command command) {
+            if (isModelEditable())
+                super.execute(command);
+        }
+
+        @Override
+        public boolean canUndo() {
+            return super.canUndo() && isModelEditable();
+        }
+
+        @Override
+        public boolean canRedo() {
+            return super.canRedo() && isModelEditable();
+        }
+    }
 }
 
