@@ -56,7 +56,7 @@ Features:
      + go to target
  + navigation history
  + single click goes in the corresponding event log table to the selected event
- + double click traces the selected event and switches to filered view
+ + double click traces the selected event and switches to filtered view
  + toggle bookmark on selected event
  + switch back to unfiltered view
  + support attaching and detaching a vector from a vector file to be displayed on the axis

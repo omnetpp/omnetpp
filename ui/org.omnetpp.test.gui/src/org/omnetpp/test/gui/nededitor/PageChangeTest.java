@@ -11,33 +11,33 @@ import com.simulcraft.test.gui.access.TextEditorAccess;
 public class PageChangeTest
     extends NedFileTestCase
 {
-    public void testPageChangeFromTextToGraphical() throws Exception {
+    public void testSimplePageChangeFromTextToGraphical() throws Exception {
         MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.activatePage("Text");
-        multiPageEditorPart.activatePage("Graphical");
+        multiPageEditorPart.ensureActiveEditor("Text");
+        multiPageEditorPart.ensureActiveEditor("Graphical");
     }
 
-    public void testPageChangeFromGraphicalToText() throws Exception {
+    public void testSimplePageChangeFromGraphicalToText() throws Exception {
         MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.activatePage("Graphical");
-        multiPageEditorPart.activatePage("Text");
+        multiPageEditorPart.ensureActiveEditor("Graphical");
+        multiPageEditorPart.ensureActiveEditor("Text");
     }
 
     public void testFollowChangesFromGraphicalToText() throws Exception {
         MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.activatePage("Text");
-        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePage("Graphical");
+        multiPageEditorPart.ensureActiveEditor("Text");
+        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
         graphicalNedEditor.createSimpleModuleWithPalette("NewSimpleModule");
-        TextEditorAccess textEditorAccess = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
+        TextEditorAccess textEditorAccess = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
         Assert.assertTrue(textEditorAccess.findStyledText().getText().matches("(?s).*NewSimpleModule.*"));
     }
 
     public void testFollowChangesFromTextToGraphical() throws Exception {
         MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.activatePage("Graphical");
-        TextEditorAccess textEditorAccess = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
+        multiPageEditorPart.ensureActiveEditor("Graphical");
+        TextEditorAccess textEditorAccess = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
         textEditorAccess.typeIn("simple NewSimpleModule {}\n");
-        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePage("Graphical");
+        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
         graphicalNedEditor.findSimpleModule("NewSimpleModule");
     }
 
