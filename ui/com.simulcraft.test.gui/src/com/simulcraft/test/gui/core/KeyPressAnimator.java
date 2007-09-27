@@ -2,14 +2,19 @@ package com.simulcraft.test.gui.core;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
@@ -29,9 +34,21 @@ public class KeyPressAnimator implements Listener {
             if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
         }
         else if (e.type==SWT.KeyDown) {
-            // animation
-            String string = KeyStroke.getInstance(modifierState, e.keyCode).toString();
-            displayTextBox(string);
+            // animation. we want to suppress plain typing in text editors, text fields, etc.
+            Control focusControl = Display.getCurrent().getFocusControl();
+            boolean inTextControl = 
+                focusControl instanceof Text || focusControl instanceof StyledText || 
+                focusControl instanceof Combo || focusControl instanceof CCombo;
+
+            if (!inTextControl || e.character < ' ' || e.character >= 128) {
+                String string = KeyStroke.getInstance(modifierState, e.keyCode).toString();
+                string = string.replaceFirst("ARROW_", "").replaceFirst("\\bCR$", "Enter").replaceFirst("\\bBS$", "Backspace"); // refine output a little
+                displayTextBox(string);
+            } 
+            else {
+                // typing: just wait a little to slow down the typing
+                try { Thread.sleep(50); } catch (InterruptedException e1) { }
+            }
         }
     }
     
