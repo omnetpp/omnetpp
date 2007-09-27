@@ -20,7 +20,7 @@ import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
- * TODO add documentation
+ * Properties of the submodule element
  *
  * @author rhornig
  */
@@ -28,12 +28,9 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
 	// submodule specific display property description
     protected static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
-        protected SubmoduleElementEx model;
 
         public SubmoduleDisplayPropertySource(SubmoduleElementEx model) {
             super(model);
-            this.model = model;
-            setDisplayString(model.getDisplayString());
             supportedProperties.addAll( EnumSet.range(DisplayString.Prop.X,
             										  DisplayString.Prop.TOOLTIP));
         }

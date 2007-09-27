@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.INEDElement;
  *
  * @author rhornig
  */
-public class MergedPropertySource implements IPropertySource2 {
+public class MergedPropertySource extends NedBasePropertySource {
     public static final String BASE_CATEGORY = "Base";
 
 	List<IPropertySource> mergedList = new ArrayList<IPropertySource>();
@@ -22,6 +22,7 @@ public class MergedPropertySource implements IPropertySource2 {
     private boolean readOnly = false;
 
 	public MergedPropertySource(INEDElement model) {
+	    super(model);
     }
 
     /**
@@ -43,7 +44,7 @@ public class MergedPropertySource implements IPropertySource2 {
 	}
 
 	public boolean isPropertySet(Object id) {
-		// ask all regitered PS if it knows about this
+		// ask all registered PS if it knows about this
 		for (IPropertySource psrc : mergedList)
 			if (psrc instanceof IPropertySource2)
 				if (((IPropertySource2)psrc).isPropertySet(id))
@@ -59,7 +60,12 @@ public class MergedPropertySource implements IPropertySource2 {
 	}
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
+	    List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
+	    // first we check whether the model element is inside the model (if not we should not
+	    // provide descriptors) ie. property editor is available ONLY for elements IN the model
+	    if (getModel().getParent() == null)
+	        return new IPropertyDescriptor[0];
+	    
 		// walk through all property source and merge its descriptors into a single list
 		for (IPropertySource psrc : mergedList)
 			for (IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {

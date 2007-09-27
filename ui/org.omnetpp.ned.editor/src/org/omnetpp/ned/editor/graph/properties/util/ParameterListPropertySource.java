@@ -15,7 +15,7 @@ import org.omnetpp.ned.model.interfaces.IHasParameters;
  *
  * @author rhornig
  */
-public class ParameterListPropertySource extends NotifiedPropertySource
+public class ParameterListPropertySource extends NedBasePropertySource
                             implements IDialogCellEditorProvider {
     // inner class to activate a dialog cell editor
     class CellEditor extends DialogCellEditor {
@@ -41,26 +41,24 @@ public class ParameterListPropertySource extends NotifiedPropertySource
 
     public final static String CATEGORY = "parameters";
     public final static String DESCRIPTION = "List of parameters (direct and inherited)";
-    protected IHasParameters model;
     protected PropertyDescriptor[] pdesc;
     protected int totalParamCount;
     protected int inheritedParamCount;
 
     public ParameterListPropertySource(IHasParameters model) {
         super(model);
-        this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, ParamElementEx> params = model.getParamDeclarations();
+        Map<String, ParamElementEx> params = getHasParametersModel().getParamDeclarations();
 
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
         for (ParamElementEx paramDecl : params.values()) {
             String typeString = (paramDecl.getIsVolatile() ? "volatile " : "") + paramDecl.getAttribute(ParamElementEx.ATT_TYPE);
             String definedIn = "";
-            if (paramDecl.getEnclosingTypeElement() != model) {
+            if (paramDecl.getEnclosingTypeElement() != getHasParametersModel()) {
                 inheritedParamCount++;
                 definedIn= " (inherited from " + paramDecl.getEnclosingTypeElement().getName() + ")";
             }
@@ -90,33 +88,19 @@ public class ParameterListPropertySource extends NotifiedPropertySource
     public Object getPropertyValue(Object id) {
         if (!(id instanceof ParamElementEx))
             return getEditableValue();
-        Map<String, ParamElementEx> paramValues = model.getParamAssignments();
+        Map<String, ParamElementEx> paramValues = getHasParametersModel().getParamAssignments();
         ParamElementEx paramDefNode = (ParamElementEx)id;
         ParamElementEx paramValueNode = paramValues.get(paramDefNode.getName());
         String valueString = paramValueNode== null ? "" : paramValueNode.getValue();
         return valueString;
     }
 
-    @Override
-    public boolean isPropertyResettable(Object id) {
-        return false;
-    }
-
-    @Override
-    public boolean isPropertySet(Object id) {
-        return false;
-    }
-
-    @Override
-    public void resetPropertyValue(Object id) {
-    }
-
-    @Override
-    public void setPropertyValue(Object id, Object value) {
-    }
-
     public DialogCellEditor getCellEditor() {
         return new CellEditor();
+    }
+    
+    public IHasParameters getHasParametersModel() {
+        return (IHasParameters)getModel();
     }
 
 }

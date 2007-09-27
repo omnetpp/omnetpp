@@ -41,7 +41,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
 
     @Override
     public void run() {
-        IHasParameters paramsParent = (IHasParameters)((IModelProvider)getSelectedObjects().get(0)).getNEDModel();
+        IHasParameters paramsParent = (IHasParameters)((IModelProvider)getSelectedObjects().get(0)).getNedModel();
         ParametersDialog dialog =
             new ParametersDialog(Display.getDefault().getActiveShell(), paramsParent);
 

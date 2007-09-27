@@ -280,7 +280,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 				// with editparts in it. INEDElement can be extracted from editparts
 				// via IModelProvider.
 				//
-				INEDElement model = ((IModelProvider)element).getNEDModel();
+				INEDElement model = ((IModelProvider)element).getNedModel();
 				if (model != null ) {
 					hideMessage();
 					buildContent(model, null, null, null);

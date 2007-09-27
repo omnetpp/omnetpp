@@ -3,10 +3,11 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.interfaces.IHasType;
 
 /**
@@ -16,15 +17,14 @@ import org.omnetpp.ned.model.interfaces.IHasType;
  *
  * @author rhornig
  */
-public abstract class TypePropertySource implements IPropertySource2 {
+public abstract class TypePropertySource extends NedBasePropertySource {
         public enum Prop { Type, Like, LikeParam }
         protected IPropertyDescriptor[] descriptors;
-        protected IHasType model;
         EditableComboBoxPropertyDescriptor typeProp;
         EditableComboBoxPropertyDescriptor likeProp;
 
         public TypePropertySource(IHasType nodeModel) {
-            model = nodeModel;
+            super(nodeModel);
 
             // set up property descriptors
             typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "type");
@@ -61,45 +61,49 @@ public abstract class TypePropertySource implements IPropertySource2 {
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Type.equals(propName))
-                return model.getType();
+                return getHasTypeModel().getType();
             if (Prop.Like.equals(propName))
-                return model.getLikeType();
+                return getHasTypeModel().getLikeType();
             if (Prop.LikeParam.equals(propName))
-                return model.getLikeParam();
+                return getHasTypeModel().getLikeParam();
 
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Type.equals(propName))
-                model.setType((String)value);
+                getHasTypeModel().setType((String)value);
             if (Prop.Like.equals(propName))
-                model.setLikeType((String)value);
+                getHasTypeModel().setLikeType((String)value);
             if (Prop.LikeParam.equals(propName))
-                model.setLikeParam((String)value);
+                getHasTypeModel().setLikeParam((String)value);
         }
 
         public boolean isPropertySet(Object propName) {
             if (Prop.Type.equals(propName))
-                return !"".equals(model.getType()) && (model.getType() != null);
+                return StringUtils.isNotEmpty(getHasTypeModel().getType()); ;
             if (Prop.Like.equals(propName))
-                return !"".equals(model.getLikeType()) && (model.getLikeType() != null);
+                return StringUtils.isNotEmpty(getHasTypeModel().getLikeType());
             if (Prop.LikeParam.equals(propName))
-                return !"".equals(model.getLikeParam()) && (model.getLikeParam() != null);
+                return StringUtils.isNotEmpty(getHasTypeModel().getLikeParam());
 
             return false;
         }
 
         public void resetPropertyValue(Object propName) {
             if (Prop.Type.equals(propName))
-                model.setType(null);
+                getHasTypeModel().setType(null);
             if (Prop.Like.equals(propName))
-                model.setLikeType(null);
+                getHasTypeModel().setLikeType(null);
             if (Prop.LikeParam.equals(propName))
-                model.setLikeParam(null);
+                getHasTypeModel().setLikeParam(null);
         }
 
         public boolean isPropertyResettable(Object propName) {
             return true;
+        }
+        
+        public IHasType getHasTypeModel() {
+            return (IHasType)getModel();
         }
 }

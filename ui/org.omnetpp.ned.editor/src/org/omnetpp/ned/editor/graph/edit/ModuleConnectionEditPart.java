@@ -211,7 +211,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
             registry.remove(getModel());
     }
 
-    public INEDElement getNEDModel() {
+    public INEDElement getNedModel() {
         return (INEDElement)getModel();
     }
 }

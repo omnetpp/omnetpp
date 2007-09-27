@@ -34,7 +34,6 @@ public class ConnectionPropertySource extends MergedPropertySource {
         public ConnectionDisplayPropertySource(ConnectionElementEx model) {
             super(model);
             this.model = model;
-            setDisplayString(model.getDisplayString());
             // define which properties should be displayed in the property sheet
             // we do not support all properties currently, just color, width and style
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL,

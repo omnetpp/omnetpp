@@ -84,7 +84,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
                 return UnexecutableCommand.INSTANCE;
 
             if (obj instanceof IModelProvider) {
-                INEDElement element = ((IModelProvider)obj).getNEDModel();
+                INEDElement element = ((IModelProvider)obj).getNedModel();
                 // return command only for those elements which support the icon property
                 if (element instanceof IHasDisplayString &&
                         (element instanceof SubmoduleElementEx || element instanceof SimpleModuleElementEx

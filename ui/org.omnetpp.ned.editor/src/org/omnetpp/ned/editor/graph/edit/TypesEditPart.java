@@ -37,13 +37,13 @@ public class TypesEditPart extends AbstractGraphicalEditPart implements IModelPr
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
     }
 
-    public INEDElement getNEDModel() {
+    public INEDElement getNedModel() {
         return (INEDElement)getModel();
     }
 
     @Override
     protected List<INedTypeElement> getModelChildren() {
-        return ((CompoundModuleElementEx)getNEDModel().getParent()).getOwnInnerTypes();
+        return ((CompoundModuleElementEx)getNedModel().getParent()).getOwnInnerTypes();
     }
 
 

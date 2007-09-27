@@ -36,7 +36,6 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         public SimpleModuleDisplayPropertySource(SimpleModuleElementEx model) {
             super(model);
             this.model = model;
-            setDisplayString(model.getDisplayString());
             supportedProperties.addAll( EnumSet.range(DisplayString.Prop.WIDTH,
             										  DisplayString.Prop.IMAGESIZE));
         }

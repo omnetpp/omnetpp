@@ -47,7 +47,7 @@ abstract public class NedEditPart
     /**
      * Returns the model associated with this as a INEDElement.
      */
-    public INEDElement getNEDModel() {
+    public INEDElement getNedModel() {
         return (INEDElement) getModel();
     }
 
@@ -56,10 +56,10 @@ abstract public class NedEditPart
         super.refreshVisuals();
 
         // indicate the error
-        int maxSeverity = getNEDModel().getMaxProblemSeverity();
+        int maxSeverity = getNedModel().getMaxProblemSeverity();
         String message = "";
         if (maxSeverity >= IMarker.SEVERITY_INFO) {
-            IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNEDModel());
+            IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNedModel());
             for (IMarker marker : markers)
                 message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
         }
@@ -133,7 +133,7 @@ abstract public class NedEditPart
      */
     protected void performDirectEdit() {
         if (manager == null && (getFigure() instanceof IDirectEditSupport)
-                && getNEDModel() instanceof IHasName && isEditable()) {
+                && getNedModel() instanceof IHasName && isEditable()) {
             IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();
             manager = new RenameDirectEditManager(this, TextCellEditor.class, renameValidator, deSupport);
         }

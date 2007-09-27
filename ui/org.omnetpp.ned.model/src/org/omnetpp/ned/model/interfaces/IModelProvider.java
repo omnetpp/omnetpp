@@ -10,5 +10,5 @@ import org.omnetpp.ned.model.INEDElement;
  * @author rhornig
  */
 public interface IModelProvider {
-    public INEDElement getNEDModel();
+    public INEDElement getNedModel();
 }

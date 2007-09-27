@@ -12,20 +12,18 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  *
  * @author rhornig
  */
-public class ExtendsListPropertySource extends NotifiedPropertySource {
+public class ExtendsListPropertySource extends NedBasePropertySource {
     public final static String CATEGORY = "extends";
     public final static String DESCRIPTION = "List of components this component extends - (read only)";
-    protected INedTypeElement model;
     protected PropertyDescriptor[] pdesc;
 
     public ExtendsListPropertySource(INedTypeElement model) {
         super(model);
-        this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<ExtendsElement> extendsList = model.getAllExtends();
+        List<ExtendsElement> extendsList = getNedTypeModel().getAllExtends();
 
         pdesc = new PropertyDescriptor[extendsList.size()];
         int totalCount = 0;
@@ -43,7 +41,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
     public Object getEditableValue() {
         StringBuilder summary = new StringBuilder("");
 
-        for (ExtendsElement extendsElement : model.getAllExtends())
+        for (ExtendsElement extendsElement : ((INedTypeElement)getModel()).getAllExtends())
             summary.append(extendsElement.getName()+",");
 
         // strip the trailing ',' char
@@ -52,27 +50,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
         return summary;
     }
 
-    @Override
-    public Object getPropertyValue(Object id) {
-        return "";
+    public INedTypeElement getNedTypeModel() {
+        return (INedTypeElement)getModel();
     }
-
-    @Override
-    public boolean isPropertyResettable(Object id) {
-        return false;
-    }
-
-    @Override
-    public boolean isPropertySet(Object id) {
-        return false;
-    }
-
-    @Override
-    public void resetPropertyValue(Object id) {
-    }
-
-    @Override
-    public void setPropertyValue(Object id, Object value) {
-    }
-
 }

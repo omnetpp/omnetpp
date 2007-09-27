@@ -82,7 +82,7 @@ public class NedFileEditPart extends NedEditPart {
 
     @Override
     protected List<INedTypeElement> getModelChildren() {
-    	return ((NedFileElementEx)getNEDModel()).getTopLevelTypeNodes();
+    	return ((NedFileElementEx)getNedModel()).getTopLevelTypeNodes();
     }
 
     /* (non-Javadoc)

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 
@@ -12,29 +13,27 @@ import org.omnetpp.ned.model.interfaces.IHasGates;
  *
  * @author rhornig
  */
-public class GateListPropertySource extends NotifiedPropertySource {
+public class GateListPropertySource extends NedBasePropertySource {
     public final static String CATEGORY = "gates";
     public final static String DESCRIPTION = "List of gates (direct and inherited)";
-    protected IHasGates model;
     protected PropertyDescriptor[] pdesc;
     protected int totalParamCount;
     protected int inheritedParamCount;
 
     public GateListPropertySource(IHasGates model) {
         super(model);
-        this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, GateElementEx> gates = model.getGateDeclarations();
+        Map<String, GateElementEx> gates = getHasGatesModel().getGateDeclarations();
 
         pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;
         for (GateElementEx gateDecl : gates.values()) {
             String typeString = gateDecl.getAttribute(GateElementEx.ATT_TYPE);
             String definedIn = "";
-            if (gateDecl.getEnclosingTypeElement() != model) {
+            if (gateDecl.getEnclosingTypeElement() != getHasGatesModel()) {
                 inheritedParamCount++;
                 definedIn= " (inherited from " + gateDecl.getEnclosingTypeElement().getName() + ")";
             }
@@ -66,29 +65,15 @@ public class GateListPropertySource extends NotifiedPropertySource {
     public Object getPropertyValue(Object id) {
         if (!(id instanceof GateElementEx))
             return getEditableValue();
-        Map<String, GateElementEx> gateSizes = model.getGateSizes();
+        Map<String, GateElementEx> gateSizes = getHasGatesModel().getGateSizes();
         GateElementEx gateDeclNode = (GateElementEx)id;
         GateElementEx gateSizeNode = gateSizes.get(gateDeclNode.getName());
         String valueString = gateSizeNode== null ? "" : gateSizeNode.getVectorSize();
         return valueString;
     }
 
-    @Override
-    public boolean isPropertyResettable(Object id) {
-        return false;
-    }
-
-    @Override
-    public boolean isPropertySet(Object id) {
-        return false;
-    }
-
-    @Override
-    public void resetPropertyValue(Object id) {
-    }
-
-    @Override
-    public void setPropertyValue(Object id, Object value) {
+    public IHasGates getHasGatesModel() {
+        return (IHasGates)getModel();
     }
 
 }

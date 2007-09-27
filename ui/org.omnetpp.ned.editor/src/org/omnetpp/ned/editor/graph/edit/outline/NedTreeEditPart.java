@@ -68,12 +68,12 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements IModelProvi
         // reorder support
     }
 
-    public INEDElement getNEDModel() {
+    public INEDElement getNedModel() {
         return (INEDElement)getModel();
     }
 
     public boolean isEditable() {
-    	NedFileElementEx nedFileElement = getNEDModel().getContainingNedFileElement();
+    	NedFileElementEx nedFileElement = getNedModel().getContainingNedFileElement();
        	return nedFileElement == null || (!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError());
     }
 
@@ -101,10 +101,17 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements IModelProvi
     }
 
     /**
-     * Fully refresh ourselves an all of our children (recursively) visually
+     * Fully refresh ourselves and all of our children (recursively) visually
      */
     @Override
     public void refresh() {
+        // check if the associated model element is still in the model. if not, we should 
+        // not refresh the element (ie. we cannot determine the icon for example as it requires the
+        // display string, which requires type resolve which requires project context...)
+        // of course the top level file element do not need a parent
+        if (!(getNedModel() instanceof NedFileElementEx) && getNedModel().getParent() == null)
+            return;
+        
     	super.refresh();
         for (Object child : getChildren())
             ((NedTreeEditPart)child).refresh();

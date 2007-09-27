@@ -12,20 +12,18 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  *
  * @author rhornig
  */
-public class InterfacesListPropertySource extends NotifiedPropertySource {
+public class InterfacesListPropertySource extends NedBasePropertySource {
     public final static String CATEGORY = "like";
     public final static String DESCRIPTION = "List of interfaces this component implements - (read only)";
-    protected INedTypeElement model;
     protected PropertyDescriptor[] pdesc;
 
     public InterfacesListPropertySource(INedTypeElement model) {
         super(model);
-        this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Set<String> interfacesList = model.getNEDTypeInfo().getInterfaces();
+        Set<String> interfacesList = getNedTypeModel().getNEDTypeInfo().getInterfaces();
 
         pdesc = new PropertyDescriptor[interfacesList.size()];
         int totalCount = 0;
@@ -41,30 +39,10 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getEditableValue() {
-    	return StringUtils.join(model.getNEDTypeInfo().getInterfaces(), ",");
+    	return StringUtils.join(getNedTypeModel().getNEDTypeInfo().getInterfaces(), ",");
     }
 
-    @Override
-    public Object getPropertyValue(Object id) {
-        return "";
+    public INedTypeElement getNedTypeModel() {
+        return (INedTypeElement)getModel();
     }
-
-    @Override
-    public boolean isPropertyResettable(Object id) {
-        return false;
-    }
-
-    @Override
-    public boolean isPropertySet(Object id) {
-        return false;
-    }
-
-    @Override
-    public void resetPropertyValue(Object id) {
-    }
-
-    @Override
-    public void setPropertyValue(Object id, Object value) {
-    }
-
 }

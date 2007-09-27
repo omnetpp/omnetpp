@@ -50,7 +50,7 @@ public class CopyAction extends SelectionAction {
 		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();
 		for (EditPart editPart : selectedEditParts)
 			if (editPart instanceof IModelProvider)
-				selectedModelObjects.add(((IModelProvider)editPart).getNEDModel().deepDup());
+				selectedModelObjects.add(((IModelProvider)editPart).getNedModel().deepDup());
 
 		// copy to clipboard
 		if (selectedModelObjects.size() > 0)

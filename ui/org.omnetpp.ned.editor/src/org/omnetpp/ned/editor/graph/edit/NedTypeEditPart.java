@@ -27,7 +27,7 @@ public class NedTypeEditPart extends NedEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new TypeNameValidator((IHasName)getNEDModel());
+        renameValidator = new TypeNameValidator((IHasName)getNedModel());
     }
 
     /**
@@ -91,7 +91,7 @@ public class NedTypeEditPart extends NedEditPart {
     @Override
     protected INEDElement getNEDElementToOpen() {
         if (getModel() instanceof INedTypeElement)
-            return ((INedTypeElement)getNEDModel()).getFirstExtendsRef();
+            return ((INedTypeElement)getNedModel()).getFirstExtendsRef();
 
         return null;
     }

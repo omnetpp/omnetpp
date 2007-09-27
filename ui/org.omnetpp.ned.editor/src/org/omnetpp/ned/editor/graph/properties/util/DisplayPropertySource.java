@@ -12,36 +12,24 @@ import org.omnetpp.common.properties.ImagePropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
- * TODO documentation
+ * Base display string property source. Common behavior to all display string property sources
  *
  * @author rhornig
  */
 //TODO implement number cell editor
-abstract public class DisplayPropertySource extends NotifiedPropertySource {
+abstract public class DisplayPropertySource extends NedBasePropertySource {
 
-    // string parser for handling the parsing of the display string tags
-    protected DisplayString displayString = null;
     // property descriptor for the sheet (could be static if pushed upper)
     protected IPropertyDescriptor[] propertyDescArray = null;
     // by default supports all possible properties defined in DisplayString
     protected EnumSet<DisplayString.Prop> supportedProperties = EnumSet.noneOf(DisplayString.Prop.class);
-    // the model that we are attached to
-    private final IHasDisplayString model;
 
     public DisplayPropertySource(IHasDisplayString model) {
         super(model);
-        this.model = model;
         // by default we provide only  the single line display property editor
         supportedProperties.add(DisplayString.Prop.DISPLAY);
-    }
-
-    @Override
-    public void modelChanged(NEDModelEvent event) {
-        if (model != null)
-            setDisplayString(model.getDisplayString());
     }
 
     /**
@@ -94,11 +82,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     }
 
     public DisplayString getDisplayString() {
-        return displayString;
-    }
-
-    public void setDisplayString(DisplayString displayString) {
-        this.displayString = displayString;
+        return ((IHasDisplayString)getModel()).getDisplayString();
     }
 
     @Override
@@ -118,7 +102,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
         // otherwise look for a single tag/attribute
-        String tagVal = displayString.getAsStringLocal(prop);
+        String tagVal = getDisplayString().getAsStringLocal(prop);
         // if the property does not exists yet, return default empty value
         if (tagVal == null)
             tagVal = DisplayString.EMPTY_TAG_VALUE;
@@ -133,7 +117,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         // check if we requested the "single line" DISPLAY property
         if (propObj == DisplayString.Prop.DISPLAY) {
-        	displayString.set((String)value);
+            getDisplayString().set((String)value);
         	return;
         }
 
@@ -141,9 +125,9 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
 
         if (value != null)
-            displayString.set(prop, value.toString());
+            getDisplayString().set(prop, value.toString());
         else
-            displayString.set(prop, null);
+            getDisplayString().set(prop, null);
 
     }
 
@@ -154,12 +138,12 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         // check if we requested the "single line" DISPLAY property, reset the whole display string
         if (prop == DisplayString.Prop.DISPLAY) {
-        	displayString.set(null);
+            getDisplayString().set(null);
         	return;
         }
 
         // set only a single attribute
-        displayString.set((DisplayString.Prop)prop, null);
+        getDisplayString().set((DisplayString.Prop)prop, null);
     }
 
     @Override
@@ -169,15 +153,15 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         // check if we requested the "single line" DISPLAY property
         if (prop == DisplayString.Prop.DISPLAY)
-            return StringUtils.isNotEmpty(displayString.toString());
+            return StringUtils.isNotEmpty(getDisplayString().toString());
 
         // otherwise check a single attribute
-        return StringUtils.isNotEmpty(displayString.getAsStringLocal((DisplayString.Prop)prop));
+        return StringUtils.isNotEmpty(getDisplayString().getAsStringLocal((DisplayString.Prop)prop));
     }
 
     @Override
     public String toString() {
-        return displayString.toString();
+        return getDisplayString().toString();
     }
 
     @Override

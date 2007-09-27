@@ -26,7 +26,6 @@ public class ModuleInterfacePropertySource extends MergedPropertySource {
         public ModuleInterfaceDisplayPropertySource(ModuleInterfaceElementEx model) {
             super(model);
             this.model = model;
-            setDisplayString(model.getDisplayString());
             supportedProperties.addAll( EnumSet.range(DisplayString.Prop.WIDTH,
                                                       DisplayString.Prop.IMAGESIZE));
         }

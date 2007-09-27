@@ -314,7 +314,7 @@ public class MultiPageNedEditor
             Object object = ((IStructuredSelection)graphicalEditor.getSite()
                     .getSelectionProvider().getSelection()).getFirstElement();
             if (object != null)
-                currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
+                currentNEDElementSelection = ((IModelProvider)object).getNedModel();
 
             if (currentNEDElementSelection != null)
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
@@ -331,7 +331,7 @@ public class MultiPageNedEditor
 	            Object object = ((IStructuredSelection)textEditor.getSite()
 	                    .getSelectionProvider().getSelection()).getFirstElement();
 	            if (object != null)
-	                currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
+	                currentNEDElementSelection = ((IModelProvider)object).getNedModel();
 	        }
             if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);

@@ -298,7 +298,7 @@ public class PasteAction extends SelectionAction {
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		List<EditPart> selectedEditParts = graphicalViewer.getSelectedEditParts();
 		if (selectedEditParts.size() > 0 && selectedEditParts.get(0) instanceof IModelProvider)
-			return ((IModelProvider)selectedEditParts.get(0)).getNEDModel();
+			return ((IModelProvider)selectedEditParts.get(0)).getNedModel();
 		else
 			return null;
 	}

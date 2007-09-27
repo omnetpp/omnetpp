@@ -3,8 +3,9 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
+
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -13,14 +14,13 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  *
  * @author rhornig
  */
-public abstract class ExtendsPropertySource implements IPropertySource2 {
+public abstract class ExtendsPropertySource extends NedBasePropertySource {
         public enum Prop { Extends }
         protected IPropertyDescriptor[] descriptors;
-        protected INedTypeElement model;
         EditableComboBoxPropertyDescriptor extendsProp;
 
         public ExtendsPropertySource(final INedTypeElement nodeModel) {
-            model = nodeModel;
+            super(nodeModel);
 
             // set up property descriptors
             extendsProp = new EditableComboBoxPropertyDescriptor(Prop.Extends, "extends");
@@ -31,7 +31,7 @@ public abstract class ExtendsPropertySource implements IPropertySource2 {
         }
 
         public Object getEditableValue() {
-            return model.getFirstExtends();
+            return getNedTypeModel().getFirstExtends();
         }
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
@@ -47,29 +47,33 @@ public abstract class ExtendsPropertySource implements IPropertySource2 {
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Extends.equals(propName))
-                return model.getFirstExtends();
+                return getNedTypeModel().getFirstExtends();
 
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Extends.equals(propName))
-                model.setFirstExtends((String)value);
+                getNedTypeModel().setFirstExtends((String)value);
         }
 
         public boolean isPropertySet(Object propName) {
             if (Prop.Extends.equals(propName))
-                return !"".equals(model.getFirstExtends()) && (model.getFirstExtends() != null);
+                return StringUtils.isNotEmpty(getNedTypeModel().getFirstExtends());
 
             return false;
         }
 
         public void resetPropertyValue(Object propName) {
             if (Prop.Extends.equals(propName))
-                model.setFirstExtends(null);
+                getNedTypeModel().setFirstExtends(null);
         }
 
         public boolean isPropertyResettable(Object propName) {
             return true;
+        }
+        
+        public INedTypeElement getNedTypeModel() {
+            return (INedTypeElement)getModel();
         }
 }

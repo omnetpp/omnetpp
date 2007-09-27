@@ -12,28 +12,25 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
  *
  * @author rhornig
  */
-public class SubmoduleListPropertySource extends NotifiedPropertySource {
+public class SubmoduleListPropertySource extends NedBasePropertySource {
     public final static String CATEGORY = "submodules";
     public final static String DESCRIPTION = "List of submodules (direct and inherited)";
-    protected CompoundModuleElementEx model;
     protected PropertyDescriptor[] pdesc;
     protected int totalSubmoduleCount;
     protected int inheritedSubmoduleCount;
 
     public SubmoduleListPropertySource(CompoundModuleElementEx model) {
         super(model);
-        this.model = model;
     }
 
-    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<SubmoduleElementEx> submodules = model.getSubmodules();
+        List<SubmoduleElementEx> submodules = ((CompoundModuleElementEx)getModel()).getSubmodules();
 
         pdesc = new PropertyDescriptor[submodules.size()];
         totalSubmoduleCount = inheritedSubmoduleCount = 0;
         for (SubmoduleElementEx smodule : submodules) {
             String definedIn = "";
-            if (smodule.getCompoundModule() != model) {
+            if (smodule.getCompoundModule() != getModel()) {
                 inheritedSubmoduleCount++;
                 definedIn= " (inherited from "+smodule.getCompoundModule().getName()+")";
             }

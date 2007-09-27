@@ -216,7 +216,7 @@ public class GraphicalNedEditor
                 List newSel = new ArrayList();
                 for (Object o : sel) {
                     if (o instanceof IModelProvider) {
-                        INEDElement nedElement = ((IModelProvider)o).getNEDModel();
+                        INEDElement nedElement = ((IModelProvider)o).getNedModel();
                         if (nedElement.getContainingNedFileElement() != null)
                             newSel.add(o);
                     }
@@ -626,7 +626,7 @@ public class GraphicalNedEditor
 		if (!(ep instanceof IModelProvider))
 			return null;
 
-		INEDElement element = ((IModelProvider)ep).getNEDModel();
+		INEDElement element = ((IModelProvider)ep).getNedModel();
 		if (element instanceof NedFileElementEx)
 			return null;
 
