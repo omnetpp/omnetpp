@@ -1,5 +1,12 @@
 package org.omnetpp.scave.editors.ui;
 
+import static org.omnetpp.scave.TestSupport.FILE_RUN_VIEW_TREE_ID;
+import static org.omnetpp.scave.TestSupport.INPUT_FILES_TREE;
+import static org.omnetpp.scave.TestSupport.LOGICAL_VIEW_TREE_ID;
+import static org.omnetpp.scave.TestSupport.RUN_FILE_VIEW_TREE_ID;
+import static org.omnetpp.scave.TestSupport.WIDGET_ID;
+import static org.omnetpp.scave.TestSupport.enableGuiTest;
+
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -115,6 +122,13 @@ public class InputsPage extends ScaveEditorPage {
         getFileRunTreeViewer().setInput(manager);
         getRunFileTreeViewer().setInput(manager);
         getLogicalDataTreeViewer().setInput(manager);
+        
+        if (enableGuiTest) {
+        	getInputFilesTreeViewer().getTree().setData(WIDGET_ID, INPUT_FILES_TREE);
+        	getFileRunTreeViewer().getTree().setData(WIDGET_ID, FILE_RUN_VIEW_TREE_ID);
+        	getRunFileTreeViewer().getTree().setData(WIDGET_ID, RUN_FILE_VIEW_TREE_ID);
+        	getLogicalDataTreeViewer().getTree().setData(WIDGET_ID, LOGICAL_VIEW_TREE_ID);
+        }
 	}
 
 	/**
