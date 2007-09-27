@@ -45,6 +45,11 @@ public class WorkbenchPartAccess
 		return getComposite().findTree();
 	}
 
+    @InUIThread
+    public TableAccess findTable() {
+        return getComposite().findTable();
+    }
+
 	@InUIThread
 	public void activateWithMouseClick() {
 		CTabItem cTabItem = findDescendantCTabItemByLabel(getCompositeInternal().getParent(), workbenchPart.getSite().getRegisteredName());

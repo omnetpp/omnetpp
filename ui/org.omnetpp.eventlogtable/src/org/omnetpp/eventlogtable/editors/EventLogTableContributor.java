@@ -533,9 +533,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 							}
 
 						if (!found) {
-							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-							marker.setAttribute("EventNumber", event.getEventNumber());
+                            InputDialog dialog = new InputDialog(null, "Add Bookmark", "Enter Bookmark name:", "", null);
+
+                            if (dialog.open() == Window.OK) {
+    							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+    							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+    							marker.setAttribute("EventNumber", event.getEventNumber());
+    							marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
+							}
 						}
 
 						update();
@@ -635,15 +640,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 									
 									if (menuItem.getSelection()) {
 										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as (BS and c(MyMessage))", null, null);
-										dialog.open();
-		
-										String pattern = dialog.getValue();
-										if (pattern == null || pattern.equals(""))
-											pattern = "*";
-		
-										eventLogTable.setCustomFilter(pattern);
-										eventLogTable.setFilterMode(4);
-										update();
+										if (dialog.open() == Window.OK) {
+    										String pattern = dialog.getValue();
+    										if (pattern == null || pattern.equals(""))
+    											pattern = "*";
+    		
+    										eventLogTable.setCustomFilter(pattern);
+    										eventLogTable.setFilterMode(4);
+    										update();
+										}
 									}
 								}
 							});

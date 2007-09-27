@@ -909,6 +909,13 @@ public class VirtualTable<T>
 
 		return rowHeight;
 	}
+	
+    /**
+     * Returns the height of the table header in pixels.
+     */
+	public int getHeaderHeight() {
+	    return table.getHeaderHeight();
+	}
 
 	private boolean elementListEquals(List<T> a, List<T> b) {
 		if (a == null || b == null)

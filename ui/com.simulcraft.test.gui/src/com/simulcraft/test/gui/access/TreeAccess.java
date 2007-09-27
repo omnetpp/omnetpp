@@ -28,6 +28,11 @@ public class TreeAccess extends ControlAccess
 	public void assertEmpty() {
 		Assert.assertTrue(getTree().getItemCount() == 0);
 	}
+
+    @InUIThread
+    public void assertNotEmpty() {
+        Assert.assertTrue(getTree().getItemCount() != 0);
+    }
 	
     @InUIThread
 	public TreeItemAccess findTreeItemByPath(String path) {

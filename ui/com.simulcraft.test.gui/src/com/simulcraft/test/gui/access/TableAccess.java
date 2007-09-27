@@ -1,5 +1,7 @@
 package com.simulcraft.test.gui.access;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.util.IPredicate;
@@ -17,7 +19,17 @@ public class TableAccess extends ControlAccess
 		return (Table)widget;
 	}
 
-	@InUIThread
+    @InUIThread
+    public void assertEmpty() {
+        Assert.assertTrue(getTable().getItemCount() == 0);
+    }
+
+    @InUIThread
+    public void assertNotEmpty() {
+        Assert.assertTrue(getTable().getItemCount() != 0);
+    }
+
+    @InUIThread
 	public TableItemAccess findTableItemByContent(final String content) {
 		return new TableItemAccess((TableItem)findObject(getTable().getItems(), new IPredicate() {
 			public boolean matches(Object object) {

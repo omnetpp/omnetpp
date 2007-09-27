@@ -63,7 +63,7 @@ public class Access
         accessFactories.add(factory);
 	}
 
-	protected static Access createAccess(Object instance) {
+	public static Access createAccess(Object instance) {
 		Class<?> clazz = instance.getClass();
 
 		while (clazz != Object.class) {
