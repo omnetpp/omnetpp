@@ -34,7 +34,7 @@ public class NedEditorUtils
 	public static void typeIntoTextualNedEditor(String fileName, String nedSource) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
+		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePageEditor("Text");
 		StyledTextAccess styledText = textualEditor.findStyledText();
 		styledText.pressKey('A', SWT.CTRL); // "Select all"
 		styledText.typeIn(nedSource);
@@ -65,8 +65,8 @@ public class NedEditorUtils
 	public static void assertBothEditorsAreAccessible(String fileName) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		multiPageEditorPart.activatePage("Graphical");
-		multiPageEditorPart.activatePage("Text");
-		multiPageEditorPart.activatePage("Graphical");
+		multiPageEditorPart.activatePageEditor("Graphical");
+		multiPageEditorPart.activatePageEditor("Text");
+		multiPageEditorPart.activatePageEditor("Graphical");
 	}
 }

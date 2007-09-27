@@ -13,7 +13,7 @@ public class CTabItemAccess extends ClickableWidgetAccess
 	public CTabItem getCTabItem() {
 		return (CTabItem)widget;
 	}
-
+	
 	@Override
 	protected Menu getContextMenu() {
 		return null;

@@ -26,7 +26,7 @@ public class ConnectionChooserTest
     private void prepareTest(String content) throws Exception {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
-        graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().activatePage("Graphical");
+        graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().activatePageEditor("Graphical");
     }
     
     // used gates cannot be part of a new connection (they should be disabled in the menu)

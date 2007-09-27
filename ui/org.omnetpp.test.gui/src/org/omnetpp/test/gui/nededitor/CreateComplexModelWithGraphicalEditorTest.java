@@ -12,16 +12,16 @@ public class CreateComplexModelWithGraphicalEditorTest
 	public void testCreateSimpleModel() throws Throwable {
 		createNewNedFileByWizard();
 		MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePage("Graphical");
+		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePageEditor("Graphical");
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
-		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePage("Text");
+		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePageEditor("Text");
 		textualEditor.moveCursorAfter("simple TestNode.*\\n\\{");
 		textualEditor.pressEnter();
 		textualEditor.typeIn("gates:");
 		textualEditor.pressEnter();
 		textualEditor.typeIn("inout g;");
 		textualEditor.pressEnter();
-		multiPageEditorPart.activatePage("Graphical");
+		multiPageEditorPart.activatePageEditor("Graphical");
 		CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.createCompoundModuleWithPalette("TestNetwork");
 		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node1", 200, 200);
 		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node2", 100, 100);
