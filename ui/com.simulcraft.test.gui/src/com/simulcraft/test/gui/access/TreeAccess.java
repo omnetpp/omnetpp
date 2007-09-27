@@ -5,10 +5,12 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.IPredicate;
 
 import com.simulcraft.test.gui.core.InUIThread;
@@ -32,6 +34,11 @@ public class TreeAccess extends ControlAccess
     @InUIThread
     public void assertNotEmpty() {
         Assert.assertTrue(getTree().getItemCount() != 0);
+    }
+    
+    @InUIThread
+    public void assertContent(GenericTreeNode... content) {
+    	Assert.assertTrue(compareContent(getTree().getItems(), content));
     }
 	
     @InUIThread
@@ -74,5 +81,21 @@ public class TreeAccess extends ControlAccess
 			if (predicate.matches(treeItem))
 				resultTreeItems.add(treeItem);
 		}
+	}
+	
+	protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
+		if (treeItems.length != expectedItems.length)
+			return false;
+			
+		for (int i = 0; i < treeItems.length; ++i) {
+			TreeItem item = treeItems[i];
+			GenericTreeNode expected = expectedItems[i];
+			if (!ObjectUtils.equals(item.getText(), expected.getPayload()))
+				return false;
+			if (!compareContent(item.getItems(), expected.getChildren()))
+				return false;
+		}
+		
+		return true;
 	}
 }
