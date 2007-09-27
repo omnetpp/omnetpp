@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.figures,
  org.omnetpp.eventlogtable,
  org.omnetpp.sequencechart,
- com.simulcraft.test.gui
+ com.simulcraft.test.gui,
+ org.omnetpp.scave
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Activator: org.omnetpp.test.gui.core.Activator
 Eclipse-LazyStart: true

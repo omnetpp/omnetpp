@@ -8,6 +8,7 @@ public class ScaveTestSuite
 {
     public ScaveTestSuite() {
         addTestSuite(OpenFileTest.class);
+        addTestSuite(InputsPageTest.class);
     }
 
     public static Test suite() {
