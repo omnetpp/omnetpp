@@ -40,7 +40,7 @@ static double NaN = zero / zero;
 ResultItem::Type ResultItem::getType() const
 {
     StringMap::const_iterator it = attributes.find("type");
-    if (it != attributes.end())
+    if (it == attributes.end())
     {
         if (attributes.find("enum") != attributes.end())
             return TYPE_ENUM;
