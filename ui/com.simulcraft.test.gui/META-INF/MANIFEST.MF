@@ -16,3 +16,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit,
  org.aspectj.runtime,
  org.omnetpp.common
+Bundle-Activator: com.simulcraft.test.gui.Activator
+Eclipse-LazyStart: true
