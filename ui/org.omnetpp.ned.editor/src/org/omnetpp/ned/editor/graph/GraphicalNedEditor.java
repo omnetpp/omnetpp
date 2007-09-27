@@ -171,6 +171,7 @@ public class GraphicalNedEditor
                 super.notifyListeners(command, state);
 
                 if (state==PRE_EXECUTE || state==PRE_UNDO || state==PRE_REDO) {
+                    Assert.isTrue(!insideBeginEnd, "Nested execute is not allowed");
                     NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
                     insideBeginEnd = true;
                 }
