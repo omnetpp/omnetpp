@@ -46,7 +46,10 @@ public class TestApplication extends IDEApplication
             int returnCode = PlatformUI.createAndRunWorkbench(display, new IDEWorkbenchAdvisor() {
             	@Override
             	public void eventLoopException(Throwable exception) {
-            		if (exception instanceof TestException || exception.getCause() instanceof TestException) {
+            		if (exception instanceof TestException ||
+            		    exception.getCause() instanceof TestException ||
+            		    (exception.getCause() != null && exception.getCause().getCause() instanceof TestException))
+            		{
             			if (debug)
             				System.out.println("Rethrowing exception from event loop");
  

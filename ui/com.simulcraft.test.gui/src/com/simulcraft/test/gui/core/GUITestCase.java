@@ -132,6 +132,7 @@ public abstract class GUITestCase extends TestCase {
 
 			waitUntilEventQueueBecomesEmpty();		
 
+			// check if step has been run successfully and return
 			if (stepThrowables[0] == null)
 				return result[0];
 			else if (firstThrowable == null)
@@ -145,7 +146,7 @@ public abstract class GUITestCase extends TestCase {
 
 		// the special WorkspaceAdvisor will let the exception go up through readAndDispatch event loops and unwind the
 		// stack until the top level test code is reached, see above
-		stepThrowables[0] = firstThrowable;
+		stepThrowables[0] = new TestException(firstThrowable);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				if (debug)
@@ -157,7 +158,7 @@ public abstract class GUITestCase extends TestCase {
 			}
 		});
 
-		// unreachable code
+		// normal execution should have been already returned, this will terminate the background test thread
 		Assert.assertTrue("Unreachable code reached", false);
 		return null;
 	}
