@@ -170,6 +170,7 @@ public class GraphicalNedEditorAccess
 
     private void createElementWithPalette(String elementTypeName, String elementName) {
         clickPaletteItem(elementTypeName);
+        // TODO: inserting sleep(1); causes the palette button to be released even if clicked and thus fail to create the element
         clickBackground();
         
         if (elementName != null)
