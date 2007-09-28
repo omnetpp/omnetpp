@@ -682,15 +682,17 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
     d.fileRunRef = fileRunRef;
 
     // lines in omnetpp.sca are usually grouped by module, we can exploit this for efficiency
-    if (lastInsertedModuleRef && *lastInsertedModuleRef==moduleName)
-    {
-        d.moduleNameRef = lastInsertedModuleRef;
-    }
-    else
-    {
+// broken concept: load scalars, load vectors with new module names, load scalars -> dangling pointer
+// TODO: create string pool for module names, and add this improvement to it
+//    if (lastInsertedModuleRef && *lastInsertedModuleRef==moduleName)
+//    {
+//        d.moduleNameRef = lastInsertedModuleRef;
+//    }
+//    else
+//    {
         std::string *m = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         d.moduleNameRef = lastInsertedModuleRef = m;
-    }
+//    }
 
     d.nameRef = stringSetFindOrInsert(names, std::string(scalarName));
 
