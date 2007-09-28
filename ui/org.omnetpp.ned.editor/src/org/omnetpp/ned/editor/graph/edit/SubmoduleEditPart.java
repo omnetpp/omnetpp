@@ -42,7 +42,12 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        IFigure fig = new SubmoduleFigure();
+        SubmoduleFigure fig = new SubmoduleFigure();
+        // set the pin decoration image for the image (The compound module requests an auto-layout
+        // if we add an figure without pin. ie. submodule created in the text editor without 
+        // a display string
+        fig.setPinDecoration(getSubmoduleModel().getDisplayString().getLocation(1.0f) != null);
+
         gateAnchor = new GateAnchor(fig);
         return fig;
     }
