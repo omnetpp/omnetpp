@@ -1,3 +1,24 @@
+2007-09-28
+----------
+
+Additions:
+
+   + Confidence intervals are computed for averaged datasets. The interval is displayed
+     in the tooltip of scalar and scatter charts.
+
+Fixes:
+
+   + Bar chart labels can be stacked under each other. (Option in the Edit dialog/Titles)
+
+   + Palette on Dataset page is scrollable if not entirely visible.
+
+   + Show 'x' in place of the color image in the Chart Edit dialog/Lines when 
+     the color field is not valid.
+
+   + Fix: crash when result files are loaded in scalar/vector/scalar order and 
+     the vector file added new modules.
+
+
 2007-09-14
 ----------
 
