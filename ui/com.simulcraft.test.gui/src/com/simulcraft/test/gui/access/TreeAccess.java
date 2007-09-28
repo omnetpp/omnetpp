@@ -7,6 +7,7 @@ import junit.framework.Assert;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.ui.GenericTreeNode;
