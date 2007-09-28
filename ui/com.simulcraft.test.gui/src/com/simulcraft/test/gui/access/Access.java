@@ -153,12 +153,16 @@ public class Access
 
 	@NotInUIThread
 	public static void sleep(double seconds) {
-		try {
-			Thread.sleep((long)(seconds * 1000));
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+	    Assert.assertTrue(seconds >= 0);
+
+	    if (seconds > 0) {
+    		try {
+    			Thread.sleep((long)(seconds * 1000));
+    		}
+    		catch (InterruptedException e) {
+    			throw new RuntimeException(e);
+    		}
+	    }
 	}
 
 	@InUIThread
