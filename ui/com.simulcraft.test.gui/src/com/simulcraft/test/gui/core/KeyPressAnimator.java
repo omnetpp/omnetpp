@@ -25,7 +25,7 @@ import org.omnetpp.common.color.ColorFactory;
  * @author Andras
  */
 public class KeyPressAnimator implements Listener {
-    private long longDelayMillis = 300; // box stays up this long
+    private long longDelayMillis = 500; // box stays up this long
     private long shortDelayMillis = 50; // average time between keypresses during typing
     
     private int modifierState = 0;
@@ -79,29 +79,8 @@ public class KeyPressAnimator implements Listener {
         gc.setFont(font);
         Point textExtent = gc.textExtent(text);
 
-        Point p;
-        Control focusControl = Display.getCurrent().getFocusControl();
-        if (focusControl instanceof Text) {
-            // for text and styled text, place the box near the text cursor
-            Text text2 = (Text)focusControl;
-            p = text2.toDisplay(text2.getCaretLocation());
-        }
-        else if (focusControl instanceof StyledText) {
-            StyledText styledText = (StyledText)focusControl;
-            p = styledText.toDisplay(styledText.getLocationAtOffset(styledText.getCaretOffset()));
-        }
-        else {
-            // if mouse is inside the control, use that position; otherwise, 
-            // just place the box to the right of the control
-            Rectangle bounds = focusControl.getBounds();
-            p = focusControl.toDisplay(new Point(bounds.x, bounds.y));
-            bounds.x = p.x; 
-            bounds.y = p.y;
-            if (bounds.contains(display.getCursorLocation()))
-                p = display.getCursorLocation();  
-            else 
-                p.x += bounds.width;  
-        }
+        //Point p = getPositionNearFocusWidget();
+        Point p = display.getCursorLocation();  
 
         Rectangle r = new Rectangle(p.x + 10, p.y + 10, textExtent.x + 20, textExtent.y + 10);
 
@@ -128,6 +107,34 @@ public class KeyPressAnimator implements Listener {
         savedBackground.dispose();
         font.dispose();
         gc.dispose();
+    }
+
+    protected Point getPositionNearFocusWidget() {
+        Point p;
+        Display display = Display.getCurrent();
+        Control focusControl = display.getFocusControl();
+        if (focusControl instanceof Text) {
+            // for text and styled text, place the box near the text cursor
+            Text text2 = (Text)focusControl;
+            p = text2.toDisplay(text2.getCaretLocation());
+        }
+        else if (focusControl instanceof StyledText) {
+            StyledText styledText = (StyledText)focusControl;
+            p = styledText.toDisplay(styledText.getLocationAtOffset(styledText.getCaretOffset()));
+        }
+        else {
+            // if mouse is inside the control, use that position; otherwise, 
+            // just place the box to the right of the control
+            Rectangle bounds = focusControl.getBounds();
+            p = focusControl.toDisplay(new Point(bounds.x, bounds.y));
+            bounds.x = p.x; 
+            bounds.y = p.y;
+            if (bounds.contains(display.getCursorLocation()))
+                p = display.getCursorLocation();  
+            else 
+                p.x += bounds.width;  
+        }
+        return p;
     }
 }
 
