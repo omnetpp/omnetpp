@@ -29,10 +29,23 @@ public class InputsPageTest extends GUITestCase {
 //	}
 	
 	public void testFileRunView() {
+		inputsPage.ensureFileRunViewVisible();
 		TreeAccess fileRunTree = inputsPage.getFileRunViewTree();
 		fileRunTree.assertContent(buildFileRunViewContent());
 	}
 	
+	public void testRunFileView() {
+		inputsPage.ensureRunFileViewVisible();
+		TreeAccess runFileTree = inputsPage.getRunFileViewTree();
+		runFileTree.assertContent(buildRunFileViewContent());
+	}
+	
+	public void testLogicalView() {
+		inputsPage.ensureLogicalViewVisible();
+		TreeAccess logicalTree = inputsPage.getLogicalViewTree();
+		logicalTree.assertContent(buildLogicalViewContent());
+	}
+
 	private static GenericTreeNode[] buildFilesViewContent() {
 		return 	forest(
 					n("file /test-project/empty.sca"),
@@ -43,12 +56,39 @@ public class InputsPageTest extends GUITestCase {
 	
 	private static GenericTreeNode[] buildFileRunViewContent() {
 		return 	forest(
-					n("test-1.vec",
-						n("run-1"),
-						n("run-2")),
-					n("test-2.vec",
-						n("run-1"),
-						n("run-2"))
+					n("/test-project/empty.sca"),
+					n("/test-project/empty.vec"),
+					n("/test-project/inputspagetest.sca",
+						n("run \"run-1\""),
+						n("run \"run-2\"")),
+					n("/test-project/inputspagetest.vec",
+						n("run \"run-1\""))
+				);
+	}
+	
+	private static GenericTreeNode[] buildRunFileViewContent() {
+		return 	forest(
+					n("run \"run-1\"",
+						n("/test-project/inputspagetest.sca"),
+						n("/test-project/inputspagetest.vec")),
+					n("run \"run-2\"",
+						n("/test-project/inputspagetest.sca"))
+				);
+	}
+	
+	private static GenericTreeNode[] buildLogicalViewContent() {
+		return 	forest(
+					n("experiment \"1\"",
+						n("measurement \"1\"",
+							n("replication \"1\"",
+								n("run \"run-1\"",
+									n("/test-project/inputspagetest.sca"),
+									n("/test-project/inputspagetest.vec"))))),
+					n("experiment \"2\"",
+						n("measurement \"2\"",
+							n("replication \"2\"",
+								n("run \"run-2\"",
+									n("/test-project/inputspagetest.sca")))))
 				);
 	}
 	
@@ -56,8 +96,8 @@ public class InputsPageTest extends GUITestCase {
 		return trees;
 	}
 	
-	private static GenericTreeNode n(String text, GenericTreeNode... children) {
-		GenericTreeNode node = new GenericTreeNode(text);
+	private static GenericTreeNode n(Object payload, GenericTreeNode... children) {
+		GenericTreeNode node = new GenericTreeNode(payload);
 		for (GenericTreeNode child : children)
 			node.addChild(child);
 		return node;
@@ -100,7 +140,7 @@ public class InputsPageTest extends GUITestCase {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
         //workbenchWindow.assertNoOpenEditorParts();
-		removeTestFiles();
+		//removeTestFiles();
 	}
 	
 	protected void createTestFiles() throws Exception {
@@ -157,8 +197,10 @@ public class InputsPageTest extends GUITestCase {
 		removeFile("inputspagetest.scave");
 		removeFile("empty.sca");
 		removeFile("empty.vec");
+		removeFile("empty.vci");
 		removeFile("inputspagetest.sca");
 		removeFile("inputspagetest.vec");
+		removeFile("inputspagetest.vci");
 	}
 	
 	protected void removeFile(String fileName) throws Exception {

@@ -16,7 +16,6 @@ public class OpenFileTest
 		workbenchWindow.chooseFromMainMenu("File|New.*|Analysis.*");
 		fillNewScaveFileWizard(projectName, fileName); // fill in wizard
 		WorkspaceUtils.assertFileExists(projectName + "/" + fileName); // make sure file got created
-		
 	}
 	
 	private static void fillNewScaveFileWizard(String parentFolder, String fileName) {
