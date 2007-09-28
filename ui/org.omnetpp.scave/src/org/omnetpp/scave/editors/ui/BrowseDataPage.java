@@ -186,7 +186,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 				public void resultFileManagerChanged(final ResultFileManager manager) {
 					getDisplay().asyncExec(new Runnable() {
 						public void run() {
-							refreshPage(manager);
+							if (!isDisposed())
+								refreshPage(manager);
 						}
 					});
 				}

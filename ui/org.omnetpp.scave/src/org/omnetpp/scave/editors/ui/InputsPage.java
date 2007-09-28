@@ -96,9 +96,11 @@ public class InputsPage extends ScaveEditorPage {
 			public void resultFileManagerChanged(final ResultFileManager manager) {
 				getDisplay().asyncExec(new Runnable() {
 					public void run() {
-						getFileRunTreeViewer().setInput(manager); // force refresh
-						getRunFileTreeViewer().setInput(manager);
-						getLogicalDataTreeViewer().setInput(manager);
+						if (!isDisposed()) {
+							getFileRunTreeViewer().setInput(manager); // force refresh
+							getRunFileTreeViewer().setInput(manager);
+							getLogicalDataTreeViewer().setInput(manager);
+						}
 					}
 				});
 			}
