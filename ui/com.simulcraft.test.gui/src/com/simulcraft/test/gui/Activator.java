@@ -8,6 +8,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.simulcraft.test.gui.core.KeyPressAnimator;
+import com.simulcraft.test.gui.core.MouseClickAnimator;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -37,6 +38,7 @@ public class Activator extends AbstractUIPlugin {
         KeyPressAnimator keyPressAnimator = new KeyPressAnimator();
         Display.getDefault().addFilter(SWT.KeyDown, keyPressAnimator);
         Display.getDefault().addFilter(SWT.KeyUp, keyPressAnimator);
+        Display.getDefault().addFilter(SWT.MouseDown, new MouseClickAnimator());
     }
 
     /*
