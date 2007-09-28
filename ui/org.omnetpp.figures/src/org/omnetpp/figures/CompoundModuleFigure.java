@@ -145,8 +145,9 @@ public class CompoundModuleFigure extends NedFigure
         
         @Override
         public void add(IFigure child, Object constraint, int index) {
-            // request an auto-layout whenever a submodule is added 
-            layouter.requestAutoLayout();
+            // request an auto-layout whenever an unpinned submodule is added (added from the text editor) 
+            if (child instanceof SubmoduleFigure && !((SubmoduleFigure)child).isPinned())
+                layouter.requestAutoLayout();
             super.add(child, constraint, index);
         }
     }

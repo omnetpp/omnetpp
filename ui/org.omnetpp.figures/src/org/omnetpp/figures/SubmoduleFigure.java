@@ -447,4 +447,8 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         pinFigure.setVisible(enabled);
         invalidate(); //XXX needed?
     }
+
+    public boolean isPinned() {
+        return pinFigure.isVisible();
+    }
 }

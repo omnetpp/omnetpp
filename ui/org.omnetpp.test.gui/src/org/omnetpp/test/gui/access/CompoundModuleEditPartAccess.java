@@ -40,8 +40,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 	public void createSubModuleWithPalette(String type, String name, int x, int y) {
 		getFlyoutPaletteComposite().clickButtonFigureWithLabel(type);
 		clickBackground(x, y);
-		String namePattern = Character.toLowerCase(type.charAt(0)) + type.substring(1) + ".*";
-		renameSubmodule(namePattern, name);
+		typeInNewName(name);
 	}
 
 	@InUIThread
@@ -56,12 +55,12 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 		typeInNewName(newName);
 	}
 
-	@InUIThread
+	@NotInUIThread
 	public void typeInNewName(String name) {
+        pressKey(SWT.F6);
 		Canvas canvas = new FigureAccess(getFigure()).getCanvas();
 		Text text = (Text)Access.findDescendantControl(canvas, Text.class);
 		TextAccess textAccess = new TextAccess(text);
-		textAccess.pressKey(SWT.F6);
 		textAccess.typeIn(name);
 		textAccess.pressEnter();
 	}
