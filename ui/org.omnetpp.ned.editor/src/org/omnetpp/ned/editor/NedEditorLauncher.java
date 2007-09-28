@@ -47,7 +47,7 @@ public class NedEditorLauncher implements IEditorLauncher {
                 return;
             }
             // open graphically
-            IDE.openEditor(page, file, MultiPageNedEditor.ID);
+            IDE.openEditor(page, file, NedEditor.ID);
         } catch (CoreException e) {
             NedEditorPlugin.logError(e);
         }

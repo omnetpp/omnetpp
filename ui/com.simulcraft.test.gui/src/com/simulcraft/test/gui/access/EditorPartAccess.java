@@ -1,5 +1,7 @@
 package com.simulcraft.test.gui.access;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorPart;
 
@@ -30,4 +32,14 @@ public class EditorPartAccess
 	public StyledTextAccess findStyledText() {
 		return getComposite().findStyledText();
 	}
+
+	@InUIThread
+    public void assertDirty() {
+        Assert.assertTrue("editor is not dirty", getEditorPart().isDirty());
+    }
+
+	@InUIThread
+    public void assertNotDirty() {
+        Assert.assertTrue("editor is dirty", !getEditorPart().isDirty());
+    }
 }

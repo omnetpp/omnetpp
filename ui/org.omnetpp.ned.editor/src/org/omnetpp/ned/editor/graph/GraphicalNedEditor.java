@@ -67,7 +67,7 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.MultiPageNedEditor;
+import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
@@ -571,7 +571,8 @@ public class GraphicalNedEditor
 
     // refresh the whole content plus the outline page and the palette too
     public void refresh() {
-        System.out.println("graph editor refresh");
+        System.out.println("graph editor refresh. Stack:");
+        new Throwable().printStackTrace(System.out);
         getGraphicalViewer().getContents().refresh();
         paletteRefreshJob.restartTimer();
         if (outlinePage != null)

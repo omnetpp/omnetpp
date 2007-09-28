@@ -65,7 +65,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  *
  * @author rhornig
  */
-public class MultiPageNedEditor
+public class NedEditor
 	extends MultiPageEditorPart
 	implements IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource
 {
@@ -77,7 +77,6 @@ public class MultiPageNedEditor
 
 	private int graphPageIndex;
 	private int textPageIndex;
-	private boolean insidePageChange = false;
 
     protected IPartListener partListener = new IPartListener() {
         public void partOpened(IWorkbenchPart part) {
@@ -87,7 +86,7 @@ public class MultiPageNedEditor
         }
 
         public void partActivated(IWorkbenchPart part) {
-            if (part == MultiPageNedEditor.this) {
+            if (part == NedEditor.this) {
                 if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
                     // when switching from another MultiPageNedEditor to this one for the same file
                     // we need to immediately pull the changes, because editing in this editor
@@ -105,13 +104,13 @@ public class MultiPageNedEditor
         }
 
         public void partDeactivated(IWorkbenchPart part) {
-            if (part == MultiPageNedEditor.this) {
+            if (part == NedEditor.this) {
                 // when switching from one MultiPageNedEditor to another for the same file
                 // we need to immediately push the changes, because editing in the other editor
                 // can be done correctly only if it is synchronized with the one just being deactivated
                 // synchronization is normally done in a delayed job and here we enforce to happen it right now
-                if (getActivePage() == textPageIndex && textEditor.hasContentChanged() &&
-                    NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
+                if (getActivePage() == textPageIndex &&
+                        NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile()))
                     textEditor.pushChangesIntoNEDResources();
             }
         }
@@ -232,9 +231,6 @@ public class MultiPageNedEditor
             textPageIndex = addPage(textEditor, getEditorInput());
             setPageText(textPageIndex,"Text");
 
-            // remember the initial content so we can detect any change later
-            textEditor.markContent();
-
             // switch to graphics mode initially if there's no error in the file
             setActivePage(maySwitchToGraphicalEditor() ? graphPageIndex : textPageIndex);
 
@@ -269,12 +265,6 @@ public class MultiPageNedEditor
 	 */
 	@Override
 	protected void pageChange(int newPageIndex) {
-	    //	prevent recursive call from setActivePage() below
-	    if (insidePageChange)
-	        return;
-
-	    insidePageChange = true;
-
         super.pageChange(newPageIndex);
 
         // XXX Kludge: currently the workbench do not send a partActivated/deactivated messages
@@ -306,7 +296,6 @@ public class MultiPageNedEditor
             NedFileElementEx nedFileElement = getModel();
             if (graphicalEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
                 textEditor.pullChangesFromNEDResourcesWhenPending();
-                textEditor.markContent();
             }
 
             // keep the current selection between the two editors
@@ -320,10 +309,11 @@ public class MultiPageNedEditor
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
 		}
 		else if (newPageIndex == graphPageIndex) {
-		    if (textEditor.hasContentChanged()) {
-		    	textEditor.pushChangesIntoNEDResources();
-    		    graphicalEditor.markContent();
-		    }
+		    textEditor.pushChangesIntoNEDResources();
+		    graphicalEditor.markContent();
+		    // earlier ned changes may not caused a refresh (because of optimizations)
+		    // in the graphical editor (ie. the editor was not visible) so we must do it now
+		    graphicalEditor.refresh();
 
             // keep the current selection between the two editors
 	        INEDElement currentNEDElementSelection = null;
@@ -338,8 +328,6 @@ public class MultiPageNedEditor
 		}
 		else
 			throw new RuntimeException("Unknown page index");
-
-        insidePageChange = false;
 	}
 
     /**

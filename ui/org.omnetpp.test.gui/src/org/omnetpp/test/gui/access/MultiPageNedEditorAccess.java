@@ -1,6 +1,6 @@
 package org.omnetpp.test.gui.access;
 
-import org.omnetpp.ned.editor.MultiPageNedEditor;
+import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
@@ -9,12 +9,12 @@ public class MultiPageNedEditorAccess
     extends MultiPageEditorPartAccess
 {
 
-	public MultiPageNedEditorAccess(MultiPageNedEditor multiPageNedEditor) {
+	public MultiPageNedEditorAccess(NedEditor multiPageNedEditor) {
 		super(multiPageNedEditor);
 	}
 	
-	public MultiPageNedEditor getMultiPageNedEditor() {
-	    return (MultiPageNedEditor)workbenchPart;
+	public NedEditor getMultiPageNedEditor() {
+	    return (NedEditor)workbenchPart;
     }
 
     public TextualNedEditor getTextualNedEditor() {

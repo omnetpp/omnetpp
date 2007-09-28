@@ -16,7 +16,7 @@ public class AutoLayoutTest
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
         Rectangle r1 = compoundModuleEditPart.findSubmoduleFigureByName("test1").getBounds();
         Rectangle r2 = compoundModuleEditPart.findSubmoduleFigureByName("test2").getBounds();
-        compoundModuleEditPart.createSubModuleWithPalette("TestSimpleModule", "test3", 100, 100);
+        compoundModuleEditPart.createSubModuleWithPalette("TestSimpleModule", "test3", 200, 200);
         Assert.assertEquals(r1, compoundModuleEditPart.findSubmoduleFigureByName("test1").getBounds());
         Assert.assertEquals(r2, compoundModuleEditPart.findSubmoduleFigureByName("test2").getBounds());
     }

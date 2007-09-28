@@ -13,8 +13,8 @@
             name="NED Editor">
       </editor> 
       <editor
-            class="org.omnetpp.ned.editor.MultiPageNedEditor"
-            contributorClass="org.omnetpp.ned.editor.MultiPageNedEditorActionContributor"
+            class="org.omnetpp.ned.editor.NedEditor"
+            contributorClass="org.omnetpp.ned.editor.NedEditorActionContributor"
             icon="icons/nedfile.gif"
             id="org.omnetpp.ned.editor"
             name="NED Graphical Editor">

@@ -19,7 +19,7 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.editor.MultiPageNedEditor;
+import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 
@@ -65,8 +65,8 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
         //
         if (searchText.equals("")) {
             IWorkbenchPart activePart = page.getActivePart();
-            if (activePart instanceof MultiPageNedEditor) {
-                MultiPageNedEditor multiPageEditor = (MultiPageNedEditor)activePart;
+            if (activePart instanceof NedEditor) {
+                NedEditor multiPageEditor = (NedEditor)activePart;
                 if (multiPageEditor.isActiveEditor(multiPageEditor.getTextEditor())) {
                     TextualNedEditor textEditor = (TextualNedEditor)multiPageEditor.getTextEditor();
                     ISourceViewer sourceViewer = textEditor.getSourceViewerPublic();

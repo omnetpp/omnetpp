@@ -16,14 +16,14 @@ import org.omnetpp.ned.editor.text.TextualNedEditorActionContributor;
  *
  * @author rhornig
  */
-public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBarContributor {
+public class NedEditorActionContributor extends MultiPageEditorActionBarContributor {
     private GNEDActionBarContributor graphContrib;
     private TextualNedEditorActionContributor textContrib;
     private IEditorPart activeEditorPart;
     /**
      * Creates a multi-page contributor.
      */
-    public MultiPageNedEditorActionContributor() {
+    public NedEditorActionContributor() {
         super();
         // create the multi page editor's own actions (if any)
         graphContrib = new GNEDActionBarContributor();

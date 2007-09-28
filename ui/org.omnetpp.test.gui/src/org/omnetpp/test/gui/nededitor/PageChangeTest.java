@@ -2,6 +2,7 @@ package org.omnetpp.test.gui.nededitor;
 
 import junit.framework.Assert;
 
+import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 
@@ -62,6 +63,40 @@ public class PageChangeTest
         graphicalNedEditor.findCompoundModule("TestCompound").findSubmoduleFigureByName("name");
     }
     
+    public void testUneditedFileIsNotDirty() throws Exception {
+        // this is intentionally unformatted to verify that no unnecessary formatting occurres
+        String fileContent = "simple A {}\nmodule TestCompound { submodules: name : A; }";
+        createFileWithContent(fileContent);
+        openFileFromProjectExplorerView();
+        MultiPageEditorPartAccess multiPageEditor = findMultiPageEditor();
+        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditor.ensureActiveEditor("Text");
+        Access.sleep(1);
+        multiPageEditor.ensureActiveEditor("Graphical");
+        Access.sleep(1);
+        multiPageEditor.ensureActiveEditor("Text");
+        Access.sleep(1);
+        textEditor.assertContent(fileContent);
+        multiPageEditor.assertNotDirty();
+    }
+    
+    public void testTextEditingDoesNotReformat() throws Exception {
+        // this is intentionally unformatted to verify that no unnecessary formatting occurres
+        String fileContent = "simple A {}\nmodule TestCompound { submodules: name : A; }";
+        createFileWithContent(fileContent);
+        openFileFromProjectExplorerView();
+        MultiPageEditorPartAccess multiPageEditor = findMultiPageEditor();
+        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditor.ensureActiveEditor("Text");
+        Access.sleep(1);
+        textEditor.typeIn(" ");
+        Access.sleep(1);
+        multiPageEditor.ensureActiveEditor("Graphical");
+        Access.sleep(1);
+        multiPageEditor.ensureActiveEditor("Text");
+        Access.sleep(1);
+        textEditor.assertContent(" "+fileContent);
+        multiPageEditor.assertDirty();
+    }
+
     private MultiPageEditorPartAccess prepareTest() throws Exception {
         createFileWithContent("simple TestSimpleModule {}");
         openFileFromProjectExplorerView();

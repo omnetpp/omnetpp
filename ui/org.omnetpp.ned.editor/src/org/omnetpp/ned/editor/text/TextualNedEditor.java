@@ -39,7 +39,7 @@ import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.MultiPageNedEditor;
+import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
@@ -78,8 +78,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
-
-	private String lastContent;
 
 	private DelayedJob pullChangesJob;
 
@@ -377,34 +375,11 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		}
 	}
 
-     // TODO: revise do we need it now ???
-    /**
-     * Marks the current editor content state, so we will be able to detect
-     * changes in the editor.
-     *
-     * @see hasContentChanged()
-     */
-    public void markContent() {
-        lastContent = getText();
-    }
-
-     // TODO: revise do we need it now ???
-    /**
-     * Returns whether the content of the editor has changed since the last
-     * markContent() call.
-     */
-    public boolean hasContentChanged() {
-        if (getText() == null)
-            return lastContent != null;
-
-        return !(getText().equals(lastContent));
-    }
-
 	public boolean isActive() {
 		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
 		IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
 		return activeEditorPart == this ||
-			(activeEditorPart instanceof MultiPageNedEditor && ((MultiPageNedEditor)activeEditorPart).isActiveEditor(this));
+			(activeEditorPart instanceof NedEditor && ((NedEditor)activeEditorPart).isActiveEditor(this));
 	}
 
     public void modelChanged(NEDModelEvent event) {
