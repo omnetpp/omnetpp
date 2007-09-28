@@ -10,7 +10,8 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="/org.omnetpp.inifile.editor/bin"/>
-	<classpathentry kind="lib" path="/com.simulcraft.test.gui/bin">
+	<classpathentry kind="lib" path="/com.simulcraft.test.gui/bin"/>
+	<classpathentry kind="lib" path="/com.simulcraft.test.gui/src">
 		<attributes>
 			<attribute name="org.eclipse.ajdt.aspectpath" value="true"/>
 		</attributes>
