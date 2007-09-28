@@ -12,10 +12,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include "commonutil.h"
+#include "opp_ctype.h"
 #include "stringutil.h"
 #include "stringtokenizer.h"
 
@@ -51,7 +51,7 @@ inline int h2d(const char *&s)
 std::string opp_parsequotedstr(const char *txt, const char *&endp)
 {
     const char *s = txt;
-    while (isspace(*s))
+    while (opp_isspace(*s))
         s++;
     if (*s++!='"')
         throw opp_runtime_error("missing opening quote");
@@ -91,7 +91,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     *d = '\0';
     if (*s++!='"')
         {delete [] buf; throw opp_runtime_error("missing closing quote"); }
-    while (isspace(*s))
+    while (opp_isspace(*s))
         s++;
     endp = s;  // if (*s!='\0'), something comes after the string
 
@@ -134,7 +134,7 @@ bool opp_needsquotes(const char *txt)
     if (!txt[0])
         return true;
     for (const char *s = txt; *s; s++)
-        if (isspace(*s) || *s=='\\' || *s=='"' || (*s>=0 && *s<32))
+        if (opp_isspace(*s) || *s=='\\' || *s=='"' || (*s>=0 && *s<32))
             return true;
     return false;
 }
@@ -235,7 +235,7 @@ int strdictcmp(const char *s1, const char *s2)
     char c1, c2;
     while ((c1=*s1)!='\0' && (c2=*s2)!='\0')
     {
-        if (isdigit(c1) && isdigit(c2))
+        if (opp_isdigit(c1) && opp_isdigit(c2))
         {
             unsigned long l1 = strtoul(s1, const_cast<char **>(&s1), 10);
             unsigned long l2 = strtoul(s2, const_cast<char **>(&s2), 10);
@@ -249,12 +249,12 @@ int strdictcmp(const char *s1, const char *s2)
         }
         else
         {
-            char lc1 = tolower(c1);
-            char lc2 = tolower(c2);
+            char lc1 = opp_tolower(c1);
+            char lc2 = opp_tolower(c2);
             if (lc1!=lc2)
                 return lc1<lc2 ? -1 : 1;
-            if (c1!=c2 && !casediff && isalpha(c1) && isalpha(c2))
-                casediff = isupper(c2) ? -1 : 1;
+            if (c1!=c2 && !casediff && opp_isalpha(c1) && opp_isalpha(c2))
+                casediff = opp_isupper(c2) ? -1 : 1;
             s1++;
             s2++;
         }

@@ -15,11 +15,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <string.h>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "opp_ctype.h"
 #include "cxmlelement.h"
 #include "minixpath.h"
 #include "cexception.h"

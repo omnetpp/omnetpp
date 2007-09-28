@@ -16,11 +16,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "opp_ctype.h"
 #include "cmddefs.h"
 #include "cmdenv.h"
 #include "enumstr.h"
@@ -549,9 +549,9 @@ int TCmdenvApp::askYesNo(const char *question )
         ::fflush(fout);
         ::fgets(buffer,512,stdin);
         buffer[strlen(buffer)-1] = '\0'; // chop LF
-        if (toupper(buffer[0])=='Y' && !buffer[1])
+        if (opp_toupper(buffer[0])=='Y' && !buffer[1])
            return 1;
-        else if (toupper(buffer[0])=='N' && !buffer[1])
+        else if (opp_toupper(buffer[0])=='N' && !buffer[1])
            return 0;
         else
            putmsg("Please type 'y' or 'n'!\n");

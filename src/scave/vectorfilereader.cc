@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include "opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
@@ -109,17 +110,17 @@ Datum parseColumns(char **tokens, int numtokens, const string &columns, const ch
 
 void VectorFileReaderNode::process()
 {
-	const char *file = filename.c_str();
+    const char *file = filename.c_str();
     char *line;
     for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=NULL; k++)
     {
-    	int lineNo = (int)reader.getNumReadLines();
+        int lineNo = (int)reader.getNumReadLines();
         int length = reader.getLastLineLength();
         tokenizer.tokenize(line, length);
 
         int numtokens = tokenizer.numTokens();
         char **vec = tokenizer.tokens();
-        if (numtokens>=3 && isdigit(vec[0][0]))  // silently ignore incomplete lines
+        if (numtokens>=3 && opp_isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
             // extract vector id
             int vectorId;

@@ -15,11 +15,11 @@
 
 
 #include <string.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include "opp_ctype.h"
 #include "nedfilebuffer.h"
 #include "nedyylib.h"
 
@@ -406,7 +406,7 @@ char *NEDFileBuffer::stripComment(const char *comment)
         if ((*s=='/' && *(s+1)=='/')) incomment = true;
         if (*s=='\n') incomment = false;
 
-        if (incomment || isspace(*s))
+        if (incomment || opp_isspace(*s))
             *d++ = *s++;
         else
             s++;
@@ -421,7 +421,7 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
 
     // skip space and comments with the beginning of the region
     const char *s = getPosition(pos.first_line, pos.first_column);
-    while (isspace(*s) || (*s=='/' && *(s+1)=='/'))
+    while (opp_isspace(*s) || (*s=='/' && *(s+1)=='/'))
     {
         if (*s=='\n' || *s=='/')
         {

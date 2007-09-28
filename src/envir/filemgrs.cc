@@ -23,6 +23,7 @@
 #include <string.h>
 #include <fstream>
 #include <errno.h> // SGI
+#include "opp_ctype.h"
 #include "cconfigkey.h"
 #include "timeutil.h"
 #include "platmisc.h"
@@ -222,8 +223,8 @@ void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char
 
             const char *startstr = s;
             const char *stopstr = ellipsis+2;
-            while (isspace(*startstr)) startstr++;
-            while (isspace(*stopstr)) stopstr++;
+            while (opp_isspace(*startstr)) startstr++;
+            while (opp_isspace(*stopstr)) stopstr++;
 
             // add to vector
             Interval interval;

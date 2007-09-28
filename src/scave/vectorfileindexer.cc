@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <sstream>
 #include <ostream>
+#include "opp_ctype.h"
 #include "platmisc.h"
 #include "stringutil.h"
 #include "scaveutils.h"
@@ -96,7 +97,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
                 throw ResultFileFormatException("vector file indexer: malformed vector in vector declaration", vectorFileName, lineNo);
             vector.moduleName = tokens[2];
             vector.name = tokens[3];
-            vector.columns = (numTokens < 5 || isdigit(tokens[4][0]) ? "TV" : tokens[4]);
+            vector.columns = (numTokens < 5 || opp_isdigit(tokens[4][0]) ? "TV" : tokens[4]);
             vector.blockSize = 0;
 
             index.addVector(vector);

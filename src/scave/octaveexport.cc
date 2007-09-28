@@ -16,7 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <ctype.h>
+#include "opp_ctype.h"
 #include "octaveexport.h"
 
 #ifdef CHECK
@@ -68,7 +68,7 @@ std::string OctaveExport::makeUniqueName(const char *nameHint)
     // are replaced with underscore
     std::string name = nameHint;
     for (int i=0; i<(int)name.length(); i++)
-        if (!isalnum(name[i]))
+        if (!opp_isalnum(name[i]))
             name[i] = '_';
 
     // check if it's already unique

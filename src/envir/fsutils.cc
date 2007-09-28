@@ -12,11 +12,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
+#include "opp_ctype.h"
 #include "fsutils.h"
 #include "platmisc.h"
 #include "onstartup.h"

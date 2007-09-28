@@ -15,7 +15,6 @@
 
 
 #include <assert.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +26,7 @@
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nederror.h"
+#include "opp_ctype.h"
 
 #include "nedyydefs.h"
 
@@ -101,8 +101,8 @@ NEDElement *NEDParser::parseNEDText(const char *nedtext)
 NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
 {
     parseexpr = true;
-	std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
-	return parseNEDText(source.c_str());
+    std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
+    return parseNEDText(source.c_str());
 }
 
 NEDElement *NEDParser::parseMSGFile(const char *fname)
@@ -195,7 +195,7 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
                 s++;
         }
         else {
-            if (*s && !isspace(*s))
+            if (*s && !opp_isspace(*s))
                 whitespaceOnly = false;
 
             // copy everything else
@@ -218,7 +218,7 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
     bool containsPackageKeyword=false;
     if (!containsNED2Chars)
         for (const char *s = strstr(buf,"package"); s!=NULL; s = strstr(s+1,"package"))
-            if (isspace(s[strlen("package")]) && (s==buf || isspace(s[-1])))
+            if (opp_isspace(s[strlen("package")]) && (s==buf || opp_isspace(s[-1])))
                 {containsPackageKeyword=true; break;}
 
     // cleanup

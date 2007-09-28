@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -DBUILDING_CMDENV /Fd"cmdenv.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"cmdenv.pdb"
 IMPLIBS=../sim/sim_std.lib ../envir/envir.lib
 
 OBJS=cmdenv.obj enumstr.obj

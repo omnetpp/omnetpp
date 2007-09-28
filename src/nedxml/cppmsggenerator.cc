@@ -343,7 +343,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
             if (cld.classtype != CLASSTYPE_STRUCT)
             {
                 std::string capfieldname = fld[i].fieldname;
-                capfieldname[0] = toupper(capfieldname[0]);
+                capfieldname[0] = opp_toupper(capfieldname[0]);
                 fld[i].getter = "get" + capfieldname;
                 fld[i].setter = "set" + capfieldname;
                 fld[i].alloc = "set" + capfieldname + "ArraySize";

@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "opp_ctype.h"
 #include "cenvir.h"
 #include "cmodule.h"
 #include "cgate.h"
@@ -246,7 +247,7 @@ int cDisplayString::insertTag(const char *tagname, int atindex)
     if (!tagname || !tagname[0])
         throw cRuntimeError("Error adding a new display string tag: tag name is empty");
     for (const char *s=tagname; *s; s++)
-        if (!isalnum(*s) && *s!=':')
+        if (!opp_isalnum(*s) && *s!=':')
             throw cRuntimeError("Error adding a new display string tag: tag name \"%s\" "
                                 "contains invalid character", tagname);
 
@@ -410,7 +411,7 @@ void cDisplayString::parse()
             else
                 throw cRuntimeError("Error parsing display string: missing tag name in \"%s\"", dispstr);
         for (const char *s=tags[i].name; *s; s++)
-            if (!isalnum(*s) && *s!=':')
+            if (!opp_isalnum(*s) && *s!=':')
                 throw cRuntimeError("Error parsing display string: tag name \"%s\" contains invalid character in  \"%s\"", tags[i].name, dispstr);
     }
 }

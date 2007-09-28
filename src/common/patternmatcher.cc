@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include "opp_ctype.h"
 #include "patternmatcher.h"
 #include "stringutil.h"
 #include "exception.h"
@@ -116,8 +117,8 @@ void PatternMatcher::parseSet(const char *&s, Elem& e)
         if (!iscasesensitive)
         {
             // if one end of range is alpha and the other is not, funny things will happen
-            range[0] = toupper(range[0]);
-            range[1] = toupper(range[1]);
+            range[0] = opp_toupper(range[0]);
+            range[1] = opp_toupper(range[1]);
         }
         e.setchars += range;
     }
@@ -153,18 +154,18 @@ bool PatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo,
     //
     lo = up = -1L;
     const char *s = str+1; // skip "[" or "{"
-    if (isdigit(*s))
+    if (opp_isdigit(*s))
     {
         lo = atol(s);
-        while (isdigit(*s)) s++;
+        while (opp_isdigit(*s)) s++;
     }
     if (*s!='.' || *(s+1)!='.')
         return false;
     s+=2;
-    if (isdigit(*s))
+    if (opp_isdigit(*s))
     {
         up = atol(s);
-        while (isdigit(*s)) s++;
+        while (opp_isdigit(*s)) s++;
     }
     if (*s!=closingchar)
         return false;
@@ -198,7 +199,7 @@ bool PatternMatcher::isInSet(char c, const char *set)
 {
     assert((strlen(set)&1)==0);
     if (!iscasesensitive)
-        c = toupper(c); // set is already uppercase here
+        c = opp_toupper(c); // set is already uppercase here
     while (*set)
     {
         if (c>=*set && c<=*(set+1))
@@ -255,10 +256,10 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
                 s++;
                 break;
             case NUMRANGE:
-                if (!isdigit(*s))
+                if (!opp_isdigit(*s))
                     return false;
                 num = atol(s);
-                while (isdigit(*s)) s++;
+                while (opp_isdigit(*s)) s++;
                 if ((e.fromnum>=0 && num<e.fromnum) || (e.tonum>=0 && num>e.tonum))
                     return false;
                 break;

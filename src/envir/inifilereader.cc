@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <set>
+#include "opp_ctype.h"
 #include "fileutil.h"  // directoryOf
 #include "inifilereader.h"
 #include "fsutils.h"
@@ -130,7 +131,7 @@ void InifileReader::internalReadFile(const char *filename)
 
         // process the line
         const char *line = lineBuf.c_str();
-        while (isspace(*line)) line++;
+        while (opp_isspace(*line)) line++;
 
         if (!strncmp(line, "#% old-wildcards", 16))
         {
@@ -147,7 +148,7 @@ void InifileReader::internalReadFile(const char *filename)
             // obsolete comment line
             throw cRuntimeError(ERRPREFIX "semicolon is no longer a comment start character, please use hashmark ('#')", filename, lineNumber);
         }
-        else if (*line=='i' && strncmp(line, "include", 7)==0 && isspace(line[7]))
+        else if (*line=='i' && strncmp(line, "include", 7)==0 && opp_isspace(line[7]))
         {
             // include directive
             const char *rest = line+7;
@@ -220,7 +221,7 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
         const char *endBuffer = buffer + strlen(buffer);
         if (buffer==endBuffer) break; // should not happen
         bool eolReached = *(endBuffer-1)=='\n' || *(endBuffer-1)=='\r';
-        while (endBuffer>buffer && isspace(*(endBuffer-1))) endBuffer--;
+        while (endBuffer>buffer && opp_isspace(*(endBuffer-1))) endBuffer--;
         line.append(buffer, endBuffer - buffer);
         if (eolReached)
             break;
@@ -255,7 +256,7 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
             break;
         case '#':
             // comment; seek back to last non-space character
-            while ((s-1)>line && isspace(*(s-1)))
+            while ((s-1)>line && opp_isspace(*(s-1)))
                 s--;
             return s;
         default:
@@ -267,8 +268,8 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
 
 std::string InifileReader::trim(const char *start, const char *end)
 {
-    while (start<end && isspace(*start)) start++;
-    while ((end-1)>start && isspace(*(end-1))) end--;
+    while (start<end && opp_isspace(*start)) start++;
+    while ((end-1)>start && opp_isspace(*(end-1))) end--;
     return std::string(start, end-start);
 }
 

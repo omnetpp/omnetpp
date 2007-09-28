@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+#include "opp_ctype.h"
 #include "scaveutils.h"
 #include "export.h"
 
@@ -213,9 +214,9 @@ string MatlabStructExport::makeIdentifier(const string &name)
 {
     string result(name);
     for (string::iterator it=result.begin(); it!=result.end(); ++it)
-        if (!isalnum(*it))
+        if (!opp_isalnum(*it))
             *it = '_';
-    if (result[0] != '_' && !isalpha(result[0]))
+    if (result[0] != '_' && !opp_isalpha(result[0]))
         result.insert(0, "_");
     return result;
 }
@@ -478,12 +479,12 @@ void CsvExport::saveVector(const string name, const string description,
                              int startIndex, int endIndex)
 {
     string xColumn, yColumn;
-    if (computed) 
+    if (computed)
     {
         xColumn = "X"; // TODO generate proper names derived from the computation
         yColumn = "Y";
     }
-    else 
+    else
     {
         const VectorResult &vector = manager.getVector(vectorID);
         xColumn = "time";

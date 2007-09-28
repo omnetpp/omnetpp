@@ -15,6 +15,7 @@
 
 
 #include <assert.h>
+#include "opp_ctype.h"
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
@@ -51,7 +52,7 @@ std::string removeSpaces(YYLTYPE pos)
     const char *s = np->getSource()->get(pos);
     std::string result;
     for (; *s; s++)
-        if (!isspace(*s))
+        if (!opp_isspace(*s))
             result += *s;
     return result;
 }

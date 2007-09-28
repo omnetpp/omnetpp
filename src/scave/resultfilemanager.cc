@@ -23,6 +23,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include "opp_ctype.h"
 #include "matchexpression.h"
 #include "patternmatcher.h"
 #include "filereader.h"
@@ -710,7 +711,7 @@ ID ResultFileManager::addComputedVector(const char *name, long computationID, ID
     VectorResult newVector = VectorResult(vector);
     newVector.nameRef = stringSetFindOrInsert(names, name);
     fileRef->vectorResults.push_back(newVector);
-    ID id = _mkID(VECTOR, fileRef->id, fileRef->vectorResults.size()-1); 
+    ID id = _mkID(VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
     computedIDCache[computationID][input] = id;
     return id;
 }
@@ -943,7 +944,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         // module name, vector name
         const char *moduleName = vec[2];
         const char *vectorName = vec[3];
-        const char *columns = (numTokens < 5 || isdigit(vec[4][0]) ? "TV" : vec[4]);
+        const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
         //printf("columns: %s\n", vecdata.columns.c_str());
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
@@ -952,7 +953,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         fileRef->vectorResults.push_back(vecdata);
         resultItemRef = &fileRef->vectorResults.back();
     }
-    else if (isdigit(vec[0][0]) && numTokens>=3)
+    else if (opp_isdigit(vec[0][0]) && numTokens>=3)
     {
         // this looks like a vector data line, skip it this time
     }
@@ -1031,7 +1032,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
             unloadFile(fileRef);
         }
         catch (...) {}
-        
+
         throw;
     }
 
@@ -1211,7 +1212,7 @@ StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist)
 
     // sort and concatenate them, and return the result
     StringVector wildvec = coll.get();
-	wildvec.push_back(std::string("*"));
+    wildvec.push_back(std::string("*"));
     std::sort(vec.begin(), vec.end());
     std::sort(wildvec.begin(), wildvec.end());
     //vec.insert(vec.end(), wildvec.begin(), wildvec.end());
@@ -1226,7 +1227,7 @@ StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
     StringVector vec;
     DuplicateStringCollector coll;
 
-	for (StringSet::iterator i=names.begin(); i!=names.end(); i++)
+    for (StringSet::iterator i=names.begin(); i!=names.end(); i++)
     {
         std::string a = (*i);
         vec.push_back(a);
@@ -1246,7 +1247,7 @@ StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
 
     // sort and concatenate them, and return the result
     StringVector wildvec = coll.get();
-	wildvec.push_back(std::string("*"));
+    wildvec.push_back(std::string("*"));
     std::sort(vec.begin(), vec.end());
     std::sort(wildvec.begin(), wildvec.end());
     //vec.insert(vec.end(), wildvec.begin(), wildvec.end());

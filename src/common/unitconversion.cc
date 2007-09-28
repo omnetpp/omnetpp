@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
+#include "opp_ctype.h"
 #include "unitconversion.h"
 
 UnitConversion::UnitDesc UnitConversion::unitTable[] = {
@@ -58,7 +59,7 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 
 bool UnitConversion::readNumber(const char *&s, double& number)
 {
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
 
     int len;
     if (sscanf(s, "%lf%n", &number, &len) <= 0)
@@ -73,18 +74,18 @@ bool UnitConversion::readNumber(const char *&s, double& number)
 //    if (errno==ERANGE)
 //        throw opp_runtime_error("overflow or underflow during conversion of `%s'", s);
 //    s = endp;
-    
-    while (isspace(*s)) s++;
+
+    while (opp_isspace(*s)) s++;
     return true; // OK
 }
 
 bool UnitConversion::readUnit(const char *&s, std::string& unit)
 {
     unit = "";
-    while (isspace(*s)) s++;
-    while (isalpha(*s))
+    while (opp_isspace(*s)) s++;
+    while (opp_isalpha(*s))
         unit.append(1, *s++);
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
     return !unit.empty();
 }
 

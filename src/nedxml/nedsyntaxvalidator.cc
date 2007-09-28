@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "opp_ctype.h"
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
 
@@ -165,7 +166,7 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
     if (!*s)
         return;
     for (; *s; s++)
-        if (!isalpha(*s) && !isdigit(*s) && *s!='_' && *s!='.' && (wildcardsAllowed ? *s!='*' : true))
+        if (!opp_isalpha(*s) && !opp_isdigit(*s) && *s!='_' && *s!='.' && (wildcardsAllowed ? *s!='*' : true))
             {errors->addError(node,"validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 

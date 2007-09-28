@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
+#include "opp_ctype.h"
 #include "simtime.h"
 #include "cexception.h"
 #include "unitconversion.h"
@@ -147,12 +148,12 @@ const SimTime SimTime::parse(const char *s)
 const SimTime SimTime::parse(const char *s, const char *&endp)
 {
     endp = s;
-    while (isspace(*endp))
+    while (opp_isspace(*endp))
         endp++;
     if (!*endp)
         {endp = s; return 0;} // it was just space
 
-    while (isalnum(*endp) || isspace(*endp) || *endp=='+' || *endp=='-' || *endp=='.')
+    while (opp_isalnum(*endp) || opp_isspace(*endp) || *endp=='+' || *endp=='-' || *endp=='.')
         endp++;
 
     // Note: UnitConversion calculates in double, so we may lose some precision during conversion

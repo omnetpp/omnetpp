@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <string.h>
+#include "opp_ctype.h"
 #include "minixpath.h"
 #include "cexception.h"
 
@@ -46,7 +46,7 @@ bool MiniXPath::parseBracketedNum(int& n, const char *s, int len)
     if (*s!='[' || *(s+len-1)!=']')
         return false;
     for (const char *s1=s+1; s1<s+len-1; s1++)
-        if (!isdigit(*s1))
+        if (!opp_isdigit(*s1))
             return false;
     n = atoi(s+1);
     return true;

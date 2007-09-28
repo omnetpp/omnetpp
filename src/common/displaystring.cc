@@ -14,7 +14,7 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <ctype.h>
+#include "opp_ctype.h"
 #include "displaystring.h"
 
 
@@ -405,7 +405,7 @@ bool DisplayString::parse()
         if (!tags[i].name[0])
             fully_ok = false; // empty string as tagname
         for (const char *s=tags[i].name; *s; s++)
-            if (!isalnum(*s) && *s!=':')
+            if (!opp_isalnum(*s) && *s!=':')
                 fully_ok = false; // tagname contains invalid character
     }
     return fully_ok;

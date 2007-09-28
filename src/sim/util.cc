@@ -20,8 +20,8 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <math.h>
+#include "opp_ctype.h"
 #include "util.h"
 #include "cenvir.h"
 #include "csimulation.h"
@@ -142,12 +142,12 @@ double strToSimtime0(const char *&str)
 {
     //XXX in 3.x, it returned -1 on error, now it throws exception: TBD check invocations!!!!
     const char *end = str;
-    while (isspace(*end))
+    while (opp_isspace(*end))
         end++;
     if (!*end)
         return 0.0; // it was just space
 
-    while (isalnum(*end) || isspace(*end) || *end=='+' || *end=='-' || *end=='.')
+    while (opp_isalnum(*end) || opp_isspace(*end) || *end=='+' || *end=='-' || *end=='.')
         end++;
     std::string tmp(str, end-str);
     str = end;
@@ -281,9 +281,9 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
                 throw cRuntimeError("opp_vsscanf: unsupported format '%s'",fmt);
             }
         }
-        else if (isspace(*fmt))
+        else if (opp_isspace(*fmt))
         {
-            while (isspace(*s)) s++;
+            while (opp_isspace(*s)) s++;
             fmt++;
         }
         else if (*fmt=='\0' || *fmt=='#')

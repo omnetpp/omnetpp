@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <math.h>
+#include "opp_ctype.h"
 #include "valueiterator.h"
 #include "commonutil.h"
 #include "stringtokenizer.h"
@@ -62,16 +63,16 @@ void ValueIterator::parseAsNumericRegion(Item& item)
         return; // no number here
     if (*(endp-1)=='.') endp--; // strtod() ate one of our dots!
     s = endp;
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
     if (*s!='.' || *(s+1)!='.')
         return; // missing ".."
     s+= 2;
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
     double to = strtod(s, &endp);
     if (endp==s)
         throw cRuntimeError(PARSEERROR, item.text.c_str()); // missing number after ".."
     s = endp;
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
     if (!*s) {
         item.isNumeric = true;
         item.from = from;
@@ -82,12 +83,12 @@ void ValueIterator::parseAsNumericRegion(Item& item)
     if (s[0]!='s' || s[1]!='t' || s[2]!='e' || s[3]!='p')
         throw cRuntimeError(PARSEERROR, item.text.c_str()); // "step" is supposed to follow, we encountered some garbage instead
     s+= 4;
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
     double step = strtod(s, &endp);
     if (endp==s || step==0)
         throw cRuntimeError(PARSEERROR, item.text.c_str()); // no number (or explicit 0) after "step"
     s = endp;
-    while (isspace(*s)) s++;
+    while (opp_isspace(*s)) s++;
     if (*s)
         throw cRuntimeError(PARSEERROR, item.text.c_str()); // trailing garbage after "step <number>"
 

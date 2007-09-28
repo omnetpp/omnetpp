@@ -18,9 +18,9 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <string>
+#include "opp_ctype.h"
 #include "cmsgpar.h"
 #include "cstat.h"
 #include "globals.h"
@@ -720,7 +720,7 @@ static bool parseQuotedString(string& str, const char *&s)  //FIXME use opp_pars
 
 bool cMsgPar::parse(const char *text, char tp)
 {
-    tp = (char) toupper(tp);
+    tp = (char) opp_toupper(tp);
 
     // create a working copy and cut whitespaces (from both sides)
     if (!text) return false;  // error: no string
@@ -852,7 +852,7 @@ bool cMsgPar::setfunction(char *text)
     // remove whitespaces in-place
     const char *s;
     for (s=d=args; *s; s++)
-       if (!isspace(*s))
+       if (!opp_isspace(*s))
           *d++ = *s;
     *d = '\0';
 

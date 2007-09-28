@@ -14,6 +14,7 @@
 
 #include <sstream>
 #include <assert.h>
+#include "opp_ctype.h"
 #include "bigdecimal.h"
 
 // helpers
@@ -386,7 +387,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     const char *p = s;
 
     // skip leading spaces
-    while (isspace(*p))
+    while (opp_isspace(*p))
         ++p;
 
     // optional signs
@@ -399,7 +400,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
         ++p;
 
     // parse special numbers
-    if (isalpha(*p))
+    if (opp_isalpha(*p))
     {
         if (strnicmp(p, "nan", 3) == 0)
         {
@@ -434,7 +435,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     }
 
     // digits before decimal
-    while (isdigit(*p))
+    while (opp_isdigit(*p))
     {
         OVERFLOW_CHECK(intVal <= _I64_MAX / 10, s);
         intVal *= 10;
@@ -453,7 +454,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     if (*p == '.')
     {
         p++;
-        while (isdigit(*p))
+        while (opp_isdigit(*p))
         {
             OVERFLOW_CHECK(intVal <= _I64_MAX / 10, s);
             intVal *= 10;

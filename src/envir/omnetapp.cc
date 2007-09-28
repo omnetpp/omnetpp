@@ -19,7 +19,6 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <ctype.h>
 #include <stdio.h>
 #include <assert.h>
 #include <fstream>
@@ -58,6 +57,7 @@
 #include "parsim/creceivedexception.h"
 #endif
 
+#include "opp_ctype.h"
 #include "stringtokenizer.h"
 #include "objectprinter.h"
 #include "fileglobber.h"
@@ -422,7 +422,7 @@ void TOmnetApp::dumpComponentList(const char *category)
 
             std::string id = "CFGID_";
             for (const char *s = key->name(); *s; s++)
-                id.append(1, isalpha(*s) ? toupper(*s) : *s=='-' ? '_' : *s=='%' ? 'n' : *s);
+                id.append(1, opp_isalpha(*s) ? opp_toupper(*s) : *s=='-' ? '_' : *s=='%' ? 'n' : *s);
             const char *method = key->isGlobal() ? "addGlobalEntry" :
                                  !key->isPerObject() ? "addPerRunEntry" :
                                  "addPerObjectEntry";
@@ -623,7 +623,7 @@ void TOmnetApp::readParameter(cPar *par)
 
 /* XXX hack to use base directory for resolving xml files location has been commented out
  * FIXME a solution needs to be worked out!
-    if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !isalnum(str[6]))
+    if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !opp_isalnum(str[6]))
     {
         // Make XML file location relative to the ini file in which it occurs.
         // Find substring between first two quotes (that is, the XML filename),

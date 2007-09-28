@@ -13,10 +13,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include "opp_ctype.h"
 #include "nederror.h"
 #include "neddtdvalidatorbase.h"
 
@@ -146,10 +146,10 @@ void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
     assert(s);
     if (!*s)
         return;
-    if (!isalpha(*s) && *s!='_')
+    if (!opp_isalpha(*s) && *s!='_')
         errors->addError(node,"DTD validation error: attribute %s='%s' starts with invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
     while (*++s)
-        if (!isalpha(*s) && !isdigit(*s) && *s!='_')
+        if (!opp_isalpha(*s) && !opp_isdigit(*s) && *s!='_')
             {errors->addError(node,"DTD validation error: attribute %s='%s' contains invalid character (valid NED identifier expected)", attr, node->getAttribute(attr)); return;}
 }
 

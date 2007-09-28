@@ -15,7 +15,6 @@
 #ifdef _WIN32
 #include <direct.h>
 #include <stdlib.h> // _MAX_PATH
-#include <ctype.h>
 #else
 #include <unistd.h>
 #endif
@@ -23,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "opp_ctype.h"
 #include "fileutil.h"
 #include "stringtokenizer.h"
 #include "exception.h"
@@ -131,7 +131,7 @@ std::string absolutePath(const char *pathname)
     char wd[_MAX_PATH];
     if (pathname[0] && pathname[1]==':') // drive only, must get cwd on that drive
     {
-        if (!_getdcwd(toupper(pathname[0])-'A'+1,wd,_MAX_PATH))
+        if (!_getdcwd(opp_toupper(pathname[0])-'A'+1,wd,_MAX_PATH))
             return std::string(pathname);  // error (no such drive?), cannot help
         return std::string(wd) + "\\" + (pathname+2);
     }
@@ -164,7 +164,7 @@ std::string concatDirAndFile(const char *basedir, const char *pathname)
 
     if (pathname[0] && pathname[1]==':') // drive only
     {
-        if (!basedir[0] || basedir[1]!=':' || toupper(basedir[0])!=toupper(pathname[0]))  // no or different drive letter
+        if (!basedir[0] || basedir[1]!=':' || opp_toupper(basedir[0])!=opp_toupper(pathname[0]))  // no or different drive letter
             return std::string(pathname);  // possibly different drives: don't touch pathname
         return std::string(basedir) + "\\" + (pathname+2);
     }

@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <sstream>
+#include "opp_ctype.h"
 #include "sectionbasedconfig.h"
 #include "cconfigreader.h"
 #include "patternmatcher.h"
@@ -412,14 +413,14 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
     const char *parvarend = NULL;
 
     const char *s = pos+2;
-    while (isspace(*s)) s++;
-    if (isalpha(*s))
+    while (opp_isspace(*s)) s++;
+    if (opp_isalpha(*s))
     {
         // must be a variable or a variable reference
         varbegin = varend = s;
-        while (isalnum(*varend)) varend++;
+        while (opp_isalnum(*varend)) varend++;
         s = varend;
-        while (isspace(*s)) s++;
+        while (opp_isspace(*s)) s++;
         if (*s=='}') {
             // ${x} syntax -- OK
         }
@@ -442,13 +443,13 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         if (exclamationMark)
         {
             const char *s = exclamationMark+1;
-            while (isspace(*s)) s++;
-            if (isalpha(*s))
+            while (opp_isspace(*s)) s++;
+            if (opp_isalpha(*s))
             {
                 parvarbegin = s;
-                while (isalnum(*s)) s++;
+                while (opp_isalnum(*s)) s++;
                 parvarend = s;
-                while (isspace(*s)) s++;
+                while (opp_isspace(*s)) s++;
                 if (s!=valueend)
                 {
                     parvarbegin = parvarend = NULL; // no parvar after all
@@ -528,7 +529,7 @@ std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames()
 {
     std::vector<const char *> result;
     for (StringMap::const_iterator it = variables.begin(); it!=variables.end(); ++it)
-        if (isalpha(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
+        if (opp_isalpha(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
             result.push_back(it->first.c_str());
     return result;
 }
@@ -822,10 +823,10 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
         {
             if (*configName == ' ')
                 throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
-            if (!isalpha(*configName) && *configName!='_')
+            if (!opp_isalpha(*configName) && *configName!='_')
                 throw cRuntimeError("Invalid section name [%s]: config name must begin with a letter or underscore", section);
             for (const char *s=configName; *s; s++)
-                if (!isalnum(*s) && strchr("-_@", *s)==NULL)
+                if (!opp_isalnum(*s) && strchr("-_@", *s)==NULL)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
             if (configNames.find(configName)!=configNames.end())
                 throw cRuntimeError("Configuration name '%s' not unique", configName, section);

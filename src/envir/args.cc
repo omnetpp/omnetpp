@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 #include "args.h"
+#include "opp_ctype.h"
 #include "exception.h"
 
 

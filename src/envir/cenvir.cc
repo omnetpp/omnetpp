@@ -16,11 +16,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "opp_ctype.h"
 #include "args.h"
 #include "distrib.h"
 #include "cconfigkey.h"
