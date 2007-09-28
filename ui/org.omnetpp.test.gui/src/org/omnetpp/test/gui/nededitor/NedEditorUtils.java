@@ -22,11 +22,11 @@ public class NedEditorUtils
 {
 	public static void createNewNedFileByWizard(String parentFolder, String fileName) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		WorkbenchUtils.choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|NED file" in the menu
+		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|NED file" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
 		ShellAccess shell = Access.findShellByTitle("New NED File");
-		shell.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
-		shell.findTextAfterLabel("File name.*").clickAndType(fileName);
+		shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
+		shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
 		shell.findButtonWithLabel("Finish").activateWithMouseClick();
 		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
 	}

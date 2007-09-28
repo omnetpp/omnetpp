@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
@@ -27,7 +28,8 @@ public class WorkbenchWindowAccess extends Access {
 	public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
 		this.workbenchWindow = workbenchWindow;
 	}
-
+	
+    @InUIThread
 	public ShellAccess getShell() {
 		return new ShellAccess(workbenchWindow.getShell());
 	}
@@ -37,6 +39,11 @@ public class WorkbenchWindowAccess extends Access {
 		return getShell().getMenuBar();
 	}
 	
+    @InUIThread
+    public IPerspectiveDescriptor getPerspective() {
+        return workbenchWindow.getWorkbench().getActiveWorkbenchWindow().getActivePage().getPerspective();
+    }
+
 	@NotInUIThread
 	public void chooseFromMainMenu(String labelPath) {
 		MenuAccess menuAccess = getMenuBar();
@@ -151,6 +158,16 @@ public class WorkbenchWindowAccess extends Access {
 	public void closeAllEditorPartsWithHotKey() {
 		pressKey('w', SWT.CONTROL + SWT.SHIFT);
 	}
+
+    @SuppressWarnings("unused")
+    public void ensureAllEditorPartsAreClosed() {
+        for (IWorkbenchPage page : workbenchWindow.getPages()) {
+            for (IEditorReference editorReference : page.getEditorReferences()) {
+                closeAllEditorPartsWithHotKey();
+                return;
+            }
+        }
+    }
 
     @InUIThread
     public void assertNoOpenEditorParts() {

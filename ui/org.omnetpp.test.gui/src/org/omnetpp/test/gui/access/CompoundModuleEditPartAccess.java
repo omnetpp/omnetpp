@@ -6,7 +6,6 @@ import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -95,24 +94,6 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
         clickSubmoduleFigureWithName(name2);
         clickConnectionOption(connectionOptionLabel);
 	}
-
-	@InUIThread
-    public void fuck(FigureAccess figureAccess, String channel) {
-	    xxx(figureAccess.getCanvas());
-	    MenuAccess menuAccess = new MenuAccess(getDisplay().getActiveShell().getMenu());
-	    Access.dumpMenu(menuAccess.getMenu());
-        menuAccess.activateMenuItemWithMouse(channel);
-    }
-	
-	private void xxx(Control control) {
-        System.out.println("************");
-        while (control != null) {
-            System.out.println(control);
-            if (control.getMenu() != null)
-                Access.dumpMenu(control.getMenu());
-            control = control.getParent();
-        }
-    }
 
 	@InUIThread
 	protected void clickConnectionOption(String label) {

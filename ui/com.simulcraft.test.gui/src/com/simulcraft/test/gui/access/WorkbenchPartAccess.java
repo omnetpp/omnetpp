@@ -4,6 +4,7 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.internal.PartSite;
@@ -52,7 +53,18 @@ public class WorkbenchPartAccess
 
 	@InUIThread
 	public void activateWithMouseClick() {
-		CTabItem cTabItem = findDescendantCTabItemByLabel(getCompositeInternal().getParent(), workbenchPart.getSite().getRegisteredName());
-		new CTabItemAccess(cTabItem).click();
+		getCTabItem().click();
 	}
+
+    @InUIThread
+    public CTabItemAccess getCTabItem() {
+        return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), workbenchPart.getSite().getRegisteredName()));
+    }
+
+    @InUIThread
+    public void ensureActivated() {
+        CTabItem cTabItem = getCTabItem().getCTabItem();
+        if (cTabItem.getParent().getSelection() != cTabItem)
+            activateWithMouseClick();
+    }
 }

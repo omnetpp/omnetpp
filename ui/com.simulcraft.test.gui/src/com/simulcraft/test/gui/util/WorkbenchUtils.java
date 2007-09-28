@@ -18,6 +18,12 @@ public class WorkbenchUtils
 		dialog.findTable().findTableItemByContent(perspectiveLabel).reveal().doubleClick();
 	}
 
+    public static void ensurePerspectiveActivated(String perspectiveLabel) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        if (!workbenchWindow.getPerspective().getLabel().matches(perspectiveLabel))
+            choosePerspectiveFromDialog(perspectiveLabel);
+    }
+
 	public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.chooseFromMainMenu("Window|Show View|Other.*");
@@ -34,13 +40,12 @@ public class WorkbenchUtils
         if (workbenchWindow.collectViewPartsByTitle(viewLabel, false).size() == 0)
             return chooseViewFromDialog(viewCategory, viewLabel);
         else {
-            workbenchWindow.findViewPartByTitle(viewLabel).activateWithMouseClick();
+            workbenchWindow.findViewPartByTitle(viewLabel).ensureActivated();
             return (ViewPartAccess) workbenchWindow.getActivePart();
         }
     }
 
 	public static TreeItemAccess findInProjectExplorerView(String path) {
-		//ViewPartAccess projectExplorerView = workbenchWindow.findViewPartByTitle("Project Explorer", true);
 		ViewPartAccess projectExplorerView = ensureViewActivated("General", "Project Explorer");
 		TreeAccess tree = projectExplorerView.findTree();
 		tree.assertHasFocus();
@@ -53,15 +58,13 @@ public class WorkbenchUtils
 	}
 
 	public static void assertNoErrorMessageInProblemsView() {
-		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
-		problemsView.activateWithMouseClick();
+        ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
 		// TODO: how do we know that validation has already taken place?
 		problemsView.findTree().assertEmpty();
 	}
 
 	public static void assertErrorMessageInProblemsView(String errorText) {
-		ViewPartAccess problemsView = Access.getWorkbenchWindowAccess().findViewPartByTitle("Problems", true);
-		problemsView.activateWithMouseClick();
+		ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
 		problemsView.findTree().findTreeItemByContent(errorText);
 	}
 }

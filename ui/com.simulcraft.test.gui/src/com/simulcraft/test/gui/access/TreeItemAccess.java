@@ -1,5 +1,6 @@
 package com.simulcraft.test.gui.access;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
@@ -44,6 +45,15 @@ public class TreeItemAccess extends ClickableWidgetAccess
         if (!getTreeItem().getChecked()) {
             click();
             pressKey(' ');
+        }
+    }
+
+    @InUIThread
+    public void ensureExpanded() {
+        if (!getTreeItem().getExpanded()) {
+            reveal();
+            click();
+            pressKey(SWT.ARROW_RIGHT);
         }
     }
 }

@@ -7,7 +7,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.ui.GenericTreeNode;
@@ -43,12 +42,10 @@ public class TreeAccess extends ControlAccess
 	
     @InUIThread
 	public TreeItemAccess findTreeItemByPath(String path) {
-        for (String pathSegment : new Path(path).removeLastSegments(1).segments()) {
-            // Note that findTreeItemByContent() does deep search, so this code won't work
-            // if any segment is not fully unique in the tree!
-            findTreeItemByContent(pathSegment).reveal().click();
-            pressKey(SWT.ARROW_RIGHT);
-        }
+        // TODO: Note that findTreeItemByContent() does deep search, so this code won't work
+        // if any segment is not fully unique in the tree!
+        for (String pathSegment : new Path(path).removeLastSegments(1).segments())
+            findTreeItemByContent(pathSegment).ensureExpanded();
 
         return findTreeItemByContent(new Path(path).lastSegment()).reveal();
 	}

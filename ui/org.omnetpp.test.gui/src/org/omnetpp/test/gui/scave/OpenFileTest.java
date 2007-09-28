@@ -12,7 +12,7 @@ public class OpenFileTest
 {
 	public void testNewScaveFile() {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		WorkbenchUtils.choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|Inifile" in the menu
+		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Analysis.*");
 		fillNewScaveFileWizard(projectName, fileName); // fill in wizard
 		WorkspaceUtils.assertFileExists(projectName + "/" + fileName); // make sure file got created
@@ -24,9 +24,9 @@ public class OpenFileTest
 		ShellAccess shell = Access.findShellByTitle("New Analysis.*");
 		//Access.dumpWidgetHierarchy(shell.getShell());
 		if (parentFolder != null)
-			shell.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
+			shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
 		if (fileName != null)
-			shell.findTextAfterLabel("File name.*").clickAndType(fileName);
+			shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
 		shell.findButtonWithLabel("Finish").activateWithMouseClick();
 	}
 }

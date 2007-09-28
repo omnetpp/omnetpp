@@ -70,7 +70,7 @@ public class ProjectFileTestCase
 	 */
 	protected void setUpInternal() throws Exception {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.closeAllEditorPartsWithHotKey();
+		workbenchWindow.ensureAllEditorPartsAreClosed();
 		workbenchWindow.assertNoOpenEditorParts();
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}
@@ -82,7 +82,7 @@ public class ProjectFileTestCase
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		if (workbenchWindow.hasEditorPartWithTitle(fileName))
 		    workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
-		workbenchWindow.closeAllEditorPartsWithHotKey();
+		workbenchWindow.ensureAllEditorPartsAreClosed();
         workbenchWindow.assertNoOpenEditorParts();
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
 	}

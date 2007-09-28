@@ -32,7 +32,7 @@ public class IniFileEditorUtils
 
 	public static void createNewIniFileByWizard2(String parentFolder, String fileName, String networkName) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		WorkbenchUtils.choosePerspectiveFromDialog(".*OMN.*"); // so that we have "New|Inifile" in the menu
+		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Ini.*");
 		fillNewInifileWizard(parentFolder, fileName, networkName); // fill in wizard
 		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
@@ -43,9 +43,9 @@ public class IniFileEditorUtils
 		ShellAccess shell = Access.findShellByTitle("New Ini File");
 		//Access.dumpWidgetHierarchy(shell.getShell());
 		if (parentFolder != null)
-			shell.findTextAfterLabel(".*parent folder.*").clickAndType(parentFolder);
+			shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
 		if (fileName != null)
-			shell.findTextAfterLabel("File name.*").clickAndType(fileName);
+			shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
 		if (networkName != null)
 			shell.findComboAfterLabel("NED Network:").clickAndType(networkName);
 		shell.findButtonWithLabel("Finish").activateWithMouseClick();

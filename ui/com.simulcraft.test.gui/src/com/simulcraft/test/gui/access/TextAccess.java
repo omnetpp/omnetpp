@@ -22,17 +22,24 @@ public class TextAccess extends ControlAccess
 		return getText().getText();
 	}
 
+    @InUIThread
 	public void assertEditable() {
 		Assert.assertTrue("text control is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
 	}
 
-	@InUIThread
-	public void clickAndType(String text) {
-		assertEnabled();
-		assertEditable();
-		click(); // focus
-		pressKey(SWT.HOME);
-		pressKey(SWT.END, SWT.SHIFT);  // select all
-		typeIn(text); // typing will replace content
+    @InUIThread
+    public void typeOver(String content) {
+        assertEnabled();
+        assertEditable();
+        assertHasFocus();
+        Text text = getText();
+        if (text.getSelectionCount() != text.getText().length())
+            pressKey('a', SWT.CONTROL);
+        typeIn(content);
+    }
+	
+	public void clickAndTypeOver(String content) {
+		click();
+		typeOver(content);
 	}
 }
