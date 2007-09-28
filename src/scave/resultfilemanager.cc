@@ -1041,7 +1041,12 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
 void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *fileRef)
 {
     VectorFileIndex *index = IndexFileReader(filename).readAll();
-
+    int numOfVectors = index->getNumberOfVectors();
+    
+    if (numOfVectors == 0) {
+    	delete index;
+    	return;
+    }
 
     Run *runRef = getRunByName(index->run.runName.c_str());
     if (!runRef)
@@ -1054,7 +1059,6 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
     runRef->moduleParams = index->run.moduleParams;
     FileRun *fileRunRef = addFileRun(fileRef, runRef);
 
-    int numOfVectors = index->getNumberOfVectors();
     for (int i = 0; i < numOfVectors; ++i)
     {
         const VectorData *vectorRef = index->getVectorAt(i);
