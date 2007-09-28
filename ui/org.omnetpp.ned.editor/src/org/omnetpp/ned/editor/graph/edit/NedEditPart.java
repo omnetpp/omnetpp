@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.edit;
 
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -20,6 +21,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -69,6 +71,8 @@ abstract public class NedEditPart
 
     @Override
     public void refresh() {
+        Assert.isTrue((getNedModel() instanceof NedFileElementEx) || getNedModel().getParent() != null, 
+                      "NedElement must be inside a model (must have parent)");
     	super.refresh();
     	for (Object child : getChildren())
     		((AbstractGraphicalEditPart)child).refresh();

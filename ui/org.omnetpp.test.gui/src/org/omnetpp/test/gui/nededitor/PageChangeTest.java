@@ -2,10 +2,12 @@ package org.omnetpp.test.gui.nededitor;
 
 import junit.framework.Assert;
 
-import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
-
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
+
+import org.eclipse.swt.SWT;
+
+import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 
 
 public class PageChangeTest
@@ -35,12 +37,31 @@ public class PageChangeTest
     public void testFollowChangesFromTextToGraphical() throws Exception {
         MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
         multiPageEditorPart.ensureActiveEditor("Graphical");
-        TextEditorAccess textEditorAccess = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
-        textEditorAccess.typeIn("simple NewSimpleModule {}\n");
+        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        textEditor.typeIn("simple NewSimpleModule {}\n");
         GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
         graphicalNedEditor.findSimpleModule("NewSimpleModule");
     }
 
+    /**
+     * Tests whether submodule name changes in the text editor are reflected in the graphical editor.
+     */
+    public void testFollowSubmoduleNameChangesFromTextToGraphical() throws Exception {
+        createFileWithContent("simple A {}\nmodule TestCompound { submodules: name : A; }");
+        openFileFromProjectExplorerView();
+        MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
+        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        textEditor.moveCursorAfter("name");
+        textEditor.typeIn("x");
+        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
+        graphicalNedEditor.findCompoundModule("TestCompound").findSubmoduleFigureByName("namex");
+        multiPageEditorPart.ensureActiveEditor("Text");
+        textEditor.moveCursorAfter("namex");
+        textEditor.pressKey(SWT.BS);
+        multiPageEditorPart.ensureActiveEditor("Graphical");
+        graphicalNedEditor.findCompoundModule("TestCompound").findSubmoduleFigureByName("name");
+    }
+    
     private MultiPageEditorPartAccess prepareTest() throws Exception {
         createFileWithContent("simple TestSimpleModule {}");
         openFileFromProjectExplorerView();

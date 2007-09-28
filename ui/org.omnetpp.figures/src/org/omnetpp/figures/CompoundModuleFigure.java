@@ -155,8 +155,6 @@ public class CompoundModuleFigure extends NedFigure
      * A special layer used in compound module, for holding the connections. This
      * layer overrides the getFreeFormExtent method, so the size of this layer will not be
      * used during the calculation of compound module size.
-     *
-     * @author rhornig
      */
     class NedConnectionLayer extends ConnectionLayer {
 
@@ -183,6 +181,10 @@ public class CompoundModuleFigure extends NedFigure
         }
     }
 
+    /**
+     * This layer overrides the getFreeFormExtent method, so the size of this layer will not be
+     * used during the calculation of compound module size.
+     */
     class NonExtendableFreeformLayer extends FreeformLayer {
         @Override
         public Rectangle getFreeformExtent() {

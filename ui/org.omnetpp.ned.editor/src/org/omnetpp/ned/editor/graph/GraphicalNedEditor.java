@@ -571,6 +571,7 @@ public class GraphicalNedEditor
 
     // refresh the whole content plus the outline page and the palette too
     public void refresh() {
+        System.out.println("graph editor refresh");
         getGraphicalViewer().getContents().refresh();
         paletteRefreshJob.restartTimer();
         if (outlinePage != null)
@@ -642,7 +643,7 @@ public class GraphicalNedEditor
 		// comment from the submodule's or connection channel's type
 		String typeComment = "";
 		if (element instanceof IHasType) {
-			INedTypeElement typeElement = ((IHasType)element).getEffectiveTypeRef();
+		    INedTypeElement typeElement = ((IHasType)element).getEffectiveTypeRef();
 			if (typeElement != null)
 				typeComment = StringUtils.trimToEmpty(typeElement.getComment());
 		}
