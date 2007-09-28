@@ -527,7 +527,7 @@ public class GraphicalNedEditor
 
 				// record notification event as an external change iff it refers to our model and we are not the originator
 				if (event instanceof NEDModelChangeEvent && event.getSource() != null && 
-					event.getSource().getContainingNedFileElement() == getModel() && !isActive() && // TODO: isActive is superfluous?!
+					event.getSource().getContainingNedFileElement() == getModel() && 
 					!((LocalCommandStack)getCommandStack()).isInsideBeginEnd()) 
 				{
 					if (pendingExternalChangeCommand == null)
@@ -610,13 +610,6 @@ public class GraphicalNedEditor
     public boolean hasContentChanged() {  //TODO: still needed?
         return !(lastUndoCommand == getCommandStack().getUndoCommand());
     }
-
-    public boolean isActive() {
-		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
-		IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
-		return activeEditorPart == this ||
-			(activeEditorPart instanceof MultiPageNedEditor && ((MultiPageNedEditor)activeEditorPart).isActiveEditor(this));
-	}
 
 	public void markSaved() {
 		getCommandStack().markSaveLocation();

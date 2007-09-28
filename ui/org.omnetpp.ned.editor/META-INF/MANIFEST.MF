@@ -23,6 +23,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.search
 Eclipse-LazyStart: true
 Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin
-Export-Package: org.omnetpp.ned.editor.graph,
+Export-Package: org.omnetpp.ned.editor,
+ org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.edit,
  org.omnetpp.ned.editor.text
