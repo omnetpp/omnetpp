@@ -2,8 +2,9 @@ package org.omnetpp.test.gui.nededitor;
 
 import junit.framework.Assert;
 
+import org.omnetpp.test.gui.access.NedEditorAccess;
+
 import com.simulcraft.test.gui.access.Access;
-import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 
 public class NedPathTest
@@ -17,8 +18,8 @@ public class NedPathTest
     }
 
     public void testChangeNedPathWhileEditorIsOpenAndModified() throws Exception {
-        MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        NedEditorAccess nedEditor = findNedEditor();
+        TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         textEditor.typeIn("Modified");
         setNedPath(directoryName);
         Assert.assertTrue(Access.getWorkbenchWindowAccess().findEditorPartByTitle(fileName).getEditorPart().isDirty());

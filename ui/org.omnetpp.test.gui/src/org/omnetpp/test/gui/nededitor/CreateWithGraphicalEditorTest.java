@@ -80,7 +80,7 @@ public class CreateWithGraphicalEditorTest
     private void prepareTest(String content) throws Exception {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
-        graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().ensureActiveEditor("Graphical");
+        graphicalNedEditor = findNedEditor().ensureActiveGraphicalEditor();
     }
     
     private void testCreateConnection(String moduleName1, String moduleName2) {

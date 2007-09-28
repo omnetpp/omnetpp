@@ -2,8 +2,8 @@ package org.omnetpp.test.gui.nededitor;
 
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.access.NedEditorAccess;
 
-import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 
 public class CreateComplexModelWithGraphicalEditorTest
@@ -11,21 +11,21 @@ public class CreateComplexModelWithGraphicalEditorTest
 {
 	public void testCreateSimpleModel() throws Throwable {
 		createNewNedFileByWizard();
-		MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
+		NedEditorAccess nedEditor = findNedEditor();
+		GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
-		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePageEditor("Text");
+		TextEditorAccess textualEditor = nedEditor.activateTextEditor();
 		textualEditor.moveCursorAfter("simple TestNode.*\\n\\{");
 		textualEditor.pressEnter();
 		textualEditor.typeIn("gates:");
 		textualEditor.pressEnter();
 		textualEditor.typeIn("inout g;");
 		textualEditor.pressEnter();
-		multiPageEditorPart.activatePageEditor("Graphical");
+		nedEditor.activateGraphicalEditor();
 		CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.createCompoundModuleWithPalette("TestNetwork");
 		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node1", 200, 200);
 		compoundModuleEditPart.createSubModuleWithPalette("TestNode", "node2", 100, 100);
 		compoundModuleEditPart.createConnectionWithPalette("node1", "node2", ".*g.*");
-		multiPageEditorPart.saveWithHotKey();
+		nedEditor.saveWithHotKey();
 	}
 }

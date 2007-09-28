@@ -12,7 +12,7 @@ public class AutoLayoutTest
     public void testNoAutoLayoutUponSubmoduleInsertionFromGraphicalEditor() throws Exception {
         createFileWithContent("simple TestSimpleModule {}\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
         openFileFromProjectExplorerView();
-        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().ensureActiveEditor("Graphical");
+        GraphicalNedEditorAccess graphicalNedEditor = findNedEditor().ensureActiveGraphicalEditor();
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
         Rectangle r1 = compoundModuleEditPart.findSubmoduleFigureByName("test1").getBounds();
         Rectangle r2 = compoundModuleEditPart.findSubmoduleFigureByName("test2").getBounds();

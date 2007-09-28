@@ -5,7 +5,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
-import org.omnetpp.test.gui.access.MultiPageNedEditorAccess;
+import org.omnetpp.test.gui.access.NedEditorAccess;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditorPartAccess;
@@ -26,7 +26,7 @@ public class ExecuteUndoRedoUndoTestSuite
         addTests(testSuite, new ExecuteUndoRedoUndoTest() {
             public void execute() throws Exception {
                 try {
-                    TextEditorAccess textEditor = (TextEditorAccess)findMultiPageEditor().ensureActiveEditor("Text");
+                    TextEditorAccess textEditor = findNedEditor().ensureActiveTextEditor();
                     textEditor.typeIn("simple TestSimpleModule {}");
                 }
                 catch (Exception e) {
@@ -37,7 +37,7 @@ public class ExecuteUndoRedoUndoTestSuite
         addTests(testSuite, new ExecuteUndoRedoUndoTest() {
             public void execute() throws Exception {
                 try {
-                    GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().ensureActiveEditor("Graphical");
+                    GraphicalNedEditorAccess graphicalNedEditor = findNedEditor().ensureActiveGraphicalEditor();
                     graphicalNedEditor.createSimpleModuleWithPalette(null);
                 }
                 catch (Exception e) {
@@ -143,11 +143,11 @@ public class ExecuteUndoRedoUndoTestSuite
 
         private EditorPartAccess ensureActiveEditor(EditorDesignator designator) {
             String editorLabel = designator == EditorDesignator.Graphical ? "Graphical" : "Text";
-            return findMultiPageEditor().ensureActiveEditor(editorLabel);
+            return findNedEditor().ensureActiveEditor(editorLabel);
         }
 
         private String getText() {
-            return ((MultiPageNedEditorAccess)findMultiPageEditor()).getTextualNedEditor().getText();
+            return findNedEditor().getTextualNedEditor().getText();
         }
     }
 }

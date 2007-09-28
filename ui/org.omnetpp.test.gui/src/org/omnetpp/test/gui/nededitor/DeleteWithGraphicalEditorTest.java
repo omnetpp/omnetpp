@@ -47,6 +47,6 @@ public class DeleteWithGraphicalEditorTest
         super.setUpInternal();
         createFileWithContent("simple TestSimple { gates: inout g; }\nmodule TestCompound { submodules: test: TestSimple; test1: TestSimple; test2: TestSimple; connections: test1.g <--> test2.g; }");
         openFileFromProjectExplorerView();
-        graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().ensureActiveEditor("Graphical");
+        graphicalNedEditor = findNedEditor().ensureActiveGraphicalEditor();
     }
 }

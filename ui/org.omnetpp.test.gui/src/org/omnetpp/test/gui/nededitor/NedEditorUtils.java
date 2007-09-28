@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
+import org.omnetpp.test.gui.access.NedEditorAccess;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
@@ -64,8 +65,8 @@ public class NedEditorUtils
 
 	public static void assertBothEditorsAreAccessible(String fileName) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		multiPageEditorPart.ensureActiveEditor("Graphical");
-		multiPageEditorPart.ensureActiveEditor("Text");
+		NedEditorAccess nedEditor = (NedEditorAccess) workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+		nedEditor.ensureActiveGraphicalEditor();
+		nedEditor.ensureActiveTextEditor();
 	}
 }

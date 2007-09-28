@@ -18,7 +18,7 @@ public class DeleteOpenFileTest
 		openFileFromProjectExplorerView();
 		WorkbenchUtils.ensureViewActivated("General", "Outline");
         WorkbenchUtils.ensureViewActivated("General", "Properties");
-		findMultiPageEditor().ensureActiveEditor("Graphical");
+		findNedEditor().ensureActiveGraphicalEditor();
 
 		WorkspaceUtils.assertFileExists("/" + projectName + "/" + fileName);
 		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);

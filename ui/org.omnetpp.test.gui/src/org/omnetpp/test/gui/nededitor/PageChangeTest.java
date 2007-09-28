@@ -2,45 +2,44 @@ package org.omnetpp.test.gui.nededitor;
 
 import junit.framework.Assert;
 
-import com.simulcraft.test.gui.access.Access;
-import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
-import com.simulcraft.test.gui.access.TextEditorAccess;
-
 import org.eclipse.swt.SWT;
-
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.access.NedEditorAccess;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.TextEditorAccess;
 
 
 public class PageChangeTest
     extends NedFileTestCase
 {
     public void testSimplePageChangeFromTextToGraphical() throws Exception {
-        MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.ensureActiveEditor("Text");
-        multiPageEditorPart.ensureActiveEditor("Graphical");
+        NedEditorAccess nedEditor = prepareTest();
+        nedEditor.ensureActiveTextEditor();
+        nedEditor.ensureActiveGraphicalEditor();
     }
 
     public void testSimplePageChangeFromGraphicalToText() throws Exception {
-        MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.ensureActiveEditor("Graphical");
-        multiPageEditorPart.ensureActiveEditor("Text");
+        NedEditorAccess nedEditor = prepareTest();
+        nedEditor.ensureActiveGraphicalEditor();
+        nedEditor.ensureActiveTextEditor();
     }
 
     public void testFollowChangesFromGraphicalToText() throws Exception {
-        MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.ensureActiveEditor("Text");
-        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
+        NedEditorAccess nedEditor = prepareTest();
+        nedEditor.ensureActiveTextEditor();
+        GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
         graphicalNedEditor.createSimpleModuleWithPalette("NewSimpleModule");
-        TextEditorAccess textEditorAccess = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        TextEditorAccess textEditorAccess = nedEditor.ensureActiveTextEditor();
         Assert.assertTrue(textEditorAccess.findStyledText().getText().matches("(?s).*NewSimpleModule.*"));
     }
 
     public void testFollowChangesFromTextToGraphical() throws Exception {
-        MultiPageEditorPartAccess multiPageEditorPart = prepareTest();
-        multiPageEditorPart.ensureActiveEditor("Graphical");
-        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        NedEditorAccess nedEditor = prepareTest();
+        nedEditor.ensureActiveGraphicalEditor();
+        TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         textEditor.typeIn("simple NewSimpleModule {}\n");
-        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
+        GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
         graphicalNedEditor.findSimpleModule("NewSimpleModule");
     }
 
@@ -50,57 +49,57 @@ public class PageChangeTest
     public void testFollowSubmoduleNameChangesFromTextToGraphical() throws Exception {
         createFileWithContent("simple A {}\nmodule TestCompound { submodules: name : A; }");
         openFileFromProjectExplorerView();
-        MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        NedEditorAccess nedEditor = findNedEditor();
+        TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         textEditor.moveCursorAfter("name");
         textEditor.typeIn("x");
-        GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
+        GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
         graphicalNedEditor.findCompoundModule("TestCompound").findSubmoduleFigureByName("namex");
-        multiPageEditorPart.ensureActiveEditor("Text");
+        nedEditor.ensureActiveTextEditor();
         textEditor.moveCursorAfter("namex");
         textEditor.pressKey(SWT.BS);
-        multiPageEditorPart.ensureActiveEditor("Graphical");
+        nedEditor.ensureActiveGraphicalEditor();
         graphicalNedEditor.findCompoundModule("TestCompound").findSubmoduleFigureByName("name");
     }
     
     public void testUneditedFileIsNotDirty() throws Exception {
-        // this is intentionally unformatted to verify that no unnecessary formatting occurres
+        // NED text below is intentionally unformatted to verify that no unnecessary reindenting/reformatting occurs
         String fileContent = "simple A {}\nmodule TestCompound { submodules: name : A; }";
         createFileWithContent(fileContent);
         openFileFromProjectExplorerView();
-        MultiPageEditorPartAccess multiPageEditor = findMultiPageEditor();
-        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditor.ensureActiveEditor("Text");
+        NedEditorAccess nedEditor = findNedEditor();
+        TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         Access.sleep(1);
-        multiPageEditor.ensureActiveEditor("Graphical");
+        nedEditor.ensureActiveGraphicalEditor();
         Access.sleep(1);
-        multiPageEditor.ensureActiveEditor("Text");
+        nedEditor.ensureActiveTextEditor();
         Access.sleep(1);
         textEditor.assertContent(fileContent);
-        multiPageEditor.assertNotDirty();
+        nedEditor.assertNotDirty();
     }
     
     public void testTextEditingDoesNotReformat() throws Exception {
-        // this is intentionally unformatted to verify that no unnecessary formatting occurres
+        // NED text below is intentionally unformatted to verify that no unnecessary reindenting/reformatting occurs
         String fileContent = "simple A {}\nmodule TestCompound { submodules: name : A; }";
         createFileWithContent(fileContent);
         openFileFromProjectExplorerView();
-        MultiPageEditorPartAccess multiPageEditor = findMultiPageEditor();
-        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditor.ensureActiveEditor("Text");
+        NedEditorAccess nedEditor = findNedEditor();
+        TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         Access.sleep(1);
         textEditor.typeIn(" ");
         Access.sleep(1);
-        multiPageEditor.ensureActiveEditor("Graphical");
+        nedEditor.ensureActiveGraphicalEditor();
         Access.sleep(1);
-        multiPageEditor.ensureActiveEditor("Text");
+        nedEditor.ensureActiveTextEditor();
         Access.sleep(1);
         textEditor.assertContent(" "+fileContent);
-        multiPageEditor.assertDirty();
+        nedEditor.assertDirty();
     }
 
-    private MultiPageEditorPartAccess prepareTest() throws Exception {
+    private NedEditorAccess prepareTest() throws Exception {
         createFileWithContent("simple TestSimpleModule {}");
         openFileFromProjectExplorerView();
-        MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-        return multiPageEditorPart;
+        NedEditorAccess nedEditor = findNedEditor();
+        return nedEditor;
     }
 }

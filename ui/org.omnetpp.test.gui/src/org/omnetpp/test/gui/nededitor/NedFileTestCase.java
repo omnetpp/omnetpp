@@ -1,7 +1,8 @@
 package org.omnetpp.test.gui.nededitor;
 
+import org.omnetpp.test.gui.access.NedEditorAccess;
+
 import com.simulcraft.test.gui.access.Access;
-import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.ProjectFileTestCase;
 
@@ -17,9 +18,9 @@ public class NedFileTestCase
 		NedEditorUtils.assertBothEditorsAreAccessible(fileName);
 	}
 
-	protected MultiPageEditorPartAccess findMultiPageEditor() {
+	protected NedEditorAccess findNedEditor() {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		return workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+		return (NedEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 	}
 
 	protected void createNewNedFileByWizard() {

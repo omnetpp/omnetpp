@@ -1,9 +1,9 @@
 package org.omnetpp.test.gui.nededitor;
 
 import org.eclipse.swt.SWT;
+import org.omnetpp.test.gui.access.NedEditorAccess;
 
 import com.simulcraft.test.gui.access.Access;
-import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 
@@ -13,10 +13,10 @@ public class SaveFileTest
 	public void testSaveFile() throws Throwable {
 		createNewNedFileByWizard();
 		typeIntoTextualNedEditor("simple Test {}");
-		MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-		multiPageEditorPart.ensureActiveEditor("Text");
-		multiPageEditorPart.saveWithHotKey();
-		multiPageEditorPart.closeWithHotKey();
+		NedEditorAccess nedEditor = findNedEditor();
+		nedEditor.ensureActiveTextEditor();
+		nedEditor.saveWithHotKey();
+		nedEditor.closeWithHotKey();
 		assertFileExists();
 	}
 
