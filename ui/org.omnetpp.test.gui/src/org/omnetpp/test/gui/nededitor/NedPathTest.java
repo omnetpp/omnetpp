@@ -18,7 +18,7 @@ public class NedPathTest
 
     public void testChangeNedPathWhileEditorIsOpenAndModified() throws Exception {
         MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.activatePageEditor("Text");
+        TextEditorAccess textEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
         textEditor.typeIn("Modified");
         setNedPath(directoryName);
         Assert.assertTrue(Access.getWorkbenchWindowAccess().findEditorPartByTitle(fileName).getEditorPart().isDirty());

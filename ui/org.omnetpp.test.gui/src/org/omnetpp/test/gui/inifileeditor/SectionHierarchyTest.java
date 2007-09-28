@@ -25,7 +25,7 @@ public class SectionHierarchyTest
 	public void testWrongNetwork() throws Throwable {
 		WorkbenchWindowAccess workbenchWindowAccess = Access.getWorkbenchWindowAccess();
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindowAccess.findMultiPageEditorPartByTitle(fileName);
-		multiPageEditorPart.activatePageEditor("Text");
+		multiPageEditorPart.ensureActiveEditor("Text");
 		StyledTextAccess styledText = multiPageEditorPart.findStyledText();
 		styledText.assertHasFocus();
 		styledText.pressKey('A', SWT.CTRL); // select all

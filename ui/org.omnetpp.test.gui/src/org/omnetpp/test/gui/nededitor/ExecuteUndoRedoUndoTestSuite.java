@@ -37,7 +37,7 @@ public class ExecuteUndoRedoUndoTestSuite
         addTests(testSuite, new ExecuteUndoRedoUndoTest() {
             public void execute() throws Exception {
                 try {
-                    GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().activatePageEditor("Graphical");
+                    GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)findMultiPageEditor().ensureActiveEditor("Graphical");
                     graphicalNedEditor.createSimpleModuleWithPalette(null);
                 }
                 catch (Exception e) {

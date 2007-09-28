@@ -4,7 +4,6 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.internal.PartSite;
@@ -64,7 +63,8 @@ public class WorkbenchPartAccess
     @InUIThread
     public void ensureActivated() {
         CTabItem cTabItem = getCTabItem().getCTabItem();
-        if (cTabItem.getParent().getSelection() != cTabItem)
+        IWorkbenchPart workbenchPart = getWorkbenchPart();
+        if (cTabItem.getParent().getSelection() != cTabItem || workbenchPart.getSite().getPage().getActivePart() != workbenchPart)
             activateWithMouseClick();
     }
 }

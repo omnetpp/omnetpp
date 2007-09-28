@@ -26,7 +26,7 @@ public class IniFileEditorTest
 		IniFileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		workbenchWindow.findMultiPageEditorPartByTitle(fileName).activatePageEditor("Text");
+		workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");
 //		Access.sleep(2);
 //		workbenchWindow.chooseFromMainMenu("Window|Show View|Problems");
 //		Access.sleep(2);
@@ -41,7 +41,7 @@ public class IniFileEditorTest
 
 		// Find the inifile editor, and switch to its text page
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		multiPageEditorPart.activatePageEditor("Text");
+		multiPageEditorPart.ensureActiveEditor("Text");
 		//Access.dumpWidgetHierarchy(editor.getRootControl());
 
 		// Find the text editor in it, and verify it has the right content
@@ -55,7 +55,7 @@ public class IniFileEditorTest
 		IniFileEditorUtils.createNewIniFileByWizard2(projectName, fileName, null);
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
-		TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).activatePageEditor("Text");
+		TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");
 
 		// Wizard has created the file with an empty "network=" line; type "Undefined" there as network name
 		textualEditor.findStyledText().moveCursorAfter("network.*=");

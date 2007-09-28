@@ -12,7 +12,7 @@ public class CreateComplexModelWithGraphicalEditorTest
 	public void testCreateSimpleModel() throws Throwable {
 		createNewNedFileByWizard();
 		MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.activatePageEditor("Graphical");
+		GraphicalNedEditorAccess graphicalNedEditor = (GraphicalNedEditorAccess)multiPageEditorPart.ensureActiveEditor("Graphical");
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
 		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.activatePageEditor("Text");
 		textualEditor.moveCursorAfter("simple TestNode.*\\n\\{");

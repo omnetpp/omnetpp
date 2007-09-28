@@ -14,7 +14,7 @@ public class SaveFileTest
 		createNewNedFileByWizard();
 		typeIntoTextualNedEditor("simple Test {}");
 		MultiPageEditorPartAccess multiPageEditorPart = findMultiPageEditor();
-		multiPageEditorPart.activatePageEditor("Text");
+		multiPageEditorPart.ensureActiveEditor("Text");
 		multiPageEditorPart.saveWithHotKey();
 		multiPageEditorPart.closeWithHotKey();
 		assertFileExists();

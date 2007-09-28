@@ -29,7 +29,7 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 
     @InUIThread
     public FigureAccess findButtonFigureWithLabel(final String label) {
-        ensureExpanded();
+        ensurePinnedOpen();
         return new FigureAccess(findDescendantFigure(getRootFigure(getPaletteViewer()), new IPredicate() {
             public boolean matches(Object object) {
                 return object instanceof TextFlow && ((TextFlow)object).getText().matches(label);
@@ -39,7 +39,7 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 
     @InUIThread
     public boolean hasButtonFigureWithLabel(final String label) {
-        ensureExpanded();
+        ensurePinnedOpen();
         IFigure rootFigure = getRootFigure(getPaletteViewer());
         IPredicate predicate = new IPredicate() {
             public boolean matches(Object object) {
@@ -51,8 +51,8 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
     }
 
 	@InUIThread
-	public void ensureExpanded() {
-		Object stateExpanded = ReflectionUtils.getFieldValue(FlyoutPaletteComposite.class, "STATE_EXPANDED");
+	public void ensurePinnedOpen() {
+		Object stateExpanded = ReflectionUtils.getFieldValue(FlyoutPaletteComposite.class, "STATE_PINNED_OPEN");
 		if (!(Boolean)ReflectionUtils.invokeMethod(getFlyoutPaletteComposite(), "isInState", stateExpanded))
 			clickFlyoutControlButton();
 	}

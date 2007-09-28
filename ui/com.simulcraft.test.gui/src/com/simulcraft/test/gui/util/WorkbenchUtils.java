@@ -41,7 +41,7 @@ public class WorkbenchUtils
             return chooseViewFromDialog(viewCategory, viewLabel);
         else {
             workbenchWindow.findViewPartByTitle(viewLabel).ensureActivated();
-            return (ViewPartAccess) workbenchWindow.getActivePart();
+            return (ViewPartAccess)workbenchWindow.getActivePart();
         }
     }
 
