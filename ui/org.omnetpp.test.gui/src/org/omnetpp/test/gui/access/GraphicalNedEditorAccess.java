@@ -150,7 +150,7 @@ public class GraphicalNedEditorAccess
         return (EditPartAccess)createAccess((EditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
             public boolean matches(Object object) {
                 if (object instanceof NedEditPart) {
-                    INEDElement nedElement = ((NedEditPart)object).getNEDModel();
+                    INEDElement nedElement = ((NedEditPart)object).getNedModel();
 
                     return type.isInstance(nedElement) && nedElement.getAttribute("name").matches(name);
                 }
@@ -171,7 +171,9 @@ public class GraphicalNedEditorAccess
     private void createElementWithPalette(String elementTypeName, String elementName) {
         clickPaletteItem(elementTypeName);
         clickBackground();
-        renameElement("Unnamed.*", elementName);
+        
+        if (elementName != null)
+            renameElement("Unnamed.*", elementName);
     }
 
     private GraphicalViewer getGraphicalViewer() {
