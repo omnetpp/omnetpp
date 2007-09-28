@@ -13,6 +13,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.IPredicate;
 
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
 
 
 public class TreeAccess extends ControlAccess
@@ -35,9 +36,32 @@ public class TreeAccess extends ControlAccess
         Assert.assertTrue(getTree().getItemCount() != 0);
     }
     
-    @InUIThread
+    @NotInUIThread
     public void assertContent(GenericTreeNode... content) {
-    	Assert.assertTrue(compareContent(getTree().getItems(), content));
+    	expandAll(); // expand all items because the Tree can be virtual
+    	Assert.assertTrue(compareContent(getItems(), content));
+    }
+    
+    @InUIThread
+    public TreeItem[] getItems() {
+    	return getTree().getItems();
+    }
+    
+    public TreeItemAccess[] getItemAccesses() {
+    	TreeItem[] items = getItems();
+    	TreeItemAccess[] treeItems = new TreeItemAccess[items.length];
+    	for (int i = 0; i < items.length; ++i)
+    		treeItems[i] = (TreeItemAccess)createAccess(items[i]);
+    	return treeItems;
+    }
+    
+    @NotInUIThread
+    public void expandAll() {
+    	for (TreeItemAccess item : getItemAccesses()) {
+    		item.reveal();
+    		item.click();
+        	pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE);
+    	}
     }
 	
     @InUIThread
@@ -80,6 +104,7 @@ public class TreeAccess extends ControlAccess
 		}
 	}
 	
+	@InUIThread
 	protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
 		if (treeItems.length != expectedItems.length)
 			return false;
@@ -87,8 +112,11 @@ public class TreeAccess extends ControlAccess
 		for (int i = 0; i < treeItems.length; ++i) {
 			TreeItem item = treeItems[i];
 			GenericTreeNode expected = expectedItems[i];
-			if (!ObjectUtils.equals(item.getText(), expected.getPayload()))
+			
+			if (!ObjectUtils.equals(item.getText(), expected.getPayload())) {
+				System.out.format("Tree content mismatch. Expected: %s, found: %s%n", expected.getPayload(), item.getText());
 				return false;
+			}
 			if (!compareContent(item.getItems(), expected.getChildren()))
 				return false;
 		}
