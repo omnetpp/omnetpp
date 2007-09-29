@@ -10,8 +10,8 @@ import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
-public class _InifileEditorTest
-	extends _InifileTestCase
+public class InifileEditorTest
+	extends InifileEditorTestCase
 {
 	@Override
 	protected void setUpInternal() throws Exception {
@@ -23,7 +23,7 @@ public class _InifileEditorTest
 	}
 
 	public void testCreateIniFile() throws Throwable {
-		_InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
+		InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");
@@ -35,7 +35,7 @@ public class _InifileEditorTest
 	}
 
 	public void testWizardResult() throws Throwable {
-		_InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
+		InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, "some-network");
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 
@@ -52,7 +52,7 @@ public class _InifileEditorTest
 	}
 
 	public void testWrongNetwork() throws Throwable {
-		_InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, null);
+		InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, null);
 
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");

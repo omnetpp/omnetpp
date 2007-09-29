@@ -7,8 +7,8 @@ import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.ProjectFileTestCase;
 
 
-public class _InifileTestCase extends ProjectFileTestCase {
-    public _InifileTestCase() {
+public class InifileTestCase extends ProjectFileTestCase {
+    public InifileTestCase() {
         super("test.ini");
     }
 
@@ -18,10 +18,10 @@ public class _InifileTestCase extends ProjectFileTestCase {
     }
 
     protected void createNewInifileByWizard() {
-        _InifileEditorUtils.createNewIniFileByWizard1(projectName, fileName, null);
+        InifileEditorUtils.createNewIniFileByWizard1(projectName, fileName, null);
     }
 
 //  protected void typeIntoTextualNedEditor(String inifileContent) {
-//  _InifileEditorUtils.typeIntoTextualNedEditor(fileName, inifileContent);
+//  InifileEditorUtils.typeIntoTextualNedEditor(fileName, inifileContent);
 //  }
 }

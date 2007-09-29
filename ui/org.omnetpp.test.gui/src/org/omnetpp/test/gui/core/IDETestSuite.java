@@ -4,7 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.omnetpp.test.gui.eventlogtable.EventLogTableTestSuite;
-import org.omnetpp.test.gui.inifileeditor._InifileEditorTestSuite;
+import org.omnetpp.test.gui.inifileeditor.InifileEditorTestSuite;
 import org.omnetpp.test.gui.launcher.LauncherTestSuite;
 import org.omnetpp.test.gui.nededitor.NedEditorTestSuite;
 import org.omnetpp.test.gui.scave.ScaveTestSuite;
@@ -15,7 +15,7 @@ public class IDETestSuite
 {
     public IDETestSuite() {
         addTest(NedEditorTestSuite.suite());
-        addTest(_InifileEditorTestSuite.suite());
+        addTest(InifileEditorTestSuite.suite());
         addTest(LauncherTestSuite.suite());
         addTest(EventLogTableTestSuite.suite());
         addTest(SequenceChartTestSuite.suite());

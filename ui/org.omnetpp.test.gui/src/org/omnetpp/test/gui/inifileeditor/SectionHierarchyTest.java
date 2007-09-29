@@ -11,7 +11,7 @@ import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class SectionHierarchyTest
-	extends _InifileTestCase 
+	extends InifileEditorTestCase 
 {
 	@Override
 	protected void setUpInternal() throws Exception {

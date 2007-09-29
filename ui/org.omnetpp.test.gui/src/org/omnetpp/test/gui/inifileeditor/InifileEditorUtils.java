@@ -10,7 +10,7 @@ import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
-public class _InifileEditorUtils
+public class InifileEditorUtils
 {
 	public static void createNewIniFileByWizard1(String projectName, String fileName, String networkName) {
 		// Select the project in the "Project Explorer" view, and choose "New|Other..." from its context menu
