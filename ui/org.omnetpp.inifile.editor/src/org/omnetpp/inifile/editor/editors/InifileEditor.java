@@ -52,8 +52,11 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
  * Editor for omnetpp.ini files.
  */
 //FIXME File|Revert is always disabled
-//FIXME line number doesn't appear on status bar
 //FIXME crashes if file gets renamed or moved
+//FIXME if workbench startup with an open inifile editor blocks for a while, 
+// that's because forms are filled in an asyncExec() that refers to InifileAnalyzer, 
+// and InifileAnalyzer is synchronized on NEDResources and has to wait until NED validation ends.
+// Solution: NED validation shouldn't lock NEDResources? (ie run validation on a *clone* of the trees)
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
 	/* editor pages */
 	private InifileTextEditor textEditor;

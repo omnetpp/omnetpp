@@ -70,6 +70,11 @@ public class InifileAnalyzer {
 	private Set<String> sectionsCausingCycles;
 	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
 	
+	// InifileDocument, InifileAnalyzer, and NEDResources are all accessed from
+	// background threads (must be synchronized), and the analyze procedure needs 
+	// NEDResources -- so use NEDResources as lock to prevent deadlocks
+	private Object lock = NEDResourcesPlugin.getNEDResources();
+	
 	/**
 	 * Classifies inifile keys; see getKeyType().
 	 */
@@ -126,7 +131,7 @@ public class InifileAnalyzer {
 	}
 
 	protected void modelChanged() {
-		synchronized (doc) {
+		synchronized (lock) {
 			changed = true;
 		}
 	}
@@ -144,7 +149,7 @@ public class InifileAnalyzer {
 	 * resolutions (see ParamResolution) are recalculated.
 	 */
 	public void analyzeIfChanged() {
-		synchronized (doc) {
+		synchronized (lock) {
 			if (changed)
 				analyze();
 		}
@@ -156,7 +161,7 @@ public class InifileAnalyzer {
 	 * recalculated.
 	 */
 	public void analyze() {
-		synchronized (doc) {
+		synchronized (lock) {
 			long startTime = System.currentTimeMillis();
 			INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 
@@ -807,7 +812,7 @@ public class InifileAnalyzer {
 	}
 
 	public boolean isUnusedParameterKey(String section, String key) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			if (getKeyType(key)!=KeyType.PARAM)
 				return false;
@@ -821,7 +826,7 @@ public class InifileAnalyzer {
 	 * empty, this key is not used to resolve any module parameters.
 	 */
 	public ParamResolution[] getParamResolutionsForKey(String section, String key) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			KeyData data = (KeyData) doc.getKeyData(section,key);
 			return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0];
@@ -829,7 +834,7 @@ public class InifileAnalyzer {
 	}
 
 	public String[] getUnusedParameterKeys(String section) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			ArrayList<String> list = new ArrayList<String>();
 			for (String key : doc.getKeys(section))
@@ -844,7 +849,7 @@ public class InifileAnalyzer {
 	 * parameters of the given module.
 	 */
 	public ParamResolution[] getParamResolutionsForModule(String moduleFullPath, String section) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			SectionData data = (SectionData) doc.getSectionData(section);
 			List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
@@ -865,7 +870,7 @@ public class InifileAnalyzer {
 	 * or null if not found.
 	 */
 	public ParamResolution getResolutionForModuleParam(String moduleFullPath, String paramName, String section) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			SectionData data = (SectionData) doc.getSectionData(section);
 			List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
@@ -885,7 +890,7 @@ public class InifileAnalyzer {
 	 * unassigned parameters as well.
 	 */
 	public ParamResolution[] getParamResolutions(String section) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			SectionData sectionData = (SectionData) doc.getSectionData(section);
 			return sectionData.allParamResolutions.toArray(new ParamResolution[]{});
@@ -896,7 +901,7 @@ public class InifileAnalyzer {
 	 * Returns unassigned parameters for the given inifile section.
 	 */
 	public ParamResolution[] getUnassignedParams(String section) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			SectionData sectionData = (SectionData) doc.getSectionData(section);
 			return sectionData.unassignedParams.toArray(new ParamResolution[]{});
@@ -942,7 +947,7 @@ public class InifileAnalyzer {
 	 * are not in the list.
 	 */
 	public String[] getIterationVariableNames(String activeSection) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			List<String> result = new ArrayList<String>();
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
@@ -961,7 +966,7 @@ public class InifileAnalyzer {
 	 * contain an iteration, like "${1,2,5}" or "${x=1,2,5}".
 	 */
 	public boolean containsIteration(String activeSection) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 			for (String section : sectionChain) {
@@ -978,7 +983,7 @@ public class InifileAnalyzer {
 	 * from the given section and its fallback sections.
 	 */
 	public String getIterationVariableValueString(String activeSection, String variable) {
-		synchronized (doc) {
+		synchronized (lock) {
 			analyzeIfChanged();
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 			for (String section : sectionChain) {
