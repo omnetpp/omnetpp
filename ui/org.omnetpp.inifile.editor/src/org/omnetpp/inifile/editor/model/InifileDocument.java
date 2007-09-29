@@ -310,7 +310,7 @@ public class InifileDocument implements IInifileDocument {
 		changed = false;
 
 		// synchronize detected problems with the file's existing markers
-		markerSynchronizer.run();
+		markerSynchronizer.runAsWorkspaceJob();
 		markerSynchronizer = null;
 		
 		// NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done 

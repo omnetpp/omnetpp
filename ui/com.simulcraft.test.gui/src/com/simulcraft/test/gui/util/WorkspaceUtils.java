@@ -78,17 +78,35 @@ public class WorkspaceUtils
 	@NotInUIThread
 	public static void createFileWithContent(String path, String content) throws Exception {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
-		if (file.exists()) file.delete(true, null);
+		if (file.exists()) 
+		    file.delete(true, null);
 		file.create(new ByteArrayInputStream(content.getBytes()), true, null);
 		WorkspaceUtils.assertFileExistsWithContent(path, content); // wait until background job finishes
 	}
 
-	@NotInUIThread
-	public static void ensureProjectFileDeleted(String projectName, String fileName) throws CoreException {
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(fileName);
-		if (file.exists())
-			file.delete(true, null);
+	public static void ensureFileNotExists(String path) throws CoreException {
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+	    if (file.exists())
+	        file.delete(true, null);
 	}
+
+    public static void ensureFolderExists(String path) throws CoreException {
+        IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
+        if (!folder.exists())
+            folder.create(true, false, null);
+    }
+
+    public static void ensureFolderNotExists(String path) throws CoreException {
+        IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
+        if (folder.exists())
+            folder.delete(true, null);
+    }
+
+    public static void ensureFileNotExists(String projectName, String fileName) throws CoreException {
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(fileName);
+        if (file.exists())
+            file.delete(true, null);
+    }
 
     public static void ensureFolderExists(String projectName, String directoryName) throws CoreException {
         IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFolder(directoryName);
@@ -96,6 +114,7 @@ public class WorkspaceUtils
             folder.create(true, false, null);
     }
     
+    //XXX this function probably not needed, can be replaced by prepending the regex with "(?s)"
     public static boolean matchesRegexp(String text, String regexp) {
         Pattern pattern = Pattern.compile(regexp, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(text);

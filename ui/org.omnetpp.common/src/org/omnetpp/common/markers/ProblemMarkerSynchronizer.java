@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
@@ -15,7 +14,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.omnetpp.common.CommonPlugin;
 
 /**
  * Solves the following problem: when an editor continuously analyzes
@@ -113,21 +111,6 @@ public class ProblemMarkerSynchronizer {
 	    return count;
 	}
 
-	/**
-	 * Performs the marker synchronization.
-	 */
-	public void run() {
-		try {
-			ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					addRemoveMarkers();
-				}
-			}, null);
-		} catch (CoreException e) {
-			CommonPlugin.logError(e);
-		}
-	}
-
     /**
      * Defers the synchronization to a later time when the resource tree is no longer locked.
      * You should use this method if the current thread locks the workspace resources
@@ -142,11 +125,13 @@ public class ProblemMarkerSynchronizer {
                     return Status.OK_STATUS;
                 }
             };
-            job.setSystem(true);
 
-            // the job should not run together with other jobs accessing the workspace resources
+            // the job should not run together with other jobs accessing the workspace resources, 
+            // to prevent subtle deadlocks (for example: progressMonitor does Display.readAndDispatch
+            // which invokes a timerExec, whose run() contains validateAllNedFiles, etc...)
             job.setRule(ResourcesPlugin.getWorkspace().getRoot());
             job.setPriority(Job.INTERACTIVE);
+            job.setSystem(true);
             job.schedule();
         }
     }

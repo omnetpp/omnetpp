@@ -21,7 +21,7 @@ public class DeleteOpenFileTest
 		findNedEditor().ensureActiveGraphicalEditor();
 
 		WorkspaceUtils.assertFileExists("/" + projectName + "/" + fileName);
-		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
+		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
 		
 		WorkbenchUtils.ensureViewActivated("General", "Outline");  // give views a chance to crash
 	}

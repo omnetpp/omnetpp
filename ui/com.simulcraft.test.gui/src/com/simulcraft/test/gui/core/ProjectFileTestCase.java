@@ -72,7 +72,7 @@ public class ProjectFileTestCase
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.ensureAllEditorPartsAreClosed();
 		workbenchWindow.assertNoOpenEditorParts();
-		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
+		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
 	}
 	
     /**
@@ -84,6 +84,6 @@ public class ProjectFileTestCase
 		    workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
 		workbenchWindow.ensureAllEditorPartsAreClosed();
         workbenchWindow.assertNoOpenEditorParts();
-		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
+		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
 	}
 }

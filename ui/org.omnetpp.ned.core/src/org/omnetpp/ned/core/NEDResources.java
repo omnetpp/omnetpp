@@ -878,17 +878,17 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	 * Schedules a background job to read NED files that are not yet loaded.
 	 */
 	public void scheduleReadMissingNedFiles() {
-        WorkspaceJob startupJob = new WorkspaceJob("Parsing NED files...") {
+        WorkspaceJob job = new WorkspaceJob("Parsing NED files...") {
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
                 readMissingNedFiles();
                 return Status.OK_STATUS;
             }
         };
-        startupJob.setRule(ResourcesPlugin.getWorkspace().getRoot());
-        startupJob.setPriority(Job.INTERACTIVE);
-        startupJob.setSystem(true);
-        startupJob.schedule();
+        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+        job.setPriority(Job.SHORT);
+        job.setSystem(false);
+        job.schedule();
 	}
 
 	/**
@@ -946,6 +946,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             return;
 
         if (event instanceof NEDModelChangeEvent) {
+            INEDElement source = ((NEDModelChangeEvent)event).getSource();
+            Assert.isTrue(source==null || source instanceof NedFileElementEx || hasConnectedEditor(getNedFile(source.getContainingNedFileElement())), "NED trees not opened in any editor must NOT be changed");
             invalidate();
             validationJob.restartTimer();
         }

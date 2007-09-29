@@ -204,6 +204,6 @@ public class InputsPageTest extends GUITestCase {
 	}
 	
 	protected void removeFile(String fileName) throws Exception {
-		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
+		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
 	}
 }

@@ -19,7 +19,7 @@ public class DummyInifileEditorTest
 		// Test setup: close all editors, delete the file left over from previous runs
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.closeAllEditorPartsWithHotKey();
-		WorkspaceUtils.ensureProjectFileDeleted(projectName, fileName);
+		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
 	}
 
 	public void testCreateIniFile() throws Throwable {

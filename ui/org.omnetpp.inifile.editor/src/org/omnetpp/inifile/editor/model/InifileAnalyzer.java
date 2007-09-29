@@ -210,7 +210,7 @@ public class InifileAnalyzer {
 			System.out.println("Inifile analyzed in "+(System.currentTimeMillis()-startTime)+"ms");
 
 			// synchronize detected problems with the file's existing markers
-			markerSynchronizer.run();
+			markerSynchronizer.runAsWorkspaceJob();
 			markerSynchronizer = null;
 		}
 	}
