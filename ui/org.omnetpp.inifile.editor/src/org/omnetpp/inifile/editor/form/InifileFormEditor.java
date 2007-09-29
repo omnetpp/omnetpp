@@ -63,7 +63,7 @@ public class InifileFormEditor extends Composite {
 		createControl();
 	}
 
-	public FormPage getFormPage() {
+	public FormPage getActiveFormPage() {
 		return formPage;
 	}
 
