@@ -10,7 +10,7 @@ import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
-public class InifileEditorTest
+public class DummyInifileEditorTest
 	extends InifileEditorTestCase
 {
 	@Override

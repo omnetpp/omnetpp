@@ -7,7 +7,7 @@ public class InifileEditorTestSuite
 	extends TestSuite
 {
 	public InifileEditorTestSuite() {
-		addTestSuite(InifileEditorTest.class);
+		addTestSuite(DummyInifileEditorTest.class);
 		addTestSuite(SectionHierarchyTest.class);
 	}		 
 
