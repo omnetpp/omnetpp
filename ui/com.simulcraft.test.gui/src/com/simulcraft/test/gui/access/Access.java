@@ -119,7 +119,7 @@ public class Access
         Shell activeShell = getDisplay().getActiveShell();
 		if (debug)
 			System.out.println("Active shell at post event is " + activeShell);
-		Assert.assertTrue(activeShell != null);
+		Assert.assertTrue("no active shell", activeShell != null);
         activeShell.forceActive();
 
 		if (debug)

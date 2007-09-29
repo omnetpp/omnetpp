@@ -395,7 +395,7 @@ public class SectionsPage extends FormPage {
 			String section = selection[0];
 			InifileFormEditor formEditor = getEditorData().getInifileEditor().getFormEditor();
 			formEditor.showCategoryPage(InifileFormEditor.PARAMETERS_PAGE);
-			formEditor.getActiveFormPage().gotoSection(section);
+			formEditor.getActiveCategoryPage().gotoSection(section);
 		}
 	}
 	

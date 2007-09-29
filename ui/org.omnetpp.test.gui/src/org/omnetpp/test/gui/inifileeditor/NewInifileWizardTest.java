@@ -12,7 +12,7 @@ public class NewInifileWizardTest extends InifileEditorTestCase {
         InifileEditorUtils.createNewIniFileByWizard2(projectName, fileName, networkName);
 
         String expectedContent = "[General]\nnetwork = "+StringUtils.nullToEmpty(networkName)+"\n";
-        WorkspaceUtils.assertFileExistsWithContent("/"+projectName+"/"+fileName, expectedContent);
+        WorkspaceUtils.assertFileExistsWithContent(filePath, expectedContent);
         
         InifileEditorAccess inifileEditor = findInifileEditor();
         inifileEditor.activateTextEditor().assertContent(expectedContent);

@@ -123,6 +123,7 @@ public abstract class GUITestCase extends TestCase {
 					catch (Throwable t) {
 						// just store the exception for later use and ignore it for now
 						stepThrowables[0] = t;
+						System.out.println("Caught: " + t.getClass().getSimpleName() + ": " + t.getMessage());
 					}
 				}
 			});

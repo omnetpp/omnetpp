@@ -32,15 +32,15 @@ public class InifileEditorAccess
         return (TextEditorAccess) activatePageEditor("Text");
     }
 
-    public CompositeAccess activateFormEditor() {
-        return (CompositeAccess) activatePageControl("Form");
+    public InifileFormEditorAccess activateFormEditor() {
+        return (InifileFormEditorAccess) activatePageControl("Form");
     }
 
     public TextEditorAccess ensureActiveTextEditor() {
         return (TextEditorAccess)ensureActiveEditor("Text");
     }
 
-    public CompositeAccess ensureActiveFormEditor() {
-        return (CompositeAccess)ensureActivePage("Form");
+    public InifileFormEditorAccess ensureActiveFormEditor() {
+        return (InifileFormEditorAccess)ensureActivePage("Form");
     }
 }

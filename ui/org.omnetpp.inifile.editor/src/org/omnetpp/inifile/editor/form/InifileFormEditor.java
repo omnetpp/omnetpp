@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.inifile.editor.TestSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
@@ -63,7 +64,7 @@ public class InifileFormEditor extends Composite {
 		createControl();
 	}
 
-	public FormPage getActiveFormPage() {
+	public FormPage getActiveCategoryPage() {
 		return formPage;
 	}
 
@@ -80,6 +81,9 @@ public class InifileFormEditor extends Composite {
 		form.setBackground(BGCOLOR);
 		form.setLayout(new FillLayout());
 		sashForm.setWeights(new int[] {1,4});
+
+        if (TestSupport.enableGuiTest)
+            treeViewer.getTree().setData(TestSupport.WIDGET_ID, TestSupport.CATEGORY_TREE);
 
 		buildTree();
 	}

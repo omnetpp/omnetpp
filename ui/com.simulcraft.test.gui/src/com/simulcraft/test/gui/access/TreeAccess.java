@@ -5,7 +5,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
@@ -37,10 +36,16 @@ public class TreeAccess extends ControlAccess
         Assert.assertTrue(getTree().getItemCount() != 0);
     }
     
+    /**
+     * Compares the Tree's content (one or more trees) to the GenericTreeNode
+     * trees passed. GenericTreeNode's payloads MUST be strings containing *regex* labels.
+     * If you need literal (non-regex) match, quote the strings beforehand using
+     * Pattern.quote().
+     */
     @NotInUIThread
     public void assertContent(GenericTreeNode... content) {
     	expandAll(); // expand all items because the Tree can be virtual
-    	Assert.assertTrue(compareContent(getItems(), content));
+    	Assert.assertTrue("tree content does not match expected content", compareContent(getItems(), content));
     }
     
     @InUIThread
@@ -114,8 +119,8 @@ public class TreeAccess extends ControlAccess
 			TreeItem item = treeItems[i];
 			GenericTreeNode expected = expectedItems[i];
 			
-			if (!ObjectUtils.equals(item.getText(), expected.getPayload())) {
-				System.out.format("Tree content mismatch. Expected: %s, found: %s%n", expected.getPayload(), item.getText());
+			if (!item.getText().matches((String)expected.getPayload())) {
+				System.out.format("Tree content mismatch. Expected regex: %s, found: %s%n", expected.getPayload(), item.getText());
 				return false;
 			}
 			if (!compareContent(item.getItems(), expected.getChildren()))

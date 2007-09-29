@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.scave;
 
+import java.util.regex.Pattern;
+
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.InputsPageAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
@@ -96,25 +98,25 @@ public class InputsPageTest extends GUITestCase {
 		return trees;
 	}
 	
-	private static GenericTreeNode n(Object payload, GenericTreeNode... children) {
-		GenericTreeNode node = new GenericTreeNode(payload);
+	private static GenericTreeNode n(String label, GenericTreeNode... children) {
+		GenericTreeNode node = new GenericTreeNode(Pattern.quote(label));
 		for (GenericTreeNode child : children)
 			node.addChild(child);
 		return node;
 	}
 	
-	@Override
 	/**
 	 * These must be advised exactly once.
 	 */
+	@Override
 	protected void setUp() throws Exception {
 		setUpInternal();
 	}
 	
-	@Override
     /**
      * These must be advised exactly once.
      */
+	@Override
 	protected void tearDown() throws Exception {
 		tearDownInternal();
 	}
