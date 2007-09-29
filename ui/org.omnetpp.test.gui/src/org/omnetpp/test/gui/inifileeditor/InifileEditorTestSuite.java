@@ -7,8 +7,20 @@ public class InifileEditorTestSuite
 	extends TestSuite
 {
 	public InifileEditorTestSuite() {
-		addTestSuite(DummyInifileEditorTest.class);
-		addTestSuite(SectionHierarchyTest.class);
+	    // wizard
+	    addTestSuite(NewInifileWizardTest.class);
+
+	    // editor
+	    addTestSuite(SectionsTest.class);
+	    addTestSuite(ConfigTest.class);
+	    addTestSuite(PerObjectConfigTest.class);
+	    addTestSuite(ParametersTest.class);
+	    addTestSuite(IncludedInifilesTest.class);
+	    
+	    // views
+	    addTestSuite(InifileOutlineViewTest.class);
+	    addTestSuite(ModuleHierarchyViewTest.class);
+	    addTestSuite(ParametersViewTest.class);
 	}		 
 
 	public static Test suite() {
