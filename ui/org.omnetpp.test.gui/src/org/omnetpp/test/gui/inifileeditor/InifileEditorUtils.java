@@ -47,7 +47,7 @@ public class InifileEditorUtils
 		if (fileName != null)
 			shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
 		if (networkName != null)
-			shell.findComboAfterLabel("NED Network:").clickAndType(networkName);
+			shell.findComboAfterLabel("NED Network:").clickAndTypeOver(networkName);
 		shell.findButtonWithLabel("Finish").activateWithMouseClick();
 	}
 }

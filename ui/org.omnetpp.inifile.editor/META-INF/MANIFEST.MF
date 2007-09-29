@@ -20,4 +20,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.edit.ui
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
-Export-Package: org.omnetpp.inifile.editor.model
+Export-Package: org.omnetpp.inifile.editor.editors,
+ org.omnetpp.inifile.editor.model

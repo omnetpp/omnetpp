@@ -2,10 +2,9 @@ package com.simulcraft.test.gui.access;
 
 import junit.framework.Assert;
 
-import com.simulcraft.test.gui.core.InUIThread;
-
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.texteditor.ITextEditor;
+
+import com.simulcraft.test.gui.core.InUIThread;
 
 public class TextEditorAccess extends EditorPartAccess 
 {
@@ -28,12 +27,24 @@ public class TextEditorAccess extends EditorPartAccess
 	}
 	
     /**
-     * NOTE: this is not the same as StyledText.assertContent (styled text does not contains the collapsed
-     * folding regions), this one DOES!
+     * Checks editor contents with String.equals().
+     * NOTE: this method is NOT equivalent to StyledText.assertContent, because
+     * the StyledText widget doesn't store the content of collapsed folding regions.
      */
     @InUIThread
     public void assertContent(String content) {
         String documentContent = getTextEditor().getDocumentProvider().getDocument(getTextEditor().getEditorInput()).get();
         Assert.assertTrue("editor content does not match", documentContent.equals(content));
+    }
+
+    /**
+     * Checks editor contents with regex match.
+     * NOTE: this method is NOT equivalent to StyledText.assertContent, because
+     * the StyledText widget doesn't store the content of collapsed folding regions.
+     */
+    @InUIThread
+    public void assertContentMatches(String regex) {
+        String documentContent = getTextEditor().getDocumentProvider().getDocument(getTextEditor().getEditorInput()).get();
+        Assert.assertTrue("editor content does not match", documentContent.matches(regex));
     }
 }

@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
 
 public class ComboAccess extends ControlAccess
 {
@@ -26,13 +27,18 @@ public class ComboAccess extends ControlAccess
 		Assert.assertTrue("combo is readonly", (getCombo().getStyle() & SWT.READ_ONLY) == 0);
 	}
 	
-	@InUIThread
-	public void clickAndType(String text) {
-		assertEnabled();
-		assertEditable();
-		click(); // focus
-		pressKey(SWT.HOME);
-		pressKey(SWT.END, SWT.SHIFT);  // select all
-		typeIn(text); // typing will replace content
-	}
+    @InUIThread
+    public void typeOver(String content) {
+        assertEnabled();
+        assertEditable();
+        assertHasFocus();
+        pressKey('a', SWT.CONTROL);
+        typeIn(content);
+    }
+    
+    @NotInUIThread
+    public void clickAndTypeOver(String content) {
+        click();
+        typeOver(content);
+    }
 }
