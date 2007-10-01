@@ -14,7 +14,7 @@ public class SectionsTest extends InifileEditorTestCase {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
     }
-    
+
     private static GenericTreeNode[] toArray(GenericTreeNode... trees) {
         return trees;
     }
@@ -32,7 +32,7 @@ public class SectionsTest extends InifileEditorTestCase {
 
     private void checkSectionsTreeViewContent(String inifileContent, GenericTreeNode[] trees) throws Exception {
         prepareTest(inifileContent);
-        
+
         InifileEditorAccess inifileEditor = findInifileEditor();
         InifileFormEditorAccess formEditor = inifileEditor.ensureActiveFormEditor();
         CompositeAccess sectionsPage = formEditor.activateCategoryPage("Sections");
@@ -81,13 +81,13 @@ public class SectionsTest extends InifileEditorTestCase {
                 toArray(
                         nw("General", 
                                 nw("Apple", 
-                                        n("GreenApple"),
-                                        n("RedApple")),
+                                        nw("GreenApple"),
+                                        nw("RedApple")),
                                 nw("Orange",
                                         nw("SmallOrange",
-                                                nw("SmallGreenOrange")),
-                                        nw("BigOrange"))),
-                                nw("Banana")));
+                                            nw("SmallGreenOrange")),
+                                        nw("BigOrange")),
+                                nw("Banana"))));
     }
 
     //TODO:
@@ -99,14 +99,14 @@ public class SectionsTest extends InifileEditorTestCase {
     //  network inheritance
     //  extends=General yes/no, general section yes/no
     //  General extends something (bogus)
-    
+
     // TODO:
     //   create, edit section by dialog
     //   delete section
     //   move by drag&drop
     //   copy/paste (if works)
-    
+
     // TODO:
     //  check tooltip, after F2
-    
+
 }

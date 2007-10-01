@@ -112,8 +112,10 @@ public class TreeAccess extends ControlAccess
 	
 	@InUIThread
 	protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
-		if (treeItems.length != expectedItems.length)
+		if (treeItems.length != expectedItems.length) {
+            System.out.format("Tree content mismatch. Expected %d children, found %d", expectedItems.length, treeItems.length);
 			return false;
+		}
 			
 		for (int i = 0; i < treeItems.length; ++i) {
 			TreeItem item = treeItems[i];
