@@ -68,7 +68,7 @@ public class EventTracer {
 
 		Listener eventFilter = new Listener() {
 			public void handleEvent(Event event) {
-				System.out.println(" - " + EventType.lookup(event.type) + ": " + event.toString());
+			    System.out.println(" - " + EventType.lookup(event.type) + ": " + event.toString());
 			}
 		};
 

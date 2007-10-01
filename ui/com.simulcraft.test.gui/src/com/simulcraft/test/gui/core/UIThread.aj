@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public aspect UIThread {
 	private static final double RETRY_TIMEOUT = 5;  // seconds
+	public static boolean debug = false;
 	
 	/**
 	 * Surround methods marked with @InUIThread with Display.syncExec() 
@@ -28,11 +29,13 @@ public aspect UIThread {
 	Object around(): execution(@InUIThread * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
-	    	System.out.println("AJ: doing " + method + " (already in UI thread)");
+	        if (debug)
+	            System.out.println("AJ: doing " + method + " (already in UI thread)");
 	    	return proceed();
 	    }
 	    else {
-	    	System.out.println("AJ: doing in UI thread: " + method);
+	        if (debug)
+	            System.out.println("AJ: doing in UI thread: " + method);
 	    	return GUITestCase.runStepWithTimeout(RETRY_TIMEOUT, new GUITestCase.Step() {
 	    		public Object runAndReturn() {
 	    			return proceed();
@@ -53,7 +56,8 @@ public aspect UIThread {
 	void around(final GUITestCase t): target(t) && (execution(public void test*()) || 
 			execution(void setUp()) || execution(void tearDown())) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
-	    System.out.println("AJ: running test case: " + method);
+	    if (debug)
+	        System.out.println("AJ: running test case: " + method);
 	    try {
 	    	t.runTest(t.new Test() {
 	    		public void run() throws Exception {

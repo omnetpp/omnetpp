@@ -10,6 +10,8 @@ import org.eclipse.ui.internal.ide.application.IDEApplication;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.omnetpp.common.util.ReflectionUtils;
 
+import com.simulcraft.test.gui.access.Access;
+
 public class TestApplication extends IDEApplication
 {
 	private static final boolean debug = true;
@@ -50,9 +52,7 @@ public class TestApplication extends IDEApplication
             		    exception.getCause() instanceof TestException ||
             		    (exception.getCause() != null && exception.getCause().getCause() instanceof TestException))
             		{
-            			if (debug)
-            				System.out.println("Rethrowing exception from event loop");
- 
+            		    Access.log(debug, "Rethrowing exception from event loop");
             			throw (RuntimeException)exception;
             		}
 

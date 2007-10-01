@@ -19,6 +19,10 @@ public class SectionsTest extends InifileEditorTestCase {
         return trees;
     }
 
+    private static GenericTreeNode nw(String containedWord, GenericTreeNode... children) {
+        return n(".*\\b" + containedWord + "\\b.*", children);
+    }
+
     private static GenericTreeNode n(String labelRegex, GenericTreeNode... children) {
         GenericTreeNode node = new GenericTreeNode(labelRegex);
         for (GenericTreeNode child : children)
@@ -49,7 +53,8 @@ public class SectionsTest extends InifileEditorTestCase {
                         n("General")));
     }
 
-    public void testGeneralSectionWithNetworkOnly() throws Exception {
+    public void testGeneralSectionOnly2() throws Exception {
+        // test that the network is displayed in the label 
         checkSectionsTreeViewContent(
                 "[General]\n" +
                 "network = TestNetwork\n", 
@@ -57,13 +62,51 @@ public class SectionsTest extends InifileEditorTestCase {
                         n("General.*TestNetwork.*")));
     }
 
-    public void testOneSectionOnly() throws Exception {
+    public void testManySectionsWithGeneral() throws Exception {
         checkSectionsTreeViewContent(
-                "[Config TestSection]\n" +
-                "network = TestNetwork\n", 
+                "[General]\n" + 
+                "[Config Apple]\n" + 
+                "[Config GreenApple]\n" +
+                "extends = Apple\n" +
+                "[Config RedApple]\n" +
+                "extends = Apple\n" +
+                "[Config Orange]\n" +
+                "[Config SmallOrange]\n" + 
+                "extends = Orange\n" +
+                "[Config SmallGreenOrange]\n" + 
+                "extends = SmallOrange\n" +
+                "[Config BigOrange]\n" +
+                "extends = Orange\n" +
+                "[Config Banana]\n",
                 toArray(
-                        n("General", 
-                                n(".*TestSection.*TestNetwork.*"))));
+                        nw("General", 
+                                nw("Apple", 
+                                        n("GreenApple"),
+                                        n("RedApple")),
+                                nw("Orange",
+                                        nw("SmallOrange",
+                                                nw("SmallGreenOrange")),
+                                        nw("BigOrange"))),
+                                nw("Banana")));
     }
 
+    //TODO:
+    //   many sections
+    //   cycle in section inheritance
+    //   nonexistent base section
+    // in the above tests: check that sections appear on the Parameters page as well
+    //  check label (inculdes network, descriotionm etc)
+    //  network inheritance
+    //  extends=General yes/no, general section yes/no
+    //  General extends something (bogus)
+    
+    // TODO:
+    //   create, edit section by dialog
+    //   delete section
+    //   move by drag&drop
+    //   copy/paste (if works)
+    
+    // TODO:
+    //  check tooltip, after F2
+    
 }

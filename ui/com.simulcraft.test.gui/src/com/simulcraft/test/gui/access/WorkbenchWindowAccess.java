@@ -96,7 +96,7 @@ public class WorkbenchWindowAccess extends Access {
 
         for (IWorkbenchPage page : workbenchWindow.getPages()) {
             for (IViewReference viewReference : page.getViewReferences()) {
-                System.out.println("  checking viewpart: " + viewReference.getPartName());
+                log(debug, "  checking viewpart: " + viewReference.getPartName());
                 if (predicate.matches(viewReference))
                     result.add(new ViewPartAccess((ViewPart)viewReference.getView(restore)));
             }
@@ -145,7 +145,7 @@ public class WorkbenchWindowAccess extends Access {
 
         for (IWorkbenchPage page : workbenchWindow.getPages()) {
             for (IEditorReference editorReference : page.getEditorReferences()) {
-                System.out.println("  checking editorpart: " + editorReference.getTitle());
+                log(debug, "  checking editorpart: " + editorReference.getTitle());
                 if (predicate.matches(editorReference))
                     result.add((EditorPartAccess)createAccess(editorReference.getEditor(restore)));
             }

@@ -11,7 +11,7 @@ import com.simulcraft.test.gui.access.Access;
 
 
 public abstract class GUITestCase extends TestCase {
-	private final static boolean debug = true;
+	private final static boolean debug = false;
 	
 	private Throwable testThrowable;
 	
@@ -40,8 +40,7 @@ public abstract class GUITestCase extends TestCase {
 		Throwable throwable = new Throwable();
 		String testName = throwable.getStackTrace()[1].getMethodName();
 		
-		if (debug)
-			System.out.println("Starting test: " + testName);
+		Access.log(debug, "Starting test: " + testName);
 
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
@@ -60,8 +59,7 @@ public abstract class GUITestCase extends TestCase {
 		while (thread.isAlive())
 			Display.getCurrent().readAndDispatch();
 
-		if (debug)
-			System.out.println("Finished test: " + testName);
+		Access.log(debug, "Finished test: " + testName);
 
 		if (testThrowable != null)
 			throw testThrowable;
@@ -107,9 +105,9 @@ public abstract class GUITestCase extends TestCase {
 				
 			if (debug) {
 				if (hasBeenRunOnce)
-					System.out.println("Rerunning step");
+					Access.log(debug, "Rerunning step");
 				else
-					System.out.println("Running step");
+				    Access.log(debug, "Running step");
 			}
 
 			stepThrowables[0] = null;
@@ -123,13 +121,12 @@ public abstract class GUITestCase extends TestCase {
 					catch (Throwable t) {
 						// just store the exception for later use and ignore it for now
 						stepThrowables[0] = t;
-						System.out.println("Caught: " + t.getClass().getSimpleName() + ": " + t.getMessage());
+						Access.log(debug, "Caught: " + t.getClass().getSimpleName() + ": " + t.getMessage());
 					}
 				}
 			});
 
-			if (debug)
-				System.out.println("Waiting to processing events");
+			Access.log(debug, "Waiting to processing events");
 
 			waitUntilEventQueueBecomesEmpty();		
 
@@ -142,16 +139,14 @@ public abstract class GUITestCase extends TestCase {
 			hasBeenRunOnce = true;
 		}
 
-		if (debug)
-			System.out.println("Step failed");
+		    Access.log(debug, "Step failed");
 
 		// the special WorkspaceAdvisor will let the exception go up through readAndDispatch event loops and unwind the
 		// stack until the top level test code is reached, see above
 		stepThrowables[0] = new TestException(firstThrowable);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				if (debug)
-					System.out.println("Rethrowing exception from step: " + stepThrowables[0]);
+			    Access.log(debug, "Rethrowing exception from step: " + stepThrowables[0]);
 
 				// TODO: this does not hide popup menus since the code doesn't use try/catch/finally there and will not hide
 				// the popup menu upon receiving an exception

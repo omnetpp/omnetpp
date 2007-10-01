@@ -30,7 +30,7 @@ public class MenuAccess extends WidgetAccess {
 	 */
 	@InUIThread
 	public MenuAccess activateMenuItemWithMouse(String label) {
-		System.out.println("Activating menu item: " + label);
+		log(debug, "Activating menu item: " + label);
 		return findMenuItemByLabel(label).activateWithMouseClick();
 	}
 
@@ -96,7 +96,7 @@ public class MenuAccess extends WidgetAccess {
 // the following code searches in the menus recursively -- retained just in case it might be needed somewhere...
 //	@InUIThread
 //	public MenuAccess activateMenuItemWithMouse_Recursive(String label) {
-//		System.out.println("Activating menu item: " + label);
+//		printIf(debug, "Activating menu item: " + label);
 //		return findMenuItemByLabelRecursive(label).activateWithMouseClick();
 //	}
 //
@@ -120,13 +120,13 @@ public class MenuAccess extends WidgetAccess {
 //	protected void collectMenuItemsRecursive(Menu menu, IPredicate predicate, List<MenuItem> resultMenuItems) {
 //		for (MenuItem menuItem : menu.getItems()) {
 //			if (debug)
-//				System.out.println("Trying to collect menu item: " + menuItem.getText());
+//				printIf(debug, "Trying to collect menu item: " + menuItem.getText());
 //
 //			if (menuItem.getMenu() != null)
 //				collectMenuItemsRecursive(menuItem.getMenu(), predicate, resultMenuItems);
 //
 //			if (predicate.matches(menuItem)) {
-//				System.out.println("--> matches: " + menuItem.getText());
+//				printIf(debug, "--> matches: " + menuItem.getText());
 //				resultMenuItems.add(menuItem);
 //			}
 //		}

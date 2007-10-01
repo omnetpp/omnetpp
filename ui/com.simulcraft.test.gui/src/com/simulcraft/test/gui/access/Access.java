@@ -40,7 +40,7 @@ public class Access
 	
     public static double delayBetweenPostEvents;
 
-    protected final static boolean debug = true;
+    public static boolean debug = false;
     
     protected static ArrayList<IAccessFactory> accessFactories = new ArrayList<IAccessFactory>();
     
@@ -57,6 +57,11 @@ public class Access
                 return Class.forName("com.simulcraft.test.gui.access." + instanceClass.getSimpleName() + "Access");
             }
 	    });
+	}
+
+    public static void log(boolean condition, String text) {
+	    if (condition)
+	        System.out.println(text);
 	}
 	
 	public static void addAccessFactory(IAccessFactory factory) {
@@ -107,7 +112,7 @@ public class Access
 				Shell shell = (Shell)object;
 
 				if (debug)
-					System.out.println("Trying to collect shell: " + shell.getText());
+					log(debug, "Trying to collect shell: " + shell.getText());
 
 				return shell.getText().matches(title);
 			}
@@ -118,12 +123,12 @@ public class Access
 	public static void postEvent(Event event) {
         Shell activeShell = getDisplay().getActiveShell();
 		if (debug)
-			System.out.println("Active shell at post event is " + activeShell);
+			log(debug, "Active shell at post event is " + activeShell);
 		Assert.assertTrue("no active shell", activeShell != null);
         activeShell.forceActive();
 
 		if (debug)
-			System.out.println("Posting event: " + event);
+			log(debug, "Posting event: " + event);
 
 		Assert.assertTrue(getDisplay().post(event));
 
@@ -141,14 +146,14 @@ public class Access
 	@InUIThread
 	public static void processEvents() {
 		if (debug)
-			System.out.println("Processing events started");
+			log(debug, "Processing events started");
 
 		while (getDisplay().readAndDispatch())
 			if (debug)
-				System.out.println("Processed an event");
+				log(debug, "Processed an event");
 
 		if (debug)
-			System.out.println("Processing events finished");
+			log(debug, "Processing events finished");
 	}
 
 	@NotInUIThread
@@ -510,16 +515,16 @@ public class Access
 
 		System.out.println(bars.length + " menubars, "+popups.length + " popup menus, " + items.length + " menu items");
 		for (Menu bar : bars) {
-			System.out.println("  menubar: " + bar);
+		    System.out.println("  menubar: " + bar);
 			if (bar != null)
 				for (MenuItem item : bar.getItems())
-					System.out.println("    " + item.toString());
+				    System.out.println("    " + item.toString());
 		}
 		for (Menu popup : popups) {
-			System.out.println("  popup: " + popup);
+		    System.out.println("  popup: " + popup);
 			if (popup != null)
 				for (MenuItem item : popup.getItems())
-					System.out.println("    " + item.toString());
+				    System.out.println("    " + item.toString());
 		}
 	}
 
@@ -529,7 +534,7 @@ public class Access
 	 */
 	@InUIThread
 	public static void dumpWidgetHierarchy() {
-		System.out.println("display-root");
+	    System.out.println("display-root");
 		for (Shell shell : Display.getDefault().getShells())
 			dumpWidgetHierarchy(shell, 1);
 	}
@@ -540,7 +545,7 @@ public class Access
 	}
 
 	protected static void dumpWidgetHierarchy(Control control, int level) {
-		System.out.println(StringUtils.repeat("  ", level) + control.toString());
+		log(debug, StringUtils.repeat("  ", level) + control.toString());
 		
 		if (control.getMenu() != null)
 			dumpMenu(control.getMenu(), level);
@@ -556,7 +561,7 @@ public class Access
 	
 	protected static void dumpMenu(Menu menu, int level) {
 		for (MenuItem menuItem : menu.getItems()) {
-			System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());
+		    System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());
 
 			if (menuItem.getMenu() != null)
 				dumpMenu(menuItem.getMenu(), level + 1);

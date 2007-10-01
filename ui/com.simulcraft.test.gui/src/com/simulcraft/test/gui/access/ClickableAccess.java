@@ -45,7 +45,7 @@ public class ClickableAccess
 	    Point p = Display.getCurrent().getCursorLocation();
 	    if (p.x != x || p.y != y) {
 	        if (smoothMouseMovement) {
-	            System.out.println("moving mouse smoothly from "+p+" to "+new Point(x,y));
+	            log(debug, "moving mouse smoothly from "+p+" to "+new Point(x,y));
                 int steps = max(abs(x-p.x), abs(y-p.y));
 	            if (steps > mouseMoveMaxSteps) steps = mouseMoveMaxSteps;
 	            int stepMillis = max( (int)(mouseMoveDurationMillis / steps), 1);
