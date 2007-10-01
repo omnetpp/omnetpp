@@ -6,10 +6,13 @@ import org.omnetpp.inifile.editor.form.InifileFormEditor;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.NotInUIThread;
 import com.simulcraft.test.gui.util.Predicate;
 
+//XXX not sure we really need this class. All method could just be added into InifileEditorAccess
 public class InifileFormEditorAccess
     extends CompositeAccess
 {
@@ -43,6 +46,44 @@ public class InifileFormEditorAccess
             return (CompositeAccess)createAccess(activeFormPage);
         else 
             return activateCategoryPage(category);
+    }
+
+    @NotInUIThread
+    public void createSectionByDialog(String sectionName, String description, String baseSection, String networkName) {
+        CompositeAccess sectionsPage = ensureActiveCategoryPage("Sections");
+        sectionsPage.findButtonWithLabel("New.*").click();
+        ShellAccess dialog = WorkbenchWindowAccess.findShellByTitle("New Section");
+        fillSectionDialog(dialog, sectionName, description, baseSection, networkName);
+    }
+
+    @NotInUIThread
+    public void editSectionByDialog(String sectionName, boolean usingContextMenu, 
+            String newSectionName, String description, String baseSection, String networkName) {
+        CompositeAccess sectionsPage = ensureActiveCategoryPage("Sections");
+        TreeAccess sectionsTree = sectionsPage.findTree();
+        String sectionLabel = (sectionName.equals("General") ? sectionName : "Config "+sectionName) + "\\b.*";
+        if (usingContextMenu) {
+            sectionsTree.findTreeItemByContent(sectionLabel).chooseFromContextMenu("Edit.*");
+        }
+        else {
+            sectionsTree.findTreeItemByContent(sectionLabel).click();
+            sectionsPage.findButtonWithLabel("Edit.*").click();
+        }
+        ShellAccess dialog = WorkbenchWindowAccess.findShellByTitle(".*Edit.* Section");
+        fillSectionDialog(dialog, newSectionName, description, baseSection, networkName);
+    }
+
+    @NotInUIThread
+    public static void fillSectionDialog(ShellAccess dialog, String sectionName, String description, String baseSection, String networkName) {
+        if (sectionName != null)
+            dialog.findTextAfterLabel("Section Name.*").clickAndTypeOver(sectionName);
+        if (description != null)
+            dialog.findTextAfterLabel("Description.*").clickAndTypeOver(description);
+        if (baseSection != null)
+            dialog.findComboAfterLabel("Fall back.*").selectItem(".*\\b"+baseSection);
+        if (networkName != null)
+            dialog.findComboAfterLabel("NED Network.*").clickAndTypeOver(networkName);
+        dialog.findButtonWithLabel("OK").click();
     }
 
 }

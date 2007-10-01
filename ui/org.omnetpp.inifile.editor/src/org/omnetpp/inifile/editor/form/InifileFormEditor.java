@@ -55,7 +55,7 @@ public class InifileFormEditor extends Composite {
 
 	protected InifileEditor inifileEditor = null;  // backreference to the containing editor
 	private TreeViewer treeViewer;
-	private Composite form;
+	private Composite formContainer;
 	private FormPage formPage;
 
 	public InifileFormEditor(Composite parent, InifileEditor inifileEditor) {
@@ -77,9 +77,9 @@ public class InifileFormEditor extends Composite {
 		sashForm.setBackground(BGCOLOR);
 
 		treeViewer = createTreeViewer(sashForm);
-		form = new Composite(sashForm, SWT.BORDER);
-		form.setBackground(BGCOLOR);
-		form.setLayout(new FillLayout());
+		formContainer = new Composite(sashForm, SWT.BORDER);
+		formContainer.setBackground(BGCOLOR);
+		formContainer.setLayout(new FillLayout());
 		sashForm.setWeights(new int[] {1,4});
 
         if (TestSupport.enableGuiTest)
@@ -115,10 +115,12 @@ public class InifileFormEditor extends Composite {
 		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
+			    if (isDisposed()) 
+			        return;
 				if (DUMP_FORGOTTEN_CONFIG_KEYS)
 					dumpForgottenConfigKeys(); // maintenance code
 				IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
-				String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE; 
+				String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE;
 				showCategoryPage(initialPage);
 			}
 		});
@@ -169,12 +171,12 @@ public class InifileFormEditor extends Composite {
 
 		// create new page
 		if (category.equals(PARAMETERS_PAGE))
-			formPage = new ParametersPage(form, inifileEditor);
+			formPage = new ParametersPage(formContainer, inifileEditor);
 		else if (category.equals(SECTIONS_PAGE))
-			formPage = new SectionsPage(form, inifileEditor);
+			formPage = new SectionsPage(formContainer, inifileEditor);
 		else
-			formPage = new GenericConfigPage(form, category, inifileEditor);
-		form.layout();
+			formPage = new GenericConfigPage(formContainer, category, inifileEditor);
+		formContainer.layout();
 		return formPage;
 	}
 

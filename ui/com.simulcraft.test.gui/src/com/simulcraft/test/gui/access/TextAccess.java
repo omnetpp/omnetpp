@@ -28,6 +28,12 @@ public class TextAccess extends ControlAccess
 	}
 
     @InUIThread
+    public void assertTextContent(String regex) {
+        Assert.assertTrue("text control content does not match "+regex, getTextContent().matches(regex));
+    }
+
+    
+    @InUIThread
     public void typeOver(String content) {
         assertEnabled();
         assertEditable();

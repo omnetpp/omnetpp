@@ -4,6 +4,8 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.widgets.Display;
 
+import com.simulcraft.test.gui.access.Access;
+
 /**
  * Aspect for manipulating the GUI from JUnit test methods running 
  * in a background thread.
@@ -29,13 +31,11 @@ public aspect UIThread {
 	Object around(): execution(@InUIThread * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
-	        if (debug)
-	            System.out.println("AJ: doing " + method + " (already in UI thread)");
+	        Access.log(debug, "AJ: doing " + method + " (already in UI thread)");
 	    	return proceed();
 	    }
 	    else {
-	        if (debug)
-	            System.out.println("AJ: doing in UI thread: " + method);
+	        Access.log(debug, "AJ: doing in UI thread: " + method);
 	    	return GUITestCase.runStepWithTimeout(RETRY_TIMEOUT, new GUITestCase.Step() {
 	    		public Object runAndReturn() {
 	    			return proceed();
@@ -56,8 +56,7 @@ public aspect UIThread {
 	void around(final GUITestCase t): target(t) && (execution(public void test*()) || 
 			execution(void setUp()) || execution(void tearDown())) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
-	    if (debug)
-	        System.out.println("AJ: running test case: " + method);
+	    Access.log(debug, "AJ: running test case: " + method);
 	    try {
 	    	t.runTest(t.new Test() {
 	    		public void run() throws Exception {

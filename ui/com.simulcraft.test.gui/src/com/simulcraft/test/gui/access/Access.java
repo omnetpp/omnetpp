@@ -110,10 +110,7 @@ public class Access
 		return new ShellAccess((Shell)findObject(getDisplay().getShells(), new IPredicate() {
 			public boolean matches(Object object) {
 				Shell shell = (Shell)object;
-
-				if (debug)
-					log(debug, "Trying to collect shell: " + shell.getText());
-
+				log(debug, "Trying to collect shell: " + shell.getText());
 				return shell.getText().matches(title);
 			}
 		}));
@@ -122,13 +119,11 @@ public class Access
 	@InUIThread
 	public static void postEvent(Event event) {
         Shell activeShell = getDisplay().getActiveShell();
-		if (debug)
-			log(debug, "Active shell at post event is " + activeShell);
+        log(debug, "Active shell at post event is " + activeShell);
 		Assert.assertTrue("no active shell", activeShell != null);
         activeShell.forceActive();
 
-		if (debug)
-			log(debug, "Posting event: " + event);
+        log(debug, "Posting event: " + event);
 
 		Assert.assertTrue(getDisplay().post(event));
 
@@ -145,15 +140,12 @@ public class Access
 
 	@InUIThread
 	public static void processEvents() {
-		if (debug)
-			log(debug, "Processing events started");
+	    log(debug, "Processing events started");
 
-		while (getDisplay().readAndDispatch())
-			if (debug)
-				log(debug, "Processed an event");
+	    while (getDisplay().readAndDispatch())
+		    log(debug, "Processed an event");
 
-		if (debug)
-			log(debug, "Processing events finished");
+		log(debug, "Processing events finished");
 	}
 
 	@NotInUIThread
@@ -498,7 +490,19 @@ public class Access
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
 	}
 
-	/**
+    public static int findString(String[] array, String regex) {
+        int index = -1;
+        for (int i=0; i<array.length; i++) {
+            if (array[i].matches(regex)) {
+                Assert.assertTrue("more than one match found for string "+regex, index == -1);
+                index = i;
+            }
+        }
+        Assert.assertTrue("more than one match found for string "+regex, index != -1);
+        return index;
+    }
+
+    /**
 	 * A failed attempt to dump all active popup menus, using the private fields of Display.
 	 * Unfortunately, it's all nulls in the arrays. (This is due to runPopups() running
 	 * before all syncExec()/asyncExec() code...)

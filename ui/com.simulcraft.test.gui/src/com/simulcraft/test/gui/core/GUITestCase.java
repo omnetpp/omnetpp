@@ -103,13 +103,7 @@ public abstract class GUITestCase extends TestCase {
 			if (hasBeenRunOnce)
 				Access.sleep(0.5);
 				
-			if (debug) {
-				if (hasBeenRunOnce)
-					Access.log(debug, "Rerunning step");
-				else
-				    Access.log(debug, "Running step");
-			}
-
+            Access.log(debug, hasBeenRunOnce ? "Rerunning step" : "Running step");
 			stepThrowables[0] = null;
 
 			Display.getDefault().syncExec(new Runnable() {

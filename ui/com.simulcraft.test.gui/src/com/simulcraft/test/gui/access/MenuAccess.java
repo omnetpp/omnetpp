@@ -119,14 +119,13 @@ public class MenuAccess extends WidgetAccess {
 //
 //	protected void collectMenuItemsRecursive(Menu menu, IPredicate predicate, List<MenuItem> resultMenuItems) {
 //		for (MenuItem menuItem : menu.getItems()) {
-//			if (debug)
-//				printIf(debug, "Trying to collect menu item: " + menuItem.getText());
+//				log(debug, "Trying to collect menu item: " + menuItem.getText());
 //
 //			if (menuItem.getMenu() != null)
 //				collectMenuItemsRecursive(menuItem.getMenu(), predicate, resultMenuItems);
 //
 //			if (predicate.matches(menuItem)) {
-//				printIf(debug, "--> matches: " + menuItem.getText());
+//				log(debug, "--> matches: " + menuItem.getText());
 //				resultMenuItems.add(menuItem);
 //			}
 //		}
