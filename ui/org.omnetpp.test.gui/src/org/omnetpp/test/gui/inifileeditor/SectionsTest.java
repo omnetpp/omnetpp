@@ -64,7 +64,6 @@ public class SectionsTest extends InifileEditorTestCase {
 
     public void testManySectionsWithGeneral() throws Exception {
         checkSectionsTreeViewContent(
-                "[General]\n" + 
                 "[Config Apple]\n" + 
                 "[Config GreenApple]\n" +
                 "extends = Apple\n" +
@@ -90,12 +89,45 @@ public class SectionsTest extends InifileEditorTestCase {
                                 nw("Banana"))));
     }
 
+    public void testSectionCycle() throws Exception {
+        // test that a cycle in the section inheritance chain (forbidden) doesn't crash the editor
+        checkSectionsTreeViewContent(
+                "[Config Foo]\n" + 
+                "extends = Bar\n" +
+                "[Config Bar]\n" +
+                "extends = Foo\n",
+                toArray(
+                        nw("General"), 
+                        nw("Foo"),
+                        nw("Bar")));
+    }
+
+    public void testMissingBaseSection() throws Exception {
+        // test that a missing base section doesn't confuse the editor
+        checkSectionsTreeViewContent(
+                "[Config Foo]\n" + 
+                "extends = Missing\n",
+                toArray(
+                        nw("General", 
+                                nw("Foo"))));
+    }
+
+    public void testDuplicateSection() throws Exception {
+        // test that a missing base section doesn't confuse the editor
+        checkSectionsTreeViewContent(
+                "[Config Duplicate]\n" + 
+                "[Config Foo]\n" + 
+                "[Config Duplicate]\n" + 
+                "extends = Foo\n",
+                toArray(
+                        nw("General", 
+                                nw("Foo",
+                                        nw("Duplicate")))));
+    }
+
     //TODO:
-    //   many sections
-    //   cycle in section inheritance
-    //   nonexistent base section
     // in the above tests: check that sections appear on the Parameters page as well
-    //  check label (inculdes network, descriotionm etc)
+    //  check label (includes network, descriotionm etc)
     //  network inheritance
     //  extends=General yes/no, general section yes/no
     //  General extends something (bogus)
