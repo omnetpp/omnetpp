@@ -4,7 +4,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -48,23 +47,9 @@ public class ControlAccess extends ClickableWidgetAccess
 		return getControl().getMenu();
 	}
 
-	@InUIThread
 	public void typeIn(String text) {
 		assertHasFocus();
-
-		for (int i = 0; i < text.length(); i++) {
-			char character = text.charAt(i);
-			boolean holdShift = Character.isUpperCase(character);
-
-			// TODO: these are kind of a hack
-			// but for example if we don't hold the shift down then we get ';' instead of ':'
-			if (character == ':' || character == '{' || character == '}') 
-				holdShift = true;
-			else if (character == '\n')
-				character = '\r';
-			
-			pressKey(Character.toLowerCase(character), holdShift ? SWT.SHIFT : SWT.NONE);
-		}
+		pressKeySequence(text);
 	}
 
 	@InUIThread

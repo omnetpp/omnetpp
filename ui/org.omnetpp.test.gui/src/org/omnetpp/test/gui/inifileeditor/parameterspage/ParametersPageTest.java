@@ -1,8 +1,9 @@
-package org.omnetpp.test.gui.inifileeditor;
+package org.omnetpp.test.gui.inifileeditor.parameterspage;
 
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.InifileEditorAccess;
 import org.omnetpp.test.gui.access.InifileFormEditorAccess;
+import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.ComboAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
@@ -32,6 +33,7 @@ public class ParametersPageTest extends InifileEditorTestCase {
     }
 
     public void testSectionFallbacks() throws Exception {
+        // check combo contents, and that tree always contains section fallback chain
         prepareTest(
                 "[General]\n **.par1 = 100\n" +
         		"[Config Foo]\n **.par2 = 200\n" +

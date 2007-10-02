@@ -1,6 +1,7 @@
-package org.omnetpp.test.gui.inifileeditor;
+package org.omnetpp.test.gui.inifileeditor.sectionspage;
 
 import org.eclipse.swt.SWT;
+import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TreeItemAccess;

@@ -175,6 +175,23 @@ public class Access
 		return event;
 	}
 
+    @InUIThread
+    public void pressKeySequence(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            char character = text.charAt(i);
+            boolean holdShift = Character.isUpperCase(character);
+
+            // TODO: these are kind of a hack
+            // but for example if we don't hold the shift down then we get ';' instead of ':'
+            if (character == ':' || character == '{' || character == '}') 
+                holdShift = true;
+            else if (character == '\n')
+                character = '\r';
+            
+            pressKey(Character.toLowerCase(character), holdShift ? SWT.SHIFT : SWT.NONE);
+        }
+    }
+
 	@InUIThread
 	public void pressEnter() {
 		pressKey(SWT.KEYPAD_CR);

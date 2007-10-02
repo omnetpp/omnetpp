@@ -1,4 +1,6 @@
-package org.omnetpp.test.gui.inifileeditor;
+package org.omnetpp.test.gui.inifileeditor.sectionspage;
+
+import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.TreeAccess;
 

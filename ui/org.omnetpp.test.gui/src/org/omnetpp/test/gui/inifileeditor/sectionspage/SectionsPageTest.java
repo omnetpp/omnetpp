@@ -1,8 +1,9 @@
-package org.omnetpp.test.gui.inifileeditor;
+package org.omnetpp.test.gui.inifileeditor.sectionspage;
 
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.InifileEditorAccess;
 import org.omnetpp.test.gui.access.InifileFormEditorAccess;
+import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
@@ -136,10 +137,8 @@ public class SectionsPageTest extends InifileEditorTestCase {
     //  General extends something (bogus)
 
     // TODO:
-    //   create, edit section by dialog (Done: SectionDialogText)
-    //   delete section
-    //   move by drag&drop
-    //   copy/paste (if works)
+    //   "goto parameters"
+    //   "add missing parameters"
 
     // TODO:
     //  check tooltip, after F2

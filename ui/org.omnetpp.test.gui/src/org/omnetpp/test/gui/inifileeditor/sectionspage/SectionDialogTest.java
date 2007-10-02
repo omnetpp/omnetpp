@@ -1,6 +1,7 @@
-package org.omnetpp.test.gui.inifileeditor;
+package org.omnetpp.test.gui.inifileeditor.sectionspage;
 
 import org.omnetpp.test.gui.access.InifileFormEditorAccess;
+import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 public class SectionDialogTest extends InifileEditorTestCase {
 
