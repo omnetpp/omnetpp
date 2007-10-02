@@ -1,38 +1,60 @@
 package org.omnetpp.test.gui.inifileeditor;
 
-import org.omnetpp.test.gui.access.InifileEditorAccess;
 import org.omnetpp.test.gui.access.InifileFormEditorAccess;
 
-import com.simulcraft.test.gui.access.CompositeAccess;
-import com.simulcraft.test.gui.access.TreeAccess;
-
 public class SectionDialogTest extends InifileEditorTestCase {
-    //TODO finish
 
     private void prepareTest(String content) throws Exception {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
     }
 
-    public void testCreateSection() throws Exception {
-        // TODO: create one (!) section, and check the result in text mode
-        prepareTest("");
-        InifileEditorAccess inifileEditor = findInifileEditor();
-        InifileFormEditorAccess formEditor = inifileEditor.ensureActiveFormEditor();
-        CompositeAccess sectionsPage = formEditor.activateCategoryPage("Sections");
-        
-        formEditor.createSectionByDialog("Foo", "some foo", null, null);
-        formEditor.createSectionByDialog("General", null, null, null);
-        formEditor.createSectionByDialog("Bar", "some bar", null, "BarNetwork");
-        formEditor.createSectionByDialog("Maz", "some maz", "Bar", null);
-
-        //TODO test contents
-        TreeAccess sectionsTree = sectionsPage.findTree();
-        //sectionsTree.assertContent(trees);
-        //...
-        
-        formEditor.editSectionByDialog("Bar", false, "Bar2", null, null, null);
-        formEditor.editSectionByDialog("Bar2", true, "Bar3", null, null, null);
+    private InifileFormEditorAccess getFormEditor() {
+        return findInifileEditor().ensureActiveFormEditor();
     }
 
+    private void assertTextEditorContentMatches(String content) {
+        findInifileEditor().ensureActiveTextEditor().assertContentIgnoringWhiteSpace(content);
+    }
+
+    private String makeSectionContent(String sectionName, String description, String baseSection, String networkName) {
+        String result = "[" + (sectionName.equals("General") ? "" : "Config ") + sectionName + "]\n";
+        if (baseSection != null)
+            result += "extends = " + baseSection + "\n";
+        if (description != null)
+            result += "description = \"" + description + "\"\n";
+        if (networkName != null)
+            result += "network = " + networkName + "\n";
+        return result;
+    }
+
+    public void testCreateBareSection() throws Exception {
+        prepareTest("");
+        getFormEditor().createSectionByDialog("Foo", null, null, null);
+        assertTextEditorContentMatches(makeSectionContent("Foo", null, null, null));
+    }
+    
+    public void testCreateFullSection() throws Exception {
+        prepareTest("[Config Bar]\n");
+        getFormEditor().createSectionByDialog("Foo", "some foo", "Bar", "FooNetwork");
+        assertTextEditorContentMatches("[Config Bar]\n" + makeSectionContent("Foo", "some foo", "Bar", "FooNetwork"));
+    }
+
+    public void testCreateBareGeneralSection() throws Exception {
+        prepareTest("");
+        getFormEditor().createSectionByDialog("General", null, null, null);
+        assertTextEditorContentMatches(makeSectionContent("General", null, null, null));
+    }
+    
+    public void testCreateFullGeneralSection() throws Exception {
+        prepareTest("");
+        getFormEditor().createSectionByDialog("General", "something general", null, "GeneralNetwork");
+        assertTextEditorContentMatches(makeSectionContent("General", "something general", null, "GeneralNetwork"));
+    }
+    
+    //TODO edit section
+    //TODO rename section
+    //TODO test that sections causing cycles are not offered
+    //TODO test that duplicate names are not allowed
+    //TODO test content assist in network editfield
 }

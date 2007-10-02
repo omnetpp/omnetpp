@@ -136,7 +136,7 @@ public class SectionsTest extends InifileEditorTestCase {
     //  General extends something (bogus)
 
     // TODO:
-    //   create, edit section by dialog
+    //   create, edit section by dialog (Done: SectionDialogText)
     //   delete section
     //   move by drag&drop
     //   copy/paste (if works)

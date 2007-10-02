@@ -4,12 +4,8 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
-import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
-import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
-import com.simulcraft.test.gui.access.TreeAccess;
-import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 
 public class InifileEditorAccess
     extends MultiPageEditorPartAccess

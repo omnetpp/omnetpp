@@ -497,4 +497,25 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 			return dictionaryCompare(first, second);
 		}
     }
+    
+    /**
+     * Tests whether two strings are equal after aggressive whitespace normalization.
+     * @see normalizeWhiteSpace()
+     */
+    public static boolean areEqualIgnoringWhiteSpace(String text1, String text2) {
+        return normalizeWhiteSpace(text1).equals(normalizeWhiteSpace(text2));
+    }
+
+    public static String normalizeWhiteSpace(String text) {
+        // zap indentation, end-line whitespaces and blank lines: any whitespace 
+        // sequence containing "\n" becomes a single "\n"
+        text = text.replaceAll("(?s)\\s*\\n\\s*", "\n");
+        // replace remaining whitespace sequences with a space each
+        text = text.replaceAll("(?s)[ \t\f]+", " ");
+        // throw out leading/trailing whitespace altogether
+        text = text.replaceAll("(?s)^\\s*", "");
+        text = text.replaceAll("(?s)\\s*$", "");
+        return text;
+    }
+
 }

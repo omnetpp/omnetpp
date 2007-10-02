@@ -3,14 +3,11 @@ package com.simulcraft.test.gui.access;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.simulcraft.test.gui.core.InUIThread;
-
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 
-import sun.security.action.GetLongAction;
+import com.simulcraft.test.gui.core.InUIThread;
 
 public class StyledTextAccess extends CompositeAccess
 {
@@ -23,7 +20,7 @@ public class StyledTextAccess extends CompositeAccess
 	}
 
 	@InUIThread
-	public String getText() {
+	public String getTextContent() {
 		return getStyledText().getText();
 	}
 
@@ -45,7 +42,7 @@ public class StyledTextAccess extends CompositeAccess
 
     @InUIThread
     public int getOffsetAfter(String patternString) {
-        String text = getText();
+        String text = getTextContent();
 		Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);
 		boolean matches = matcher.matches();

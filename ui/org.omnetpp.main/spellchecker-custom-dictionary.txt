@@ -226,3 +226,4 @@ mac
 cyan
 keypresses
 reindenting
+whitespaces

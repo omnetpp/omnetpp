@@ -59,7 +59,7 @@ public abstract class FormPage extends Composite {
 
 	private DelayedJob delayedRereadJob = new DelayedJob(1000) {
 		public void run() {
-		    // reread if page is still displayed
+		    // reread if page is still displayed (and exists)
 		    if (inifileEditor.isFormPageDisplayed() && !FormPage.this.isDisposed() && 
 		            inifileEditor.getFormEditor().getActiveCategoryPage()==FormPage.this) {
 		        System.out.println("delayedJob: rereading form page");

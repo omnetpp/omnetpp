@@ -31,7 +31,7 @@ public class PageChangeTest
         GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
         graphicalNedEditor.createSimpleModuleWithPalette("NewSimpleModule");
         TextEditorAccess textEditorAccess = nedEditor.ensureActiveTextEditor();
-        Assert.assertTrue(textEditorAccess.findStyledText().getText().matches("(?s).*NewSimpleModule.*"));
+        Assert.assertTrue(textEditorAccess.findStyledText().getTextContent().matches("(?s).*NewSimpleModule.*"));
     }
 
     public void testFollowChangesFromTextToGraphical() throws Exception {
