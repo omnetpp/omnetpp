@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import com.simulcraft.test.gui.core.AnimationEffects;
 import com.simulcraft.test.gui.core.InUIThread;
 
 public class ClickableAccess
@@ -101,8 +102,13 @@ public class ClickableAccess
 	@InUIThread
 	public void dragMouseAbsolute(int button, int x, int y, int x2, int y2) {
         moveMouseAbsolute(x, y);
+
         postMouseEvent(SWT.MouseDown, button, x, y);
+
+        AnimationEffects.beginAnimateDragDrop(x, y, x2, y2);
         moveMouseAbsolute(x2, y2);
+        AnimationEffects.endAnimateDragDrop(x, y, x2, y2);
+
         postMouseEvent(SWT.MouseUp, button, x2, y2);
 	}
 
