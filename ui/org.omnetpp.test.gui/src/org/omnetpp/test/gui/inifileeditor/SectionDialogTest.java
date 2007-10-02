@@ -28,32 +28,91 @@ public class SectionDialogTest extends InifileEditorTestCase {
         return result;
     }
 
-    public void testCreateBareSection() throws Exception {
+    public void testCreateSection1() throws Exception {
         prepareTest("");
         getFormEditor().createSectionByDialog("Foo", null, null, null);
         assertTextEditorContentMatches(makeSectionContent("Foo", null, null, null));
     }
     
-    public void testCreateFullSection() throws Exception {
+    public void testCreateSection2() throws Exception {
         prepareTest("[Config Bar]\n");
         getFormEditor().createSectionByDialog("Foo", "some foo", "Bar", "FooNetwork");
         assertTextEditorContentMatches("[Config Bar]\n" + makeSectionContent("Foo", "some foo", "Bar", "FooNetwork"));
     }
 
-    public void testCreateBareGeneralSection() throws Exception {
+    public void testCreateGeneralSection1() throws Exception {
         prepareTest("");
         getFormEditor().createSectionByDialog("General", null, null, null);
         assertTextEditorContentMatches(makeSectionContent("General", null, null, null));
     }
     
-    public void testCreateFullGeneralSection() throws Exception {
+    public void testCreateGeneralSection2() throws Exception {
         prepareTest("");
         getFormEditor().createSectionByDialog("General", "something general", null, "GeneralNetwork");
         assertTextEditorContentMatches(makeSectionContent("General", "something general", null, "GeneralNetwork"));
     }
+
+    public void testEditSection1() throws Exception {
+        // fill in fields
+        prepareTest("[Config Foo]\n[Config Bar]");
+        getFormEditor().editSectionByDialog("Foo", true, null, "some foo", "Bar", "FooNetwork");
+        assertTextEditorContentMatches(makeSectionContent("Foo", "some foo", "Bar", "FooNetwork")+"[Config Bar]\n");
+    }
+
+    public void testEditSection2() throws Exception {
+        // remove (blank out) fields
+        //FIXME fails: cannot null out base section in the dialog, combo doesn't contain blank entry!!!
+        prepareTest(makeSectionContent("Foo", "some foo", "Bar", "FooNetwork")+"[Config Bar]\n");
+        getFormEditor().editSectionByDialog("Foo", true, null, "", "", "");
+        assertTextEditorContentMatches("[Config Foo]\n[Config Bar]\n");
+    }
+
+    public void testRenameSection1() throws Exception {
+        // name must be adjusted in other sections' "extends=" line as well
+        prepareTest(
+                "[Config Foo]\n" +
+                "network = FooNetwork\n" +
+                "[Config Bar]\nextends = Foo\n" +
+                "[Config Baz]\nextends = Foo\n");
+        getFormEditor().editSectionByDialog("Foo", false, "NewFoo", null, null, null);
+        assertTextEditorContentMatches(
+                "[Config NewFoo]\n" +
+                "network = FooNetwork\n" +
+                "[Config Bar]\nextends = NewFoo\n" +
+                "[Config Baz]\nextends = NewFoo\n");
+        //FIXME fails: some extra "null" gets inserted into the file (???)
+    }
+
+    public void testRenameToGeneral() throws Exception {
+        prepareTest(
+                "[Config Foo]\n" +
+                "network = FooNetwork\n" +
+                "[Config Bar]\nextends = Foo\n" +
+                "[Config Baz]\nextends = Foo\n");
+        getFormEditor().editSectionByDialog("Foo", false, "General", null, null, null);
+        assertTextEditorContentMatches(
+                "[General]\n" +
+                "network = FooNetwork\n" +
+                "[Config Bar]\n" +
+                "[Config Baz]\n");
+        //FIXME fails: code gets totally confused (race condition?)
+    }
+
+    public void testRenameGeneral() throws Exception {
+        prepareTest(
+                "[General]\n" +
+                "network = FooNetwork\n" +
+                "[Config Bar]\n" +
+                "[Config Baz]\n");
+        getFormEditor().editSectionByDialog("General", false, "Foo", null, null, null);
+        assertTextEditorContentMatches(
+                "[Config Foo]\n" +
+                "network = FooNetwork\n" +
+                "[Config Bar]\nextends = Foo\n" +
+                "[Config Baz]\nextends = Foo\n");
+        //FIXME fails: code gets totally confused (race condition?)
+    }
     
-    //TODO edit section
-    //TODO rename section
     //TODO test that sections causing cycles are not offered
     //TODO test that duplicate names are not allowed
     //TODO test content assist in network editfield

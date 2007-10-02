@@ -80,7 +80,7 @@ public class InifileFormEditorAccess
         if (description != null)
             dialog.findTextAfterLabel("Description.*").clickAndTypeOver(description);
         if (baseSection != null)
-            dialog.findComboAfterLabel("Fall back.*").selectItem(".*\\b"+baseSection);
+            dialog.findComboAfterLabel("Fall back.*").selectItem(baseSection.equals("") ? "" : ".*\\b"+baseSection);
         if (networkName != null)
             dialog.findComboAfterLabel("NED Network.*").clickAndTypeOver(networkName);
         dialog.findButtonWithLabel("OK").click();

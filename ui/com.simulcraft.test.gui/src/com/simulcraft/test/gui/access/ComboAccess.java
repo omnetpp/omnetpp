@@ -42,8 +42,12 @@ public class ComboAccess extends ControlAccess
         assertEnabled();
         assertEditable();
         assertHasFocus();
+        Combo combo = getCombo();
         pressKey('a', SWT.CONTROL);
-        typeIn(content);
+        if (combo.getText().length() > 0 && content.equals(""))
+            pressKey(SWT.DEL);
+        else
+            typeIn(content);
     }
     
     @NotInUIThread
