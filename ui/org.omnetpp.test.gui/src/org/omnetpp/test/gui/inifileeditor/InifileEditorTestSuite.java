@@ -11,7 +11,7 @@ public class InifileEditorTestSuite
 	    addTestSuite(NewInifileWizardTest.class);
 
 	    // editor
-	    addTestSuite(SectionsTest.class);
+	    addTestSuite(SectionsPageTest.class);
 	    addTestSuite(ConfigTest.class);
 	    addTestSuite(PerObjectConfigTest.class);
 	    addTestSuite(ParametersTest.class);

@@ -7,7 +7,7 @@ import org.omnetpp.test.gui.access.InifileFormEditorAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 
-public class SectionsTest extends InifileEditorTestCase {
+public class SectionsPageTest extends InifileEditorTestCase {
     //TODO finish
 
     private void prepareTest(String content) throws Exception {
