@@ -20,7 +20,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	@InUIThread @Override
 	public void click() {
 		//FIXME we must ensure that the item is visible (i.e. not scrolled off-screen,
-		// or in an un-expanded subtree). same for doubleClick() etc.
+		// or in a collapsed subtree). same for doubleClick() etc.
 		super.click();
 	}
 

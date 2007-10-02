@@ -50,5 +50,15 @@ public abstract class ClickableWidgetAccess
 		for (String label : labelPath.split("\\|"))
 			menuAccess = menuAccess.activateMenuItemWithMouse(label);
 	}
+	
+    @InUIThread
+	public void dragToAbsolute(int x, int y) {
+	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));    
+	}
+
+    @InUIThread
+	public void dragTo(ClickableWidgetAccess target) {
+	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());    
+	}
 
 }

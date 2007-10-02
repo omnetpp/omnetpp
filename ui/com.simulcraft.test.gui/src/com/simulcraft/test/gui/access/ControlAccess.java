@@ -38,7 +38,7 @@ public class ControlAccess extends ClickableWidgetAccess
 		Assert.assertTrue("control not visible", getControl().isVisible());
 	}
 
-	@Override
+	@Override @InUIThread
 	protected Point getAbsolutePointToClick() {
 		return getControl().getParent().toDisplay(getCenter(getControl().getBounds()));
 	}

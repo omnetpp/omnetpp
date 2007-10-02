@@ -66,7 +66,7 @@ public class TreeAccess extends ControlAccess
     	for (TreeItemAccess item : getItemAccesses()) {
     		item.reveal();
     		item.click();
-        	pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE);
+        	pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE); // fully expands the subtree (right arrow or Plus only expands this node)
     	}
     }
 	
@@ -85,7 +85,7 @@ public class TreeAccess extends ControlAccess
 		TreeItem treeItem = (TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
 				TreeItem treeItem = (TreeItem)object;
-				log(debug, "  checking: " + treeItem);
+				log(true/*debug*/, "  checking: " + treeItem);
 				String treeItemContent = treeItem.getText();
 				return treeItemContent.matches(content);
 			}

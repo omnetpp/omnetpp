@@ -92,5 +92,18 @@ public class ClickableAccess
 	public void doubleClickCenterAbsolute(int button, Rectangle rectangle) {
 		doubleClickAbsolute(button, getCenter(rectangle));
 	}
+	   
+	@InUIThread
+	public void dragMouseAbsolute(int button, Point fromPoint, Point toPoint) {
+	    dragMouseAbsolute(button, fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
+	}
+
+	@InUIThread
+	public void dragMouseAbsolute(int button, int x, int y, int x2, int y2) {
+        moveMouseAbsolute(x, y);
+        postMouseEvent(SWT.MouseDown, button, x, y);
+        moveMouseAbsolute(x2, y2);
+        postMouseEvent(SWT.MouseUp, button, x2, y2);
+	}
 
 }
