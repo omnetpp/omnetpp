@@ -17,7 +17,7 @@
 OMNETPP_ROOT = $(OMNETPP_ROOT:\=/)
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-4.0a1
+OMNETPP_VERSION=omnetpp-4.0a2
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
