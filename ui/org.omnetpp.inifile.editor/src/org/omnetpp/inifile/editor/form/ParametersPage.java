@@ -162,8 +162,8 @@ public class ParametersPage extends FormPage {
 					SectionKey item = (SectionKey) element;
 					switch (columnIndex) {
 					case 0: return item.key;
-					case 1: return getInifileDocument().getValue(item.section, item.key); 
-					case 2: return getInifileDocument().getComment(item.section, item.key);
+					case 1: return nullToEmpty(getInifileDocument().getValue(item.section, item.key)); 
+					case 2: return nullToEmpty(getInifileDocument().getComment(item.section, item.key));
 					default: throw new IllegalArgumentException();
 					}
 				}
@@ -258,8 +258,11 @@ public class ParametersPage extends FormPage {
 						}
 					}
 					else if (property.equals("comment")) {
-						if (!nullSafeEquals((String)value, doc.getComment(item.section, item.key))) {
-							doc.setComment(item.section, item.key, (String)value);
+					    String comment = (String)value;
+					    if (comment.equals("")) 
+					        comment = null;  // i.e. don't create empty comment, '#' followed by nothing
+						if (!comment.equals(doc.getComment(item.section, item.key))) {
+							doc.setComment(item.section, item.key, comment);
 							treeViewer.refresh();
 						}
 					}

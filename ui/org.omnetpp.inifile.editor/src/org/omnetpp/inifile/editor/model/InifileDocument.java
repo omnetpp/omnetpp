@@ -56,7 +56,7 @@ public class InifileDocument implements IInifileDocument {
         IFile file;
         int lineNumber; // 1-based
         int numLines;  // ==1 unless line continues on other lines (trailing backslash)
-        String rawComment; // includes leading "#" and preceding whitespace
+        String rawComment; // includes leading "#" and preceding whitespace; NEVER NULL
         Object data;
     };
     static class SectionHeadingLine extends Line {
@@ -546,7 +546,7 @@ public class InifileDocument implements IInifileDocument {
     }
 
     public void setComment(String section, String key, String comment) {
-        setRawComment(section, key, updateComment(getRawComment(section, key), comment));
+        setRawComment(section, key, updateRawComment(getRawComment(section, key), comment));
     }
 
     public String getRawComment(String section, String key) {
@@ -556,7 +556,7 @@ public class InifileDocument implements IInifileDocument {
     public void setRawComment(String section, String key, String rawComment) {
         validateRawComment(rawComment);
         KeyValueLine line = getEditableEntry(section, key);
-        if (!nullSafeEquals(line.rawComment, rawComment)) {
+        if (!line.rawComment.equals(rawComment)) {
             line.rawComment = rawComment; 
             String text = line.key + " = " + line.value + line.rawComment;
             if (!replaceLine(line, text))
@@ -566,21 +566,21 @@ public class InifileDocument implements IInifileDocument {
 
     protected static void validateRawComment(String rawComment) {
         Assert.isTrue(rawComment!=null);
-        Assert.isTrue(rawComment.trim().equals("") || rawComment.matches("^\\s*[#;].*"));
+        Assert.isTrue(rawComment.trim().equals("") || rawComment.matches("^\\s*#.*"));
     }
 
-    protected static String stripCommentPrefix(String comment) {
-        // strip leading whitespace, "#" or ";", and one space if possible
-        return comment.replaceFirst("^\\s*[#;] ?", "");
+    protected static String stripCommentPrefix(String rawComment) {
+        // strip leading whitespace, "#" and one space if possible; return null if no "#"
+        return rawComment.contains("#") ? rawComment.replaceFirst("^\\s*# ?", "") : null;
     }
 
-    protected static String updateComment(String oldRawComment, String newComment) {
-        if (StringUtils.isEmpty(newComment))
+    protected static String updateRawComment(String oldRawComment, String newComment) {
+        if (newComment == null)
             return "";
         if (oldRawComment.trim().equals(""))
             return "  # " + newComment.trim(); // no prefix to preserve
-        String prefix = oldRawComment.replaceFirst("^(\\s*[#;] ?).*", "$1"); // cf with stripCommentPrefix()
-        return prefix + newComment.trim();
+        String prefix = oldRawComment.replaceFirst("^(\\s*# ?).*", "$1"); // cf with stripCommentPrefix()
+        return prefix + newComment;
     }
 
     public void changeKey(String section, String oldKey, String newKey) {
@@ -751,7 +751,7 @@ public class InifileDocument implements IInifileDocument {
     }
 
     public void setSectionComment(String section, String comment) {
-        setRawSectionComment(section, updateComment(getRawSectionComment(section), comment));
+        setRawSectionComment(section, updateRawComment(getRawSectionComment(section), comment));
     }
 
     public String getRawSectionComment(String sectionName) {
@@ -764,7 +764,7 @@ public class InifileDocument implements IInifileDocument {
     public void setRawSectionComment(String sectionName, String rawComment) {
         validateRawComment(rawComment);
         SectionHeadingLine line = getFirstEditableSectionHeading(sectionName);
-        if (!nullSafeEquals(line.rawComment, rawComment)) {
+        if (!line.rawComment.equals(rawComment)) {
             line.rawComment = rawComment; 
             String text = "[" + line.sectionName + "]" + line.rawComment;
             if (!replaceLine(line, text))

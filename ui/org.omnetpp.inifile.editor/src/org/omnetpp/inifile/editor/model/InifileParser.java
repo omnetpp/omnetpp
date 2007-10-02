@@ -139,7 +139,8 @@ public class InifileParser {
 					continue;
 				}
 				String sectionName = m.group(1).trim();
-				String rawComment = m.groupCount()>1 ? m.group(2) : ""; 
+				String rawComment = m.groupCount()>1 ? m.group(2) : "";
+				if (rawComment == null) rawComment = "";
 				callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
 			}
 			else {

@@ -95,29 +95,33 @@ public interface IInifileDocument {
 
 	/** 
 	 * Returns comment for the given key, or null if there's no comment.
-	 * The comment is returned without the leading "# " or "#". 
+	 * The comment is returned without the leading "# " or "#".
+	 * Note: "" means empty comment ("#" followed by nothing.)  
 	 * Throws error if key doesn't exist.
 	 */
 	String getComment(String section, String key);
 
 	/** 
-	 * Sets the comment for an entry. 
+	 * Sets the comment for an entry. Specify null to remove the comment. 
 	 * The comment should be passed without the leading "# " or "#". 
+	 * Note: "" means empty comment ("#" followed by nothing.)  
 	 * Throws error if key doesn't exist, or the entry is readonly.
 	 */
 	void setComment(String section, String key, String comment);
 
 	/** 
-	 * Returns comment for the given key, or null if there's no comment.
-	 * The comment is returned, including the leading "#" and preceding whitespace. 
+	 * Returns the comment for the given key, including the leading "#" and 
+	 * preceding whitespace. Returns "" if there is no comment (i.e. null
+	 * is never returned.) 
 	 * Throws error if key doesn't exist.
 	 */
 	String getRawComment(String section, String key);
 
 	/** 
-	 * Sets the comment for an entry. 
-	 * The comment should be passed with the leading "#" and preceding whitespace. 
-	 * Throws error if key doesn't exist, or the entry is readonly.
+	 * Sets the comment for an entry. The comment should be passed with 
+	 * the leading "#" and preceding whitespace. Specify "" to 
+	 * remove the comment (null is not accepted).
+	 * Throws error if key doesn't exist, the entry is readonly.
 	 */
 	void setRawComment(String section, String key, String comment);
 
@@ -200,16 +204,20 @@ public interface IInifileDocument {
 	LineInfo getSectionLineDetails(String section); 
 	
 	/**
-	 * Returns the comment on the section heading's line. Throws error if section 
-	 * doesn't exist; returns comment of the first heading if there're more than one.
-	 * The comment is returned without the leading "# " or "#". 
+     * Returns comment on the section heading's line, or null if there's no comment.
+     * The comment is returned without the leading "# " or "#".
+     * Note: "" means empty comment ("#" followed by nothing.)  
+     * Throws error if section doesn't exist; returns comment of the first heading 
+     * if there're more than one.
 	 */
 	String getSectionComment(String section);
 
 	/**
 	 * Sets the comment on the section heading's line. 
 	 * Sets the comment of the first heading if there're more than one. 
-	 * The comment should be passed without the leading "# " or "#". 
+	 * The comment should be passed without the leading "# " or "#";
+	 * specify null to remove the comment.
+     * Note: "" means empty comment ("#" followed by nothing.)  
 	 * Throws error if section doesn't exist, or if the section heading line 
 	 * is readonly.
 	 */
@@ -218,7 +226,8 @@ public interface IInifileDocument {
 	/**
 	 * Returns the comment on the section heading's line. Throws error if section 
 	 * doesn't exist; returns comment of the first heading if there's more than one.
-	 * The comment is returned with the leading "#" and preceding whitespace. 
+	 * The comment is returned with the leading "#" and preceding whitespace.
+     * Returns "" if there is no comment (i.e. null is never returned.)  
 	 */
 	String getRawSectionComment(String section);
 
@@ -226,6 +235,7 @@ public interface IInifileDocument {
 	 * Sets the comment on the section heading's line. 
 	 * Sets the comment of the first heading if there're more than one. 
 	 * The comment should be passed with the leading "#" and preceding whitespace. 
+     * Specify "" to remove the comment (null is not accepted.)
 	 * Throws error if section doesn't exist, or if the section heading line 
 	 * is readonly.
 	 */

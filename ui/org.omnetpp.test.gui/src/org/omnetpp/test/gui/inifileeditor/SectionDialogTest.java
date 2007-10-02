@@ -31,7 +31,8 @@ public class SectionDialogTest extends InifileEditorTestCase {
     public void testCreateSection1() throws Exception {
         prepareTest("");
         getFormEditor().createSectionByDialog("Foo", null, null, null);
-        assertTextEditorContentMatches(makeSectionContent("Foo", null, null, null));
+        assertTextEditorContentMatches("[Config Foo]\n");
+        //FIXME fails: cannot close editor at the end. Why on earth...?
     }
     
     public void testCreateSection2() throws Exception {
@@ -80,7 +81,6 @@ public class SectionDialogTest extends InifileEditorTestCase {
                 "network = FooNetwork\n" +
                 "[Config Bar]\nextends = NewFoo\n" +
                 "[Config Baz]\nextends = NewFoo\n");
-        //FIXME fails: some extra "null" gets inserted into the file (???)
     }
 
     public void testRenameToGeneral() throws Exception {
@@ -95,7 +95,7 @@ public class SectionDialogTest extends InifileEditorTestCase {
                 "network = FooNetwork\n" +
                 "[Config Bar]\n" +
                 "[Config Baz]\n");
-        //FIXME fails: code gets totally confused (race condition?)
+        //FIXME fails: "extends=" line don't get removed
     }
 
     public void testRenameGeneral() throws Exception {
@@ -110,7 +110,7 @@ public class SectionDialogTest extends InifileEditorTestCase {
                 "network = FooNetwork\n" +
                 "[Config Bar]\nextends = Foo\n" +
                 "[Config Baz]\nextends = Foo\n");
-        //FIXME fails: code gets totally confused (race condition?)
+        //FIXME fails: extends= doesn't get added to sections
     }
     
     //TODO test that sections causing cycles are not offered
