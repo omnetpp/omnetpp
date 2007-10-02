@@ -69,5 +69,14 @@ public class ComboAccess extends ControlAccess
         assertTextContent(content);
     }
     
+    @InUIThread
+    public void assertContainsItem(String regex) {
+        Assert.assertTrue("combo does not contain item: " + regex, findString(getComboItems(), regex) != -1);
+    }
+
+    @InUIThread
+    public void assertNotContainsItem(String regex) {
+        Assert.assertTrue("combo contains item: " + regex, findString(getComboItems(), regex) == -1);
+    }
 
 }

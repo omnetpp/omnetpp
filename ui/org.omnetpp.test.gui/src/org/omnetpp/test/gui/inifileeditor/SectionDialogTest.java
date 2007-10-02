@@ -114,6 +114,6 @@ public class SectionDialogTest extends InifileEditorTestCase {
     }
     
     //TODO test that sections causing cycles are not offered
-    //TODO test that duplicate names are not allowed
-    //TODO test content assist in network editfield
+    //TODO test that duplicate names are not allowed (OK button gets disabled)
+    //TODO test that content assist works in network editfield
 }
