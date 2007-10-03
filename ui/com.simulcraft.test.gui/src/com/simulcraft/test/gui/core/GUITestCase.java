@@ -35,6 +35,10 @@ public abstract class GUITestCase extends TestCase {
 	 * loop, e.g. inside modal dialogs.
 	 */
 	public void runTest(final Test test) throws Throwable {
+        new KeyboardLayout().testKeyboard();
+        Assert.assertTrue(false);
+
+	    
 		testThrowable = null;
 
 		Throwable throwable = new Throwable();
