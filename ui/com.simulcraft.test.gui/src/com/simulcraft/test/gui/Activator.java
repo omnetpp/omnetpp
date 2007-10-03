@@ -8,7 +8,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.simulcraft.test.gui.core.KeyPressAnimator;
-import com.simulcraft.test.gui.core.KeyboardLayout;
 import com.simulcraft.test.gui.core.MouseClickAnimator;
 
 /**
@@ -20,9 +19,6 @@ public class Activator extends AbstractUIPlugin {
 
     // The shared instance
     private static Activator plugin;
-    
-    private KeyboardLayout keyboardLayout = new KeyboardLayout();
-
     
     /**
      * The constructor
@@ -38,8 +34,6 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-
-        // note: cannot do loadOrTestKeyboardLayout() here, because SWT is not yet ready (sort of)
         
         KeyPressAnimator keyPressAnimator = new KeyPressAnimator();
         Display.getDefault().addFilter(SWT.KeyDown, keyPressAnimator);
@@ -64,35 +58,7 @@ public class Activator extends AbstractUIPlugin {
         return plugin;
     }
 
-    public KeyboardLayout getKeyboardLayout() {
-        return keyboardLayout;
+    public static void logError(Throwable exception) {
+        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, exception.toString(), exception));
     }
-
-    public void logError(Throwable exception) {
-        getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, exception.toString(), exception));
-    }
-    
-    public void loadOrTestKeyboardLayout() {
-        String filename = getStateLocation().append("keyboard-layout").toOSString();
-        try {
-            // exceptions will cause keyboardLayout to remain (or become) empty
-            keyboardLayout.loadMapping(filename);
-        }
-        catch (RuntimeException e) {
-            logError(e); // could not load table
-        }
-
-        // if we couldn't load it, re-test keyboard
-        if (keyboardLayout.isEmpty()) {
-            keyboardLayout.testKeyboard();
-
-            try {
-                keyboardLayout.saveMapping(filename);
-            }
-            catch (RuntimeException e) {
-                logError(e); // could not save the result -- will have to re-test it next time as well
-            }
-        }
-    }
-    
 }

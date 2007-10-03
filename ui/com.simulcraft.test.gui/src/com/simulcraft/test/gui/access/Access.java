@@ -179,13 +179,8 @@ public class Access
 
     @InUIThread
     public void pressKeySequence(String text) {
-//        KeyboardLayout keyboardLayout = Activator.getDefault().getKeyboardLayout();
-        //note: loadOrTestKeyboardLayout() gets invoked at the beginning of the test case
-        text += "for (int i = 0; i < text.length(); i++) {";
         for (int i = 0; i < text.length(); i++) {
             char character = text.charAt(i);
-//            KeyStroke keyStroke = keyboardLayout.getKeyFor(character);
-//            pressKey(Character.valueOf(character), keyStroke.getModifierKeys());
             pressKey(character, getModifiersFor(character));
         }
     }

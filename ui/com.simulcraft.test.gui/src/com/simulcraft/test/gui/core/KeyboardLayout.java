@@ -21,10 +21,12 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
+import com.simulcraft.test.gui.Activator;
 import com.simulcraft.test.gui.access.Access;
 
 /**
- * 
+ * Experimentally detects keyboard layout. Not needed, at least on Windows, because 
+ * Win32 has a VkKeyScan API call.
  * @author Andras
  */
 public class KeyboardLayout {
@@ -141,4 +143,29 @@ public class KeyboardLayout {
             System.out.println(" for "+character+" press "+mapping.get(character));
     }
     
+    
+    public void loadOrTestKeyboardLayout() {
+        String filename = Activator.getDefault().getStateLocation().append("keyboard-layout").toOSString();
+        try {
+            // exceptions will cause keyboardLayout to remain (or become) empty
+            loadMapping(filename);
+        }
+        catch (RuntimeException e) {
+            Activator.logError(e); // could not load table
+        }
+
+        // if we couldn't load it, re-test keyboard
+        if (isEmpty()) {
+            testKeyboard();
+
+            try {
+                saveMapping(filename);
+            }
+            catch (RuntimeException e) {
+                Activator.logError(e); // could not save the result -- will have to re-test it next time as well
+            }
+        }
+    }
+    
+
 }
