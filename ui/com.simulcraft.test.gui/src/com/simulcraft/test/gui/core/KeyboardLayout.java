@@ -13,6 +13,7 @@ import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -53,7 +54,7 @@ public class KeyboardLayout {
         
         final Shell shell = new Shell(SWT.TOOL | SWT.ON_TOP | SWT.APPLICATION_MODAL);
         shell.setSize(200, 20);
-        Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
+        Control text = new Text(shell, SWT.SINGLE | SWT.BORDER);
         shell.setLayout(new FillLayout());
         shell.layout();
         shell.open();
@@ -67,6 +68,7 @@ public class KeyboardLayout {
             }
         });
         
+        long startTime = System.currentTimeMillis();
         mapping = new HashMap<Character, KeyStroke>();
         for (char naturalKey = 32; naturalKey < 127; naturalKey++) {
             if (naturalKey>='A' && naturalKey<='Z') 
@@ -74,6 +76,8 @@ public class KeyboardLayout {
             testKey(naturalKey, 0);
             testKey(naturalKey, SWT.SHIFT);
         }
+        System.out.println("Keyboard tested in " + (System.currentTimeMillis()-startTime) + " millis");
+
         shell.dispose();
     }
 
