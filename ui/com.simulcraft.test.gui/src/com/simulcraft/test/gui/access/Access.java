@@ -8,12 +8,13 @@ import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
-import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.TCHAR;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -28,10 +29,8 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.Activator;
 import com.simulcraft.test.gui.core.EventTracer;
 import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.KeyboardLayout;
 import com.simulcraft.test.gui.core.NotInUIThread;
 
 
@@ -180,12 +179,14 @@ public class Access
 
     @InUIThread
     public void pressKeySequence(String text) {
-        KeyboardLayout keyboardLayout = Activator.getDefault().getKeyboardLayout();
+//        KeyboardLayout keyboardLayout = Activator.getDefault().getKeyboardLayout();
         //note: loadOrTestKeyboardLayout() gets invoked at the beginning of the test case
+        text += "for (int i = 0; i < text.length(); i++) {";
         for (int i = 0; i < text.length(); i++) {
             char character = text.charAt(i);
-            KeyStroke keyStroke = keyboardLayout.getKeyFor(character);
-            pressKey(Character.valueOf(character), keyStroke.getModifierKeys());
+//            KeyStroke keyStroke = keyboardLayout.getKeyFor(character);
+//            pressKey(Character.valueOf(character), keyStroke.getModifierKeys());
+            pressKey(character, getModifiersFor(character));
         }
     }
 
@@ -212,6 +213,25 @@ public class Access
 	@InUIThread
 	public void pressKey(char character, int modifierKeys) {
 		pressKey(character, 0, modifierKeys);
+	}
+
+	public static int getModifiersFor(char ch) {
+	    // see VkKeyScan documentation in the Windows API, and usage in Display.post()
+        short vkKeyScan = OS.VkKeyScan ((short) wcsToMbcs (ch, 0)); //XXX platform specific (Windows only)
+        byte vkModifier = (byte)(vkKeyScan >> 8);
+        int modifier = 0;
+        if ((vkModifier & 1) !=0) modifier |= SWT.SHIFT;
+        if ((vkModifier & 2) !=0) modifier |= SWT.CONTROL;
+        if ((vkModifier & 4) !=0) modifier |= SWT.ALT;
+        return modifier;
+	}
+	
+	private static int wcsToMbcs (char ch, int codePage) {
+	    // from Display (win32)
+	    if (OS.IsUnicode) return ch;
+	    if (ch <= 0x7F) return ch;
+	    TCHAR buffer = new TCHAR (codePage, ch, false);
+	    return buffer.tcharAt (0);
 	}
 
 	@InUIThread
