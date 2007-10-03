@@ -23,10 +23,6 @@ public class NedFileTestCase
 		return (NedEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 	}
 
-	protected void createNewNedFileByWizard() {
-		NedEditorUtils.createNewNedFileByWizard(projectName, fileName);
-	}
-
 	protected void typeIntoTextualNedEditor(String nedSource) {
 		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
 	}

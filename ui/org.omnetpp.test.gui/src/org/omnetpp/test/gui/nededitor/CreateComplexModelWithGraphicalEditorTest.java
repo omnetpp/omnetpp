@@ -5,12 +5,13 @@ import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 import org.omnetpp.test.gui.access.NedEditorAccess;
 
 import com.simulcraft.test.gui.access.TextEditorAccess;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class CreateComplexModelWithGraphicalEditorTest
 	extends NedFileTestCase
 {
 	public void testCreateSimpleModel() throws Throwable {
-		createNewNedFileByWizard();
+		WorkspaceUtils.createFileWithContent(filePath, "");
 		NedEditorAccess nedEditor = findNedEditor();
 		GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");
