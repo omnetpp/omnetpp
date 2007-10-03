@@ -1,10 +1,7 @@
 package com.simulcraft.test.gui;
 
-import java.io.IOException;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -81,11 +78,8 @@ public class Activator extends AbstractUIPlugin {
             // exceptions will cause keyboardLayout to remain (or become) empty
             keyboardLayout.loadMapping(filename);
         }
-        catch (IOException e) {
-            // probably just file not found -- don't log it
-        }
-        catch (ParseException e) {
-            logError(e);
+        catch (RuntimeException e) {
+            logError(e); // could not load table
         }
 
         // if we couldn't load it, re-test keyboard
@@ -95,7 +89,7 @@ public class Activator extends AbstractUIPlugin {
             try {
                 keyboardLayout.saveMapping(filename);
             }
-            catch (IOException e) {
+            catch (RuntimeException e) {
                 logError(e); // could not save the result -- will have to re-test it next time as well
             }
         }

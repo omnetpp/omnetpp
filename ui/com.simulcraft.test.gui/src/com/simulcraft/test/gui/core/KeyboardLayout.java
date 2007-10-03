@@ -2,7 +2,6 @@ package com.simulcraft.test.gui.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,23 +101,36 @@ public class KeyboardLayout {
         }
     }
     
-    public void saveMapping(String filename) throws IOException {
+    public void saveMapping(String filename) {
+        try {
             String contents = "";
             for (char ch : mapping.keySet())
                 contents += ch + " " + mapping.get(ch).format() + "\n";
             FileUtils.copy(new ByteArrayInputStream(contents.getBytes()), new File(filename));
+        }
+        catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void loadMapping(String filename) throws IOException, ParseException {
-        mapping = null;
-        HashMap<Character, KeyStroke> tmp = new HashMap<Character, KeyStroke>();
-        String contents = FileUtils.readTextFile(filename);
-        for (String line : StringUtils.splitToLines(contents)) {
-            char ch = line.charAt(0);
-            String key = line.substring(1);
-            tmp.put(ch, KeyStroke.getInstance(key));
+    public void loadMapping(String filename) {
+        try {
+            mapping = null;
+            HashMap<Character, KeyStroke> tmp = new HashMap<Character, KeyStroke>();
+            String contents = FileUtils.readTextFile(filename);
+            for (String line : StringUtils.splitToLines(contents)) {
+                line = line.replace("\n", "");
+                if (line.length()<3)
+                    throw new ParseException("line too short in " + filename);
+                char ch = line.charAt(0);
+                String key = line.substring(2);
+                tmp.put(ch, KeyStroke.getInstance(key));
+            }
+            mapping = tmp; // only install if loaded without error
         }
-        mapping = tmp; // only install if loaded without error
+        catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void printMapping() {

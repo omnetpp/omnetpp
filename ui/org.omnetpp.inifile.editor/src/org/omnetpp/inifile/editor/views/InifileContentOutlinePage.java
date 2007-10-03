@@ -158,9 +158,10 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	public void update() {
 		final TreeViewer viewer = getTreeViewer();
 		if (viewer != null) {
-			Display.getDefault().asyncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {  //XXX why asyncExec?
 				public void run() {
-					viewer.refresh();
+				    if (!viewer.getTree().isDisposed()) // because of asyncExec
+				        viewer.refresh();
 				}
 			});
 		}		
