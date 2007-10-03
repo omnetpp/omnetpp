@@ -13,6 +13,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.core.NotInUIThread;
@@ -67,6 +68,13 @@ public class WorkspaceUtils
 		String actualContent = FileUtils.readTextFile(file.getContents());
 		Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, actualContent.equals(expectedContent));
 	}
+	
+    @InUIThread
+    public static void assertFileExistsWithContentIgnoringWhiteSpace(String path, String expectedContent) throws Exception {
+        IFile file = assertFileExists(path);
+        String actualContent = FileUtils.readTextFile(file.getContents());
+        Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, StringUtils.areEqualIgnoringWhiteSpace(actualContent, expectedContent));
+    }
 	
     @InUIThread
     public static void assertFileExistsWithRegexpContent(String path, String expectedRegexpContent) throws Exception {

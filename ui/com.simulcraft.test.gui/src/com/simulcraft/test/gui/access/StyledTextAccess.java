@@ -5,10 +5,11 @@ import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
-import com.simulcraft.test.gui.core.InUIThread;
-
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
+import org.omnetpp.common.util.StringUtils;
+
+import com.simulcraft.test.gui.core.InUIThread;
 
 public class StyledTextAccess extends CompositeAccess
 {
@@ -47,10 +48,42 @@ public class StyledTextAccess extends CompositeAccess
 		Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);
 		boolean matches = matcher.matches();
-		Assert.assertTrue("Cannot find "+patternString+" in styled text",matches);
+		Assert.assertTrue("cannot find "+patternString+" in styled text",matches);
 		int targetOffset = matcher.end(1);
 		matcher.region(matcher.end(), text.length());
-		Assert.assertFalse("More than one match for "+patternString, matcher.matches());
+		Assert.assertFalse("more than one match for "+patternString, matcher.matches());
         return targetOffset;
     }
+    
+    /**
+     * Checks StyledText contents with String.equals(). Note: the StyledText
+     * control does NOT contain the content of collapsed folding regions.
+     */
+    @InUIThread
+    public void assertContent(String expectedContent) {
+        String actualContent = getTextContent();
+        Assert.assertTrue("StyledText content does not match", actualContent.equals(expectedContent));
+    }
+
+    /**
+     * Checks StyledText contents after normalizing all whitespace. Note: 
+     * the StyledText control does NOT contain the content of collapsed 
+     * folding regions.
+     */
+    @InUIThread
+    public void assertContentIgnoringWhiteSpace(String expectedContent) {
+        String actualContent = getTextContent();
+        Assert.assertTrue("StyledText content does not match", StringUtils.areEqualIgnoringWhiteSpace(actualContent, expectedContent));
+    }
+    
+    /**
+     * Checks StyledText contents with regex match. Note: the StyledText
+     * control does NOT contain the content of collapsed folding regions.
+     */
+    @InUIThread
+    public void assertContentMatches(String regex) {
+        String actualContent = getTextContent();
+        Assert.assertTrue("StyledText content does not match", actualContent.matches(regex));
+    }
+
 }
