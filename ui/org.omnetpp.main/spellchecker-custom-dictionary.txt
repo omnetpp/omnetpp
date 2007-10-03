@@ -227,3 +227,4 @@ cyan
 keypresses
 reindenting
 whitespaces
+lowercase

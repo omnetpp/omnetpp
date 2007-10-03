@@ -33,7 +33,7 @@ public class DeleteWithGraphicalEditorTest
         graphicalNedEditor.clickLabelFigure("test");
         graphicalNedEditor.clickLabelFigure("test1");
         graphicalNedEditor.clickLabelFigure("test2");
-        graphicalNedEditor.releaseUpModifiers(SWT.CONTROL);
+        graphicalNedEditor.releaseModifiers(SWT.CONTROL);
         graphicalNedEditor.pressKey(SWT.DEL);
     }
     

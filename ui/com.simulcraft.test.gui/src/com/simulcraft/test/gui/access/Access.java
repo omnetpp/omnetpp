@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -27,8 +28,10 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 
+import com.simulcraft.test.gui.Activator;
 import com.simulcraft.test.gui.core.EventTracer;
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.KeyboardLayout;
 import com.simulcraft.test.gui.core.NotInUIThread;
 
 
@@ -177,18 +180,12 @@ public class Access
 
     @InUIThread
     public void pressKeySequence(String text) {
+        KeyboardLayout keyboardLayout = Activator.getDefault().getKeyboardLayout();
+        //note: loadOrTestKeyboardLayout() gets invoked at the beginning of the test case
         for (int i = 0; i < text.length(); i++) {
             char character = text.charAt(i);
-            boolean holdShift = Character.isUpperCase(character);
-
-            // TODO: these are kind of a hack
-            // but for example if we don't hold the shift down then we get ';' instead of ':'
-            if (character == ':' || character == '{' || character == '}') 
-                holdShift = true;
-            else if (character == '\n')
-                character = '\r';
-            
-            pressKey(Character.toLowerCase(character), holdShift ? SWT.SHIFT : SWT.NONE);
+            KeyStroke keyStroke = keyboardLayout.getKeyFor(character);
+            pressKey(Character.valueOf(character), keyStroke.getModifierKeys());
         }
     }
 
@@ -235,7 +232,7 @@ public class Access
 		postEvent(event);
 
 		if (modifierKeys != 0)
-			releaseUpModifiers(modifierKeys);
+			releaseModifiers(modifierKeys);
 	}
 
     @InUIThread
@@ -262,7 +259,7 @@ public class Access
     }
 
     @InUIThread
-    public void releaseUpModifiers(int modifierKeys) {
+    public void releaseModifiers(int modifierKeys) {
         Event event;
 
         if ((modifierKeys & SWT.SHIFT) != 0) {

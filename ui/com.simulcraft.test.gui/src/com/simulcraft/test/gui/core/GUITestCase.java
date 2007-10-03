@@ -7,6 +7,7 @@ import org.eclipse.swt.internal.win32.MSG;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Display;
 
+import com.simulcraft.test.gui.Activator;
 import com.simulcraft.test.gui.access.Access;
 
 
@@ -35,9 +36,8 @@ public abstract class GUITestCase extends TestCase {
 	 * loop, e.g. inside modal dialogs.
 	 */
 	public void runTest(final Test test) throws Throwable {
-        new KeyboardLayout().testKeyboard();
-        Assert.assertTrue(false);
-
+	    if (Activator.getDefault().getKeyboardLayout().isEmpty())
+	        Activator.getDefault().loadOrTestKeyboardLayout();
 	    
 		testThrowable = null;
 

@@ -1,14 +1,13 @@
 package com.simulcraft.test.gui.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -45,6 +44,10 @@ public class KeyboardLayout {
         return mapping;
     }
     
+    public boolean isEmpty() {
+        return mapping == null || mapping.isEmpty();
+    }
+
     public void testKeyboard() {
         Assert.isTrue(Display.getCurrent() != null, "must be in the UI thread");
         
@@ -95,37 +98,23 @@ public class KeyboardLayout {
         }
     }
     
-    public void saveMapping(IFile file) throws CoreException {
-        try {
+    public void saveMapping(String filename) throws IOException {
             String contents = "";
             for (char ch : mapping.keySet())
                 contents += ch + " " + mapping.get(ch).format() + "\n";
-            file.setContents(new ByteArrayInputStream(contents.getBytes()), IFile.FORCE, null);
-        }
-        catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
+            FileUtils.copy(new ByteArrayInputStream(contents.getBytes()), new File(filename));
     }
 
-    public void loadMapping(IFile file) {
-        try {
-            mapping = new HashMap<Character, KeyStroke>();
-            String contents = FileUtils.readTextFile(file.getContents());
-            for (String line : StringUtils.splitToLines(contents)) {
-                char ch = line.charAt(0);
-                String key = line.substring(1);
-                mapping.put(ch, KeyStroke.getInstance(key));
-            }
+    public void loadMapping(String filename) throws IOException, ParseException {
+        mapping = null;
+        HashMap<Character, KeyStroke> tmp = new HashMap<Character, KeyStroke>();
+        String contents = FileUtils.readTextFile(filename);
+        for (String line : StringUtils.splitToLines(contents)) {
+            char ch = line.charAt(0);
+            String key = line.substring(1);
+            tmp.put(ch, KeyStroke.getInstance(key));
         }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-        catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        mapping = tmp; // only install if loaded without error
     }
 
     public void printMapping() {
