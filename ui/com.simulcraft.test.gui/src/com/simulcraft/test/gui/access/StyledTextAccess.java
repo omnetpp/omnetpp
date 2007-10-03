@@ -3,11 +3,12 @@ package com.simulcraft.test.gui.access;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.Point;
+import junit.framework.Assert;
 
 import com.simulcraft.test.gui.core.InUIThread;
+
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
 
 public class StyledTextAccess extends CompositeAccess
 {
@@ -46,10 +47,10 @@ public class StyledTextAccess extends CompositeAccess
 		Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);
 		boolean matches = matcher.matches();
-		Assert.isTrue(matches);
+		Assert.assertTrue("Cannot find "+patternString+" in styled text",matches);
 		int targetOffset = matcher.end(1);
 		matcher.region(matcher.end(), text.length());
-		Assert.isTrue(!matcher.matches());
+		Assert.assertFalse("More than one match for "+patternString, matcher.matches());
         return targetOffset;
     }
 }
