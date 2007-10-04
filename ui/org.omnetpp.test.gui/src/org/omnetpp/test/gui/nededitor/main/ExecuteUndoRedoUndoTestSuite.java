@@ -1,17 +1,18 @@
-package org.omnetpp.test.gui.nededitor;
+package org.omnetpp.test.gui.nededitor.main;
 
 import junit.framework.Assert;
 import junit.framework.TestSuite;
-
-import org.eclipse.swt.SWT;
-import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
-import org.omnetpp.test.gui.access.NedEditorAccess;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 import com.simulcraft.test.gui.core.GUITestCase;
 import com.simulcraft.test.gui.core.InUIThread;
+
+import org.eclipse.swt.SWT;
+
+import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 public class ExecuteUndoRedoUndoTestSuite
     extends GUITestCase

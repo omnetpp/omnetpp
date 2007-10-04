@@ -1,4 +1,6 @@
-package org.omnetpp.test.gui.nededitor;
+package org.omnetpp.test.gui.nededitor.view;
+
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 public class NedOutlineViewTest
     extends NedFileTestCase

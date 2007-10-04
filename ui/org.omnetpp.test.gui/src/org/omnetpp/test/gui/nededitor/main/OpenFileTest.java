@@ -1,6 +1,8 @@
-package org.omnetpp.test.gui.nededitor;
+package org.omnetpp.test.gui.nededitor.main;
 
 import com.simulcraft.test.gui.util.WorkbenchUtils;
+
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 
 public class OpenFileTest 

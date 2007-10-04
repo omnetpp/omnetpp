@@ -3,17 +3,21 @@ package org.omnetpp.test.gui.nededitor;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.omnetpp.test.gui.nededitor.graphical.GraphicalEditorTestSuite;
+import org.omnetpp.test.gui.nededitor.main.MultipageNedEditorTestSuite;
+import org.omnetpp.test.gui.nededitor.textual.TextuallEditorTestSuite;
+import org.omnetpp.test.gui.nededitor.view.NedViewEditorTestSuite;
+
 public class NedEditorTestSuite
 	extends TestSuite
 {
 	public NedEditorTestSuite() {
-		addTestSuite(OpenFileTest.class);
-        addTestSuite(SaveFileTest.class);
         addTestSuite(NedFileWizardTest.class);
         addTestSuite(NedPathTest.class);
-		addTestSuite(SimpleModuleTypeTest.class);
-		addTestSuite(NedOutlineViewTest.class);
-		addTest(GraphicalEditorTestSuite.suite());
+        addTest(MultipageNedEditorTestSuite.suite());
+        addTest(GraphicalEditorTestSuite.suite());
+        addTest(TextuallEditorTestSuite.suite());
+        addTest(NedViewEditorTestSuite.suite());
 	}
 
     public static Test suite() {

@@ -1,6 +1,5 @@
 package org.omnetpp.test.gui.core;
 
-import com.simulcraft.test.gui.core.ProjectFileTestCase;
 
 public class EventLogFileTestCase
     extends ProjectFileTestCase

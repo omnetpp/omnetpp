@@ -1,12 +1,13 @@
-package org.omnetpp.test.gui.nededitor;
-
-import org.eclipse.swt.SWT;
-import org.omnetpp.test.gui.access.NedEditorAccess;
+package org.omnetpp.test.gui.nededitor.main;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
-import com.simulcraft.test.gui.util.WorkspaceUtils;
+
+import org.eclipse.swt.SWT;
+
+import org.omnetpp.test.gui.access.NedEditorAccess;
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 public class SaveFileTest 
 	extends NedFileTestCase

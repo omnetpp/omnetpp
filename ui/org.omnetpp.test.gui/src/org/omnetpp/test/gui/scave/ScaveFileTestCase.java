@@ -1,6 +1,6 @@
 package org.omnetpp.test.gui.scave;
 
-import com.simulcraft.test.gui.core.ProjectFileTestCase;
+import org.omnetpp.test.gui.core.ProjectFileTestCase;
 
 public class ScaveFileTestCase
     extends ProjectFileTestCase

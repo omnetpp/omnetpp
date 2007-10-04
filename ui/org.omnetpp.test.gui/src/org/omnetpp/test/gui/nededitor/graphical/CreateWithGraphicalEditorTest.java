@@ -1,7 +1,8 @@
-package org.omnetpp.test.gui.nededitor;
+package org.omnetpp.test.gui.nededitor.graphical;
 
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.util.WorkspaceUtils;

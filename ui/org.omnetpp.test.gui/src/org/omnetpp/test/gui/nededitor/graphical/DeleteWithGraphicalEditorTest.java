@@ -1,7 +1,8 @@
-package org.omnetpp.test.gui.nededitor;
+package org.omnetpp.test.gui.nededitor.graphical;
 
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 public class DeleteWithGraphicalEditorTest
     extends NedFileTestCase

@@ -1,10 +1,11 @@
-package org.omnetpp.test.gui.nededitor;
+package org.omnetpp.test.gui.nededitor.graphical;
 
 import junit.framework.Assert;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 public class AutoLayoutTest
     extends NedFileTestCase

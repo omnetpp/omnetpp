@@ -1,9 +1,10 @@
-package com.simulcraft.test.gui.core;
+package org.omnetpp.test.gui.core;
 
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.core.GUITestCase;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
