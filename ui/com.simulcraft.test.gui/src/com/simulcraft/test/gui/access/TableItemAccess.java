@@ -28,12 +28,6 @@ public class TableItemAccess extends ClickableWidgetAccess
 	    return (TableAccess) createAccess(getTableItem().getParent());
 	}
 
-	@InUIThread @Override
-	public void click() {
-	    Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(getAbsolutePointToClick()));
-	    super.click();
-	}
-
 	@InUIThread
 	public TableItemAccess reveal() {
 		Table table = getTableItem().getParent();
@@ -44,7 +38,10 @@ public class TableItemAccess extends ClickableWidgetAccess
 
 	@Override
 	protected Point getAbsolutePointToClick() {
-		return getTableItem().getParent().toDisplay(getCenter(getTableItem().getBounds()));
+	    Point point = getTableItem().getParent().toDisplay(getCenter(getTableItem().getBounds()));
+        Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
+        Assert.assertTrue("column has zero width", getTableItem().getBounds().width > 0);
+        return point;
 	}
 
 	@Override

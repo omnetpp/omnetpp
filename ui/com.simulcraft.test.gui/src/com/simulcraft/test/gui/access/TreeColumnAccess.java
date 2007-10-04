@@ -19,26 +19,26 @@ public class TreeColumnAccess extends ClickableWidgetAccess
 		return (TreeColumn)widget;
 	}
 
-	@InUIThread @Override
-	public void click() {
-        Tree tree = (Tree)getTreeColumn().getParent();
-	    Assert.assertTrue("header not visible", tree.getHeaderVisible());
-		//FIXME we should ensure that the item is visible (i.e. not scrolled 
-	    // horizontally off-screen). same for doubleClick() etc.
-		super.click();
-	}
-
+    @InUIThread
+    public TreeAccess getTree() {
+        return (TreeAccess) createAccess(getTreeColumn().getParent());
+    }
+	
 	@InUIThread
 	public TreeColumnAccess reveal() {
-		//TODO scroll there
+		//TODO horizontally scroll there
 		return this;
 	}
 	
 	@Override
 	protected Point getAbsolutePointToClick() {
-	    // center of the header
+        // center of the header. Note: header is at NEGATIVE table coordinates! (origin is top-left of data area)
+	    getTree().assertHeaderVisible();
         Tree tree = (Tree)getTreeColumn().getParent();
-	    return tree.toDisplay(getX() + getTreeColumn().getWidth()/2, tree.getHeaderHeight()/2);
+        Point point = tree.toDisplay(getX() + getTreeColumn().getWidth()/2, -tree.getHeaderHeight()/2);
+        Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
+        Assert.assertTrue("column has zero width, cannot click", getTreeColumn().getWidth() > 0);
+        return point;
 	}
 
 	@Override
@@ -52,7 +52,6 @@ public class TreeColumnAccess extends ClickableWidgetAccess
 	 */
 	@InUIThread
 	public int getX() {
-	    //XXX untested; cf TreeItem.get[Text]Bounds(index)
 	    Tree tree = (Tree)getTreeColumn().getParent();
 	    TreeColumn[] columns = tree.getColumns();
 	    int[] columnOrder = tree.getColumnOrder();
