@@ -4,6 +4,7 @@ import junit.framework.Assert;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
@@ -43,6 +44,19 @@ public class TableItemAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width", getTableItem().getBounds().width > 0);
         return point;
 	}
+
+	/**
+     * Useful for selecting a table item without incidentally activating its cell editor.
+     */
+    @InUIThread
+    public void clickLeftEdge() {
+        Rectangle bounds = getTableItem().getBounds();
+        Point point = getTableItem().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
+        Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
+        Assert.assertTrue("column has zero width", bounds.width > 0);
+        clickAbsolute(LEFT_MOUSE_BUTTON, point);
+    }
+    
 
 	@Override
 	protected Menu getContextMenu() {

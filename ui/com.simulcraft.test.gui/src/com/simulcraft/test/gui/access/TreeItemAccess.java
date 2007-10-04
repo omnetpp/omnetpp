@@ -4,6 +4,7 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
@@ -29,7 +30,8 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	
 	@InUIThread
 	public TreeItemAccess reveal() {
-		getTreeItem().getParent().setTopItem(getTreeItem()); // scroll there
+	    if (!getTreeItem().getParent().getBounds().contains(getCenter(getTreeItem().getBounds())))
+	            getTreeItem().getParent().setTopItem(getTreeItem()); // scroll there
 		return this;
 	}
 	
@@ -41,6 +43,18 @@ public class TreeItemAccess extends ClickableWidgetAccess
         return point;
 	}
 
+	/**
+	 * Useful for selecting a tree item without incidentally activating its cell editor.
+	 */
+	@InUIThread
+	public void clickLeftEdge() {
+        Rectangle bounds = getTreeItem().getBounds();
+        Point point = getTreeItem().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
+        Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
+        Assert.assertTrue("column has zero width", bounds.width > 0);
+        clickAbsolute(LEFT_MOUSE_BUTTON, point);
+	}
+	
 	@Override
 	protected Menu getContextMenu() {
 		return (Menu)getTreeItem().getParent().getMenu();
