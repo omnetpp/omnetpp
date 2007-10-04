@@ -50,8 +50,8 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	}
 
     @InUIThread
-    public void ensureChecked() {
-        if (!getTreeItem().getChecked()) {
+    public void ensureChecked(boolean state) {
+        if (getTreeItem().getChecked() != state) {
             click();
             pressKey(' ');
         }

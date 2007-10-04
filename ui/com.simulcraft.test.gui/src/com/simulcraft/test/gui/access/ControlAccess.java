@@ -46,7 +46,7 @@ public class ControlAccess extends ClickableWidgetAccess
 	@InUIThread
 	public Rectangle getAbsoluteBounds() {
 	    Rectangle bounds = getControl().getBounds();
-	    Point topLeftAbsolute = getControl().getParent().toDisplay(0,0);
+	    Point topLeftAbsolute = getControl().getParent().toDisplay(bounds.x, bounds.y);
         return new Rectangle(topLeftAbsolute.x, topLeftAbsolute.y, bounds.width, bounds.height);
 	}
 

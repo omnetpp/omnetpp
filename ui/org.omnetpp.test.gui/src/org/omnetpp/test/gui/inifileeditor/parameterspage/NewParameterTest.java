@@ -5,7 +5,7 @@ import org.omnetpp.test.gui.access.InifileFormEditorAccess;
 import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.CompositeAccess;
-import com.simulcraft.test.gui.access.TreeItemAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
 
 public class NewParameterTest extends InifileEditorTestCase {
     //FIXME cell editing very unreliable. Probably needs refactoring in the Inifile code
@@ -31,12 +31,11 @@ public class NewParameterTest extends InifileEditorTestCase {
         parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
 
         parametersPage.findButtonWithLabel("New").activateWithMouseClick();
-        TreeItemAccess newItem = parametersPage.findTree().findTreeItemByContent(".*newKey.*");
-        newItem.clickAndTypeOver(2, "some foo parameter");
-        newItem = parametersPage.findTree().findTreeItemByContent(".*newKey.*"); // tree may have changed
-        newItem.clickAndTypeOver(1, "200");
-        newItem = parametersPage.findTree().findTreeItemByContent(".*newKey.*");
-        newItem.clickAndTypeOver(0, "**.fooParam");  //FIXME this fails doesn't take effect?
+        TreeAccess tree = parametersPage.findTree();
+        // note: newly find item each time, because tree may have re-loaded
+        tree.findTreeItemByContent(".*newKey.*").clickAndTypeOver(2, "some foo parameter");
+        tree.findTreeItemByContent(".*newKey.*").clickAndTypeOver(1, "200");
+        tree.findTreeItemByContent(".*newKey.*").clickAndTypeOver(0, "**.fooParam");  //FIXME this fails?? (value doesn't get written back)
 
         //XXX does not work in reverse order: 0,1,2
         //tree.findTreeItemByContent(".*newKey.*").clickAndTypeOver(0, "**.fooParam");

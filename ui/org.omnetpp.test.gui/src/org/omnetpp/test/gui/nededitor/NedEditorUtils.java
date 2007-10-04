@@ -61,7 +61,7 @@ public class NedEditorUtils
                 return object instanceof Tree && object != panelSelectorTree.getWidget();
             }
         }));
-        nedPathTree.findTreeItemByPath(path == null ? projectName : projectName + "/" + path).ensureChecked();
+        nedPathTree.findTreeItemByPath(path == null ? projectName : projectName + "/" + path).ensureChecked(true);
         shell.findButtonWithLabel("OK").click();
     }
 
