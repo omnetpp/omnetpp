@@ -261,7 +261,7 @@ public class ParametersPage extends FormPage {
 					    String comment = (String)value;
 					    if (comment.equals("")) 
 					        comment = null;  // i.e. don't create empty comment, '#' followed by nothing
-						if (!comment.equals(doc.getComment(item.section, item.key))) {
+						if (!StringUtils.equals(comment, doc.getComment(item.section, item.key))) {
 							doc.setComment(item.section, item.key, comment);
 							treeViewer.refresh();
 						}

@@ -49,4 +49,9 @@ public class NewParameterTest extends InifileEditorTestCase {
                 "**.par1 = 100\n" +
                 "**.fooParam = 200  # some foo parameter\n");
     }
+    
+    //TODO more tests:
+    //  fill in / blank out fields
+    //  validation
+    
 }
