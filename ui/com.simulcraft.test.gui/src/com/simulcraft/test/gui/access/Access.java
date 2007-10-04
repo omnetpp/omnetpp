@@ -95,6 +95,11 @@ public class Access
 		return display != null ? display : Display.getDefault();
 	}
 	
+    @InUIThread
+	public static ControlAccess getFocusControl() {
+	    return (ControlAccess) createAccess(Display.getCurrent().getFocusControl());
+	}
+	
 	@InUIThread
 	public static WorkbenchWindowAccess getWorkbenchWindowAccess() {
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -578,7 +583,7 @@ public class Access
 	}
 
 	protected static void dumpWidgetHierarchy(Control control, int level) {
-		log(debug, StringUtils.repeat("  ", level) + control.toString());
+		System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : ""));
 		
 		if (control.getMenu() != null)
 			dumpMenu(control.getMenu(), level);

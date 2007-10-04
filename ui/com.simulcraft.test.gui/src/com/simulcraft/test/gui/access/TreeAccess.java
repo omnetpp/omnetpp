@@ -35,7 +35,12 @@ public class TreeAccess extends ControlAccess
     public void assertNotEmpty() {
         Assert.assertTrue(getTree().getItemCount() != 0);
     }
-    
+
+    @InUIThread
+    public void assertHeaderVisible() {
+        Assert.assertTrue(getTree().getHeaderVisible());
+    }
+
     /**
      * Compares the Tree's content (one or more trees) to the GenericTreeNode
      * trees passed. GenericTreeNode's payloads MUST be strings containing *regex* labels.
@@ -131,4 +136,18 @@ public class TreeAccess extends ControlAccess
 		
 		return true;
 	}
+	
+    /**
+     * Return the given column; columns are in creation order. 
+     */
+	@InUIThread
+	public TreeColumnAccess getTreeColumn(int index) {
+	    return new TreeColumnAccess(getTree().getColumns()[index]);
+	}
+
+	@InUIThread
+	public int[] getTreeColumnOrder() {
+	    return getTree().getColumnOrder();
+	}
+
 }

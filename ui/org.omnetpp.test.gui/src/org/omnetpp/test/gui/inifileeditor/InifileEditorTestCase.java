@@ -16,12 +16,4 @@ public class InifileEditorTestCase extends ProjectFileTestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
         return (InifileEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName);
     }
-
-    protected void createNewInifileByWizard() {
-        InifileEditorUtils.createNewIniFileByWizard1(projectName, fileName, null);
-    }
-
-//  protected void typeIntoTextualNedEditor(String inifileContent) {
-//  InifileEditorUtils.typeIntoTextualNedEditor(fileName, inifileContent);
-//  }
 }

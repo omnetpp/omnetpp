@@ -5,6 +5,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.common.util.IPredicate;
@@ -40,6 +41,13 @@ public class ControlAccess extends ClickableWidgetAccess
 	@Override @InUIThread
 	protected Point getAbsolutePointToClick() {
 		return getControl().getParent().toDisplay(getCenter(getControl().getBounds()));
+	}
+
+	@InUIThread
+	public Rectangle getAbsoluteBounds() {
+	    Rectangle bounds = getControl().getBounds();
+	    Point topLeftAbsolute = getControl().getParent().toDisplay(0,0);
+        return new Rectangle(topLeftAbsolute.x, topLeftAbsolute.y, bounds.width, bounds.height);
 	}
 
 	@Override

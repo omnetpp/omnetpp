@@ -1,6 +1,8 @@
 package org.omnetpp.test.gui.nededitor;
 
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 
 
@@ -48,7 +50,8 @@ public class SimpleModuleTypeTest
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
-		NedEditorUtils.createNewNedFileByWizard(projectName, fileName);
+		WorkspaceUtils.createFileWithContent(filePath, "");
+        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 	}
 
 	protected void assertNoErrorInNedSource(String nedSource) {
