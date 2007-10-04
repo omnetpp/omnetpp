@@ -9,7 +9,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.ui.TableTextCellEditor;
 
 /**
- * 
+ * Set up content assist on the given column of a table viewer.
  * @author Andras
  */
 public class ContentAssistUtil {
@@ -21,17 +21,18 @@ public class ContentAssistUtil {
 	 * @param replace  whether proposal replaces editor content or gets inserted
 	 */
 	public static ContentAssistCommandAdapter configureTableColumnContentAssist(final ColumnViewer tableViewer, 
-			int columnIndex, IContentProposalProvider valueProposalProvider, boolean replace) {
+			int columnIndex, IContentProposalProvider valueProposalProvider, char[] activationChars, boolean replace) {
 
 		// officially, it should be just this:
 		final TableTextCellEditor cellEditor = (TableTextCellEditor) tableViewer.getCellEditors()[columnIndex];
 		ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(cellEditor.getText(), 
 				new TextContentAdapter(), valueProposalProvider, 
-				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, activationChars, true);
 		commandAdapter.setProposalAcceptanceStyle(replace ? ContentProposalAdapter.PROPOSAL_REPLACE : ContentProposalAdapter.PROPOSAL_INSERT);
+		cellEditor.setContentAssistAdapter(commandAdapter);
 
 		// Following workaround is not needed. Problem was solved by modifying TableTextCellEditor NOT to commit
-		// on focusLost events at all. This works fairly well.
+		// on focusLost event, if the focus goes to the content assist popup. This works fairly well.
 		//
 		// WORKAROUND: after selecting a proposal with the mouse, the cell editor loses focus and closes,
 		// before the proposal could be inserted -- which is bad. Luckily, the cell editor itself still 

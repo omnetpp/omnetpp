@@ -411,10 +411,10 @@ public class ParametersDialog extends TitleAreaDialog {
         // edit support
         tableViewer.setColumnProperties(COLUMNS);
         final CellEditor editors[] = new CellEditor[] {
-            new TableTextCellEditor(tableViewer, 0, true),
-            new TableTextCellEditor(tableViewer, 1, true),
-            new TableTextCellEditor(tableViewer, 2, true),
-            new TableTextCellEditor(tableViewer, 3, true)
+            new TableTextCellEditor(tableViewer, 0),
+            new TableTextCellEditor(tableViewer, 1),
+            new TableTextCellEditor(tableViewer, 2),
+            new TableTextCellEditor(tableViewer, 3)
         };
         tableViewer.setCellEditors(editors);
 

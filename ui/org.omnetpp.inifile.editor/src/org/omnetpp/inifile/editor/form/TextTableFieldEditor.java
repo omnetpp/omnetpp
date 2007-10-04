@@ -105,7 +105,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 			}
 		};
 
-		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, valueProposalProvider, true);
+		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, valueProposalProvider, null, true);
 
 		return tableViewer; 
 	}

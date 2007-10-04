@@ -277,23 +277,33 @@ public class ParametersPage extends FormPage {
 		IContentProposalProvider proposalProvider = new InifileParamKeyContentProposalProvider(null, false, getInifileDocument(), getInifileAnalyzer()) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
-				SectionKey e = (SectionKey)( (IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+				Object element = ( (IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+				if (element instanceof GenericTreeNode)
+				    element = ((GenericTreeNode)element).getPayload();
+				if (element == null)
+				    return new IContentProposal[0];
+                SectionKey e = (SectionKey)element;
 				configure(e.section, false); // set context for proposal calculation
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtil.configureTableColumnContentAssist(treeViewer, 1, proposalProvider, false);
+		ContentAssistUtil.configureTableColumnContentAssist(treeViewer, 0, proposalProvider, new char[]{'.'}, false);
 
 		// content assist for the Value column
 		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer(), false) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
-				SectionKey e = (SectionKey)( (IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+			    Object element = ( (IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+                if (element instanceof GenericTreeNode)
+                    element = ((GenericTreeNode)element).getPayload();
+                if (element == null)
+                    return new IContentProposal[0];
+                SectionKey e = (SectionKey)element;
 				setInifileEntry(e.section, e.key); // set context for proposal calculation
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtil.configureTableColumnContentAssist(treeViewer, 2, valueProposalProvider, true);
+		ContentAssistUtil.configureTableColumnContentAssist(treeViewer, 1, valueProposalProvider, null, true);
 
 		// on double-click, show entry in the text editor (not a good idea, commented out)
 		//tableViewer.getTable().addSelectionListener(new SelectionAdapter() {

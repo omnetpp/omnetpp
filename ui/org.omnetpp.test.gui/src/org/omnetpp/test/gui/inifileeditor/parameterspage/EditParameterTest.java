@@ -90,4 +90,6 @@ public class EditParameterTest extends InifileEditorTestCase {
     //TODO more tests:
     //  validation
     
+    // lots of cell editor tests!! with content assist with mouse/keyboard selection, navigation up/down, Esc, Enter, click away, etc!!!!
+    
 }

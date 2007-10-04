@@ -11,7 +11,6 @@
 package org.omnetpp.common.ui;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -35,26 +34,26 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.omnetpp.common.util.ReflectionUtils;
 
 /**
- * <i>Note: This class is a copy of <code>org.eclipse.jdt.internal.ui.dialogs.TableTextCellEditor</code>,
+ * Note: This class is a copy of <code>org.eclipse.jdt.internal.ui.dialogs.TableTextCellEditor</code>,
  * with the following changes:<br/>
- *     (1) it does not apply the value on every keystroke<br/>
- *     (2) does NOTHING on focus lost event<br/>
+ *     (1) it does NOT apply the value on every keystroke<br/>
+ *     (2) supports ContentAssistCommandAdapter instead of deprecated SubjectControlContentAssistant<br/>
  *     (3) works also for TreeViewer <br/>
- *     
- * The original TextCellEditor commits on focus lost, which means a content proposal
- * selected with mouse double click just gets IGNORED. Moreover, such commit causes
- * disaster in InifileEditor ParametersPage "Key" column editing. JDT code used
- * fContentAssistant.hasProposalPopupFocus() to determine whether to commit or not;
- * this is not good because we use the new ContentAssistCommandAdapter not the
- * deprecated SubjectControlContentAssistant. Not committing on focusLost at all
- * is by far the best of all workarounds tried out.
+ * <p>    
+ * The "focus lost" problem: the original TextCellEditor commits on focus lost, 
+ * which means a content proposal selected with mouse double click just gets IGNORED.
+ * JDT code used fContentAssistant.hasProposalPopupFocus() to determine whether to commit 
+ * or not; we use the equivalent code for ContentAssistCommandAdapter.
+ * 
  * <p>
  * See comment marked with [Andras] in the code.
  *
  * <p>
- * Original class comment follows.</i>
+ * Original class comment follows.
  *
  * <p>
  * <code>TableTextCellEditor</code> is a copy of TextCellEditor, with the
@@ -73,6 +72,7 @@ import org.eclipse.swt.widgets.Text;
  * <li>the user can go to the next/previous row with up and down keys</li>
  * </ul>
  */
+//TODO up/down support when used with a Tree
 public class TableTextCellEditor extends CellEditor {
 	public interface IActivationListener {
 		public void activate();
@@ -80,15 +80,17 @@ public class TableTextCellEditor extends CellEditor {
 
 	private final ColumnViewer fTableViewer; // a TableViewer or a TreeViewer
 	private final int fColumn;
-    private boolean commitOnFocusLost = false;
 	//[Andras] private final String fProperty;
-	/**
+    /**
 	 * The editor's value on activation. This value is reset to the
 	 * cell when the editor is left via ESC key.
 	 */
 	String fOriginalValue;
-	SubjectControlContentAssistant fContentAssistant;
+	//[Andras]
+	// SubjectControlContentAssistant fContentAssistant;
 	private IActivationListener fActivationListener;
+	//[Andras]
+	ContentAssistCommandAdapter fContentAssistAdapter;
 
     protected Text text;
 
@@ -104,11 +106,6 @@ public class TableTextCellEditor extends CellEditor {
 		fTableViewer= tableViewer;
 		fColumn= column;
 		//[Andras] fProperty= (String) tableViewer.getColumnProperties()[column];
-	}
-
-	public TableTextCellEditor(ColumnViewer tableViewer, int column, boolean commitOnFocusLost) {
-	    this(tableViewer, column);
-	    this.commitOnFocusLost = commitOnFocusLost;
 	}
 
 	@Override
@@ -129,23 +126,37 @@ public class TableTextCellEditor extends CellEditor {
 	@Override
     protected void focusLost() {
 	    System.out.println("FOCUS LOST");
-		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
-			// skip focus lost if it went to the content assist popup
+//[Andras]
+//		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
+//			// skip focus lost if it went to the content assist popup
+//		}
+		if (fContentAssistAdapter != null && ReflectionUtils.getFieldValue(fContentAssistAdapter, "popup") != null) {  // work around private field...
+            // skip focus lost if it went to the content assist popup
 		}
 		else {
 		    // [Andras]
-		    if (commitOnFocusLost)
-		        super.focusLost();
+		    super.focusLost();
 		}
 	}
 
-	public void setContentAssistant(SubjectControlContentAssistant assistant) {
-		fContentAssistant= assistant;
-	}
+//[Andras]
+//	public void setContentAssistant(SubjectControlContentAssistant assistant) {
+//		fContentAssistant= assistant;
+//	}
+//
+//	public void setActivationListener(IActivationListener listener) {
+//	    fActivationListener= listener;
+//	}
 
-	public void setActivationListener(IActivationListener listener) {
-		fActivationListener= listener;
-	}
+	//[Andras]
+	public ContentAssistCommandAdapter getContentAssistAdapter() {
+        return fContentAssistAdapter;
+    }
+
+	//[Andras]
+	public void setContentAssistAdapter(ContentAssistCommandAdapter contentAssistAdapter) {
+        fContentAssistAdapter = contentAssistAdapter;
+    }
 
 	public Text getText() {
 		return text;
