@@ -12,7 +12,7 @@ public class SectionDragDropTest extends InifileEditorTestCase {
     }
 
     private void dragSection(String section, String targetSection) {
-        TreeAccess sectionsTree = findInifileEditor().ensureActiveFormEditor().ensureActiveCategoryPage("Sections").findTree();
+        TreeAccess sectionsTree = findInifileEditor().ensureActiveFormPage("Sections").findTree();
         sectionsTree.findTreeItemByContent(section).dragTo(sectionsTree.findTreeItemByContent(targetSection));
     }
 
@@ -65,4 +65,5 @@ public class SectionDragDropTest extends InifileEditorTestCase {
                 "[Config Bar]\nextends = Foo\n");
     }
 
+    //TODO drag multiple sections
 }

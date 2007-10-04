@@ -4,6 +4,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
+import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 
@@ -42,5 +43,9 @@ public class InifileEditorAccess
     public InifileFormEditorAccess ensureActiveFormEditor() {
         return (InifileFormEditorAccess)ensureActivePage("Form");
     }
-    
+
+    public CompositeAccess ensureActiveFormPage(String category) {
+        return ensureActiveFormEditor().ensureActiveCategoryPage(category);
+    }
+
 }

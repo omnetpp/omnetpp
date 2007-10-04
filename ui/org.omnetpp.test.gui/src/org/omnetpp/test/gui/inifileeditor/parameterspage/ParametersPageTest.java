@@ -39,9 +39,7 @@ public class ParametersPageTest extends InifileEditorTestCase {
         		"[Config Foo]\n **.par2 = 200\n" +
         		"[Config Bar]\n extends = Foo\n **.par3 = 300\n" +
         		"[Config Hap]\n extends = Foo\n **.par4 = 400\n");
-        InifileEditorAccess inifileEditor = findInifileEditor();
-        InifileFormEditorAccess formEditor = inifileEditor.ensureActiveFormEditor();
-        CompositeAccess parametersPage = formEditor.activateCategoryPage("Parameters");
+        CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         ComboAccess combo = parametersPage.findComboAfterLabel("Config.*");
         TreeAccess parametersTree = parametersPage.findTree();
         

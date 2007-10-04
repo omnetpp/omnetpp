@@ -34,13 +34,11 @@ public class SectionsPageTest extends InifileEditorTestCase {
     private void checkSectionsTreeViewContent(String inifileContent, GenericTreeNode[] trees) throws Exception {
         prepareTest(inifileContent);
 
-        InifileEditorAccess inifileEditor = findInifileEditor();
-        InifileFormEditorAccess formEditor = inifileEditor.ensureActiveFormEditor();
-        CompositeAccess sectionsPage = formEditor.activateCategoryPage("Sections");
+        CompositeAccess sectionsPage = findInifileEditor().ensureActiveFormPage("Sections");
         TreeAccess sectionsTree = sectionsPage.findTree();
         sectionsTree.assertContent(trees);
 
-        CompositeAccess parametersPage = formEditor.activateCategoryPage("Parameters");
+        CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         //TODO test params page contents as well.
     }
 

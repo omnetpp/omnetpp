@@ -56,8 +56,7 @@ public class DeleteParameterTest extends InifileEditorTestCase {
                 "**.foo2 = 200\n" +
                 "**.foo3 = 300\n" +
                 "**.foo4 = 400\n");
-        InifileFormEditorAccess formEditor = findInifileEditor().ensureActiveFormEditor();
-        CompositeAccess parametersPage = formEditor.activateCategoryPage("Parameters");
+        CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
 
         TreeAccess tree = parametersPage.findTree();
