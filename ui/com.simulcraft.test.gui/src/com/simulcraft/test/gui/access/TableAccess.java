@@ -30,6 +30,11 @@ public class TableAccess extends ControlAccess
     }
 
     @InUIThread
+    public void assertHeaderVisible() {
+        Assert.assertTrue(getTable().getHeaderVisible());
+    }
+
+    @InUIThread
 	public TableItemAccess findTableItemByContent(final String content) {
 		return new TableItemAccess((TableItem)findObject(getTable().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -45,4 +50,18 @@ public class TableAccess extends ControlAccess
 			}
 		}));
 	}
+
+    /**
+     * Return the given column; columns are in creation order. 
+     */
+    @InUIThread
+    public TableColumnAccess getTableColumn(int index) {
+        return new TableColumnAccess(getTable().getColumns()[index]);
+    }
+
+    @InUIThread
+    public int[] getTableColumnOrder() {
+        return getTable().getColumnOrder();
+    }
+
 }
