@@ -127,6 +127,7 @@ public class TableTextCellEditor extends CellEditor {
 
 	@Override
     protected void focusLost() {
+	    System.out.println("FOCUS LOST");
 		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
 			// skip focus lost if it went to the content assist popup
 		}
@@ -386,6 +387,7 @@ public class TableTextCellEditor extends CellEditor {
 
     protected void handleDefaultSelection(SelectionEvent event) {
         // same with enter-key handling code in keyReleaseOccured(e);
+        System.out.println("TableTextCellEditor: calling fireApplyEditorValue()");
         fireApplyEditorValue();
         deactivate();
     }

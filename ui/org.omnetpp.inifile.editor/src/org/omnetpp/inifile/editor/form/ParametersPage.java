@@ -618,10 +618,24 @@ public class ParametersPage extends FormPage {
 				if (key.contains("."))
 					sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
 		}
-		treeViewer.setInput(rootNode);
-		treeViewer.expandAll();
-		treeViewer.refresh();
-
+		
+		if (treeViewer.isCellEditorActive()) {
+		    // refreshing the tree would close the cell editor, so don't do it.
+		    // however, we'll need to do a refresh once the cell editor loses focus (commits or cancels).
+		    // commit is OK, since it will directly invoke refresh(); we only have to deal with cancel.
+		    // treeViewer.getColumnViewerEditor().addEditorActivationListener() doesn't seem to work
+		    // (listener doesn't get called), so we just schedule another reread into the future.
+            System.out.println("cell editor active -- postponing tree refresh");
+		    delayedRereadJob.restartTimer();
+		} 
+		else {
+		    // refresh the tree
+		    System.out.println("refreshing the tree");
+		    treeViewer.setInput(rootNode);
+		    treeViewer.expandAll();
+		    treeViewer.refresh();
+		}
+		
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		int numUnassigned = "".equals(selectedSection) ? 0 : getInifileAnalyzer().getUnassignedParams(selectedSection).length;

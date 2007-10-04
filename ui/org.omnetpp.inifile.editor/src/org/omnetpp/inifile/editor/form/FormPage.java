@@ -47,7 +47,7 @@ public abstract class FormPage extends Composite {
 	// See fields "delayedRereadListener" and "delayedRereadJob" which participate 
 	// in this mechanism.
 	//
-	private IInifileChangeListener delayedRereadListener = new IInifileChangeListener() {
+	protected IInifileChangeListener delayedRereadListener = new IInifileChangeListener() {
 		public void modelChanged() {
 			// we only need to schedule an update if the form editor is displayed;
 			// if text editor is displayed, switching to form mode will re-read
@@ -57,7 +57,7 @@ public abstract class FormPage extends Composite {
 		}
 	};
 
-	private DelayedJob delayedRereadJob = new DelayedJob(1000) {
+	protected DelayedJob delayedRereadJob = new DelayedJob(1000) {
 		public void run() {
 		    // reread if page is still displayed (and exists)
 		    if (inifileEditor.isFormPageDisplayed() && !FormPage.this.isDisposed() && 
