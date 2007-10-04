@@ -30,7 +30,7 @@ import org.eclipse.ui.ide.IDE;
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
     private static String[] NEDFILE_TEMPLATES = {
-        "//\n// NED file\n//\n\n",
+        "//\n// TODO Place comment here\n//\n\n",
         "//\n// TODO Place comment here\n//\n\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
         "//\n// TODO Place comment here\n//\n\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n  connections:\n}\n",
         "//\n// TODO Place comment here\n//\n\nnetwork #NAME# {\n  parameters:\n  submodules:\n  connections:\n}\n"
