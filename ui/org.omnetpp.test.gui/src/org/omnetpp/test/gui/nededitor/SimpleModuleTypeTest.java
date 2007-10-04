@@ -50,7 +50,7 @@ public class SimpleModuleTypeTest
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
-		WorkspaceUtils.createFileWithContent(filePath, "");
+		createEmptyFile();
         WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 	}
 

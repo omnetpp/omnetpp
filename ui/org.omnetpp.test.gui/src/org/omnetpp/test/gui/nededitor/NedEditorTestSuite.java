@@ -9,6 +9,7 @@ public class NedEditorTestSuite
 	public NedEditorTestSuite() {
 		addTestSuite(OpenFileTest.class);
         addTestSuite(SaveFileTest.class);
+        addTestSuite(NedFileWizardTest.class);
         addTestSuite(NedPathTest.class);
 		addTestSuite(SimpleModuleTypeTest.class);
 		addTestSuite(NedOutlineViewTest.class);
