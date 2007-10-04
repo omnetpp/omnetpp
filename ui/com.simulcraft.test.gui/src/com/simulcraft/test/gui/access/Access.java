@@ -30,6 +30,7 @@ import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.core.EventTracer;
+import com.simulcraft.test.gui.core.EventUtils;
 import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.core.NotInUIThread;
 
@@ -126,7 +127,7 @@ public class Access
 	@InUIThread
 	public static void postEvent(Event event) {
         Shell activeShell = getDisplay().getActiveShell();
-        log(debug, "Active shell at post event is " + activeShell);
+        // log(debug, "Active shell at post event is " + activeShell);
 		Assert.assertTrue("no active shell", activeShell != null);
         activeShell.forceActive();
 
@@ -175,7 +176,12 @@ public class Access
 	}
 
 	public static Event newEvent(int type) {
-		Event event = new Event();
+		Event event = new Event() {
+		    @Override
+		    public String toString() {
+		        return EventUtils.getEventDescription(this);
+		    }
+		};
 		event.type = type;
 		event.display = getDisplay();
 
@@ -186,7 +192,10 @@ public class Access
     public void pressKeySequence(String text) {
         for (int i = 0; i < text.length(); i++) {
             char character = text.charAt(i);
-            pressKey(character, getModifiersFor(character));
+            if (character == '\n')
+                pressEnter();  // \n would post LF instead of CR
+            else
+                pressKey(character, getModifiersFor(character));
         }
     }
 

@@ -25,7 +25,7 @@ public class EditorPartAccess
 
 	@InUIThread
 	public void closeWithHotKey() {
-		pressKey(SWT.CONTROL + SWT.F4);
+		pressKey(SWT.F4, SWT.CONTROL);
 	}
 
 	@InUIThread

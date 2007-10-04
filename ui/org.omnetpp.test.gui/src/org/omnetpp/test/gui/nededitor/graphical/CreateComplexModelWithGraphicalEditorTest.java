@@ -13,6 +13,7 @@ public class CreateComplexModelWithGraphicalEditorTest
 {
 	public void testCreateSimpleModel() throws Throwable {
 		WorkspaceUtils.createFileWithContent(filePath, "");
+		openFileFromProjectExplorerView();
 		NedEditorAccess nedEditor = findNedEditor();
 		GraphicalNedEditorAccess graphicalNedEditor = nedEditor.ensureActiveGraphicalEditor();
 		graphicalNedEditor.createSimpleModuleWithPalette("TestNode");

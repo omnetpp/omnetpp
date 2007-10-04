@@ -90,7 +90,7 @@ public class TreeAccess extends ControlAccess
 		TreeItem treeItem = (TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
 				TreeItem treeItem = (TreeItem)object;
-				log(true/*debug*/, "  checking: " + treeItem);
+				log(debug, "  checking: " + treeItem);
 				String treeItemContent = treeItem.getText();
 				return treeItemContent.matches(content);
 			}

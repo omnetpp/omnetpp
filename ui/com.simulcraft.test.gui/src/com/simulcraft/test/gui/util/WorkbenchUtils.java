@@ -63,6 +63,7 @@ public class WorkbenchUtils
 		problemsView.findTree().assertEmpty();
 	}
 
+	// FIXME should work in a case when two or more message is matching
 	public static void assertErrorMessageInProblemsView(String errorText) {
 		ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
 		problemsView.findTree().findTreeItemByContent(errorText);

@@ -17,7 +17,9 @@ public class SimpleModuleTypeTest
 	}
 
 	public void testDuplicate1() throws Throwable {
-		assertErrorInNedSource("simple A {} simple A {}", ".*A.*already defined.*");
+	    // FIXME this test fails because 2 error message is generated (1 for each line)
+	    // however assertErrorMessageInProblemView requires to mach only a single line
+		assertErrorInNedSource("simple A {}\nsimple A {}", ".*A.*already defined.*");
 	}
 
 	public void testExtends1() throws Throwable {
@@ -48,21 +50,17 @@ public class SimpleModuleTypeTest
 		assertErrorInNedSource("simple A extends B {}\nsimple B extends C {}\nsimple C extends A {}", ".*cycle.*");
 	}
 	
-	@Override
-	protected void setUpInternal() throws Exception {
-		super.setUpInternal();
-		createEmptyFile();
+	protected void assertNoErrorInNedSource(String nedSource) throws Exception {
+	    createFileWithContent(nedSource);
         WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
-	}
-
-	protected void assertNoErrorInNedSource(String nedSource) {
-		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
 		WorkbenchUtils.assertNoErrorMessageInProblemsView();
 	}
 
-	protected void assertErrorInNedSource(String nedSource, String errorText) {
-		NedEditorUtils.typeIntoTextualNedEditor(fileName, nedSource);
+	protected void assertErrorInNedSource(String nedSource, String errorText) throws Exception {
+        createFileWithContent(nedSource);
+        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 		WorkbenchUtils.assertErrorMessageInProblemsView(errorText);
-		//TODO: do something in the graphical editor: check error markers are there, etc
+		// TODO do something in the graphical editor: check error markers are there, etc
+		// TODO also check the ruler of the text editor
 	}
 }
