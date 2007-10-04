@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -232,24 +233,30 @@ public class TableTextCellEditor extends CellEditor {
 				switch (e.keyCode) {
 
 				case SWT.ARROW_DOWN :
+				    e.doit= false;
 					if (fTableViewer instanceof TableViewer) {
-						e.doit= false;
 						int nextRow= ((TableViewer)fTableViewer).getTable().getSelectionIndex() + 1;
 						if (nextRow >= ((TableViewer)fTableViewer).getTable().getItemCount())
 							break;
 						editRow(nextRow);
-						break;
 					}
+                    if (fTableViewer instanceof TreeViewer) {
+                        //TODO implement
+                    }
+					break;
 
 				case SWT.ARROW_UP :
+				    e.doit= false;
 					if (fTableViewer instanceof TableViewer) {
-						e.doit= false;
 						int prevRow= ((TableViewer)fTableViewer).getTable().getSelectionIndex() - 1;
 						if (prevRow < 0)
 							break;
 						editRow(prevRow);
-						break;
 					}
+                    if (fTableViewer instanceof TreeViewer) {
+                        //TODO implement
+                    }
+					break;
 
 				case SWT.F2 :
 					e.doit= false;
