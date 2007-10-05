@@ -20,28 +20,29 @@ public class TableItemAccess extends ClickableWidgetAccess
 		super(widget);
 	}
 	
-	public TableItem getTableItem() {
+    @Override
+	public TableItem getWidget() {
 		return (TableItem)widget;
 	}
 
 	@InUIThread
 	public TableAccess getTable() {
-	    return (TableAccess) createAccess(getTableItem().getParent());
+	    return (TableAccess) createAccess(getWidget().getParent());
 	}
 
 	@InUIThread
 	public TableItemAccess reveal() {
-		Table table = getTableItem().getParent();
-		int myIndex = ArrayUtils.indexOf(table.getItems(), getTableItem());
+		Table table = getWidget().getParent();
+		int myIndex = ArrayUtils.indexOf(table.getItems(), getWidget());
 		table.setTopIndex(myIndex); // scroll there
 		return this;
 	}
 
 	@Override
 	protected Point getAbsolutePointToClick() {
-	    Point point = getTableItem().getParent().toDisplay(getCenter(getTableItem().getBounds()));
+	    Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
         Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
-        Assert.assertTrue("column has zero width", getTableItem().getBounds().width > 0);
+        Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
 	}
 
@@ -50,8 +51,8 @@ public class TableItemAccess extends ClickableWidgetAccess
      */
     @InUIThread
     public void clickLeftEdge() {
-        Rectangle bounds = getTableItem().getBounds();
-        Point point = getTableItem().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
+        Rectangle bounds = getWidget().getBounds();
+        Point point = getWidget().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
         Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width", bounds.width > 0);
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
@@ -60,12 +61,12 @@ public class TableItemAccess extends ClickableWidgetAccess
 
 	@Override
 	protected Menu getContextMenu() {
-		return (Menu)getTableItem().getParent().getMenu();
+		return (Menu)getWidget().getParent().getMenu();
 	}
 	
     @InUIThread
     public void ensureChecked(boolean state) {
-        if (getTableItem().getChecked() != state) {
+        if (getWidget().getChecked() != state) {
             click();
             pressKey(' ');
         }
@@ -73,7 +74,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 	
     @InUIThread
     public void clickColumn(int index) {
-        Point point = getTableItem().getParent().toDisplay(getCenter(getTableItem().getTextBounds(index)));
+        Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
         Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
     }
@@ -116,12 +117,12 @@ public class TableItemAccess extends ClickableWidgetAccess
 
     @InUIThread
     public void assertTextContent(String content) {
-        Assert.assertTrue(getTableItem().getText().matches(content));
+        Assert.assertTrue(getWidget().getText().matches(content));
     }
 
     @InUIThread
     public void assertTextContent(int index, String content) {
-        Assert.assertTrue(getTableItem().getText(index).matches(content));
+        Assert.assertTrue(getWidget().getText(index).matches(content));
     }
 
 }

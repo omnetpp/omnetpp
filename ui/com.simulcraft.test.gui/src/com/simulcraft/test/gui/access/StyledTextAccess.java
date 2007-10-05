@@ -17,20 +17,21 @@ public class StyledTextAccess extends CompositeAccess
 		super(styledText);
 	}
 
-	public StyledText getStyledText() {
+    @Override
+	public StyledText getControl() {
 		return (StyledText)widget;
 	}
 
 	@InUIThread
 	public String getTextContent() {
-		return getStyledText().getText();
+		return getControl().getText();
 	}
 
 	@InUIThread
 	public void moveCursorAfter(String patternString) {
 	    int targetOffset = getOffsetAfter(patternString);
 	    reveal(targetOffset);
-		Point loc = getStyledText().toDisplay(getStyledText().getLocationAtOffset(targetOffset));
+		Point loc = getControl().toDisplay(getControl().getLocationAtOffset(targetOffset));
 		clickAbsolute(LEFT_MOUSE_BUTTON, loc);
 	}
 	
@@ -38,8 +39,8 @@ public class StyledTextAccess extends CompositeAccess
 	public void reveal(int offset) {
 	    // FIXME it moves the offset at the top. it would be enough to show only on the screen
 	    // need to scroll horizontally as well
-	    int lineAtOffset = getStyledText().getLineAtOffset(offset);
-        getStyledText().setTopIndex(lineAtOffset);
+	    int lineAtOffset = getControl().getLineAtOffset(offset);
+        getControl().setTopIndex(lineAtOffset);
 	}
 
     @InUIThread

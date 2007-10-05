@@ -22,28 +22,29 @@ public class CompositeAccess extends ControlAccess
 		super(composite);
 	}
 
-	public Composite getComposite() {
+    @Override
+	public Composite getControl() {
 		return (Composite)widget;
 	}
 
 	@InUIThread
 	public Control findDescendantControl(Class<? extends Control> clazz) {
-		return findDescendantControl(getComposite(), clazz);
+		return findDescendantControl(getControl(), clazz);
 	}
 
 	@InUIThread
 	public Control findDescendantControl(IPredicate predicate) {
-		return findDescendantControl(getComposite(), predicate);
+		return findDescendantControl(getControl(), predicate);
 	}
 
 	@InUIThread
 	public List<Control> collectDescendantControls(IPredicate predicate) {
-		return collectDescendantControls(getComposite(), predicate);
+		return collectDescendantControls(getControl(), predicate);
 	}
 
 	@InUIThread
 	public ButtonAccess findButtonWithLabel(final String label) {
-		return new ButtonAccess((Button)findDescendantControl(getComposite(), new IPredicate() {
+		return new ButtonAccess((Button)findDescendantControl(getControl(), new IPredicate() {
 			public boolean matches(Object object) {
 				if (object instanceof Button) {
 					Button button = (Button)object;
@@ -56,7 +57,7 @@ public class CompositeAccess extends ControlAccess
 
 	@InUIThread
 	public LabelAccess findLabel(final String label) {
-		Label labelControl = (Label)findDescendantControl(getComposite(), new IPredicate() {
+		Label labelControl = (Label)findDescendantControl(getControl(), new IPredicate() {
 			public boolean matches(Object object) {
 				if (object instanceof Label) {
 					Label labelControl = (Label)object;
@@ -70,17 +71,17 @@ public class CompositeAccess extends ControlAccess
 
 	@InUIThread
 	public TreeAccess findTree() {
-		return new TreeAccess((Tree)findDescendantControl(getComposite(), Tree.class));
+		return new TreeAccess((Tree)findDescendantControl(getControl(), Tree.class));
 	}
 
 	@InUIThread
 	public TableAccess findTable() {
-		return new TableAccess((Table)findDescendantControl(getComposite(), Table.class));
+		return new TableAccess((Table)findDescendantControl(getControl(), Table.class));
 	}
 
 	@InUIThread
 	public StyledTextAccess findStyledText() {
-		return new StyledTextAccess((StyledText) Access.findDescendantControl(getComposite(), StyledText.class));
+		return new StyledTextAccess((StyledText) Access.findDescendantControl(getControl(), StyledText.class));
 	}
 
 	@InUIThread

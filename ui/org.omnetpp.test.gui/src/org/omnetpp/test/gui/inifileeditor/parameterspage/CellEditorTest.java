@@ -131,7 +131,6 @@ public class CellEditorTest extends InifileEditorTestCase {
         tree.findTreeItemByContent(".*par2").activateCellEditor(1);
         tree.pressKey(SWT.DEL);
         tree.pressKey(' ', SWT.CTRL); // Content Assist should come up
-//        Access.sleep(1); // wait until Content Assist appears
         WorkbenchWindowAccess.chooseFromContentAssistPopupWithKeyboard("exponential\\(mean\\).*");
         tree.pressKeySequence("+10"); // append some text to see cell editor is still open
         tree.pressEnter(); // commit cell editor
@@ -143,7 +142,6 @@ public class CellEditorTest extends InifileEditorTestCase {
         tree.findTreeItemByContent(".*par2").activateCellEditor(1);
         tree.pressKeySequence("expon");
         tree.pressKey(' ', SWT.CTRL); // Content Assist should come up, with "exponential()" as first proposal
-//        Access.sleep(1); // wait until Content Assist appears
         WorkbenchWindowAccess.chooseFromContentAssistPopupWithMouse("exponential\\(mean\\).*");
         tree.pressKeySequence("+10"); // append some text to see cell editor is still open
         tree.pressEnter(); // commit cell editor

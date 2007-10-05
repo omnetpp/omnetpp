@@ -22,23 +22,24 @@ public class TreeAccess extends ControlAccess
 		super(tree);
 	}
 
-	public Tree getTree() {
+	@Override
+	public Tree getControl() {
 		return (Tree)widget;
 	}
 
 	@InUIThread
 	public void assertEmpty() {
-		Assert.assertTrue(getTree().getItemCount() == 0);
+		Assert.assertTrue(getControl().getItemCount() == 0);
 	}
 
     @InUIThread
     public void assertNotEmpty() {
-        Assert.assertTrue(getTree().getItemCount() != 0);
+        Assert.assertTrue(getControl().getItemCount() != 0);
     }
 
     @InUIThread
     public void assertHeaderVisible() {
-        Assert.assertTrue(getTree().getHeaderVisible());
+        Assert.assertTrue(getControl().getHeaderVisible());
     }
 
     /**
@@ -55,7 +56,7 @@ public class TreeAccess extends ControlAccess
     
     @InUIThread
     public TreeItem[] getItems() {
-    	return getTree().getItems();
+    	return getControl().getItems();
     }
     
     public TreeItemAccess[] getItemAccesses() {
@@ -87,7 +88,7 @@ public class TreeAccess extends ControlAccess
 
 	@InUIThread
 	public TreeItemAccess findTreeItemByContent(final String content) {
-		TreeItem treeItem = (TreeItem)theOnlyWidget(collectTreeItems(getTree().getItems(), new IPredicate() {
+		TreeItem treeItem = (TreeItem)theOnlyWidget(collectTreeItems(getControl().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
 				TreeItem treeItem = (TreeItem)object;
 				log(debug, "  checking: " + treeItem);
@@ -142,18 +143,18 @@ public class TreeAccess extends ControlAccess
      */
 	@InUIThread
 	public TreeColumnAccess getTreeColumn(int index) {
-	    return new TreeColumnAccess(getTree().getColumns()[index]);
+	    return new TreeColumnAccess(getControl().getColumns()[index]);
 	}
 
 	@InUIThread
 	public int[] getTreeColumnOrder() {
-	    return getTree().getColumnOrder();
+	    return getControl().getColumnOrder();
 	}
 
     @InUIThread
     public TreeItemAccess[] getSelection() {
         ArrayList<TreeItemAccess> result = new ArrayList<TreeItemAccess>(); 
-        for (TreeItem item : getTree().getSelection())
+        for (TreeItem item : getControl().getSelection())
             result.add((TreeItemAccess)createAccess(item));
         return result.toArray(new TreeItemAccess[]{});
     }

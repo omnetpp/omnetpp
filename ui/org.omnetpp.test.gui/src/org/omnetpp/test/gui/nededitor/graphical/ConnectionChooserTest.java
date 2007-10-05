@@ -116,7 +116,7 @@ public class ConnectionChooserTest
         menuAccess.assertMenuItemsEnabled(enabledLabels);
         menuAccess.assertMenuItemsDisabled(disabledLabels);
         if (doNotAllowExtraItems)
-            assertTrue("Menu contains extra items", menuAccess.getMenu().getItemCount() == enabledLabels.length + disabledLabels.length);
+            assertTrue("Menu contains extra items", menuAccess.getWidget().getItemCount() == enabledLabels.length + disabledLabels.length);
     }
 
     private String q(String txt) {

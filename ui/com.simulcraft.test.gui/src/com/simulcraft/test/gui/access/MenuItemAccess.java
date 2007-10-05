@@ -16,23 +16,24 @@ public class MenuItemAccess extends ClickableWidgetAccess
 		super(menuItem);
 	}
 
-	public MenuItem getMenuItem() {
+    @Override
+	public MenuItem getWidget() {
 		return (MenuItem)widget;
 	}
 
 	@InUIThread
 	public void assertEnabled() {
-		if (!getMenuItem().isEnabled()) {
+		if (!getWidget().isEnabled()) {
 	    	MenuAccess.closeMenus();
-	    	Assert.assertTrue("menu item '"+getMenuItem().getText()+"' should be enabled", false);
+	    	Assert.assertTrue("menu item '"+getWidget().getText()+"' should be enabled", false);
 		}
 	}
 	
     @InUIThread
     public void assertDisabled() {
-        if (getMenuItem().isEnabled()) {
+        if (getWidget().isEnabled()) {
             MenuAccess.closeMenus();
-            Assert.assertTrue("menu item '"+getMenuItem().getText()+"' should be disabled", false);
+            Assert.assertTrue("menu item '"+getWidget().getText()+"' should be disabled", false);
         }
     }
     
@@ -40,13 +41,13 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	public MenuAccess activateWithMouseClick() {
 		assertEnabled();
 		click();
-		return getMenuItem().getMenu() == null ? null : new MenuAccess(getMenuItem().getMenu());
+		return getWidget().getMenu() == null ? null : new MenuAccess(getWidget().getMenu());
 	}
 
 	@Override
 	protected Point getAbsolutePointToClick() {
-		Rectangle parentRectangle = (Rectangle)ReflectionUtils.invokeMethod(getMenuItem().getParent(), "getBounds");
-		Rectangle rectangle = (Rectangle)ReflectionUtils.invokeMethod(getMenuItem(), "getBounds");
+		Rectangle parentRectangle = (Rectangle)ReflectionUtils.invokeMethod(getWidget().getParent(), "getBounds");
+		Rectangle rectangle = (Rectangle)ReflectionUtils.invokeMethod(getWidget(), "getBounds");
 		rectangle.x = rectangle.x + parentRectangle.x;
 		rectangle.y = rectangle.y + parentRectangle.y;
 		return getCenter(rectangle);

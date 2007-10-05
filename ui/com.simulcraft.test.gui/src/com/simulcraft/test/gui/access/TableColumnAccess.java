@@ -15,13 +15,14 @@ public class TableColumnAccess extends ClickableWidgetAccess
 		super(treeColumn);
 	}
 
-	public TableColumn getTableColumn() {
+    @Override
+	public TableColumn getWidget() {
 		return (TableColumn)widget;
 	}
 
     @InUIThread
     public TableAccess getTable() {
-        return (TableAccess) createAccess(getTableColumn().getParent());
+        return (TableAccess) createAccess(getWidget().getParent());
     }
 	
 	@InUIThread
@@ -34,16 +35,16 @@ public class TableColumnAccess extends ClickableWidgetAccess
 	protected Point getAbsolutePointToClick() {
         // center of the header. Note: header is at NEGATIVE table coordinates! (origin is top-left of data area)
 	    getTable().assertHeaderVisible();
-        Table tree = (Table)getTableColumn().getParent();
-        Point point = tree.toDisplay(getX() + getTableColumn().getWidth()/2, -tree.getHeaderHeight()/2);
+        Table tree = (Table)getWidget().getParent();
+        Point point = tree.toDisplay(getX() + getWidget().getWidth()/2, -tree.getHeaderHeight()/2);
         Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
-        Assert.assertTrue("column has zero width, cannot click", getTableColumn().getWidth() > 0);
+        Assert.assertTrue("column has zero width, cannot click", getWidget().getWidth() > 0);
         return point;
 	}
 
 	@Override
 	protected Menu getContextMenu() {
-		return (Menu)getTableColumn().getParent().getMenu();
+		return (Menu)getWidget().getParent().getMenu();
 	}
 
 	/**
@@ -52,13 +53,13 @@ public class TableColumnAccess extends ClickableWidgetAccess
 	 */
 	@InUIThread
 	public int getX() {
-	    Table tree = (Table)getTableColumn().getParent();
+	    Table tree = (Table)getWidget().getParent();
 	    TableColumn[] columns = tree.getColumns();
 	    int[] columnOrder = tree.getColumnOrder();
 	    int x = 0;
 	    for (int i = 0; i < columns.length; i++) {
 	        TableColumn col = columns[columnOrder[i]];
-	        if (col == getTableColumn()) {
+	        if (col == getWidget()) {
                 int horizontalScrollOffset = tree.getHorizontalBar().getSelection();
                 return x - horizontalScrollOffset;
             }

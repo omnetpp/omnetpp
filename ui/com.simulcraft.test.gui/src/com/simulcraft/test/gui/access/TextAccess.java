@@ -13,13 +13,14 @@ public class TextAccess extends ControlAccess
 		super(text);
 	}
 
-	public Text getText() {
+    @Override
+	public Text getControl() {
 		return (Text)widget;
 	}
 	
 	@InUIThread
 	public String getTextContent() {
-		return getText().getText();
+		return getControl().getText();
 	}
 
     @InUIThread
@@ -38,7 +39,7 @@ public class TextAccess extends ControlAccess
         assertEnabled();
         assertEditable();
         assertHasFocus();
-        Text text = getText();
+        Text text = getControl();
         if (text.getSelectionCount() != text.getText().length())
             pressKey('a', SWT.CONTROL);
         if (text.getText().length() > 0 && content.equals(""))

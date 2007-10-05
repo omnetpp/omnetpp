@@ -10,7 +10,8 @@ public class CTabItemAccess extends ClickableWidgetAccess
 		super(cTabItem);
 	}
 	
-	public CTabItem getCTabItem() {
+    @Override
+	public CTabItem getWidget() {
 		return (CTabItem)widget;
 	}
 	
@@ -21,6 +22,6 @@ public class CTabItemAccess extends ClickableWidgetAccess
 
 	@Override
 	protected Point getAbsolutePointToClick() {
-		return getCTabItem().getParent().toDisplay(getCenter(getCTabItem().getBounds()));
+		return getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
 	}
 }

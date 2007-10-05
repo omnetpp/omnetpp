@@ -10,7 +10,8 @@ public class ButtonAccess extends ControlAccess
 		super(control);
 	}
 	
-	public Button getButton() {
+	@Override
+	public Button getControl() {
 		return (Button)widget;
 	}
 

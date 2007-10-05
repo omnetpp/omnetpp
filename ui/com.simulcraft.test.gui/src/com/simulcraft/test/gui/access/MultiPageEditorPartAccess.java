@@ -35,7 +35,7 @@ public class MultiPageEditorPartAccess
 	@InUIThread
 	public boolean isPageActive(String label) {
 		CTabItemAccess activeCTabItem = getActiveCTabItem();
-		return activeCTabItem != null && label.equals(activeCTabItem.getCTabItem().getText());
+		return activeCTabItem != null && label.equals(activeCTabItem.getWidget().getText());
 	}
 
 	@InUIThread

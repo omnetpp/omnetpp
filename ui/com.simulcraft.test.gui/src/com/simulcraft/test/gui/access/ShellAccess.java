@@ -13,13 +13,14 @@ public class ShellAccess extends CompositeAccess
 		super(shell);
 	}
 
-	public Shell getShell() {
+    @Override
+	public Shell getControl() {
 		return (Shell)widget;
 	}
 
 	@InUIThread
 	public MenuAccess getMenuBar() {
-		return new MenuAccess(getShell().getMenuBar());
+		return new MenuAccess(getControl().getMenuBar());
 	}
 
 	/**
@@ -28,6 +29,6 @@ public class ShellAccess extends CompositeAccess
 	 */
 	@InUIThread
 	public void assertIsActive() {
-		Assert.assertTrue("not the active shell", Display.getCurrent().getActiveShell() == getShell());
+		Assert.assertTrue("not the active shell", Display.getCurrent().getActiveShell() == getControl());
 	}
 }

@@ -19,27 +19,28 @@ public class TreeItemAccess extends ClickableWidgetAccess
 		super(treeItem);
 	}
 
-	public TreeItem getTreeItem() {
+    @Override
+	public TreeItem getWidget() {
 		return (TreeItem)widget;
 	}
 
 	@InUIThread
 	public TreeAccess getTree() {
-	    return (TreeAccess) createAccess(getTreeItem().getParent());
+	    return (TreeAccess) createAccess(getWidget().getParent());
 	}
 	
 	@InUIThread
 	public TreeItemAccess reveal() {
-	    if (!getTreeItem().getParent().getBounds().contains(getCenter(getTreeItem().getBounds())))
-	            getTreeItem().getParent().setTopItem(getTreeItem()); // scroll there
+	    if (!getWidget().getParent().getBounds().contains(getCenter(getWidget().getBounds())))
+	            getWidget().getParent().setTopItem(getWidget()); // scroll there
 		return this;
 	}
 	
 	@Override
 	protected Point getAbsolutePointToClick() {
-	    Point point = getTreeItem().getParent().toDisplay(getCenter(getTreeItem().getBounds()));
+	    Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
-        Assert.assertTrue("column has zero width", getTreeItem().getBounds().width > 0);
+        Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
 	}
 
@@ -48,8 +49,8 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	 */
 	@InUIThread
 	public void clickLeftEdge() {
-        Rectangle bounds = getTreeItem().getBounds();
-        Point point = getTreeItem().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
+        Rectangle bounds = getWidget().getBounds();
+        Point point = getWidget().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width", bounds.width > 0);
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
@@ -57,12 +58,12 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	
 	@Override
 	protected Menu getContextMenu() {
-		return (Menu)getTreeItem().getParent().getMenu();
+		return (Menu)getWidget().getParent().getMenu();
 	}
 
     @InUIThread
     public void ensureChecked(boolean state) {
-        if (getTreeItem().getChecked() != state) {
+        if (getWidget().getChecked() != state) {
             click();
             pressKey(' ');
         }
@@ -70,7 +71,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 
     @InUIThread
     public void ensureExpanded() {
-        if (!getTreeItem().getExpanded()) {
+        if (!getWidget().getExpanded()) {
             reveal();
             click();
             pressKey(SWT.ARROW_RIGHT);
@@ -79,7 +80,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
     
     @InUIThread
     public void clickColumn(int index) {
-        Point point = getTreeItem().getParent().toDisplay(getCenter(getTreeItem().getTextBounds(index)));
+        Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
     }
@@ -122,11 +123,11 @@ public class TreeItemAccess extends ClickableWidgetAccess
 
     @InUIThread
     public void assertTextContent(String content) {
-        Assert.assertTrue(getTreeItem().getText().matches(content));
+        Assert.assertTrue(getWidget().getText().matches(content));
     }
 
     @InUIThread
     public void assertTextContent(int index, String content) {
-        Assert.assertTrue(getTreeItem().getText(index).matches(content));
+        Assert.assertTrue(getWidget().getText(index).matches(content));
     }
 }

@@ -20,7 +20,8 @@ public class MenuAccess extends WidgetAccess {
 		super(menu);
 	}
 
-	public Menu getMenu() {
+    @Override
+	public Menu getWidget() {
 		return (Menu)widget;
 	}
 
@@ -37,7 +38,7 @@ public class MenuAccess extends WidgetAccess {
 	@InUIThread
 	public MenuItemAccess findMenuItemByLabel(final String label) {
 		try {
-			return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(getMenu(), new IPredicate() {
+			return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(getWidget(), new IPredicate() {
 				public boolean matches(Object object) {
 					String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
 					return menuItemLabel.matches(label);

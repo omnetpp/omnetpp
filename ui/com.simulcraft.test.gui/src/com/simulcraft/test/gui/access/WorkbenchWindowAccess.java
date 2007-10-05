@@ -185,7 +185,7 @@ public class WorkbenchWindowAccess extends Access {
         // Content Assist popup is a Table in a Composite in a nameless Shell
         Shell shell = (Shell)Access.findObject(Access.getDisplay().getShells(), new IPredicate() {
             public boolean matches(Object object) {
-                Access.log(Access.debug, "Trying to content assist popup");
+                Access.log(Access.debug, "Trying to find content assist popup");
                 Shell shell = (Shell)object;
                 if (shell.getText().equals("")) {
                     //shell.getStyle() == 0x020004F0

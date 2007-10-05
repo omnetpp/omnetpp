@@ -62,7 +62,7 @@ public class WorkbenchPartAccess
 
     @InUIThread
     public void ensureActivated() {
-        CTabItem cTabItem = getCTabItem().getCTabItem();
+        CTabItem cTabItem = getCTabItem().getWidget();
         IWorkbenchPart workbenchPart = getWorkbenchPart();
         if (cTabItem.getParent().getSelection() != cTabItem || workbenchPart.getSite().getPage().getActivePart() != workbenchPart)
             activateWithMouseClick();

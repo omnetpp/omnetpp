@@ -14,22 +14,23 @@ public class ComboAccess extends ControlAccess
 		super(combo);
 	}
 
-	public Combo getCombo() {
+    @Override
+	public Combo getControl() {
 		return (Combo)widget;
 	}
 	
     @InUIThread
 	public String[] getComboItems() {
-	    return getCombo().getItems();
+	    return getControl().getItems();
 	}
 	
 	@InUIThread
 	public String getTextContent() {
-		return getCombo().getText();
+		return getControl().getText();
 	}
 
 	public void assertEditable() {
-		Assert.assertTrue("combo is readonly", (getCombo().getStyle() & SWT.READ_ONLY) == 0);
+		Assert.assertTrue("combo is readonly", (getControl().getStyle() & SWT.READ_ONLY) == 0);
 	}
 
     @InUIThread
@@ -42,7 +43,7 @@ public class ComboAccess extends ControlAccess
         assertEnabled();
         assertEditable();
         assertHasFocus();
-        Combo combo = getCombo();
+        Combo combo = getControl();
         pressKey('a', SWT.CONTROL);
         if (combo.getText().length() > 0 && content.equals(""))
             pressKey(SWT.DEL);

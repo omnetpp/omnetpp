@@ -16,13 +16,13 @@ public class EventLogTableAccess
         super(composite);
     }
     
-    public EventLogTable getEventLogTable() {
+    public EventLogTable getEventLogTableControl() {
         return (EventLogTable)widget;
     }
 
     @InUIThread
     public MenuAccess activateContextMenuWithMouseClick(int eventNumber) {
-        EventLogTable eventLogTable = getEventLogTable();
+        EventLogTable eventLogTable = getEventLogTableControl();
         
         if (eventLogTable.getTopVisibleElement().getEventNumber() <= eventNumber &&
             eventNumber <= eventLogTable.getBottomFullyVisibleElement().getEventNumber())

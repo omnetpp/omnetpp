@@ -8,7 +8,8 @@ public class LabelAccess extends ControlAccess
 		super(control);
 	}
 	
-	public Label getLabel() {
+    @Override
+	public Label getControl() {
 		return (Label)widget;
 	}
 }
