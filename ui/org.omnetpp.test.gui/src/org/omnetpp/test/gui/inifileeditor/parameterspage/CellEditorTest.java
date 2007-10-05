@@ -1,12 +1,29 @@
 package org.omnetpp.test.gui.inifileeditor.parameterspage;
 
+import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
-public class CellEditorTest extends InifileEditorTestCase {
+import com.simulcraft.test.gui.access.CompositeAccess;
+import com.simulcraft.test.gui.access.TextAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
 
-    private void prepareTest(String content) throws Exception {
+public class CellEditorTest extends InifileEditorTestCase {
+    final String content = 
+        "[General]\n" +
+        "**.par1 = 100\n" +
+        "**.par2 = 200\n" +
+        "**.par3 = 300\n" +
+        "**.par4 = 400\n" +
+        "[Config Foo]\n" +
+        "**.par5 = 500\n" +
+        "**.par6 = 600\n";
+
+    private TreeAccess prepareTest() throws Exception {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
+        CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
+        parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
+        return parametersPage.findTree();
     }
 
     private void assertTextEditorContentMatches(String content) {
@@ -15,6 +32,13 @@ public class CellEditorTest extends InifileEditorTestCase {
 
     public void testKeyUp1() throws Exception {
         // edit previous line
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par3").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.pressKey(SWT.ARROW_UP);
+        tree.pressKeySequence("bar");
+        tree.pressEnter();
+        assertTextEditorContentMatches(content.replace("300", "foo").replace("200", "bar"));
     }
 
     public void testKeyUp2() throws Exception {

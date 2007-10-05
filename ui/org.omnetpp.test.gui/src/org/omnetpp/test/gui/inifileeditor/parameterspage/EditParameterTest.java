@@ -6,7 +6,6 @@ import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 
 public class EditParameterTest extends InifileEditorTestCase {
-    //FIXME cell editing very unreliable. Probably needs refactoring in the Inifile code
     private void prepareTest(String content) throws Exception {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
@@ -88,8 +87,6 @@ public class EditParameterTest extends InifileEditorTestCase {
     }
 
     //TODO more tests:
-    //  validation
-    
-    // lots of cell editor tests!! with content assist with mouse/keyboard selection, navigation up/down, Esc, Enter, click away, etc!!!!
+    //  validation, content assist proposals
     
 }
