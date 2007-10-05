@@ -148,7 +148,7 @@ public class ExecuteUndoRedoUndoTestSuite
         }
 
         private String getText() {
-            return findNedEditor().getTextualNedEditor().getText();
+            return findNedEditor().getTextualNedEditor().getTextContent();
         }
     }
 }

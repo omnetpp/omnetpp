@@ -15,7 +15,7 @@ public class TextEditorAccess extends EditorPartAccess
 	
     @Override
 	public ITextEditor getPart() {
-	    return (ITextEditor)getPart();
+	    return (ITextEditor)workbenchPart;
 	}
 
 	@InUIThread
