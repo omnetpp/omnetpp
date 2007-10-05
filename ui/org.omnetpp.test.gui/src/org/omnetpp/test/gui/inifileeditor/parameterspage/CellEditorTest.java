@@ -3,11 +3,13 @@ package org.omnetpp.test.gui.inifileeditor.parameterspage;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
+import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class CellEditorTest extends InifileEditorTestCase {
     final String content = 
@@ -21,10 +23,14 @@ public class CellEditorTest extends InifileEditorTestCase {
         "**.par6 = 600\n";
 
     private TreeAccess prepareTest() throws Exception {
+        return prepareTest(content, "Config Foo");
+    }
+
+    private TreeAccess prepareTest(String content, String sectionToSelect) throws Exception {
         createFileWithContent(content);
         openFileFromProjectExplorerView();
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
-        parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
+        parametersPage.findComboAfterLabel("Config.*").selectItem(sectionToSelect);
         return parametersPage.findTree();
     }
 
@@ -116,12 +122,24 @@ public class CellEditorTest extends InifileEditorTestCase {
         assertTextEditorContentMatches(content.replace("500", "foo"));
     }
 
+    public void testContentAssistWithKeyboardSelection() throws Exception {
+        WorkspaceUtils.createFileWithContent(projectName+"/test.ned", "network TestNetwork { parameters: int aaa; bool bbb; }\n");
+        String content = 
+            "[General]\n" +
+            "network = TestNetwork\n" +
+            "**.bbb = garbage\n";
+        TreeAccess tree = prepareTest(content, "General");
+        tree.findTreeItemByContent(".*bbb").activateCellEditor(1);
+        tree.pressKeySequence("f");
+        tree.pressKey(' ', SWT.CTRL); // Content Assist should come up, with "false" as first proposal
+        Access.sleep(1); // wait until Content Assist appears
+        tree.pressEnter(); // select default proposal
+        tree.pressKeySequence(" and blabla"); // append some text to see cell editor is still open
+        tree.pressEnter(); // commit cell editor
+        assertTextEditorContentMatches(content.replace("garbage", "false and blabla"));
+    }
+    
     public void testContentAssistWithMouseSelection() throws Exception {
         //TODO
     }
-
-    public void testContentAssistWithKeyboardSelection() throws Exception {
-        //TODO
-    }
-    
 }
