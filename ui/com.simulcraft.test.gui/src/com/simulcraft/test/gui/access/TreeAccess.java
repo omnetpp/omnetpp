@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.IPredicate;
@@ -51,16 +52,17 @@ public class TreeAccess extends ControlAccess
     @NotInUIThread
     public void assertContent(GenericTreeNode... content) {
     	expandAll(); // expand all items because the Tree can be virtual
-    	Assert.assertTrue("tree content does not match expected content", compareContent(getItems(), content));
+    	doAssertContent(content);
     }
-    
+
     @InUIThread
-    public TreeItem[] getItems() {
-    	return getControl().getItems();
+    protected void doAssertContent(GenericTreeNode... content) {
+        Assert.assertTrue("tree content does not match expected content", compareContent(getControl().getItems(), content));
     }
-    
-    public TreeItemAccess[] getItemAccesses() {
-    	TreeItem[] items = getItems();
+
+    @InUIThread
+    public TreeItemAccess[] getItems() {
+    	TreeItem[] items = getControl().getItems();
     	TreeItemAccess[] treeItems = new TreeItemAccess[items.length];
     	for (int i = 0; i < items.length; ++i)
     		treeItems[i] = (TreeItemAccess)createAccess(items[i]);
@@ -69,7 +71,7 @@ public class TreeAccess extends ControlAccess
     
     @NotInUIThread
     public void expandAll() {
-    	for (TreeItemAccess item : getItemAccesses()) {
+    	for (TreeItemAccess item : getItems()) {
     		item.reveal();
     		item.click();
         	pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE); // fully expands the subtree (right arrow or Plus only expands this node)
@@ -137,7 +139,15 @@ public class TreeAccess extends ControlAccess
 		
 		return true;
 	}
-	
+
+    @InUIThread
+    public TreeColumnAccess[] getTreeColumns() {
+        ArrayList<TreeColumnAccess> result = new ArrayList<TreeColumnAccess>(); 
+        for (TreeColumn item : getControl().getColumns())
+            result.add((TreeColumnAccess)createAccess(item));
+        return result.toArray(new TreeColumnAccess[]{});
+    }
+
     /**
      * Return the given column; columns are in creation order. 
      */

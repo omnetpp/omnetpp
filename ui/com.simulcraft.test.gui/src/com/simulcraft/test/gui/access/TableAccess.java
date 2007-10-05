@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import junit.framework.Assert;
 
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.util.IPredicate;
 
@@ -53,6 +54,14 @@ public class TableAccess extends ControlAccess
 			}
 		}));
 	}
+
+    @InUIThread
+    public TableColumnAccess[] getTableColumns() {
+        ArrayList<TableColumnAccess> result = new ArrayList<TableColumnAccess>(); 
+        for (TableColumn item : getControl().getColumns())
+            result.add((TableColumnAccess)createAccess(item));
+        return result.toArray(new TableColumnAccess[]{});
+    }
 
     /**
      * Return the given column; columns are in creation order. 
