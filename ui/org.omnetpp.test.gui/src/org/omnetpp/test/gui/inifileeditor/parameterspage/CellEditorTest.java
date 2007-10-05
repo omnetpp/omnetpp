@@ -6,6 +6,8 @@ import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class CellEditorTest extends InifileEditorTestCase {
     final String content = 
@@ -43,38 +45,83 @@ public class CellEditorTest extends InifileEditorTestCase {
 
     public void testKeyUp2() throws Exception {
         // edit top line (cannot move up)
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.pressKey(SWT.ARROW_UP); // already at the top, so UP key won't do anything
+        tree.pressKeySequence("bar");
+        tree.pressEnter();
+        assertTextEditorContentMatches(content.replace("500", "foobar"));
     }
 
     public void testKeyDown() throws Exception {
         // edit next line
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par3").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.pressKey(SWT.ARROW_DOWN);
+        tree.pressKeySequence("bar");
+        tree.pressEnter();
+        assertTextEditorContentMatches(content.replace("300", "foo").replace("400", "bar"));
     }
 
     public void testKeyDown2() throws Exception {
         // edit bottom line (cannot move down)
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par6").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.pressKey(SWT.ARROW_DOWN); // already at the bottom, so DOWN key won't do anything
+        tree.pressKeySequence("bar");
+        tree.pressEnter();
+        assertTextEditorContentMatches(content.replace("600", "foobar"));
     }
 
     public void testEscKey() throws Exception {
         // Esc should cancel editing
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par6").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.pressKey(SWT.ESC);
+        tree.pressEnter();  // why not
+        assertTextEditorContentMatches(content); // unchanged
     }
 
     public void testFocusLost1() throws Exception {
-        // left edge of same tree cell clicked, to select cell
+        // left edge of same tree cell clicked (e.g. to select cell): cell editor should commit
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.findTreeItemByContent(".*par5").clickLeftEdge();
+        assertTextEditorContentMatches(content.replace("500", "foo"));
     }
 
     public void testFocusLost2() throws Exception {
-        // another cell clicked for editing
+        // another cell clicked for editing: cell editor should commit, 
+        // and other editor should become activated
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        tree.findTreeItemByContent(".*par2").clickColumn(1);
+        tree.pressKeySequence("bar"); // verify new cell editor became active
+        tree.pressEnter();
+        assertTextEditorContentMatches(content.replace("500", "foo").replace("200", "bar"));
     }
 
     public void testFocusLost3() throws Exception {
         // another widget clicked
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
+        tree.pressKeySequence("foo");
+        WorkbenchWindowAccess.getWorkbenchWindowAccess().findViewPartByTitle("Project Explorer.*", false).activateWithMouseClick();
+        assertTextEditorContentMatches(content.replace("500", "foo"));
     }
 
     public void testContentAssistWithMouseSelection() throws Exception {
-        // another widget clicked
+        //TODO
     }
 
     public void testContentAssistWithKeyboardSelection() throws Exception {
-        // another widget clicked
+        //TODO
     }
     
 }
