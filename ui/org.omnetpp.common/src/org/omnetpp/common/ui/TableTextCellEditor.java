@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.omnetpp.common.ui;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -34,6 +35,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.omnetpp.common.util.ReflectionUtils;
 
@@ -78,7 +81,7 @@ public class TableTextCellEditor extends CellEditor {
 		public void activate();
 	}
 
-	private final ColumnViewer fTableViewer; // a TableViewer or a TreeViewer
+	private final ColumnViewer fViewer; // a TableViewer or a TreeViewer
 	private final int fColumn;
 	//[Andras] private final String fProperty;
     /**
@@ -103,7 +106,7 @@ public class TableTextCellEditor extends CellEditor {
 
 	public TableTextCellEditor(ColumnViewer tableViewer, int column) {
 		super((Composite)tableViewer.getControl(), defaultStyle);
-		fTableViewer= tableViewer;
+		fViewer= tableViewer;
 		fColumn= column;
 		//[Andras] fProperty= (String) tableViewer.getColumnProperties()[column];
 	}
@@ -245,27 +248,25 @@ public class TableTextCellEditor extends CellEditor {
 
 				case SWT.ARROW_DOWN :
 				    e.doit= false;
-					if (fTableViewer instanceof TableViewer) {
-						int nextRow= ((TableViewer)fTableViewer).getTable().getSelectionIndex() + 1;
-						if (nextRow >= ((TableViewer)fTableViewer).getTable().getItemCount())
-							break;
-						editRow(nextRow);
+					if (fViewer instanceof TableViewer) {
+						int nextRow= ((TableViewer)fViewer).getTable().getSelectionIndex() + 1;
+						if (nextRow < ((TableViewer)fViewer).getTable().getItemCount())
+						    editTableRow(nextRow);
 					}
-                    if (fTableViewer instanceof TreeViewer) {
-                        //TODO implement
+					else if (fViewer instanceof TreeViewer) {
+                        editTreeRow(1);
                     }
 					break;
 
 				case SWT.ARROW_UP :
 				    e.doit= false;
-					if (fTableViewer instanceof TableViewer) {
-						int prevRow= ((TableViewer)fTableViewer).getTable().getSelectionIndex() - 1;
-						if (prevRow < 0)
-							break;
-						editRow(prevRow);
+					if (fViewer instanceof TableViewer) {
+						int prevRow= ((TableViewer)fViewer).getTable().getSelectionIndex() - 1;
+						if (prevRow >= 0)
+						    editTableRow(prevRow);
 					}
-                    if (fTableViewer instanceof TreeViewer) {
-                        //TODO implement
+					else if (fViewer instanceof TreeViewer) {
+                        editTreeRow(-1);
                     }
 					break;
 
@@ -276,11 +277,31 @@ public class TableTextCellEditor extends CellEditor {
 				}
 			}
 
-			private void editRow(int row) {
-				((TableViewer)fTableViewer).getTable().setSelection(row);
-				IStructuredSelection newSelection= (IStructuredSelection) ((TableViewer)fTableViewer).getSelection();
+			private void editTableRow(int row) {
+				((TableViewer)fViewer).getTable().setSelection(row);
+				IStructuredSelection newSelection= (IStructuredSelection) fViewer.getSelection();
 				if (newSelection.size() == 1)
-					((TableViewer)fTableViewer).editElement(newSelection.getFirstElement(), fColumn);
+					fViewer.editElement(newSelection.getFirstElement(), fColumn);
+			}
+
+			private void editTreeRow(int delta) {
+			    // determine index of current line within parent
+			    Tree tree = ((TreeViewer)fViewer).getTree();
+			    if (tree.getSelectionCount()==0) 
+			        return;
+			    TreeItem current = tree.getSelection()[0];
+			    TreeItem[] items = current.getParentItem().getItems();
+			    int index = ArrayUtils.indexOf(items, current);
+			    Assert.isTrue(index != -1, "item not found in its parent");
+			    
+			    // edit line index + delta within the same parent
+			    index += delta;
+			    if (index >= 0 && index < items.length) {
+			        tree.setSelection(items[index]);
+	                IStructuredSelection newSelection= (IStructuredSelection) fViewer.getSelection();
+	                if (newSelection.size() == 1)
+	                    fViewer.editElement(newSelection.getFirstElement(), fColumn);
+			    }
 			}
 
 		});

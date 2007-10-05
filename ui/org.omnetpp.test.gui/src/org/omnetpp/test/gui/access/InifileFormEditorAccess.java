@@ -9,6 +9,7 @@ import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.core.NotInUIThread;
 import com.simulcraft.test.gui.util.Predicate;
 
@@ -31,6 +32,11 @@ public class InifileFormEditorAccess
 	                    getFormEditor(),
 	                    Predicate.hasID(TestSupport.CATEGORY_TREE)));
 	}
+
+    @InUIThread
+    public CompositeAccess getActiveCategoryPage() {
+        return (CompositeAccess)createAccess(getFormEditor().getActiveCategoryPage());
+    }
 
     @NotInUIThread
     public CompositeAccess activateCategoryPage(String category) {

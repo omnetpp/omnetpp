@@ -124,7 +124,7 @@ public class Access
 		}));
 	}
 
-	@InUIThread
+    @InUIThread
 	public static void postEvent(Event event) {
         Shell activeShell = getDisplay().getActiveShell();
         // log(debug, "Active shell at post event is " + activeShell);
@@ -614,4 +614,5 @@ public class Access
 				dumpMenu(menuItem.getMenu(), level + 1);
 		}
 	}
+
 }

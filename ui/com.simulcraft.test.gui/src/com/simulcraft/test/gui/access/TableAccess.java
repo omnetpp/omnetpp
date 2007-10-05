@@ -1,5 +1,7 @@
 package com.simulcraft.test.gui.access;
 
+import java.util.ArrayList;
+
 import junit.framework.Assert;
 
 import org.eclipse.swt.widgets.Table;
@@ -62,6 +64,14 @@ public class TableAccess extends ControlAccess
     @InUIThread
     public int[] getTableColumnOrder() {
         return getTable().getColumnOrder();
+    }
+
+    @InUIThread
+    public TableItemAccess[] getSelection() {
+        ArrayList<TableItemAccess> result = new ArrayList<TableItemAccess>(); 
+        for (TableItem item : getTable().getSelection())
+            result.add((TableItemAccess)createAccess(item));
+        return result.toArray(new TableItemAccess[]{});
     }
 
 }

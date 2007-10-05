@@ -5,32 +5,36 @@ import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
-import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
-import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class CellEditorTest extends InifileEditorTestCase {
+    final String nedText = 
+        "network TestNetwork {\n" +
+        "  parameters:\n" +
+        "    int par1;\n" +
+        "    int par2;\n" +
+        "    int par3;\n" +
+        "    int par4;\n" +
+        "    int par5;\n" +
+        "}\n";
     final String content = 
         "[General]\n" +
+        "network = TestNetwork\n" +
         "**.par1 = 100\n" +
         "**.par2 = 200\n" +
         "**.par3 = 300\n" +
-        "**.par4 = 400\n" +
         "[Config Foo]\n" +
-        "**.par5 = 500\n" +
-        "**.par6 = 600\n";
+        "**.par4 = 400\n" +
+        "**.par5 = 500\n";
 
     private TreeAccess prepareTest() throws Exception {
-        return prepareTest(content, "Config Foo");
-    }
-
-    private TreeAccess prepareTest(String content, String sectionToSelect) throws Exception {
         createFileWithContent(content);
+        WorkspaceUtils.createFileWithContent(projectName+"/test.ned", nedText);
         openFileFromProjectExplorerView();
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
-        parametersPage.findComboAfterLabel("Config.*").selectItem(sectionToSelect);
+        parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
         return parametersPage.findTree();
     }
 
@@ -52,40 +56,40 @@ public class CellEditorTest extends InifileEditorTestCase {
     public void testKeyUp2() throws Exception {
         // edit top line (cannot move up)
         TreeAccess tree = prepareTest();
-        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
+        tree.findTreeItemByContent(".*par4").activateCellEditor(1);
         tree.pressKeySequence("foo");
         tree.pressKey(SWT.ARROW_UP); // already at the top, so UP key won't do anything
         tree.pressKeySequence("bar");
         tree.pressEnter();
-        assertTextEditorContentMatches(content.replace("500", "foobar"));
+        assertTextEditorContentMatches(content.replace("400", "foobar"));
     }
 
     public void testKeyDown() throws Exception {
         // edit next line
         TreeAccess tree = prepareTest();
-        tree.findTreeItemByContent(".*par3").activateCellEditor(1);
+        tree.findTreeItemByContent(".*par2").activateCellEditor(1);
         tree.pressKeySequence("foo");
         tree.pressKey(SWT.ARROW_DOWN);
         tree.pressKeySequence("bar");
         tree.pressEnter();
-        assertTextEditorContentMatches(content.replace("300", "foo").replace("400", "bar"));
+        assertTextEditorContentMatches(content.replace("200", "foo").replace("300", "bar"));
     }
 
     public void testKeyDown2() throws Exception {
         // edit bottom line (cannot move down)
         TreeAccess tree = prepareTest();
-        tree.findTreeItemByContent(".*par6").activateCellEditor(1);
+        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
         tree.pressKeySequence("foo");
         tree.pressKey(SWT.ARROW_DOWN); // already at the bottom, so DOWN key won't do anything
         tree.pressKeySequence("bar");
         tree.pressEnter();
-        assertTextEditorContentMatches(content.replace("600", "foobar"));
+        assertTextEditorContentMatches(content.replace("500", "foobar"));
     }
 
     public void testEscKey() throws Exception {
         // Esc should cancel editing
         TreeAccess tree = prepareTest();
-        tree.findTreeItemByContent(".*par6").activateCellEditor(1);
+        tree.findTreeItemByContent(".*par4").activateCellEditor(1);
         tree.pressKeySequence("foo");
         tree.pressKey(SWT.ESC);
         tree.pressEnter();  // why not
@@ -95,10 +99,10 @@ public class CellEditorTest extends InifileEditorTestCase {
     public void testFocusLost1() throws Exception {
         // left edge of same tree cell clicked (e.g. to select cell): cell editor should commit
         TreeAccess tree = prepareTest();
-        tree.findTreeItemByContent(".*par5").activateCellEditor(1);
+        tree.findTreeItemByContent(".*par4").activateCellEditor(1);
         tree.pressKeySequence("foo");
-        tree.findTreeItemByContent(".*par5").clickLeftEdge();
-        assertTextEditorContentMatches(content.replace("500", "foo"));
+        tree.findTreeItemByContent(".*par4").clickLeftEdge();
+        assertTextEditorContentMatches(content.replace("400", "foo"));
     }
 
     public void testFocusLost2() throws Exception {
@@ -123,23 +127,26 @@ public class CellEditorTest extends InifileEditorTestCase {
     }
 
     public void testContentAssistWithKeyboardSelection() throws Exception {
-        WorkspaceUtils.createFileWithContent(projectName+"/test.ned", "network TestNetwork { parameters: int aaa; bool bbb; }\n");
-        String content = 
-            "[General]\n" +
-            "network = TestNetwork\n" +
-            "**.bbb = garbage\n";
-        TreeAccess tree = prepareTest(content, "General");
-        tree.findTreeItemByContent(".*bbb").activateCellEditor(1);
-        tree.pressKeySequence("f");
-        tree.pressKey(' ', SWT.CTRL); // Content Assist should come up, with "false" as first proposal
-        Access.sleep(1); // wait until Content Assist appears
-        tree.pressEnter(); // select default proposal
-        tree.pressKeySequence(" and blabla"); // append some text to see cell editor is still open
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par2").activateCellEditor(1);
+        tree.pressKey(SWT.DEL);
+        tree.pressKey(' ', SWT.CTRL); // Content Assist should come up
+//        Access.sleep(1); // wait until Content Assist appears
+        WorkbenchWindowAccess.chooseFromContentAssistPopupWithKeyboard("exponential\\(mean\\).*");
+        tree.pressKeySequence("+10"); // append some text to see cell editor is still open
         tree.pressEnter(); // commit cell editor
-        assertTextEditorContentMatches(content.replace("garbage", "false and blabla"));
+        assertTextEditorContentMatches(content.replace("200", "exponential(mean)+10"));
     }
     
     public void testContentAssistWithMouseSelection() throws Exception {
-        //TODO
+        TreeAccess tree = prepareTest();
+        tree.findTreeItemByContent(".*par2").activateCellEditor(1);
+        tree.pressKeySequence("expon");
+        tree.pressKey(' ', SWT.CTRL); // Content Assist should come up, with "exponential()" as first proposal
+//        Access.sleep(1); // wait until Content Assist appears
+        WorkbenchWindowAccess.chooseFromContentAssistPopupWithMouse("exponential\\(mean\\).*");
+        tree.pressKeySequence("+10"); // append some text to see cell editor is still open
+        tree.pressEnter(); // commit cell editor
+        assertTextEditorContentMatches(content.replace("200", "exponential(mean)+10"));
     }
 }

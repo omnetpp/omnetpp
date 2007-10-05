@@ -6,6 +6,9 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPerspectiveDescriptor;
@@ -176,4 +179,47 @@ public class WorkbenchWindowAccess extends Access {
                 Assert.fail("Editor part " + editorReference.getTitle() + " still open");
         }
     }
+
+    @InUIThread
+    public static TableAccess findContentAssistPopup() {
+        // Content Assist popup is a Table in a Composite in a nameless Shell
+        Shell shell = (Shell)Access.findObject(Access.getDisplay().getShells(), new IPredicate() {
+            public boolean matches(Object object) {
+                Access.log(Access.debug, "Trying to content assist popup");
+                Shell shell = (Shell)object;
+                if (shell.getText().equals("")) {
+                    //shell.getStyle() == 0x020004F0
+                    if (shell.getChildren().length==1 && shell.getChildren()[0] instanceof Composite) {
+                        Composite composite = (Composite)shell.getChildren()[0];
+                        if (composite.getChildren().length==1 && composite.getChildren()[0] instanceof Table) {
+                            Table table = (Table)composite.getChildren()[0];
+                            if (table.getColumnCount() == 0) 
+                                return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+        return new TableAccess((Table) ((Composite)shell.getChildren()[0]).getChildren()[0] );
+    }
+    
+    @NotInUIThread
+    public static void chooseFromContentAssistPopupWithMouse(String label) {
+        WorkbenchWindowAccess.findContentAssistPopup().findTableItemByContent(label).reveal().doubleClick();
+    }
+
+    @NotInUIThread
+    public static void chooseFromContentAssistPopupWithKeyboard(String label) {
+        TableAccess table = WorkbenchWindowAccess.findContentAssistPopup();
+        TableItemAccess item = table.findTableItemByContent(label);
+
+        // press Down until we get there (wraps if we reach the bottom)
+        while (table.getSelection().length!=1 || table.getSelection()[0].getWidget()!=item.getWidget()) {
+            Access.sleep(0.1);
+            table.pressKey(SWT.ARROW_DOWN);  // usually not visible in the animation because the text is the focus control!
+        }
+        table.pressEnter();
+    }
+
 }

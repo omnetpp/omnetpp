@@ -150,4 +150,12 @@ public class TreeAccess extends ControlAccess
 	    return getTree().getColumnOrder();
 	}
 
+    @InUIThread
+    public TreeItemAccess[] getSelection() {
+        ArrayList<TreeItemAccess> result = new ArrayList<TreeItemAccess>(); 
+        for (TreeItem item : getTree().getSelection())
+            result.add((TreeItemAccess)createAccess(item));
+        return result.toArray(new TreeItemAccess[]{});
+    }
+
 }
