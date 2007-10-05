@@ -22,7 +22,7 @@ public class NedPathTest
         TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         textEditor.typeIn("Modified");
         setNedPath(directoryName);
-        Assert.assertTrue(Access.getWorkbenchWindowAccess().findEditorPartByTitle(fileName).getEditorPart().isDirty());
+        Assert.assertTrue(Access.getWorkbenchWindowAccess().findEditorPartByTitle(fileName).getPart().isDirty());
     }
 
     @Override

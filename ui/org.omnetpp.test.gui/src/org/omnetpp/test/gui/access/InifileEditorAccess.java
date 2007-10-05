@@ -16,16 +16,17 @@ public class InifileEditorAccess
 		super(multiPageNedEditor);
 	}
 	
-	public InifileEditor getInifileEditor() {
+    @Override
+	public InifileEditor getPart() {
 	    return (InifileEditor)workbenchPart;
     }
 
     public InifileTextEditor getTextEditor() {
-        return getInifileEditor().getTextEditor();
+        return getPart().getTextEditor();
     }
 
     public InifileFormEditor getFormEditor() {
-        return getInifileEditor().getFormEditor();
+        return getPart().getFormEditor();
     }
 
     public TextEditorAccess activateTextEditor() {

@@ -1,7 +1,6 @@
 package org.omnetpp.test.gui.access;
 
 import org.omnetpp.ned.editor.NedEditor;
-import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
@@ -14,12 +13,13 @@ public class NedEditorAccess
 		super(multiPageNedEditor);
 	}
 	
-	public NedEditor getMultiPageNedEditor() {
+    @Override
+	public NedEditor getPart() {
 	    return (NedEditor)workbenchPart;
     }
 
-    public TextualNedEditor getTextualNedEditor() {
-        return getMultiPageNedEditor().getTextEditor();
+    public TextEditorAccess getTextualNedEditor() {
+        return (TextEditorAccess) createAccess(getPart().getTextEditor());
     }
 
     public TextEditorAccess activateTextEditor() {

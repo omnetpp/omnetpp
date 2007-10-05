@@ -16,19 +16,20 @@ public class MultiPageEditorPartAccess
 		super(multiPageEditorPart);
 	}
 	
-	public MultiPageEditorPart getMultiPageEditorPart() {
+    @Override
+	public MultiPageEditorPart getPart() {
 		return (MultiPageEditorPart)workbenchPart;
 	}
 	
 	@InUIThread
-	public CTabItemAccess getItem(int pageIndex) {
-		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getMultiPageEditorPart(), "getItem", pageIndex); 
+	public CTabItemAccess getCTabItem(int pageIndex) {
+		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getPart(), "getItem", pageIndex); 
 		return (CTabItemAccess)createAccess(item); 
 	}
 	
 	@InUIThread
 	public ControlAccess getControl(int pageIndex) {
-		Control control = (Control)ReflectionUtils.invokeMethod(getMultiPageEditorPart(), "getControl", pageIndex);
+		Control control = (Control)ReflectionUtils.invokeMethod(getPart(), "getControl", pageIndex);
 		return (ControlAccess)createAccess(control);
 	}
 	
@@ -40,19 +41,19 @@ public class MultiPageEditorPartAccess
 
 	@InUIThread
 	public EditorPartAccess getActivePageEditor() {
-		return (EditorPartAccess)createAccess(ReflectionUtils.invokeMethod(getMultiPageEditorPart(), "getActiveEditor"));
+		return (EditorPartAccess)createAccess(ReflectionUtils.invokeMethod(getPart(), "getActiveEditor"));
 	}
 
 	@InUIThread
 	public ControlAccess getActivePageControl() {
-		int activePage = (Integer)ReflectionUtils.invokeMethod(getMultiPageEditorPart(), "getActivePage");
+		int activePage = (Integer)ReflectionUtils.invokeMethod(getPart(), "getActivePage");
 		return activePage >= 0 ? getControl(activePage) : null;
 	}
 	
 	@InUIThread
 	public CTabItemAccess getActiveCTabItem() {
-		int activePage = (Integer)ReflectionUtils.invokeMethod(getMultiPageEditorPart(), "getActivePage");
-		return activePage >= 0 ? getItem(activePage) : null;
+		int activePage = (Integer)ReflectionUtils.invokeMethod(getPart(), "getActivePage");
+		return activePage >= 0 ? getCTabItem(activePage) : null;
 	}
 	
 	@InUIThread

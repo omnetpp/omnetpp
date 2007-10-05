@@ -20,7 +20,7 @@ public class WorkbenchPartAccess
 		this.workbenchPart = workbenchPart;
 	}
 
-	public IWorkbenchPart getWorkbenchPart() {
+	public IWorkbenchPart getPart() {
 		return workbenchPart;
 	}
 	
@@ -63,7 +63,7 @@ public class WorkbenchPartAccess
     @InUIThread
     public void ensureActivated() {
         CTabItem cTabItem = getCTabItem().getWidget();
-        IWorkbenchPart workbenchPart = getWorkbenchPart();
+        IWorkbenchPart workbenchPart = getPart();
         if (cTabItem.getParent().getSelection() != cTabItem || workbenchPart.getSite().getPage().getActivePart() != workbenchPart)
             activateWithMouseClick();
     }

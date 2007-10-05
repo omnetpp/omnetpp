@@ -22,32 +22,33 @@ public class InifileFormEditorAccess
 		super(formEditor);
 	}
 	
-	public InifileFormEditor getFormEditor() {
-	    return (InifileFormEditor)getControl();
+    @Override
+	public InifileFormEditor getControl() {
+	    return (InifileFormEditor)widget;
     }
 
 	public TreeAccess getCategoryTree() {
 	    return (TreeAccess)createAccess(
 	            findDescendantControl(
-	                    getFormEditor(),
+	                    getControl(),
 	                    Predicate.hasID(TestSupport.CATEGORY_TREE)));
 	}
 
     @InUIThread
     public CompositeAccess getActiveCategoryPage() {
-        return (CompositeAccess)createAccess(getFormEditor().getActiveCategoryPage());
+        return (CompositeAccess)createAccess(getControl().getActiveCategoryPage());
     }
 
     @NotInUIThread
     public CompositeAccess activateCategoryPage(String category) {
         getCategoryTree().findTreeItemByContent(category).click();
         Access.sleep(1); //XXX no idea why this is needed. should work without it too (because click() is a "step" which includes the processing of the event, and there's no asyncExec in the inifile code here) 
-        return (CompositeAccess)createAccess(getFormEditor().getActiveCategoryPage());
+        return (CompositeAccess)createAccess(getControl().getActiveCategoryPage());
     }
 
     @NotInUIThread
     public CompositeAccess ensureActiveCategoryPage(String category) {
-        FormPage activeFormPage = getFormEditor().getActiveCategoryPage();
+        FormPage activeFormPage = getControl().getActiveCategoryPage();
         if (activeFormPage.getPageCategory().equals(category))
             return (CompositeAccess)createAccess(activeFormPage);
         else 

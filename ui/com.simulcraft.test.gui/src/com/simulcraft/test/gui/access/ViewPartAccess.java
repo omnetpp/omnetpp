@@ -8,7 +8,8 @@ public class ViewPartAccess extends WorkbenchPartAccess {
 		super(viewPart);
 	}
 
-	public IViewPart getViewPart() {
+    @Override
+	public IViewPart getPart() {
 		return (IViewPart)workbenchPart;
 	}
 }

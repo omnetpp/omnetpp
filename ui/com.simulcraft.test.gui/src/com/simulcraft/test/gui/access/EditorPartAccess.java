@@ -14,7 +14,8 @@ public class EditorPartAccess
 		super(editorPart);
 	}
 
-	public IEditorPart getEditorPart() {
+	@Override
+	public IEditorPart getPart() {
 		return (IEditorPart)workbenchPart;
 	}
 	
@@ -35,11 +36,11 @@ public class EditorPartAccess
 
 	@InUIThread
     public void assertDirty() {
-        Assert.assertTrue("editor is not dirty", getEditorPart().isDirty());
+        Assert.assertTrue("editor is not dirty", getPart().isDirty());
     }
 
 	@InUIThread
     public void assertNotDirty() {
-        Assert.assertTrue("editor is dirty", !getEditorPart().isDirty());
+        Assert.assertTrue("editor is dirty", !getPart().isDirty());
     }
 }

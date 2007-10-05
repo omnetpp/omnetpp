@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Gui Test Plug-in
+Bundle-Name: GUI Testing Plug-in
 Bundle-SymbolicName: com.simulcraft.test.gui;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Simulcraft Inc.
@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.aspectj.runtime,
  org.omnetpp.common,
  org.eclipse.ui.workbench.texteditor,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors
 Bundle-Activator: com.simulcraft.test.gui.Activator
 Eclipse-LazyStart: true
