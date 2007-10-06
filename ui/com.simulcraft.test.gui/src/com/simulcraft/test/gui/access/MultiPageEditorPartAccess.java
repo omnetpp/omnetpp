@@ -56,11 +56,14 @@ public class MultiPageEditorPartAccess
 		return activePage >= 0 ? getCTabItem(activePage) : null;
 	}
 	
-	@InUIThread
 	public void activatePageWithMouseClick(String label) {
-		CTabItem cTabItem = findDescendantCTabItemByLabel(getCompositeInternal().getParent(), label);
-		new CTabItemAccess(cTabItem).click(LEFT_MOUSE_BUTTON);
+	    getCTabItem(label).click();
 	}
+
+    @InUIThread
+	public CTabItemAccess getCTabItem(String label) {
+        return (CTabItemAccess) createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), label));
+    }
 	
 	@NotInUIThread
 	public EditorPartAccess activatePageEditor(String label) {

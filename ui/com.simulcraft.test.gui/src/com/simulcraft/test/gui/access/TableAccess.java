@@ -25,17 +25,22 @@ public class TableAccess extends ControlAccess
 
     @InUIThread
     public void assertEmpty() {
-        Assert.assertTrue(getControl().getItemCount() == 0);
+        Assert.assertTrue("table is not empty", getControl().getItemCount() == 0);
     }
 
     @InUIThread
     public void assertNotEmpty() {
-        Assert.assertTrue(getControl().getItemCount() != 0);
+        Assert.assertTrue("table is empty", getControl().getItemCount() != 0);
     }
 
     @InUIThread
     public void assertHeaderVisible() {
-        Assert.assertTrue(getControl().getHeaderVisible());
+        Assert.assertTrue("table header not visible", getControl().getHeaderVisible());
+    }
+
+    @InUIThread
+    public void assertHeaderNotVisible() {
+        Assert.assertTrue("table header visible", !getControl().getHeaderVisible());
     }
 
     @InUIThread

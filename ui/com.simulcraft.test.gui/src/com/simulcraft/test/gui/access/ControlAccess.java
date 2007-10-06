@@ -29,13 +29,28 @@ public class ControlAccess extends ClickableWidgetAccess
 	}
 
 	@InUIThread
+	public void assertDisabled() {
+	    Assert.assertTrue("control is enabled", !getControl().getEnabled());
+	}
+
+	@InUIThread
 	public void assertHasFocus() {
 		Assert.assertTrue("control has no focus", getControl().isFocusControl());
 	}
 
 	@InUIThread
+	public void assertHasNoFocus() {
+	    Assert.assertTrue("control has focus", !getControl().isFocusControl());
+	}
+
+	@InUIThread
 	public void assertVisible() {
 		Assert.assertTrue("control not visible", getControl().isVisible());
+	}
+
+	@InUIThread
+	public void assertNotVisible() {
+	    Assert.assertTrue("control visible", !getControl().isVisible());
 	}
 
 	@Override @InUIThread

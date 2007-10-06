@@ -21,12 +21,12 @@ public class InifileEditorAccess
 	    return (InifileEditor)workbenchPart;
     }
 
-    public InifileTextEditor getTextEditor() {
-        return getPart().getTextEditor();
+    public TextEditorAccess getTextEditor() {
+        return (TextEditorAccess) createAccess(getPart().getTextEditor());
     }
 
-    public InifileFormEditor getFormEditor() {
-        return getPart().getFormEditor();
+    public InifileFormEditorAccess getFormEditor() {
+        return (InifileFormEditorAccess) createAccess(getPart().getFormEditor());
     }
 
     public TextEditorAccess activateTextEditor() {

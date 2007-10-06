@@ -30,17 +30,22 @@ public class TreeAccess extends ControlAccess
 
 	@InUIThread
 	public void assertEmpty() {
-		Assert.assertTrue(getControl().getItemCount() == 0);
+		Assert.assertTrue("tree is not empty", getControl().getItemCount() == 0);
 	}
 
     @InUIThread
     public void assertNotEmpty() {
-        Assert.assertTrue(getControl().getItemCount() != 0);
+        Assert.assertTrue("tree is empty", getControl().getItemCount() != 0);
     }
 
     @InUIThread
     public void assertHeaderVisible() {
-        Assert.assertTrue(getControl().getHeaderVisible());
+        Assert.assertTrue("tree header not visible", getControl().getHeaderVisible());
+    }
+
+    @InUIThread
+    public void assertHeaderNotVisible() {
+        Assert.assertTrue("tree header visible", !getControl().getHeaderVisible());
     }
 
     /**
