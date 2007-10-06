@@ -1,14 +1,33 @@
 package com.simulcraft.test.gui.core;
 
 /**
- * Marks methods that should be executed in the UI thread.
- * This annotation is typically placed on methods of 
- * org.omnetpp.test.gui.access.* classes, and the UIThread
- * aspect will add code containing Display.syncExec() around them.  
+ * Marks the method as one "UI step". What happens is the following:
+ * <ul>
+ *   <li>1. The method annotated with @InUIThread will be wrapped in a Runnable, 
+ *          and gets executed in the UI thread with Display.syncExec().
+ *   <li>2. If there was an exception, the step gets re-tried every 0.5s or so
+ *          until it succeeds, or a timeout of about 5s is reached. If there
+ *          was no successful execution, the exception is thrown on.
+ *   <li>3. When execution was successful, UI events in queue get processed
+ *          using Display.readAndDispatch() until the queue becomes empty.
+ *          Then the method returns.       
+ *
+ * @InUIThread does NOT nest: If there there are nested @InUIThread method calls, 
+ * only the toplevel one (entered first) will get special treatment, all nested
+ * ones are treated like plain method calls.
+ *          
+ * NOTE: no UI events (mouse clicks, keypresses) get processed while control is
+ * in the body of the method annotated with @InUIThread -- only after it finished.
+ * So if you click a button or type something in the method, that will only
+ * post the events, but nothing will actually happen until after the method returns.
+ * 
+ * If you need events to get processed during the method, it must NOT execute
+ * within a @InUIThread method, and you're recommended to use the @NotInUIThread
+ * annotation to assert that.
  * 
  * @author Andras
- *
  */
+//XXX rename to "@UIStep" ?
 public @interface InUIThread {
 
 }
