@@ -22,8 +22,13 @@
 #include "exception.h"
 #include "inttypes.h"
 
-// maximum number of digits in an int64 number, i.e. number of digits in _I64_MAX.
-#define _I64_MAX_DIGITS 19
+// maximum number of digits in an int64 number, i.e. number of digits in INT64_MAX.
+#define INT64_MAX_DIGITS 19
+
+// maximum signed value on 64 bits
+//FIXME write unit test for BigDecimal, and also for this constant!
+#define INT64_MAX   ((((int64)1)<<63)-1)
+
 
 /**
  * BigDecimal stores a decimal value as a 64-bit integer and a scale.
@@ -48,7 +53,7 @@ class COMMON_API BigDecimal
     void checkScale(int scale)
     {
         if (scale < minScale || scale > maxScale)
-            throw opp_runtime_error("Scale must be between %d and %d.", minScale, maxScale); 
+            throw opp_runtime_error("Scale must be between %d and %d.", minScale, maxScale);
     }
 
     /*
@@ -75,7 +80,7 @@ class COMMON_API BigDecimal
 
     /** @name Constructors. */
     //@{
-    BigDecimal() {intVal=_I64_MAX; scale=INT_MAX;} // == Nil
+    BigDecimal() {intVal=INT64_MAX; scale=INT_MAX;} // == Nil
     BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { normalize(); }
     BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}

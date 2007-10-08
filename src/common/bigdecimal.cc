@@ -1,5 +1,5 @@
 //==========================================================================
-//   SIMTIME.CC  - part of
+//   BIGDECIMAL.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -52,7 +52,7 @@ void BigDecimal::normalize()
     }
 
     // underflow, XXX should throw an exception?
-    if (scale < minScale - _I64_MAX_DIGITS)
+    if (scale < minScale - INT64_MAX_DIGITS)
     {
         intVal = 0;
         scale = 0;
@@ -60,7 +60,7 @@ void BigDecimal::normalize()
     }
 
     // overflow
-    if (scale > maxScale + _I64_MAX_DIGITS)
+    if (scale > maxScale + INT64_MAX_DIGITS)
         throw opp_runtime_error("BigDecimal::normalize(): scale too big: %d.", scale); // XXX should be +-Infinity?
 
     // transform scale between minScale and maxScale
@@ -82,7 +82,7 @@ void BigDecimal::normalize()
     {
         while (scale > maxScale)
         {
-            if (intVal > _I64_MAX/10)
+            if (intVal > INT64_MAX/10)
                 throw opp_runtime_error("BigDecimal::normalize(): arithmetic overflow");
 
             intVal *= 10;
@@ -184,7 +184,7 @@ const BigDecimal& BigDecimal::operator=(double d)
         scale = exponent;
         for (int i = exponent; i < 0; ++i)
         {
-            if (intVal <= _I64_MAX/5)
+            if (intVal <= INT64_MAX/5)
             {
                 intVal *= 5;
             }
@@ -200,7 +200,7 @@ const BigDecimal& BigDecimal::operator=(double d)
         scale = 0;
         for (int i = 0; i < exponent; ++i)
         {
-            if (intVal <= _I64_MAX/2)
+            if (intVal <= INT64_MAX/2)
             {
                 intVal *= 2;
             }
@@ -438,10 +438,10 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     // digits before decimal
     while (opp_isdigit(*p))
     {
-        OVERFLOW_CHECK(intVal <= _I64_MAX / 10, s);
+        OVERFLOW_CHECK(intVal <= INT64_MAX / 10, s);
         intVal *= 10;
         digit = ((*p++)-'0');
-        OVERFLOW_CHECK(intVal <= _I64_MAX - digit, s);
+        OVERFLOW_CHECK(intVal <= INT64_MAX - digit, s);
         intVal += digit;
         digits++;
     }
@@ -457,10 +457,10 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
         p++;
         while (opp_isdigit(*p))
         {
-            OVERFLOW_CHECK(intVal <= _I64_MAX / 10, s);
+            OVERFLOW_CHECK(intVal <= INT64_MAX / 10, s);
             intVal *= 10;
             digit = ((*p++)-'0');
-            OVERFLOW_CHECK(intVal <= _I64_MAX - digit, s);
+            OVERFLOW_CHECK(intVal <= INT64_MAX - digit, s);
             intVal += digit;
             digits++;
             scale--;
