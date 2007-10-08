@@ -14,7 +14,6 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
-#define strcasecmp stricmp
 #endif
 
 #include <stdlib.h>
@@ -24,6 +23,7 @@
 #include <memory>
 #include <algorithm>
 #include "opp_ctype.h"
+#include "platmisc.h"
 #include "matchexpression.h"
 #include "patternmatcher.h"
 #include "filereader.h"
@@ -1043,10 +1043,10 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
 {
     VectorFileIndex *index = IndexFileReader(filename).readAll();
     int numOfVectors = index->getNumberOfVectors();
-    
+
     if (numOfVectors == 0) {
-    	delete index;
-    	return;
+        delete index;
+        return;
     }
 
     Run *runRef = getRunByName(index->run.runName.c_str());

@@ -26,7 +26,7 @@ class ArrayBuilderNodeType;
  */
 class SCAVE_API ArrayBuilderNode : public SingleSinkNode
 {
-    friend ArrayBuilderNodeType;
+    friend class ArrayBuilderNodeType;
     private:
         double *xvec;
         double *yvec;
@@ -51,7 +51,7 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
 
 class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
 {
-    friend ArrayBuilderNode;
+    friend class ArrayBuilderNode;
     public:
         virtual const char *name() const {return "arraybuilder";}
         virtual const char *description() const;

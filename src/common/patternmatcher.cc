@@ -16,13 +16,10 @@
 #include <assert.h>
 #include <string.h>
 #include "opp_ctype.h"
+#include "platmisc.h"
 #include "patternmatcher.h"
 #include "stringutil.h"
 #include "exception.h"
-
-#ifdef _MSC_VER
-#define strncasecmp  strnicmp
-#endif
 
 
 PatternMatcher::PatternMatcher()

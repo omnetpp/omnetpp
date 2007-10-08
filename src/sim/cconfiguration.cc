@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <errno.h>
 #include "cconfiguration.h"
 #include "cconfigkey.h"
 #include "unitconversion.h"

@@ -102,7 +102,7 @@ COMMON_API std::string opp_indentlines(const char *text, const char *indent);
 COMMON_API bool opp_stringendswith(const char *s, const char *ending);
 
 /**
- * Dictionary-compare two strings, the main difference from stricmp()
+ * Dictionary-compare two strings, the main difference from strcasecmp()
  * being that integers embedded in the strings are compared in
  * numerical order.
  */

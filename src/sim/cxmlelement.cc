@@ -20,15 +20,13 @@
 #include <sstream>
 #include <string>
 #include "opp_ctype.h"
+#include "platmisc.h"
 #include "cxmlelement.h"
 #include "minixpath.h"
 #include "cexception.h"
 #include "cenvir.h"
 #include "cmodule.h" // for ModNameParamResolver
 
-#ifdef _MSC_VER
-#define strcasecmp  stricmp
-#endif
 
 using std::ostream;
 

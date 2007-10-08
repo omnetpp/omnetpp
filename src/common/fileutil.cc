@@ -27,6 +27,7 @@
 #include "stringtokenizer.h"
 #include "exception.h"
 
+
 void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
     if (!pathname || !*pathname)
@@ -187,8 +188,8 @@ bool isDirectory(const char *pathname)
 {
     struct stat statbuf;
     if (stat(pathname, &statbuf) != 0)
-        throw opp_runtime_error("cannot stat file '%s': %s", pathname, _strerror(NULL));
-    return statbuf.st_mode & _S_IFDIR;
+        throw opp_runtime_error("cannot stat file '%s': %s", pathname, strerror(NULL));
+    return statbuf.st_mode & S_IFDIR;
 }
 
 //----

@@ -17,12 +17,9 @@
 
 #include <string.h>
 #include "opp_ctype.h"
+#include "platmisc.h"
 #include "minixpath.h"
 #include "cexception.h"
-
-#ifdef _MSC_VER
-#define strcasecmp  stricmp
-#endif
 
 
 

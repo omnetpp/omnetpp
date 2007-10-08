@@ -15,15 +15,13 @@
 
 #include <sstream>
 #include <string.h>
+#include "platmisc.h"
 #include "commonutil.h"
 #include "filereader.h"
 #include "exception.h"
 
 #define PRINT_DEBUG_MESSAGES false
 
-#ifdef _MSC_VER
-#define strncasecmp strnicmp
-#endif
 
 FileReader::FileReader(const char *fileName, size_t bufferSize)
 {

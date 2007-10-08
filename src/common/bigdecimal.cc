@@ -15,6 +15,7 @@
 #include <sstream>
 #include <assert.h>
 #include "opp_ctype.h"
+#include "platmisc.h"
 #include "bigdecimal.h"
 
 // helpers
@@ -402,15 +403,15 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     // parse special numbers
     if (opp_isalpha(*p))
     {
-        if (strnicmp(p, "nan", 3) == 0)
+        if (strncasecmp(p, "nan", 3) == 0)
         {
             endp = p+3;
             return NaN;
         }
-        else if (strnicmp(p, "inf", 3) == 0) // inf and infinity
+        else if (strncasecmp(p, "inf", 3) == 0) // inf and infinity
         {
             endp = p+3;
-            if (strnicmp(endp, "inity", 5) == 0)
+            if (strncasecmp(endp, "inity", 5) == 0)
                 endp += 5;
             return sign > 0 ? PositiveInfinity : NegativeInfinity;
         }
@@ -422,12 +423,12 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     }
     else if (*p=='1' && *(p+1)=='.' && *(p+2)=='#')
     {
-        if (strnicmp(p+3, "ind", 3) == 0)
+        if (strncasecmp(p+3, "ind", 3) == 0)
         {
             endp = p+6;
             return NaN;
         }
-        else if (strnicmp(p+3, "inf", 6) == 0)
+        else if (strncasecmp(p+3, "inf", 6) == 0)
         {
             endp = p+6;
             return sign > 0 ? PositiveInfinity : NegativeInfinity;

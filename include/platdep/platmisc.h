@@ -50,6 +50,10 @@
 #include <exception>
 #include <stdexcept>
 
+#ifdef _MSC_VER
+#define strcasecmp  stricmp
+#define strncasecmp strnicmp
+#endif
 
 //
 // Getting Windows error strings
