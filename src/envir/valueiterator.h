@@ -15,6 +15,7 @@
 #ifndef VALUEITERATOR_H_
 #define VALUEITERATOR_H_
 
+#include <string>
 #include <vector>
 
 /**

@@ -25,7 +25,6 @@
 #include "matchexpression.h"
 #include "matchableobject.h"
 
-extern bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int fieldIndex,  void *fieldValue, int level);
 
 /**
  * A utility class to serialize an object in text form. It is currently used
@@ -41,7 +40,7 @@ class ObjectPrinter
 
     public:
         /**
-         * FIXME Levy: parameters and operation need to be documented!
+         * FIXME Levy: pls document parameters and operation
          */
         ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
                       std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,

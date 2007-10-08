@@ -19,6 +19,8 @@
 #include "commonutil.h"
 #include "objectprinter.h"
 
+bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int fieldIndex,  void *fieldValue, int level);
+
 static bool defaultRecurseIntoCObject(void *object, cClassDescriptor *descriptor, int fieldIndex, cObject *fieldValue, int level)
 {
     cArray *carray = dynamic_cast<cArray *>(fieldValue);
