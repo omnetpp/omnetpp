@@ -73,8 +73,11 @@ public class PaletteManager {
     protected PaletteRoot nedPalette;
     protected PaletteContainer toolsContainer;
     protected PaletteContainer channelsStack;
+    protected List<PaletteEntry> tempChannelsStackContent;
     protected PaletteDrawer typesContainer;
+    protected List<PaletteEntry> tempTypesContainerContent;
     protected PaletteDrawer defaultContainer;
+    protected List<PaletteEntry> tempDefaultContainerContent;
 
     protected Map<String, PaletteEntry> currentEntries = new HashMap<String, PaletteEntry>();
     protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
@@ -142,17 +145,12 @@ public class PaletteManager {
      * Builds the palette (all drawers)
      */
     public void refresh() {
+        System.out.println("paletteManager refresh() start");
         long startMillis = System.currentTimeMillis();
 
-        nedPalette.getChildren().clear();
-        nedPalette.add(toolsContainer);
-        nedPalette.add(typesContainer);
-        nedPalette.add(defaultContainer);
-        channelsStack.getChildren().clear();
-        typesContainer.getChildren().clear();
-        defaultContainer.getChildren().clear();
-        for (PaletteContainer container : currentContainers.values())
-            container.getChildren().clear();
+        tempChannelsStackContent = new ArrayList<PaletteEntry>();
+        tempTypesContainerContent = new ArrayList<PaletteEntry>();
+        tempDefaultContainerContent = new ArrayList<PaletteEntry>();
 
         Map<String, PaletteEntry> newEntries = createPaletteModel();
         for (String id : newEntries.keySet()) {
@@ -165,9 +163,26 @@ public class PaletteManager {
         }
         currentEntries = newEntries;
 
+        System.out.println(" **** before");
+
         // TODO sort the containers by name
-        for (PaletteContainer container : currentContainers.values())
-            nedPalette.add(container);
+        ArrayList<PaletteContainer> drawers = new ArrayList<PaletteContainer>();
+        drawers.add(toolsContainer);
+        drawers.add(typesContainer);
+        drawers.add(defaultContainer);
+        // drawers.addAll(currentContainers.values());
+
+        channelsStack.setChildren(tempChannelsStackContent);
+        typesContainer.setChildren(tempTypesContainerContent);
+        defaultContainer.setChildren(tempDefaultContainerContent);
+//        for (PaletteContainer container : currentContainers.values())
+//            container.setChildren(container.getChildren());
+       
+        nedPalette.setChildren(drawers);
+        
+//        defaultContainer.add(new PanningSelectionToolEntry("Selector","Select module(s)"));
+        
+        System.out.println(" **** after");
 
         long dt = System.currentTimeMillis() - startMillis;
         System.out.println("paletteManager refresh(): " + dt + "ms");
@@ -176,25 +191,27 @@ public class PaletteManager {
     /**
      * The container belonging to this ID
      */
-    public PaletteContainer getContainerFor(String id) {
+    public List<PaletteEntry> getContainerFor(String id) {
         if (!id.contains(GROUP_DELIMITER))
-            return defaultContainer;
+            return tempDefaultContainerContent;
         String group = StringUtils.substringBefore(id, GROUP_DELIMITER);
         if (MRU_GROUP.equals(group))
-            return defaultContainer;
+            return tempDefaultContainerContent;
         if (CONNECTIONS_GROUP.equals(group))
-            return channelsStack;
+            return tempChannelsStackContent;
         if (TYPES_GROUP.equals(group))
-            return typesContainer;
+            return tempTypesContainerContent;
 
-        PaletteDrawer drawer = currentContainers.get(group);
-        if (drawer == null) {
-            drawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
-            drawer.setInitialState(PaletteDrawer.INITIAL_STATE_CLOSED);
-            currentContainers.put(group, drawer);
-        }
-
-        return drawer;
+        // TODO add grouping support
+//        PaletteDrawer drawer = currentContainers.get(group);
+//        if (drawer == null) {
+//            drawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+//            drawer.setInitialState(PaletteDrawer.INITIAL_STATE_CLOSED);
+//            currentContainers.put(group, drawer);
+//        }
+//
+//        return drawer;
+        return tempDefaultContainerContent;
     }
 
     /**
