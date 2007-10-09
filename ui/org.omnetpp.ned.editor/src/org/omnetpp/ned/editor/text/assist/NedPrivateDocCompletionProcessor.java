@@ -20,7 +20,7 @@ public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProce
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
             createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(),
-                    "", NedCompletionHelper.proposedPrivateDocTodo, " ", null);
+                    "", NedCompletionHelper.proposedPrivateDocTodo, " ", "");
 
         Collections.sort(result, CompletionProposalComparator.getInstance());
         return result.toArray(new ICompletionProposal[result.size()]);

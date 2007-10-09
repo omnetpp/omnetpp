@@ -22,11 +22,11 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
         List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
         
         result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedAtWordDetector(),
-        		"@", NedCompletionHelper.proposedDocKeywords, " ", null));
+        		"@", NedCompletionHelper.proposedDocKeywords, " ", ""));
         result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedDocTagDetector(), 
-                "<", NedCompletionHelper.proposedDocTags, "> ", null));
+                "<", NedCompletionHelper.proposedDocTags, "> ", ""));
         result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedDocTagDetector(), 
-                "</", NedCompletionHelper.proposedDocTags, "> ", null));
+                "</", NedCompletionHelper.proposedDocTags, "> ", ""));
         
 //        Collections.sort(result, CompletionProposalComparator.getInstance());
         return result.toArray(new ICompletionProposal[result.size()]);

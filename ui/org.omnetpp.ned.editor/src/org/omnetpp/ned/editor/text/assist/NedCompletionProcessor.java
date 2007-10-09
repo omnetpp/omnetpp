@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.text.assist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -20,15 +21,19 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver.IPredicate;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 // TODO completion within inner types
@@ -130,23 +135,23 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
-				addProposals(viewer, documentOffset, result, res.getNedTypeQNames(NEDResources.SIMPLE_MODULE_FILTER, project), "simple-module type");
+			    addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.SIMPLE_MODULE_FILTER);
 			else if (line.matches(".*\\b(module|network) .* extends"))
-				addProposals(viewer, documentOffset, result, res.getNedTypeQNames(NEDResources.COMPOUND_MODULE_FILTER, project), "compound-module type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.COMPOUND_MODULE_FILTER);
 			else if (line.matches(".*\\bchannel .* extends"))
-				addProposals(viewer, documentOffset, result, res.getChannelQNames(project), "channel type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.CHANNEL_FILTER);
 			else if (line.matches(".*\\bmoduleinterface .* extends"))
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(project), "module interface type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\bchannelinterface .* extends"))
-				addProposals(viewer, documentOffset, result, res.getChannelInterfaceQNames(project), "channel interface type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.CHANNELINTERFACE_FILTER);
 
 			// match "like" clauses
 			if (line.matches(".*\\bsimple .* like") || line.matches(".*\\bsimple .* like .*,"))
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(project), "module interface type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\b(module|network) .* like") || line.matches(".*\\b(module|network) .* like .*,"))
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(project), "module interface type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.MODULEINTERFACE_FILTER);
 			else if (line.matches(".*\\bchannel .* like") || line.matches(".*\\bchannel .* like .*,"))
-				addProposals(viewer, documentOffset, result, res.getChannelInterfaceQNames(project), "channel interface type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.CHANNELINTERFACE_FILTER);
 
 			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|interface|channelinterface)\\b.*"))
 				addProposals(viewer, documentOffset, result, new String[]{"extends "}, "keyword");
@@ -243,7 +248,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					addProposals(viewer, documentOffset, result, parentComponent.getParamDeclarations().keySet(), "parameter");
 				}
 			}
-			addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedConstants, null);
+			addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedConstants, "");
 
 			addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedOtherExpressionKeywords, "keyword");
 		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedOperatorsTempl);
@@ -274,8 +279,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		if (info.sectionType == SECT_SUBMODULES) {
 			// System.out.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
-				// XXX offer "like" template too
-				addProposals(viewer, documentOffset, result, res.getModuleQNames(project), "module type");
+			    addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.MODULE_FILTER);
 			}
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (parentComponent!=null)
@@ -285,7 +289,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, "keyword");
 			}
 			else if (line.matches(".*\\blike")) {
-				addProposals(viewer, documentOffset, result, res.getModuleInterfaceQNames(project), "module interface type");
+                addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.MODULEINTERFACE_FILTER);
 			}
 		}
 
@@ -301,6 +305,9 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		if (parentComponent!=null) {
 	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmodules().keySet(), "submodule");
 	    			addProposals(viewer, documentOffset, result, parentComponent.getGateDeclarations().keySet(), "gate");
+	    			// only a single arrow can be present in the line to give channel assistance to
+                    if (line.matches(".*--.*") && !line.matches(".*--.*--.*"))
+                        addNedTypeProposals(viewer, documentOffset, result, project, parentComponent, NEDResources.CHANNEL_FILTER);
 	    		}
 	    	}
 	    	else if (line.endsWith(".")) {
@@ -324,6 +331,36 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 	}
+
+    private void addNedTypeProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result,
+            IProject project, INEDTypeInfo parentComponent, IPredicate predicate) {
+        NEDResources res = NEDResourcesPlugin.getNEDResources();
+        // add inner types
+        if (parentComponent != null) {
+            Set<String> innerTypeNames = new HashSet<String>();
+            for (INedTypeElement innerTypeElement : parentComponent.getInnerTypes().values()) {
+                if (predicate.matches(innerTypeElement.getNEDTypeInfo()))
+                    innerTypeNames.add(innerTypeElement.getName());
+            }
+            addProposals(viewer, documentOffset, result, innerTypeNames, "inner type");
+        }
+        
+        // add top level types
+        // XXX offer "like" template too
+        Set<String> qnames = res.getNedTypeQNames(predicate, project);
+        String names[] = new String[qnames.size()];
+        String descriptions[] = new String[qnames.size()];
+        int i = 0;
+        for (String qname : qnames) {
+            INEDTypeInfo nedTypeInfo = res.getToplevelNedType(qname, project);
+            names[i] = nedTypeInfo.getName();
+            System.out.println("before : "+ nedTypeInfo.getNamePrefix());
+            descriptions[i] = StringUtils.chomp(nedTypeInfo.getNamePrefix(), ".") + " - "+ nedTypeInfo.getNEDElement().getReadableTagName()+" type";
+            System.out.println("after : "+ nedTypeInfo.getNamePrefix()+" desc: "+descriptions[i]);
+            i++;
+        }
+        addProposals(viewer, documentOffset, result, names, descriptions);
+    }
 
 	private boolean containsOpenBracket(String line) {
 		while (line.matches(".*\\[[^\\[\\]]*\\].*"))
@@ -350,12 +387,16 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		return null; // bad luck
 	}
 
+    private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String[] descriptions) {
+        result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals, "", descriptions));
+    }
+
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals, "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals.toArray(new String[0]), "", description));
+		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals.toArray(new String[] {}), "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
