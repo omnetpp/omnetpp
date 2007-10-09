@@ -61,16 +61,37 @@ clean:
 	rm -f *.o libcommon$(A_LIB_SUFFIX) libcommon$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+bigdecimal.o: bigdecimal.cc \
+  opp_ctype.h \
+  bigdecimal.h \
+  commondefs.h \
+  exception.h
 commonutil.o: commonutil.cc \
   commonutil.h \
   commondefs.h \
   exception.h
 displaystring.o: displaystring.cc \
+  opp_ctype.h \
   displaystring.h \
   commondefs.h
 exception.o: exception.cc \
   exception.h \
   commondefs.h
+expression.o: expression.cc \
+  expression.h \
+  expressionyydefs.h \
+  commondefs.h \
+  commonutil.h \
+  stringutil.h \
+  exception.h
+expression.tab.o: expression.tab.cc \
+  expressionyydefs.h \
+  expression.h \
+  exception.h \
+  stringutil.h \
+  unitconversion.h \
+  commondefs.h \
+  commonutil.h
 fileglobber.o: fileglobber.cc \
   fileglobber.h \
   commondefs.h
@@ -80,7 +101,10 @@ filereader.o: filereader.cc \
   exception.h \
   commondefs.h
 fileutil.o: fileutil.cc \
+  opp_ctype.h \
   fileutil.h \
+  stringtokenizer.h \
+  exception.h \
   commondefs.h
 fnamelisttokenizer.o: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
@@ -89,7 +113,22 @@ fnamelisttokenizer.o: fnamelisttokenizer.cc \
   exception.h
 lcgrandom.o: lcgrandom.cc \
   lcgrandom.h \
-  commondefs.h
+  commondefs.h \
+  exception.h
+lex.expressionyy.o: lex.expressionyy.cc \
+  expressionyydefs.h \
+  exception.h \
+  expression.tab.h \
+  stringutil.h \
+  expression.h \
+  commondefs.h \
+  commonutil.h
+lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
+  stringutil.h \
+  matchexpression.tab.h \
+  commondefs.h \
+  commonutil.h \
+  exception.h
 linetokenizer.o: linetokenizer.cc \
   exception.h \
   linetokenizer.h \
@@ -97,23 +136,36 @@ linetokenizer.o: linetokenizer.cc \
 matchexpression.o: matchexpression.cc \
   matchexpression.h \
   patternmatcher.h \
+  commonutil.h \
   commondefs.h \
   exception.h
+matchexpression.tab.o: matchexpression.tab.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  exception.h \
+  commondefs.h
 patternmatcher.o: patternmatcher.cc \
+  opp_ctype.h \
   patternmatcher.h \
   stringutil.h \
   exception.h \
   commondefs.h \
   commonutil.h
+stringpool.o: stringpool.cc \
+  stringpool.h \
+  commondefs.h
 stringtokenizer.o: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h
 stringutil.o: stringutil.cc \
   commonutil.h \
+  opp_ctype.h \
   stringutil.h \
+  stringtokenizer.h \
   commondefs.h \
   exception.h
 unitconversion.o: unitconversion.cc \
+  opp_ctype.h \
   unitconversion.h \
   commondefs.h \
   exception.h

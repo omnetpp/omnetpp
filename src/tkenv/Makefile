@@ -305,8 +305,7 @@ layouterenv.o: layouterenv.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h
+  ../../include/cconfiguration.h
 modinsp.o: modinsp.cc \
   modinsp.h \
   tkapp.h \
@@ -364,8 +363,7 @@ modinsp.o: modinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h
+  ../../include/cconfiguration.h
 objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -506,7 +504,6 @@ statinsp.o: statinsp.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h \
   inspector.h \
   tkutil.h \
   tkdefs.h
@@ -628,7 +625,6 @@ tkcmd.o: tkcmd.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h \
   tkutil.h \
   tkdefs.h \
   ../envir/matchableobject.h
@@ -658,8 +654,7 @@ tklib.o: tklib.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
-  ../../include/cconfigkey.h
+  ../../include/opp_string.h
 tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
@@ -697,7 +692,6 @@ tkutil.o: tkutil.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h \
   ../envir/matchableobject.h \
   tkdefs.h
 visitor.o: visitor.cc \
@@ -748,5 +742,4 @@ visitor.o: visitor.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h
+  ../../include/cconfiguration.h

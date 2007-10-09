@@ -50,6 +50,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/cmessage.h \
   ../envir/args.h \
   ../envir/speedometer.h \
+  ../../include/cconfigkey.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -76,7 +77,6 @@ cmdenv.o: cmdenv.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/cconfigkey.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \

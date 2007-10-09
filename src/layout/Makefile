@@ -110,7 +110,8 @@ graphlayouter.o: graphlayouter.cc \
   graphlayouter.h \
   layoutdefs.h \
   ../common/lcgrandom.h \
-  ../common/commondefs.h
+  ../common/commondefs.h \
+  ../common/exception.h
 heapembedding.o: heapembedding.cc \
   heapembedding.h \
   geometry.h \

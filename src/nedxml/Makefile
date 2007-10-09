@@ -139,6 +139,34 @@ cppmsggenerator.o: cppmsggenerator.cc \
   nedcompiler.h \
   nedresourcecache.h \
   nedcomponent.h
+lex.msg2yy.o: lex.msg2yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  msg2.tab.h \
+  nedxmldefs.h \
+  nedelement.h
+lex.ned1yy.o: lex.ned1yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  ned1.tab.h \
+  nedxmldefs.h \
+  nedelement.h
+lex.ned2yy.o: lex.ned2yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  ned2.tab.h \
+  nedxmldefs.h \
+  nedelement.h
+msg2.tab.o: msg2.tab.cc \
+  nedyydefs.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 ned1generator.o: ned1generator.cc \
   ned1generator.h \
   nedutil.h \
@@ -146,19 +174,32 @@ ned1generator.o: ned1generator.cc \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
+ned1.tab.o: ned1.tab.cc \
+  nedyydefs.h \
+  nedutil.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 ned2generator.o: ned2generator.cc \
   ned2generator.h \
   nederror.h \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-nedsyntaxvalidator.o: nedsyntaxvalidator.cc \
+ned2.tab.o: ned2.tab.cc \
+  nedyydefs.h \
   nederror.h \
-  nedsyntaxvalidator.h \
-  nedelement.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
   nedxmldefs.h \
-  nedvalidator.h \
-  nedelements.h
+  nedelement.h
 nedcompiler.o: nedcompiler.cc \
   nederror.h \
   nedcompiler.h \
@@ -248,6 +289,13 @@ nedsemanticvalidator.o: nedsemanticvalidator.cc \
   nedvalidator.h \
   nedelements.h \
   nedcomponent.h
+nedsyntaxvalidator.o: nedsyntaxvalidator.cc \
+  nederror.h \
+  nedsyntaxvalidator.h \
+  nedelement.h \
+  nedxmldefs.h \
+  nedvalidator.h \
+  nedelements.h
 nedtool.o: nedtool.cc \
   nedparser.h \
   nederror.h \
