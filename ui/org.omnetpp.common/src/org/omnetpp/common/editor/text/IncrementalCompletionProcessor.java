@@ -23,6 +23,7 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
+
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.StringUtils;
 
@@ -73,6 +74,17 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * position and filters the proposal accordingly.
      */
     protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
+        String descriptions[] = new String[proposalString.length]; 
+        Arrays.fill(descriptions, description);
+        return createProposals(viewer, documentOffset, wordDetector, startStr, proposalString, endStr, descriptions);
+        
+    }
+
+    /**
+     * Create a List of ICompletionProposal from an array of string. Checks the word under the current cursor
+     * position and filters the proposal accordingly.
+     */
+    protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String[] descriptions) {
         List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
         String prefix;
         IRegion wordRegion;
@@ -89,7 +101,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         for (int i = 0 ;i < proposalString.length; ++i) {
             String prop = startStr + proposalString[i] + endStr;
             if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
-            	String displayText = description==null ? prop : prop+" - "+description;
+            	String displayText = StringUtils.isEmpty(descriptions[i]) ? prop : prop+" - "+descriptions[i];
                 propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), null, displayText, null, null));
             }
         }
