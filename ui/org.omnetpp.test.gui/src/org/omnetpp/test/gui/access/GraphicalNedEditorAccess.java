@@ -34,6 +34,7 @@ import com.simulcraft.test.gui.core.NotInUIThread;
 public class GraphicalNedEditorAccess
 	extends EditorPartAccess
 {
+    private final static String NBSP = "\u00A0";
 	public GraphicalNedEditorAccess(GraphicalNedEditor editorPart) {
 		super(editorPart);
 	}
@@ -49,12 +50,12 @@ public class GraphicalNedEditorAccess
 
 	@NotInUIThread
 	public void createSimpleModuleWithPalette(String name) {
-		createElementWithPalette("Simple\u00A0Module", name);
+		createElementWithPalette("Simple"+NBSP+"Module", name);
 	}
 
     @NotInUIThread
     public void createModuleInterfaceWithPalette(String name) {
-        createElementWithPalette("Module\u00A0Interface", name);
+        createElementWithPalette("Module"+NBSP+"Interface", name);
     }
 
     @NotInUIThread
@@ -64,7 +65,7 @@ public class GraphicalNedEditorAccess
 
     @NotInUIThread
     public void createChannelInterfaceWithPalette(String name) {
-        createElementWithPalette("Channel\u00A0Interface", name);
+        createElementWithPalette("Channel"+NBSP+"Interface", name);
     }
 
     @NotInUIThread
@@ -139,7 +140,7 @@ public class GraphicalNedEditorAccess
 
     @NotInUIThread
 	public CompoundModuleEditPartAccess createCompoundModuleWithPalette(String name) {
-		clickPaletteItem("Compound\u00A0Module");
+		clickPaletteItem("Compound"+NBSP+"Module");
 		clickBackground();
 		renameElement("Unnamed.*", name);
 

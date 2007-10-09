@@ -41,13 +41,8 @@ public class ConfigTest extends InifileEditorTestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
         TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");
 
-        // Wizard has created the file with an empty "network=" line; type "Undefined" there as network name
-        textualEditor.findStyledText().moveCursorAfter("network.*=");
+        textualEditor.findStyledText().typeIn("[General] \nnetwork = Undefined");
         
-        StyledTextAccess styledText = workbenchWindow.getActiveEditorPart().findStyledText();
-        styledText.typeIn(" Undefined");
-        workbenchWindow.getActiveEditorPart().saveWithHotKey();
-
         WorkbenchUtils.assertErrorMessageInProblemsView(".*No such NED network.*");
     }
 

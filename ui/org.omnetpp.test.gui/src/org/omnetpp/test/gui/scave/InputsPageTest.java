@@ -14,7 +14,7 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class InputsPageTest extends GUITestCase {
 	
-	protected String projectName = "test-project";
+	protected String projectName = "project";
 	
 	protected ScaveEditorAccess editor;
 	protected InputsPageAccess inputsPage;
@@ -50,20 +50,20 @@ public class InputsPageTest extends GUITestCase {
 
 	private static GenericTreeNode[] buildFilesViewContent() {
 		return 	forest(
-					n("file /test-project/empty.sca"),
-					n("file /test-project/empty.vec"),
+					n("file /project/empty.sca"),
+					n("file /project/empty.vec"),
 					n("file inputspage*.vec"),
 					n("file inputspage*.sca"));
 	}
 	
 	private static GenericTreeNode[] buildFileRunViewContent() {
 		return 	forest(
-					n("/test-project/empty.sca"),
-					n("/test-project/empty.vec"),
-					n("/test-project/inputspagetest.sca",
+					n("/project/empty.sca"),
+					n("/project/empty.vec"),
+					n("/project/inputspagetest.sca",
 						n("run \"run-1\""),
 						n("run \"run-2\"")),
-					n("/test-project/inputspagetest.vec",
+					n("/project/inputspagetest.vec",
 						n("run \"run-1\""))
 				);
 	}
@@ -71,10 +71,10 @@ public class InputsPageTest extends GUITestCase {
 	private static GenericTreeNode[] buildRunFileViewContent() {
 		return 	forest(
 					n("run \"run-1\"",
-						n("/test-project/inputspagetest.sca"),
-						n("/test-project/inputspagetest.vec")),
+						n("/project/inputspagetest.sca"),
+						n("/project/inputspagetest.vec")),
 					n("run \"run-2\"",
-						n("/test-project/inputspagetest.sca"))
+						n("/project/inputspagetest.sca"))
 				);
 	}
 	
@@ -84,13 +84,13 @@ public class InputsPageTest extends GUITestCase {
 						n("measurement \"1\"",
 							n("replication \"1\"",
 								n("run \"run-1\"",
-									n("/test-project/inputspagetest.sca"),
-									n("/test-project/inputspagetest.vec"))))),
+									n("/project/inputspagetest.sca"),
+									n("/project/inputspagetest.vec"))))),
 					n("experiment \"2\"",
 						n("measurement \"2\"",
 							n("replication \"2\"",
 								n("run \"run-2\"",
-									n("/test-project/inputspagetest.sca")))))
+									n("/project/inputspagetest.sca")))))
 				);
 	}
 	
@@ -152,8 +152,8 @@ public class InputsPageTest extends GUITestCase {
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 			"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
 			"<inputs>" +
-			"<inputs name=\"/test-project/empty.sca\"/>" +
-			"<inputs name=\"/test-project/empty.vec\"/>" +
+			"<inputs name=\"/project/empty.sca\"/>" +
+			"<inputs name=\"/project/empty.vec\"/>" +
 			"<inputs name=\"inputspage*.vec\"/>" +
 			"<inputs name=\"inputspage*.sca\"/>" +
 			"</inputs>" +

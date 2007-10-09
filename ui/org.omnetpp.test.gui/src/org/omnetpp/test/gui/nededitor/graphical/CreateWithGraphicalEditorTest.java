@@ -50,12 +50,6 @@ public class CreateWithGraphicalEditorTest
         assertFileExistsWithContent(".*submodules.*test.*TestSimpleModule.*");
     }
     
-    public void testCreateSubmoduleToSubmoduleConnection() throws Exception {
-        prepareTest("simple TestSimpleModule { gates: inout g; }\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
-        testCreateConnection("test1", "test2");
-        assertFileExistsWithContent(".*connections.*test1.g.*test2.g.*");
-    }
-
     public void testCreateSubmoduleSelfConnection() throws Exception {
         prepareTest("simple TestSimpleModule { gates: inout g; }\nmodule TestCompoundModule { submodules: test: TestSimpleModule; }");
         testCreateConnection("test", "test");
@@ -68,8 +62,14 @@ public class CreateWithGraphicalEditorTest
         assertFileExistsWithContent(".*connections.*test.g.*g.*");
     }
 
+    public void testCreateSubmoduleToSubmoduleConnection() throws Exception {
+        prepareTest("simple TestSimpleModule { gates: inout g; }\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
+        testCreateConnection("test1", "test2");
+        assertFileExistsWithContent(".*connections.*test1.g.*test2.g.*");
+    }
+
     public void testCreateSubmoduleToSubmoduleConnectionWithChannel() throws Exception {
-        prepareTest("simple TestSimpleModule { gates: inout g; }\nchannel TestChannel {}\nmodule TestCompoundModule { submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
+        prepareTest("simple TestSimpleModule { gates: inout g; }\nchannel TestChannel {}\nmodule TestCompoundModule { @display(\"bgb=200,100\"); submodules: test1: TestSimpleModule; test2: TestSimpleModule; }");
         testCreateConnection(".*TestChannel.*", "test1", "test2");
         assertFileExistsWithContent(".*connections.*test1.g.*TestChannel.*test2.g.*");
     }

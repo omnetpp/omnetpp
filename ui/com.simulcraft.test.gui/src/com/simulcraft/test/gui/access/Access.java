@@ -5,7 +5,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
 import org.eclipse.swt.SWT;
@@ -28,6 +27,7 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.core.EventTracer;
 import com.simulcraft.test.gui.core.EventUtils;
@@ -504,7 +504,7 @@ public class Access
 	}
 
 	protected static Object theOnlyObject(List<? extends Object> objects) {
-		Assert.assertTrue("Found more than one objects when exactly one is expected", objects.size() < 2);
+		Assert.assertTrue("Found "+objects.size()+" objects when exactly one is expected ["+StringUtils.join(objects, ", ")+"]", objects.size() < 2);
 		Assert.assertTrue("Found zero object when exactly one is expected", objects.size() > 0);
 		return objects.get(0);
 	}

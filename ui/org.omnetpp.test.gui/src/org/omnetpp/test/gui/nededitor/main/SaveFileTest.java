@@ -32,7 +32,7 @@ public class SaveFileTest
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
 		workbenchWindow.chooseFromMainMenu("File|Save As.*");
 		ShellAccess shell = WorkbenchWindowAccess.findShellByTitle(".*Save As.*");
-		String newFileName = "Renamed.ned";
+		String newFileName = "testRenamed.ned";
 		shell.findTextAfterLabel("File name:").typeIn(newFileName);
 		shell.pressKey(SWT.CR);
 		setFileName(newFileName);
