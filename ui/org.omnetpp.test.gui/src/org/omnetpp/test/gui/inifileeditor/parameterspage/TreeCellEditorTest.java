@@ -10,7 +10,7 @@ import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
-public class CellEditorTest extends InifileEditorTestCase {
+public class TreeCellEditorTest extends InifileEditorTestCase {
     final String nedText = 
         "network TestNetwork {\n" +
         "  parameters:\n" +
