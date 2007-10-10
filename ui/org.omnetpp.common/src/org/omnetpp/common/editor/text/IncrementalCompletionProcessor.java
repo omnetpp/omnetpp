@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.BadLocationException;
@@ -97,10 +98,12 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         }
 
         // we have to sort the name and the description together so we merge them in a single string
-        String SEPARATOR = "\u00A0";  // non breaking space
+        String SEPARATOR = "\u0000";  // ASCII 0
         String displayLine[] = new String[proposalString.length];
-        for (int i=0; i<proposalString.length; i++)
+        for (int i=0; i<proposalString.length; i++) {
+            Assert.isTrue(!proposalString[i].contains(SEPARATOR), "Proposal string contains an internal terminator char.");
             displayLine[i] = proposalString[i]+SEPARATOR+descriptions[i];
+        }
         
         Arrays.sort(displayLine);
         
