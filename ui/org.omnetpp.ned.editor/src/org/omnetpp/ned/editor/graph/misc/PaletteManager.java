@@ -145,8 +145,8 @@ public class PaletteManager {
      * Builds the palette (all drawers)
      */
     public void refresh() {
-        System.out.println("paletteManager refresh() start");
-        long startMillis = System.currentTimeMillis();
+        // System.out.println("paletteManager refresh() start");
+        // long startMillis = System.currentTimeMillis();
 
         tempChannelsStackContent = new ArrayList<PaletteEntry>();
         tempTypesContainerContent = new ArrayList<PaletteEntry>();
@@ -163,8 +163,6 @@ public class PaletteManager {
         }
         currentEntries = newEntries;
 
-        System.out.println(" **** before");
-
         // TODO sort the containers by name
         ArrayList<PaletteContainer> drawers = new ArrayList<PaletteContainer>();
         drawers.add(toolsContainer);
@@ -180,12 +178,8 @@ public class PaletteManager {
        
         nedPalette.setChildren(drawers);
         
-//        defaultContainer.add(new PanningSelectionToolEntry("Selector","Select module(s)"));
-        
-        System.out.println(" **** after");
-
-        long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("paletteManager refresh(): " + dt + "ms");
+//        long dt = System.currentTimeMillis() - startMillis;
+//        System.out.println("paletteManager refresh(): " + dt + "ms");
     }
 
     /**
