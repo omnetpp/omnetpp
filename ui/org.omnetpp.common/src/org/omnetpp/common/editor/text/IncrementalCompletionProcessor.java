@@ -96,12 +96,19 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         	return propList;
         }
 
-        Arrays.sort(proposalString);
+        // we have to sort the name and the description together so we merge them in a single string
+        String SEPARATOR = "\u00A0";  // non breaking space
+        String displayLine[] = new String[proposalString.length];
+        for (int i=0; i<proposalString.length; i++)
+            displayLine[i] = proposalString[i]+SEPARATOR+descriptions[i];
         
-        for (int i = 0 ;i < proposalString.length; ++i) {
-            String prop = startStr + proposalString[i] + endStr;
+        Arrays.sort(displayLine);
+        
+        for (int i = 0 ;i < displayLine.length; ++i) {
+            String prop = startStr + StringUtils.substringBefore(displayLine[i], SEPARATOR) + endStr;
+            String descr = StringUtils.substringAfter(displayLine[i], SEPARATOR);
             if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
-            	String displayText = StringUtils.isEmpty(descriptions[i]) ? prop : prop+" - "+descriptions[i];
+            	String displayText = StringUtils.isEmpty(descr) ? prop : prop+" - "+descr;
                 propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), null, displayText, null, null));
             }
         }
