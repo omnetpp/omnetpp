@@ -27,6 +27,7 @@ import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.engine.PackageNode;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -354,9 +355,9 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
         for (String qname : qnames) {
             INEDTypeInfo nedTypeInfo = res.getToplevelNedType(qname, project);
             names[i] = nedTypeInfo.getName();
-            System.out.println("before : "+ nedTypeInfo.getNamePrefix());
-            descriptions[i] = StringUtils.chomp(nedTypeInfo.getNamePrefix(), ".") + " - "+ nedTypeInfo.getNEDElement().getReadableTagName()+" type";
-            System.out.println("after : "+ nedTypeInfo.getNamePrefix()+" desc: "+descriptions[i]);
+            String packageName = StringUtils.chomp(nedTypeInfo.getNamePrefix(), ".");
+            packageName = StringUtils.isBlank(packageName) ? "" : packageName+" - ";
+            descriptions[i] =  packageName + nedTypeInfo.getNEDElement().getReadableTagName()+" type";
             i++;
         }
         addProposals(viewer, documentOffset, result, names, descriptions);
