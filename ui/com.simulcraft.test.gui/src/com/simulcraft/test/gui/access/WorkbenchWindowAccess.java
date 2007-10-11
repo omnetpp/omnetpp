@@ -6,9 +6,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPerspectiveDescriptor;
@@ -178,31 +175,6 @@ public class WorkbenchWindowAccess extends Access {
             for (IEditorReference editorReference : page.getEditorReferences())
                 Assert.fail("Editor part " + editorReference.getTitle() + " still open");
         }
-    }
-
-    @InUIThread
-    public static ContentAssistAccess findContentAssistPopup() {
-        // Content Assist popup is a Table in a Composite in a nameless Shell
-        Shell shell = (Shell)Access.findObject(Access.getDisplay().getShells(), new IPredicate() {
-            public boolean matches(Object object) {
-                Access.log(Access.debug, "Trying to find content assist popup");
-                Shell shell = (Shell)object;
-                if (shell.getText().equals("") && shell.isVisible()) {
-                    Composite parent = shell;
-                    //shell.getStyle() == 0x020004F0                   
-                    if (shell.getChildren().length==1 && shell.getChildren()[0].getClass() == Composite.class) // Table is a composite too
-                        parent = (Composite)shell.getChildren()[0];
-                    
-                    if (parent.getChildren().length==1 && parent.getChildren()[0] instanceof Table) {
-                        Table table = (Table)parent.getChildren()[0];
-                        if (table.getColumnCount() == 0) 
-                            return true;
-                    }
-                }
-                return false;
-            }
-        });
-        return new ContentAssistAccess(new ShellAccess(shell).findTable().getControl());
     }
     
 }

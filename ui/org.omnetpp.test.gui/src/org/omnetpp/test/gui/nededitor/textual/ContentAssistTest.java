@@ -4,7 +4,6 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ContentAssistAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
-import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 import org.eclipse.swt.SWT;
@@ -31,14 +30,19 @@ public class ContentAssistTest extends NedFileTestCase {
            "    gates:\n" + 
            "        inout cg;\n" + 
            "    types:\n" + 
+           "        channel InnerChannel1 {}\n" + 
+           "        channel InnerChannel2 {}\n" + 
+           "        moduleinterface InnerModuleIf {}\n" + 
            "        simple InnerSimple1\n" + 
            "        {\n" + 
            "            gates:\n" + 
            "                inout g;\n" + 
            "        }\n" + 
            "        simple InnerSimple2 {}\n" + 
-           "        channel InnerChannel1 {}\n" + 
-           "        channel InnerChannel2 {}\n" + 
+           "        module InnerCompound {\n" +
+           "            submodules:\n" +
+           "                innersub1: InnerSimple1;\n" +
+           "        }\n" + 
            "    submodules:\n" + 
            "        sub1: InnerSimple1;\n" + 
            "        sub2: InnerSimple1;\n" + 
@@ -65,8 +69,8 @@ public class ContentAssistTest extends NedFileTestCase {
         TextEditorAccess textualNedEditor = findNedEditor().getTextualNedEditor();
         textualNedEditor.moveCursorAfter("simple Simple2");
         textualNedEditor.typeIn(" extends ");
-        textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        textualNedEditor.pressKey(' ', SWT.CTRL); 
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "Simple1 - simple module type",
                 "Simple1 - testpackage - simple module type",
                 "Simple2 - simple module type"}); 
@@ -77,7 +81,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("module Compound2");
         textualNedEditor.typeIn(" extends ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "Compound1 - compound module type",
                 "Compound1 - testpackage - compound module type",
                 "Compound2 - compound module type"}); 
@@ -88,7 +92,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("moduleinterface ModuleIf2");
         textualNedEditor.typeIn(" extends ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "IBidirectionalChannel - ned - module interface type",
                 "IUnidirectionalChannel - ned - module interface type",
                 "ModuleIf1 - module interface type",
@@ -101,7 +105,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("channel Channel2");
         textualNedEditor.typeIn(" extends ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "cBasicChannel - ned - channel type",
                 "Channel1 - channel type",
                 "Channel1 - testpackage - channel type",
@@ -114,7 +118,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("channelinterface ChannelIf2");
         textualNedEditor.typeIn(" extends ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "ChannelIf1 - channel interface type",
                 "ChannelIf1 - testpackage - channel interface type",
                 "ChannelIf2 - channel interface type"}); 
@@ -125,7 +129,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("simple Simple2");
         textualNedEditor.typeIn(" like ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "IBidirectionalChannel - ned - module interface type",
                 "IUnidirectionalChannel - ned - module interface type",
                 "ModuleIf1 - module interface type",
@@ -138,7 +142,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("module Compound2");
         textualNedEditor.typeIn(" like ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "IBidirectionalChannel - ned - module interface type",
                 "IUnidirectionalChannel - ned - module interface type",
                 "ModuleIf1 - module interface type",
@@ -151,7 +155,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("channel Channel2");
         textualNedEditor.typeIn(" like ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "ChannelIf1 - channel interface type",
                 "ChannelIf1 - testpackage - channel interface type",
                 "ChannelIf2 - channel interface type"}); 
@@ -162,7 +166,8 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("sub2: InnerSimple1;");
         textualNedEditor.typeIn("\n sub3: ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
+                "InnerCompound - inner type",
                 "InnerSimple1 - inner type",
                 "InnerSimple2 - inner type",
                 "Compound1 - compound module type",
@@ -178,15 +183,16 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("sub2: InnerSimple1;");
         textualNedEditor.typeIn("\n sub3: <");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "par - parameter"}); 
         textualNedEditor.typeIn("par>");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "like - keyword"}); 
         textualNedEditor.typeIn(" like ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
+                "InnerModuleIf - inner type",
                 "IBidirectionalChannel - ned - module interface type",
                 "IUnidirectionalChannel - ned - module interface type",
                 "ModuleIf1 - module interface type",
@@ -199,18 +205,18 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.moveCursorAfter("connections:");
         textualNedEditor.typeIn("\n");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContentStartWith(new String[] {
+        Access.findContentAssistPopup().assertContentStartWith(new String[] {
                 "sub1 - submodule",
                 "sub2 - submodule",
                 "cg - gate"
                 }, null); 
         textualNedEditor.typeIn("sub1.");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "g - gate"});
         textualNedEditor.typeIn("g <--> ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "sub1 - submodule",
                 "sub2 - submodule",
                 "cg - gate",
@@ -223,14 +229,53 @@ public class ContentAssistTest extends NedFileTestCase {
                 "cIdealChannel - ned - channel type"}); 
         textualNedEditor.typeIn("Channel2 <--> ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "sub1 - submodule",
                 "sub2 - submodule",
                 "cg - gate"
                 }); 
         textualNedEditor.typeIn("sub2.");
         textualNedEditor.pressKey(' ', SWT.CTRL);
-        WorkbenchWindowAccess.findContentAssistPopup().assertContent(new String[] {
+        Access.findContentAssistPopup().assertContent(new String[] {
                 "g - gate"});
     }
+
+    public void testSubmoduleTypeInInnerCompound() throws Throwable {
+        TextEditorAccess textualNedEditor = findNedEditor().getTextualNedEditor();
+        textualNedEditor.moveCursorAfter("innersub1: InnerSimple1;");
+        textualNedEditor.typeIn("\n innersub1: ");
+        textualNedEditor.pressKey(' ', SWT.CTRL);
+        Access.findContentAssistPopup().assertContent(new String[] {
+                "InnerCompound - inner type",
+                "InnerSimple1 - inner type",
+                "InnerSimple2 - inner type",
+                "Compound1 - compound module type",
+                "Compound1 - testpackage - compound module type",
+                "Compound2 - compound module type",
+                "Simple1 - simple module type",
+                "Simple1 - testpackage - simple module type",
+                "Simple2 - simple module type"}); 
+    }
+
+    public void testSubmoduleLikeInInnerCompound() throws Throwable {
+        TextEditorAccess textualNedEditor = findNedEditor().getTextualNedEditor();
+        textualNedEditor.moveCursorAfter("innersub1: InnerSimple1;");
+        textualNedEditor.typeIn("\n sub3: <");
+        textualNedEditor.pressKey(' ', SWT.CTRL);
+        Access.assertHasNoContentAssistPopup(); 
+        textualNedEditor.typeIn("par>");
+        textualNedEditor.pressKey(' ', SWT.CTRL);
+        Access.findContentAssistPopup().assertContent(new String[] {
+                "like - keyword"}); 
+        textualNedEditor.typeIn(" like ");
+        textualNedEditor.pressKey(' ', SWT.CTRL);
+        Access.findContentAssistPopup().assertContent(new String[] {
+                "InnerModuleIf - inner type",
+                "IBidirectionalChannel - ned - module interface type",
+                "IUnidirectionalChannel - ned - module interface type",
+                "ModuleIf1 - module interface type",
+                "ModuleIf1 - testpackage - module interface type",
+                "ModuleIf2 - module interface type"}); 
+    }
+
 }

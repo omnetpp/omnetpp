@@ -3,6 +3,7 @@ package org.omnetpp.test.gui.inifileeditor.parameterspage;
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
+import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TextAccess;
@@ -132,7 +133,7 @@ public class CellEditorTest extends InifileEditorTestCase {
         tree.findTreeItemByContent(".*par2").activateCellEditor(1);
         tree.pressKey(SWT.DEL);
         tree.pressKey(' ', SWT.CTRL); // Content Assist should come up
-        WorkbenchWindowAccess.findContentAssistPopup().chooseWithKeyboard("exponential\\(mean\\).*");
+        Access.findContentAssistPopup().chooseWithKeyboard("exponential\\(mean\\).*");
         tree.pressKeySequence("+10"); // append some text to see cell editor is still open
         tree.pressEnter(); // commit cell editor
         assertTextEditorContentMatches(content.replace("200", "exponential(mean)+10"));
@@ -143,7 +144,7 @@ public class CellEditorTest extends InifileEditorTestCase {
         tree.findTreeItemByContent(".*par2").activateCellEditor(1);
         tree.pressKeySequence("expon");
         tree.pressKey(' ', SWT.CTRL); // Content Assist should come up
-        WorkbenchWindowAccess.findContentAssistPopup().chooseWithMouse("exponential\\(mean\\).*");
+        Access.findContentAssistPopup().chooseWithMouse("exponential\\(mean\\).*");
         tree.pressKeySequence("+10"); // append some text to see cell editor is still open
         tree.pressEnter(); // commit cell editor
         assertTextEditorContentMatches(content.replace("200", "exponential(mean)+10"));
@@ -164,7 +165,7 @@ public class CellEditorTest extends InifileEditorTestCase {
         TextAccess cellEditor = tree.findTreeItemByContent(paramName).activateCellEditor(1);
         tree.pressKeySequence(textToType);
         tree.pressKey(' ', SWT.CTRL); // Content Assist should come up
-        TableAccess contentAssistPopup = WorkbenchWindowAccess.findContentAssistPopup();
+        TableAccess contentAssistPopup = Access.findContentAssistPopup();
         contentAssistPopup.assertHasNoFocus();
         contentAssistPopup.click();
         contentAssistPopup.assertHasFocus();

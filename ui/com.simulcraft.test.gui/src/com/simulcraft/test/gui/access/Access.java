@@ -5,6 +5,11 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import com.simulcraft.test.gui.core.EventTracer;
+import com.simulcraft.test.gui.core.EventUtils;
+import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
 import org.eclipse.swt.SWT;
@@ -21,18 +26,15 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
-
-import com.simulcraft.test.gui.core.EventTracer;
-import com.simulcraft.test.gui.core.EventUtils;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
 
 
 public class Access
@@ -320,6 +322,42 @@ public class Access
 	}
 
 	@InUIThread
+    public static ContentAssistAccess findContentAssistPopup() {
+        // Content Assist popup is a Table in a Composite in a nameless Shell
+	    Shell shell = (Shell) theOnlyObject(collectContentAssistPopups());
+        return new ContentAssistAccess(new ShellAccess(shell).findTable().getControl());
+    }
+	
+	@NotInUIThread
+	public static void assertHasNoContentAssistPopup() {
+	    Access.sleep(0.5);
+	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups().size() == 0);
+	}
+	
+	@InUIThread
+    protected static List<Object> collectContentAssistPopups() {
+        return collectObjects(getDisplay().getShells(), new IPredicate() {
+            public boolean matches(Object object) {
+                log(debug, "Trying to find content assist popup");
+                Shell shell = (Shell)object;
+                if (shell.getText().equals("") && shell.isVisible()) {
+                    Composite parent = shell;
+                    //shell.getStyle() == 0x020004F0                   
+                    if (shell.getChildren().length==1 && shell.getChildren()[0].getClass() == Composite.class) // Table is a composite too
+                        parent = (Composite)shell.getChildren()[0];
+                    
+                    if (parent.getChildren().length==1 && parent.getChildren()[0] instanceof Table) {
+                        Table table = (Table)parent.getChildren()[0];
+                        if (table.getColumnCount() == 0) 
+                            return true;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    @InUIThread
 	public static Object findObject(List<Object> objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate));
 	}
