@@ -309,7 +309,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, "keyword");
 			}
 			else if (line.matches(".*\\blike")) {
-                addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types) 
+                    addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
+                else  // top level type
+                    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, NEDResources.MODULEINTERFACE_FILTER);
 			}
 		}
 
