@@ -11,7 +11,7 @@ package com.simulcraft.test.gui.core;
  *   <li>3. When execution was successful, UI events in queue get processed
  *          using Display.readAndDispatch() until the queue becomes empty.
  *          Then the method returns.       
- *
+ * </ul> 
  * @InUIThread does NOT nest: If there there are nested @InUIThread method calls, 
  * only the toplevel one (entered first) will get special treatment, all nested
  * ones are treated like plain method calls.

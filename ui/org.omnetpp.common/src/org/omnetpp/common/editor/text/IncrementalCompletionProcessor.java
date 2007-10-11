@@ -105,13 +105,13 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             displayLine[i] = proposalString[i]+SEPARATOR+descriptions[i];
         }
         
-        Arrays.sort(displayLine);
+        Arrays.sort(displayLine, StringUtils.dictionaryComparator);
         
         for (int i = 0 ;i < displayLine.length; ++i) {
             String prop = startStr + StringUtils.substringBefore(displayLine[i], SEPARATOR) + endStr;
             String descr = StringUtils.substringAfter(displayLine[i], SEPARATOR);
             if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
-            	String displayText = StringUtils.isEmpty(descr) ? prop : prop+" - "+descr;
+            	String displayText = StringUtils.isEmpty(descr) ? StringUtils.strip(prop) : StringUtils.strip(prop)+" - "+descr;
                 propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), null, displayText, null, null));
             }
         }

@@ -44,6 +44,33 @@ public class TableAccess extends ControlAccess
     }
 
     @InUIThread
+    public void assertContent(String items[]) {
+        Assert.assertEquals("Table item count does not match.", items.length, getControl().getItemCount());
+        for (int i = 0; i< items.length; ++i) {
+            String itemText = getControl().getItem(i).getText();
+            Assert.assertTrue("Table item does not match. Expected: '"+items[i]+"' found: '"+itemText+"'", itemText.matches(items[i]));
+        }
+    }
+    
+    /**
+     * Table starts with the provided items, the rest of the table should match restShouldMatch or can be anything
+     * if restShouldMatch is NULL.
+     */
+    @InUIThread
+    public void assertContentStartWith(String items[], String restShouldMatch) {
+        Assert.assertTrue("Table item count less than expected.", items.length <= getControl().getItemCount());
+        for (int i = 0; i< items.length; ++i) {
+            String itemText = getControl().getItem(i).getText();
+            Assert.assertTrue("Table item does not match. Expected: '"+items[i]+"' found: '"+itemText+"'", itemText.matches(items[i]));
+        }
+        if (restShouldMatch != null)
+            for (int i = items.length; i < getControl().getItemCount(); ++i) {
+                String itemText = getControl().getItem(i).getText();
+                Assert.assertTrue("Table item does not match. Expected: '"+restShouldMatch+"' found: '"+itemText+"'", itemText.matches(restShouldMatch));
+            }
+    }
+    
+    @InUIThread
 	public TableItemAccess findTableItemByContent(final String content) {
 		return new TableItemAccess((TableItem)findObject(getControl().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
