@@ -101,6 +101,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
 
             index.addVector(vector);
             lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
+            currentVectorRef = NULL;
         }
         else // data line
         {
