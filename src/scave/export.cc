@@ -17,6 +17,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <cstdio>
 #include <iostream>
 #include "opp_ctype.h"
 #include "scaveutils.h"
@@ -88,10 +89,10 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
 
     // add a column for each column in scalars headed by the non-grouping fields
     const IDVector firstRow = scalars[0]; // XXX empty idlist?
-    for (int col = 0; col < firstRow.size(); ++col)
+    for (int col = 0; col < (int)firstRow.size(); ++col)
     {
         ID id = -1;
-        for (int row = 0; row < scalars.size(); ++row)
+        for (int row = 0; row < (int)scalars.size(); ++row)
             if ((id = scalars[row][col]) != -1)
                 break;
 
@@ -231,7 +232,8 @@ string MatlabStructExport::makeUniqueIdentifier(const string &name)
         for (int i=0; ; ++i)
         {
             char suffix[32];
-            result = base + "_" + itoa(i, suffix, 10);
+            sprintf(suffix, "_%d", i);
+            result = base + suffix;
             if (identifiers.find(result) == identifiers.end())
                 break;
         }
@@ -436,7 +438,7 @@ void OctaveTextExport::writeBigDecimalColumn(const DataTable &table, int col, in
            "# columns: 1\n";
     for (int row = startRow; row <endRow; ++row)
     {
-        BigDecimal &value = table.getBigDecimalValue(row, col);
+        BigDecimal value = table.getBigDecimalValue(row, col);
         out << value.str() << "\n";
     }
 }
@@ -453,7 +455,7 @@ void OctaveTextExport::writeStringColumn(const DataTable &table, int col, int st
            "# elements: " << (endRow - startRow) << "\n";
     for (int row = startRow; row < endRow; ++row)
     {
-        std::string &value = table.getStringValue(row, col);
+        std::string value = table.getStringValue(row, col);
         out << "# length: " << value.size() << "\n"
             << value << "\n";
     }

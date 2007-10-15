@@ -55,6 +55,7 @@ class SCAVE_API DataTable
     public:
         int numOfColumns() const { return header.size(); }
         Column column(int i) const { return header[i]; }
+        virtual ~DataTable() {}
         virtual int numOfRows() const = 0;
         virtual double getDoubleValue(int row, int col) const = 0;
         virtual BigDecimal getBigDecimalValue(int row, int col) const = 0;

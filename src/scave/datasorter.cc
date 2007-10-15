@@ -101,7 +101,7 @@ struct ValueAndIndex
     double value;
     int index;
     ValueAndIndex(double value, int index) : value(value), index(index) {}
-    bool operator<(const ValueAndIndex& other) { return this->value < other.value; }
+    bool operator<(const ValueAndIndex& other) const { return this->value < other.value; }
 };
 
 void XYDataset::sortColumnsAccordingToFirstRowMean()
@@ -109,9 +109,9 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
     if (values.size() > 0)
     {
         vector<ValueAndIndex> vals;
-        for (int i = 0; i < values[0].size(); ++i)
+        for (int i = 0; i < (int)values[0].size(); ++i)
         {
-        	double mean = values[0][i].mean();
+            double mean = values[0][i].mean();
             if (!isNaN(mean))
                 vals.push_back(ValueAndIndex(mean, i));
         }
@@ -119,7 +119,7 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
         sort(vals.begin(), vals.end());
 
         columnOrder = vector<int>(vals.size());
-        for (int i = 0; i < vals.size(); ++i)
+        for (int i = 0; i < (int)vals.size(); ++i)
             columnOrder[i] = vals[i].index;
     }
 }
@@ -321,7 +321,7 @@ static bool isMissing(const IDVectorVector &vv, int j)
     if (vv[0][j]==-1)
         return true;
     bool foundY = false;
-    for (int i=1; i<vv.size();++i)
+    for (int i=1; i<(int)vv.size();++i)
         if (vv[i][j]!=-1)
         {
             foundY = true;
@@ -518,7 +518,7 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
 	
 	assert(v1.size() == v2.size());
 	
-	for (int i = 0; i < v1.size(); ++i)
+	for (int i = 0; i < (int)v1.size(); ++i)
 		if(v1[i] != v2[i])
 			return false;
 	

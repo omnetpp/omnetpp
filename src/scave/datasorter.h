@@ -44,7 +44,7 @@ typedef std::vector<std::string> StringVector;
 class XYDataset
 {
     private:
-        typedef const ScalarResult Key;
+        typedef ScalarResult Key;
         typedef std::map<Key, int, ResultItemFieldsLess> KeyToIndexMap;
         typedef std::vector<Statistics> Row;
 

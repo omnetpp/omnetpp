@@ -177,8 +177,8 @@ struct SCAVE_API FileRun
 
 typedef std::set<std::string> StringSet;
 typedef std::vector<std::string> StringVector;
-typedef std::map<ID,ID> IDMap;
-typedef std::map<long,IDMap> ComputedIDCache;
+//typedef std::map<ID,ID> IDMap;
+typedef std::map<std::pair<long, ID> , ID> ComputedIDCache;
 
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output

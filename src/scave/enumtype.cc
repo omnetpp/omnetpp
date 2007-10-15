@@ -63,7 +63,7 @@ int EnumType::valueOf(const char *name, int fallback) const
     return it==nameToValueMap.end() ? fallback : it->second;
 }
 
-static bool less(std::pair<int,std::string> &left, std::pair<int,std::string> &right)
+static bool less(const std::pair<int,std::string> &left, const std::pair<int,std::string> &right)
 {
     return left.first < right.first;
 }

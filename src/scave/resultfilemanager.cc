@@ -22,6 +22,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <utility>
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "matchexpression.h"
@@ -712,19 +713,24 @@ ID ResultFileManager::addComputedVector(const char *name, long computationID, ID
     newVector.nameRef = stringSetFindOrInsert(names, name);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
-    computedIDCache[computationID][input] = id;
+    //computedIDCache[computationID][input] = id;
+    std::pair<long, ID> key = std::make_pair(computationID, input);
+    computedIDCache[key] = id;
     return id;
 }
 
 ID ResultFileManager::getComputedVector(long computationID, ID input)
 {
-    ComputedIDCache::iterator it = computedIDCache.find(computationID);
+    //ComputedIDCache::iterator it = computedIDCache.find(computationID);
+    std::pair<long, ID> key = std::make_pair(computationID, input);
+    ComputedIDCache::iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())
     {
-        IDMap idmap = it->second;
-        IDMap::iterator it2 = idmap.find(input);
-        if (it2 != idmap.end())
-            return it2->second;
+      //IDMap idmap = it->second;
+      //IDMap::iterator it2 = idmap.find(input);
+      //  if (it2 != idmap.end())
+      //      return it2->second;
+      return it->second; 
     }
     return -1;
 }
@@ -1081,6 +1087,7 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
 void ResultFileManager::unloadFile(ResultFile *file)
 {
     // remove computed vector IDs
+    /*
     for (ComputedIDCache::iterator it = computedIDCache.begin(); it != computedIDCache.end(); ++it)
         for (IDMap::iterator it2 = it->second.begin(); it2 != it->second.end(); )
         {
@@ -1089,6 +1096,19 @@ void ResultFileManager::unloadFile(ResultFile *file)
             else
                 ++it2;
         }
+    */
+    for (ComputedIDCache::iterator it = computedIDCache.begin(); it != computedIDCache.end();)
+    {
+        ID id = it->first.second;
+        if (_fileid(id) == file->id) 
+        {
+            ComputedIDCache::iterator oldIt = it;
+            it++;
+            computedIDCache.erase(oldIt);
+        }
+        else
+            ++it;
+    }
 
     // remove FileRun entries
     RunList runsPotentiallyToBeDeleted;

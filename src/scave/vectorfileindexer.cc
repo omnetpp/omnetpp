@@ -55,7 +55,6 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
     char *line;
     char **tokens;
     int numTokens, lineNo, numOfUnrecognizedLines = 0;
-    int currentVectorId = -1;
     VectorData *currentVectorRef = NULL;
     VectorData *lastVectorDecl = NULL;
     Block currentBlock;
@@ -133,7 +132,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
                     throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);
             }
 
-            for (int i = 0; i < currentVectorRef->columns.size(); ++i)
+            for (int i = 0; i < (int)currentVectorRef->columns.size(); ++i)
             {
                 char column = currentVectorRef->columns[i];
                 if (i+1 >= numTokens)

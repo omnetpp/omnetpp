@@ -81,8 +81,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
     char *line, **tokens;
     int numTokens;
     LineTokenizer tokenizer;
-    long id, eventNumber;
-    double t, val;
+    long id;
 
     std::string columns = vector->columns;
     int columnsNo = columns.size();
@@ -96,7 +95,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
         tokens=tokenizer.tokens();
         numTokens = tokenizer.numTokens();
 
-        CHECK(numTokens >= columns.size() + 1, "Line is too short", block, i);
+        CHECK(numTokens >= (int)columns.size() + 1, "Line is too short", block, i);
         CHECK(parseLong(tokens[0],id) && id==vector->vectorId, "Missing or unexpected vector id", block, i);
 
         OutputVectorEntry &entry = currentEntries[i];
@@ -351,7 +350,6 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
     std::string &columns = port->vector.columns;
     int colno = columns.size();
     Datum a;
-    int count;
     char buf[64];
     char *endp;
 
@@ -390,7 +388,6 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
         for (int i=0; i<n; i++)
         {
             chan->read(&a,1);
-            int count = 0;
             bufferPrintf(port,"%d", vectorId);
             for (int j=0; j<colno; ++j)
             {

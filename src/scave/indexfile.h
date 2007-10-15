@@ -199,13 +199,13 @@ public:
     
     const VectorData *getVectorAt(int index) const
     {
-        Assert(0 <= index && index < vectors.size());
+        Assert(0 <= index && index < (int)vectors.size());
         return &vectors[index];
     }
 
     VectorData *getVectorAt(int index)
     {
-        Assert(0 <= index && index < vectors.size());
+        Assert(0 <= index && index < (int)vectors.size());
         return &vectors[index];
     }
     

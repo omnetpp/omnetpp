@@ -355,7 +355,6 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     if (numTokens == 0 || tokens[0][0] == '#')
         return;
 
-    char *endPtr;
     long count;
     double min;
     double max;

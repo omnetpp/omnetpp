@@ -25,7 +25,7 @@
 using namespace std;
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
-  filename(filename), reader(filename, bufferSize), tokenizer(), fFinished(false), index(NULL)
+  filename(filename), index(NULL), reader(filename, bufferSize), tokenizer(), fFinished(false)
 {
 
 }
@@ -105,7 +105,7 @@ bool IndexedVectorFileReaderNode::readNextBlock(PortData &portData)
     assert(portData.vector);
 
     VectorData *vector = portData.vector;
-    if (portData.currentBlockIndex >= vector->blocks.size())
+    if (portData.currentBlockIndex >= (int)vector->blocks.size())
         return false;
 
     const char *file = filename.c_str();
