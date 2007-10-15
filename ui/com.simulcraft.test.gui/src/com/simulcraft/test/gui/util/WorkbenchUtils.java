@@ -56,6 +56,10 @@ public class WorkbenchUtils
         findInProjectExplorerView(projectName).activateContextMenuWithMouseClick().findMenuItemByLabel(".*Properties.*").activateWithMouseClick();
         return WorkbenchWindowAccess.findShellByTitle("Properties.*" + projectName + ".*");
 	}
+	
+	public static void refreshProjectFromProjectExplorerView(String projectName) {
+		findInProjectExplorerView(projectName).reveal().pressKey(SWT.F5);
+	}
 
 	public static void assertNoErrorMessageInProblemsView() {
         ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
