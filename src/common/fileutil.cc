@@ -19,6 +19,7 @@
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
+#include <errno.h>
 #include <string>
 #include <vector>
 
@@ -188,7 +189,7 @@ bool isDirectory(const char *pathname)
 {
     struct stat statbuf;
     if (stat(pathname, &statbuf) != 0)
-        throw opp_runtime_error("cannot stat file '%s': %s", pathname, strerror(NULL));
+        throw opp_runtime_error("cannot stat file '%s': %s", pathname, strerror(errno));
     return statbuf.st_mode & S_IFDIR;
 }
 

@@ -264,9 +264,9 @@ bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
                 // potential shortcuts: if pattern ends in ANYSEQ, rest of the input
                 // can be anything; if pattern ends in ANYSEQ LITERAL, it's enough if
                 // input ends in the literal string
-                if (k==pattern.size()-2)
+                if (k==(int)pattern.size()-2)
                     return true;
-                if (k==pattern.size()-3 && pattern[k+1].type==LITERALSTRING)
+                if (k==(int)pattern.size()-3 && pattern[k+1].type==LITERALSTRING)
                     return opp_stringendswith(s, pattern[k+1].literalstring.c_str());
 
                 // general case
