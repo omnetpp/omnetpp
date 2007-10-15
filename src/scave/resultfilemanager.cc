@@ -713,7 +713,6 @@ ID ResultFileManager::addComputedVector(const char *name, long computationID, ID
     newVector.nameRef = stringSetFindOrInsert(names, name);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
-    //computedIDCache[computationID][input] = id;
     std::pair<long, ID> key = std::make_pair(computationID, input);
     computedIDCache[key] = id;
     return id;
@@ -721,18 +720,12 @@ ID ResultFileManager::addComputedVector(const char *name, long computationID, ID
 
 ID ResultFileManager::getComputedVector(long computationID, ID input)
 {
-    //ComputedIDCache::iterator it = computedIDCache.find(computationID);
     std::pair<long, ID> key = std::make_pair(computationID, input);
     ComputedIDCache::iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())
-    {
-      //IDMap idmap = it->second;
-      //IDMap::iterator it2 = idmap.find(input);
-      //  if (it2 != idmap.end())
-      //      return it2->second;
       return it->second; 
-    }
-    return -1;
+    else
+    	return -1;
 }
 
 /*
@@ -1087,16 +1080,6 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
 void ResultFileManager::unloadFile(ResultFile *file)
 {
     // remove computed vector IDs
-    /*
-    for (ComputedIDCache::iterator it = computedIDCache.begin(); it != computedIDCache.end(); ++it)
-        for (IDMap::iterator it2 = it->second.begin(); it2 != it->second.end(); )
-        {
-            if (_fileid(it2->first) == file->id)
-                it2 = it->second.erase(it2);
-            else
-                ++it2;
-        }
-    */
     for (ComputedIDCache::iterator it = computedIDCache.begin(); it != computedIDCache.end();)
     {
         ID id = it->first.second;

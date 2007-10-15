@@ -177,7 +177,6 @@ struct SCAVE_API FileRun
 
 typedef std::set<std::string> StringSet;
 typedef std::vector<std::string> StringVector;
-//typedef std::map<ID,ID> IDMap;
 typedef std::map<std::pair<long, ID> , ID> ComputedIDCache;
 
 /**
