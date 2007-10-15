@@ -63,14 +63,14 @@ int InifileReader::getNumEntries(int sectionId) const
 const InifileReader::KeyValue& InifileReader::getEntry(int sectionId, int entryId) const
 {
     const Section& section = getSection(sectionId);
-    if (entryId<0 || entryId>=section.entries.size())
+    if (entryId<0 || entryId>=(int)section.entries.size())
         throw cRuntimeError("InifileReader: entry index %d out of bounds", entryId);
     return section.entries[entryId];
 }
 
 const InifileReader::Section& InifileReader::getSection(int sectionId) const
 {
-    if (sectionId<0 || sectionId>=sections.size())
+    if (sectionId<0 || sectionId>=(int)sections.size())
         throw cRuntimeError("InifileReader: section index %d out of bounds", sectionId);
     return sections[sectionId];
 }
@@ -95,8 +95,8 @@ void InifileReader::internalReadFile(const char *filename)
         basedirs.insert(tmpdir);
 
     // get a reference to the string instance in filenames[], we'll refer to it in KeyValue
-    std::string *filenameRef = &(*filenames.find(tmpfname));
-    std::string *basedirRef = &(*basedirs.find(tmpdir));
+    const std::string *filenameRef = &(*filenames.find(tmpfname));
+    const std::string *basedirRef = &(*basedirs.find(tmpdir));
 
     // open and read this file
     FILE *file = fopen(filename,"r");
@@ -179,7 +179,7 @@ void InifileReader::internalReadFile(const char *filename)
 
             // add section of not yet seen (in another file)
             currentSection = NULL;
-            for (int i=0; i<sections.size(); i++)
+            for (int i=0; i<(int)sections.size(); i++)
                 if (sections[i].name == sectionName)
                     {currentSection = &sections[i]; break;}
             if (currentSection==NULL)

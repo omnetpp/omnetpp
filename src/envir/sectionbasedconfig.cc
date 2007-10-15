@@ -699,7 +699,7 @@ SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(int sect
         basedirs.insert(e.getBaseDirectory());
         it = basedirs.find(e.getBaseDirectory());
     }
-    std::string *basedirRef = &(*it);
+    const std::string *basedirRef = &(*it);
     return KeyValue1(basedirRef, e.getKey(), value.c_str());
 }
 

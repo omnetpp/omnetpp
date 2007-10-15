@@ -42,11 +42,11 @@ class SectionBasedConfiguration : public cConfiguration
     class KeyValue1 : public cConfiguration::KeyValue {
       public:
         static std::string nullbasedir;
-        std::string *basedirRef; // points into basedirs[]
+        const std::string *basedirRef; // points into basedirs[]
         std::string key;
         std::string value;
         KeyValue1() {basedirRef = &nullbasedir;}
-        KeyValue1(std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
+        KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const   {return key.c_str();}

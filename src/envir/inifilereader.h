@@ -29,14 +29,14 @@ class InifileReader : public cConfigurationReader
   protected:
     class KeyValue1 : public KeyValue {
       private:
-        std::string *basedir;  // points into basedirs[]
-        std::string *filename; // points into filenames[]
+        const std::string *basedir;  // points into basedirs[]
+        const std::string *filename; // points into filenames[]
         int lineNumber;
         std::string key;
         std::string value; //XXX stringpool it?
 
       public:
-        KeyValue1(std::string *bdir, std::string *fname, int li, const char *k, const char *v) {
+        KeyValue1(const std::string *bdir, const std::string *fname, int li, const char *k, const char *v) {
             basedir = bdir; filename = fname; lineNumber = li; key = k; value = v;
         }
 
