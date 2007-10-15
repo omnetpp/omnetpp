@@ -166,7 +166,7 @@ void cEnvir::setup(int argc, char *argv[])
         for (int k=0; (libname=args->optionValue('l',k))!=NULL; k++)
             loadExtensionLibrary(libname);
         std::vector<std::string> libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
-        for (int k=0; k<libs.size(); k++)
+        for (int k=0; k<(int)libs.size(); k++)
             loadExtensionLibrary(libs[k].c_str());
 
         //
@@ -188,7 +188,7 @@ void cEnvir::setup(int argc, char *argv[])
 
             // load libs from this config as well
             std::vector<std::string> libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
-            for (int k=0; k<libs.size(); k++)
+            for (int k=0; k<(int)libs.size(); k++)
                 loadExtensionLibrary(libs[k].c_str());
         }
 

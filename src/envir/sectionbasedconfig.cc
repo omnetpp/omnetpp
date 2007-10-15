@@ -204,7 +204,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
-    for (int i=0; i<sectionChain.size(); i++)
+    for (int i=0; i < (int)sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
         for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
@@ -227,7 +227,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
 
     // store iteration variables, and also their "positions" (iteration count) as "&varid"
     const std::vector<IterationVariable>& itervars = scenario->getIterationVariables();
-    for (int i=0; i<itervars.size(); i++)
+    for (int i=0; i<(int)itervars.size(); i++)
     {
         const char *varid = itervars[i].varid.c_str();
         variables[varid] = scenario->getVariable(varid);
@@ -236,7 +236,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
 
     // assemble ${iterationvars}
     std::string iterationvars, iterationvars2;
-    for (int i=0; i<itervars.size(); i++)
+    for (int i=0; i<(int)itervars.size(); i++)
     {
         std::string txt = "$" + itervars[i].varname + "=" + scenario->getVariable(itervars[i].varid.c_str());
         if (itervars[i].varname != CFGVAR_REPETITION)
@@ -306,7 +306,7 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *c
                     // itervars, plus all entries that contain ${..}
                     runstring += std::string("\t# ") + scenario.str() + "\n";
                     (const_cast<SectionBasedConfiguration *>(this))->setupVariables(configName, result.size(), &scenario, sectionChain);
-                    for (int i=0; i<sectionChain.size(); i++)
+                    for (int i=0; i<(int)sectionChain.size(); i++)
                     {
                         int sectionId = sectionChain[i];
                         for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
@@ -342,7 +342,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
 {
     std::vector<IterationVariable> v;
     int unnamedCount = 0;
-    for (int i=0; i<sectionChain.size(); i++)
+    for (int i=0; i<(int)sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
         for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
@@ -365,7 +365,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
                     if (!loc.varname.empty())
                     {
                         // check it does not conflict with other iteration variables or predefined variables
-                        for (int j=0; j<v.size(); j++)
+                        for (int j=0; j<(int)v.size(); j++)
                             if (v[j].varname==loc.varname)
                                 throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", loc.varname.c_str());
                         if (isPredefinedVariable(loc.varname.c_str()))
@@ -624,7 +624,7 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
                 Group& group = groups[groupName];
 
                 // initialize group with matching wildcard keys seen so far
-                for (int k=0; k<wildcardGroup.entries.size(); k++)
+                for (int k=0; k<(int)wildcardGroup.entries.size(); k++)
                     if (wildcardGroup.entries[k].groupPattern->matches(groupName.c_str()))
                         group.entries.push_back(wildcardGroup.entries[k]);
             }
@@ -737,7 +737,7 @@ int SectionBasedConfiguration::internalFindEntry(int sectionId, const char *key)
 
 bool SectionBasedConfiguration::internalFindEntry(const std::vector<int>& sectionChain, const char *key, int& outSectionId, int& outEntryId) const
 {
-    for (int i=0; i<sectionChain.size(); i++)
+    for (int i=0; i<(int)sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
         int entryId = internalFindEntry(sectionId, key);
@@ -753,7 +753,7 @@ bool SectionBasedConfiguration::internalFindEntry(const std::vector<int>& sectio
 
 const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key) const
 {
-    for (int i=0; i<sectionChain.size(); i++)
+    for (int i=0; i<(int)sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
         int entryId = internalFindEntry(sectionId, key);
@@ -972,7 +972,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
 
     // find first match in the group
     bool dontApplyDefault = false;
-    for (int i=0; i<group->entries.size(); i++)
+    for (int i=0; i<(int)group->entries.size(); i++)
     {
         const KeyValue2& entry = group->entries[i];
         if (entryMatches(entry, moduleFullPath, paramName))
@@ -1021,7 +1021,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
     const Group *group = it==groups.end() ? &wildcardGroup : &it->second;
 
     // find first match in the group
-    for (int i=0; i<group->entries.size(); i++)
+    for (int i=0; i<(int)group->entries.size(); i++)
     {
         const KeyValue2& entry = group->entries[i];
         if (!entry.isApplyDefault && entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(keySuffix)))
@@ -1051,7 +1051,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matcher the other as string, and vica versa.
             const Group& group = it->second;
-            for (int i=0; i<group.entries.size(); i++)
+            for (int i=0; i<(int)group.entries.size(); i++)
             {
                 const KeyValue2& entry = group.entries[i];
                 if (!entry.isApplyDefault && entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || matcher.matches(partAfterLastDot(entry.key.c_str())) || entry.groupPattern->matches(keySuffixPattern)))
@@ -1073,11 +1073,11 @@ void SectionBasedConfiguration::dump() const
         const std::string& groupName = it->first;
         const Group& group = it->second;
         printf("Group %s:\n", groupName.c_str());
-        for (int i=0; i<group.entries.size(); i++)
+        for (int i=0; i<(int)group.entries.size(); i++)
             printf("  %s = %s\n", group.entries[i].key.c_str(), group.entries[i].value.c_str());
     }
     printf("Wildcard Group:\n");
-    for (int i=0; i<wildcardGroup.entries.size(); i++)
+    for (int i=0; i<(int)wildcardGroup.entries.size(); i++)
         printf("  %s = %s\n", wildcardGroup.entries[i].key.c_str(), wildcardGroup.entries[i].value.c_str());
 }
 

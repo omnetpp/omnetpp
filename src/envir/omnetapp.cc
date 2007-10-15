@@ -89,10 +89,6 @@
 using std::ostream;
 
 
-// This variable could really be a local var inside the functions where it is
-// used; it was only made a static to reduce per-module stack size with activity().
-static char buffer[1024];
-
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
@@ -323,7 +319,7 @@ void TOmnetApp::setup()
          {
              // iterate through file names
              ev.printf("\n");
-             for (int i=0; i<nedfiles.size(); i++)
+             for (int i=0; i<(int)nedfiles.size(); i++)
              {
                  const char *fname = nedfiles[i].c_str();
                  if (fname[0]=='@' && fname[1]=='@')
@@ -404,7 +400,7 @@ void TOmnetApp::dumpComponentList(const char *category)
 
         ev << "Predefined variables that can be used in config values:\n";
         std::vector<const char *> v = getConfig()->getPredefinedVariableNames();
-        for (int i=0; i<v.size(); i++)
+        for (int i=0; i<(int)v.size(); i++)
             ev << "    ${" << v[i] << "}\n";
         ev << "\n";
     }
