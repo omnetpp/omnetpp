@@ -574,7 +574,10 @@ fi
 OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS="-lwsock32 $SYS_LIBS")
 
 # zlib
-OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $(ZLIB_CFLAGS), $(ZLIB_LIBS), zlib_ok)
+if test "$ZLIB_LIBS" = ""; then
+    ZLIB_LIBS=-lz
+fi
+OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
 if test $zlib_ok = no; then
    AC_MSG_ERROR([zlib or zlib header file not found, please install it])
 fi
@@ -705,7 +708,6 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 
 #----------------------
 # Check for JDK
-# FIXME detect the optional JDK correctly
 #----------------------
 AC_CHECK_PROG(JDK, javac, javac, not found)
 if test "$JDK" = "not found"; then
@@ -714,7 +716,12 @@ if test "$JDK" = "not found"; then
    jni_ok=no
 else
    if test "$JAVA_CFLAGS" = ""; then
-      # FIXME try to set it to: /usr/java/jdk; /usr/lib/jvm/java; /usr/lib/jvm/java-6-sun; etc
+      javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
+      for dir in $javahome_candidates; do
+          if test "$JAVA_HOME" = "" -a -d "$dir"; then
+              JAVA_HOME=$dir
+          fi
+      done
       if test "$JAVA_HOME" = ""; then
          AC_MSG_WARN(JAVA_HOME variable not set.)
       else
