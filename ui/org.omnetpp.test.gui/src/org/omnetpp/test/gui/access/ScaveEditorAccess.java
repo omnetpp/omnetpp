@@ -13,5 +13,8 @@ public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 	public InputsPageAccess ensureInputsPageActive() {
 		return (InputsPageAccess)ensureActivePage("Inputs");
 	}
-
+	
+	public BrowseDataPageAccess ensureBrowseDataPageActive() {
+		return (BrowseDataPageAccess)ensureActivePage("Browse data");
+	}
 }

@@ -115,7 +115,7 @@ public class InputsPageTest extends ScaveFileTestCase {
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
 		createTestFiles();
-		editor = ScaveEditorUtils.openAnalysisFile(projectName, "test.scave");
+		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		inputsPage = editor.ensureInputsPageActive();
 	}
 	
