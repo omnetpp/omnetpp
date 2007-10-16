@@ -23,9 +23,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -427,20 +430,32 @@ public class Access
 		}
 	}
 
-	protected static CTabItem findDescendantCTabItemByLabel(Composite composite, final String label) {
-		CTabFolder cTabFolder = (CTabFolder)findDescendantControl(composite, new IPredicate() {
+	protected static CTabItem findDescendantCTabItemByLabel(Composite composite, String label) {
+		return (CTabItem)findDescendantTabItemByLabel(composite, label, true);
+	}
+	
+	protected static TabItem findDescendantTabItemByLabel(Composite composite, String label) {
+		return (TabItem)findDescendantTabItemByLabel(composite, label, false);
+	}
+	
+	private static Item[] getTabItems(Composite tabfolder) {
+		return tabfolder instanceof CTabFolder ? ((CTabFolder)tabfolder).getItems() : ((TabFolder)tabfolder).getItems();
+	}
+	
+	private static Item findDescendantTabItemByLabel(Composite composite, final String label, final boolean custom) {
+		Composite folder = (Composite)findDescendantControl(composite, new IPredicate() {
 			public boolean matches(Object object) {
-				if (object instanceof CTabFolder) {
-					CTabFolder cTabFolder = (CTabFolder)object;
-					List<Object> cTabItems = collectObjects(cTabFolder.getItems(), new IPredicate() {
+				
+				if (object instanceof CTabFolder && custom || object instanceof TabFolder && !custom) {
+					List<Object> matchingItems = collectObjects(getTabItems((Composite)object), new IPredicate() {
 						public boolean matches(Object object) {
-							return ((CTabItem)object).getText().matches(label);
+							return ((Item)object).getText().matches(label);
 						}
 					});
 
-					Assert.assertTrue("more than one matching CTabItem found", cTabItems.size() < 2);
+					Assert.assertTrue("more than one matching CTabItem found", matchingItems.size() < 2);
 
-					if (cTabItems.size() == 0)
+					if (matchingItems.size() == 0)
 						return false;
 					else
 						return true;
@@ -449,9 +464,9 @@ public class Access
 			}
 		});
 
-		return (CTabItem)findObject(cTabFolder.getItems(), new IPredicate() {
+		return (Item)findObject(getTabItems(folder), new IPredicate() {
 			public boolean matches(Object object) {
-				return ((CTabItem)object).getText().matches(label);
+				return ((Item)object).getText().matches(label);
 			}
 		});
 	}
