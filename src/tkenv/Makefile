@@ -7,7 +7,7 @@ include ../../Makefile.inc
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) -DBUILDING_TKENV
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
        inspfactory.o objinsp.o modinsp.o statinsp.o layouterenv.o \

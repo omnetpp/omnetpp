@@ -370,7 +370,7 @@ SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm \$(shell \$(CXX) -print-file-name=libstdc+
 
 # User interface libs
 CMDENV_LIBS=-u _cmdenv_lib -lenvir -lcmdenv
-TKENV_LIBS=-u _tkenv_lib -lenvir -ltkenv -llayout \$(TK_LIBS)
+TKENV_LIBS=-u _tkenv_lib -lenvir -ltkenv -llayout \$(TK_LIBS) \$(ZLIB_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=-lsim_std
@@ -586,7 +586,7 @@ cat <<EOT
 
 # User interface libs
 CMDENV_LIBS=-u _cmdenv_lib -lenvir -lcmdenv
-TKENV_LIBS=-u _tkenv_lib -lenvir -ltkenv -llayout \$(TK_LIBS)
+TKENV_LIBS=-u _tkenv_lib -lenvir -ltkenv -llayout \$(TK_LIBS) \$(ZLIB_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=-lsim_std

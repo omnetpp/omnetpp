@@ -175,10 +175,14 @@ EXPAT_LIBS=libexpat.lib /libpath:"$(EXPAT_DIR)/libs"
 LIBXML_CFLAGS=/I "$(ICONV_DIR)/include" /I "$(LIBXML_DIR)/include"
 LIBXML_LIBS=libxml2.lib iconv.lib wsock32.lib /libpath:"$(LIBXML_DIR)/lib" /libpath:"$(ICONV_DIR)/lib"
 
+# zlib is needed for libxml and Tkenv's png support
+ZLIB_CFLAGS=/I "$(ZLIB_DIR)/include"
+ZLIB_LIBS=zdll.lib /libpath:"$(ZLIB_DIR)/lib"
+
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
 # (NO_CONST is for testing code compatibility with systems where tcl.h comes without 'const')
-TK_CFLAGS=/I "$(TK_INCL_DIR)" /I "$(ZLIB_DIR)/include" /DNO_CONST
-TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) zdll.lib /libpath:"$(TK_LIB_DIR)" /libpath:"$(ZLIB_DIR)/lib" 
+TK_CFLAGS=/I "$(TK_INCL_DIR)" /DNO_CONST
+TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) /libpath:"$(TK_LIB_DIR)"
 MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
 MPI_LIBS=
 

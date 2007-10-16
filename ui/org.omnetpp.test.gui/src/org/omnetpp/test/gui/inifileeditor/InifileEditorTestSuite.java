@@ -3,7 +3,7 @@ package org.omnetpp.test.gui.inifileeditor;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.omnetpp.test.gui.inifileeditor.parameterspage.CellEditorTest;
+import org.omnetpp.test.gui.inifileeditor.parameterspage.TreeCellEditorTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.DeleteParameterTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.EditParameterTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.NewParameterTest;
@@ -29,7 +29,7 @@ public class InifileEditorTestSuite
 	    addTestSuite(NewInifileWizardTest.class);
 	    addTestSuite(ParametersTest.class);
 	    addTestSuite(PerObjectConfigTest.class);
-	    addTestSuite(CellEditorTest.class);
+	    addTestSuite(TreeCellEditorTest.class);
 	    addTestSuite(DeleteParameterTest.class);
 	    addTestSuite(EditParameterTest.class);
 	    addTestSuite(NewParameterTest.class);

@@ -573,6 +573,13 @@ fi
 # winsock (for MinGW)
 OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS="-lwsock32 $SYS_LIBS")
 
+# zlib
+OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $(ZLIB_CFLAGS), $(ZLIB_LIBS), zlib_ok)
+if test $zlib_ok = no; then
+   AC_MSG_ERROR([zlib or zlib header file not found, please install it])
+fi
+
+
 #----------------------
 # Check for Tcl/Tk.
 #----------------------

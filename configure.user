@@ -113,10 +113,10 @@ WITH_PARSIM=no
 #BLT_LIBS=
 
 #
-# ZLib todo-todo-todo...for tkenv's png support
+# ZLib is a compression library needed by libxml2 and Tkenv's png support.
 #
 #ZLIB_CFLAGS=
-#ZLIB_LIBS=-lzlib
+#ZLIB_LIBS=-lz
 
 #
 # Compiler and linker options for MPI (optional component).

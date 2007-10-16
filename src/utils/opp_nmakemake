@@ -495,7 +495,7 @@ print OUT "
 
 # User interface libs
 CMDENV_LIBS=/include:_cmdenv_lib envir.lib cmdenv.lib
-TKENV_LIBS=/include:_tkenv_lib envir.lib tkenv.lib layout.lib \$(TK_LIBS)
+TKENV_LIBS=/include:_tkenv_lib envir.lib tkenv.lib layout.lib \$(TK_LIBS) \$(ZLIB_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=common.lib sim_std.lib
