@@ -52,6 +52,20 @@ public class TableAccess extends ControlAccess
         }
     }
     
+    @InUIThread
+    public void assertContent(String[]... items) {
+        Assert.assertEquals("Table item count does not match.", items.length, getControl().getItemCount());
+        for (int i = 0; i< items.length; ++i) {
+        	String[] item = items[i];
+        	Assert.assertTrue("Table does not have enough columns. Expected: " + item.length + ", found: " + getControl().getColumnCount(),
+        			item.length <= getControl().getColumnCount());
+        	for (int j = 0; j < item.length; ++j) {
+        		String itemText = getControl().getItem(i).getText(j);
+        		Assert.assertTrue("Table item does not match. Expected: '"+item[j]+"' found: '"+itemText+"'", itemText.matches(item[j]));
+        	}
+        }
+    }
+    
     /**
      * Table starts with the provided items, the rest of the table should match restShouldMatch or can be anything
      * if restShouldMatch is NULL.
