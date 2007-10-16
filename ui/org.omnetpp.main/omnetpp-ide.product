@@ -139,7 +139,6 @@
 
    <features>
       <feature id="de.unikassel.imageexport" version="0.9.0"/>
-      <feature id="org.eclipse.cdt" version="4.0.0.200706261300"/>
       <feature id="org.eclipse.emf.common" version="2.3.0.v200706262000"/>
       <feature id="org.eclipse.emf.common.ui" version="2.3.0.v200706262000"/>
       <feature id="org.eclipse.emf.ecore" version="2.3.0.v200706262000"/>
