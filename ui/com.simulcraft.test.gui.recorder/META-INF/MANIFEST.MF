@@ -6,5 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Activator: com.simulcraft.test.gui.recorder.Activator
 Bundle-Vendor: SIMULCRAFT
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.omnetpp.common
 Eclipse-LazyStart: true

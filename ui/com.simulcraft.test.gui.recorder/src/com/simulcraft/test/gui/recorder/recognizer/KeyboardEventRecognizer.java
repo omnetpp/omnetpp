@@ -23,7 +23,7 @@ public class KeyboardEventRecognizer extends Recognizer {
         super(recorder);
     }
     
-    public JavaExpr identifyWidget(Control control, Point point) {
+    public JavaExpr identifyControl(Control control, Point point) {
         return null;
     }
 
@@ -38,11 +38,8 @@ public class KeyboardEventRecognizer extends Recognizer {
             else if ((e.keyCode & SWT.MODIFIER_MASK) == 0) {
                 // record non-modifier control key
                 modifierJustPressed = false;
-                JavaExpr typingStep = flushTyping();
-                String typingJavaCode = typingStep == null ? "" : typingStep.getJavaCode();
-                
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return new JavaExpr(typingJavaCode + "pressKey(SWT." + string + ")", 0.7);
+                return concat(flushTyping(), new JavaExpr("pressKey(SWT." + string + ")", 0.7));
             }
             else {
                 // modifier KeyDown -- ignore
@@ -59,9 +56,9 @@ public class KeyboardEventRecognizer extends Recognizer {
         }
         else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
             modifierJustPressed = false;
-            return flushTyping();
+            recorder.add(flushTyping());
         }
-        return null;
+        return new JavaExpr("", 0.0);  // recognized but not too well
     }
 
     private JavaExpr flushTyping() {

@@ -14,8 +14,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import com.simulcraft.test.gui.recorder.recognizer.ButtonRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.ComboRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.KeyboardEventRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.MenuRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.ShellRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.TableRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.TextRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
 
 
@@ -36,6 +41,11 @@ public class GUIRecorder implements Listener {
         recognizers.add(new WorkspaceWindowRecognizer(this));
         recognizers.add(new ShellRecognizer(this));
         recognizers.add(new ButtonRecognizer(this));
+        recognizers.add(new ComboRecognizer(this));
+        recognizers.add(new TextRecognizer(this));
+        recognizers.add(new TreeRecognizer(this));
+        recognizers.add(new TableRecognizer(this));
+        recognizers.add(new MenuRecognizer(this));
     }
 
     public int getKeyboardModifierState() {
@@ -74,7 +84,6 @@ public class GUIRecorder implements Listener {
         // and print it
         if (bestJavaExpr != null) {
             add(bestJavaExpr);
-            System.out.println(bestJavaExpr.getJavaCode());
         }
         else {
             // unprocessed -- only print message if event is significant
@@ -83,10 +92,14 @@ public class GUIRecorder implements Listener {
         }
     }
 
-    public JavaExpr identifyWidget(Control control, Point point) {
+    public JavaExpr identifyControl(Control control) {
+        return identifyControl(control, null);
+    }
+
+    public JavaExpr identifyControl(Control control, Point point) {
         List<JavaExpr> list = new ArrayList<JavaExpr>();
         for (IRecognizer recognizer : recognizers) {
-            JavaExpr javaExpr = recognizer.identifyWidget(control, point);
+            JavaExpr javaExpr = recognizer.identifyControl(control, point);
             if (javaExpr != null) list.add(javaExpr);
         }
         return getBestJavaExpr(list);
@@ -102,7 +115,10 @@ public class GUIRecorder implements Listener {
     }
     
     public void add(JavaExpr expr) {
-        result.add(expr);
+        if (expr != null && expr.getQuality() > 0) {
+            System.out.println(expr.getJavaCode());
+            result.add(expr);
+        }
     }
 
 }

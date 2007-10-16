@@ -13,7 +13,7 @@ public interface IRecognizer {
      * Returns some code that identifies the given widget.
      * Point is relative to the control.
      */
-    JavaExpr identifyWidget(Control control, Point point);
+    JavaExpr identifyControl(Control control, Point point);
 
     /**
      * Returns some code which produce the event when played back.

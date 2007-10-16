@@ -14,20 +14,24 @@ public class ButtonRecognizer extends Recognizer {
         super(recorder);
     }
 
-    public JavaExpr identifyWidget(Control control, Point point) {
+    public JavaExpr identifyControl(Control control, Point point) {
         if (control instanceof Button) {
-            JavaExpr shellCode = recorder.identifyWidget(control.getShell(), null);
-            if (shellCode != null)
-                return shellCode.append(".findButtonWithLabel(\"" + ((Button)control).getText() + "\")"); //XXX quality?
+            Button button = (Button)control;
+            return chain(recorder.identifyControl(control.getShell()), "findButtonWithLabel("+quote(button.getText()) + ")", 0.8);
         }
         return null;
     }
 
     public JavaExpr recognizeEvent(Event e) {
-        if (e.type == SWT.MouseDown) {
-            JavaExpr javaExpr = identifyWidget((Control)e.widget, new Point(e.x, e.y));
-            if (javaExpr != null)
-                return javaExpr.append(".activateWithMouseClick()");
+        if (e.type == SWT.MouseDown && e.widget instanceof Button) {
+            Button button = (Button)e.widget;
+            if ((button.getStyle() & SWT.PUSH) != 0) {
+                return chain(identifyControlIn(e), "activateWithMouseClick()", 1.0);
+            }
+            if ((button.getStyle() & (SWT.CHECK|SWT.RADIO)) != 0) {
+                String action = button.getSelection() ? "deselectWithMouseClick()" : "selectWithMouseClick()";
+                return chain(identifyControlIn(e), action, 1.0);
+            }
         }
         return null;
     }

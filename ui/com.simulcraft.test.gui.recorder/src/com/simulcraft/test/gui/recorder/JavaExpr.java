@@ -13,11 +13,6 @@ public class JavaExpr {
         return javaCode;
     }
 
-    public JavaExpr append(String javaCode) {
-        this.javaCode += javaCode;
-        return this;
-    }
-
     /**
      * Quality of this guess, 0.0=worst, 1.0=best.
      */
