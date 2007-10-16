@@ -1,8 +1,6 @@
 package org.omnetpp.test.gui.nededitor.textual;
 
 import com.simulcraft.test.gui.access.Access;
-import com.simulcraft.test.gui.access.ContentAssistAccess;
-import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
