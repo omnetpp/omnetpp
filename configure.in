@@ -714,6 +714,7 @@ if test "$JDK" = "not found"; then
    jni_ok=no
 else
    if test "$JAVA_CFLAGS" = ""; then
+      # FIXME try to set it to: /usr/java/jdk; /usr/lib/jvm/java; /usr/lib/jvm/java-6-sun; etc
       if test "$JAVA_HOME" = ""; then
          AC_MSG_WARN(JAVA_HOME variable not set.)
       else
