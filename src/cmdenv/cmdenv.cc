@@ -209,7 +209,7 @@ int TCmdenvApp::run()
         if (opt_printconfigdetails || opt_printconfigdetails2)
         {
             std::vector<std::string> runs = cfg->unrollScenario(opt_configname.c_str(), opt_printconfigdetails2);
-            for (int i=0; i<runs.size(); i++)
+            for (int i=0; i<(int)runs.size(); i++)
                 if (opt_printconfigdetails2)
                     ev.printf("Run %d:\n%s", i, runs[i].c_str());  // -G: detailed
                 else

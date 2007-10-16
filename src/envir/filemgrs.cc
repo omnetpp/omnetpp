@@ -124,7 +124,7 @@ void cFileOutputVectorManager::initRun()
 
         // fill in run.attributes[]
         std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
-        for (int i=0; i<keys.size(); i++)
+        for (int i=0; i<(int)keys.size(); i++)
         {
             const char *key = keys[i];
             run.attributes[key] = cfg->getConfigValue(key);
@@ -237,7 +237,7 @@ void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char
 
         // return as plain C++ array
         outIntervals = new Interval[intervals.size()+1]; // +1: terminating (0,0)
-        for (int i=0; i<intervals.size(); i++)
+        for (int i=0; i<(int)intervals.size(); i++)
             outIntervals[i] = intervals[i];
     }
 }
@@ -397,7 +397,7 @@ void cFileOutputScalarManager::init()
         // save iteration variables
 
         std::vector<const char *> v = ev.config()->getIterationVariableNames();
-        for (int i=0; i<v.size(); i++)
+        for (int i=0; i<(int)v.size(); i++)
         {
             const char *name = v[i];
             const char *value = ev.config()->getVariable(v[i]);

@@ -26,7 +26,7 @@
 #include "util.h"
 #include "filemgrs.h"
 
-#define MIN_BUFFER_MEMORY 1024*1024
+#define MIN_BUFFER_MEMORY    (1024*1024)
 #define DEFAULT_MEMORY_LIMIT "16MB"
 
 /**

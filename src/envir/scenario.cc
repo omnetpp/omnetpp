@@ -73,7 +73,7 @@ vars(iterationVariables)
 
     // fill the variable tables
     variterators.resize(vars.size());
-    for (int i=0; i<vars.size(); i++)
+    for (int i=0; i<(int)vars.size(); i++)
     {
         ASSERT(!vars[i].varid.empty() && !vars[i].value.empty());
         variterators[i].parse(vars[i].value.c_str());
@@ -123,7 +123,7 @@ bool Scenario::restart()
     // reset all iterators. If all of them are immediately at end(), there's no
     // valid state and we must return false
     bool ok = false;
-    for (int i=0; i<variterators.size(); i++)
+    for (int i=0; i<(int)variterators.size(); i++)
     {
         variterators[i].restart();
         if (!variterators[i].end())
@@ -203,7 +203,7 @@ int Scenario::getIteratorPosition(const char *varid) const
 std::string Scenario::str() const
 {
     std::stringstream out;
-    for (int i=0; i<vars.size(); i++)
+    for (int i=0; i<(int)vars.size(); i++)
         out << (i>0?", ":"") << "$" << vars[i].varname << "=" << variterators[i].get();
     return out.str();
 }

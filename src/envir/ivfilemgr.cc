@@ -69,7 +69,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     memoryUsed = 0;
 
     long d = (long) ev.config()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
-    maxMemoryUsed = max(d, MIN_BUFFER_MEMORY);
+    maxMemoryUsed = (size_t) max(d, MIN_BUFFER_MEMORY);
 }
 
 void cIndexedFileOutputVectorManager::openIndexFile()

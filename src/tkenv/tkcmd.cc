@@ -283,7 +283,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    std::vector<std::string> confignames = cfg->getConfigNames();
 
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-   for (int i=0; i<confignames.size(); i++)
+   for (int i=0; i<(int)confignames.size(); i++)
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
    Tcl_SetObjResult(interp, listobj);
    return TCL_OK;

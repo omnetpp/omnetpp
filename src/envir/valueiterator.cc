@@ -102,7 +102,7 @@ void ValueIterator::parseAsNumericRegion(Item& item)
 int ValueIterator::length() const
 {
     int n = 0;
-    for (int i=0; i<items.size(); i++)
+    for (int i=0; i<(int)items.size(); i++)
         n += items[i].n;
     return n;
 }
@@ -113,7 +113,7 @@ std::string ValueIterator::get(int index) const
         throw cRuntimeError("ValueIterator: index %d out of bounds", index);
 
     int k = 0;
-    for (int i=0; i<items.size(); i++)
+    for (int i=0; i<(int)items.size(); i++)
     {
         const Item& item = items[i];
         if (!item.isNumeric)
@@ -138,12 +138,13 @@ std::string ValueIterator::get(int index) const
 void ValueIterator::restart()
 {
     pos = itemIndex = k = 0;
-    while (itemIndex < items.size() && items[itemIndex].n == 0) itemIndex++;
+    while (itemIndex < (int)items.size() && items[itemIndex].n == 0) 
+    	itemIndex++;
 }
 
 void ValueIterator::operator++(int)
 {
-    if (itemIndex >= items.size())
+    if (itemIndex >= (int)items.size())
         return;
     pos++;
     const Item& item = items[itemIndex];
@@ -152,13 +153,13 @@ void ValueIterator::operator++(int)
     }
     else {
         k = 0;
-        while (++itemIndex < items.size() && items[itemIndex].n == 0);
+        while (++itemIndex < (int)items.size() && items[itemIndex].n == 0);
     }
 }
 
 std::string ValueIterator::get() const
 {
-    if (itemIndex >= items.size())
+    if (itemIndex >= (int)items.size())
         return "";
     const Item& item = items[itemIndex];
     if (!item.isNumeric) {
@@ -173,13 +174,13 @@ std::string ValueIterator::get() const
 
 bool ValueIterator::end() const
 {
-    return itemIndex >= items.size();
+    return itemIndex >= (int)items.size();
 }
 
 void ValueIterator::dump() const
 {
     printf("parsed form: ");
-    for (int i=0; i<items.size(); i++)
+    for (int i=0; i<(int)items.size(); i++)
     {
         const Item& item = items[i];
         if (i>0) printf(", ");
