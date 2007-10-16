@@ -14,8 +14,16 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <locale.h>
 #include "commonutil.h"
 
+
+void setPosixLocale()
+{
+	setlocale(LC_ALL, "C");
+}
+
+//----
 
 int DebugCall::depth;
 
@@ -36,6 +44,7 @@ DebugCall::~DebugCall()
     printf("%*s -- %s\n", --depth*2, "", funcname.c_str());
 }
 
+//----
 
 #ifdef _MSC_VER
 // source: http://en.wikipedia.org/wiki/RDTSC

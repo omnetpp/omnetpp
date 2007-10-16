@@ -36,6 +36,13 @@
 #endif
 #endif
 
+/**
+ * Sets locale to Posix ("C"). Needed because we want to read/write real numbers
+ * with "." as decimal separator always (and not "," used by some locales).
+ * This affects sprintf(), strtod(), etc.
+ */
+COMMON_API void setPosixLocale();
+
 //XXX docu
 class COMMON_API DebugCall
 {
