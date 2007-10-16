@@ -34,10 +34,20 @@
 #include "indexfile.h"
 #include "scaveutils.h"
 #include "resultfilemanager.h"
+#include "commonutil.h"
 
 
 static double zero = 0.0;
 static double NaN = zero / zero;
+
+static class SetPosixLocale 
+{
+  public:
+	SetPosixLocale() {
+		setPosixLocale();
+	}
+} instance;
+
 
 ResultItem::Type ResultItem::getType() const
 {

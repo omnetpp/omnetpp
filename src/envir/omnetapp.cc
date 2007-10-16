@@ -61,6 +61,7 @@
 #include "stringtokenizer.h"
 #include "objectprinter.h"
 #include "fileglobber.h"
+#include "commonutil.h"
 
 #include "timeutil.h"
 #include "platmisc.h"
@@ -238,6 +239,9 @@ void TOmnetApp::setup()
 
      try
      {
+         // ensure correct numeric format in output files
+         setPosixLocale();
+
          // set opt_* variables from ini file(s)
          readOptions();
 
