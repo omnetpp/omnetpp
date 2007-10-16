@@ -1,10 +1,14 @@
-package com.simulcraft.test.gui.recorder;
+package com.simulcraft.test.gui.recorder.recognizer;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+
+import com.simulcraft.test.gui.recorder.GUIRecorder;
+import com.simulcraft.test.gui.recorder.IRecognizer;
+import com.simulcraft.test.gui.recorder.Step;
 
 
 /**

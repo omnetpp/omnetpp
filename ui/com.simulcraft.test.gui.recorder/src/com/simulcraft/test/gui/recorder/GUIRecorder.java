@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
+
+import com.simulcraft.test.gui.recorder.recognizer.ButtonRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.KeyboardEventRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.ShellRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
 
 
 /**
@@ -65,49 +65,6 @@ public class GUIRecorder implements Listener {
     public void add(Object step) {
         System.out.println(step.toString());
         result.add(step);
-    }
-    
-    //=================
-    
-    public class WorkspaceWindowRecognizer implements IRecognizer {
-        public Step identifyWidget(Control control, Point point) {
-            if (control instanceof Shell && control == PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())
-                return new Step("getWorkbenchWindow()", 0.8);
-            return null;
-        }
-
-        public Step recognize(Event e, int modifierState) {
-            return null;
-        }
-    }
-
-    public class ShellRecognizer implements IRecognizer {
-        public Step identifyWidget(Control control, Point point) {
-            if (control instanceof Shell)
-                return new Step("findShellWithTitle(\"" + ((Shell)control).getText() + "\")", 0.5);
-            return null;
-        }
-
-        public Step recognize(Event e, int modifierState) {
-            return null;
-        }
-    }
-
-    public class ButtonRecognizer implements IRecognizer {
-        public Step identifyWidget(Control control, Point point) {
-            if (control instanceof Button)
-                return new Step("findButtonWithLabel(\"" + ((Button)control).getText() + "\")", 0.5);
-            return null;
-        }
-
-        public Step recognize(Event e, int modifierState) {
-            if (e.type == SWT.MouseDown) {
-                Step step = identifyWidget((Control)e.widget, new Point(e.x, e.y));
-                if (step != null)
-                    return new Step(step.getJavaCode()+".activateWithMouseClick()", step.getQuality());
-            }
-            return null;
-        }
     }
 
 }
