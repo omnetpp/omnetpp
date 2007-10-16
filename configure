@@ -684,6 +684,8 @@ TK_CFLAGS
 TK_LIBS
 HAVE_BLT
 BLT_LIBS
+ZLIB_CFLAGS
+ZLIB_LIBS
 HAVE_MPI
 MPI_CFLAGS
 MPI_LIBS
@@ -7048,6 +7050,8 @@ ac_config_files="$ac_config_files Makefile.inc src/utils/opp_makemake src/utils/
 
 
 
+
+
 #
 # Generate files
 #
@@ -7830,6 +7834,8 @@ TK_CFLAGS!$TK_CFLAGS$ac_delim
 TK_LIBS!$TK_LIBS$ac_delim
 HAVE_BLT!$HAVE_BLT$ac_delim
 BLT_LIBS!$BLT_LIBS$ac_delim
+ZLIB_CFLAGS!$ZLIB_CFLAGS$ac_delim
+ZLIB_LIBS!$ZLIB_LIBS$ac_delim
 HAVE_MPI!$HAVE_MPI$ac_delim
 MPI_CFLAGS!$MPI_CFLAGS$ac_delim
 MPI_LIBS!$MPI_LIBS$ac_delim
@@ -7851,7 +7857,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 29; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 31; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
