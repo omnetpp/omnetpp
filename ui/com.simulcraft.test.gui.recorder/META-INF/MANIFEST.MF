@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GUI Recorder Plug-in
+Bundle-SymbolicName: com.simulcraft.test.gui.recorder;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: com.simulcraft.test.gui.recorder.Activator
+Bundle-Vendor: SIMULCRAFT
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-LazyStart: true
