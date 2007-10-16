@@ -1,9 +1,15 @@
 package com.simulcraft.test.gui.recorder;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -21,7 +27,7 @@ import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
  */
 public class GUIRecorder implements Listener {
     private int modifierState = 0;
-    private List<Object> result = new ArrayList<Object>();
+    private List<JavaExpr> result = new ArrayList<JavaExpr>();
 
     private List<IRecognizer> recognizers = new ArrayList<IRecognizer>();
     
@@ -32,7 +38,23 @@ public class GUIRecorder implements Listener {
         recognizers.add(new ButtonRecognizer(this));
     }
 
-    public void handleEvent(Event e) {
+    public int getKeyboardModifierState() {
+        return modifierState;
+    }
+
+    public void handleEvent(final Event e) {
+        SafeRunner.run(new ISafeRunnable() {
+            public void run() throws Exception {
+                safeHandleEvent(e);
+            }
+
+            public void handleException(Throwable ex) {
+                Activator.logError("An error occurred during recording of event "+e, ex);
+            }
+        });
+    }
+
+    protected void safeHandleEvent(Event e) {
         // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
         if (e.type == SWT.KeyDown || e.type == SWT.KeyUp) {
             if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
@@ -40,20 +62,19 @@ public class GUIRecorder implements Listener {
                 if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
             }
         }
-
+        
         // collect the best one of the guesses
-        JavaExpr bestStep = null;
+        List<JavaExpr> list = new ArrayList<JavaExpr>();
         for (IRecognizer recognizer : recognizers) {
-            JavaExpr javaExpr = recognizer.recognize(e, modifierState);
-            if (javaExpr != null) {
-                if (bestStep == null || javaExpr.getQuality() > bestStep.getQuality())
-                    bestStep = javaExpr;
-            }
+            JavaExpr javaExpr = recognizer.recognizeEvent(e);
+            if (javaExpr != null) list.add(javaExpr);
         }
-
+        JavaExpr bestJavaExpr = getBestJavaExpr(list);
+        
         // and print it
-        if (bestStep != null) {
-            System.out.println(bestStep.getJavaCode());
+        if (bestJavaExpr != null) {
+            add(bestJavaExpr);
+            System.out.println(bestJavaExpr.getJavaCode());
         }
         else {
             // unprocessed -- only print message if event is significant
@@ -61,10 +82,27 @@ public class GUIRecorder implements Listener {
                 System.out.println("unrecognized mouse click or keydown event: " + e); //XXX record as postEvent() etc?
         }
     }
+
+    public JavaExpr identifyWidget(Control control, Point point) {
+        List<JavaExpr> list = new ArrayList<JavaExpr>();
+        for (IRecognizer recognizer : recognizers) {
+            JavaExpr javaExpr = recognizer.identifyWidget(control, point);
+            if (javaExpr != null) list.add(javaExpr);
+        }
+        return getBestJavaExpr(list);
+    }
+
+    protected JavaExpr getBestJavaExpr(List<JavaExpr> list) {
+        return list.isEmpty() ? null : Collections.max(list, new Comparator<JavaExpr>() {
+            public int compare(JavaExpr o1, JavaExpr o2) {
+                double d = o1.getQuality() - o2.getQuality();
+                return d==0 ? 0 : d<0 ? -1 : 1;
+            }
+        });
+    }
     
-    public void add(Object step) {
-        System.out.println(step.toString());
-        result.add(step);
+    public void add(JavaExpr expr) {
+        result.add(expr);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.simulcraft.test.gui.recorder;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -45,4 +47,12 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
+    
+    public static void logError(String message, Throwable exception) {
+        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+    }
+	
 }

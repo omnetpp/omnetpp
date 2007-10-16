@@ -18,5 +18,5 @@ public interface IRecognizer {
     /**
      * Returns some code which produce the event when played back.
      */
-    JavaExpr recognize(Event e, int modifierState);
+    JavaExpr recognizeEvent(Event e);
 }

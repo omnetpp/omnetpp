@@ -27,7 +27,9 @@ public class KeyboardEventRecognizer extends Recognizer {
         return null;
     }
 
-    public JavaExpr recognize(Event e, int modifierState) {
+    public JavaExpr recognizeEvent(Event e) {
+        int modifierState = recorder.getKeyboardModifierState();
+        
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
                 modifierJustPressed = false;
@@ -40,7 +42,7 @@ public class KeyboardEventRecognizer extends Recognizer {
                 String typingJavaCode = typingStep == null ? "" : typingStep.getJavaCode();
                 
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return new JavaExpr(typingJavaCode + "pressKey(SWT." + string + ");", 0.7);
+                return new JavaExpr(typingJavaCode + "pressKey(SWT." + string + ")", 0.7);
             }
             else {
                 // modifier KeyDown -- ignore
@@ -52,7 +54,7 @@ public class KeyboardEventRecognizer extends Recognizer {
             if (modifierJustPressed) {
                 modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return new JavaExpr("pressKey(SWT." + string + ");", 0.7);
+                return new JavaExpr("pressKey(SWT." + string + ")", 0.7);
             }
         }
         else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
@@ -66,7 +68,7 @@ public class KeyboardEventRecognizer extends Recognizer {
         if (typing.length() > 0) {
             String quoted = typing.replace("\"", "\\\"");
             typing = "";
-            return new JavaExpr("type(\"" + quoted + "\");", 0.7);
+            return new JavaExpr("type(\"" + quoted + "\")", 0.7);
         }
         return null;
     }

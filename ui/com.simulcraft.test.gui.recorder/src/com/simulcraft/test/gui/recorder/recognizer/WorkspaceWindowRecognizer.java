@@ -20,7 +20,7 @@ public class WorkspaceWindowRecognizer extends Recognizer {
         return null;
     }
 
-    public JavaExpr recognize(Event e, int modifierState) {
+    public JavaExpr recognizeEvent(Event e) {
         return null;
     }
 }

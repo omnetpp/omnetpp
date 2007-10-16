@@ -15,16 +15,19 @@ public class ButtonRecognizer extends Recognizer {
     }
 
     public JavaExpr identifyWidget(Control control, Point point) {
-        if (control instanceof Button)
-            return new JavaExpr("findButtonWithLabel(\"" + ((Button)control).getText() + "\")", 0.5);
+        if (control instanceof Button) {
+            JavaExpr shellCode = recorder.identifyWidget(control.getShell(), null);
+            if (shellCode != null)
+                return shellCode.append(".findButtonWithLabel(\"" + ((Button)control).getText() + "\")"); //XXX quality?
+        }
         return null;
     }
 
-    public JavaExpr recognize(Event e, int modifierState) {
+    public JavaExpr recognizeEvent(Event e) {
         if (e.type == SWT.MouseDown) {
             JavaExpr javaExpr = identifyWidget((Control)e.widget, new Point(e.x, e.y));
             if (javaExpr != null)
-                return new JavaExpr(javaExpr.getJavaCode()+".activateWithMouseClick()", javaExpr.getQuality());
+                return javaExpr.append(".activateWithMouseClick()");
         }
         return null;
     }
