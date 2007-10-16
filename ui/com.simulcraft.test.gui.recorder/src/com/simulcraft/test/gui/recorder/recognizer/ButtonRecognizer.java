@@ -10,20 +10,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.IRecognizer;
-import com.simulcraft.test.gui.recorder.Step;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 
 public class ButtonRecognizer implements IRecognizer {
-    public Step identifyWidget(Control control, Point point) {
+    public JavaExpr identifyWidget(Control control, Point point) {
         if (control instanceof Button)
-            return new Step("findButtonWithLabel(\"" + ((Button)control).getText() + "\")", 0.5);
+            return new JavaExpr("findButtonWithLabel(\"" + ((Button)control).getText() + "\")", 0.5);
         return null;
     }
 
-    public Step recognize(Event e, int modifierState) {
+    public JavaExpr recognize(Event e, int modifierState) {
         if (e.type == SWT.MouseDown) {
-            Step step = identifyWidget((Control)e.widget, new Point(e.x, e.y));
-            if (step != null)
-                return new Step(step.getJavaCode()+".activateWithMouseClick()", step.getQuality());
+            JavaExpr javaExpr = identifyWidget((Control)e.widget, new Point(e.x, e.y));
+            if (javaExpr != null)
+                return new JavaExpr(javaExpr.getJavaCode()+".activateWithMouseClick()", javaExpr.getQuality());
         }
         return null;
     }

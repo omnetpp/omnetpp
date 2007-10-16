@@ -13,10 +13,10 @@ public interface IRecognizer {
      * Returns some code that identifies the given widget.
      * Point is relative to the control.
      */
-    Step identifyWidget(Control control, Point point);
+    JavaExpr identifyWidget(Control control, Point point);
 
     /**
      * Returns some code which produce the event when played back.
      */
-    Step recognize(Event e, int modifierState);
+    JavaExpr recognize(Event e, int modifierState);
 }

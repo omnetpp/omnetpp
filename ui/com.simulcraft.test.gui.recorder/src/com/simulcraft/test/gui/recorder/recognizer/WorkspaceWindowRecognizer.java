@@ -10,16 +10,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.simulcraft.test.gui.recorder.IRecognizer;
-import com.simulcraft.test.gui.recorder.Step;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 
 public class WorkspaceWindowRecognizer implements IRecognizer {
-    public Step identifyWidget(Control control, Point point) {
+    public JavaExpr identifyWidget(Control control, Point point) {
         if (control instanceof Shell && control == PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())
-            return new Step("getWorkbenchWindow()", 0.8);
+            return new JavaExpr("getWorkbenchWindow()", 0.8);
         return null;
     }
 
-    public Step recognize(Event e, int modifierState) {
+    public JavaExpr recognize(Event e, int modifierState) {
         return null;
     }
 }

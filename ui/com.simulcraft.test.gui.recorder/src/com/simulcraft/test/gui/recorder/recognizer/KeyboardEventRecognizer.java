@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.IRecognizer;
-import com.simulcraft.test.gui.recorder.Step;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 
 
 /**
@@ -23,11 +23,11 @@ public class KeyboardEventRecognizer implements IRecognizer {
     public KeyboardEventRecognizer(GUIRecorder recorder) {
     }
 
-    public Step identifyWidget(Control control, Point point) {
+    public JavaExpr identifyWidget(Control control, Point point) {
         return null;
     }
 
-    public Step recognize(Event e, int modifierState) {
+    public JavaExpr recognize(Event e, int modifierState) {
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
                 modifierJustPressed = false;
@@ -36,11 +36,11 @@ public class KeyboardEventRecognizer implements IRecognizer {
             else if ((e.keyCode & SWT.MODIFIER_MASK) == 0) {
                 // record non-modifier control key
                 modifierJustPressed = false;
-                Step typingStep = flushTyping();
+                JavaExpr typingStep = flushTyping();
                 String typingJavaCode = typingStep == null ? "" : typingStep.getJavaCode();
                 
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return new Step(typingJavaCode + "pressKey(SWT." + string + ");", 0.7);
+                return new JavaExpr(typingJavaCode + "pressKey(SWT." + string + ");", 0.7);
             }
             else {
                 // modifier KeyDown -- ignore
@@ -52,7 +52,7 @@ public class KeyboardEventRecognizer implements IRecognizer {
             if (modifierJustPressed) {
                 modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return new Step("pressKey(SWT." + string + ");", 0.7);
+                return new JavaExpr("pressKey(SWT." + string + ");", 0.7);
             }
         }
         else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
@@ -62,11 +62,11 @@ public class KeyboardEventRecognizer implements IRecognizer {
         return null;
     }
 
-    private Step flushTyping() {
+    private JavaExpr flushTyping() {
         if (typing.length() > 0) {
             String quoted = typing.replace("\"", "\\\"");
             typing = "";
-            return new Step("type(\"" + quoted + "\");", 0.7);
+            return new JavaExpr("type(\"" + quoted + "\");", 0.7);
         }
         return null;
     }

@@ -1,16 +1,21 @@
 package com.simulcraft.test.gui.recorder;
 
-public class Step {
+public class JavaExpr {
     private String javaCode;
     private double quality;
 
-    public Step(String javaCode, double quality) {
+    public JavaExpr(String javaCode, double quality) {
         this.javaCode = javaCode;
         this.quality = quality;
     }
 
     public String getJavaCode() {
         return javaCode;
+    }
+
+    public JavaExpr append(String javaCode) {
+        this.javaCode += javaCode;
+        return this;
     }
 
     /**

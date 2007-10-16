@@ -42,12 +42,12 @@ public class GUIRecorder implements Listener {
         }
 
         // collect the best one of the guesses
-        Step bestStep = null;
+        JavaExpr bestStep = null;
         for (IRecognizer recognizer : recognizers) {
-            Step step = recognizer.recognize(e, modifierState);
-            if (step != null) {
-                if (bestStep == null || step.getQuality() > bestStep.getQuality())
-                    bestStep = step;
+            JavaExpr javaExpr = recognizer.recognize(e, modifierState);
+            if (javaExpr != null) {
+                if (bestStep == null || javaExpr.getQuality() > bestStep.getQuality())
+                    bestStep = javaExpr;
             }
         }
 

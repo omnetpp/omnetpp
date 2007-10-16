@@ -9,16 +9,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 
 import com.simulcraft.test.gui.recorder.IRecognizer;
-import com.simulcraft.test.gui.recorder.Step;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 
 public class ShellRecognizer implements IRecognizer {
-    public Step identifyWidget(Control control, Point point) {
+    public JavaExpr identifyWidget(Control control, Point point) {
         if (control instanceof Shell)
-            return new Step("findShellWithTitle(\"" + ((Shell)control).getText() + "\")", 0.5);
+            return new JavaExpr("findShellWithTitle(\"" + ((Shell)control).getText() + "\")", 0.5);
         return null;
     }
 
-    public Step recognize(Event e, int modifierState) {
+    public JavaExpr recognize(Event e, int modifierState) {
         return null;
     }
 }
