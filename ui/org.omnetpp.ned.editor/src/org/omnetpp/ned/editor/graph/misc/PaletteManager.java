@@ -90,8 +90,12 @@ public class PaletteManager {
         this.hostingEditor = hostingEditor;
         nedPalette = new PaletteRoot();
         // TODO: maybe a flag?
-        // channelsStack = new PaletteStack("Connections", "Connect modules using this tool",ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
-        channelsStack = new PaletteDrawer("Connections", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
+        // test specific code part (tests whether we are running under gui testing)
+        // this is a hack because the testing framework cannot access the PalettStack correctly.
+        if (System.getProperty("com.simulcraft.test.running") == null)
+            channelsStack = new PaletteStack("Connections", "Connect modules using this tool",ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
+        else
+            channelsStack = new PaletteDrawer("Connections", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION));
         toolsContainer = createTools();
         typesContainer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
         typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
@@ -117,12 +121,10 @@ public class PaletteManager {
         result.putAll(createConnectionTools());
         Map<String, ToolEntry> innerChannelTypes = createInnerTypes(file, false);
         if (innerChannelTypes.size() > 0) {
-            result.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"separator1", new PaletteSeparator());
             result.putAll(innerChannelTypes);
         }
         Map<String, ToolEntry> channelsStackEntries = createChannelsStackEntries(contextProject);
         if (channelsStackEntries.size() > 0) {
-            result.put(CONNECTIONS_GROUP+GROUP_DELIMITER+"separator2", new PaletteSeparator());
             result.putAll(channelsStackEntries);
         }
 
