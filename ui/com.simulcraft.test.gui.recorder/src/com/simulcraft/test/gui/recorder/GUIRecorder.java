@@ -27,9 +27,9 @@ public class GUIRecorder implements Listener {
     
     public GUIRecorder() {
         recognizers.add(new KeyboardEventRecognizer(this));
-        recognizers.add(new WorkspaceWindowRecognizer());
-        recognizers.add(new ShellRecognizer());
-        recognizers.add(new ButtonRecognizer());
+        recognizers.add(new WorkspaceWindowRecognizer(this));
+        recognizers.add(new ShellRecognizer(this));
+        recognizers.add(new ButtonRecognizer(this));
     }
 
     public void handleEvent(Event e) {

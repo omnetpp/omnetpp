@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.IRecognizer;
 import com.simulcraft.test.gui.recorder.JavaExpr;
 
 
@@ -16,13 +15,14 @@ import com.simulcraft.test.gui.recorder.JavaExpr;
  *   
  * @author Andras
  */
-public class KeyboardEventRecognizer implements IRecognizer {
+public class KeyboardEventRecognizer extends Recognizer {
     private String typing = "";
     private boolean modifierJustPressed = false;
-    
-    public KeyboardEventRecognizer(GUIRecorder recorder) {
-    }
 
+    public KeyboardEventRecognizer(GUIRecorder recorder) {
+        super(recorder);
+    }
+    
     public JavaExpr identifyWidget(Control control, Point point) {
         return null;
     }
