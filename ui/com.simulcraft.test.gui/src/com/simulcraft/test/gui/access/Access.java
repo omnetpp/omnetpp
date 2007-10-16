@@ -42,6 +42,7 @@ public class Access
     public final static int LEFT_MOUSE_BUTTON = 1;
     public final static int MIDDLE_MOUSE_BUTTON = 2;
     public final static int RIGHT_MOUSE_BUTTON = 3;
+    private static final String TEST_RUNNING = "com.simulcraft.test.running"; 
 	
     public static double delayBetweenPostEvents;
 
@@ -54,6 +55,7 @@ public class Access
     }
     
 	static {
+        System.setProperty(TEST_RUNNING, "1");
 	    String value = System.getProperty("com.simulcraft.test.gui.DelayBetweenPostEvents");
 	    delayBetweenPostEvents = value == null ? 0 : Double.parseDouble(value);
 

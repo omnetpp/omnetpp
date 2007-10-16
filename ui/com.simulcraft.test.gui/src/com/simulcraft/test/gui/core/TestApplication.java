@@ -17,7 +17,7 @@ public class TestApplication extends IDEApplication
 	private static final boolean debug = true;
 
     private static final String PROP_EXIT_CODE = "eclipse.exitcode"; //$NON-NLS-1$
-
+    
     /**
      * A special return code that will be recognized by the launcher and used to
      * restart the workbench.
