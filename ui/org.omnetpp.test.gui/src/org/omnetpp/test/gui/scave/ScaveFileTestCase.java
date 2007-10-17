@@ -8,7 +8,7 @@ public class ScaveFileTestCase
     extends ProjectFileTestCase
 {
     public ScaveFileTestCase() {
-        super("test.scave");
+        super("test.anf");
     }
     
 	protected void createFile(String fileName, String content) throws Exception {
