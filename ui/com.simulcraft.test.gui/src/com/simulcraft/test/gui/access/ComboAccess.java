@@ -18,6 +18,11 @@ public class ComboAccess extends ControlAccess
 	public Combo getControl() {
 		return (Combo)widget;
 	}
+    
+    @InUIThread
+    public boolean isEditable() {
+    	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
+    }
 	
     @InUIThread
 	public String[] getComboItems() {
@@ -30,7 +35,7 @@ public class ComboAccess extends ControlAccess
 	}
 
 	public void assertEditable() {
-		Assert.assertTrue("combo is readonly", (getControl().getStyle() & SWT.READ_ONLY) == 0);
+		Assert.assertTrue("combo is readonly", isEditable());
 	}
 
     @InUIThread
@@ -60,7 +65,13 @@ public class ComboAccess extends ControlAccess
     @NotInUIThread
     public void selectItem(String content) {
         click();
-        pressKey(SWT.HOME);
+        
+        if (isEditable()) {
+        	typeOver("");
+        	pressKey(SWT.ARROW_DOWN);
+        }
+        else
+        	pressKey(SWT.HOME);
 
         int index = findString(getComboItems(), content);
         for (int i=0; i<index; i++)
