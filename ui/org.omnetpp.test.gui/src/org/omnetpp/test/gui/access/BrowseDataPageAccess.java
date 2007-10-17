@@ -6,12 +6,16 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 
 import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.ButtonAccess;
+import com.simulcraft.test.gui.access.ComboAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TabFolderAccess;
 import com.simulcraft.test.gui.access.TabItemAccess;
 import com.simulcraft.test.gui.access.TableAccess;
+import com.simulcraft.test.gui.access.TableColumnAccess;
+import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.core.NotInUIThread;
 
@@ -36,6 +40,16 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	public TabItemAccess getTabItem(String label) {
 		return getTabFolder().getItem(label);
 	}
+	
+	@InUIThread
+	public TabItemAccess getSelectedTabItem() {
+		return getTabFolder().getSelection();
+	}
+	
+	@InUIThread
+	public CompositeAccess getSelectedTabControl() {
+		return (CompositeAccess)getSelectedTabItem().getControl();
+	}
 
 	@InUIThread
 	public TableAccess getTable(String label) {
@@ -43,6 +57,11 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		return findDataTable((Composite)tabitem.getControl());
 	}
 	
+	@InUIThread
+	public TableAccess getSelectedTable() {
+		return findDataTable(getSelectedTabControl().getControl());
+	}
+
 	public TableAccess getScalarsTable() {
 		return getTable(SCALARS);
 	}
@@ -53,12 +72,6 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	
 	public TableAccess getHistogramsTable() {
 		return getTable(HISTOGRAMS);
-	}
-	
-	@InUIThread
-	public TableAccess getSelectedTable() {
-		Composite panel = (Composite)getTabFolder().getSelection().getControl().getControl();
-		return findDataTable(panel);
 	}
 	
 	@NotInUIThread
@@ -93,6 +106,44 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	
 	public void ensureHistogramsSelected() {
 		ensureTabSelected(HISTOGRAMS);
+	}
+	
+	@InUIThread
+	public void ensureBasicFilterSelected() {
+		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Basic");
+		if (button != null)
+			button.activateWithMouseClick();
+	}
+	
+	@InUIThread
+	public void ensureAdvancedFilterSelected() {
+		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Advanced");
+		if (button != null)
+			button.activateWithMouseClick();
+	}
+	
+	@InUIThread
+	public ComboAccess getRunNameFilter() {
+		return getSelectedTabControl().findComboAfterLabel("Run.*");
+	}
+	
+	@InUIThread
+	public ComboAccess getModuleNameFilter() {
+		return getSelectedTabControl().findComboAfterLabel("Module.*");
+	}
+	
+	@InUIThread
+	public ComboAccess getDataNameFilter() {
+		return getSelectedTabControl().findComboAfterLabel("Name.*");
+	}
+	
+	public TextAccess getAdvancedFilterText() {
+		return getSelectedTabControl().findTextAfterLabel("Filter.*");
+	}
+	
+	@InUIThread
+	public TableColumnAccess getColumn(String columnName) {
+		return getSelectedTable().getTableColumn(columnName);
 	}
 	
 	protected TableAccess findDataTable(Composite composite) {

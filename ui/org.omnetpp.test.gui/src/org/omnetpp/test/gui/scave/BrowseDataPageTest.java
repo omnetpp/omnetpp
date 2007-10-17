@@ -5,6 +5,10 @@ import junit.framework.Assert;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
 
+import com.simulcraft.test.gui.access.ComboAccess;
+import com.simulcraft.test.gui.access.TableAccess;
+import com.simulcraft.test.gui.access.TextAccess;
+
 public class BrowseDataPageTest extends ScaveFileTestCase {
 
 	protected ScaveEditorAccess editor;
@@ -33,10 +37,58 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		browseDataPage.getHistogramsTable().assertEmpty();
 	}
 	
+	public void testBasicFilter() throws Exception {
+		browseDataPage.ensureScalarsSelected();
+		browseDataPage.showAllTableColumns();
+		browseDataPage.ensureBasicFilterSelected();
+		testFilterCombo(browseDataPage.getRunNameFilter(), "run-1", "Run id", "run-1");
+		testFilterCombo(browseDataPage.getModuleNameFilter(), "module-1", "Module", "module-1");
+		testFilterCombo(browseDataPage.getDataNameFilter(), "scalar-1", "Name", "scalar-1");
+
+		browseDataPage.ensureVectorsSelected();
+		browseDataPage.showAllTableColumns();
+		browseDataPage.ensureBasicFilterSelected();
+		testFilterCombo(browseDataPage.getRunNameFilter(), "run-1", "Run id", "run-1");
+		testFilterCombo(browseDataPage.getModuleNameFilter(), "module-1", "Module", "module-1");
+		testFilterCombo(browseDataPage.getDataNameFilter(), "vector-1", "Name", "vector-1");
+	}
+	
+	private void testFilterCombo(ComboAccess filterCombo, String filter, String columnName, String columnValue) {
+		filterCombo.selectItem(filter);
+		browseDataPage.getSelectedTable().assertColumnContentMatches(columnName, columnValue);
+		filterCombo.selectItem("\\*");
+	}
+	
+	public void testAdvancedFilter() throws Exception {
+		browseDataPage.ensureScalarsSelected();
+		browseDataPage.showAllTableColumns();
+		browseDataPage.ensureAdvancedFilterSelected();
+		testAdvancedFilter("run", "run-1", 1, "Run id", "run-1");
+		testAdvancedFilter("module", "module-1", 1, "Module", "module-1");
+		testAdvancedFilter("name", "scalar-1", 1, "Name", "scalar-1");
+	}
+	
+	private void testAdvancedFilter(String fieldName, String fieldPattern, int rowCount, String columnName, String columnPattern) throws Exception {
+		TextAccess filterText = browseDataPage.getAdvancedFilterText();
+		filterText.click();
+		filterText.typeOver(String.format("%s(%s)", fieldName, fieldPattern));
+		filterText.pressEnter();
+		
+		TableAccess table = browseDataPage.getSelectedTable();
+		table.assertItemCount(rowCount);
+		table.assertColumnContentMatches(columnName, columnPattern);
+	}
+	
 	protected String[][] buildVectorsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
 			content[i] = buildVectorsTableRow(2-i);
+		return content;
+	}
+	
+	protected String[][] buildFilteredVectorsTableContent() {
+		String[][] content = new String[1][];
+		content[0] = buildScalarsTableRow(1);
 		return content;
 	}
 	
@@ -65,6 +117,12 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
 			content[i] = buildScalarsTableRow(2-i);
+		return content;
+	}
+	
+	protected String[][] buildFilteredScalarsTableContent() {
+		String[][] content = new String[1][];
+		content[0] = buildScalarsTableRow(1);
 		return content;
 	}
 	
