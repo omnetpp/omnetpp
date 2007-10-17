@@ -73,7 +73,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		if (resultFiles.length > 0)
 		{
 			IFile resultFile = resultFiles[0];
-			IPath analysisFilePath = resultFile.getFullPath().removeFileExtension().addFileExtension("scave");
+			IPath analysisFilePath = resultFile.getFullPath().removeFileExtension().addFileExtension("anf");
 			IFile analysisFile = root.getFile(analysisFilePath);
 			if (analysisFile.getLocation().toFile().exists()) {
 				return analysisFile; // return existing

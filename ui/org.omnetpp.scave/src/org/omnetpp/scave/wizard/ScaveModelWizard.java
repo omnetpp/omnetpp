@@ -58,7 +58,7 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 public class ScaveModelWizard extends Wizard implements INewWizard {
 
 	private static final String ENCODING = "UTF-8";
-	private static final String FILENAME_EXTENSION = "scave";
+	private static final String FILENAME_EXTENSION = "anf";
 
 	/**
 	 * This is the file creation page.
@@ -279,9 +279,9 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		@Override
         protected boolean validatePage() {
 			if (super.validatePage()) {
-				// Make sure the file ends in ".scavemodel".
+				// Make sure the file ends in ".anf".
 				//
-				String requiredExt = ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameExtension");
+				String requiredExt = FILENAME_EXTENSION;
 				String enteredExt = new Path(getFileName()).getFileExtension();
 				if (enteredExt == null || !enteredExt.equals(requiredExt)) {
 					setErrorMessage(ScaveEditPlugin.INSTANCE.getString("_WARN_FilenameExtension", new Object [] { requiredExt }));

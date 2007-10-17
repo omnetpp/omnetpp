@@ -6,7 +6,7 @@
          point="org.eclipse.ui.editors">
       <editor
             name="OMNeT++ Analysis"
-            extensions="scave"
+            extensions="anf"
             icon="icons/scavefile.png"
             contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
             class="org.omnetpp.scave.editors.ScaveEditor"
@@ -63,7 +63,7 @@
            class="org.omnetpp.scave.wizard.ScaveModelWizard"
            icon="icons/newscavefile.png"
            id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
-           name="Analysis File (scave)">
+           name="Analysis File (anf)">
         <description>
            Create a new Analysis file that describes how charts and plottings should be created from recorded data.
         </description>
