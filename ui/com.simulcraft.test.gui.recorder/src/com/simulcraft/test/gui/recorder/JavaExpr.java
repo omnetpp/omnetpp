@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.recorder;
 public class JavaExpr {
     private String javaCode;
     private double quality;
+    private JavaExpr methodOf;
 
     public JavaExpr(String javaCode, double quality) {
         this.javaCode = javaCode;
@@ -18,5 +19,13 @@ public class JavaExpr {
      */
     public double getQuality() {
         return quality;
+    }
+
+    public JavaExpr getMethodOf() {
+        return methodOf;
+    }
+
+    public void setMethodOf(JavaExpr methodOf) {
+        this.methodOf = methodOf;
     }
 }

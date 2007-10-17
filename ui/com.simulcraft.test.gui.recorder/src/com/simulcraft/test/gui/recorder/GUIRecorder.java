@@ -221,6 +221,19 @@ public class GUIRecorder implements Listener {
         }
     }
 
+    public String generateCode() {
+        String text = "";
+        for (JavaExpr expr : result) {
+            if (expr.getMethodOf() != null)
+                text += ".";
+            else if (text.length() > 0)
+                text += ";\n";
+            text += expr.getJavaCode();
+        }
+        text += ";\n";
+        return text;
+    }
+
     protected void createPanel() {
         panel = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         panel.setLayout(new FillLayout());
@@ -314,10 +327,7 @@ public class GUIRecorder implements Listener {
     @SuppressWarnings("restriction")
     protected void showResult() {
         // produce Java code
-        String text = "";
-        for (JavaExpr expr : result)
-            text += expr.getJavaCode() + ";\n";
-        final String finalText = text;
+        final String javaText = generateCode();
 
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
@@ -325,7 +335,7 @@ public class GUIRecorder implements Listener {
                     // save to a file
                     String fileName = Activator.getDefault().getStateLocation().append("tmp.java").toOSString();
                     File file = new File(fileName);
-                    FileUtils.copy(new ByteArrayInputStream(finalText.getBytes()), file);
+                    FileUtils.copy(new ByteArrayInputStream(javaText.getBytes()), file);
 
                     // open file in an editor
                     final IEditorInput input = new FileStoreEditorInput(new LocalFile(file));
@@ -340,7 +350,6 @@ public class GUIRecorder implements Listener {
             }
         });
     }
-    
 
 }
 

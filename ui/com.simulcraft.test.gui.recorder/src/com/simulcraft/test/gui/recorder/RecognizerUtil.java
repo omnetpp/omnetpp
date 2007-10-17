@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.recorder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -39,20 +40,15 @@ public class RecognizerUtil  {
     }
 
     public static List<JavaExpr> chain(List<JavaExpr> base, JavaExpr expr) {
+        // if creation of either "base" or "expr" failed, return null
         if (base == null || expr == null)
             return null;
+        Assert.isTrue(base.size() > 0);
         List<JavaExpr> result = new ArrayList<JavaExpr>();
         result.addAll(base);
         result.add(expr);
+        expr.setMethodOf(base.get(base.size()-1));
         return result;
-    }
-
-    public static JavaExpr concat(JavaExpr base, JavaExpr expr) {
-        if (base == null)
-            return expr;
-        if (expr == null)
-            return base;
-        return new JavaExpr(base.getJavaCode() + "; " + expr.getJavaCode(), Math.min(base.getQuality(), expr.getQuality()));
     }
 
     public static Object findObject(List<Object> objects, IPredicate predicate) {
