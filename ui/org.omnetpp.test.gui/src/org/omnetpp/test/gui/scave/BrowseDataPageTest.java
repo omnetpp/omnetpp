@@ -97,8 +97,8 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		int i = 0;
 		row[i++] = "/project/";
 		row[i++] = String.format("test-%d.vec", rowIndex);
-		row[i++] = "n.a."; // config name
-		row[i++] = "n.a."; // run number
+		row[i++] = String.format("config-%d", rowIndex); // config name
+		row[i++] = String.format("%d", rowIndex); // run number
 		row[i++] = String.format("run-%d", rowIndex);
 		row[i++] = String.format("module-%s", rowIndex);
 		row[i++] = String.format("vector-%d", rowIndex);
@@ -131,8 +131,8 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		int i = 0;
 		row[i++] = "/project/";
 		row[i++] = String.format("test-%d.sca", rowIndex);
-		row[i++] = "n.a."; // config name
-		row[i++] = "n.a."; // run number
+		row[i++] = String.format("config-%d", rowIndex); // config name
+		row[i++] = String.format("%d", rowIndex); // run number
 		row[i++] = String.format("run-%d", rowIndex);
 		row[i++] = String.format("module-%s", rowIndex);
 		row[i++] = String.format("scalar-%d", rowIndex);
@@ -174,11 +174,12 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 				
 				String.format(
 					"run run-%1$d\n" +
+					"attr run-number %1$d\n" +
+					"attr config config-%1$d\n" +
 					"attr experiment %1$d\n" +
 					"attr measurement %1$d\n" +
 					"attr replication %1$d\n" +
 					"scalar module-%1$d scalar-%1$d %1$d\n",
-				
 					runNumber));
 	}
 	
@@ -188,12 +189,13 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 				
 				String.format(
 					"run run-%1$d\n" +
+					"attr run-number %1$d\n" +
+					"attr config config-%1$d\n" +
 					"attr experiment %1$d\n" +
 					"attr measurement %1$d\n" +
 					"attr replication %1$d\n" +
 					"vector 1 module-%1$d vector-%1$d TV\n" +
 					"1	0.0	%2$f\n",
-				
 					runNumber, (double)runNumber));
 	}
 }
