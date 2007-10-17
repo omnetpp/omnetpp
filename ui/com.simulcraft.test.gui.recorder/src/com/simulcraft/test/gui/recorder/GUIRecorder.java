@@ -1,17 +1,27 @@
 package com.simulcraft.test.gui.recorder;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.omnetpp.common.util.FileUtils;
 
 import com.simulcraft.test.gui.recorder.recognizer.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.ComboRecognizer;
@@ -23,7 +33,6 @@ import com.simulcraft.test.gui.recorder.recognizer.TextRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
 
-
 /**
  * Records GUI events for playback.
  * Must be installed on Display as an event filter.
@@ -31,11 +40,12 @@ import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
  * @author Andras
  */
 public class GUIRecorder implements Listener {
+    private boolean enabled = true;
     private int modifierState = 0;
     private List<JavaExpr> result = new ArrayList<JavaExpr>();
 
     private List<IRecognizer> recognizers = new ArrayList<IRecognizer>();
-    
+
     public GUIRecorder() {
         recognizers.add(new KeyboardEventRecognizer(this));
         recognizers.add(new WorkspaceWindowRecognizer(this));
@@ -53,18 +63,31 @@ public class GUIRecorder implements Listener {
     }
 
     public void handleEvent(final Event e) {
-        SafeRunner.run(new ISafeRunnable() {
-            public void run() throws Exception {
-                safeHandleEvent(e);
+        if (e.type == SWT.KeyDown && e.keyCode == SWT.SCROLL_LOCK) {
+            // handle on/off hotkey
+            Display.getCurrent().beep();
+            enabled = !enabled;
+            if (!enabled && !result.isEmpty()) {
+                // just turned off: show result
+                showResult();
+                result.clear();
             }
+        }
+        else if (enabled) {
+            // record event
+            SafeRunner.run(new ISafeRunnable() {
+                public void run() throws Exception {
+                    recordEvent(e);
+                }
 
-            public void handleException(Throwable ex) {
-                Activator.logError("An error occurred during recording of event "+e, ex);
-            }
-        });
+                public void handleException(Throwable ex) {
+                    Activator.logError("An error occurred during recording of event "+e, ex);
+                }
+            });
+        }
     }
 
-    protected void safeHandleEvent(Event e) {
+    protected void recordEvent(Event e) {
         // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
         if (e.type == SWT.KeyDown || e.type == SWT.KeyUp) {
             if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
@@ -72,7 +95,7 @@ public class GUIRecorder implements Listener {
                 if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
             }
         }
-        
+
         // collect the best one of the guesses
         List<JavaExpr> list = new ArrayList<JavaExpr>();
         for (IRecognizer recognizer : recognizers) {
@@ -80,7 +103,7 @@ public class GUIRecorder implements Listener {
             if (javaExpr != null) list.add(javaExpr);
         }
         JavaExpr bestJavaExpr = getBestJavaExpr(list);
-        
+
         // and print it
         if (bestJavaExpr != null) {
             add(bestJavaExpr);
@@ -90,6 +113,36 @@ public class GUIRecorder implements Listener {
             if (e.type==SWT.KeyDown || e.type==SWT.MouseDown)
                 System.out.println("unrecognized mouse click or keydown event: " + e); //XXX record as postEvent() etc?
         }
+    }
+
+    @SuppressWarnings("restriction")
+    protected void showResult() {
+        // produce Java code
+        String text = "";
+        for (JavaExpr expr : result)
+            text += expr.getJavaCode() + ";\n";
+        final String finalText = text;
+
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    // save to a file
+                    String fileName = Activator.getDefault().getStateLocation().append("tmp.java").toOSString();
+                    File file = new File(fileName);
+                    FileUtils.copy(new ByteArrayInputStream(finalText.getBytes()), file);
+
+                    // open file in an editor
+                    final IEditorInput input = new FileStoreEditorInput(new LocalFile(file));
+                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, "org.eclipse.ui.DefaultTextEditor");
+                }
+                catch (PartInitException e) {
+                    Activator.logError(e);  //XXX
+                }
+                catch (IOException e) {
+                    Activator.logError(e); //XXX
+                }
+            }
+        });
     }
 
     public JavaExpr identifyControl(Control control) {
@@ -113,7 +166,7 @@ public class GUIRecorder implements Listener {
             }
         });
     }
-    
+
     public void add(JavaExpr expr) {
         if (expr != null && expr.getQuality() > 0) {
             System.out.println(expr.getJavaCode());

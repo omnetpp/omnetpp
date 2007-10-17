@@ -5,7 +5,9 @@ Bundle-SymbolicName: com.simulcraft.test.gui.recorder;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: com.simulcraft.test.gui.recorder.Activator
 Bundle-Vendor: SIMULCRAFT
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.omnetpp.common
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.omnetpp.common,
+ org.eclipse.core.filesystem
 Eclipse-LazyStart: true
