@@ -4,7 +4,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.common.editor.text.NedKeywords;
+import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
@@ -92,7 +92,7 @@ public class CorrectIndentationAction extends NedTextEditorAction {
 
 	private static boolean containsSectionKeyword(String line) {
 		line = removeCommentsAndStrings(line);
-		return line.matches("(?s).*\\b("+StringUtils.join(NedKeywords.SECTION_KEYWORDS, "|")+")\\b.*");
+		return line.matches("(?s).*\\b("+StringUtils.join(Keywords.SECTION_KEYWORDS, "|")+")\\b.*");
 	}
 
 	private static String removeCommentsAndStrings(String line) {

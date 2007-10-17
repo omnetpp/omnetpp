@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
-import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 
 /**
  * Private NED documentation completion processor.
@@ -19,7 +19,7 @@ public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProce
 	@SuppressWarnings("unchecked")
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
-            createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(),
+            createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(),
                     "", NedCompletionHelper.proposedPrivateDocTodo, " ", "");
 
         Collections.sort(result, CompletionProposalComparator.getInstance());

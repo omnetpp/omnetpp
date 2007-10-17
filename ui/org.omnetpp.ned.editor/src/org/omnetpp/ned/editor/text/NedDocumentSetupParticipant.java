@@ -13,17 +13,8 @@ import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
  *
  * @author rhornig
  */
-//TODO "F3 Goto declaration" or ctrl-click "Follow Hyperlink" feature
 public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
 	
-	/**
-	 */
-	public NedDocumentSetupParticipant() {
-	}
-
-	/*
-	 * @see org.eclipse.core.filebuffers.IDocumentSetupParticipant#setup(org.eclipse.jface.text.IDocument)
-	 */
 	public void setup(IDocument document) {
 		if (document instanceof IDocumentExtension3) {
 			IDocumentExtension3 extension3= (IDocumentExtension3) document;

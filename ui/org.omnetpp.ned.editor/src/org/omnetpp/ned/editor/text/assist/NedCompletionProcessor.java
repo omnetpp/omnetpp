@@ -23,7 +23,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import org.omnetpp.common.editor.text.NedCompletionHelper;
-import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.layout.EmbeddingTest;
 import org.omnetpp.ned.core.NEDResources;
@@ -411,19 +411,19 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	}
 
     private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String[] descriptions) {
-        result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals, "", descriptions));
+        result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), "", proposals, "", descriptions));
     }
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals, "", description));
+		result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), "", proposals, "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), "", proposals.toArray(new String[] {}), "", description));
+		result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), "", proposals.toArray(new String[] {}), "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
-	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, new NedSyntaxHighlightHelper.NedWordDetector(), templates)));
+	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), templates)));
 	}
 
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {

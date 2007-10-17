@@ -9,8 +9,8 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.omnetpp.common.editor.text.NedKeywords;
-import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.Keywords;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
@@ -62,14 +62,14 @@ public class NedTextUtils {
 
     public static Info getNedReferenceFromSource(ITextEditor textEditor, ITextViewer textViewer, IRegion region) {
         try {
-            IRegion wordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedWordDetector());
-            IRegion dottedWordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new NedSyntaxHighlightHelper.NedDottedWordDetector());
+            IRegion wordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new SyntaxHighlightHelper.NedWordDetector());
+            IRegion dottedWordRegion = TextEditorUtil.detectWordRegion(textViewer, region.getOffset(), new SyntaxHighlightHelper.NedDottedWordDetector());
             if (wordRegion.getLength() == 0)
                 return null;
 
             String word = TextEditorUtil.get(textViewer, wordRegion);
             String dottedWord = TextEditorUtil.get(textViewer, dottedWordRegion);
-            if (ArrayUtils.contains(NedKeywords.RESERVED_WORDS, word))
+            if (ArrayUtils.contains(Keywords.RESERVED_WORDS, word))
                 return null;
 
             // find which NED element was hovered

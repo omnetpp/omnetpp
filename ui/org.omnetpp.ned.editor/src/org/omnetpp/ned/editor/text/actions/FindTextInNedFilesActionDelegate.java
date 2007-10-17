@@ -16,7 +16,7 @@ import org.eclipse.search2.internal.ui.text2.RetrieverAction;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.common.editor.text.NedSyntaxHighlightHelper;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.editor.text.TextEditorUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.NedEditor;
@@ -71,7 +71,7 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
                     TextualNedEditor textEditor = (TextualNedEditor)multiPageEditor.getTextEditor();
                     ISourceViewer sourceViewer = textEditor.getSourceViewerPublic();
                     try {
-                        searchText = TextEditorUtil.getWordRegion(sourceViewer, sourceViewer.getSelectedRange().x, new NedSyntaxHighlightHelper.NedWordDetector());
+                        searchText = TextEditorUtil.getWordRegion(sourceViewer, sourceViewer.getSelectedRange().x, new SyntaxHighlightHelper.NedWordDetector());
                     } 
                     catch (BadLocationException e) {
                     }
