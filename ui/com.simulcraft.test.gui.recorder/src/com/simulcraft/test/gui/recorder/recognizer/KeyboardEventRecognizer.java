@@ -34,6 +34,7 @@ public class KeyboardEventRecognizer extends Recognizer {
             if (e.character >= ' ' && e.character < 127) {
                 modifierJustPressed = false;
                 typing += e.character;
+                return new JavaExpr("", 0.5);  // stored it. quality=0: "don't store"
             }
             else if ((e.keyCode & SWT.MODIFIER_MASK) == 0) {
                 // record non-modifier control key
@@ -58,7 +59,7 @@ public class KeyboardEventRecognizer extends Recognizer {
             modifierJustPressed = false;
             recorder.add(flushTyping());
         }
-        return new JavaExpr("", 0.0);  // recognized but not too well
+        return null;
     }
 
     private JavaExpr flushTyping() {

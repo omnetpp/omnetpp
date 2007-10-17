@@ -130,7 +130,7 @@ public class GUIRecorder implements Listener {
             // unprocessed -- only print message if event is significant
             if (e.type==SWT.KeyDown || e.type==SWT.MouseDown) {
                 add(new JavaExpr("//TODO unrecognized mouse click or keydown event: " + e, 1.0));
-                Display.getCurrent().beep();
+                //Display.getCurrent().beep();
             }
         }
     }
@@ -158,9 +158,11 @@ public class GUIRecorder implements Listener {
     }
 
     public void add(JavaExpr expr) {
-        if (expr != null && expr.getQuality() > 0) {
+        if (expr != null && expr.getJavaCode().length() > 0) {
             System.out.println(expr.getJavaCode());
-            result.add(expr);
+            if (expr.getQuality() > 0) {
+                result.add(expr);
+            }
         }
     }
 
