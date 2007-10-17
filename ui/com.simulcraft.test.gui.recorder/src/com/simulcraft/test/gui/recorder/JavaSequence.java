@@ -50,6 +50,9 @@ public class JavaSequence {
         return q;
     }
     
+    /**
+     * Generate Java code from the JavaExpr objects contained. 
+     */
     public String generateCode() {
         // preliminary, simplified version
         String text = "";
