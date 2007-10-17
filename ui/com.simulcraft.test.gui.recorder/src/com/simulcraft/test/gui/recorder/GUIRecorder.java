@@ -12,11 +12,19 @@ import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -40,9 +48,15 @@ import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
  * @author Andras
  */
 public class GUIRecorder implements Listener {
+    // state
     private boolean enabled = true;
     private int modifierState = 0;
     private List<JavaExpr> result = new ArrayList<JavaExpr>();
+    
+    // gui
+    private Shell panel;
+    private Button stopButton;
+    private Button startButton;
 
     private List<IRecognizer> recognizers = new ArrayList<IRecognizer>();
 
@@ -56,6 +70,7 @@ public class GUIRecorder implements Listener {
         recognizers.add(new TreeRecognizer(this));
         recognizers.add(new TableRecognizer(this));
         recognizers.add(new MenuRecognizer(this));
+        displayPanel();
     }
 
     public int getKeyboardModifierState() {
@@ -65,16 +80,13 @@ public class GUIRecorder implements Listener {
     public void handleEvent(final Event e) {
         if (e.type == SWT.KeyDown && e.keyCode == SWT.SCROLL_LOCK) {
             // handle on/off hotkey
-            Display.getCurrent().beep();
-            enabled = !enabled;
-            if (!enabled && !result.isEmpty()) {
-                // just turned off: show result
-                showResult();
-                result.clear();
-            }
+            if (enabled)
+                stopRecording();
+            else 
+                startRecording();
         }
-        else if (enabled) {
-            // record event
+        else if (enabled && ((Control)e.widget).getShell() != panel) {
+            // record event, catching potential exceptions meanwhile
             SafeRunner.run(new ISafeRunnable() {
                 public void run() throws Exception {
                     recordEvent(e);
@@ -115,6 +127,82 @@ public class GUIRecorder implements Listener {
         }
     }
 
+    public JavaExpr identifyControl(Control control) {
+        return identifyControl(control, null);
+    }
+
+    public JavaExpr identifyControl(Control control, Point point) {
+        List<JavaExpr> list = new ArrayList<JavaExpr>();
+        for (IRecognizer recognizer : recognizers) {
+            JavaExpr javaExpr = recognizer.identifyControl(control, point);
+            if (javaExpr != null) list.add(javaExpr);
+        }
+        return getBestJavaExpr(list);
+    }
+
+    protected JavaExpr getBestJavaExpr(List<JavaExpr> list) {
+        return list.isEmpty() ? null : Collections.max(list, new Comparator<JavaExpr>() {
+            public int compare(JavaExpr o1, JavaExpr o2) {
+                double d = o1.getQuality() - o2.getQuality();
+                return d==0 ? 0 : d<0 ? -1 : 1;
+            }
+        });
+    }
+
+    public void add(JavaExpr expr) {
+        if (expr != null && expr.getQuality() > 0) {
+            System.out.println(expr.getJavaCode());
+            result.add(expr);
+        }
+    }
+
+    protected void displayPanel() {
+        panel = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
+        panel.setLayout(new FillLayout());
+        Composite composite = new Composite(panel, SWT.BORDER);
+        composite.setLayout(new GridLayout(2, false));
+        composite.setBackground(new Color(null,255,255,255));
+        startButton = new Button(composite, SWT.PUSH);
+        startButton.setText("Start");
+        stopButton = new Button(composite, SWT.PUSH);
+        stopButton.setText("Stop");
+        startButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                startRecording();
+            }
+        });
+        stopButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                stopRecording();
+            }
+        });
+        updatePanelState();
+        panel.layout();
+        panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        panel.open();
+    }
+
+    public void startRecording() {
+        enabled = true;
+        updatePanelState();
+    }
+    
+    public void stopRecording() {
+        enabled = false;
+        updatePanelState();
+        if (!result.isEmpty()) {
+            // just turned off: show result
+            showResult();
+            result.clear();
+        }
+    }
+    
+    protected void updatePanelState() {
+        //panel.setBackground(enabled ? new Color(null,255,0,0) : new Color(null,255,255,255));
+        startButton.setEnabled(!enabled);
+        stopButton.setEnabled(enabled);
+    }
+
     @SuppressWarnings("restriction")
     protected void showResult() {
         // produce Java code
@@ -144,35 +232,7 @@ public class GUIRecorder implements Listener {
             }
         });
     }
-
-    public JavaExpr identifyControl(Control control) {
-        return identifyControl(control, null);
-    }
-
-    public JavaExpr identifyControl(Control control, Point point) {
-        List<JavaExpr> list = new ArrayList<JavaExpr>();
-        for (IRecognizer recognizer : recognizers) {
-            JavaExpr javaExpr = recognizer.identifyControl(control, point);
-            if (javaExpr != null) list.add(javaExpr);
-        }
-        return getBestJavaExpr(list);
-    }
-
-    protected JavaExpr getBestJavaExpr(List<JavaExpr> list) {
-        return list.isEmpty() ? null : Collections.max(list, new Comparator<JavaExpr>() {
-            public int compare(JavaExpr o1, JavaExpr o2) {
-                double d = o1.getQuality() - o2.getQuality();
-                return d==0 ? 0 : d<0 ? -1 : 1;
-            }
-        });
-    }
-
-    public void add(JavaExpr expr) {
-        if (expr != null && expr.getQuality() > 0) {
-            System.out.println(expr.getJavaCode());
-            result.add(expr);
-        }
-    }
+    
 
 }
 
