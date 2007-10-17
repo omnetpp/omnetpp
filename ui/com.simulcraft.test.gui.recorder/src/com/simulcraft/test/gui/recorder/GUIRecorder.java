@@ -12,6 +12,9 @@ import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -57,6 +60,8 @@ public class GUIRecorder implements Listener {
     private Shell panel;
     private Button stopButton;
     private Button startButton;
+    private boolean mouse1Down;
+    private int panelMoveOffsetX, panelMoveOffsetY;
 
     private List<IRecognizer> recognizers = new ArrayList<IRecognizer>();
 
@@ -70,7 +75,7 @@ public class GUIRecorder implements Listener {
         recognizers.add(new TreeRecognizer(this));
         recognizers.add(new TableRecognizer(this));
         recognizers.add(new MenuRecognizer(this));
-        displayPanel();
+        createPanel();
     }
 
     public int getKeyboardModifierState() {
@@ -80,10 +85,7 @@ public class GUIRecorder implements Listener {
     public void handleEvent(final Event e) {
         if (e.type == SWT.KeyDown && e.keyCode == SWT.SCROLL_LOCK) {
             // handle on/off hotkey
-            if (enabled)
-                stopRecording();
-            else 
-                startRecording();
+            setPanelVisible(!panel.isVisible());
         }
         else if (enabled && ((Control)e.widget).getShell() != panel) {
             // record event, catching potential exceptions meanwhile
@@ -156,16 +158,23 @@ public class GUIRecorder implements Listener {
         }
     }
 
-    protected void displayPanel() {
+    protected void createPanel() {
         panel = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         panel.setLayout(new FillLayout());
         Composite composite = new Composite(panel, SWT.BORDER);
-        composite.setLayout(new GridLayout(2, false));
+        composite.setLayout(new GridLayout(3, false));
         composite.setBackground(new Color(null,255,255,255));
+        
+        // create and configure buttons
         startButton = new Button(composite, SWT.PUSH);
         startButton.setText("Start");
+        startButton.setToolTipText("Start Recording UI Actions");
         stopButton = new Button(composite, SWT.PUSH);
         stopButton.setText("Stop");
+        stopButton.setToolTipText("Stop Recording");
+        Button hideButton = new Button(composite, SWT.PUSH);
+        hideButton.setText("X");
+        hideButton.setToolTipText("Hide Panel (hit Scroll Lock to show it again)");
         startButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 startRecording();
@@ -176,10 +185,43 @@ public class GUIRecorder implements Listener {
                 stopRecording();
             }
         });
+        hideButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                setPanelVisible(false);
+            }
+        });
+        
+        // allow panel to be moved around with the mouse
+        composite.addMouseListener(new MouseAdapter() {
+            public void mouseDown(MouseEvent e) {
+                mouse1Down = true;
+                Point p = Display.getCurrent().getCursorLocation();
+                Point loc = panel.getLocation();
+                panelMoveOffsetX = loc.x - p.x;
+                panelMoveOffsetY = loc.y - p.y;
+            }
+            public void mouseUp(MouseEvent e) {
+                mouse1Down = false;
+            }
+        });
+        composite.addMouseMoveListener(new MouseMoveListener() {
+            public void mouseMove(MouseEvent e) {
+                if (mouse1Down) {
+                    Point p = Display.getCurrent().getCursorLocation();
+                    panel.setLocation(p.x + panelMoveOffsetX, p.y + panelMoveOffsetY);
+                }
+            }
+        });
+        
+        // open panel
         updatePanelState();
         panel.layout();
         panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        panel.setLocation((int)(Display.getCurrent().getClientArea().width * 0.75), 10);
+        Control oldFocusControl = Display.getCurrent().getFocusControl();
         panel.open();
+        if (oldFocusControl != null)
+            oldFocusControl.setFocus();
     }
 
     public void startRecording() {
@@ -191,10 +233,13 @@ public class GUIRecorder implements Listener {
         enabled = false;
         updatePanelState();
         if (!result.isEmpty()) {
-            // just turned off: show result
             showResult();
             result.clear();
         }
+    }
+    
+    public void setPanelVisible(boolean visible) {
+        panel.setVisible(visible);
     }
     
     protected void updatePanelState() {
