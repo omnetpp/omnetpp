@@ -7,7 +7,7 @@
       <editor
             name="OMNeT++/OMNEST Event Log Table"
             extensions="log"
-            icon="icons/sample.gif"
+            icon="icons/eventlog.png"
             contributorClass="org.omnetpp.eventlogtable.editors.EventLogTableContributor"
             class="org.omnetpp.eventlogtable.editors.EventLogTableEditor"
             id="org.omnetpp.eventlogtable.editors.EventLogTableEditor">
@@ -18,7 +18,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Event Log"
-            icon="icons/sample.gif"
+            icon="icons/eventlog.png"
             category="org.omnetpp.views"
             class="org.omnetpp.eventlogtable.editors.EventLogTableView"
             id="org.omnetpp.eventlogtable.editors.EventLogTableView">
