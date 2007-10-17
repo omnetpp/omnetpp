@@ -54,6 +54,21 @@ public class CompositeAccess extends ControlAccess
 			}
 		}));
 	}
+	
+	@InUIThread
+	public ButtonAccess tryToFindButtonWithLabel(final String label) {
+		List<Control> buttons = collectDescendantControls(getControl(), new IPredicate() {
+			public boolean matches(Object object) {
+				if (object instanceof Button) {
+					Button button = (Button)object;
+					return button.getText().replace("&", "").matches(label);
+				}
+				return false;
+			}
+		});
+		Button button = (Button)atMostOneObject(buttons);
+		return button != null ? (ButtonAccess)createAccess(button) : null;
+	}
 
 	@InUIThread
 	public LabelAccess findLabel(final String label) {

@@ -5,11 +5,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import com.simulcraft.test.gui.core.EventTracer;
-import com.simulcraft.test.gui.core.EventUtils;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
-
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
 import org.eclipse.swt.SWT;
@@ -33,11 +28,15 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+
+import com.simulcraft.test.gui.core.EventTracer;
+import com.simulcraft.test.gui.core.EventUtils;
+import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
 
 
 public class Access
@@ -361,7 +360,7 @@ public class Access
             }
         });
     }
-
+	
     @InUIThread
 	public static Object findObject(List<Object> objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate));
@@ -578,6 +577,11 @@ public class Access
 
 	protected static EditPart theOnlyEditPart(List<? extends EditPart> controls) {
 		return (EditPart)theOnlyObject(controls);
+	}
+	
+	protected static Object atMostOneObject(List<? extends Object> objects) {
+		Assert.assertTrue("Found "+objects.size()+" objects when one or zero is expected ["+StringUtils.join(objects, ", ")+"]", objects.size() < 2);
+		return objects.isEmpty() ? null : objects.get(0);
 	}
 
 	protected static Point getCenter(Rectangle rectangle) {
