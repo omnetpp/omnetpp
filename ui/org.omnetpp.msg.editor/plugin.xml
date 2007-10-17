@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Message File Editor"
+            extensions="msg"
+            icon="icons/msgfile.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.omnetpp.msg.editor.MsgEditor"
+            id="org.omnetpp.msg.editor.MsgEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="org.omnetpp.msg.editor.MsgDocumentSetupParticipant"
+            extensions="msg">
+      </participant>
+   </extension>
+
+</plugin>
