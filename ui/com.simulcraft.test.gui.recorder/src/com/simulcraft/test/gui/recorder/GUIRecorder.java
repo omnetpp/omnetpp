@@ -9,8 +9,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.internal.filesystem.local.LocalFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.TableTree;
@@ -154,6 +156,7 @@ public class GUIRecorder implements Listener {
      * within a GEF canvas). Returns the control itself if it doesn't contain
      * identifiable items.  
      */
+    //TODO make this extensible
     @SuppressWarnings("deprecation")
     public Object resolveUIObject(Control control, Point point) {
         // Not handled because no getItem(point) or item.getBounds() method: 
@@ -176,6 +179,11 @@ public class GUIRecorder implements Listener {
                     return item;
         }
         return control;
+    }
+
+    public List<JavaExpr> identifyObjectIn(Event e) {
+        Assert.isTrue(e.widget instanceof Control);
+        return identifyObject(resolveUIObject((Control)e.widget, new Point(e.x, e.y)));
     }
 
     public List<JavaExpr> identifyObject(Object uiObject) {
@@ -222,6 +230,7 @@ public class GUIRecorder implements Listener {
     }
 
     public String generateCode() {
+        // preliminary, simplified version
         String text = "";
         for (JavaExpr expr : result) {
             if (expr.getMethodOf() != null)
@@ -341,11 +350,13 @@ public class GUIRecorder implements Listener {
                     final IEditorInput input = new FileStoreEditorInput(new LocalFile(file));
                     PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, "org.eclipse.ui.DefaultTextEditor");
                 }
-                catch (PartInitException e) {
-                    Activator.logError(e);  //XXX
-                }
                 catch (IOException e) {
-                    Activator.logError(e); //XXX
+                    MessageDialog.openError(null, "Error", "Cannot save recorded code into temporary file: " + e.getMessage());
+                    Activator.logError(e);
+                }
+                catch (PartInitException e) {
+                    MessageDialog.openError(null, "Error", "Cannot open editor to view recorded code: " + e.getMessage());
+                    Activator.logError(e);
                 }
             }
         });
