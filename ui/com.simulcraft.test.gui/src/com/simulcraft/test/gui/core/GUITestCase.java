@@ -1,6 +1,7 @@
 package com.simulcraft.test.gui.core;
 
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.internal.win32.MSG;
@@ -133,14 +134,16 @@ public abstract class GUITestCase extends TestCase {
 			hasBeenRunOnce = true;
 		}
 
-		    Access.log(debug, "Step failed");
+	    Access.log(debug, "Step failed");
 
 		// the special WorkspaceAdvisor will let the exception go up through readAndDispatch event loops and unwind the
 		// stack until the top level test code is reached, see above
 		stepThrowables[0] = new TestException(firstThrowable);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-			    Access.log(debug, "Rethrowing exception from step: " + stepThrowables[0]);
+				
+				AnimationEffects.displayError(stepThrowables[0].getCause(), 2000);
+				Access.log(debug, "Rethrowing exception from step: " + stepThrowables[0]);
 
 				// TODO: this does not hide popup menus since the code doesn't use try/catch/finally there and will not hide
 				// the popup menu upon receiving an exception

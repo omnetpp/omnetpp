@@ -1,6 +1,7 @@
 package com.simulcraft.test.gui.core;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -14,10 +15,14 @@ import com.simulcraft.test.gui.access.ClickableAccess;
 public class AnimationEffects  {
     
     public static void displayTextBox(String text, long delayMillis) {
+    	displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
+    }
+    
+    public static void displayTextBox(String text, Color textColor, int fontSize, long delayMillis) {
         // choose font, calculate position and size
         Display display = Display.getCurrent();
         GC gc = new GC(display);
-        Font font = new Font(display, "Arial", 16, SWT.NORMAL);
+        Font font = new Font(display, "Arial", fontSize, SWT.NORMAL);
         gc.setFont(font);
         Point textExtent = gc.textExtent(text);
 
@@ -37,6 +42,7 @@ public class AnimationEffects  {
         gc.setLineWidth(2);
         gc.fillRectangle(r);
         gc.drawRectangle(r);
+        gc.setForeground(textColor);
         gc.drawText(text, r.x + r.width/2 - textExtent.x/2, r.y + r.height/2 - textExtent.y/2);
 
         // wait
@@ -49,6 +55,10 @@ public class AnimationEffects  {
         savedBackground.dispose();
         font.dispose();
         gc.dispose();
+    }
+    
+    public static void displayError(Throwable error, long delayMillis) {
+    	displayTextBox(error.getMessage(), ColorFactory.RED, 12, delayMillis);
     }
     
     @SuppressWarnings("deprecation")
