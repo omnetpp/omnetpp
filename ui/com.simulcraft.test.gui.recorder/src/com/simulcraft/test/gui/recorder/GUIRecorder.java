@@ -12,6 +12,8 @@ import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -24,10 +26,18 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -135,6 +145,35 @@ public class GUIRecorder implements Listener {
                 //Display.getCurrent().beep();
             }
         }
+    }
+
+    /**
+     * Find item within the containing control (ie. TableItem in Tree, Figure
+     * within a GEF canvas). Returns the control itself if it doesn't contain
+     * identifiable items.  
+     */
+    @SuppressWarnings("deprecation")
+    public Object resolveUIObject(Control control, Point point) {
+        // Not handled because no getItem(point) or item.getBounds() method: 
+        //  TabFolder/TabItem, ExpandBar/ExpandItem, Tray/TrayItem,
+        //  TableColumn, TreeColumn, MenuItem
+        // TODO recognize Figures in GEF canvases
+        if (control instanceof Table && ((Table)control).getItem(point) != null)
+            return ((Table)control).getItem(point);
+        if (control instanceof Tree && ((Tree)control).getItem(point) != null)
+            return ((Tree)control).getItem(point);
+        if (control instanceof TableTree && ((TableTree)control).getItem(point) != null)
+            return ((TableTree)control).getItem(point);
+        if (control instanceof CTabFolder && ((CTabFolder)control).getItem(point) != null)
+            return ((CTabFolder)control).getItem(point);
+        if (control instanceof ToolBar && ((ToolBar)control).getItem(point) != null)
+            return ((ToolBar)control).getItem(point);
+        if (control instanceof CoolBar) {
+            for (CoolItem item : ((CoolBar)control).getItems())
+                if (item.getBounds().contains(point))
+                    return item;
+        }
+        return control;
     }
 
     public JavaExpr identifyControl(Control control) {
