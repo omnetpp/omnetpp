@@ -30,11 +30,8 @@ import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.ExpandBar;
-import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.Tree;
@@ -44,10 +41,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.omnetpp.common.util.FileUtils;
 
+import com.simulcraft.test.gui.recorder.recognizer.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.ButtonRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.ClickRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.ComboRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.KeyboardEventRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.MenuRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.ShellRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.TableItemRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.TableRecognizer;
@@ -76,21 +74,24 @@ public class GUIRecorder implements Listener {
     private boolean mouse1Down;
     private int panelMoveOffsetX, panelMoveOffsetY;
 
-    private List<IRecognizer> recognizers = new ArrayList<IRecognizer>();
+    private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
+    private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
 
     public GUIRecorder() {
-        recognizers.add(new KeyboardEventRecognizer(this));
-        recognizers.add(new WorkbenchWindowRecognizer(this));
-        recognizers.add(new WorkbenchPartRecognizer(this));
-        recognizers.add(new ShellRecognizer(this));
-        recognizers.add(new ButtonRecognizer(this));
-        recognizers.add(new ComboRecognizer(this));
-        recognizers.add(new TextRecognizer(this));
-        recognizers.add(new TableRecognizer(this));
-        recognizers.add(new TreeRecognizer(this));
-        recognizers.add(new TableItemRecognizer(this));
-        recognizers.add(new TreeItemRecognizer(this));
-        recognizers.add(new MenuRecognizer(this));
+        eventRecognizers.add(new KeyboardEventRecognizer(this));
+        eventRecognizers.add(new ButtonEventRecognizer(this));
+        eventRecognizers.add(new ClickRecognizer(this));
+        
+        objectRecognizers.add(new WorkbenchWindowRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartRecognizer(this));
+        objectRecognizers.add(new ShellRecognizer(this));
+        objectRecognizers.add(new ButtonRecognizer(this));
+        objectRecognizers.add(new ComboRecognizer(this));
+        objectRecognizers.add(new TextRecognizer(this));
+        objectRecognizers.add(new TableRecognizer(this));
+        objectRecognizers.add(new TreeRecognizer(this));
+        objectRecognizers.add(new TableItemRecognizer(this));
+        objectRecognizers.add(new TreeItemRecognizer(this));
         createPanel();
     }
 
@@ -127,16 +128,17 @@ public class GUIRecorder implements Listener {
         }
 
         // collect the best one of the guesses
-        List<JavaExpr> list = new ArrayList<JavaExpr>();
-        for (IRecognizer recognizer : recognizers) {
-            JavaExpr javaExpr = recognizer.recognizeEvent(e);
-            if (javaExpr != null) list.add(javaExpr);
+        List<List<JavaExpr>> proposals = new ArrayList<List<JavaExpr>>();
+        for (IEventRecognizer eventRecognizer : eventRecognizers) {
+            List<JavaExpr> proposal = eventRecognizer.recognizeEvent(e);
+            if (proposal != null) 
+                proposals.add(proposal);
         }
-        JavaExpr bestJavaExpr = getBestJavaExpr(list);
+        List<JavaExpr> bestProposal = getBestProposal(proposals);
 
         // and print it
-        if (bestJavaExpr != null) {
-            add(bestJavaExpr);
+        if (bestProposal != null) {
+            add(bestProposal);
         }
         else {
             // unprocessed -- only print message if event is significant
@@ -176,26 +178,38 @@ public class GUIRecorder implements Listener {
         return control;
     }
 
-    public JavaExpr identifyControl(Control control) {
-        return identifyControl(control, null);
-    }
-
-    public JavaExpr identifyControl(Control control, Point point) {
-        List<JavaExpr> list = new ArrayList<JavaExpr>();
-        for (IRecognizer recognizer : recognizers) {
-            JavaExpr javaExpr = recognizer.identifyControl(control, point);
-            if (javaExpr != null) list.add(javaExpr);
+    public List<JavaExpr> identifyObject(Object uiObject) {
+        // collect the best one of the guesses
+        List<List<JavaExpr>> proposals = new ArrayList<List<JavaExpr>>();
+        for (IObjectRecognizer objectRecognizer : objectRecognizers) {
+            List<JavaExpr> proposal = objectRecognizer.identifyObject(uiObject);
+            if (proposal != null && !proposal.isEmpty()) 
+                proposals.add(proposal);
         }
-        return getBestJavaExpr(list);
+        List<JavaExpr> bestProposal = getBestProposal(proposals);
+        return bestProposal;
     }
 
-    protected JavaExpr getBestJavaExpr(List<JavaExpr> list) {
-        return list.isEmpty() ? null : Collections.max(list, new Comparator<JavaExpr>() {
-            public int compare(JavaExpr o1, JavaExpr o2) {
-                double d = o1.getQuality() - o2.getQuality();
+    protected List<JavaExpr> getBestProposal(List<List<JavaExpr>> proposals) {
+        return proposals.isEmpty() ? null : Collections.max(proposals, new Comparator<List<JavaExpr>>() {
+            public int compare(List<JavaExpr> o1, List<JavaExpr> o2) {
+                double d = getQuality(o1) - getQuality(o2);
                 return d==0 ? 0 : d<0 ? -1 : 1;
             }
         });
+    }
+
+    protected double getQuality(List<JavaExpr> proposal) {
+        double q = 1;
+        for (JavaExpr expr : proposal)
+            q *= expr.getQuality();
+        return q;
+    }
+
+    public void add(List<JavaExpr> list) {
+        if (list != null)
+            for (JavaExpr expr : list)
+                add(expr);
     }
 
     public void add(JavaExpr expr) {

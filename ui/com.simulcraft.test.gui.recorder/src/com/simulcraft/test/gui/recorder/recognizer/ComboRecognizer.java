@@ -1,34 +1,24 @@
 package com.simulcraft.test.gui.recorder.recognizer;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
+import java.util.List;
+
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaExpr;
 
-public class ComboRecognizer extends Recognizer {
+public class ComboRecognizer extends ObjectRecognizer {
     public ComboRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
 
-    public JavaExpr identifyControl(Control control, Point point) {
-        if (control instanceof Combo) {
-            Combo text = (Combo)control;
-            Label label = getPrecedingUniqueLabel(control.getShell(), text);
+    public List<JavaExpr> identifyObject(Object uiObject) {
+        if (uiObject instanceof Combo) {
+            Combo combo = (Combo)uiObject;
+            Label label = getPrecedingUniqueLabel(combo.getShell(), combo);
             if (label != null)
-                return chain(recorder.identifyControl(control.getShell()), "findComboAfterLabel("+quote(label.getText()) + ")", 0.8);
-        }
-        return null;
-    }
-
-    public JavaExpr recognizeEvent(Event e) {
-        if (e.type == SWT.MouseDown && e.widget instanceof Combo) {
-            //Combo combo = (Combo)e.widget;
-            return chain(identifyControlIn(e), "click()", 1.0);
+                return chain(recorder.identifyObject(combo.getShell()), "findComboAfterLabel("+quote(label.getText()) + ")", 0.8);
         }
         return null;
     }

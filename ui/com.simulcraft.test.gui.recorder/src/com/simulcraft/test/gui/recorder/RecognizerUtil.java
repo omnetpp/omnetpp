@@ -1,13 +1,11 @@
-package com.simulcraft.test.gui.recorder.recognizer;
+package com.simulcraft.test.gui.recorder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -17,33 +15,36 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.StringUtils;
 
-import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.IRecognizer;
-import com.simulcraft.test.gui.recorder.JavaExpr;
-
-public abstract class Recognizer implements IRecognizer {
-    protected GUIRecorder recorder;
-    
-    public Recognizer(GUIRecorder recorder) {
-        this.recorder = recorder;
-    }
-
-    protected JavaExpr identifyControlIn(Event e) {
-        return identifyControl((Control)e.widget, new Point(e.x, e.y));
-    }
-    
+/**
+ * Utility class. All methods are static.
+ * @author Andras
+ */
+public class RecognizerUtil  {
     public static String quote(String text) {
         return "\"" + text.replace("\"", "\\\"")+ "\""; 
     }
-    
-    public static JavaExpr chain(JavaExpr base, String expr, double quality) {
+
+    public static List<JavaExpr> wrap(String expr, double quality) {
+        return wrap(new JavaExpr(expr, quality));
+    }
+
+    public static List<JavaExpr> wrap(JavaExpr expr) {
+        List<JavaExpr> result = new ArrayList<JavaExpr>();
+        result.add(expr);
+        return result;
+    }
+
+    public static List<JavaExpr> chain(List<JavaExpr> base, String expr, double quality) {
         return chain(base, new JavaExpr(expr, quality));
     }
 
-    public static JavaExpr chain(JavaExpr base, JavaExpr expr) {
+    public static List<JavaExpr> chain(List<JavaExpr> base, JavaExpr expr) {
         if (base == null || expr == null)
             return null;
-        return new JavaExpr(base.getJavaCode() + "." + expr.getJavaCode(), base.getQuality() * expr.getQuality());
+        List<JavaExpr> result = new ArrayList<JavaExpr>();
+        result.addAll(base);
+        result.add(expr);
+        return result;
     }
 
     public static JavaExpr concat(JavaExpr base, JavaExpr expr) {
@@ -112,7 +113,7 @@ public abstract class Recognizer implements IRecognizer {
         return (Control)theOnlyObject(controls);
     }
     
-    protected Label getPrecedingUniqueLabel(Composite composite, Control control) {
+    protected static Label getPrecedingUniqueLabel(Composite composite, Control control) {
         Control[] siblings = control.getParent().getChildren();
         Label label = null;
         for (int i = 1; i < siblings.length && label == null; i++)
