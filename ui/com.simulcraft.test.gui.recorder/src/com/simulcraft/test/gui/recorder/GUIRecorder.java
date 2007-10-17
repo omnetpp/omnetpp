@@ -67,7 +67,7 @@ public class GUIRecorder implements Listener {
     // state
     private boolean enabled = true;
     private int modifierState = 0;
-    private List<JavaExpr> result = new ArrayList<JavaExpr>();
+    private JavaSequence result = new JavaSequence();
     
     // gui
     private Shell panel;
@@ -130,13 +130,13 @@ public class GUIRecorder implements Listener {
         }
 
         // collect the best one of the guesses
-        List<List<JavaExpr>> proposals = new ArrayList<List<JavaExpr>>();
+        List<JavaSequence> proposals = new ArrayList<JavaSequence>();
         for (IEventRecognizer eventRecognizer : eventRecognizers) {
-            List<JavaExpr> proposal = eventRecognizer.recognizeEvent(e);
+            JavaSequence proposal = eventRecognizer.recognizeEvent(e);
             if (proposal != null) 
                 proposals.add(proposal);
         }
-        List<JavaExpr> bestProposal = getBestProposal(proposals);
+        JavaSequence bestProposal = getBestProposal(proposals);
 
         // and print it
         if (bestProposal != null) {
@@ -146,26 +146,55 @@ public class GUIRecorder implements Listener {
             // unprocessed -- only print message if event is significant
             if (e.type==SWT.KeyDown || e.type==SWT.MouseDown) {
                 add(new JavaExpr("//TODO unrecognized mouse click or keydown event: " + e, 1.0));
-                //Display.getCurrent().beep();
             }
         }
     }
 
-    public List<JavaExpr> identifyObjectIn(Event e) {
+    public JavaSequence identifyObjectIn(Event e) {
         Assert.isTrue(e.widget instanceof Control);
         return identifyObject(resolveUIObject((Control)e.widget, new Point(e.x, e.y)));
     }
 
-    public List<JavaExpr> identifyObject(Object uiObject) {
+    public JavaSequence identifyObject(Object uiObject) {
         // collect the best one of the guesses
-        List<List<JavaExpr>> proposals = new ArrayList<List<JavaExpr>>();
+        List<JavaSequence> proposals = new ArrayList<JavaSequence>();
         for (IObjectRecognizer objectRecognizer : objectRecognizers) {
-            List<JavaExpr> proposal = objectRecognizer.identifyObject(uiObject);
+            JavaSequence proposal = objectRecognizer.identifyObject(uiObject);
             if (proposal != null && !proposal.isEmpty()) 
                 proposals.add(proposal);
         }
-        List<JavaExpr> bestProposal = getBestProposal(proposals);
+        JavaSequence bestProposal = getBestProposal(proposals);
+        System.out.println("identifyObject: " + uiObject + " --> " + bestProposal);
         return bestProposal;
+    }
+
+    protected JavaSequence getBestProposal(List<JavaSequence> proposals) {
+        return proposals.isEmpty() ? null : Collections.max(proposals, new Comparator<JavaSequence>() {
+            public int compare(JavaSequence o1, JavaSequence o2) {
+                double d = o1.getQuality() - o2.getQuality();
+                return d==0 ? 0 : d<0 ? -1 : 1;
+            }
+        });
+    }
+
+    public void add(JavaSequence seq) {
+        if (seq != null) {
+            System.out.println(seq.toString());
+            result.merge(seq);
+        }
+    }
+
+    public void add(JavaExpr expr) {
+        if (expr != null && expr.getJavaCode().length() > 0) {
+            System.out.println(expr.getJavaCode());
+            if (expr.getQuality() > 0) {
+                result.add(expr);
+            }
+        }
+    }
+
+    public String generateCode() {
+        return result.generateCode();
     }
 
     /**
@@ -197,52 +226,7 @@ public class GUIRecorder implements Listener {
         }
         return control;
     }
-
-    protected List<JavaExpr> getBestProposal(List<List<JavaExpr>> proposals) {
-        return proposals.isEmpty() ? null : Collections.max(proposals, new Comparator<List<JavaExpr>>() {
-            public int compare(List<JavaExpr> o1, List<JavaExpr> o2) {
-                double d = getQuality(o1) - getQuality(o2);
-                return d==0 ? 0 : d<0 ? -1 : 1;
-            }
-        });
-    }
-
-    protected double getQuality(List<JavaExpr> proposal) {
-        double q = 1;
-        for (JavaExpr expr : proposal)
-            q *= expr.getQuality();
-        return q;
-    }
-
-    public void add(List<JavaExpr> list) {
-        if (list != null)
-            for (JavaExpr expr : list)
-                add(expr);
-    }
-
-    public void add(JavaExpr expr) {
-        if (expr != null && expr.getJavaCode().length() > 0) {
-            System.out.println(expr.getJavaCode());
-            if (expr.getQuality() > 0) {
-                result.add(expr);
-            }
-        }
-    }
-
-    public String generateCode() {
-        // preliminary, simplified version
-        String text = "";
-        for (JavaExpr expr : result) {
-            if (expr.getMethodOf() != null)
-                text += ".";
-            else if (text.length() > 0)
-                text += ";\n";
-            text += expr.getJavaCode();
-        }
-        text += ";\n";
-        return text;
-    }
-
+    
     protected void createPanel() {
         panel = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         panel.setLayout(new FillLayout());

@@ -1,19 +1,17 @@
 package com.simulcraft.test.gui.recorder.object;
 
-import java.util.List;
-
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
+import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class ComboRecognizer extends ObjectRecognizer {
     public ComboRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
 
-    public List<JavaExpr> identifyObject(Object uiObject) {
+    public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Combo) {
             Combo combo = (Combo)uiObject;
             Label label = getPrecedingUniqueLabel(combo.getShell(), combo);

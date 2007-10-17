@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.recorder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Widget;
 
 public class JavaSequence {
@@ -12,6 +13,7 @@ public class JavaSequence {
     }
 
     public void merge(JavaSequence other) {
+        Assert.isTrue(other != null);
         for (JavaExpr expr : other.list)
             add(expr);
     }
@@ -20,6 +22,18 @@ public class JavaSequence {
         list.add(expr);
     }
 
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+    
+    public void clear() {
+        list.clear();
+    }
+
+    public JavaExpr getLast() {
+        return list.get(list.size()-1); //XXX needed?
+    }
+    
     /**
      * Returns the expression which produces the given UI object,
      * or returns null.
@@ -65,5 +79,10 @@ public class JavaSequence {
         }
         text += ";\n";
         return text;
+    }
+    
+    @Override
+    public String toString() {
+        return "len=" + list.size() + " quality=" + getQuality() + ": " + generateCode().trim();
     }
 }

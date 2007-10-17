@@ -1,13 +1,11 @@
 package com.simulcraft.test.gui.recorder.event;
 
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
+import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class ButtonEventRecognizer extends EventRecognizer {
 
@@ -15,7 +13,7 @@ public class ButtonEventRecognizer extends EventRecognizer {
         super(recorder);
     }
 
-    public List<JavaExpr> recognizeEvent(Event e) {
+    public JavaSequence recognizeEvent(Event e) {
         if (e.type == SWT.MouseDown && e.widget instanceof Button) {
             Button button = (Button)e.widget;
             if ((button.getStyle() & SWT.PUSH) != 0) {

@@ -25,29 +25,29 @@ public class RecognizerUtil  {
         return "\"" + text.replace("\"", "\\\"")+ "\""; 
     }
 
-    public static List<JavaExpr> wrap(String expr, double quality) {
+    public static JavaSequence wrap(String expr, double quality) {
         return wrap(new JavaExpr(expr, quality));
     }
 
-    public static List<JavaExpr> wrap(JavaExpr expr) {
-        List<JavaExpr> result = new ArrayList<JavaExpr>();
+    public static JavaSequence wrap(JavaExpr expr) {
+        JavaSequence result = new JavaSequence();
         result.add(expr);
         return result;
     }
 
-    public static List<JavaExpr> chain(List<JavaExpr> base, String expr, double quality) {
+    public static JavaSequence chain(JavaSequence base, String expr, double quality) {
         return chain(base, new JavaExpr(expr, quality));
     }
 
-    public static List<JavaExpr> chain(List<JavaExpr> base, JavaExpr expr) {
+    public static JavaSequence chain(JavaSequence base, JavaExpr expr) {
         // if creation of either "base" or "expr" failed, return null
         if (base == null || expr == null)
             return null;
-        Assert.isTrue(base.size() > 0);
-        List<JavaExpr> result = new ArrayList<JavaExpr>();
-        result.addAll(base);
+        Assert.isTrue(!base.isEmpty());
+        JavaSequence result = new JavaSequence();
+        result.merge(base);
         result.add(expr);
-        expr.setMethodOf(base.get(base.size()-1));
+        expr.setMethodOf(base.getLast());
         return result;
     }
 

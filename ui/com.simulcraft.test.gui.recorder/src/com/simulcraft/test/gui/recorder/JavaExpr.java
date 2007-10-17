@@ -46,4 +46,10 @@ public class JavaExpr {
     public void setSuggestedVariableName(String suggestedVariableName) {
         this.suggestedVariableName = suggestedVariableName;
     }
+
+    @Override
+    public String toString() {
+        return "quality=" + getQuality() + ": " + getJavaCode().trim();
+    }
+
 }

@@ -1,19 +1,17 @@
 package com.simulcraft.test.gui.recorder.object;
 
-import java.util.List;
-
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
+import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class TextRecognizer extends ObjectRecognizer {
     public TextRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
 
-    public List<JavaExpr> identifyObject(Object uiObject) {
+    public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Text) {
             Text text = (Text)uiObject;
             Label label = getPrecedingUniqueLabel(text.getShell(), text);

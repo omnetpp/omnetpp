@@ -1,14 +1,11 @@
 package com.simulcraft.test.gui.recorder.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
+import com.simulcraft.test.gui.recorder.JavaSequence;
 
 
 /**
@@ -24,14 +21,14 @@ public class KeyboardEventRecognizer extends EventRecognizer {
         super(recorder);
     }
     
-    public List<JavaExpr> recognizeEvent(Event e) {
+    public JavaSequence recognizeEvent(Event e) {
         int modifierState = recorder.getKeyboardModifierState();
         
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
                 modifierJustPressed = false;
                 typing += e.character;
-                return new ArrayList<JavaExpr>();
+                return new JavaSequence();
             }
             else if ((e.keyCode & SWT.MODIFIER_MASK) == 0) {
                 // record non-modifier control key
@@ -60,7 +57,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
         return null;
     }
 
-    protected List<JavaExpr> flushTyping() {
+    protected JavaSequence flushTyping() {
         if (typing.length() > 0) {
             String quoted = typing.replace("\"", "\\\"");
             typing = "";

@@ -1,18 +1,16 @@
 package com.simulcraft.test.gui.recorder.object;
 
-import java.util.List;
-
 import org.eclipse.swt.widgets.Tree;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
+import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class TreeRecognizer extends ObjectRecognizer {
     public TreeRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
 
-    public List<JavaExpr> identifyObject(Object uiObject) {
+    public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Tree) {
             Tree tree = (Tree)uiObject;
             if (findDescendantControl(tree.getShell(), Tree.class) == uiObject)

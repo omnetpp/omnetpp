@@ -1,11 +1,9 @@
 package com.simulcraft.test.gui.recorder.object;
 
-import java.util.List;
-
 import org.eclipse.swt.widgets.Button;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
+import com.simulcraft.test.gui.recorder.JavaSequence;
 
 public class ButtonRecognizer extends ObjectRecognizer {
     
@@ -13,7 +11,7 @@ public class ButtonRecognizer extends ObjectRecognizer {
         super(recorder);
     }
 
-    public List<JavaExpr> identifyObject(Object uiObject) {
+    public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Button) {
             Button button = (Button)uiObject;
             return chainO(button.getShell(), "findButtonWithLabel("+quote(button.getText()) + ")", 0.8);
