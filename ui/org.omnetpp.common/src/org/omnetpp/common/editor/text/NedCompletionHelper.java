@@ -13,17 +13,17 @@ public final class NedCompletionHelper {
     public static final String DEFAULT_NED_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
 
     // word lists for completion
-    public final static String[] proposedPrivateDocTodo = NedKeywords.DOC_TODO;
-    public final static String[] proposedDocTags = NedKeywords.DOC_TAGS;
-    public final static String[] proposedDocKeywords = NedKeywords.DOC_KEYWORDS;
-    public final static String[] proposedNedBaseParamTypes = NedKeywords.PARAM_TYPES;
+    public final static String[] proposedPrivateDocTodo = Keywords.DOC_TODO;
+    public final static String[] proposedDocTags = Keywords.DOC_TAGS;
+    public final static String[] proposedDocKeywords = Keywords.DOC_KEYWORDS;
+    public final static String[] proposedNedBaseParamTypes = Keywords.PARAM_TYPES;
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
-    public final static String[] proposedNedGateTypes = NedKeywords.GATE_TYPES;
+    public final static String[] proposedNedGateTypes = Keywords.GATE_TYPES;
     public final static String[] proposedNedTopLevelKeywords = { "import", "network", "package", "property"};
     public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channelinterface", "moduleinterface", "module", "simple"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedOtherExpressionKeywords = NedKeywords.EXPR_KEYWORDS;
-    public final static String[] proposedConstants = NedKeywords.CONSTANTS;
+    public final static String[] proposedNedOtherExpressionKeywords = Keywords.EXPR_KEYWORDS;
+    public final static String[] proposedConstants = Keywords.CONSTANTS;
 
 
     public final static Template[] proposedNedComponentPropertyTempl = {

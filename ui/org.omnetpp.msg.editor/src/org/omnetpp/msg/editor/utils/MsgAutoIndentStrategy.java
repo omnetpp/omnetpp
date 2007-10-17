@@ -7,6 +7,7 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
 
+import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.msg.editor.MsgEditorPlugin;
 
 
@@ -17,9 +18,6 @@ import org.omnetpp.msg.editor.MsgEditorPlugin;
  */
 public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
-	public MsgAutoIndentStrategy() {
-	}
-
 	/* (non-Javadoc)
 	 * Method declared on IAutoIndentStrategy
 	 */
@@ -29,7 +27,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			smartIndentAfterNewLine(doc, command);
 		else if ("}".equals(command.text)) { 
 			smartInsertAfterBracket(doc, command);
-		}
+		} 
 	}
 	
 	/**
@@ -72,7 +70,6 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			int lineend= linestart + document.getLineLength(line) - 1;
 			brackcount += getBracketCount(document, linestart, lineend, false);
 		}
-		System.out.println("findMatchingOpenBracket() of line "+origLine+": "+line);		
 		return line;
 	}
 	
@@ -137,29 +134,6 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		return bracketcount;
 	}
 	
-//XXX	/**
-//	 * Returns the end position of a comment starting at the given <code>position</code>.
-//	 * 
-//	 * @param document - the document being parsed
-//	 * @param position - the start position for the search
-//	 * @param end - the end position for the search
-//	 * @return the end position of a comment starting at the given <code>position</code>
-//	 * @throws BadLocationException in case <code>position</code> and <code>end</code> are invalid in the document
-//	 */
-//	 private int getCommentEnd(IDocument document, int position, int end) throws BadLocationException {
-//		int currentPosition = position;
-//		while (currentPosition < end) {
-//			char curr= document.getChar(currentPosition);
-//			currentPosition++;
-//			if (curr == '*') {
-//				if (currentPosition < end && document.getChar(currentPosition) == '/') {
-//					return currentPosition + 1;
-//				}
-//			}
-//		}
-//		return end;
-//	}
-	
 	/**
 	 * Returns the content of the given line without the leading whitespace.
 	 * 
@@ -179,7 +153,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	}
 
 	/**
-	 * Returns true if there is a section keyword ("parameters", "gates", "types", "submodules", "connections")
+	 * Returns true if there is a section keyword ("fields", "properties")
 	 * on the given line.
 	 * 
 	 * @param document - the document being parsed
@@ -191,7 +165,6 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		 if (line < 0)
 			 return false;
 
-		 final String[] keywords = {"parameters", "gates", "types", "submodules", "connections"};
 		 int start= document.getLineOffset(line);
 		 int len = document.getLineLength(line) - 1;
 		 String linestr = document.get(start, len);
@@ -204,7 +177,7 @@ public class MsgAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			 if (linestr.charAt(i)=='\"')
 				 break; 
 			 
-			 for (String keyword : keywords) {
+			 for (String keyword : Keywords.MSG_SECTION_KEYWORDS) {
 				 int klen = keyword.length();
 				 if (linestr.regionMatches(i, keyword, 0, klen) &&
 					 (i==0 || !Character.isJavaIdentifierPart(linestr.charAt(i-1))) &&

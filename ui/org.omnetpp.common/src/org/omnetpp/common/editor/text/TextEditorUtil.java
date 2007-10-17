@@ -3,6 +3,7 @@ package org.omnetpp.common.editor.text;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
@@ -30,15 +31,22 @@ public class TextEditorUtil {
 	public static void replaceRangeAndSelect(ITextEditor editor, int startOffset, int endOffset, String replacement, boolean selectUnlessOneLine) throws BadLocationException {
 		// replace if differs
 		IDocument doc = getDocument(editor);
-		String text = doc.get(startOffset, endOffset-startOffset);
+        int selectionOffset = ((ITextSelection)editor.getSelectionProvider().getSelection()).getOffset();
+        int selectionLength = ((ITextSelection)editor.getSelectionProvider().getSelection()).getLength();
+		int oldLength =  endOffset-startOffset;
+		String text = doc.get(startOffset, oldLength);
 		if (!text.equals(replacement)) {
-			doc.replace(startOffset, endOffset-startOffset, replacement);
+			doc.replace(startOffset, oldLength, replacement);
+			endOffset = startOffset + replacement.length();
 			resetMarkerAnnotations(editor);  // or markers will disappear from replaced region
 		}
 
 		// select it unless it's one line only
 		if (selectUnlessOneLine && doc.getLineOfOffset(startOffset) != doc.getLineOfOffset(endOffset-1))
 			editor.selectAndReveal(startOffset, replacement.length());
+		else 
+		    editor.selectAndReveal(selectionOffset +replacement.length()-oldLength, selectionLength);
+		
 	}
 
 	/**

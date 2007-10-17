@@ -1,11 +1,11 @@
 package org.omnetpp.common.editor.text;
 
 /**
- * NED keywords, for syntax highlighting and completion
+ * NED/MSG keywords, for syntax highlighting and completion
  * 
  * @author Andras
  */
-public class NedKeywords {
+public class Keywords {
 	
 	public final static String[] DOC_TODO = { "CHECKME", "FIXME", "TBD", "TODO" };
 
@@ -38,8 +38,13 @@ public class NedKeywords {
 	public final static String[] EXPR_KEYWORDS = { "sizeof", "const", "default", "this", "index", "typename", "xmldoc" };
 
 	public final static String[] CONSTANTS = { "false", "true" };
+	
+	public final static String[] MSG_TYPE_KEYWORDS = {"abstract", "readonly", "bool", "char", "short", "int", "long", "double", "unsigned", "string"};
 
-	public final static String[] RESERVED_WORDS = concat(TYPE_KEYWORDS, SPECIAL_KEYWORDS, NONEXPR_KEYWORDS, EXPR_KEYWORDS, CONSTANTS);
+	public final static String[] MSG_KEYWORDS = {"cplusplus", "struct", "message", "class", "noncobject", "enum", "extends"};
+
+	public final static String[] MSG_SECTION_KEYWORDS = {  "properties", "fields"};
+
 	
 	public final static String[] FUNCTIONS = { "acos", "asin", "atan", "atan2", "bernoulli",
 			"beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp",
@@ -49,6 +54,7 @@ public class NedKeywords {
 			"negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sqrt",
 			"student_t", "tan", "triang", "truncnormal", "uniform", "weibull" };
 
+	public final static String[] RESERVED_WORDS = concat(TYPE_KEYWORDS, SPECIAL_KEYWORDS, NONEXPR_KEYWORDS, EXPR_KEYWORDS, CONSTANTS);
 	/**
 	 * Utility function: concatenates string arrays.
 	 */

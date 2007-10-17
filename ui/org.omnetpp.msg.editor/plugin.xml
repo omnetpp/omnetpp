@@ -8,7 +8,7 @@
             name="Message File Editor"
             extensions="msg"
             icon="icons/msgfile.png"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            contributorClass="org.omnetpp.msg.editor.MsgEditorActionContributor"
             class="org.omnetpp.msg.editor.MsgEditor"
             id="org.omnetpp.msg.editor.MsgEditor">
       </editor>
@@ -19,6 +19,45 @@
             class="org.omnetpp.msg.editor.MsgDocumentSetupParticipant"
             extensions="msg">
       </participant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.msg.editor.ToggleComment"
+            contextId="org.omnetpp.context.msgEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+/">
+      </key>
+      <key
+            commandId="org.omnetpp.msg.editor.CorrectIndentation"
+            contextId="org.omnetpp.context.msgEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+I">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Comment/Uncomment the selected lines"
+            id="org.omnetpp.msg.editor.ToggleComment"
+            name="Toggle Comment">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Reindent selected lines of the MSG source"
+            id="org.omnetpp.msg.editor.CorrectIndentation"
+            name="Correct Indentation">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="OMNEST/OMNeT++ MSG File Editor"
+            id="org.omnetpp.context.msgEditor"
+            name="Editing MSG Source"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
    </extension>
 
 </plugin>
