@@ -39,8 +39,10 @@ import com.simulcraft.test.gui.recorder.recognizer.ComboRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.KeyboardEventRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.MenuRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.ShellRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.TableItemRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.TableRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.TextRecognizer;
+import com.simulcraft.test.gui.recorder.recognizer.TreeItemRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.recognizer.WorkspaceWindowRecognizer;
 
@@ -72,8 +74,10 @@ public class GUIRecorder implements Listener {
         recognizers.add(new ButtonRecognizer(this));
         recognizers.add(new ComboRecognizer(this));
         recognizers.add(new TextRecognizer(this));
-        recognizers.add(new TreeRecognizer(this));
         recognizers.add(new TableRecognizer(this));
+        recognizers.add(new TreeRecognizer(this));
+        recognizers.add(new TableItemRecognizer(this));
+        recognizers.add(new TreeItemRecognizer(this));
         recognizers.add(new MenuRecognizer(this));
         createPanel();
     }
@@ -124,8 +128,10 @@ public class GUIRecorder implements Listener {
         }
         else {
             // unprocessed -- only print message if event is significant
-            if (e.type==SWT.KeyDown || e.type==SWT.MouseDown)
-                System.out.println("unrecognized mouse click or keydown event: " + e); //XXX record as postEvent() etc?
+            if (e.type==SWT.KeyDown || e.type==SWT.MouseDown) {
+                add(new JavaExpr("//TODO unrecognized mouse click or keydown event: " + e, 1.0));
+                Display.getCurrent().beep();
+            }
         }
     }
 
