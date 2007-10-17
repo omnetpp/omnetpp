@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.util.IPredicate;
 
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.util.Predicate;
 
 
 public class TableAccess extends ControlAccess
@@ -31,6 +33,11 @@ public class TableAccess extends ControlAccess
     @InUIThread
     public void assertNotEmpty() {
         Assert.assertTrue("table is empty", getControl().getItemCount() != 0);
+    }
+    
+    @InUIThread
+    public void assertItemCount(int count) {
+        Assert.assertTrue("Expected " + count + " item, found " + getControl().getItemCount() + " in table", getControl().getItemCount() == count);
     }
 
     @InUIThread
@@ -72,16 +79,34 @@ public class TableAccess extends ControlAccess
      */
     @InUIThread
     public void assertContentStartWith(String items[], String restShouldMatch) {
+    	assertContentStartWith(0, items, restShouldMatch);
+    }
+    
+    @InUIThread
+    public void assertContentStartWith(int columnIndex, String items[], String restShouldMatch) {
         Assert.assertTrue("Table item count less than expected.", items.length <= getControl().getItemCount());
         for (int i = 0; i< items.length; ++i) {
-            String itemText = getControl().getItem(i).getText();
+            String itemText = getControl().getItem(i).getText(columnIndex);
             Assert.assertTrue("Table item does not match. Expected: '"+items[i]+"' found: '"+itemText+"'", itemText.matches(items[i]));
         }
         if (restShouldMatch != null)
             for (int i = items.length; i < getControl().getItemCount(); ++i) {
-                String itemText = getControl().getItem(i).getText();
+                String itemText = getControl().getItem(i).getText(columnIndex);
                 Assert.assertTrue("Table item does not match. Expected: '"+restShouldMatch+"' found: '"+itemText+"'", itemText.matches(restShouldMatch));
             }
+    }
+    
+    public void assertColumnContentMatches(String columnName, String pattern) {
+    	assertColumnContentStartWith(getTableColumnIndex(columnName), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
+    }
+    
+    public void assertColumnContentMatches(TableColumnAccess column, String pattern) {
+    	assertColumnContentStartWith(getTableColumnIndex(column), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
+    }
+    
+    @InUIThread
+    public void assertColumnContentStartWith(int columnIndex, String[] items, String restShouldMatch) {
+    	assertContentStartWith(columnIndex, items, restShouldMatch);
     }
     
     @InUIThread
@@ -105,7 +130,7 @@ public class TableAccess extends ControlAccess
     public TableColumnAccess[] getTableColumns() {
         ArrayList<TableColumnAccess> result = new ArrayList<TableColumnAccess>(); 
         for (TableColumn item : getControl().getColumns())
-            result.add((TableColumnAccess)createAccess(item));
+            result.add(wrapTableColumn(item));
         return result.toArray(new TableColumnAccess[]{});
     }
 
@@ -115,6 +140,21 @@ public class TableAccess extends ControlAccess
     @InUIThread
     public TableColumnAccess getTableColumn(int index) {
         return new TableColumnAccess(getControl().getColumns()[index]);
+    }
+    
+    @InUIThread
+    public TableColumnAccess getTableColumn(String columnName) {
+    	return wrapTableColumn(findObject(getControl().getColumns(), Predicate.itemWithText(columnName)));
+    }
+    
+    @InUIThread
+    public int getTableColumnIndex(String columnName) {
+    	return getTableColumnIndex(getTableColumn(columnName));
+    }
+    
+    @InUIThread
+    public int getTableColumnIndex(TableColumnAccess column) {
+    	return getControl().indexOf(column.getWidget());
     }
 
     @InUIThread
@@ -129,5 +169,8 @@ public class TableAccess extends ControlAccess
             result.add((TableItemAccess)createAccess(item));
         return result.toArray(new TableItemAccess[]{});
     }
-
+    
+    private TableColumnAccess wrapTableColumn(Object column) {
+    	return column != null ? (TableColumnAccess)createAccess(column) : null;
+    }
 }
