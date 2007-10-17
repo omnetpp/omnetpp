@@ -15,7 +15,7 @@ public class ClickRecognizer extends EventRecognizer {
 
     public List<JavaExpr> recognizeEvent(Event e) {
         if (e.type == SWT.MouseDown)
-            return chain(recorder.identifyObjectIn(e), "click()", 0.3); //FIXME get Item from Control first!!!
+            return chainE(e, "click()", 0.3);
         return null;
     }
 }

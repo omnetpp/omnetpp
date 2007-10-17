@@ -18,7 +18,7 @@ public class TextRecognizer extends ObjectRecognizer {
             Text text = (Text)uiObject;
             Label label = getPrecedingUniqueLabel(text.getShell(), text);
             if (label != null)
-                return chain(recorder.identifyObject(text.getShell()), "findTextAfterLabel("+quote(label.getText()) + ")", 0.8);
+                return chainO(text.getShell(), "findTextAfterLabel("+quote(label.getText()) + ")", 0.8);
         }
         return null;
     }

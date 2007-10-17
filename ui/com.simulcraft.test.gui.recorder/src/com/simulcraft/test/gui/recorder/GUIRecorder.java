@@ -151,6 +151,23 @@ public class GUIRecorder implements Listener {
         }
     }
 
+    public List<JavaExpr> identifyObjectIn(Event e) {
+        Assert.isTrue(e.widget instanceof Control);
+        return identifyObject(resolveUIObject((Control)e.widget, new Point(e.x, e.y)));
+    }
+
+    public List<JavaExpr> identifyObject(Object uiObject) {
+        // collect the best one of the guesses
+        List<List<JavaExpr>> proposals = new ArrayList<List<JavaExpr>>();
+        for (IObjectRecognizer objectRecognizer : objectRecognizers) {
+            List<JavaExpr> proposal = objectRecognizer.identifyObject(uiObject);
+            if (proposal != null && !proposal.isEmpty()) 
+                proposals.add(proposal);
+        }
+        List<JavaExpr> bestProposal = getBestProposal(proposals);
+        return bestProposal;
+    }
+
     /**
      * Find item within the containing control (ie. TableItem in Tree, Figure
      * within a GEF canvas). Returns the control itself if it doesn't contain
@@ -179,23 +196,6 @@ public class GUIRecorder implements Listener {
                     return item;
         }
         return control;
-    }
-
-    public List<JavaExpr> identifyObjectIn(Event e) {
-        Assert.isTrue(e.widget instanceof Control);
-        return identifyObject(resolveUIObject((Control)e.widget, new Point(e.x, e.y)));
-    }
-
-    public List<JavaExpr> identifyObject(Object uiObject) {
-        // collect the best one of the guesses
-        List<List<JavaExpr>> proposals = new ArrayList<List<JavaExpr>>();
-        for (IObjectRecognizer objectRecognizer : objectRecognizers) {
-            List<JavaExpr> proposal = objectRecognizer.identifyObject(uiObject);
-            if (proposal != null && !proposal.isEmpty()) 
-                proposals.add(proposal);
-        }
-        List<JavaExpr> bestProposal = getBestProposal(proposals);
-        return bestProposal;
     }
 
     protected List<JavaExpr> getBestProposal(List<List<JavaExpr>> proposals) {

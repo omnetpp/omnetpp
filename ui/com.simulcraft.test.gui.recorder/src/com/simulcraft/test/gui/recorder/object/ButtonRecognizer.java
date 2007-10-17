@@ -16,7 +16,7 @@ public class ButtonRecognizer extends ObjectRecognizer {
     public List<JavaExpr> identifyObject(Object uiObject) {
         if (uiObject instanceof Button) {
             Button button = (Button)uiObject;
-            return chain(recorder.identifyObject(button.getShell()), "findButtonWithLabel("+quote(button.getText()) + ")", 0.8);
+            return chainO(button.getShell(), "findButtonWithLabel("+quote(button.getText()) + ")", 0.8);
         }
         return null;
     }

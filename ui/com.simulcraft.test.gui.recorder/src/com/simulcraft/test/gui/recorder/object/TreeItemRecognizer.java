@@ -16,7 +16,7 @@ public class TreeItemRecognizer extends ObjectRecognizer {
         if (uiObject instanceof TreeItem) {
             TreeItem item = (TreeItem)uiObject;
             //FIXME check label uniquely identifies item
-            return chain(recorder.identifyObject(item.getParent()), "findTreeItemByContent("+quote(item.getText())+")", 0.8);
+            return chainO(item.getParent(), "findTreeItemByContent("+quote(item.getText())+")", 0.8);
         }
         return null;
     }
