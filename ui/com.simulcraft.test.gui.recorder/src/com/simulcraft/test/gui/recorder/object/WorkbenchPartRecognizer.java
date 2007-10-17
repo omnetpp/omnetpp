@@ -20,9 +20,9 @@ public class WorkbenchPartRecognizer extends ObjectRecognizer {
             CTabItem item = (CTabItem)uiObject;
             //FIXME check that label uniquely identifies item
             if (isEditorTabItem(item))
-                return wrap("workbenchWindow.findEditorPartByLabel("+quote(item.getText())+")", 0.9);
+                return makeSeq(expr("workbenchWindow.findEditorPartByLabel("+quote(item.getText())+")", 0.9, item));
             if (isViewTabItem(item))
-                return wrap("workbenchWindow.findViewPartByLabel("+quote(item.getText())+")", 0.9);
+                return makeSeq(expr("workbenchWindow.findViewPartByLabel("+quote(item.getText())+")", 0.9, item));
         }
         return null;
     }

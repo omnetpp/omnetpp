@@ -16,7 +16,7 @@ public class ComboRecognizer extends ObjectRecognizer {
             Combo combo = (Combo)uiObject;
             Label label = getPrecedingUniqueLabel(combo.getShell(), combo);
             if (label != null)
-                return chainO(combo.getShell(), "findComboAfterLabel("+quote(label.getText()) + ")", 0.8);
+                return makeSeq(combo.getShell(), expr("findComboAfterLabel("+quote(label.getText()) + ")", 0.8, combo));
         }
         return null;
     }

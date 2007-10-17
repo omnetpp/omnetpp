@@ -13,7 +13,7 @@ public class ClickRecognizer extends EventRecognizer {
 
     public JavaSequence recognizeEvent(Event e) {
         if (e.type == SWT.MouseDown)
-            return chainE(e, "click()", 0.3);
+            return makeSeq(uiObject(e), expr("click()", 0.3, null));
         return null;
     }
 }

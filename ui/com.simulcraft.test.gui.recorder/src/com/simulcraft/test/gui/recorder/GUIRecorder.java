@@ -145,16 +145,17 @@ public class GUIRecorder implements Listener {
         else {
             // unprocessed -- only print message if event is significant
             if (e.type==SWT.KeyDown || e.type==SWT.MouseDown) {
-                add(new JavaExpr("//TODO unrecognized mouse click or keydown event: " + e, 1.0));
+                add(new JavaExpr("//TODO unrecognized mouse click or keydown event: " + e, 1.0, null));
             }
         }
+        
+        result.cleanup(); //XXX call less frequently if slow
     }
 
-    public JavaSequence identifyObjectIn(Event e) {
-        Assert.isTrue(e.widget instanceof Control);
-        return identifyObject(resolveUIObject((Control)e.widget, new Point(e.x, e.y)));
+    public JavaExpr lookup(Object uiObject) {
+        return result.lookup(uiObject);
     }
-
+    
     public JavaSequence identifyObject(Object uiObject) {
         // collect the best one of the guesses
         List<JavaSequence> proposals = new ArrayList<JavaSequence>();
@@ -195,6 +196,11 @@ public class GUIRecorder implements Listener {
 
     public String generateCode() {
         return result.generateCode();
+    }
+
+    public Object resolveUIObject(Event e) {
+        Assert.isTrue(e.widget instanceof Control);
+        return resolveUIObject((Control)e.widget, new Point(e.x, e.y));
     }
 
     /**

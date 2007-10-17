@@ -14,7 +14,7 @@ public class TreeRecognizer extends ObjectRecognizer {
         if (uiObject instanceof Tree) {
             Tree tree = (Tree)uiObject;
             if (findDescendantControl(tree.getShell(), Tree.class) == uiObject)
-                return chainO(tree.getShell(), "findTree()", 0.8);
+                return makeSeq(tree.getShell(), expr("findTree()", 0.8, tree));
         }
         return null;
     }

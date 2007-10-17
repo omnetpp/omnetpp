@@ -12,8 +12,10 @@ public class WorkbenchWindowRecognizer extends ObjectRecognizer {
     }
 
     public JavaSequence identifyObject(Object uiObject) {
-        if (uiObject instanceof Shell && uiObject == PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())
-            return wrap("getWorkbenchWindow()", 0.5);
+        if (uiObject instanceof Shell && uiObject == PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()) {
+            Shell shell = (Shell)uiObject;
+            return makeSeq(expr("getWorkbenchWindow()", 0.5, shell));
+        }
         return null;
     }
 }

@@ -14,7 +14,7 @@ public class TableRecognizer extends ObjectRecognizer {
         if (uiObject instanceof Table) {
             Table table = (Table)uiObject;
             if (findDescendantControl(table.getShell(), Table.class) == uiObject)
-                return chainO(table.getShell(), "findTable()", 0.8);
+                return makeSeq(table.getShell(), expr("findTable()", 0.8, table));
         }
         return null;
     }

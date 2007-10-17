@@ -1,15 +1,24 @@
 package com.simulcraft.test.gui.recorder;
 
+import org.omnetpp.common.util.StringUtils;
+
 public class JavaExpr {
     private String javaCode;
     private double quality;
-    private JavaExpr methodOf;
-    private Object uiObject;
+    private JavaExpr calledOn;
+    private Object resultUIObject;
     private String suggestedVariableName;
 
-    public JavaExpr(String javaCode, double quality) {
+    public JavaExpr(String javaCode, double quality, Object resultUIObject) {
+        this(javaCode, quality, resultUIObject, resultUIObject == null ? null : 
+            StringUtils.toInstanceName(resultUIObject.getClass().getSimpleName()));
+    }
+
+    public JavaExpr(String javaCode, double quality, Object resultUIObject, String suggestedVariableName) {
         this.javaCode = javaCode;
         this.quality = quality;
+        this.resultUIObject = resultUIObject;
+        this.suggestedVariableName = suggestedVariableName;
     }
 
     public String getJavaCode() {
@@ -23,20 +32,20 @@ public class JavaExpr {
         return quality;
     }
 
-    public JavaExpr getMethodOf() {
-        return methodOf;
+    public JavaExpr getCalledOn() {
+        return calledOn;
     }
 
-    public void setMethodOf(JavaExpr methodOf) {
-        this.methodOf = methodOf;
+    public void setCalledOn(JavaExpr calledOn) {
+        this.calledOn = calledOn;
     }
 
-    public Object getUiObject() {
-        return uiObject;
+    public Object getResultUIObject() {
+        return resultUIObject;
     }
-
-    public void setUiObject(Object uiObject) {
-        this.uiObject = uiObject;
+    
+    public void releaseUIObject() {
+        resultUIObject = null;
     }
 
     public String getSuggestedVariableName() {
@@ -51,5 +60,6 @@ public class JavaExpr {
     public String toString() {
         return "quality=" + getQuality() + ": " + getJavaCode().trim();
     }
+
 
 }

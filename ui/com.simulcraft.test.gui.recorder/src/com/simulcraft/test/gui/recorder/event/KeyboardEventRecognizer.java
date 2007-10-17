@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
 
@@ -35,7 +36,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
                 modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
                 recorder.add(flushTyping());
-                return wrap("pressKey(SWT." + string + ")", 0.7);
+                return makeSeq(expr("pressKey(SWT." + string + ")", 0.7, null));
             }
             else {
                 // modifier KeyDown -- ignore
@@ -47,7 +48,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
             if (modifierJustPressed) {
                 modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return wrap("pressKey(SWT." + string + ")", 0.7);
+                return makeSeq(expr("pressKey(SWT." + string + ")", 0.7, null));
             }
         }
         else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
@@ -61,7 +62,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
         if (typing.length() > 0) {
             String quoted = typing.replace("\"", "\\\"");
             typing = "";
-            return wrap("type(\"" + quoted + "\")", 0.7);
+            return makeSeq(expr("type(\"" + quoted + "\")", 0.7, null));
         }
         return null;
     }

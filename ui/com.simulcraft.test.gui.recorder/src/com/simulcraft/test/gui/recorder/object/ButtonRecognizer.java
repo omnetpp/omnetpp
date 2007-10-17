@@ -14,7 +14,7 @@ public class ButtonRecognizer extends ObjectRecognizer {
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Button) {
             Button button = (Button)uiObject;
-            return chainO(button.getShell(), "findButtonWithLabel("+quote(button.getText()) + ")", 0.8);
+            return makeSeq(button.getShell(), expr("findButtonWithLabel("+quote(button.getText()) + ")", 0.8, button));
         }
         return null;
     }

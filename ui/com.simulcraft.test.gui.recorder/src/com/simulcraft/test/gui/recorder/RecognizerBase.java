@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -17,39 +18,75 @@ import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * Utility class. All methods are static.
  * @author Andras
  */
-public class RecognizerUtil  {
+public class RecognizerBase  {
+    protected GUIRecorder recorder;
+    
+    public RecognizerBase(GUIRecorder recorder) {
+        this.recorder = recorder;
+    }
+
+    public Object uiObject(Event e) {
+        return recorder.resolveUIObject(e);
+    }
+
+    public JavaExpr expr(String javaCode, double quality, Object resultUIObject) {
+        return new JavaExpr(javaCode, quality, resultUIObject);
+    }
+
+    public JavaExpr expr(String javaCode, double quality, Object resultUIObject, String suggestedVariableName) {
+        return new JavaExpr(javaCode, quality, resultUIObject, suggestedVariableName);
+    }
+
+    // expr is standalone expression 
+    public JavaSequence makeSeq(JavaExpr expr) {
+        return addExpr(new JavaSequence(), expr);
+    }
+
+    // expr is a method, called on uiObject 
+    public JavaSequence makeSeq(Object uiObject, JavaExpr expr) {
+        return addExpr(new JavaSequence(), uiObject, expr);
+    }
+
+    // expr is standalone expression 
+    public JavaSequence addExpr(JavaSequence base, JavaExpr expr) {
+        base.add(expr);
+        return base;
+    }
+
+    // expr is a method, called on uiObject 
+    public JavaSequence addExpr(JavaSequence base, Object uiObject, JavaExpr expr) {
+        Assert.isTrue(!(uiObject instanceof Event));
+
+        // first, check if uiObject was already identified somewhere
+        JavaExpr uiObjectExpr = recorder.lookup(uiObject);
+        if (uiObjectExpr == null)
+            uiObjectExpr = base.lookup(uiObject);
+        if (uiObjectExpr == null) {
+            // no, generate code to identify it here
+            JavaSequence seq = recorder.identifyObject(uiObject);
+            if (seq != null) {
+                base.merge(seq);
+                uiObjectExpr = base.lookup(uiObject);
+            }
+        }
+
+        // add the new expression to the code sequence
+        if (uiObjectExpr == null)
+            return null; // could not find a way to identify uiObject
+        else {
+            expr.setCalledOn(uiObjectExpr);
+            base.add(expr);
+            return base;
+        }
+    }
+
+    
     public static String quote(String text) {
         return "\"" + text.replace("\"", "\\\"")+ "\""; 
     }
 
-    public static JavaSequence wrap(String expr, double quality) {
-        return wrap(new JavaExpr(expr, quality));
-    }
-
-    public static JavaSequence wrap(JavaExpr expr) {
-        JavaSequence result = new JavaSequence();
-        result.add(expr);
-        return result;
-    }
-
-    public static JavaSequence chain(JavaSequence base, String expr, double quality) {
-        return chain(base, new JavaExpr(expr, quality));
-    }
-
-    public static JavaSequence chain(JavaSequence base, JavaExpr expr) {
-        // if creation of either "base" or "expr" failed, return null
-        if (base == null || expr == null)
-            return null;
-        Assert.isTrue(!base.isEmpty());
-        JavaSequence result = new JavaSequence();
-        result.merge(base);
-        result.add(expr);
-        expr.setMethodOf(base.getLast());
-        return result;
-    }
 
     public static Object findObject(List<Object> objects, IPredicate predicate) {
         return theOnlyObject(collectObjects(objects, predicate));
