@@ -1,4 +1,4 @@
-package com.simulcraft.test.gui.recorder.recognizer;
+package com.simulcraft.test.gui.recorder.event;
 
 import java.util.ArrayList;
 import java.util.List;

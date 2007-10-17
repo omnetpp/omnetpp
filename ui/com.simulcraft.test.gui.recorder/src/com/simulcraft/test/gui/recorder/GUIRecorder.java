@@ -41,19 +41,19 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.omnetpp.common.util.FileUtils;
 
-import com.simulcraft.test.gui.recorder.recognizer.ButtonEventRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.ButtonRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.ClickRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.ComboRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.KeyboardEventRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.ShellRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.TableItemRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.TableRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.TextRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.TreeItemRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.TreeRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.WorkbenchPartRecognizer;
-import com.simulcraft.test.gui.recorder.recognizer.WorkbenchWindowRecognizer;
+import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
+import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
+import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
+import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
+import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
+import com.simulcraft.test.gui.recorder.object.ShellRecognizer;
+import com.simulcraft.test.gui.recorder.object.TableItemRecognizer;
+import com.simulcraft.test.gui.recorder.object.TableRecognizer;
+import com.simulcraft.test.gui.recorder.object.TextRecognizer;
+import com.simulcraft.test.gui.recorder.object.TreeItemRecognizer;
+import com.simulcraft.test.gui.recorder.object.TreeRecognizer;
+import com.simulcraft.test.gui.recorder.object.WorkbenchPartRecognizer;
+import com.simulcraft.test.gui.recorder.object.WorkbenchWindowRecognizer;
 
 /**
  * Records GUI events for playback.

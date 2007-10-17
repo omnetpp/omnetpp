@@ -1,4 +1,4 @@
-package com.simulcraft.test.gui.recorder.recognizer;
+package com.simulcraft.test.gui.recorder.event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.IEventRecognizer;
