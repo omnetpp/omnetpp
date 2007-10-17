@@ -9,8 +9,8 @@ import org.eclipse.ui.PlatformUI;
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaExpr;
 
-public class WorkspaceWindowRecognizer extends Recognizer {
-    public WorkspaceWindowRecognizer(GUIRecorder recorder) {
+public class WorkbenchWindowRecognizer extends Recognizer {
+    public WorkbenchWindowRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
 

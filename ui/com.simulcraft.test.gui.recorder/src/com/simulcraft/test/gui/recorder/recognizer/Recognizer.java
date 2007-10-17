@@ -6,11 +6,16 @@ import java.util.List;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
+import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.IRecognizer;
@@ -123,6 +128,44 @@ public abstract class Recognizer implements IRecognizer {
                 return label;
         }
         return null;
+    }
+
+    /**
+     * Dumps all widgets of all known shells. Note: active popup menus are
+     * sadly not listed (not returned by Display.getShells()).
+     */
+    public static void dumpWidgetHierarchy() {
+        System.out.println("display-root");
+        for (Shell shell : Display.getDefault().getShells())
+            dumpWidgetHierarchy(shell, 1);
+    }
+
+    public static void dumpWidgetHierarchy(Control control) {
+        dumpWidgetHierarchy(control, 0);
+    }
+
+    protected static void dumpWidgetHierarchy(Control control, int level) {
+        System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : ""));
+        
+        if (control.getMenu() != null)
+            dumpMenu(control.getMenu(), level);
+
+        if (control instanceof Composite)
+            for (Control child : ((Composite)control).getChildren())
+                dumpWidgetHierarchy(child, level+1);
+    }
+
+    public static void dumpMenu(Menu menu) {
+        dumpMenu(menu, 0);
+    }
+    
+    protected static void dumpMenu(Menu menu, int level) {
+        for (MenuItem menuItem : menu.getItems()) {
+            System.out.println(StringUtils.repeat("  ", level) + menuItem.getText());
+
+            if (menuItem.getMenu() != null)
+                dumpMenu(menuItem.getMenu(), level + 1);
+        }
     }
 
 }
