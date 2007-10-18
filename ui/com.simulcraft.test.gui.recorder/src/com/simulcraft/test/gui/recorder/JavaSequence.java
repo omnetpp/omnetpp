@@ -66,6 +66,7 @@ public class JavaSequence {
      * Generate Java code from the JavaExpr objects contained. 
      */
     public String generateCode() {
+        simplifySequence();
         makeVariablesUnique();
 
         // a "chain" is an expression like: "object.method1().method2().method3();"
@@ -112,6 +113,22 @@ public class JavaSequence {
                 return i+1;
         }
         return list.size();
+    }
+
+    protected void simplifySequence() {
+        // replace "click, click, doubleClick" with "doubleClick"
+        for (int i=0; i<list.size(); i++) {
+            if (i<list.size()-2 && 
+                    list.get(i).getJavaCode().equals("click()") &&
+                    list.get(i+1).getJavaCode().equals("click()") &&
+                    list.get(i+2).getJavaCode().equals("doubleClick()") &&
+                    list.get(i).getCalledOn()==list.get(i+1).getCalledOn() &&
+                    list.get(i+1).getCalledOn()==list.get(i+2).getCalledOn()) 
+            {
+                list.remove(i+1);
+                list.remove(i);
+            }
+        }
     }
     
     protected void makeVariablesUnique() {
