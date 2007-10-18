@@ -1,5 +1,7 @@
 package com.simulcraft.test.gui.access;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.part.MultiPageEditorPart;
@@ -20,7 +22,12 @@ public class MultiPageEditorPartAccess
 	public MultiPageEditorPart getPart() {
 		return (MultiPageEditorPart)workbenchPart;
 	}
-	
+    
+    @InUIThread
+    public void assertActivePage(String label) {
+    	Assert.assertTrue("Page is not active: " + label, isPageActive(label));
+    }
+    
 	@InUIThread
 	public CTabItemAccess getCTabItem(int pageIndex) {
 		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getPart(), "getItem", pageIndex); 
@@ -36,7 +43,7 @@ public class MultiPageEditorPartAccess
 	@InUIThread
 	public boolean isPageActive(String label) {
 		CTabItemAccess activeCTabItem = getActiveCTabItem();
-		return activeCTabItem != null && label.equals(activeCTabItem.getWidget().getText());
+		return activeCTabItem != null && activeCTabItem.getWidget().getText().matches(label);
 	}
 
 	@InUIThread
