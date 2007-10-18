@@ -73,8 +73,10 @@ public class RecognizerBase  {
         }
 
         // add the new expression to the code sequence
-        if (uiObjectExpr == null)
+        if (uiObjectExpr == null) {
+            System.out.println("could not find a way to identify UI object: " + uiObject);
             return null; // could not find a way to identify uiObject
+        }
         else {
             methodExpr.setCalledOn(uiObjectExpr);
             base.add(methodExpr);

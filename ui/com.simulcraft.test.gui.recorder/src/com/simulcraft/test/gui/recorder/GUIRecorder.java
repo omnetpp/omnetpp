@@ -47,8 +47,10 @@ import com.simulcraft.test.gui.recorder.event.BlankLineInserter;
 import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
+import com.simulcraft.test.gui.recorder.event.MenuSelectionRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
+import com.simulcraft.test.gui.recorder.object.MenuItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.ShellRecognizer;
 import com.simulcraft.test.gui.recorder.object.StyledTextRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableItemRecognizer;
@@ -99,12 +101,14 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new KeyboardEventRecognizer(this));
         eventRecognizers.add(new ButtonEventRecognizer(this));
         eventRecognizers.add(new ClickRecognizer(this));
+        eventRecognizers.add(new MenuSelectionRecognizer(this));
         eventRecognizers.add(new BlankLineInserter(this));
         
         objectRecognizers.add(new WorkbenchWindowRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
         objectRecognizers.add(new ShellRecognizer(this));
+        objectRecognizers.add(new MenuItemRecognizer(this));
         objectRecognizers.add(new ButtonRecognizer(this));
         objectRecognizers.add(new ComboRecognizer(this));
         objectRecognizers.add(new TextRecognizer(this));
@@ -163,7 +167,7 @@ public class GUIRecorder implements Listener {
         List<JavaSequence> proposals = new ArrayList<JavaSequence>();
         for (IEventRecognizer eventRecognizer : eventRecognizers) {
             JavaSequence proposal = eventRecognizer.recognizeEvent(e);
-            if (proposal != null) 
+            if (proposal != null)
                 proposals.add(proposal);
         }
         JavaSequence bestProposal = getBestProposal(proposals);
@@ -191,8 +195,10 @@ public class GUIRecorder implements Listener {
         List<JavaSequence> proposals = new ArrayList<JavaSequence>();
         for (IObjectRecognizer objectRecognizer : objectRecognizers) {
             JavaSequence proposal = objectRecognizer.identifyObject(uiObject);
-            if (proposal != null && !proposal.isEmpty()) 
+            if (proposal != null && !proposal.isEmpty()) {
+                Assert.isTrue(proposal.lookup(uiObject) != null); // otherwise it doesn't identify uiObject
                 proposals.add(proposal);
+            }
         }
         JavaSequence bestProposal = getBestProposal(proposals);
         System.out.println("identifyObject: " + uiObject + " --> " + bestProposal);

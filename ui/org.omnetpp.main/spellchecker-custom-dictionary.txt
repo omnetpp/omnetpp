@@ -228,3 +228,5 @@ keypresses
 reindenting
 whitespaces
 lowercase
+playback
+expr
