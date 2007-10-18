@@ -21,10 +21,30 @@ import com.simulcraft.test.gui.core.NotInUIThread;
 
 public class BrowseDataPageAccess extends CompositeAccess {
 	
-	private static final String
+	// tab names
+	public static final String
 		SCALARS = "Scalars.*",
 		VECTORS = "Vectors.*",
 		HISTOGRAMS = "Histograms.*";
+	
+	// column names
+	public static final String
+		DIRECTORY = "Dir.*",
+		FILE_NAME = "File.*",
+		CONFIG_NAME = "Config.*",
+		RUN_NUMBER = "Run num.*",
+		RUN_ID = "Run [iI][dD].*",
+		MODULE = "Module.*",
+		NAME = "Name.*",
+		EXPERIMENT = "Experiment.*",
+		MEASUREMENT = "Measurement.*",
+		REPLICATION = "Replication.*",
+		VALUE = "Value.*",
+		COUNT = "Count.*",
+		MEAN = "Mean.*",
+		STDDEV = "St.*[dD]ev.*",
+		MIN = "Min.*",
+		MAX = "Max.*";
 
 	public BrowseDataPageAccess(Composite composite) {
 		super(composite);

@@ -2,7 +2,9 @@ package org.omnetpp.test.gui.access;
 
 import org.eclipse.ui.part.MultiPageEditorPart;
 
+import com.simulcraft.test.gui.access.CTabItemAccess;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.core.InUIThread;
 
 public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 
@@ -16,5 +18,15 @@ public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 	
 	public BrowseDataPageAccess ensureBrowseDataPageActive() {
 		return (BrowseDataPageAccess)ensureActivePage("Browse data");
+	}
+	
+	public DatasetsAndChartsPageAccess ensureDatasetsPageActive() {
+		return (DatasetsAndChartsPageAccess)ensureActivePage("Datasets");
+	}
+	
+	@InUIThread
+	public void closePage(String label) {
+		CTabItemAccess item = getCTabItem(label);
+		item.clickOnCloseIcon();
 	}
 }

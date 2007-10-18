@@ -1,13 +1,21 @@
 package org.omnetpp.test.gui.scave;
 
+import static org.omnetpp.test.gui.access.BrowseDataPageAccess.RUN_ID;
+import static org.omnetpp.test.gui.access.BrowseDataPageAccess.SCALARS;
+import static org.omnetpp.test.gui.access.BrowseDataPageAccess.VECTORS;
 import junit.framework.Assert;
 
+import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
 
+import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ComboAccess;
+import com.simulcraft.test.gui.access.MenuAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TextAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
 
 public class BrowseDataPageTest extends ScaveFileTestCase {
 
@@ -20,6 +28,11 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		createFiles();
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		browseDataPage = editor.ensureBrowseDataPageActive();
+	}
+	
+	@Override
+	protected void tearDownInternal() throws Exception {
+		super.tearDownInternal();
 	}
 	
 	public void testTableContent() throws Exception {
@@ -79,10 +92,91 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		table.assertColumnContentMatches(columnName, columnPattern);
 	}
 	
+	public void testSelectAll() {
+		String[] tabs = new String[] { SCALARS, VECTORS};
+		for (String tab : tabs) {
+			browseDataPage.ensureTabSelected(tab);
+			TableAccess table = browseDataPage.getSelectedTable();
+			table.click();
+			table.pressKey('a', SWT.CTRL);
+			table.assertSelectionCount(2);
+		}
+	}
+	
+	public void testOpenTempChart() {
+		String[] tabs = new String[] { SCALARS, VECTORS };
+		for (String tab : tabs) {
+			browseDataPage.ensureTabSelected(tab);
+			TableAccess table = browseDataPage.getSelectedTable();
+			table.click();
+			table.pressKey('a', SWT.CTRL);
+			MenuAccess menu = table.activateContextMenuWithMouseClick();
+			menu.activateMenuItemWithMouse("Plot.*");
+			editor.assertActivePage("Chart.*");
+			editor.closePage("Chart.*");
+		}
+	}
+	
+	public void testAddScalarsToDatasetByFilter() {
+		testAddToDatasetByFilter(SCALARS, "scalar");
+	}
+	
+	public void testAddVectorsToDatasetByFilter() {
+		testAddToDatasetByFilter(VECTORS, "vector");
+	}
+	
+	private void testAddToDatasetByFilter(String tab, String resultItemType) {
+		browseDataPage.ensureTabSelected(tab);
+		browseDataPage.getRunNameFilter().selectItem("run-1");
+		TableAccess table = browseDataPage.getSelectedTable();
+		MenuAccess menu = table.activateContextMenuWithMouseClick();
+		menu.activateMenuItemWithMouse("Add [fF]ilter.*");
+		fillSelectDatasetDialog();
+		
+		editor.assertActivePage("Datasets");
+		TreeAccess datasetsTree = editor.ensureDatasetsPageActive().getDatasetsTree();
+		datasetsTree.assertContent(
+				n("dataset test-dataset",
+					n("add " + resultItemType + "s: run(run-1)")));
+	}
+	
+	public void testAddScalarsToDatasetBySelection() {
+		testAddToDatasetBySelection(SCALARS, "scalar");
+	}
+	
+	public void testAddVectorsToDatasetBySelection() {
+		testAddToDatasetBySelection(VECTORS, "vector");
+	}
+
+	private void testAddToDatasetBySelection(String tab, String resultItemType) {
+		browseDataPage.ensureTabSelected(tab);
+		TableAccess table = browseDataPage.getSelectedTable();
+		table.findTableItemByContent(RUN_ID, "run-1").click();
+		MenuAccess menu = table.activateContextMenuWithMouseClick();
+		menu.activateMenuItemWithMouse("Add [sS]elected.*");
+		fillSelectDatasetDialog();
+		
+		editor.assertActivePage("Datasets");
+		TreeAccess datasetsTree = editor.ensureDatasetsPageActive().getDatasetsTree();
+		datasetsTree.assertContent(
+				n("dataset test-dataset",
+					n("add " + resultItemType + "s: run(run-1) AND module(module-1) AND name(" + resultItemType + "-1)")));
+	}
+	
+	private void fillSelectDatasetDialog() {
+		ShellAccess dialogShell = Access.findShellByTitle("Select.*[dD]ataset.*"); 
+		dialogShell.findButtonWithLabel("New.*").activateWithMouseClick();
+		ShellAccess dialogShell2 = Access.findShellByTitle("New [dD]ataset.*");
+		TextAccess text = dialogShell2.findTextAfterLabel("Enter.*name.*");
+		text.typeIn("test-dataset");
+		dialogShell2.findButtonWithLabel("OK").activateWithMouseClick();
+		dialogShell.findButtonWithLabel("OK").activateWithMouseClick();
+	}
+	
 	protected String[][] buildVectorsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
-			content[i] = buildVectorsTableRow(2-i);
+			content[i] = buildVectorsTableRow(2-i); // TODO sorting
 		return content;
 	}
 	
@@ -141,11 +235,6 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		row[i++] = String.format("%d", rowIndex); // replication
 		row[i++] = String.format("%s", (double)rowIndex); // value
 		return row;
-	}
-	
-	@Override
-	protected void tearDownInternal() throws Exception {
-		super.tearDownInternal();
 	}
 	
 	protected void createFiles() throws Exception {

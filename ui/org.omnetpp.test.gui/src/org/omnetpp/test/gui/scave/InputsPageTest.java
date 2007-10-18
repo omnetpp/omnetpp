@@ -1,7 +1,5 @@
 package org.omnetpp.test.gui.scave;
 
-import java.util.regex.Pattern;
-
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.InputsPageAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
@@ -98,16 +96,6 @@ public class InputsPageTest extends ScaveFileTestCase {
 				);
 	}
 	
-	private static GenericTreeNode[] forest(GenericTreeNode... trees) {
-		return trees;
-	}
-	
-	private static GenericTreeNode n(String label, GenericTreeNode... children) {
-		GenericTreeNode node = new GenericTreeNode(Pattern.quote(label));
-		for (GenericTreeNode child : children)
-			node.addChild(child);
-		return node;
-	}
 	
 	/**
 	 * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
