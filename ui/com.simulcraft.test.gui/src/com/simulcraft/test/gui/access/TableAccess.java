@@ -110,7 +110,21 @@ public class TableAccess extends ControlAccess
     }
     
     @InUIThread
-	public TableItemAccess findTableItemByContent(final String content) {
+    public void assertSelectionCount(int count) {
+    	Assert.assertEquals("Selection count does not match,", count, getControl().getSelectionCount());
+    }
+    
+	public TableItemAccess findTableItemByContent(String content) {
+		return findTableItemByContent(0, content);
+	}
+	
+	@InUIThread
+	public TableItemAccess findTableItemByContent(String columnName, String content) {
+		return findTableItemByContent(getTableColumnIndex(columnName), content);
+	}
+	
+    @InUIThread
+	public TableItemAccess findTableItemByContent(int columnIndex, final String content) {
 		return new TableItemAccess((TableItem)findObject(getControl().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
 				// true if the "main" text or any column text matches
