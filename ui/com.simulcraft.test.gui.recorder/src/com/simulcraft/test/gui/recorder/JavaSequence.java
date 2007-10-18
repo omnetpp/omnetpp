@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Widget;
+import org.omnetpp.common.util.StringUtils;
 
 public class JavaSequence {
     private List<JavaExpr> list = new ArrayList<JavaExpr>();
@@ -75,7 +76,7 @@ public class JavaSequence {
         for (int i = 0; i < list.size(); i++) {
             JavaExpr expr = list.get(i);
             if (endOfCurrentChain == i) {
-                if (text.length()>0) text += ";\n";
+                text = addSemicolonIfNeeded(text) + "\n";
                 endOfCurrentChain = findEndOfChain(i);
                 JavaExpr lastExprInChain = list.get(endOfCurrentChain-1);
                 if (needsVariable(lastExprInChain))
@@ -88,7 +89,7 @@ public class JavaSequence {
                 text += ".";
             text += expr.getJavaCode();
         }
-        if (text.length()>0) text += ";\n";
+        text = addSemicolonIfNeeded(text).trim() + "\n";
         return text;
     }
     
@@ -114,6 +115,16 @@ public class JavaSequence {
         }
         return list.size();
     }
+
+    protected String addSemicolonIfNeeded(String text) {
+        String lastLine = StringUtils.substringAfterLast(text, "\n");
+        String lastLineWithoutComments = lastLine.replaceFirst("//[^\"]*$", "").trim(); // for this to work, comments should not contain quotes
+        if (!StringUtils.isEmpty(lastLineWithoutComments) && !lastLineWithoutComments.endsWith(";"))
+            return text + ";";
+        else 
+            return text;
+    }
+
 
     protected void simplifySequence() {
         // replace "click, click, doubleClick" with "doubleClick"

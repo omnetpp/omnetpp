@@ -43,6 +43,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.omnetpp.common.util.FileUtils;
 
+import com.simulcraft.test.gui.recorder.event.BlankLineInserter;
 import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
@@ -85,6 +86,7 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new KeyboardEventRecognizer(this));
         eventRecognizers.add(new ButtonEventRecognizer(this));
         eventRecognizers.add(new ClickRecognizer(this));
+        eventRecognizers.add(new BlankLineInserter(this));
         
         objectRecognizers.add(new WorkbenchWindowRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
@@ -190,7 +192,7 @@ public class GUIRecorder implements Listener {
     }
 
     public void add(JavaExpr expr) {
-        if (expr != null && expr.getJavaCode().length() > 0) {
+        if (expr != null) {
             System.out.println(expr.getJavaCode());
             if (expr.getQuality() > 0) {
                 result.add(expr);
