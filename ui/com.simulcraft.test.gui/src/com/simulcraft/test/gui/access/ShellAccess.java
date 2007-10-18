@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
 
 public class ShellAccess extends CompositeAccess
 {
@@ -21,6 +22,14 @@ public class ShellAccess extends CompositeAccess
 	@InUIThread
 	public MenuAccess getMenuBar() {
 		return new MenuAccess(getControl().getMenuBar());
+	}
+
+	@NotInUIThread
+	public void chooseFromMainMenu(String labelPath) {
+	    MenuAccess menuAccess = getMenuBar();
+	    for (String label : labelPath.split("\\|"))
+	        //menuAccess = menuAccess.findMenuItemByLabel(label).activateWithMouseClick();
+	        menuAccess = menuAccess.activateMenuItemWithMouse(label);
 	}
 
 	/**

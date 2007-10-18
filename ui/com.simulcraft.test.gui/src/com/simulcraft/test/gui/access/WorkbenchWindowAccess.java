@@ -46,10 +46,7 @@ public class WorkbenchWindowAccess extends Access {
 
 	@NotInUIThread
 	public void chooseFromMainMenu(String labelPath) {
-		MenuAccess menuAccess = getMenuBar();
-		for (String label : labelPath.split("\\|"))
-			//menuAccess = menuAccess.findMenuItemByLabel(label).activateWithMouseClick();
-			menuAccess = menuAccess.activateMenuItemWithMouse(label);
+	    getShell().chooseFromContextMenu(labelPath);
 	}
 	
 	@InUIThread
