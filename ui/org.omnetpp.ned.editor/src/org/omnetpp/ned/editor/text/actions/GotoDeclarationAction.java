@@ -23,16 +23,31 @@ public class GotoDeclarationAction extends NedTextEditorAction {
 
     @Override
 	public void update() {
-    	setEnabled(getTextEditor() != null);
+//        setEnabled(getTextEditor() != null);
+        if (getTextEditor() == null) {
+            setEnabled(false);
+            return;
+        }
+        Info info = getInfoForSelection();
+    	setEnabled(info != null && info.referredElement != null);
 	}
 
     @Override
     public void run() {
-        ISourceViewer viewer = ((TextualNedEditor)getTextEditor()).getSourceViewerPublic();
-        IRegion region = new Region(viewer.getSelectedRange().x, viewer.getSelectedRange().y); 
-        Info info = NedTextUtils.getNedReferenceFromSource(getTextEditor(), viewer, region);
+        Info info = getInfoForSelection();
         if (info != null && info.referredElement != null)
             NEDResourcesPlugin.openNEDElementInEditor(info.referredElement, IGotoNedElement.Mode.TEXT);
+    }
+
+    /**
+     * @return
+     */
+    private Info getInfoForSelection() {
+        ISourceViewer viewer = ((TextualNedEditor)getTextEditor()).getSourceViewerPublic();
+        if (viewer == null)
+            return null;
+        IRegion region = new Region(viewer.getSelectedRange().x, viewer.getSelectedRange().y); 
+        return NedTextUtils.getNedReferenceFromSource(getTextEditor(), viewer, region);
     }
 
 }
