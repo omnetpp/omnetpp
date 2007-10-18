@@ -16,6 +16,7 @@ import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.ViewPartAccess;
 
 public class BrowseDataPageTest extends ScaveFileTestCase {
 
@@ -171,6 +172,15 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		text.typeIn("test-dataset");
 		dialogShell2.findButtonWithLabel("OK").activateWithMouseClick();
 		dialogShell.findButtonWithLabel("OK").activateWithMouseClick();
+	}
+	
+	public void testShowVectorDataView() {
+		browseDataPage.ensureTabSelected(VECTORS);
+		TableAccess table = browseDataPage.getSelectedTable();
+		MenuAccess menu = table.activateContextMenuWithMouseClick();
+		menu.activateMenuItemWithMouse("Show.*[vV]ector.*[vV]iew.*");
+		
+		Access.getWorkbenchWindowAccess().findViewPartByTitle(".*[vV]ector.*").assertActivated();
 	}
 	
 	protected String[][] buildVectorsTableContent() {
