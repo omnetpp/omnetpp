@@ -2,6 +2,8 @@ package com.simulcraft.test.gui.recorder.event;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
@@ -24,6 +26,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
     
     public JavaSequence recognizeEvent(Event e) {
         int modifierState = recorder.getKeyboardModifierState();
+        Control focusControl = Display.getCurrent().getFocusControl();
         
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
@@ -36,7 +39,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
                 modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
                 recorder.add(flushTyping());
-                return makeSeq(expr("pressKey(SWT." + string + ")", 0.7, null));
+                return makeSeq(focusControl, expr("pressKey(SWT." + string + ")", 0.7, null));
             }
             else {
                 // modifier KeyDown -- ignore
@@ -48,7 +51,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
             if (modifierJustPressed) {
                 modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return makeSeq(expr("pressKey(SWT." + string + ")", 0.7, null));
+                return makeSeq(focusControl, expr("pressKey(SWT." + string + ")", 0.7, null));
             }
         }
         else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
@@ -62,7 +65,8 @@ public class KeyboardEventRecognizer extends EventRecognizer {
         if (typing.length() > 0) {
             String quoted = typing.replace("\"", "\\\"");
             typing = "";
-            return makeSeq(expr("type(\"" + quoted + "\")", 0.7, null));
+            Control focusControl = Display.getCurrent().getFocusControl();
+            return makeSeq(focusControl, expr("type(\"" + quoted + "\")", 0.7, null));
         }
         return null;
     }
