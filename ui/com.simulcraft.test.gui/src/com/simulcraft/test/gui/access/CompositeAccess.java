@@ -111,4 +111,9 @@ public class CompositeAccess extends ControlAccess
 		return new ComboAccess((Combo)labelAccess.findNextControl(Combo.class));
 	}
 
+	@InUIThread
+	public TreeAccess findTreeAfterLabel(String label) {
+		final LabelAccess labelAccess = findLabel(label);
+		return new TreeAccess((Tree)labelAccess.findNextControl(Tree.class));
+	}
 }
