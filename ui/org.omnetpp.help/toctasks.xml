@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Tasks" link_to="toc.xml#tasks"> 
+	<topic label="Main Topic"  href="html/tasks/maintopic.html"> 
+		<topic label="Sub Topic" href="html/tasks/subtopic.html" /> 
+	</topic>
+	<topic label="Main Topic 2">
+		<topic label="Sub Topic 2" href="html/tasks/subtopic2.html" /> 
+	</topic> 
+</toc>
