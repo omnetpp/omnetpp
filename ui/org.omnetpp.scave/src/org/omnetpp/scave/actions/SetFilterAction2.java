@@ -37,7 +37,7 @@ public class SetFilterAction2 extends Action
 
 			DataTable table = panel.getTable();
 			item = table.getSelectedItem();
-			if (table.getSelectedField() != null) {
+			if (item != null && table.getSelectedField() != null) {
 				field = new ResultItemField(table.getSelectedField());
 				value = field.getFieldValue(item);
 				

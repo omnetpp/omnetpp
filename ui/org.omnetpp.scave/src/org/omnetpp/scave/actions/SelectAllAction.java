@@ -1,6 +1,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -44,6 +45,7 @@ public class SelectAllAction extends AbstractScaveAction {
 				Combo combo = (Combo)focusControl;
 				combo.setSelection(new Point(0, combo.getText().length()));
 			}
+			focusControl.notifyListeners(SWT.Selection, null);
 		}
 		else if (activePage == scaveEditor.getBrowseDataPage()) {
 			FilteredDataPanel panel = ((BrowseDataPage)activePage).getActivePanel();
@@ -52,6 +54,7 @@ public class SelectAllAction extends AbstractScaveAction {
 				if (table != null) {
 					table.setFocus();
 					table.selectAll();
+					table.notifyListeners(SWT.Selection, null);
 				}
 			}
 		}
