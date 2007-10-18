@@ -70,6 +70,8 @@ public class TextEditorUtil {
 	public static IRegion detectWordRegion(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) throws BadLocationException {
 		int offset = documentOffset;
 		int length = 0;
+		if (viewer.getDocument() == null)
+		    return new Region(documentOffset, 0);
 
 		// find the first char that may not be the trailing part of a word.
 		while (offset > 0 && wordDetector.isWordPart(viewer.getDocument().getChar(offset - 1)))
