@@ -54,6 +54,7 @@ import com.simulcraft.test.gui.recorder.object.StyledTextRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableRecognizer;
 import com.simulcraft.test.gui.recorder.object.TextRecognizer;
+import com.simulcraft.test.gui.recorder.object.ToolItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TreeItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCTabRecognizer;
@@ -100,6 +101,7 @@ public class GUIRecorder implements Listener {
         objectRecognizers.add(new TreeRecognizer(this));
         objectRecognizers.add(new TableItemRecognizer(this));
         objectRecognizers.add(new TreeItemRecognizer(this));
+        objectRecognizers.add(new ToolItemRecognizer(this));
         createPanel();
     }
 
