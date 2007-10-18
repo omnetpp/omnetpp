@@ -83,6 +83,18 @@ public class GUIRecorder implements Listener {
     private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
     private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
 
+    private static final int[] eventTypes = { 
+            SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseMove, 
+            SWT.MouseEnter, SWT.MouseExit, SWT.MouseDoubleClick, SWT.Paint, SWT.Move, 
+            SWT.Resize, SWT.Dispose, SWT.Selection, SWT.DefaultSelection, SWT.FocusIn, 
+            SWT.FocusOut, SWT.Expand, SWT.Collapse, SWT.Iconify, SWT.Deiconify, 
+            SWT.Close, SWT.Show, SWT.Hide, SWT.Modify, SWT.Verify, SWT.Activate, 
+            SWT.Deactivate, SWT.Help, SWT.DragDetect, SWT.Arm, SWT.Traverse, 
+            SWT.MouseHover, SWT.HardKeyDown, SWT.HardKeyUp, SWT.MenuDetect, 
+            SWT.SetData, SWT.MouseWheel, SWT.Settings, SWT.EraseItem, SWT.MeasureItem, 
+            SWT.PaintItem
+    };
+
     public GUIRecorder() {
         eventRecognizers.add(new KeyboardEventRecognizer(this));
         eventRecognizers.add(new ButtonEventRecognizer(this));
@@ -105,6 +117,16 @@ public class GUIRecorder implements Listener {
         createPanel();
     }
 
+    public void hookListeners() {
+        for (int eventType : eventTypes)
+            Display.getCurrent().addFilter(eventType, this);
+    }
+
+    public void unhookListeners() {
+        for (int eventType : eventTypes)
+            Display.getCurrent().removeFilter(eventType, this);
+    }
+
     public int getKeyboardModifierState() {
         return modifierState;
     }
@@ -114,7 +136,7 @@ public class GUIRecorder implements Listener {
             // handle on/off hotkey
             setPanelVisible(!panel.isVisible());
         }
-        else if (enabled && ((Control)e.widget).getShell() != panel) {
+        else if (enabled && (!(e.widget instanceof Control) || ((Control)e.widget).getShell() != panel)) {
             // record event, catching potential exceptions meanwhile
             SafeRunner.run(new ISafeRunnable() {
                 public void run() throws Exception {
@@ -207,8 +229,10 @@ public class GUIRecorder implements Listener {
     }
 
     public Object resolveUIObject(Event e) {
-        Assert.isTrue(e.widget instanceof Control);
-        return resolveUIObject((Control)e.widget, new Point(e.x, e.y));
+        if (e.widget instanceof Control)
+            return resolveUIObject((Control)e.widget, new Point(e.x, e.y));
+        else
+            return e.widget;
     }
 
     /**
