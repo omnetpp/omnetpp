@@ -447,7 +447,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
      */
     public void pullChangesFromNEDResources() {
         Assert.isTrue(Display.getCurrent() != null);
-        System.out.println("texteditor: pulling changes from NEDResources");
+//        System.out.println("texteditor: pulling changes from NEDResources");
         TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
         		getDocument(), getModel().getNEDSource());
         TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing

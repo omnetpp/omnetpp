@@ -519,7 +519,7 @@ public class GraphicalNedEditor
 				{
 					if (pendingExternalChangeCommand == null)
 						pendingExternalChangeCommand = new ExternalChangeCommand();
-					System.out.println("adding " + event + " to current external change command");
+//					System.out.println("adding " + event + " to current external change command");
 					pendingExternalChangeCommand.addEvent(event);
 		    	}
 

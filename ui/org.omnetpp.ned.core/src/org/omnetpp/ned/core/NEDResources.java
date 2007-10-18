@@ -234,7 +234,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	        if (treeDifferenceApplier.hasDifferences()) {
 	        	// push tree differences into the official tree
-	        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
+//	        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
 		        currentTree.fireModelEvent(new NEDBeginModelChangeEvent(currentTree));
 	        	currentTree.setSyntaxProblemMaxLocalSeverity(INEDElement.SEVERITY_NONE);
 		        treeDifferenceApplier.apply();
@@ -975,7 +975,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();
-                    printDelta(delta);
+                    // printDelta(delta);
                     if (isNEDFile(resource)) {
                     	IFile file = (IFile)resource;
                     	switch (delta.getKind()) {

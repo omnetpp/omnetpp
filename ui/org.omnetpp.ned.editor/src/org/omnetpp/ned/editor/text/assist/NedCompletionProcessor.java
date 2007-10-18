@@ -503,11 +503,11 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			if (sectionType == SECT_GLOBAL)
 			    nedTypeName = enclosingNedTypeName = submoduleTypeName = null;
 			
-			System.out.println(">>>"+source+"<<<");
-			System.out.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
-			System.out.println("PREFIX: >>"+prefix+"<<");
-			System.out.println("PREFIX2: >>"+prefix2+"<<");
-            System.out.println("inside inner type: "+insideInnertype);
+//			System.out.println(">>>"+source+"<<<");
+//			System.out.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
+//			System.out.println("PREFIX: >>"+prefix+"<<");
+//			System.out.println("PREFIX2: >>"+prefix2+"<<");
+//            System.out.println("inside inner type: "+insideInnertype);
 
 			CompletionInfo ret = new CompletionInfo();
 			ret.linePrefix = prefix;

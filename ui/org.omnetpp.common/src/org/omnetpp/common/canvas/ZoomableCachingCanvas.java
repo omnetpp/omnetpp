@@ -48,7 +48,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		if (this.minY == this.maxY)  this.maxY = this.minY + 1;
 		
 		zoomToFit(); // includes updateVirtualSize(), clearCanvasCache(), redraw() etc.
-		System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
+		// System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
 	}
 	
 	public RectangularArea getArea() {

@@ -148,7 +148,7 @@ public abstract class RubberbandSupport {
 	}
 
 	private static void drawRubberBand(GC gc, Rectangle rect) {
-		System.out.println("rubberBand="+rect);
+		// System.out.println("rubberBand="+rect);
 		Rectangle r = new Rectangle(rect.x, rect.y, rect.width, rect.height);
 		// needed because gc.drawFocus() doesn't accept negative width/height
 		fixNegativeSizes(r);

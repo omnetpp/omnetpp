@@ -156,10 +156,10 @@ public class ProblemMarkerSynchronizer {
 		}
 
 		// debug
-		if (markersAdded==0 && markersRemoved==0)
-			System.out.println("markerSychronizer: no marker change");
-		else
-			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
+//		if (markersAdded==0 && markersRemoved==0)
+//			System.out.println("markerSychronizer: no marker change");
+//		else
+//			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
 	}
 
 	protected boolean fileContainsMarker(IFile file, MarkerData markerData) throws CoreException {

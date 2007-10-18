@@ -6,6 +6,7 @@ import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
+
 import org.omnetpp.ned.editor.NedEditorPlugin;
 
 
@@ -88,7 +89,6 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			int lineend= linestart + document.getLineLength(line) - 1;
 			brackcount += getBracketCount(document, linestart, lineend, false);
 		}
-		System.out.println("findMatchingOpenBracket() of line "+origLine+": "+line);		
 		return line;
 	}
 	
