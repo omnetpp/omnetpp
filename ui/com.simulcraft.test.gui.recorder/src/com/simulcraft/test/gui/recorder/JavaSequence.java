@@ -149,16 +149,18 @@ public class JavaSequence {
     protected void makeVariablesUnique() {
         Set<String> varnames = new HashSet<String>();
         for (JavaExpr expr : list) {
-            String varname = expr.getSuggestedVariableName();
-            if (varname != null) {
-                if (varnames.contains(varname)) {
-                    int k = 2;
-                    while (varnames.contains(varname+k))
-                        k++;
-                    varname = varname+k;
-                    expr.setSuggestedVariableName(varname);
+            if (needsVariable(expr)) {
+                String varname = expr.getSuggestedVariableName();
+                if (varname != null) {
+                    if (varnames.contains(varname)) {
+                        int k = 2;
+                        while (varnames.contains(varname+k))
+                            k++;
+                        varname = varname+k;
+                        expr.setSuggestedVariableName(varname);
+                    }
+                    varnames.add(varname);
                 }
-                varnames.add(varname);
             }
         }
     }

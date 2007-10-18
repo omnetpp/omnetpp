@@ -1,7 +1,6 @@
 package com.simulcraft.test.gui.recorder.object;
 
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IWorkbenchWindow;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaSequence;
@@ -12,9 +11,8 @@ public class WorkbenchWindowRecognizer extends ObjectRecognizer {
     }
 
     public JavaSequence identifyObject(Object uiObject) {
-        if (uiObject instanceof Shell && uiObject == PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()) {
-            Shell shell = (Shell)uiObject;
-            return makeSeq(expr("getWorkbenchWindow()", 0.5, shell));
+        if (uiObject instanceof IWorkbenchWindow) {
+            return makeSeq(expr("Access.getWorkbenchWindow()", 0.5, uiObject));
         }
         return null;
     }

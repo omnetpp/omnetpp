@@ -27,11 +27,12 @@ public class WorkbenchPartCompositeRecognizer extends ObjectRecognizer {
         if (uiObject instanceof Composite) {
             Composite composite = (Composite)uiObject;
 
+            IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             IWorkbenchPart workbenchPart = getCorrespondingWorkbenchPart(composite);
             if (workbenchPart instanceof IEditorPart)
-                return makeSeq(expr("workbenchWindow.findEditorPartByLabel("+quote(workbenchPart.getTitle())+").getComposite()", 0.9, composite));
+                return makeSeq(workbenchWindow, expr("findEditorPartByLabel("+quote(workbenchPart.getTitle())+").getComposite()", 0.9, composite));
             else if (workbenchPart instanceof IViewPart)
-                return makeSeq(expr("workbenchWindow.findViewPartByLabel("+quote(workbenchPart.getTitle())+").getComposite()", 0.9, composite));
+                return makeSeq(workbenchWindow, expr("findViewPartByLabel("+quote(workbenchPart.getTitle())+").getComposite()", 0.9, composite));
             else if (workbenchPart != null)
                 Assert.isTrue(false, "Unknown workbenchpart: " + workbenchPart);
         }

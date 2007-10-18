@@ -1,6 +1,8 @@
 package com.simulcraft.test.gui.recorder.object;
 
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.EditorPane;
 import org.eclipse.ui.internal.PartPane;
 import org.eclipse.ui.internal.ViewPane;
@@ -19,10 +21,11 @@ public class WorkbenchPartCTabRecognizer extends ObjectRecognizer {
         if (uiObject instanceof CTabItem) {
             CTabItem item = (CTabItem)uiObject;
             //FIXME check that label uniquely identifies item
+            IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             if (isEditorTabItem(item))
-                return makeSeq(expr("workbenchWindow.findEditorPartByLabel("+quote(item.getText())+")", 0.9, item));
+                return makeSeq(workbenchWindow, expr("findEditorPartByLabel("+quote(item.getText())+")", 0.9, item));
             if (isViewTabItem(item))
-                return makeSeq(expr("workbenchWindow.findViewPartByLabel("+quote(item.getText())+")", 0.9, item));
+                return makeSeq(workbenchWindow, expr("findViewPartByLabel("+quote(item.getText())+")", 0.9, item));
         }
         return null;
     }

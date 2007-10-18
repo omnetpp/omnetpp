@@ -81,6 +81,7 @@ import com.simulcraft.test.gui.recorder.object.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCTabRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCompositeRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchWindowRecognizer;
+import com.simulcraft.test.gui.recorder.object.WorkbenchWindowShellRecognizer;
 
 /**
  * Records GUI events for playback.
@@ -124,6 +125,7 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new BlankLineInserter(this));
         
         objectRecognizers.add(new WorkbenchWindowRecognizer(this));
+        objectRecognizers.add(new WorkbenchWindowShellRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
         objectRecognizers.add(new ShellRecognizer(this));
