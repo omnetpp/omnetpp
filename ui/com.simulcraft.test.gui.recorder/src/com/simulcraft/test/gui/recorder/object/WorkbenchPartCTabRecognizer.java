@@ -23,26 +23,26 @@ public class WorkbenchPartCTabRecognizer extends ObjectRecognizer {
             //FIXME check that label uniquely identifies item
             IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             if (isEditorTabItem(item))
-                return makeSeq(workbenchWindow, expr("findEditorPartByLabel("+quote(item.getText())+")", 0.9, item));
+                return makeSeq(workbenchWindow, expr("findEditorPartByTitle("+quote(item.getText())+").getCTabItem()", 0.9, item));
             if (isViewTabItem(item))
-                return makeSeq(workbenchWindow, expr("findViewPartByLabel("+quote(item.getText())+")", 0.9, item));
+                return makeSeq(workbenchWindow, expr("findViewPartByTitle("+quote(item.getText())+").getCTabItem()", 0.9, item));
         }
         return null;
     }
 
     
     @SuppressWarnings("restriction")
-    private boolean isViewTabItem(CTabItem item) {
+    public static boolean isViewTabItem(CTabItem item) {
         return getPresentablePartPane(item) instanceof ViewPane;
     }
 
     @SuppressWarnings("restriction")
-    private boolean isEditorTabItem(CTabItem item) {
+    public static boolean isEditorTabItem(CTabItem item) {
         return getPresentablePartPane(item) instanceof EditorPane;
     }
 
     @SuppressWarnings("restriction")
-    private PartPane getPresentablePartPane(CTabItem item) {
+    private static PartPane getPresentablePartPane(CTabItem item) {
         // dirty hack, exploiting workbench internals. to be replaced if something better comes up 
         Object itemData = item.getData();
         if (itemData instanceof AbstractTabItem) {

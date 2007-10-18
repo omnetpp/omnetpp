@@ -67,6 +67,7 @@ import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.MenuSelectionRecognizer;
+import com.simulcraft.test.gui.recorder.event.WorkbenchPartCTabClickRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
 import com.simulcraft.test.gui.recorder.object.MenuItemRecognizer;
@@ -122,6 +123,7 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new ButtonEventRecognizer(this));
         eventRecognizers.add(new ClickRecognizer(this));
         eventRecognizers.add(new MenuSelectionRecognizer(this));
+        eventRecognizers.add(new WorkbenchPartCTabClickRecognizer(this));
         eventRecognizers.add(new BlankLineInserter(this));
         
         objectRecognizers.add(new WorkbenchWindowRecognizer(this));
