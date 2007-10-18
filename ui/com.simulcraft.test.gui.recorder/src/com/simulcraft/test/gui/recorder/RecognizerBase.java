@@ -32,11 +32,11 @@ public class RecognizerBase  {
     }
 
     public JavaExpr expr(String javaCode, double quality, Object resultUIObject) {
-        return new JavaExpr(javaCode, quality, resultUIObject);
+        return new JavaExpr(javaCode, quality, resultUIObject, recorder.getVariableTypeFor(resultUIObject));
     }
 
     public JavaExpr expr(String javaCode, double quality, Object resultUIObject, String suggestedVariableName) {
-        return new JavaExpr(javaCode, quality, resultUIObject, suggestedVariableName);
+        return new JavaExpr(javaCode, quality, resultUIObject, recorder.getVariableTypeFor(resultUIObject), suggestedVariableName);
     }
 
     // expr is standalone expression 

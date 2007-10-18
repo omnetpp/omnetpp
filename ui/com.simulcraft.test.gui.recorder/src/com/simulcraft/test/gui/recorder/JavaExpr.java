@@ -8,16 +8,18 @@ public class JavaExpr {
     private JavaExpr calledOn;
     private Object resultUIObject;
     private String suggestedVariableName;
+    private String variableType;
 
-    public JavaExpr(String javaCode, double quality, Object resultUIObject) {
-        this(javaCode, quality, resultUIObject, resultUIObject == null ? null : 
+    public JavaExpr(String javaCode, double quality, Object resultUIObject, String variableType) {
+        this(javaCode, quality, resultUIObject, variableType, resultUIObject == null ? null : 
             StringUtils.toInstanceName(resultUIObject.getClass().getSimpleName()));
     }
 
-    public JavaExpr(String javaCode, double quality, Object resultUIObject, String suggestedVariableName) {
+    public JavaExpr(String javaCode, double quality, Object resultUIObject, String variableType, String suggestedVariableName) {
         this.javaCode = javaCode;
         this.quality = quality;
         this.resultUIObject = resultUIObject;
+        this.variableType = variableType;
         this.suggestedVariableName = suggestedVariableName;
     }
 
@@ -56,10 +58,17 @@ public class JavaExpr {
         this.suggestedVariableName = suggestedVariableName;
     }
 
+    public String getVariableType() {
+        return variableType;
+    }
+
+    public void setVariableType(String variableType) {
+        this.variableType = variableType;
+    }
+
     @Override
     public String toString() {
         return "quality=" + getQuality() + ": " + getJavaCode().trim();
     }
-
 
 }

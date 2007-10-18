@@ -82,7 +82,7 @@ public class JavaSequence {
                 endOfCurrentChain = findEndOfChain(i);
                 JavaExpr lastExprInChain = list.get(endOfCurrentChain-1);
                 if (needsVariable(lastExprInChain))
-                    text += "SomeAccess " + lastExprInChain.getSuggestedVariableName() + " = ";
+                    text += lastExprInChain.getVariableType() + " " + lastExprInChain.getSuggestedVariableName() + " = ";
                 if (expr.getCalledOn() != null)
                     text += expr.getCalledOn().getSuggestedVariableName();
             }

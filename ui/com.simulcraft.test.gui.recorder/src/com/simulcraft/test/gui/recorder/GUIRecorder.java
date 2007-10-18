@@ -15,6 +15,8 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -26,21 +28,38 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.FileUtils;
 
 import com.simulcraft.test.gui.recorder.event.BlankLineInserter;
@@ -178,9 +197,9 @@ public class GUIRecorder implements Listener {
         }
         else {
             if (e.type==SWT.MouseDown)
-                add(new JavaExpr("Access.clickAbsolute(" + e.x + ", " + e.y + "); //TODO unrecognized click - revise", 1.0, null)); //XXX which button
+                add(new JavaExpr("Access.clickAbsolute(" + e.x + ", " + e.y + "); //TODO unrecognized click - revise", 1.0, null, null)); //XXX which button
             if (e.type==SWT.KeyDown)
-                add(new JavaExpr("Access.pressKey("+e.keyCode + "); //TODO unrecognized keypress - revise", 1.0, null)); //XXX modifier keys
+                add(new JavaExpr("Access.pressKey("+e.keyCode + "); //TODO unrecognized keypress - revise", 1.0, null, null)); //XXX modifier keys
         }
         
         result.cleanup(); // may be called less frequently if proves to be slow
@@ -271,6 +290,63 @@ public class GUIRecorder implements Listener {
         return control;
     }
     
+    //TODO make this extensible
+    public String getVariableTypeFor(Object resultUIObject) {
+        // note: base classes last, because we want to return the most specialized type
+        if (resultUIObject == null)
+            return null;
+        if (resultUIObject instanceof Button)
+            return "ButtonAccess";
+        if (resultUIObject instanceof Combo)
+            return "ComboAccess";
+        if (resultUIObject instanceof CTabItem)
+            return "CTabItemAccess";
+        if (resultUIObject instanceof Label)
+            return "LabelAccess";
+        if (resultUIObject instanceof Menu)
+            return "MenuAccess";
+        if (resultUIObject instanceof MenuItem)
+            return "MenuItemAccess";
+        if (resultUIObject instanceof Shell)
+            return "ShellAccess";
+        if (resultUIObject instanceof StyledText)
+            return "StyledTextAccess";
+        if (resultUIObject instanceof TabFolder)
+            return "TabFolderAccess";
+        if (resultUIObject instanceof TabItem)
+            return "TabItemAccess";
+        if (resultUIObject instanceof Table)
+            return "TableAccess";
+        if (resultUIObject instanceof TableColumn)
+            return "TableColumnAccess";
+        if (resultUIObject instanceof TableItem)
+            return "TableItemAccess";
+        if (resultUIObject instanceof Text)
+            return "TextAccess";
+        if (resultUIObject instanceof Tree)
+            return "TreeAccess";
+        if (resultUIObject instanceof TreeColumn)
+            return "TreeColumnAccess";
+        if (resultUIObject instanceof TreeItem)
+            return "TreeItemAccess";
+        if (resultUIObject instanceof Composite)
+            return "CompositeAccess";
+        if (resultUIObject instanceof Widget)
+            return "WidgetAccess";
+        if (resultUIObject instanceof MultiPageEditorPart)
+            return "MultiPageEditorPartAccess";
+        if (resultUIObject instanceof IEditorPart)
+            return "EditorPartAccess";
+        if (resultUIObject instanceof IViewPart)
+            return "ViewPartAccess";
+        if (resultUIObject instanceof IWorkbenchPart)
+            return "WorkbenchPartAccess";
+        if (resultUIObject instanceof IWorkbenchWindow)
+            return "WorkbenchWindowAccess";
+        Assert.isTrue(false);
+        return null;
+    }
+
     protected void createPanel() {
         panel = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         panel.setLayout(new FillLayout());
@@ -389,6 +465,5 @@ public class GUIRecorder implements Listener {
             }
         });
     }
-
 }
 
