@@ -2,6 +2,7 @@ package com.simulcraft.test.gui.recorder.object;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.IObjectRecognizer;
@@ -21,7 +22,7 @@ public abstract class ObjectRecognizer extends RecognizerBase implements IObject
         // walk up, and choose first local maximum in quality
         Composite composite = control.getParent();
         double quality = qualityOf(composite);
-        while (composite.getParent() != null) {
+        while (composite.getParent() != null && !(composite instanceof Shell)) {
             double parentQuality = qualityOf(composite.getParent());
             if (quality > parentQuality)
                 return composite;
