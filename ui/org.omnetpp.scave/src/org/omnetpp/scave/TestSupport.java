@@ -12,5 +12,7 @@ public class TestSupport {
 		FILE_VIEW_TREE_ID = "FileViewTree",
 		FILE_RUN_VIEW_TREE_ID = "FileRunViewTree",
 		RUN_FILE_VIEW_TREE_ID = "RunFileViewTree",
-		LOGICAL_VIEW_TREE_ID = "LogicalViewTree";
+		LOGICAL_VIEW_TREE_ID = "LogicalViewTree",
+		DATASETS_TREE_ID = "Datasets",
+		CHARTSHEETS_TREE_ID = "ChartSheets";
 }

@@ -1,5 +1,10 @@
 package org.omnetpp.scave.editors.ui;
 
+import static org.omnetpp.scave.TestSupport.CHARTSHEETS_TREE_ID;
+import static org.omnetpp.scave.TestSupport.DATASETS_TREE_ID;
+import static org.omnetpp.scave.TestSupport.WIDGET_ID;
+import static org.omnetpp.scave.TestSupport.enableGuiTest;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.DelegatingWrapperItemProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -62,6 +67,11 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		Analysis analysis = scaveEditor.getAnalysis();
 		getDatasetsTreeViewer().setInput(analysis.getDatasets());
         getChartSheetsTreeViewer().setInput(analysis.getChartSheets());
+        
+        if (enableGuiTest) {
+        	getDatasetsTreeViewer().getTree().setData(WIDGET_ID, DATASETS_TREE_ID);
+        	getChartSheetsTreeViewer().getTree().setData(WIDGET_ID, CHARTSHEETS_TREE_ID);
+        }
 	}
 
 	/**
