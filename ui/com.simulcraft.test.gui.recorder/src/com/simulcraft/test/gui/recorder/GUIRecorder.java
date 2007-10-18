@@ -49,12 +49,14 @@ import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
 import com.simulcraft.test.gui.recorder.object.ShellRecognizer;
+import com.simulcraft.test.gui.recorder.object.StyledTextRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableRecognizer;
 import com.simulcraft.test.gui.recorder.object.TextRecognizer;
 import com.simulcraft.test.gui.recorder.object.TreeItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TreeRecognizer;
-import com.simulcraft.test.gui.recorder.object.WorkbenchPartRecognizer;
+import com.simulcraft.test.gui.recorder.object.WorkbenchPartCTabRecognizer;
+import com.simulcraft.test.gui.recorder.object.WorkbenchPartCompositeRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchWindowRecognizer;
 
 /**
@@ -85,11 +87,13 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new ClickRecognizer(this));
         
         objectRecognizers.add(new WorkbenchWindowRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
         objectRecognizers.add(new ShellRecognizer(this));
         objectRecognizers.add(new ButtonRecognizer(this));
         objectRecognizers.add(new ComboRecognizer(this));
         objectRecognizers.add(new TextRecognizer(this));
+        objectRecognizers.add(new StyledTextRecognizer(this));
         objectRecognizers.add(new TableRecognizer(this));
         objectRecognizers.add(new TreeRecognizer(this));
         objectRecognizers.add(new TableItemRecognizer(this));
@@ -143,13 +147,13 @@ public class GUIRecorder implements Listener {
             add(bestProposal);
         }
         else {
-            // unprocessed -- only print message if event is significant
-            if (e.type==SWT.KeyDown || e.type==SWT.MouseDown) {
-                add(new JavaExpr("//TODO unrecognized mouse click or keydown event: " + e, 1.0, null));
-            }
+            if (e.type==SWT.MouseDown)
+                add(new JavaExpr("Access.clickAbsolute(" + e.x + ", " + e.y + "); //TODO unrecognized click - revise", 1.0, null)); //XXX which button
+            if (e.type==SWT.KeyDown)
+                add(new JavaExpr("Access.pressKey("+e.keyCode + "); //TODO unrecognized keypress - revise", 1.0, null)); //XXX modifier keys
         }
         
-        result.cleanup(); //XXX call less frequently if slow
+        result.cleanup(); // may be called less frequently if proves to be slow
     }
 
     public JavaExpr lookup(Object uiObject) {

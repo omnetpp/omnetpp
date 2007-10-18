@@ -1,6 +1,7 @@
 package com.simulcraft.test.gui.recorder.object;
 
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
@@ -14,9 +15,10 @@ public class ComboRecognizer extends ObjectRecognizer {
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Combo) {
             Combo combo = (Combo)uiObject;
-            Label label = getPrecedingUniqueLabel(combo.getShell(), combo);
+            Composite container = findContainer(combo);
+            Label label = getPrecedingUniqueLabel(container, combo);
             if (label != null)
-                return makeSeq(combo.getShell(), expr("findComboAfterLabel("+quote(label.getText()) + ")", 0.8, combo));
+                return makeSeq(container, expr("findComboAfterLabel("+quote(label.getText()) + ")", 0.8, combo));
         }
         return null;
     }

@@ -68,17 +68,50 @@ public class JavaSequence {
     public String generateCode() {
         makeVariablesUnique();
 
+        // a "chain" is an expression like: "object.method1().method2().method3();"
         String text = "";
-        for (JavaExpr expr : list) {
-            //TODO if (needsVariable(expr))...
-            if (expr.getSuggestedVariableName() != null)
-                text += "SomeAccess " + expr.getSuggestedVariableName() + " = ";
+        int endOfCurrentChain = 0;
+        for (int i = 0; i < list.size(); i++) {
+            JavaExpr expr = list.get(i);
+            if (endOfCurrentChain == i) {
+                if (text.length()>0) text += ";\n";
+                endOfCurrentChain = findEndOfChain(i);
+                JavaExpr lastExprInChain = list.get(endOfCurrentChain-1);
+                if (needsVariable(lastExprInChain))
+                    text += "SomeAccess " + lastExprInChain.getSuggestedVariableName() + " = ";
+                if (expr.getCalledOn() != null)
+                    text += expr.getCalledOn().getSuggestedVariableName();
+            }
+
             if (expr.getCalledOn() != null)
-                text += expr.getCalledOn().getSuggestedVariableName() + ".";
+                text += ".";
             text += expr.getJavaCode();
-            text += ";\n";
         }
+        if (text.length()>0) text += ";\n";
         return text;
+    }
+    
+    protected boolean needsVariable(JavaExpr expr) {
+        // needs variable if called from other place than immediately following expression
+        JavaExpr prev = null;
+        for (JavaExpr e : list) {
+            if (e.getCalledOn() == expr && prev != expr) {
+                Assert.isTrue(expr.getSuggestedVariableName() != null); // if needs variable, must have a variable name!
+                return true;
+            }
+            prev = e;
+        }
+        return false;
+    }
+    
+    protected int findEndOfChain(int startIndex) {
+        for (int i = startIndex; i < list.size(); i++) {
+            if (i+1 < list.size() && list.get(i+1).getCalledOn() != list.get(i))
+                return i+1;
+            if (needsVariable(list.get(i)))
+                return i+1;
+        }
+        return list.size();
     }
     
     protected void makeVariablesUnique() {
@@ -98,17 +131,6 @@ public class JavaSequence {
         }
     }
 
-    protected boolean needsVariable(JavaExpr expr) {
-        // needs variable if called from other place than immediately following expression
-        JavaExpr prev = null;
-        for (JavaExpr e : list) {
-            if (e.getCalledOn() == expr && prev != expr)
-                return true;
-            prev = e;
-        }
-        return false;
-    }
-    
     @Override
     public String toString() {
         return "len=" + list.size() + " quality=" + getQuality() + ": " + generateCode().trim();

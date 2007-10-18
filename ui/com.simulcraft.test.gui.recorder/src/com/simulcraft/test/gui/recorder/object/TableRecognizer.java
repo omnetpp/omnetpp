@@ -1,5 +1,6 @@
 package com.simulcraft.test.gui.recorder.object;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
@@ -13,8 +14,9 @@ public class TableRecognizer extends ObjectRecognizer {
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Table) {
             Table table = (Table)uiObject;
-            if (findDescendantControl(table.getShell(), Table.class) == uiObject)
-                return makeSeq(table.getShell(), expr("findTable()", 0.8, table));
+            Composite container = findContainer(table);
+            if (findDescendantControl(container, Table.class) == uiObject)
+                return makeSeq(container, expr("findTable()", 0.8, table));
         }
         return null;
     }

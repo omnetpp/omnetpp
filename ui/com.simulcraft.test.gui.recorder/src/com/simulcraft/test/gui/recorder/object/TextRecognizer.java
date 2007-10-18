@@ -1,5 +1,6 @@
 package com.simulcraft.test.gui.recorder.object;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -14,9 +15,10 @@ public class TextRecognizer extends ObjectRecognizer {
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Text) {
             Text text = (Text)uiObject;
-            Label label = getPrecedingUniqueLabel(text.getShell(), text);
+            Composite container = findContainer(text);
+            Label label = getPrecedingUniqueLabel(container, text);
             if (label != null)
-                return makeSeq(text.getShell(), expr("findTextAfterLabel("+quote(label.getText()) + ")", 0.8, text));
+                return makeSeq(container, expr("findTextAfterLabel("+quote(label.getText()) + ")", 0.8, text));
         }
         return null;
     }

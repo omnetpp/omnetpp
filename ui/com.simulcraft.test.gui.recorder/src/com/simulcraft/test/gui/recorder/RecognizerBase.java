@@ -45,8 +45,8 @@ public class RecognizerBase  {
     }
 
     // expr is a method, called on uiObject 
-    public JavaSequence makeSeq(Object uiObject, JavaExpr expr) {
-        return addExpr(new JavaSequence(), uiObject, expr);
+    public JavaSequence makeSeq(Object uiObject, JavaExpr methodExpr) {
+        return addExpr(new JavaSequence(), uiObject, methodExpr);
     }
 
     // expr is standalone expression 
@@ -56,7 +56,7 @@ public class RecognizerBase  {
     }
 
     // expr is a method, called on uiObject 
-    public JavaSequence addExpr(JavaSequence base, Object uiObject, JavaExpr expr) {
+    public JavaSequence addExpr(JavaSequence base, Object uiObject, JavaExpr methodExpr) {
         Assert.isTrue(!(uiObject instanceof Event));
 
         // first, check if uiObject was already identified somewhere
@@ -76,8 +76,8 @@ public class RecognizerBase  {
         if (uiObjectExpr == null)
             return null; // could not find a way to identify uiObject
         else {
-            expr.setCalledOn(uiObjectExpr);
-            base.add(expr);
+            methodExpr.setCalledOn(uiObjectExpr);
+            base.add(methodExpr);
             return base;
         }
     }

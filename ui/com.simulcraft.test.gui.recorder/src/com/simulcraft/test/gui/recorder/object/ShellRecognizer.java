@@ -14,6 +14,7 @@ public class ShellRecognizer extends ObjectRecognizer {
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Shell) {
             Shell shell = (Shell)uiObject;
+            //FIXME check label uniquely identifies button within container
             return makeSeq(new JavaExpr("findShellWithTitle(" + quote(shell.getText()) + ")", 0.5, shell));
         }
         return null;

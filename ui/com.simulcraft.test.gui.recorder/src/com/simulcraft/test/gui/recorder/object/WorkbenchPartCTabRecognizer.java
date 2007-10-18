@@ -10,8 +10,8 @@ import org.eclipse.ui.internal.presentations.util.AbstractTabItem;
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
-public class WorkbenchPartRecognizer extends ObjectRecognizer {
-    public WorkbenchPartRecognizer(GUIRecorder recorder) {
+public class WorkbenchPartCTabRecognizer extends ObjectRecognizer {
+    public WorkbenchPartCTabRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
 
