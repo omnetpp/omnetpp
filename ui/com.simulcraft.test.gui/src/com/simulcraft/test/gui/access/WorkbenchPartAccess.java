@@ -59,12 +59,23 @@ public class WorkbenchPartAccess
     public CTabItemAccess getCTabItem() {
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), workbenchPart.getSite().getRegisteredName()));
     }
+    
+    @InUIThread
+    public boolean isActivated() {
+        CTabItem cTabItem = getCTabItem().getWidget();
+        IWorkbenchPart workbenchPart = getPart();
+        return cTabItem.getParent().getSelection() == cTabItem &&
+        		workbenchPart.getSite().getPage().getActivePart() == workbenchPart;
+    }
+    
+    @InUIThread
+    public void assertActivated() {
+    	Assert.assertTrue("The workbench part '" + getPart().getSite().getRegisteredName() + "' is not activated", isActivated());
+    }
 
     @InUIThread
     public void ensureActivated() {
-        CTabItem cTabItem = getCTabItem().getWidget();
-        IWorkbenchPart workbenchPart = getPart();
-        if (cTabItem.getParent().getSelection() != cTabItem || workbenchPart.getSite().getPage().getActivePart() != workbenchPart)
+        if (!isActivated())
             activateWithMouseClick();
     }
 }
