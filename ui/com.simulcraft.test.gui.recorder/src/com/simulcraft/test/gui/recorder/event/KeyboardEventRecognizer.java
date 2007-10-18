@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
-import com.simulcraft.test.gui.recorder.JavaExpr;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
 
@@ -18,7 +17,7 @@ import com.simulcraft.test.gui.recorder.JavaSequence;
  */
 public class KeyboardEventRecognizer extends EventRecognizer {
     private String typing = "";
-    private boolean modifierJustPressed = false;
+    private Control typingFocus = null;
 
     public KeyboardEventRecognizer(GUIRecorder recorder) {
         super(recorder);
@@ -27,48 +26,38 @@ public class KeyboardEventRecognizer extends EventRecognizer {
     public JavaSequence recognizeEvent(Event e) {
         int modifierState = recorder.getKeyboardModifierState();
         Control focusControl = Display.getCurrent().getFocusControl();
+        if (focusControl != typingFocus) {
+            flushTyping();
+            typingFocus = focusControl;
+        }
         
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
-                modifierJustPressed = false;
                 typing += e.character;
                 return new JavaSequence();
             }
-            else if ((e.keyCode & SWT.MODIFIER_MASK) == 0) {
+            else if ((e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
                 // record non-modifier control key
-                modifierJustPressed = false;
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                recorder.add(flushTyping());
+                flushTyping();
                 return makeSeq(focusControl, expr("pressKey(SWT." + string + ")", 0.7, null));
             }
             else {
                 // modifier KeyDown -- ignore
-                modifierJustPressed = true;
-            }
-        }
-        else if (e.type == SWT.KeyUp) {
-            // record if modifier was pressed then released without anything in between
-            if (modifierJustPressed) {
-                modifierJustPressed = false;
-                String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                return makeSeq(focusControl, expr("pressKey(SWT." + string + ")", 0.7, null));
             }
         }
         else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
-            modifierJustPressed = false;
-            recorder.add(flushTyping());
+            flushTyping();
         }
         return null;
     }
 
-    protected JavaSequence flushTyping() {
+    protected void flushTyping() {
         if (typing.length() > 0) {
-            String quoted = typing.replace("\"", "\\\"");
+            String quotedText = typing.replace("\"", "\\\"");
+            recorder.add(makeSeq(typingFocus, expr("type(\"" + quotedText + "\")", 0.7, null)));
             typing = "";
-            Control focusControl = Display.getCurrent().getFocusControl();
-            return makeSeq(focusControl, expr("type(\"" + quoted + "\")", 0.7, null));
         }
-        return null;
     }
 }
 

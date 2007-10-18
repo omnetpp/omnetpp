@@ -67,6 +67,8 @@ public class JavaSequence {
      * Generate Java code from the JavaExpr objects contained. 
      */
     public String generateCode() {
+        long startTime = System.currentTimeMillis();
+
         simplifySequence();
         makeVariablesUnique();
 
@@ -90,6 +92,8 @@ public class JavaSequence {
             text += expr.getJavaCode();
         }
         text = addSemicolonIfNeeded(text).trim() + "\n";
+        
+        System.out.println("code generated in " + (System.currentTimeMillis()-startTime) + "ms");
         return text;
     }
     
