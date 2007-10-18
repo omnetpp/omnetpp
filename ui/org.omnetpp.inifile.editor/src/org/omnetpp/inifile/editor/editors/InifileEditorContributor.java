@@ -64,16 +64,15 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	@Override
 	public void setActivePage(IEditorPart part) {
 
-
 		// the rest of actions are enabled only if the active editor is a text editor
 		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
 		textEdContributor.setActiveEditor(part);
 
 		// the UNDO/REDO is always redirected to the text editor
-		InifileEditor multipageEditor = (InifileEditor) getPage().getActiveEditor();
-		if (multipageEditor != null) {
-		    setTextEditorGlobalActionHandler(ActionFactory.UNDO.getId(), multipageEditor.getTextEditor());
-		    setTextEditorGlobalActionHandler(ActionFactory.REDO.getId(), multipageEditor.getTextEditor());
+		IEditorPart multipageEditor = getPage().getActiveEditor();
+		if (multipageEditor != null && multipageEditor instanceof InifileEditor) {
+		    setTextEditorGlobalActionHandler(ActionFactory.UNDO.getId(), ((InifileEditor)multipageEditor).getTextEditor());
+		    setTextEditorGlobalActionHandler(ActionFactory.REDO.getId(), ((InifileEditor)multipageEditor).getTextEditor());
 		}
 
         fContentAssistProposal.setAction(getAction(textEditor, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS));
