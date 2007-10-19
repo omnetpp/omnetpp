@@ -17,7 +17,7 @@
 OMNETPP_ROOT = $(OMNETPP_ROOT:\=/)
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-4.0a2
+OMNETPP_VERSION=omnetpp-4.0a3
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -98,7 +98,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to
@@ -120,10 +120,10 @@ WITH_PARSIM=no    # FIXME for now
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
+#CFLAGS=$(CFLAGS_DEBUG)
+#LDFLAGS=$(LDFLAGS_DEBUG)
 
 
 #==============================================================================

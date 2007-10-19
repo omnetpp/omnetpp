@@ -8,7 +8,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
- * Visitor interface for use with NEDTreeIterator.
+ * Visitor interface for use with NEDTreeTraversal.
  */
 public interface IModuleTreeVisitor {
 	/**

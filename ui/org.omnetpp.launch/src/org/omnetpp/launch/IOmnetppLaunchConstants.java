@@ -52,5 +52,5 @@ public interface IOmnetppLaunchConstants {
     /**
      * How many simulations may run in parallel during batch execution
      */
-    public static final String ATTR_PARALLELISM = OMNETPP_LAUNCH_ID + ".PARALLELISM";
+    public static final String ATTR_NUM_CONCURRENT_PROCESSES = OMNETPP_LAUNCH_ID + ".NUM_CONCURRENT_PROCESSES";
 }

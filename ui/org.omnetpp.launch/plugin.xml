@@ -49,5 +49,16 @@
             supportsArgument="true">
       </variable>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            default="true"
+            extensions="launch"
+            icon="icons/launchfile.png"
+            id="org.omnetpp.launch.editor"
+            launcher="org.omnetpp.launch.ConfigurationLauncher"
+            name="Configuration Launcher">
+      </editor>
+   </extension>
 
 </plugin>

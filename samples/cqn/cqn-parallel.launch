@@ -3,7 +3,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-f omnetpp.ini -c LargeLookahead -n ${ned_path:/cqn} -u Tkenv "/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/cqn/parsim/runparsim.bat"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
-<intAttribute key="org.omnetpp.launch.PARALLELISM" value="1"/>
+<intAttribute key="org.omnetpp.launch.NUM_CONCURRENT_PROCESSES" value="1"/>
 <stringAttribute key="org.omnetpp.launch.RUN" value="0"/>
 <booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="false"/>
 </launchConfiguration>

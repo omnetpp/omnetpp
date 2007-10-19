@@ -43,14 +43,14 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      * @param configuration The configuration to be started
      * @param launch The launch object
      * @param runs An integer array specifying which runs to execute
-     * @param paralelism How many simulations should be able to run concurrently
+     * @param parallelism How many simulations should be able to run concurrently
      */
-    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer[] runs, int paralelism) {
+    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer[] runs, int parallelism) {
         super("Running "+runs.length+" simulations");
         this.configuration = configuration;
         this.launch = launch;
         this.runs = runs;
-        this.maxParalelJobs = paralelism;
+        this.maxParalelJobs = parallelism;
         // we don't want to display the batch job to the user
         setSystem(true);
     }

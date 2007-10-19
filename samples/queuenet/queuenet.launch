@@ -5,7 +5,7 @@
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
 <intAttribute key="org.omnetpp.launch.PARALELISM" value="1"/>
-<intAttribute key="org.omnetpp.launch.PARALLELISM" value="1"/>
+<intAttribute key="org.omnetpp.launch.NUM_CONCURRENT_PROCESSES" value="1"/>
 <stringAttribute key="org.omnetpp.launch.RUN" value="0"/>
 <booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="true"/>
 </launchConfiguration>

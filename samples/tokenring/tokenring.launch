@@ -3,7 +3,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-c TokenRing1 -n ${ned_path:/tokenring} -u Tkenv "/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/tokenring/tokenring.exe"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
-<intAttribute key="org.omnetpp.launch.PARALLELISM" value="1"/>
+<intAttribute key="org.omnetpp.launch.NUM_CONCURRENT_PROCESSES" value="1"/>
 <stringAttribute key="org.omnetpp.launch.RUN" value=""/>
 <booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="false"/>
 </launchConfiguration>

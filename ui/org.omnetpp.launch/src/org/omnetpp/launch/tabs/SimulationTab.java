@@ -85,8 +85,9 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 return name +(StringUtils.isEmpty(additional) ? "" : " --"+additional);
             }
         }
+        
         IFile currentFile;
-        String currentSectionName;
+        Section currentSection;
         Map<String, Section> result;
 
         public ConfigEnumeratorCallback(IFile file, Map<String, Section> result) {
@@ -113,35 +114,28 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
         @Override
         public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
-            if ("extends".equals(key)){
-                getSectionForName(currentSectionName).extnds = value;
-            }
-            if ("description".equals(key)){
-                getSectionForName(currentSectionName).descr = value;
-            }
-            if ("network".equals(key)){
-                getSectionForName(currentSectionName).network = value;
-            }
+            if ("extends".equals(key))
+                currentSection.extnds = value;
+            
+            if ("description".equals(key))
+                currentSection.descr = value;
+            
+            if ("network".equals(key))
+                currentSection.network = value;
         }
 
         @Override
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
-            currentSectionName = StringUtils.removeStart(sectionName,"Config ");
+            String name = StringUtils.removeStart(sectionName,"Config ");
+            if (result.containsKey(name))
+                currentSection = result.get(name);
+            else {
+                currentSection = new Section();
+                currentSection.name = name;
+                result.put(name, currentSection);
+            }
         }
 
-        /**
-         * Returns the section with a given name (if not present in the map, adds it)
-         */
-        private Section getSectionForName(String name) {
-            Section currSection = result.get(name);
-            // if it still not in the
-            if (currSection == null) {
-                currSection = new Section();
-                currSection.name = name;
-                result.put(name, currSection);
-            }
-            return currSection;
-        }
     }
 
     /**
@@ -423,7 +417,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""));
 
             if (fParallelismSpinner != null)
-                fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_PARALLELISM, 1));
+                fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, 1));
 
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
@@ -482,7 +476,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
         }
 
         if (fParallelismSpinner != null)
-            config.setAttribute(IOmnetppLaunchConstants.ATTR_PARALLELISM, fParallelismSpinner.getSelection());
+            config.setAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
 
         if (fCmdEnvButton.getSelection())
             arg += "-u Cmdenv ";
