@@ -379,3 +379,41 @@ class SCAVE_API RemoveRepeatsNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
 
+//----
+
+/**
+ * Processing node which compares the value against a constant.
+ */
+class SCAVE_API ComparatorNode : public FilterNode
+{
+    protected:
+        double threshold;
+        bool replaceIfLess;
+        bool replaceIfGreater;
+        bool replaceIfEqual;
+        double valueIfLess;
+        double valueIfGreater;
+        double valueIfEqual;
+    public:
+        ComparatorNode()  {replaceIfLess = replaceIfGreater = replaceIfEqual = false;}
+        virtual ~ComparatorNode() {}
+
+        void setThreshold(double d)  {threshold = d;}
+        void setLessValue(double d)  {valueIfLess = d; replaceIfLess = true;}
+        void setEqualValue(double d)  {valueIfEqual = d; replaceIfEqual = true;}
+        void setGreaterValue(double d)  {valueIfGreater = d; replaceIfGreater = true;}
+
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SCAVE_API ComparatorNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "compare";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+};
+

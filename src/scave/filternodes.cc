@@ -19,6 +19,7 @@
 #include <math.h>
 #include "channel.h"
 #include "filternodes.h"
+#include "stringutil.h"
 
 
 bool NopNode::isReady() const
@@ -676,6 +677,79 @@ Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
 
     Node *node = new RemoveRepeatsNode();
     node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+//-----
+
+bool ComparatorNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void ComparatorNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+
+        if (d.y < threshold)
+        {
+             if (replaceIfLess)
+                 d.y = valueIfLess;
+        }
+        else if (d.y > threshold)
+        {
+             if (replaceIfGreater)
+                 d.y = valueIfGreater;
+        }
+        else
+        {
+             if (replaceIfEqual)
+                 d.y = valueIfEqual;
+        }
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *ComparatorNodeType::description() const
+{
+    return "Compares value against a constant, and optionally replaces "
+           "it with a constant if less, equal or greater.";
+}
+
+void ComparatorNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["threshold"] = "constaint to compare against";
+    attrs["ifLess"] = "number to output if y < threshold (empty=no change)";
+    attrs["ifEqual"] = "number to output if y == threshold (empty=no change)";
+    attrs["ifGreater"] = "number to output if y > threshold (empty=no change)";
+}
+
+void ComparatorNodeType::getAttrDefaults(StringMap& attrs) const
+{
+}
+
+Node *ComparatorNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    ComparatorNode *node = new ComparatorNode();
+    node->setNodeType(this);
+
+    node->setThreshold(atof(attrs["threshold"].c_str()));
+    if (!opp_isblank(attrs["ifLess"].c_str()))
+        node->setLessValue(atof(attrs["ifLess"].c_str()));
+    if (!opp_isblank(attrs["ifEqual"].c_str()))
+        node->setEqualValue(atof(attrs["ifEqual"].c_str()));
+    if (!opp_isblank(attrs["ifGreater"].c_str()))
+        node->setGreaterValue(atof(attrs["ifGreater"].c_str()));
+
     mgr->addNode(node);
     return node;
 }
