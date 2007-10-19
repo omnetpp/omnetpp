@@ -419,39 +419,39 @@ void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
 }
 
 class RunAttributeLess : CmpBase {
-	private:
-		const char* attrName;
-	public:
-		RunAttributeLess(ResultFileManager* m, const char* attrName)
-			: CmpBase(m), attrName(attrName) {}
-		bool operator()(ID a, ID b) {
-			const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
-			const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-			return ((aValue && bValue) ? less(aValue, bValue) : aValue!=NULL);
-		}
+    private:
+        const char* attrName;
+    public:
+        RunAttributeLess(ResultFileManager* m, const char* attrName)
+            : CmpBase(m), attrName(attrName) {}
+        bool operator()(ID a, ID b) {
+            const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
+            const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+            return ((aValue && bValue) ? less(aValue, bValue) : aValue!=NULL);
+        }
 };
 
 class RunAttributeMore : CmpBase {
-	private:
-		const char* attrName;
-	public:
-		RunAttributeMore(ResultFileManager* m, const char* attrName)
-			: CmpBase(m), attrName(attrName) {}
-		bool operator()(ID a, ID b) {
-			const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
-			const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-			return ((bValue && aValue) ? less(bValue, aValue) : bValue!=NULL);
-		}
+    private:
+        const char* attrName;
+    public:
+        RunAttributeMore(ResultFileManager* m, const char* attrName)
+            : CmpBase(m), attrName(attrName) {}
+        bool operator()(ID a, ID b) {
+            const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
+            const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+            return ((bValue && aValue) ? less(bValue, aValue) : bValue!=NULL);
+        }
 };
 
 void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute, bool ascending) {
-	checkIntegrity(mgr);
+    checkIntegrity(mgr);
     if (v->size()>=2 && RunAttributeLess(mgr, runAttribute)(v->at(0), v->at(v->size()-1)) != ascending)
        reverse();
-	if (ascending)
-		std::sort(v->begin(), v->end(), RunAttributeLess(mgr, runAttribute));
-	else
-		std::sort(v->begin(), v->end(), RunAttributeMore(mgr, runAttribute));
+    if (ascending)
+        std::sort(v->begin(), v->end(), RunAttributeLess(mgr, runAttribute));
+    else
+        std::sort(v->begin(), v->end(), RunAttributeMore(mgr, runAttribute));
 }
 
 void IDList::reverse()
@@ -489,7 +489,7 @@ void IDList::toByteArray(char *array, int n) const
     checkV();
     if (n != (int)v->size()*8)
         throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
-    std::copy(v->begin(), v->end(), (ID*)array);
+    std::copy(v->begin(), v->end(), (ID*)array);  //XXX VC8.0: warning C4996: 'std::_Copy_opt' was declared deprecated
 }
 
 void IDList::fromByteArray(char *array, int n)
