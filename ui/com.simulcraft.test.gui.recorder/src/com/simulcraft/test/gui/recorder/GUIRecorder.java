@@ -18,6 +18,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableTree;
+import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -47,6 +49,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -62,15 +65,18 @@ import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.FileUtils;
 
-import com.simulcraft.test.gui.recorder.event.BlankLineInserter;
 import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.MenuSelectionRecognizer;
+import com.simulcraft.test.gui.recorder.event.StyledTextClickRecognizer;
+import com.simulcraft.test.gui.recorder.event.TextClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.WorkbenchPartCTabClickRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
+import com.simulcraft.test.gui.recorder.object.IDBasedControlRecognizer;
 import com.simulcraft.test.gui.recorder.object.MenuItemRecognizer;
+import com.simulcraft.test.gui.recorder.object.MultiPageEditorCTabRecognizer;
 import com.simulcraft.test.gui.recorder.object.ShellRecognizer;
 import com.simulcraft.test.gui.recorder.object.StyledTextRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableItemRecognizer;
@@ -81,6 +87,7 @@ import com.simulcraft.test.gui.recorder.object.TreeItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCTabRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCompositeRecognizer;
+import com.simulcraft.test.gui.recorder.object.WorkbenchPartRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchWindowRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchWindowShellRecognizer;
 
@@ -122,14 +129,17 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new KeyboardEventRecognizer(this));
         eventRecognizers.add(new ButtonEventRecognizer(this));
         eventRecognizers.add(new ClickRecognizer(this));
+        eventRecognizers.add(new TextClickRecognizer(this));
+        eventRecognizers.add(new StyledTextClickRecognizer(this));
         eventRecognizers.add(new MenuSelectionRecognizer(this));
         eventRecognizers.add(new WorkbenchPartCTabClickRecognizer(this));
-        eventRecognizers.add(new BlankLineInserter(this));
         
         objectRecognizers.add(new WorkbenchWindowRecognizer(this));
         objectRecognizers.add(new WorkbenchWindowShellRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
         objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
+        objectRecognizers.add(new MultiPageEditorCTabRecognizer(this));
         objectRecognizers.add(new ShellRecognizer(this));
         objectRecognizers.add(new MenuItemRecognizer(this));
         objectRecognizers.add(new ButtonRecognizer(this));
@@ -141,6 +151,7 @@ public class GUIRecorder implements Listener {
         objectRecognizers.add(new TableItemRecognizer(this));
         objectRecognizers.add(new TreeItemRecognizer(this));
         objectRecognizers.add(new ToolItemRecognizer(this));
+        objectRecognizers.add(new IDBasedControlRecognizer(this));
         createPanel();
     }
 
@@ -203,7 +214,7 @@ public class GUIRecorder implements Listener {
             if (e.type==SWT.MouseDown)
                 add(new JavaExpr("Access.clickAbsolute(" + e.x + ", " + e.y + "); //TODO unrecognized click - revise", 1.0, null, null)); //XXX which button
             if (e.type==SWT.KeyDown)
-                add(new JavaExpr("Access.pressKey("+e.keyCode + "); //TODO unrecognized keypress - revise", 1.0, null, null)); //XXX modifier keys
+                add(new JavaExpr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(e, modifierState)+ "; //TODO unrecognized keypress - revise", 1.0, null, null));
         }
         
         result.cleanup(); // may be called less frequently if proves to be slow
@@ -294,6 +305,31 @@ public class GUIRecorder implements Listener {
         return control;
     }
     
+    //TODO make this extensible
+    @SuppressWarnings("deprecation")
+    public static Control getParentControl(Widget widget) {
+        Control control = null;
+        if (widget instanceof Control)
+            control = (Control)widget;
+        else if (widget instanceof TreeItem)
+            control = ((TreeItem)widget).getParent();
+        else if (widget instanceof TableItem)
+            control = ((TableItem)widget).getParent();
+        else if (widget instanceof TableTreeItem)
+            control = ((TableTreeItem)widget).getParent();
+        else if (widget instanceof TabItem)
+            control = ((TabItem)widget).getParent();
+        else if (widget instanceof CTabItem)
+            control = ((CTabItem)widget).getParent();
+        else if (widget instanceof ToolItem)
+            control = ((ToolItem)widget).getParent();
+        else if (widget instanceof CoolItem)
+            control = ((CoolItem)widget).getParent();
+        else if (widget instanceof ExpandItem)
+            control = ((ExpandItem)widget).getParent();
+        return control;
+    }
+
     //TODO make this extensible
     public String getVariableTypeFor(Object resultUIObject) {
         // note: base classes last, because we want to return the most specialized type

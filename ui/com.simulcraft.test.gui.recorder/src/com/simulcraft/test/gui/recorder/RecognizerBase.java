@@ -85,7 +85,7 @@ public class RecognizerBase  {
         }
     }
 
-    public static String quoteText(String text) {
+    public static String quoteRegexText(String text) {
         return toJavaLiteral(toRegex(text));
     }
 

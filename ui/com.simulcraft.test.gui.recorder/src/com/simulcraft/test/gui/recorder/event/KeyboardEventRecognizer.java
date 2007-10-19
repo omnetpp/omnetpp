@@ -38,9 +38,8 @@ public class KeyboardEventRecognizer extends EventRecognizer {
             }
             else if ((e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
                 // record non-modifier control key
-                String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
                 flushTyping();
-                return makeSeq(focusControl, expr("pressKey(SWT." + string + ")", 0.7, null));
+                return makeSeq(focusControl, expr(toPressKeyInvocation(e, modifierState), 0.7, null));
             }
             else {
                 // modifier KeyDown -- ignore
@@ -52,9 +51,14 @@ public class KeyboardEventRecognizer extends EventRecognizer {
         return null;
     }
 
+    public static String toPressKeyInvocation(Event e, int modifierState) {
+        String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
+        return "pressKey(SWT." + string + ")";
+    }
+    
     protected void flushTyping() {
         if (typedChars.length() > 0) {
-            recorder.add(makeSeq(typingFocus, expr("type(" + quoteText(typedChars) + ")", 0.7, null)));
+            recorder.add(makeSeq(typingFocus, expr("type(" + toJavaLiteral(typedChars) + ")", 0.7, null)));
             typedChars = "";
         }
     }
