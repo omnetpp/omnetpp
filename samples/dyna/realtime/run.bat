@@ -1,1 +1,1 @@
-..\dyna.exe
+..\dyna.exe realtime.ini

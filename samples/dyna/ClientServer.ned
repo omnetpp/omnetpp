@@ -7,12 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "Client";
-import "Server";
-import "Switch";
-
-
 //
 // Model of the network, consisting of serveral clients, a server and a switch
 //

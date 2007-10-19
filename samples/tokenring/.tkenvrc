@@ -16,8 +16,7 @@ option penguin_mode	{0}
 option showlayouting	{0}
 option usenewlayouter	{0}
 option bubbles	{1}
-option animation_speed	{1.5}
-option bkpts_enabled	{1}
+option animation_speed	{3}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
@@ -49,6 +48,6 @@ config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
 inspector "TokenRing" "TokenRing" "2" "377x410+96+124"
 inspector "token" "token" "2" "367x416+87+174"
-inspector "token.comp[4]" "Computer" "2" "367x303+503+147"
 inspector "TokenRing.comp[0]" "Computer" "2" "367x303+120+155"
+inspector "token.comp[4]" "Computer" "2" "367x303+503+147"
 

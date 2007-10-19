@@ -17,7 +17,6 @@ option showlayouting	{0}
 option usenewlayouter	{0}
 option bubbles	{1}
 option animation_speed	{3}
-option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
@@ -47,6 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "ClientServer" "ClientServer" "2" "405x418+369+178"
 inspector "dyna" "ClientServer" "2" "405x417+146+239"
 

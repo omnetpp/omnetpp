@@ -1,7 +1,7 @@
-QueueNET
+Queuinglib
 ========
 
-QueueNET is a queueing network tutorial and queueing library for OMNeT++.
+QueueNET is a queuing network tutorial and queuing library for OMNeT++.
 It is the successor of the Queue, Queueing, Fifo samples from earlier
 versions of OMNeT++. It contains several basic building blocks that can be
 used to build more complex queueing theory related networks. Jobs are passed
@@ -20,15 +20,15 @@ Basic building blocks:
 
 - Classifier
   Classifies all incoming Jobs based on Job type or priority and sends out
-  them on the corresponding output gates,
+  them on the corresponding output gates.
 
 - Delay
   Delays a Job by an amount of time. The dealy can be specified as a random
-  distrinution.
+  distribution.
 
 - Fork
   Creates copies from incoming Jobs and sends them out on ALL output.
-  Copies are labelled after the original Job that got copied,
+  Copies are labelled after the original Job that got copied.
 
 - Join
   Any Job arriving on an INPUT will be sent out immediately on the SINGLE
@@ -39,9 +39,9 @@ Basic building blocks:
   to be able to consume Jobs. Queue size can be limited and Jobs over
   the size limit will be dropped (capacity). Queuing strategy can be set 
   eiter to FIFO or LIFO. If more than one server is attached to the PQueue's 
-  output it uses the sendingAlgorithm parameter to decide where should 
-  it send a newly received Job. Gatehers statistics like max,min,average
-  queue length. Average queueing time.
+  output it uses the sendingAlgorithm parameter to decide where the newly 
+  received Job should be sent. Gathers statistics like max, min, average
+  queue length. Average queuing time.
 
 - Server
   A Job processing unit. Only PQueue-s should be attached to its input. If 
@@ -50,14 +50,15 @@ Basic building blocks:
   to define how Jobs are processed by the Server.
 
 - Queue
-  An active provessing server with a uilt in queue. Basically it is a PQueue
+  An active provessing server with a built in queue. Basically it is a PQueue
   and a Server built into a single module.
 
 - Router
   Routes the incoming Jobs using different algorithm like random, roundRobin,
   shortestQueue etc.
 
-Examples
+========
+QueueNET - queuinglib examples
 ========
 
 - A simple source, server, sink example.
@@ -67,7 +68,7 @@ Examples
 - Tandem queues
   Several servers connected to each other in a row.
 
-- A closed queueing network (ring)
+- A closed queuing network (ring)
   Several servers connected in a ring. Demonstrates how to inject Jobs into 
   a queue.
 

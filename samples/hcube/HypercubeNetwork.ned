@@ -7,10 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "Hypercube";
-
-
 //
 // The actual hypercube network, instantiated as from the Hypercube
 // topology template, substituting HypercubeNode for HCNode.

@@ -6,8 +6,9 @@
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
 //
+package networks;
 
-import "../Node";
+import Net60;
 
 //
 // This network adds one extra connection to the net60 model (net60.ned).

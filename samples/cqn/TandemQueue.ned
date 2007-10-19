@@ -7,11 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "Queue.ned";
-import "Switch.ned";
-
-
 //
 // A "tandem queue" for the "B" variant of the Closed Queueing Network.
 //

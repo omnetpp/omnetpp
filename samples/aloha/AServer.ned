@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 //
 // The central computer in the ALOHAnet network.
 //

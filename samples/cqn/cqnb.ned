@@ -7,10 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "tandemqueue.ned";
-
-
 //
 // Closed Queueing Network, variant "B".
 //

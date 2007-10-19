@@ -16,8 +16,7 @@ option penguin_mode	{0}
 option showlayouting	{1}
 option usenewlayouter	{1}
 option bubbles	{1}
-option animation_speed	{1.94}
-option bkpts_enabled	{1}
+option animation_speed	{2.06}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}

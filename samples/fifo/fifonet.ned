@@ -7,12 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "gen";
-import "fifo";
-import "sink";
-
-
 //
 // Simple queueing network: generator + FIFO + sink.
 //

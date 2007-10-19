@@ -7,12 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "HCGenerator";
-import "HCSink";
-import "HCRouter";
-
-
 //
 // Building block of the deflection routing hypercube.
 //

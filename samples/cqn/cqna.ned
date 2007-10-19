@@ -7,11 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "queue.ned";
-import "switch.ned";
-
-
 //
 // Closed Queueing Network, variant "A".
 //

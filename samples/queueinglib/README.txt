@@ -1,6 +1,6 @@
 
 This is not a standalone simulation!
 
-This directory contains a queueing library implementation; see the QueueNet 
+This directory contains a queuing library implementation; see the QueueNet 
 directory for an example usage.
 

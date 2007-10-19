@@ -7,13 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import "telnetclient";
-import "exttelnetclient";
-import "telnetserver";
-import "cloud";
-
-
 //
 // Model of the network, consisting of several clients, a server and a cloud
 //
