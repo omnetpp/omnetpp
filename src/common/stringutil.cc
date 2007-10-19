@@ -20,6 +20,14 @@
 #include "stringtokenizer.h"
 
 
+bool opp_isblank(const char *txt)
+{
+    for (const char *s = txt; *s; s++)
+        if (!opp_isspace(*s))
+            return false;
+    return true;
+}
+
 std::string opp_parsequotedstr(const char *txt)
 {
     const char *endp;

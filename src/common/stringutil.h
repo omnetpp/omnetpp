@@ -22,6 +22,11 @@
 
 
 /**
+ * Returns true if the string only contains whitespace.
+ */
+COMMON_API bool opp_isblank(const char *txt);
+
+/**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
  * Throws an exception if there's a parse error. If there's anything
