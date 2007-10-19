@@ -42,9 +42,9 @@ public class MenuSelectionRecognizer extends EventRecognizer {
 
             Display display = Display.getCurrent();
             if (display.getFocusControl().getMenu() == rootMenu)
-                return makeSeq(display.getFocusControl(), expr("chooseFromContextMenu("+quote(menuPath)+")", 0.8, null));
+                return makeSeq(display.getFocusControl(), expr("chooseFromContextMenu("+quoteMenuPath(menuPath)+")", 0.8, null));
             else if (display.getActiveShell().getMenuBar() == rootMenu)
-                return makeSeq(display.getActiveShell(), expr("chooseFromMainMenu("+quote(menuPath)+")", 0.8, null));
+                return makeSeq(display.getActiveShell(), expr("chooseFromMainMenu("+quoteMenuPath(menuPath)+")", 0.8, null));
             // try harder? like: menuOwner = findMenuOwner(rootMenu); ...
         }
         return null;

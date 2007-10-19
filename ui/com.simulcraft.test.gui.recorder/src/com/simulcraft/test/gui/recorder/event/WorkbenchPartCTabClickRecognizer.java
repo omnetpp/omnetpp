@@ -23,9 +23,9 @@ public class WorkbenchPartCTabClickRecognizer extends EventRecognizer {
                 CTabItem item = (CTabItem) uiObject;
                 IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                 if (WorkbenchPartCTabRecognizer.isViewTabItem(item))
-                    return makeSeq(workbenchWindow, expr("findViewPartByTitle("+quote(item.getText())+").activateByMouseClick()", 0.9, null));
+                    return makeSeq(workbenchWindow, expr("findViewPartByTitle("+quoteLabel(item.getText())+").activateByMouseClick()", 0.9, null));
                 if (WorkbenchPartCTabRecognizer.isEditorTabItem(item))
-                    return makeSeq(workbenchWindow, expr("findEditorPartByTitle("+quote(item.getText())+").activateByMouseClick()", 0.9, null));
+                    return makeSeq(workbenchWindow, expr("findEditorPartByTitle("+quoteLabel(item.getText())+").activateByMouseClick()", 0.9, null));
             }
         }
         return null;

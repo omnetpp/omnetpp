@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.recorder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -84,11 +85,27 @@ public class RecognizerBase  {
         }
     }
 
-    
-    public static String quote(String text) {
-        return "\"" + text.replace("\"", "\\\"")+ "\""; 
+    public static String quoteText(String text) {
+        return toJavaLiteral(toRegex(text));
     }
 
+    public static String quoteMenuPath(String text) {
+        return toJavaLiteral(toRegex(text.replace("&", "")).replace("\\|", "|").replace("\\.\\.\\." ,".*"));
+    }
+
+    public static String quoteLabel(String text) {
+        return toJavaLiteral(toRegex(text.replace("&", "")).replace("\\.\\.\\." ,".*"));
+    }
+
+    public static String toRegex(String text) {
+        for (char ch : "\\*?+.^$()[]{}|".toCharArray())
+            text = text.replace(""+ch, "\\"+ch);
+        return text;
+    }
+
+    public static String toJavaLiteral(String text) {
+        return "\"" + StringEscapeUtils.escapeJava(text) + "\""; 
+    }
 
     public static Object findObject(List<Object> objects, IPredicate predicate) {
         return theOnlyObject(collectObjects(objects, predicate));

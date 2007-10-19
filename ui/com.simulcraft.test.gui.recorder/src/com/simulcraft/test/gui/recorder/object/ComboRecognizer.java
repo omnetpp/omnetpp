@@ -18,7 +18,7 @@ public class ComboRecognizer extends ObjectRecognizer {
             Composite container = findContainer(combo);
             Label label = getPrecedingUniqueLabel(container, combo);
             if (label != null)
-                return makeSeq(container, expr("findComboAfterLabel("+quote(label.getText()) + ")", 0.8, combo));
+                return makeSeq(container, expr("findComboAfterLabel("+quoteLabel(label.getText()) + ")", 0.8, combo));
         }
         return null;
     }

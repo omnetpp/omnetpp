@@ -17,7 +17,7 @@ public class ButtonRecognizer extends ObjectRecognizer {
             Button button = (Button)uiObject;
             Composite container = findContainer(button);
             //FIXME check label uniquely identifies button within container
-            return makeSeq(container, expr("findButtonWithLabel("+quote(button.getText()) + ")", 0.8, button));
+            return makeSeq(container, expr("findButtonWithLabel("+quoteLabel(button.getText()) + ")", 0.8, button));
         }
         return null;
     }

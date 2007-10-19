@@ -17,7 +17,7 @@ public class ToolItemRecognizer extends ObjectRecognizer {
             ToolItem item = (ToolItem)uiObject;
             Composite container = findContainer(item.getParent());
             //FIXME check tooltip text uniquely identifies button within container
-            return makeSeq(container, expr("findToolItemWithTooltip("+quote(item.getToolTipText()) + ")", 0.8, item));
+            return makeSeq(container, expr("findToolItemWithTooltip("+quoteLabel(item.getToolTipText()) + ")", 0.8, item));
         }
         return null;
     }

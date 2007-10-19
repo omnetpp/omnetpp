@@ -14,7 +14,7 @@ public class TableItemRecognizer extends ObjectRecognizer {
         if (uiObject instanceof TableItem) {
             TableItem item = (TableItem)uiObject;
             //FIXME check label uniquely identifies item
-            return makeSeq(item.getParent(), expr("findTableItemByContent("+quote(item.getText())+")", 0.8, item));
+            return makeSeq(item.getParent(), expr("findTableItemByContent("+quoteLabel(item.getText())+")", 0.8, item));
         }
         return null;
     }

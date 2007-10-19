@@ -11,12 +11,12 @@ import com.simulcraft.test.gui.recorder.JavaSequence;
 
 
 /**
- * Responsible for recording typing
+ * Responsible for recording typedChars
  *   
  * @author Andras
  */
 public class KeyboardEventRecognizer extends EventRecognizer {
-    private String typing = "";
+    private String typedChars = "";
     private Control typingFocus = null;
 
     public KeyboardEventRecognizer(GUIRecorder recorder) {
@@ -33,7 +33,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
         
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
-                typing += e.character;
+                typedChars += e.character;
                 return new JavaSequence();
             }
             else if ((e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
@@ -53,10 +53,9 @@ public class KeyboardEventRecognizer extends EventRecognizer {
     }
 
     protected void flushTyping() {
-        if (typing.length() > 0) {
-            String quotedText = typing.replace("\"", "\\\"");
-            recorder.add(makeSeq(typingFocus, expr("type(\"" + quotedText + "\")", 0.7, null)));
-            typing = "";
+        if (typedChars.length() > 0) {
+            recorder.add(makeSeq(typingFocus, expr("type(" + quoteText(typedChars) + ")", 0.7, null)));
+            typedChars = "";
         }
     }
 }
