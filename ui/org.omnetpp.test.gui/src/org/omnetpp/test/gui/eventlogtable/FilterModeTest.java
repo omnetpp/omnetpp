@@ -12,7 +12,7 @@ public class FilterModeTest
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInEventLogTableEditor();
         
-        findEditorPart().getToolBarManager().getToolBar().findToolItemWithToolTip("Filter mode").
+        findEditorPart().getToolBarManager().getToolBar().findToolItemWithTooltip("Filter mode").
             activateDropDownMenu().activateMenuItemWithMouse(text);
     }
 

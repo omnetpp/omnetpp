@@ -9,7 +9,7 @@ public class DisplayModeTest
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInEventLogTableEditor();
         
-        findEditorPart().getToolBarManager().getToolBar().findToolItemWithToolTip("Display mode").
+        findEditorPart().getToolBarManager().getToolBar().findToolItemWithTooltip("Display mode").
             activateDropDownMenu().activateMenuItemWithMouse(text);
     }
 

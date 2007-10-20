@@ -7,9 +7,12 @@ import org.eclipse.swt.SWT;
 
 public class Demo extends GUITestCase {
     public void testPlay() {
+        // open perspective
+        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
+        
         {
             //create project
-            Access.findShellWithTitle("OMNeT\\+\\+ - OMNeT\\+\\+ IDE").chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNEST/OMNeT\\+\\+ Project");
+            Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNEST/OMNeT\\+\\+ Project");
             ShellAccess shell = Access.findShellWithTitle("New OMNeT\\+\\+ project");
             shell.findTextAfterLabel("Project name:").typeOver("demo");
             shell.findButtonWithLabel("Finish").selectWithMouseClick();
@@ -39,10 +42,48 @@ public class Demo extends GUITestCase {
             text.typeOver("demo");
             shell.findButtonWithLabel("A new toplevel Network").selectWithMouseClick();
             shell.findButtonWithLabel("Finish").selectWithMouseClick();
+            
         }
         
         // create demo network
         {
+            String code = "import org.omnetpp.samples.queueing.Source;\r\n" + 
+            		"import org.omnetpp.samples.queueing.Sink;\r\n" + 
+            		"import org.omnetpp.samples.queueing.Queue;\r\n" + 
+            		"import org.omnetpp.samples.queueing.Delay;\r\n" + 
+            		"import org.omnetpp.samples.queueing.Classifier;\r\n" + 
+            		"\r\n" + 
+            		"import org.omnetpp.samples.queueing.Router;\r\n" + 
+            		"network example\r\n" + 
+            		"{\r\n" + 
+            		"    parameters:\r\n" + 
+            		"        @display(\"bgb=386,257;i=block/network2\");\r\n" + 
+            		"    gates:\r\n" + 
+            		"    submodules:\r\n" + 
+            		"        source: Source {\r\n" + 
+            		"            @display(\"p=98,101\");\r\n" + 
+            		"        }\r\n" + 
+            		"        queue: Queue {\r\n" + 
+            		"            @display(\"p=157,172\");\r\n" + 
+            		"        }\r\n" + 
+            		"        queue1: Queue {\r\n" + 
+            		"            @display(\"p=269,59\");\r\n" + 
+            		"        }\r\n" + 
+            		"        queue2: Queue {\r\n" + 
+            		"            @display(\"p=317,189\");\r\n" + 
+            		"        }\r\n" + 
+            		"    connections:\r\n" + 
+            		"        source.out --> queue.in++;\r\n" + 
+            		"        queue.out --> queue1.in++;\r\n" + 
+            		"        queue1.out --> queue2.in++;\r\n" + 
+            		"        queue2.out --> queue.in++;\r\n" + 
+            		"}\r\n";
+            
+            MultiPageEditorPartAccess editor = (MultiPageEditorPartAccess)Access.getWorkbenchWindow().findEditorPartByTitle("demo\\.ned");
+            editor.activatePageEditor("Text");
+            editor.pressKey('a', SWT.CTRL);
+            editor.getComposite().findStyledText().typeIn(code);
+            editor.saveWithHotKey();
         }
         
         // create INI file
@@ -108,23 +149,24 @@ public class Demo extends GUITestCase {
             shell.findTree().findTreeItemByContent("OMNeT\\+\\+ Simulation").click();
             shell.findToolItemWithTooltip("New launch configuration").click();
             shell.findTextAfterLabel("Name:").clickAndTypeOver("demo");
-            CompositeAccess cTabFolder = shell.findCTabFolder();
-            cTabFolder.findButtonWithLabel("Browse.*").selectWithMouseClick();
 
-            ShellAccess shell2 = Access.findShellWithTitle("Select Executable File");
-            TreeAccess tree = shell2.findTree();
-            tree.findTreeItemByContent("queueinglib").click();
+            CompositeAccess cTabFolder = shell.findCTabFolder();
+            Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Run|Open Run Dialog.*");
+            cTabFolder.findTextAfterLabel("Simulation Program:").click();
+            shell.pressKey(SWT.TAB);
+            shell.pressKey(' ');
+            TreeAccess tree = Access.findShellWithTitle("Select Executable File").findTree();
             tree.pressKey(SWT.ARROW_RIGHT);
             tree.findTreeItemByContent("queueinglib\\.exe").doubleClick();
             
-            cTabFolder.findButtonWithLabel("Browse.*").selectWithMouseClick();
-
-            ShellAccess shell3 = Access.findShellWithTitle("Select INI Files");
-            TreeAccess tree2 = shell3.findTree();
+            cTabFolder.findTextAfterLabel("Initialization file\\(s\\):").click();
+            shell.pressKey(SWT.TAB);
+            shell.pressKey(' ');
+            TreeAccess tree2 = Access.findShellWithTitle("Select INI Files").findTree();
             tree2.findTreeItemByContent("demo").click();
             tree2.pressKey(SWT.ARROW_RIGHT);
             tree2.findTreeItemByContent("omnetpp\\.ini").doubleClick();
-
+            
             ComboAccess combo = cTabFolder.findComboAfterLabel("Configuration name:");
             combo.selectItem("General -- \\(network: demo\\)");
             shell.findButtonWithLabel("Apply").selectWithMouseClick();
