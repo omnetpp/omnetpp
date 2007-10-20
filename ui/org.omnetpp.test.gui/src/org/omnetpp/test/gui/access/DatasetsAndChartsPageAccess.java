@@ -52,9 +52,9 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 	
 	public DatasetsAndChartsPageAccess createDataset(String datasetName) {
 		getPalette().clickButton(DATASET_BUTTON);
-		ShellAccess dialog = Access.findShellByTitle("New Object");
+		ShellAccess dialog = Access.findShellWithTitle("New Object");
 		dialog.findTextAfterLabel("Name.*").typeIn(datasetName);
-		dialog.findButtonWithLabel("Finish").activateWithMouseClick();
+		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
 	
@@ -69,9 +69,9 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 	public DatasetsAndChartsPageAccess createAddDiscard(String datasetName, String button, String dataType) {
 		selectDataset(datasetName);
 		getPalette().clickButton(button);
-		ShellAccess dialog = Access.findShellByTitle("New Object");
+		ShellAccess dialog = Access.findShellWithTitle("New Object");
 		dialog.findComboAfterLabel("Data type.*").selectItem(dataType);
-		dialog.findButtonWithLabel("Finish").activateWithMouseClick();
+		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
 	
@@ -86,11 +86,11 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 	public DatasetsAndChartsPageAccess createProcessingOperation(String datasetName, String button, String operation) {
 		selectDataset(datasetName);
 		getPalette().clickButton(button);
-		ShellAccess dialog = Access.findShellByTitle("New Object");
+		ShellAccess dialog = Access.findShellWithTitle("New Object");
 		if (operation != null)
 			dialog.findCombo().selectItem(operation);
 		// TODO params
-		dialog.findButtonWithLabel("Finish").activateWithMouseClick();
+		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
 	
@@ -113,17 +113,17 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 	public DatasetsAndChartsPageAccess createChart(String datasetName, String chartButton, String chartName) {
 		selectDataset(datasetName);
 		getPalette().clickButton(chartButton);
-		ShellAccess dialog = Access.findShellByTitle("New Object");
+		ShellAccess dialog = Access.findShellWithTitle("New Object");
 		dialog.findTextAfterLabel("Chart name.*").typeIn(chartName);
-		dialog.findButtonWithLabel("Finish").activateWithMouseClick();
+		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
 	
 	public DatasetsAndChartsPageAccess createChartsheet(String chartsheetName) {
 		getPalette().clickButton(CHARTSHEET_BUTTON);
-		ShellAccess dialog = Access.findShellByTitle("New Object");
+		ShellAccess dialog = Access.findShellWithTitle("New Object");
 		dialog.findTextAfterLabel("Name.*").typeIn(chartsheetName);
-		dialog.findButtonWithLabel("Finish").activateWithMouseClick();
+		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
 	
