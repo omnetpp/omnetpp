@@ -38,6 +38,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
@@ -195,7 +196,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			nameText.setFocus();
 			optionsGroup = createGroup("Options", panel, 1);
 			antialiasCheckbox = createCheckboxField("Use antialias", optionsGroup);
+			antialiasCheckbox.setSelection(ChartDefaults.DEFAULT_ANTIALIAS);
 			cachingCheckbox = createCheckboxField("Use caching", optionsGroup);
+			cachingCheckbox.setSelection(ChartDefaults.DEFAULT_CANVAS_CACHING);
 		}
 		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);

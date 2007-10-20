@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.ScalarChartProperties;
@@ -97,6 +98,7 @@ public class BarChartEditForm extends ChartEditForm {
 		}
 		else if (TAB_TITLES.equals(name)) {
 			wrapLabelsCheckbox = createCheckboxField("wrap labels", axisTitlesGroup);
+			wrapLabelsCheckbox.setSelection(ChartDefaults.DEFAULT_WRAP_LABELS);
 		}
 		else if (TAB_BARS.equals(name)) {
 			if (chart instanceof BarChart) {
