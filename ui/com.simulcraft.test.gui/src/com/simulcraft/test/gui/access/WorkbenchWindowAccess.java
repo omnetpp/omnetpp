@@ -46,7 +46,7 @@ public class WorkbenchWindowAccess extends Access {
 
 	@NotInUIThread
 	public void chooseFromMainMenu(String labelPath) {
-	    getShell().chooseFromContextMenu(labelPath);
+	    getShell().chooseFromMainMenu(labelPath);
 	}
 	
 	@InUIThread

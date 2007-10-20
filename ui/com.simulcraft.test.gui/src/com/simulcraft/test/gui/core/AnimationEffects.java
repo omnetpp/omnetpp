@@ -58,7 +58,7 @@ public class AnimationEffects  {
     }
     
     public static void displayError(Throwable error, long delayMillis) {
-    	displayTextBox(error.getMessage(), ColorFactory.RED, 12, delayMillis);
+        displayTextBox(error.toString(), ColorFactory.RED, 12, delayMillis);
     }
     
     @SuppressWarnings("deprecation")
