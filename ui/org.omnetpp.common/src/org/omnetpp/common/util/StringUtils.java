@@ -518,4 +518,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         return text;
     }
 
+    public static String indentLines(String text, String indent) {
+        return indent + StringUtils.removeEnd(text.replace("\n", "\n" + indent), indent);
+    }
+
 }

@@ -64,6 +64,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
@@ -110,6 +111,7 @@ public class GUIRecorder implements Listener {
     private Button startButton;
     private boolean mouse1Down;
     private int panelMoveOffsetX, panelMoveOffsetY;
+    private static int testSeqNumber;
 
     private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
     private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
@@ -267,7 +269,16 @@ public class GUIRecorder implements Listener {
     }
 
     public String generateCode() {
-        return result.generateCode();
+        String statements = result.generateCode();
+        String result = 
+            "import com.simulcraft.test.gui.access.*;\n" +
+            "\n" +
+            "public class UnnamedTestCase extends GUITestCase {\n" + 
+            "    public void testNew" + (++testSeqNumber) + "() {\n" +
+            "        " + statements.replace("\n", "\n        ").trim() + "\n" + 
+            "    }\n" + 
+            "}\n";
+        return result;
     }
 
     public Object resolveUIObject(Event e) {
@@ -467,6 +478,7 @@ public class GUIRecorder implements Listener {
             showResult();
             result.clear();
         }
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().forceActive();
     }
     
     public void setPanelVisible(boolean visible) {
