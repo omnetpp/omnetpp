@@ -58,7 +58,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	
 	@InUIThread
 	public TabItemAccess getTabItem(String label) {
-		return getTabFolder().getItem(label);
+		return getTabFolder().findItemByText(label);
 	}
 	
 	@InUIThread
@@ -68,7 +68,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	
 	@InUIThread
 	public CompositeAccess getSelectedTabControl() {
-		return (CompositeAccess)getSelectedTabItem().getControl();
+		return (CompositeAccess) getSelectedTabItem().getClientControl();
 	}
 
 	@InUIThread
@@ -107,7 +107,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	
 	@InUIThread
 	public void selectTab(String label) {
-		getTabFolder().setSelection(label);
+		getTabFolder().selectItem(label);
 	}
 	
 	@InUIThread

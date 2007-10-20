@@ -1,6 +1,11 @@
 package com.simulcraft.test.gui.access;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.widgets.TabItem;
+import org.omnetpp.common.util.ReflectionUtils;
+
+import com.simulcraft.test.gui.core.InUIThread;
 
 public class TabItemAccess extends WidgetAccess
 {
@@ -13,14 +18,37 @@ public class TabItemAccess extends WidgetAccess
 		return (TabItem)widget;
 	}
     
-    public CompositeAccess getParent() {
-    	return (CompositeAccess)createAccess(getWidget().getParent());
+    @InUIThread
+    public TabFolderAccess getTabFolder() {
+    	return (TabFolderAccess)createAccess(getWidget().getParent());
     }
-    
-    public ControlAccess getControl() {
-    	return (ControlAccess)createAccess(getWidget().getControl());
+
+    @InUIThread
+    public ControlAccess getClientControl() {
+        return (ControlAccess)createAccess(getWidget().getControl());
     }
-    
+
+    @InUIThread
+    public TabItemAccess reveal() {
+        //XXX how to do it?
+        return this;
+    }
+
+    @InUIThread
+    public void select() {
+        int index = findInTabFolder();
+        Assert.assertTrue(index != -1);
+        ReflectionUtils.invokeMethod(getWidget().getParent(), "setSelection", index, true);
+    }
+
+    protected int findInTabFolder() {
+        TabItem[] items = getWidget().getParent().getItems();
+        for (int i=0; i<items.length; i++)
+            if (items[i] == getWidget())
+                return i;
+        return -1;
+    }
+
 //	@Override
 //	protected Menu getContextMenu() {
 //		return null;

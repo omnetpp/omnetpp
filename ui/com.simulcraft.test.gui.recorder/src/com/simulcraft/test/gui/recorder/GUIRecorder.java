@@ -73,17 +73,17 @@ import com.simulcraft.test.gui.recorder.event.StyledTextClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.TextClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.WorkbenchPartCTabClickRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
+import com.simulcraft.test.gui.recorder.object.CTabFolderRecognizer;
 import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
 import com.simulcraft.test.gui.recorder.object.IDBasedControlRecognizer;
+import com.simulcraft.test.gui.recorder.object.ItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.MenuItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.MultiPageEditorCTabRecognizer;
 import com.simulcraft.test.gui.recorder.object.ShellRecognizer;
 import com.simulcraft.test.gui.recorder.object.StyledTextRecognizer;
-import com.simulcraft.test.gui.recorder.object.TableItemRecognizer;
+import com.simulcraft.test.gui.recorder.object.TabFolderRecognizer;
 import com.simulcraft.test.gui.recorder.object.TableRecognizer;
 import com.simulcraft.test.gui.recorder.object.TextRecognizer;
-import com.simulcraft.test.gui.recorder.object.ToolItemRecognizer;
-import com.simulcraft.test.gui.recorder.object.TreeItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.TreeRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCTabRecognizer;
 import com.simulcraft.test.gui.recorder.object.WorkbenchPartCompositeRecognizer;
@@ -134,12 +134,7 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new MenuSelectionRecognizer(this));
         eventRecognizers.add(new WorkbenchPartCTabClickRecognizer(this));
         
-        objectRecognizers.add(new WorkbenchWindowRecognizer(this));
-        objectRecognizers.add(new WorkbenchWindowShellRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
-        objectRecognizers.add(new MultiPageEditorCTabRecognizer(this));
+        objectRecognizers.add(new ItemRecognizer(this));
         objectRecognizers.add(new ShellRecognizer(this));
         objectRecognizers.add(new MenuItemRecognizer(this));
         objectRecognizers.add(new ButtonRecognizer(this));
@@ -148,10 +143,15 @@ public class GUIRecorder implements Listener {
         objectRecognizers.add(new StyledTextRecognizer(this));
         objectRecognizers.add(new TableRecognizer(this));
         objectRecognizers.add(new TreeRecognizer(this));
-        objectRecognizers.add(new TableItemRecognizer(this));
-        objectRecognizers.add(new TreeItemRecognizer(this));
-        objectRecognizers.add(new ToolItemRecognizer(this));
+        objectRecognizers.add(new TabFolderRecognizer(this));
+        objectRecognizers.add(new CTabFolderRecognizer(this));
         objectRecognizers.add(new IDBasedControlRecognizer(this));
+        objectRecognizers.add(new WorkbenchWindowRecognizer(this));
+        objectRecognizers.add(new WorkbenchWindowShellRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
+        objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
+        objectRecognizers.add(new MultiPageEditorCTabRecognizer(this));
         createPanel();
     }
 

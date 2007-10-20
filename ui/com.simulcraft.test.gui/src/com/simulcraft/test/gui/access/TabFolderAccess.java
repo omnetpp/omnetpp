@@ -5,7 +5,6 @@ import junit.framework.Assert;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.common.util.ReflectionUtils;
 
 public class TabFolderAccess extends CompositeAccess {
 
@@ -21,8 +20,13 @@ public class TabFolderAccess extends CompositeAccess {
     public TabItemAccess[] getItems() {
     	return wrapItems(getControl().getItems());
     }
+
+    public TabItemAccess getItem(int index) {
+        Assert.assertTrue(0 <= index && index < getControl().getItemCount());
+        return wrapItem(getControl().getItem(index));
+    }
     
-    public TabItemAccess getItem(final String label) {
+    public TabItemAccess findItemByText(final String label) {
     	return wrapItem(
     			(TabItem)findObject(
     						getControl().getItems(),
@@ -31,11 +35,6 @@ public class TabFolderAccess extends CompositeAccess {
     								return ((TabItem)object).getText().matches(label);
     							}
     						}));
-    }
-    
-    public TabItemAccess getItem(int index) {
-		Assert.assertTrue(0 <= index && index < getControl().getItemCount());
-		return wrapItem(getControl().getItem(index));
     }
     
     public TabItemAccess getSelection() {
@@ -48,21 +47,8 @@ public class TabFolderAccess extends CompositeAccess {
     	return selection.length == 1 && selection[0].getText().matches(label);
     }
     
-    public void setSelection(TabItemAccess item) {
-    	setSelection(item.getWidget());
-    }
-
-	public void setSelection(TabItem item) {
-    	setSelection(getControl().indexOf(item));
-    }
-	
-	public void setSelection(String label) {
-		setSelection(getItem(label));
-	}
-	
-	public void setSelection(int index) {
-		Assert.assertTrue(0 <= index && index < getControl().getItemCount());
-    	ReflectionUtils.invokeMethod(getControl(), "setSelection", index, true);
+	public void selectItem(String label) {
+		findItemByText(label).select();
 	}
 	
 	public static TabItemAccess[] wrapItems(TabItem[] items) {

@@ -2,7 +2,6 @@ package com.simulcraft.test.gui.access;
 
 import junit.framework.Assert;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -21,6 +20,11 @@ public class CTabItemAccess extends ClickableWidgetAccess
 	public CTabItem getWidget() {
 		return (CTabItem)widget;
 	}
+    
+    @InUIThread
+    public CTabFolderAccess getCTabFolder() {
+        return (CTabFolderAccess)createAccess(getWidget().getParent());
+    }
     
     @InUIThread
     public boolean isClosable() {
@@ -45,4 +49,11 @@ public class CTabItemAccess extends ClickableWidgetAccess
 		Point center = new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 		clickAbsolute(LEFT_MOUSE_BUTTON, getWidget().getParent().toDisplay(center));
 	}
+	
+    @InUIThread
+    public CTabItemAccess reveal() {
+        getWidget().getParent().showItem(getWidget());
+        return this;
+    }
+	
 }
