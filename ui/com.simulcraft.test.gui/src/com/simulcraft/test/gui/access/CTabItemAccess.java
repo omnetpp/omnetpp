@@ -38,7 +38,12 @@ public class CTabItemAccess extends ClickableWidgetAccess
 
 	@Override
 	protected Point getAbsolutePointToClick() {
-		return getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
+		return toAbsolute(getCenter(getWidget().getBounds()));
+	}
+	
+	@Override
+	protected Point toAbsolute(Point point) {
+        return getWidget().getParent().toDisplay(point);
 	}
 	
 	@InUIThread

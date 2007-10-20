@@ -1,5 +1,6 @@
 package org.omnetpp.test.gui.eventlogtable;
 
+import org.eclipse.swt.graphics.Point;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 import org.omnetpp.test.gui.access.EventLogTableAccess;
 import org.omnetpp.test.gui.core.EventLogFileTestCase;
@@ -15,6 +16,8 @@ public class BookmarkTest
     extends EventLogFileTestCase
 {
     public void testAddBookmark() throws Exception {
+        assertEmptyBookmarksView();
+
         createFileWithTwoEvents();
         openFileFromProjectExplorerView();
         addBookmark(findEditorPart(), 1, "test");
@@ -37,6 +40,8 @@ public class BookmarkTest
     public void testGotoBookmark() throws Exception {
         assertEmptyBookmarksView();
 
+        createFileWithTwoEvents();
+        openFileFromProjectExplorerView();
         EditorPartAccess editorPart = findEditorPart();
         addBookmark(editorPart, 1, "test");
         editorPart.closeWithHotKey();
@@ -63,7 +68,7 @@ public class BookmarkTest
     private void deleteBookmark(String description) {
         ViewPartAccess viewPart = WorkbenchUtils.ensureViewActivated("General", "Bookmarks");
         TreeItemAccess treeItem = viewPart.findTree().findTreeItemByContent(".*" + description + ".*").reveal();
-        treeItem.activateContextMenuWithMouseClick().findMenuItemByLabel(".*Delete.*").activateWithMouseClick();
+        treeItem.activateContextMenuWithMouseClick(new Point(1, 1)).findMenuItemByLabel(".*Delete.*").activateWithMouseClick();
     }
 
     // TODO: factor out

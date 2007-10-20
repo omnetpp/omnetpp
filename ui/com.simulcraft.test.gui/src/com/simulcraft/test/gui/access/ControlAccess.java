@@ -55,8 +55,13 @@ public class ControlAccess extends ClickableWidgetAccess
 
 	@Override @InUIThread
 	protected Point getAbsolutePointToClick() {
-		return getControl().getParent().toDisplay(getCenter(getControl().getBounds()));
+		return toAbsolute(getCenter(getControl().getBounds()));
 	}
+
+    @Override @InUIThread
+	protected Point toAbsolute(Point point) {
+        return getControl().getParent().toDisplay(point);
+    }
 
 	@InUIThread
 	public Rectangle getAbsoluteBounds() {

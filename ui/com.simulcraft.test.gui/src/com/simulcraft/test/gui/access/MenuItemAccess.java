@@ -54,6 +54,12 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	}
 
 	@Override
+    protected Point toAbsolute(Point point) {
+        Rectangle parentRectangle = (Rectangle)ReflectionUtils.invokeMethod(getWidget().getParent(), "getBounds");
+        return new Point(parentRectangle.x + point.x, parentRectangle.y + point.y);
+	}
+
+	@Override
 	protected Menu getContextMenu() {
 		return null;  // a menu has no context menu
 	}

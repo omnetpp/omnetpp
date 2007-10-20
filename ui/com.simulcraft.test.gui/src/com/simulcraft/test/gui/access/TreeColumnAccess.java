@@ -41,6 +41,12 @@ public class TreeColumnAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width, cannot click", getWidget().getWidth() > 0);
         return point;
 	}
+	
+	@Override
+	protected Point toAbsolute(Point point) {
+	    // TODO:
+	    throw new RuntimeException();
+	}
 
 	@Override
 	protected Menu getContextMenu() {

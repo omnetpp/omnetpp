@@ -15,6 +15,8 @@ public abstract class ClickableWidgetAccess
 	}
 
 	protected abstract Point getAbsolutePointToClick();
+	
+	protected abstract Point toAbsolute(Point point);
 
 	protected abstract Menu getContextMenu();
 
@@ -40,9 +42,15 @@ public abstract class ClickableWidgetAccess
 
 	@InUIThread
 	public MenuAccess activateContextMenuWithMouseClick() {
-		rightClick();
-		return new MenuAccess(getContextMenu());
+        rightClick();
+        return new MenuAccess(getContextMenu());
 	}
+
+	@InUIThread
+    public MenuAccess activateContextMenuWithMouseClick(Point point) {
+        clickAbsolute(Access.RIGHT_MOUSE_BUTTON, toAbsolute(point));
+        return new MenuAccess(getContextMenu());
+    }
 
 	@NotInUIThread
 	public void chooseFromContextMenu(String labelPath) {

@@ -225,7 +225,8 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
         		Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-	    				eventLogTable.redraw();
+					    if (!eventLogTable.isDisposed())
+					        eventLogTable.redraw();
 					}            		
             	});
             }

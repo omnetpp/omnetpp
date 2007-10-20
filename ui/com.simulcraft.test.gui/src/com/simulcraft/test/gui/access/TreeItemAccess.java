@@ -38,10 +38,15 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	
 	@Override
 	protected Point getAbsolutePointToClick() {
-	    Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
+	    Point point = toAbsolute(getCenter(getWidget().getBounds()));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
+	}
+
+	@Override
+    protected Point toAbsolute(Point point) {
+        return getWidget().getParent().toDisplay(point);
 	}
 
 	/**
