@@ -397,9 +397,9 @@ public class FilterSyntax {
 					};
 					String v = value.toString();
 					if (keywords.containsKey(v))
-						return new Token(keywords.get(v), startPos, pos);
+						return new Token(keywords.get(v), v, startPos, pos);
 					else
-						return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
+						return new Token(TokenType.STRING_LITERAL, v, startPos, pos);
 				}
 			}
 		}
