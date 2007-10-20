@@ -70,7 +70,7 @@ class SCAVE_API RunAttribute
 
 inline const char *getAttribute(const ResultItem &d, const std::string attrName)
 {
-	const char *value = d.fileRunRef->runRef->getAttribute(attrName.c_str()); 
+    const char *value = d.fileRunRef->runRef->getAttribute(attrName.c_str()); 
     return value ? value : ""; 
 }
 
@@ -87,6 +87,12 @@ inline std::string ResultItemField::getFieldValue(const ResultItem &d)
 	}
 }
 
+inline int strcmpFIXME(const char *str1, const char *str2)
+{
+    return strcmp(str1, str2);
+}
+
+
 inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) const
 {
 	switch (id)
@@ -95,7 +101,8 @@ inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) c
 	case RUN_ID:		return d1.fileRunRef->runRef != d2.fileRunRef->runRef;
 	case MODULE_ID:		return d1.moduleNameRef != d2.moduleNameRef;
 	case NAME_ID:		return d1.nameRef != d2.nameRef;
-	case RUN_ATTR_ID:	return strcmp(getAttribute(d1, name), getAttribute(d2, name)) == 0;
+                        // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
+	case RUN_ATTR_ID:	return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
 	default:			return true;
 	}
 }
