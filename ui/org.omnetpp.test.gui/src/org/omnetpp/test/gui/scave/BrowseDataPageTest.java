@@ -7,7 +7,6 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
-import org.omnetpp.test.gui.access.ScaveEditorAccess;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ComboAccess;
@@ -19,7 +18,6 @@ import com.simulcraft.test.gui.access.TreeAccess;
 
 public class BrowseDataPageTest extends ScaveFileTestCase {
 
-	protected ScaveEditorAccess editor;
 	protected BrowseDataPageAccess browseDataPage;
 
 	@Override

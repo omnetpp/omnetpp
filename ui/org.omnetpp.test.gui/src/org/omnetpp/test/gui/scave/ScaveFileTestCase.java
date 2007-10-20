@@ -3,6 +3,7 @@ package org.omnetpp.test.gui.scave;
 import java.util.regex.Pattern;
 
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.test.gui.access.ScaveEditorAccess;
 import org.omnetpp.test.gui.core.ProjectFileTestCase;
 
 import com.simulcraft.test.gui.util.WorkspaceUtils;
@@ -10,6 +11,8 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 public class ScaveFileTestCase
     extends ProjectFileTestCase
 {
+	protected ScaveEditorAccess editor;
+	
     public ScaveFileTestCase() {
         super("test.anf");
     }

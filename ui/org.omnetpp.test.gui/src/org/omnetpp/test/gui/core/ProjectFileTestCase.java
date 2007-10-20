@@ -148,6 +148,7 @@ public class ProjectFileTestCase
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		if (workbenchWindow.hasEditorPartWithTitle(fileName))
 		    workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
+		Thread.sleep(1000);
 		workbenchWindow.ensureAllEditorPartsAreClosed();
         workbenchWindow.assertNoOpenEditorParts();
 	}

@@ -2,14 +2,12 @@ package org.omnetpp.test.gui.scave;
 
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.InputsPageAccess;
-import org.omnetpp.test.gui.access.ScaveEditorAccess;
 
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class InputsPageTest extends ScaveFileTestCase {
 	
-	protected ScaveEditorAccess editor;
 	protected InputsPageAccess inputsPage;
 	
 	public void testInputFilesTree() {

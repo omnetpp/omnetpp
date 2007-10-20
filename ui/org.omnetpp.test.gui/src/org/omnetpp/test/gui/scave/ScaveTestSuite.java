@@ -10,6 +10,7 @@ public class ScaveTestSuite
         addTestSuite(OpenFileTest.class);
         addTestSuite(InputsPageTest.class);
         addTestSuite(BrowseDataPageTest.class);
+        addTestSuite(DatasetsAndChartsPageTest.class);
     }
 
     public static Test suite() {
