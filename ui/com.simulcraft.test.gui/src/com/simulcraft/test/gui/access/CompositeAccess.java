@@ -96,12 +96,12 @@ public class CompositeAccess extends ControlAccess
 
 	@InUIThread
 	public TreeAccess findTree() {
-		return new TreeAccess((Tree)findDescendantControl(getControl(), Tree.class));
+		return new TreeAccess((Tree)findDescendantControl(Tree.class));
 	}
 
 	@InUIThread
 	public TableAccess findTable() {
-		return new TableAccess((Table)findDescendantControl(getControl(), Table.class));
+		return new TableAccess((Table)findDescendantControl(Table.class));
 	}
 
     @InUIThread
@@ -116,7 +116,12 @@ public class CompositeAccess extends ControlAccess
 
     @InUIThread
 	public StyledTextAccess findStyledText() {
-		return new StyledTextAccess((StyledText) Access.findDescendantControl(getControl(), StyledText.class));
+		return new StyledTextAccess((StyledText)findDescendantControl(StyledText.class));
+	}
+	
+	@InUIThread
+	public ComboAccess findCombo() {
+		return (ComboAccess)createAccess(findDescendantControl(Combo.class));
 	}
 
 	@InUIThread
