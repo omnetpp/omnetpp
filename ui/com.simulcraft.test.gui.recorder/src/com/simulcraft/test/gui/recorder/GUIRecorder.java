@@ -64,11 +64,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.ClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.ComboSelectionRecognizer;
+import com.simulcraft.test.gui.recorder.event.ContentAssistSelectionRecognizer;
 import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.MenuSelectionRecognizer;
 import com.simulcraft.test.gui.recorder.event.StyledTextClickRecognizer;
@@ -136,6 +136,7 @@ public class GUIRecorder implements Listener {
         eventRecognizers.add(new StyledTextClickRecognizer(this));
         eventRecognizers.add(new MenuSelectionRecognizer(this));
         eventRecognizers.add(new ComboSelectionRecognizer(this));
+        eventRecognizers.add(new ContentAssistSelectionRecognizer(this));
         eventRecognizers.add(new WorkbenchPartCTabClickRecognizer(this));
         
         objectRecognizers.add(new ItemRecognizer(this));
