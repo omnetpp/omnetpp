@@ -1,6 +1,7 @@
 package com.simulcraft.test.gui.util;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.common.util.IPredicate;
@@ -33,5 +34,17 @@ public class Predicate {
 						((Item)object).getText().matches(text);
 			}
 		};
+	}
+	
+	public static IPredicate buttonWithText(final String text) {
+	    return new IPredicate() {
+	        public boolean matches(Object object) {
+	            if (object instanceof Button) {
+	                Button button = (Button)object;
+	                return button.getText().replace("&", "").matches(text);
+	            }
+	            return false;
+	        }
+	    };
 	}
 }

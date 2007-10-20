@@ -5,6 +5,7 @@ import java.util.List;
 import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.util.Predicate;
 
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.*;
 
@@ -50,7 +51,21 @@ public class CompositeAccess extends ControlAccess
 		}));
 	}
 	
-	@InUIThread
+    @InUIThread
+    public ButtonAccess findButtonAfterLabel(String labelText, final String buttonText) {
+        final LabelAccess labelAccess = findLabel(labelText);
+        return new ButtonAccess((Button)labelAccess.findNextControl(new IPredicate() {
+            public boolean matches(Object object) {
+                if (object instanceof Button) {
+                    Button button = (Button)object;
+                    return button.getText().replace("&", "").matches(buttonText);
+                }
+                return false;
+            }
+        }));
+    }
+
+    @InUIThread
 	public ButtonAccess tryToFindButtonWithLabel(final String label) {
 		List<Control> buttons = collectDescendantControls(getControl(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -89,7 +104,17 @@ public class CompositeAccess extends ControlAccess
 		return new TableAccess((Table)findDescendantControl(getControl(), Table.class));
 	}
 
-	@InUIThread
+    @InUIThread
+    public CTabFolderAccess findCTabFolder() {
+        return (CTabFolderAccess)createAccess(findDescendantControl(getControl(), CTabFolder.class));
+    }
+
+    @InUIThread
+    public TabFolderAccess findTabFolder() {
+        return (TabFolderAccess)createAccess(findDescendantControl(getControl(), TabFolder.class));
+    }
+
+    @InUIThread
 	public StyledTextAccess findStyledText() {
 		return new StyledTextAccess((StyledText) Access.findDescendantControl(getControl(), StyledText.class));
 	}
@@ -123,17 +148,25 @@ public class CompositeAccess extends ControlAccess
     }
     
     @InUIThread
-    public ControlAccess findToolItemWithTooltip(final String tooltip) {
-        return (ControlAccess)createAccess(findDescendantControl(new IPredicate() {
+    public ToolItemAccess findToolItemWithTooltip(final String tooltip) {
+        ToolBar toolBar = (ToolBar)findDescendantControl(new IPredicate() {
             public boolean matches(Object object) {
                 if (object instanceof ToolBar) {
                     ToolBar toolBar = ((ToolBar)object);
-                    for (ToolItem toolItem : toolBar.getItems())
-                        if (toolItem.getToolTipText() != null && toolItem.getToolTipText().matches(tooltip))
-                            return true;
+                    if (findToolItem(toolBar, tooltip) != null)
+                        return true;
                 }
                 return false;
             }
-        }));
+        });
+        return (ToolItemAccess)createAccess(findToolItem(toolBar, tooltip));
     }
+
+    private ToolItem findToolItem(ToolBar toolBar, final String tooltip) {
+        for (ToolItem toolItem : toolBar.getItems())
+            if (toolItem.getToolTipText() != null && toolItem.getToolTipText().matches(tooltip))
+                return toolItem;
+        return null;
+    }
+
 }

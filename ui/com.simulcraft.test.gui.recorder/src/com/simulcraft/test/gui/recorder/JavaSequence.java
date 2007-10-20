@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Widget;
+
 import org.omnetpp.common.util.StringUtils;
 
 public class JavaSequence {
@@ -67,8 +68,6 @@ public class JavaSequence {
      * Generate Java code from the JavaExpr objects contained. 
      */
     public String generateCode() {
-        long startTime = System.currentTimeMillis();
-
         simplifySequence();
         makeVariablesUnique();
 
@@ -92,8 +91,6 @@ public class JavaSequence {
             text += expr.getJavaCode();
         }
         text = addSemicolonIfNeeded(text).trim() + "\n";
-        
-        System.out.println("code generated in " + (System.currentTimeMillis()-startTime) + "ms");
         return text;
     }
     
