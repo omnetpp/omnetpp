@@ -11,6 +11,7 @@
 <booleanAttribute key="clearwslog" value="false"/>
 <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/ide-test"/>
 <booleanAttribute key="default" value="false"/>
+<stringAttribute key="deselected_workspace_plugins" value="com.simulcraft.test.gui.recorder"/>
 <booleanAttribute key="includeOptional" value="true"/>
 <stringAttribute key="location" value="${workspace_loc:org.omnetpp.test.gui/test-workspace}"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
