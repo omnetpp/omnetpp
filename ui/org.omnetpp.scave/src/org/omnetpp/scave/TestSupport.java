@@ -14,5 +14,6 @@ public class TestSupport {
 		RUN_FILE_VIEW_TREE_ID = "RunFileViewTree",
 		LOGICAL_VIEW_TREE_ID = "LogicalViewTree",
 		DATASETS_TREE_ID = "Datasets",
-		CHARTSHEETS_TREE_ID = "ChartSheets";
+		CHARTSHEETS_TREE_ID = "ChartSheets",
+		DATASETS_PAGE_PALETTE_ID = "DatasetsPagePalette";
 }

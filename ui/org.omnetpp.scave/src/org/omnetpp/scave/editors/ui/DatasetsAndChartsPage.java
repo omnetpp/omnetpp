@@ -1,6 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import static org.omnetpp.scave.TestSupport.CHARTSHEETS_TREE_ID;
+import static org.omnetpp.scave.TestSupport.DATASETS_PAGE_PALETTE_ID;
 import static org.omnetpp.scave.TestSupport.DATASETS_TREE_ID;
 import static org.omnetpp.scave.TestSupport.WIDGET_ID;
 import static org.omnetpp.scave.TestSupport.enableGuiTest;
@@ -57,7 +58,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		createChartSheetsSection();
 		sashform.setWeights(new int[] {2,1});
 
-		createPalette(getBody(), true);
+		Composite palette = createPalette(getBody(), true);
 		
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
@@ -71,6 +72,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
         if (enableGuiTest) {
         	getDatasetsTreeViewer().getTree().setData(WIDGET_ID, DATASETS_TREE_ID);
         	getChartSheetsTreeViewer().getTree().setData(WIDGET_ID, CHARTSHEETS_TREE_ID);
+			palette.setData(WIDGET_ID, DATASETS_PAGE_PALETTE_ID);
         }
 	}
 
