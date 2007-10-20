@@ -1,7 +1,10 @@
 package com.simulcraft.test.gui.access;
 
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.swt.widgets.ToolBar;
+import org.omnetpp.common.util.ReflectionUtils;
+
+import com.simulcraft.test.gui.core.InUIThread;
 
 public class ToolBarManagerAccess
     extends Access
@@ -12,12 +15,8 @@ public class ToolBarManagerAccess
         this.toolBarManager = toolBarManager;
     }
     
-    public ToolItemAccess findToolItem() {
-        for (IContributionItem contributionItem : toolBarManager.getItems()) {
-            contributionItem.getId();
-        }
-
-//        return new ToolItemAccess();
-        return null;
+    @InUIThread
+    public ToolBarAccess getToolBar() {
+        return new ToolBarAccess((ToolBar)ReflectionUtils.getFieldValue(toolBarManager, "toolBar"));
     }
 }
