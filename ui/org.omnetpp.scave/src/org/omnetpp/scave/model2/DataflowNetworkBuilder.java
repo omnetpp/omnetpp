@@ -401,20 +401,24 @@ public class DataflowNetworkBuilder {
 			 * Adds a filter node for each port selected by the apply operation.
 			 */
 			public Object caseApply(Apply apply) {
-				IDList idlist = select(getIDs(), apply.getFilters());
-				for (int i = 0; i < idlist.size(); ++i) {
-					addFilterNode(idlist.get(i), apply.getOperation(), apply.getParams());
+				if (apply.getOperation() != null) {
+					IDList idlist = select(getIDs(), apply.getFilters());
+					for (int i = 0; i < idlist.size(); ++i) {
+						addFilterNode(idlist.get(i), apply.getOperation(), apply.getParams());
+					}
 				}
 				return this;
 			}
 
 			public Object caseCompute(Compute compute) {
-				IDList idlist = select(getIDs(), compute.getFilters());
-				for (int i = 0; i < idlist.size(); ++i) {
-					addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
+				if (compute.getOperation() != null) {
+					IDList idlist = select(getIDs(), compute.getFilters());
+					for (int i = 0; i < idlist.size(); ++i) {
+						addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
 
-					//TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
-					//addFilterNode(teeNode.outPort2.id, compute.getOperation(), compute.getParams());
+						//TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
+						//addFilterNode(teeNode.outPort2.id, compute.getOperation(), compute.getParams());
+					}
 				}
 				return this;
 			}
