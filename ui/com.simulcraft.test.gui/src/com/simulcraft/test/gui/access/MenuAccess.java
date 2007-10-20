@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
 
 
 public class MenuAccess extends WidgetAccess {
@@ -93,6 +97,39 @@ public class MenuAccess extends WidgetAccess {
         for (String label : labels) 
             findMenuItemByLabel(label).assertDisabled();        
     }
+
+    @NotInUIThread
+    public static MenuAccess withOpeningContextMenu(Control control, Runnable runnable) {
+        int i = MenuAccess.findNextMenuShellIndex(control);
+        runOpeningContextMenuBody(runnable);
+        return new MenuAccess(getMenuShellMenu(control, i));
+    }
+
+    @InUIThread
+    private static Menu getMenuShellMenu(Control control, int i) {
+        return MenuAccess.getMenuShellMenus(control)[i];
+    }
+    
+    @InUIThread
+    private static void runOpeningContextMenuBody(Runnable runnable) {
+        runnable.run();
+    }
+
+    private static Menu[] getMenuShellMenus(Control control) {
+        Decorations decorations = (Decorations)ReflectionUtils.invokeMethod(control, "menuShell");
+        return (Menu[])ReflectionUtils.getFieldValue(decorations, "menus");
+    }
+
+    private static int findNextMenuShellIndex(Control control) {
+        Menu[] menus = getMenuShellMenus(control);
+        
+        for (int i = 0; i < menus.length; i++)
+            if (menus[i] == null)
+                return i;
+
+        return menus.length;
+    }
+
     
 // the following code searches in the menus recursively -- retained just in case it might be needed somewhere...
 //	@InUIThread

@@ -60,7 +60,7 @@ public class WorkbenchWindowAccess extends Access {
 		if (activePart instanceof IEditorPart)
 			return new EditorPartAccess((IEditorPart)activePart);
 		else 
-			return new ViewPartAccess((IViewPart)activePart);
+			return (WorkbenchPartAccess)createAccess((IViewPart)activePart);
 	}
 
 	@InUIThread

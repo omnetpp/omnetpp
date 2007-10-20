@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.core;
 
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+
 
 public class EventLogFileTestCase
     extends ProjectFileTestCase
@@ -29,5 +31,13 @@ public class EventLogFileTestCase
         		"ES t 1\r\n" + 
         		"\r\n" + 
         		"E # 1 t 1 m 1 msg 2\r\n");
+    }
+
+    protected void openFileFromProjectExplorerViewInEventLogTableEditor() {
+        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().activateContextMenuWithMouseClick().activateMenuItemWithMouse(".*Open With.*").activateMenuItemWithMouse(".*Event Log Table.*");
+    }
+
+    protected void openFileFromProjectExplorerViewInSequenceChartEditor() {
+        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().activateContextMenuWithMouseClick().activateMenuItemWithMouse(".*Open With.*").activateMenuItemWithMouse(".*Sequence Chart.*");
     }
 }
