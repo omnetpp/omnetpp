@@ -16,7 +16,6 @@ import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
-import com.simulcraft.test.gui.access.ViewPartAccess;
 
 public class BrowseDataPageTest extends ScaveFileTestCase {
 
@@ -181,6 +180,28 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		menu.activateMenuItemWithMouse("Show.*[vV]ector.*[vV]iew.*");
 		
 		Access.getWorkbenchWindowAccess().findViewPartByTitle(".*[vV]ector.*").assertActivated();
+	}
+	
+	public void testContentAssist() {
+		browseDataPage.ensureVectorsSelected();
+		TextAccess filterText = browseDataPage.ensureAdvancedFilterSelected();
+		filterText.click();
+		filterText.typeOver("fi");
+		filterText.pressKey(' ', SWT.CTRL);
+		Access.findContentAssistPopup().chooseWithKeyboard("file\\(\\)");
+		filterText.pressKey(' ', SWT.CTRL);
+		Access.findContentAssistPopup().chooseWithKeyboard(".*test-1.*");
+		filterText.pressKey(SWT.END);
+		filterText.pressKey(' ', SWT.CTRL);
+		Access.findContentAssistPopup().chooseWithKeyboard("AND");
+		filterText.pressKey(' '); // FIXME ' ' should be added after 'AND'
+		Access.findContentAssistPopup().chooseWithKeyboard("NOT");
+		filterText.pressKey(' '); // FIXME ' ' should be added after 'NOT'
+		Access.findContentAssistPopup().chooseWithKeyboard("module\\(.*");
+		filterText.pressKey(' ', SWT.CTRL);
+		Access.findContentAssistPopup().chooseWithKeyboard("module-2");
+		
+		filterText.assertTextContent("file\\(/project/test-1\\.vec\\) AND NOT module\\(module-2\\) ");
 	}
 	
 	protected String[][] buildVectorsTableContent() {

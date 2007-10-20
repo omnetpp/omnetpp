@@ -135,11 +135,12 @@ public class BrowseDataPageAccess extends CompositeAccess {
 			button.activateWithMouseClick();
 	}
 	
-	@InUIThread
-	public void ensureAdvancedFilterSelected() {
+	@NotInUIThread
+	public TextAccess ensureAdvancedFilterSelected() {
 		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Advanced");
 		if (button != null)
 			button.activateWithMouseClick();
+		return getAdvancedFilterText();
 	}
 	
 	@InUIThread
@@ -157,6 +158,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		return getSelectedTabControl().findComboAfterLabel("Name.*");
 	}
 	
+	@InUIThread
 	public TextAccess getAdvancedFilterText() {
 		return getSelectedTabControl().findTextAfterLabel("Filter.*");
 	}
