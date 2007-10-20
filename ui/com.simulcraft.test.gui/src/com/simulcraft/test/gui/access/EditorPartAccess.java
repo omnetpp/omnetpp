@@ -33,6 +33,11 @@ public class EditorPartAccess
 	public StyledTextAccess findStyledText() {
 		return getComposite().findStyledText();
 	}
+	
+    @InUIThread
+	public ToolBarManagerAccess getToolBarManager() {
+        return new ToolBarManagerAccess(getPart().getEditorSite().getActionBars().getToolBarManager());
+	}
 
 	@InUIThread
     public void assertDirty() {
