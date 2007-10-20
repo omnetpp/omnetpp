@@ -19,7 +19,7 @@ public class ButtonAccess extends ControlAccess
 	}
 
 	@InUIThread
-	public void activateWithMouseClick() {
+	public void selectWithMouseClick() {
 		assertEnabled();
 		click();
 	}

@@ -94,7 +94,7 @@ public class CreateWithGraphicalEditorTest
     }
     
     private void assertFileExistsWithContent(String regexpContent) throws Exception {
-        Access.getWorkbenchWindowAccess().findEditorPartByTitle(fileName).saveWithHotKey();
+        Access.getWorkbenchWindow().findEditorPartByTitle(fileName).saveWithHotKey();
         WorkspaceUtils.assertFileExistsWithRegexpContent(filePath, regexpContent);
     }
 }

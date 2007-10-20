@@ -59,7 +59,7 @@ public class InifileFormEditorAccess
     public void createSectionByDialog(String sectionName, String description, String baseSection, String networkName) {
         CompositeAccess sectionsPage = ensureActiveCategoryPage("Sections");
         sectionsPage.findButtonWithLabel("New.*").click();
-        ShellAccess dialog = WorkbenchWindowAccess.findShellByTitle("New Section");
+        ShellAccess dialog = WorkbenchWindowAccess.findShellWithTitle("New Section");
         fillSectionDialog(dialog, sectionName, description, baseSection, networkName);
     }
 
@@ -76,7 +76,7 @@ public class InifileFormEditorAccess
             sectionsTree.findTreeItemByContent(sectionLabel).click();
             sectionsPage.findButtonWithLabel("Edit.*").click();
         }
-        ShellAccess dialog = WorkbenchWindowAccess.findShellByTitle(".*Edit.* Section");
+        ShellAccess dialog = WorkbenchWindowAccess.findShellWithTitle(".*Edit.* Section");
         fillSectionDialog(dialog, newSectionName, description, baseSection, networkName);
     }
 

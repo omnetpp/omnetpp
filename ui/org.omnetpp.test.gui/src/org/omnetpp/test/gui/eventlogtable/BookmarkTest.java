@@ -53,7 +53,7 @@ public class BookmarkTest
     private void addBookmark(EditorPartAccess editorPart, int eventNumber, String description) {
         EventLogTableAccess eventLogTable = (EventLogTableAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), EventLogTable.class));
         eventLogTable.activateContextMenuWithMouseClick(eventNumber).findMenuItemByLabel("Toggle bookmark").activateWithMouseClick();
-        ShellAccess shell = Access.findShellByTitle(".*Bookmark.*");
+        ShellAccess shell = Access.findShellWithTitle(".*Bookmark.*");
         shell.findTextAfterLabel(".*Bookmark.*").typeIn(description);
         shell.findButtonWithLabel("OK").click();
     }

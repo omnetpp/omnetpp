@@ -29,9 +29,9 @@ public class SaveFileTest
 	public void testSaveFileAs() throws Throwable  {
 		createFileWithContent(CONTENT);
 		openFileFromProjectExplorerView();
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("File|Save As.*");
-		ShellAccess shell = WorkbenchWindowAccess.findShellByTitle(".*Save As.*");
+		ShellAccess shell = WorkbenchWindowAccess.findShellWithTitle(".*Save As.*");
 		String newFileName = "testRenamed.ned";
 		shell.findTextAfterLabel("File name:").typeIn(newFileName);
 		shell.pressKey(SWT.CR);

@@ -11,7 +11,7 @@ public class OpenFileTest
     extends ScaveFileTestCase
 {
 	public void testNewScaveFile() {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Analysis.*");
 		fillNewScaveFileWizard(projectName, fileName); // fill in wizard
@@ -20,12 +20,12 @@ public class OpenFileTest
 	
 	private static void fillNewScaveFileWizard(String parentFolder, String fileName) {
 		// fill in the fields in the dialog, then click "Finish"
-		ShellAccess shell = Access.findShellByTitle("New Analysis.*");
+		ShellAccess shell = Access.findShellWithTitle("New Analysis.*");
 		//Access.dumpWidgetHierarchy(shell.getShell());
 		if (parentFolder != null)
 			shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
 		if (fileName != null)
 			shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
-		shell.findButtonWithLabel("Finish").activateWithMouseClick();
+		shell.findButtonWithLabel("Finish").selectWithMouseClick();
 	}
 }

@@ -12,22 +12,22 @@ import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 public class WorkbenchUtils
 {
 	public static void choosePerspectiveFromDialog(String perspectiveLabel) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("Window|Open Perspective|Other.*");
-		ShellAccess dialog = Access.findShellByTitle("Open Perspective");
+		ShellAccess dialog = Access.findShellWithTitle("Open Perspective");
 		dialog.findTable().findTableItemByContent(perspectiveLabel).reveal().doubleClick();
 	}
 
     public static void ensurePerspectiveActivated(String perspectiveLabel) {
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         if (!workbenchWindow.getPerspective().getLabel().matches(perspectiveLabel))
             choosePerspectiveFromDialog(perspectiveLabel);
     }
 
 	public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("Window|Show View|Other.*");
-		TreeAccess tree = Access.findShellByTitle("Show View").findTree();
+		TreeAccess tree = Access.findShellWithTitle("Show View").findTree();
 		tree.findTreeItemByContent(viewCategory).reveal().click();
 		tree.pressKey(SWT.ARROW_RIGHT); // open category node
 		tree.findTreeItemByContent(viewLabel).reveal().doubleClick();
@@ -36,7 +36,7 @@ public class WorkbenchUtils
 	}
 
     public static ViewPartAccess ensureViewActivated(String viewCategory, String viewLabel) {
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         if (workbenchWindow.collectViewPartsByTitle(viewLabel, false).size() == 0)
             return chooseViewFromDialog(viewCategory, viewLabel);
         else {
@@ -54,7 +54,7 @@ public class WorkbenchUtils
 	
 	public static ShellAccess openProjectPropertiesFromProjectExplorerView(String projectName) {
         findInProjectExplorerView(projectName).activateContextMenuWithMouseClick().findMenuItemByLabel(".*Properties.*").activateWithMouseClick();
-        return WorkbenchWindowAccess.findShellByTitle("Properties.*" + projectName + ".*");
+        return WorkbenchWindowAccess.findShellWithTitle("Properties.*" + projectName + ".*");
 	}
 	
 	public static void refreshProjectFromProjectExplorerView(String projectName) {

@@ -22,20 +22,20 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 public class NedEditorUtils
 {
 	public static void createNewNedFileByWizard(String parentFolder, String fileName, String template) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|NED file" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
-		ShellAccess shell = Access.findShellByTitle("New NED File");
+		ShellAccess shell = Access.findShellWithTitle("New NED File");
 		shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
 		shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
 		if (template != null)
-		    shell.findButtonWithLabel(template).activateWithMouseClick();
-		shell.findButtonWithLabel("Finish").activateWithMouseClick();
+		    shell.findButtonWithLabel(template).selectWithMouseClick();
+		shell.findButtonWithLabel("Finish").selectWithMouseClick();
 		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
 	}
 
 	public static void typeIntoTextualNedEditor(String fileName, String nedSource) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
 		StyledTextAccess styledText = textualEditor.findStyledText();
@@ -66,7 +66,7 @@ public class NedEditorUtils
     }
 
 	public static void assertBothEditorsAreAccessible(String fileName) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		NedEditorAccess nedEditor = (NedEditorAccess) workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 		nedEditor.ensureActiveGraphicalEditor();
 		nedEditor.ensureActiveTextEditor();

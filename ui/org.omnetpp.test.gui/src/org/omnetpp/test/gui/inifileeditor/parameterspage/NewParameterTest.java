@@ -26,7 +26,7 @@ public class NewParameterTest extends InifileEditorTestCase {
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
 
-        parametersPage.findButtonWithLabel("New").activateWithMouseClick();
+        parametersPage.findButtonWithLabel("New").selectWithMouseClick();
         TreeAccess tree = parametersPage.findTree();
         tree.findTreeItemByContent(".*newKey.*").clickAndTypeOver(0, "**.fooParam");
         // note: detailed cell editor tests are in EditParameterTest
@@ -46,9 +46,9 @@ public class NewParameterTest extends InifileEditorTestCase {
                 "**.par1 = 100\n");
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
 
-        parametersPage.findButtonWithLabel("New").activateWithMouseClick();
-        parametersPage.findButtonWithLabel("New").activateWithMouseClick();
-        parametersPage.findButtonWithLabel("New").activateWithMouseClick();
+        parametersPage.findButtonWithLabel("New").selectWithMouseClick();
+        parametersPage.findButtonWithLabel("New").selectWithMouseClick();
+        parametersPage.findButtonWithLabel("New").selectWithMouseClick();
 
         assertTextEditorContentMatches(
                 "[General]\n" +

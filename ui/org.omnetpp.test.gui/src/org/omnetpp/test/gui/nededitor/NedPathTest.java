@@ -16,7 +16,7 @@ public class NedPathTest
     // editor should close if the NED file is no longer under the NED-path
     public void testChangeNedPathWhileEditorIsOpen() throws Exception {
         setNedPath(directoryName);
-        Assert.assertFalse(Access.getWorkbenchWindowAccess().hasEditorPartWithTitle(fileName));
+        Assert.assertFalse(Access.getWorkbenchWindow().hasEditorPartWithTitle(fileName));
     }
 
     // NED file should stay open but loaded in a text editor if it is no longer under NED-Path
@@ -25,7 +25,7 @@ public class NedPathTest
         TextEditorAccess textEditor = nedEditor.ensureActiveTextEditor();
         textEditor.typeIn("Modified");
         setNedPath(directoryName);
-        Assert.assertTrue(Access.getWorkbenchWindowAccess().findEditorPartByTitle(fileName).getPart().isDirty());
+        Assert.assertTrue(Access.getWorkbenchWindow().findEditorPartByTitle(fileName).getPart().isDirty());
     }
 
     @Override

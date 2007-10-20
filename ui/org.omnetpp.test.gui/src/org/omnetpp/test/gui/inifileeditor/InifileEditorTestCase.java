@@ -13,7 +13,7 @@ public class InifileEditorTestCase extends ProjectFileTestCase {
     }
 
     protected InifileEditorAccess findInifileEditor() {
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         return (InifileEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName);
     }
 }

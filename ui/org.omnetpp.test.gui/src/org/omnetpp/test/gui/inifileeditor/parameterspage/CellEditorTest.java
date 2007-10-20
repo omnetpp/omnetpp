@@ -124,7 +124,7 @@ public class CellEditorTest extends InifileEditorTestCase {
         TreeAccess tree = prepareTest();
         tree.findTreeItemByContent(".*par5").activateCellEditor(1);
         tree.pressKeySequence("foo");
-        WorkbenchWindowAccess.getWorkbenchWindowAccess().findViewPartByTitle("Project Explorer.*", false).activateWithMouseClick();
+        WorkbenchWindowAccess.getWorkbenchWindow().findViewPartByTitle("Project Explorer.*", false).activateWithMouseClick();
         assertTextEditorContentMatches(content.replace("500", "foo"));
     }
 
@@ -216,7 +216,7 @@ public class CellEditorTest extends InifileEditorTestCase {
         // click outside the editor: click into the middle of the Project Explorer
         TreeAccess tree = prepareTest();
         TextAccess cellEditor = activateCellEditorAndFocusContentAssistPopup(tree, ".*par2", "expon");
-        WorkbenchWindowAccess.getWorkbenchWindowAccess().findViewPartByTitle("Project Explorer.*", true).findTree().click();
+        WorkbenchWindowAccess.getWorkbenchWindow().findViewPartByTitle("Project Explorer.*", true).findTree().click();
         cellEditor.assertDisposed(); // should have committed  THIS FAILS. Solution: when editor gets deactivated (PartListener!), should tell form editor to close currently open cell editors
         assertTextEditorContentMatches(content.replace("200", "expon"));
     }

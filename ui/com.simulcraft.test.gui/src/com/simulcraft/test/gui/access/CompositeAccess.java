@@ -2,18 +2,13 @@ package com.simulcraft.test.gui.access;
 
 import java.util.List;
 
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
-import org.omnetpp.common.util.IPredicate;
-
 import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.util.Predicate;
+
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.*;
+
+import org.omnetpp.common.util.IPredicate;
 
 
 public class CompositeAccess extends ControlAccess
@@ -116,4 +111,24 @@ public class CompositeAccess extends ControlAccess
 		final LabelAccess labelAccess = findLabel(label);
 		return new TreeAccess((Tree)labelAccess.findNextControl(Tree.class));
 	}
+	
+    @InUIThread
+    public ControlAccess findControlWithID(String id) {
+        return (ControlAccess)createAccess(findDescendantControl(Predicate.hasID(id)));
+    }
+    
+    @InUIThread
+    public ControlAccess findToolItemWithTooltip(final String tooltip) {
+        return (ControlAccess)createAccess(findDescendantControl(new IPredicate() {
+            public boolean matches(Object object) {
+                if (object instanceof ToolBar) {
+                    ToolBar toolBar = ((ToolBar)object);
+                    for (ToolItem toolItem : toolBar.getItems())
+                        if (toolItem.getToolTipText() != null && toolItem.getToolTipText().matches(tooltip))
+                            return true;
+                }
+                return false;
+            }
+        }));
+    }
 }

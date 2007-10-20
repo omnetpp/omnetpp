@@ -17,7 +17,7 @@ public class InifileEditorUtils
 		WorkbenchUtils.findInProjectExplorerView(projectName).chooseFromContextMenu("New|Other.*");
 
 		// Open the "OMNEST/OMNeT++" category in the "New" dialog, and double-click "Ini file" in it
-		ShellAccess shell = Access.findShellByTitle("New");
+		ShellAccess shell = Access.findShellWithTitle("New");
 		TreeAccess tree = shell.findTree();
 		TreeItemAccess treeItem = tree.findTreeItemByContent(".*OMNEST.*");
 		treeItem.click();
@@ -31,7 +31,7 @@ public class InifileEditorUtils
 	}
 
 	public static void createNewIniFileByWizard2(String parentFolder, String fileName, String networkName) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Ini.*");
 		fillNewInifileWizard(parentFolder, fileName, networkName); // fill in wizard
@@ -40,7 +40,7 @@ public class InifileEditorUtils
 
 	public static void fillNewInifileWizard(String parentFolder, String fileName, String networkName) {
 		// fill in the fields in the dialog, then click "Finish"
-		ShellAccess shell = Access.findShellByTitle("New Ini File");
+		ShellAccess shell = Access.findShellWithTitle("New Ini File");
 		//Access.dumpWidgetHierarchy(shell.getShell());
 		if (parentFolder != null)
 			shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
@@ -48,6 +48,6 @@ public class InifileEditorUtils
 			shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
 		if (networkName != null)
 			shell.findComboAfterLabel("NED Network:").clickAndTypeOver(networkName);
-		shell.findButtonWithLabel("Finish").activateWithMouseClick();
+		shell.findButtonWithLabel("Finish").selectWithMouseClick();
 	}
 }

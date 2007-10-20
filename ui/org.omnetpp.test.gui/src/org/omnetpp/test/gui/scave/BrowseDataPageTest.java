@@ -164,13 +164,13 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	}
 	
 	private void fillSelectDatasetDialog() {
-		ShellAccess dialogShell = Access.findShellByTitle("Select.*[dD]ataset.*"); 
-		dialogShell.findButtonWithLabel("New.*").activateWithMouseClick();
-		ShellAccess dialogShell2 = Access.findShellByTitle("New [dD]ataset.*");
+		ShellAccess dialogShell = Access.findShellWithTitle("Select.*[dD]ataset.*"); 
+		dialogShell.findButtonWithLabel("New.*").selectWithMouseClick();
+		ShellAccess dialogShell2 = Access.findShellWithTitle("New [dD]ataset.*");
 		TextAccess text = dialogShell2.findTextAfterLabel("Enter.*name.*");
 		text.typeIn("test-dataset");
-		dialogShell2.findButtonWithLabel("OK").activateWithMouseClick();
-		dialogShell.findButtonWithLabel("OK").activateWithMouseClick();
+		dialogShell2.findButtonWithLabel("OK").selectWithMouseClick();
+		dialogShell.findButtonWithLabel("OK").selectWithMouseClick();
 	}
 	
 	public void testShowVectorDataView() {
@@ -179,7 +179,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		MenuAccess menu = table.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Show.*[vV]ector.*[vV]iew.*");
 		
-		Access.getWorkbenchWindowAccess().findViewPartByTitle(".*[vV]ector.*").assertActivated();
+		Access.getWorkbenchWindow().findViewPartByTitle(".*[vV]ector.*").assertActivated();
 	}
 	
 	public void testContentAssist() {

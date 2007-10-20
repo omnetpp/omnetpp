@@ -18,7 +18,7 @@ public class ScaveEditorUtils {
 	}
 	
 	public static ScaveEditorAccess findScaveEditor(String analysisFile) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		MultiPageEditorPartAccess editor = workbenchWindow.findMultiPageEditorPartByTitle(analysisFile); 
 		return editor instanceof ScaveEditorAccess ? (ScaveEditorAccess)editor : null;
 	}

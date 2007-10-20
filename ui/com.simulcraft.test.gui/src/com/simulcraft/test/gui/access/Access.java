@@ -108,7 +108,7 @@ public class Access
 	}
 	
 	@InUIThread
-	public static WorkbenchWindowAccess getWorkbenchWindowAccess() {
+	public static WorkbenchWindowAccess getWorkbenchWindow() {
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		Assert.assertNotNull("no active workbench window", workbenchWindow);
 		return new WorkbenchWindowAccess(workbenchWindow);
@@ -120,7 +120,7 @@ public class Access
 	}
 
 	@InUIThread
-	public static ShellAccess findShellByTitle(final String title) {
+	public static ShellAccess findShellWithTitle(final String title) {
 		return new ShellAccess((Shell)findObject(getDisplay().getShells(), new IPredicate() {
 			public boolean matches(Object object) {
 				Shell shell = (Shell)object;

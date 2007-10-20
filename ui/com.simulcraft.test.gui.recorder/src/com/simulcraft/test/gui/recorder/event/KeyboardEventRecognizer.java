@@ -58,7 +58,7 @@ public class KeyboardEventRecognizer extends EventRecognizer {
     
     protected void flushTyping() {
         if (typedChars.length() > 0) {
-            recorder.add(makeSeq(typingFocus, expr("type(" + toJavaLiteral(typedChars) + ")", 0.7, null)));
+            recorder.add(makeSeq(typingFocus, expr("typeIn(" + toJavaLiteral(typedChars) + ")", 0.7, null)));
             typedChars = "";
         }
     }

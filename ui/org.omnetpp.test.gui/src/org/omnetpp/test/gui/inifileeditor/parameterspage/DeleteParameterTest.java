@@ -33,7 +33,7 @@ public class DeleteParameterTest extends InifileEditorTestCase {
 
         TreeAccess tree = parametersPage.findTree();
         tree.findTreeItemByContent(".*fooParam.*").click();
-        parametersPage.findButtonWithLabel("Remove").activateWithMouseClick();
+        parametersPage.findButtonWithLabel("Remove").selectWithMouseClick();
 
         assertTextEditorContentMatches(
                 "[General]\n" +

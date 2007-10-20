@@ -100,9 +100,9 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		MenuAccess menu = table.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Choose table columns.*");
 		
-		ShellAccess shell = Access.findShellByTitle("Select Columns.*");
-		shell.findButtonWithLabel("Select All").activateWithMouseClick();
-		shell.findButtonWithLabel("OK").activateWithMouseClick();
+		ShellAccess shell = Access.findShellWithTitle("Select Columns.*");
+		shell.findButtonWithLabel("Select All").selectWithMouseClick();
+		shell.findButtonWithLabel("OK").selectWithMouseClick();
 	}
 	
 	@InUIThread
@@ -132,14 +132,14 @@ public class BrowseDataPageAccess extends CompositeAccess {
 	public void ensureBasicFilterSelected() {
 		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Basic");
 		if (button != null)
-			button.activateWithMouseClick();
+			button.selectWithMouseClick();
 	}
 	
 	@NotInUIThread
 	public TextAccess ensureAdvancedFilterSelected() {
 		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Advanced");
 		if (button != null)
-			button.activateWithMouseClick();
+			button.selectWithMouseClick();
 		return getAdvancedFilterText();
 	}
 	

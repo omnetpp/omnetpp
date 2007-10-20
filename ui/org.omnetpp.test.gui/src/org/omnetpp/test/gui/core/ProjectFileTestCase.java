@@ -52,7 +52,7 @@ public class ProjectFileTestCase
 	}
 
     protected EditorPartAccess findEditorPart() {
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         return workbenchWindow.findEditorPartByTitle(fileName);
     }
 
@@ -107,7 +107,7 @@ public class ProjectFileTestCase
 	 * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
 	 */
 	protected void setUpInternal() throws Exception {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.ensureAllEditorPartsAreClosed();
 		workbenchWindow.assertNoOpenEditorParts();
 		cleanupWorkspace();
@@ -145,7 +145,7 @@ public class ProjectFileTestCase
      * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
      */
 	protected void tearDownInternal() throws Exception {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		if (workbenchWindow.hasEditorPartWithTitle(fileName))
 		    workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
 		workbenchWindow.ensureAllEditorPartsAreClosed();

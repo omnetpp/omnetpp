@@ -16,8 +16,8 @@ public class KeyboardTest extends GUITestCase
 {
 	public void testKeyboard() throws Throwable {
 	    WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*");
-	    WorkbenchWindowAccess.getWorkbenchWindowAccess().chooseFromMainMenu("File|New.*|.*Other.*");
-	    TextAccess text = Access.findShellByTitle("New").findTextAfterLabel("Wizards:");
+	    WorkbenchWindowAccess.getWorkbenchWindow().chooseFromMainMenu("File|New.*|.*Other.*");
+	    TextAccess text = Access.findShellWithTitle("New").findTextAfterLabel("Wizards:");
 	    for (char c=32; c<128; ++c) {
 	        text.typeOver(""+c);
 	        String result = text.getTextContent();

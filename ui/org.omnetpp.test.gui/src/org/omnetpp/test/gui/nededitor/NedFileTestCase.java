@@ -19,7 +19,7 @@ public abstract class NedFileTestCase
 	}
 
 	protected NedEditorAccess findNedEditor() {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		return (NedEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName);
 	}
 

@@ -21,11 +21,11 @@ public class SectionDeleteTest extends InifileEditorTestCase {
         TreeItemAccess treeItem = sectionsPage.findTree().findTreeItemByContent(section).reveal();
         switch (mode) {
             case DEL_KEY: treeItem.click(); sectionsPage.pressKey(SWT.DEL); break;
-            case BUTTON: treeItem.click(); sectionsPage.findButtonWithLabel("Remove.*").activateWithMouseClick(); break;
+            case BUTTON: treeItem.click(); sectionsPage.findButtonWithLabel("Remove.*").selectWithMouseClick(); break;
             case CONTEXTMENU: treeItem.chooseFromContextMenu("Remove"); break;
         }
         // confirmation dialog
-        WorkbenchWindowAccess.getActiveShell().findButtonWithLabel("Yes").activateWithMouseClick();
+        WorkbenchWindowAccess.getActiveShell().findButtonWithLabel("Yes").selectWithMouseClick();
     }
 
     private void assertTextEditorContentMatches(String content) {

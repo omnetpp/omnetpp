@@ -16,7 +16,7 @@ public class TestFrameworkTest extends GUITestCase
 	}
 
 	public void testMainMenu_1() {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("Window|Show View|Problems");
 		Access.sleep(2);
 		workbenchWindow.chooseFromMainMenu("Window|Show View|Tasks");
@@ -24,17 +24,17 @@ public class TestFrameworkTest extends GUITestCase
 	}
 
 	public void testMainMenu_SHOULDFAIL_2() {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("Window|Blabla-menu-item"); // should fail
 	}
 
 	public void testMainMenu_SHOULDFAIL_3() {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("File|Revert"); // should fail because it's **disabled**
 	}
 
 	public void testIsActiveShell_SHOULDFAIL_1() {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
 		workbenchWindow.chooseFromMainMenu("File|Open File.*"); // bring up "File Open" dialog
 		workbenchWindow.getShell().assertIsActive(); // now this should fail because dialog is open
 	}

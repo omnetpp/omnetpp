@@ -15,7 +15,7 @@ public class ConfigTest extends InifileEditorTestCase {
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         WorkspaceUtils.createFileWithContent(filePath, "");
         WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
         workbenchWindow.findEditorPartByTitle(fileName); //TODO .assertClass(InifileEditor.class)
@@ -23,7 +23,7 @@ public class ConfigTest extends InifileEditorTestCase {
     
     public void testSyntaxError() throws Throwable {
         //XXX refine
-        WorkbenchWindowAccess workbenchWindowAccess = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindowAccess = Access.getWorkbenchWindow();
         MultiPageEditorPartAccess multiPageEditorPart = workbenchWindowAccess.findMultiPageEditorPartByTitle(fileName);
         multiPageEditorPart.ensureActiveEditor("Text");
         StyledTextAccess styledText = multiPageEditorPart.findStyledText();
@@ -38,7 +38,7 @@ public class ConfigTest extends InifileEditorTestCase {
     }
 
     public void testWrongNetwork() throws Throwable {
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindowAccess();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         TextEditorAccess textualEditor = (TextEditorAccess)workbenchWindow.findMultiPageEditorPartByTitle(fileName).ensureActiveEditor("Text");
 
         textualEditor.findStyledText().typeIn("[General] \nnetwork = Undefined");
