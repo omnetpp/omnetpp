@@ -31,8 +31,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	
 	@InUIThread
 	public TreeItemAccess reveal() {
-	    if (!getWidget().getParent().getBounds().contains(getCenter(getWidget().getBounds())))
-	            getWidget().getParent().setTopItem(getWidget()); // scroll there
+   		getWidget().getParent().showItem(getWidget());
 		return this;
 	}
 	
