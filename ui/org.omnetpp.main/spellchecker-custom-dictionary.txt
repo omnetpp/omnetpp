@@ -231,3 +231,4 @@ lowercase
 playback
 expr
 rewriters
+hotkeys
