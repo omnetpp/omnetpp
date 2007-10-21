@@ -13,7 +13,8 @@ import com.simulcraft.test.gui.recorder.JavaSequence;
 
 
 /**
- * Responsible for recording typedChars
+ * Responsible for recording typing. Seems like hotkeys are NOT delivered here, because
+ * they get translated earlier on.
  *   
  * @author Andras
  */
