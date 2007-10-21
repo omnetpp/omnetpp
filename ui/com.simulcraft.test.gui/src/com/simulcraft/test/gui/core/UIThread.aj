@@ -46,7 +46,7 @@ public aspect UIThread {
 	
 	before(): execution(@NotInUIThread * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
-		Assert.assertTrue("Must be in a background thread to call: " + method, Display.getCurrent()==null);
+		Assert.assertTrue("Must be in a background thread to call: " + method + " (make sure AspectJ advises your test case classes!)", Display.getCurrent()==null);
 	}
 
 	/**

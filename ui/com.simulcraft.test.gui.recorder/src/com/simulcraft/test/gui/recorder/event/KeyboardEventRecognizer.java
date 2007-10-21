@@ -26,10 +26,12 @@ public class KeyboardEventRecognizer extends EventRecognizer {
     public JavaSequence recognizeEvent(Event e) {
         int modifierState = recorder.getKeyboardModifierState();
         Control focusControl = Display.getCurrent().getFocusControl();
-        if (focusControl != typingFocus) {
-            flushTyping();
-            typingFocus = focusControl;
-        }
+//        if (focusControl != typingFocus || e.type == SWT.MouseDown /*|| 
+//                e.type == SWT.MouseWheel || e.type == SWT.Selection*/) {
+//            flushTyping();
+//            typingFocus = focusControl;
+//            System.out.println("BUUU");
+//        }
         
         if (e.type == SWT.KeyDown) {
             if (e.character >= ' ' && e.character < 127) {
@@ -43,17 +45,21 @@ public class KeyboardEventRecognizer extends EventRecognizer {
             }
             else {
                 // modifier KeyDown -- ignore
+                return new JavaSequence();
             }
-        }
-        else if (e.type == SWT.MouseUp || e.type == SWT.MouseDown || e.type == SWT.MouseWheel) {
-            flushTyping();
         }
         return null;
     }
 
     public static String toPressKeyInvocation(Event e, int modifierState) {
-        String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-        return "pressKey(SWT." + string + ")";
+        String modifierString = KeyStroke.getInstance(modifierState, 0).toString();
+        modifierString = modifierString.replaceAll("\\+$", "").replace("+", " | ").replaceAll("\\b([A-Z])", "SWT.$1");
+        String keyString = KeyStroke.getInstance(0, e.keyCode).toString();
+        keyString = keyString.length()==1 ? ("'"+keyString+"'") : ("SWT."+keyString);
+        if (modifierState == 0)
+            return "pressKey(" + keyString + ")";
+        else 
+            return "pressKey(" + keyString + ", " + modifierString + ")";
     }
     
     protected void flushTyping() {
