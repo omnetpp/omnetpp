@@ -13,15 +13,16 @@ public class TraversalRecognizer extends EventRecognizer {
 
     public JavaSequence recognizeEvent(Event e) {
         if (e.type == SWT.Traverse) {
-            // See TraversalEvent docu.
+            // see TraversalEvent documentation
+            // XXX Content Assist: when navigating while it has focus (ie after 1 click), arrows will be recorded twice! (both as KeyDown and Traversal)
             switch (e.detail) {
                 case SWT.TRAVERSE_NONE: break;
                 case SWT.TRAVERSE_ESCAPE: return pressKey(SWT.ESC, 0); //FIXME generates 5 lines or so (???)
                 case SWT.TRAVERSE_RETURN: return pressKey(SWT.CR, 0); //FIXME generates 5 lines or so (???)
                 case SWT.TRAVERSE_TAB_NEXT: return pressKey(SWT.TAB, 0); 
                 case SWT.TRAVERSE_TAB_PREVIOUS: return pressKey(SWT.TAB, SWT.SHIFT); 
-                case SWT.TRAVERSE_ARROW_NEXT: return pressKey(SWT.ARROW_RIGHT, 0); 
-                case SWT.TRAVERSE_ARROW_PREVIOUS: return pressKey(SWT.ARROW_LEFT, 0); 
+                case SWT.TRAVERSE_ARROW_NEXT: return pressKey(SWT.ARROW_DOWN, 0); 
+                case SWT.TRAVERSE_ARROW_PREVIOUS: return pressKey(SWT.ARROW_UP, 0); 
                 case SWT.TRAVERSE_MNEMONIC: break;  //XXX ???
                 case SWT.TRAVERSE_PAGE_NEXT: return pressKey(SWT.PAGE_DOWN, 0); 
                 case SWT.TRAVERSE_PAGE_PREVIOUS: return pressKey(SWT.PAGE_UP, 0); 

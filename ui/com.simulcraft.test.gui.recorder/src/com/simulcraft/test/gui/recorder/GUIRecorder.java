@@ -12,6 +12,8 @@ import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -79,6 +81,9 @@ import com.simulcraft.test.gui.recorder.event.WorkbenchPartCTabClickRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.object.CTabFolderRecognizer;
 import com.simulcraft.test.gui.recorder.object.ComboRecognizer;
+import com.simulcraft.test.gui.recorder.object.ContentAssistPopupRecognizer;
+import com.simulcraft.test.gui.recorder.object.FigureCanvasRecognizer;
+import com.simulcraft.test.gui.recorder.object.FigureRecognizer;
 import com.simulcraft.test.gui.recorder.object.IDBasedControlRecognizer;
 import com.simulcraft.test.gui.recorder.object.ItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.MenuItemRecognizer;
@@ -156,6 +161,9 @@ public class GUIRecorder implements Listener {
         register(new TreeRecognizer(this));
         register(new TabFolderRecognizer(this));
         register(new CTabFolderRecognizer(this));
+        register(new ContentAssistPopupRecognizer(this));
+        register(new FigureCanvasRecognizer(this));
+        register(new FigureRecognizer(this));
         register(new IDBasedControlRecognizer(this));
         register(new WorkbenchWindowRecognizer(this));
         register(new WorkbenchWindowShellRecognizer(this));
@@ -349,10 +357,11 @@ public class GUIRecorder implements Listener {
     //TODO make this extensible
     @SuppressWarnings("deprecation")
     public Object resolveUIObject(Control control, Point point) {
-        // Not handled because no getItem(point) or item.getBounds() method: 
+        // Note: the following Item subclasses cannot be recognized, because 
+        // there is no getItem(point) or item.getBounds() method for them: 
         //  TabFolder/TabItem, ExpandBar/ExpandItem, Tray/TrayItem,
         //  TableColumn, TreeColumn, MenuItem
-        // TODO recognize Figures in GEF canvases
+        //
         if (control instanceof Table && ((Table)control).getItem(point) != null)
             return ((Table)control).getItem(point);
         if (control instanceof Tree && ((Tree)control).getItem(point) != null)
@@ -367,6 +376,12 @@ public class GUIRecorder implements Listener {
             for (CoolItem item : ((CoolBar)control).getItems())
                 if (item.getBounds().contains(point))
                     return item;
+        }
+        if (control instanceof FigureCanvas) {
+            IFigure rootFigure = ((FigureCanvas)control).getLightweightSystem().getRootFigure();
+            IFigure figure = rootFigure == null ? null : rootFigure.findFigureAt(point.x, point.y);
+            if (figure != null)
+                return figure;
         }
         return control;
     }
@@ -439,6 +454,8 @@ public class GUIRecorder implements Listener {
             return "CompositeAccess";
         if (resultUIObject instanceof Widget)
             return "WidgetAccess";
+        if (resultUIObject instanceof IFigure)
+            return "FigureAccess";
         if (resultUIObject instanceof MultiPageEditorPart)
             return "MultiPageEditorPartAccess";
         if (resultUIObject instanceof IEditorPart)

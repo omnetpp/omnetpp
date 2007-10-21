@@ -4,6 +4,7 @@ import junit.framework.Assert;
 
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.ReflectionUtils;
 
@@ -39,7 +40,13 @@ public class MultiPageEditorPartAccess
 		Control control = (Control)ReflectionUtils.invokeMethod(getPart(), "getControl", pageIndex);
 		return (ControlAccess)createAccess(control);
 	}
-	
+
+	@InUIThread
+	public EditorPartAccess getEditor(int pageIndex) {
+	    IEditorPart part = (IEditorPart)ReflectionUtils.invokeMethod(getPart(), "getEditor", pageIndex);
+	    return (EditorPartAccess)createAccess(part);
+	}
+
 	@InUIThread
 	public boolean isPageActive(String label) {
 		CTabItemAccess activeCTabItem = getActiveCTabItem();

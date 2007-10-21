@@ -14,8 +14,17 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.InstanceofPredicate;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -151,6 +160,45 @@ public class RecognizerBase  {
             if (predicate.matches(control))
                 controls.add(control);
         }
+    }
+
+    public static IWorkbenchPart findWorkbenchPart(boolean includeMultipageEditorPages, IPredicate predicate) {
+        return (IWorkbenchPart) theOnlyObject(collectWorkbenchParts(includeMultipageEditorPages, predicate));
+    }
+
+    protected static List<IWorkbenchPart> collectWorkbenchParts(boolean includeMultipageEditorPages, IPredicate predicate) {
+        ArrayList<IWorkbenchPart> result = new ArrayList<IWorkbenchPart>();
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        for (IWorkbenchPage page : workbenchWindow.getPages()) {
+            for (IViewReference viewReference : page.getViewReferences()) {
+                IWorkbenchPart viewPart = viewReference.getPart(false);
+                if (viewPart != null && predicate.matches(viewPart))
+                    result.add(viewPart);
+            }
+            for (IEditorReference editorReference : page.getEditorReferences()) {
+                IWorkbenchPart editorPart = editorReference.getPart(false);
+                if (editorPart != null && predicate.matches(editorPart))
+                    result.add(editorPart);
+                if (editorPart instanceof MultiPageEditorPart && includeMultipageEditorPages)
+                    result.addAll(collectPageEditors((MultiPageEditorPart)editorPart, predicate));
+            }
+        }
+        return result;
+    }
+
+    public static IEditorPart findPageEditor(MultiPageEditorPart multiPageEditor, IPredicate predicate) {
+        return (IEditorPart) theOnlyObject(collectPageEditors(multiPageEditor, predicate));
+    }
+
+    protected static List<IEditorPart> collectPageEditors(MultiPageEditorPart multiPageEditor, IPredicate predicate) {
+        ArrayList<IEditorPart> result = new ArrayList<IEditorPart>();
+        int pages = (Integer) ReflectionUtils.invokeMethod(multiPageEditor, "getPageCount");
+        for (int i=0; i<pages; i++) {
+            IEditorPart pageEditor = (IEditorPart) ReflectionUtils.invokeMethod(multiPageEditor, "getEditor", i);
+            if (pageEditor != null && predicate.matches(pageEditor))
+                result.add(pageEditor);
+        }
+        return result;
     }
 
     protected static Object theOnlyObject(List<? extends Object> objects) {
