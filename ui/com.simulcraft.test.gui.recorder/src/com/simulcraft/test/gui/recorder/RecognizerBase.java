@@ -58,7 +58,7 @@ public class RecognizerBase  {
 
     // expr is a method, called on uiObject 
     public JavaSequence addExpr(JavaSequence base, Object uiObject, JavaExpr methodExpr) {
-        Assert.isTrue(!(uiObject instanceof Event));
+        Assert.isTrue(!(uiObject instanceof Event) && !(uiObject instanceof JavaExpr) && !(uiObject instanceof JavaSequence));
 
         // first, check if uiObject was already identified somewhere
         JavaExpr uiObjectExpr = recorder.lookup(uiObject);

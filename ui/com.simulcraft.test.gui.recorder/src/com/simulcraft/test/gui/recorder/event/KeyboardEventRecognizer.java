@@ -7,6 +7,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
+import com.simulcraft.test.gui.recorder.ICodeRewriter;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
 
@@ -15,57 +17,58 @@ import com.simulcraft.test.gui.recorder.JavaSequence;
  *   
  * @author Andras
  */
-public class KeyboardEventRecognizer extends EventRecognizer {
-    private String typedChars = "";
-    private Control typingFocus = null;
-
+public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRewriter {
     public KeyboardEventRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
     
     public JavaSequence recognizeEvent(Event e) {
         int modifierState = recorder.getKeyboardModifierState();
-        Control focusControl = Display.getCurrent().getFocusControl();
-//        if (focusControl != typingFocus || e.type == SWT.MouseDown /*|| 
-//                e.type == SWT.MouseWheel || e.type == SWT.Selection*/) {
-//            flushTyping();
-//            typingFocus = focusControl;
-//            System.out.println("BUUU");
-//        }
-        
-        if (e.type == SWT.KeyDown) {
-            if (e.character >= ' ' && e.character < 127) {
-                typedChars += e.character;
-                return new JavaSequence();
-            }
-            else if ((e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
-                // record non-modifier control key
-                flushTyping();
+        if (e.type == SWT.KeyDown && (e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
+            Control focusControl = Display.getCurrent().getFocusControl();
+            if (focusControl == null)
+                return makeSeq(expr("Access." + toPressKeyInvocation(e, modifierState), 0.7, null));
+            else
                 return makeSeq(focusControl, expr(toPressKeyInvocation(e, modifierState), 0.7, null));
-            }
-            else {
-                // modifier KeyDown -- ignore
-                return new JavaSequence();
-            }
         }
         return null;
     }
 
     public static String toPressKeyInvocation(Event e, int modifierState) {
-        String modifierString = KeyStroke.getInstance(modifierState, 0).toString();
-        modifierString = modifierString.replaceAll("\\+$", "").replace("+", " | ").replaceAll("\\b([A-Z])", "SWT.$1");
-        String keyString = KeyStroke.getInstance(0, e.keyCode).toString();
-        keyString = keyString.length()==1 ? ("'"+keyString+"'") : ("SWT."+keyString);
-        if (modifierState == 0)
-            return "pressKey(" + keyString + ")";
-        else 
-            return "pressKey(" + keyString + ", " + modifierString + ")";
+        if (e.keyCode >= 32 && e.keyCode < 127 && (modifierState & ~SWT.SHIFT)==0) {
+            return "pressKey('" + e.character + "')";
+        }
+        else {
+            String modifierString = KeyStroke.getInstance(modifierState, 0).toString();
+            modifierString = modifierString.replaceAll("\\+$", "").replace("+", " | ").replaceAll("\\b([A-Z])", "SWT.$1");
+            String keyString = KeyStroke.getInstance(0, e.keyCode).toString();
+            keyString = keyString.length()==1 ? ("'"+keyString+"'") : ("SWT."+keyString);
+            if (modifierState == 0)
+                return "pressKey(" + keyString + ")";
+            else 
+                return "pressKey(" + keyString + ", " + modifierString + ")";
+        }
     }
-    
-    protected void flushTyping() {
-        if (typedChars.length() > 0) {
-            recorder.add(makeSeq(typingFocus, expr("typeIn(" + toJavaLiteral(typedChars) + ")", 0.7, null)));
-            typedChars = "";
+
+    public void rewrite(JavaSequence list) {
+        // merge separate keypresses into typing
+        if (list.endMatches(-1, "pressKey\\('.'\\)") && list.endMatches(-2, "pressKey\\('.'\\)") &&
+                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) { 
+            String arg1 = list.getEnd(-1).getJavaCode().replaceFirst("pressKey\\('(.)'\\)", "$1");
+            String arg2 = list.getEnd(-2).getJavaCode().replaceFirst("pressKey\\('(.)'\\)", "$1");
+
+            JavaExpr newExpr = expr("typeIn("+toJavaLiteral(arg2+arg1)+")", 1.0, null);
+            newExpr.setCalledOn(list.getEnd(-1).getCalledOn());
+            list.replaceEnd(-2, 2, makeSeq(newExpr));
+        }
+        if (list.endMatches(-1, "pressKey\\('.'\\)") && list.endMatches(-2, "typeIn\\(\".*\"\\)") &&
+                list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) { 
+            String arg1 = list.getEnd(-1).getJavaCode().replaceFirst("pressKey\\('(.)'\\)", "$1");
+            String arg2 = list.getEnd(-2).getJavaCode().replaceFirst("typeIn\\(\"(.*)\"\\)", "$1");
+
+            JavaExpr newExpr = expr("typeIn("+toJavaLiteral(arg2+arg1)+")", 1.0, null);
+            newExpr.setCalledOn(list.getEnd(-1).getCalledOn());
+            list.replaceEnd(-2, 2, makeSeq(newExpr));
         }
     }
 }

@@ -10,5 +10,5 @@ public interface ICodeRewriter {
     /**
      * May modify the code to make it more straightforward, etc.
      */
-    void rewrite(JavaSequence sequence);
+    void rewrite(JavaSequence list);
 }

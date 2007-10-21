@@ -229,8 +229,8 @@ public class GUIRecorder implements Listener {
         else {
             if (e.type==SWT.MouseDown)
                 add(new JavaExpr("Access.clickAbsolute(" + e.x + ", " + e.y + "); //TODO unrecognized click - revise", 1.0, null, null)); //XXX which button
-            if (e.type==SWT.KeyDown)
-                add(new JavaExpr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(e, modifierState)+ "; //TODO unrecognized keypress - revise", 1.0, null, null));
+            //if (e.type==SWT.KeyDown)
+            //    add(new JavaExpr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(e, modifierState)+ "; //TODO unrecognized keypress - revise", 1.0, null, null));
         }
         
         // invoke code rewriters if anything changed
