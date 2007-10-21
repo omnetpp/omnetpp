@@ -13,10 +13,10 @@ public class TextClickRecognizer extends EventRecognizer {
     }
 
     public JavaSequence recognizeEvent(Event e) {
-        //FIXME do Combo and whatnot as well
         if (e.widget instanceof Text && (e.type == SWT.MouseDown || e.type == SWT.MouseDoubleClick) && e.button == 1) { // left click into a StyledText
             Text text = (Text) e.widget;
-            return makeSeq(text, expr("clickRelative("+e.x+", "+e.y+")", 0.5, null));
+            //return makeSeq(text, expr("clickRelative("+e.x+", "+e.y+")", 0.5, null));
+            return makeSeq(text, expr("click()", 0.5, null));
         }
         return null;
     }
