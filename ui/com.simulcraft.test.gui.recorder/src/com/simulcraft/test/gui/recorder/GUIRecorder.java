@@ -74,6 +74,7 @@ import com.simulcraft.test.gui.recorder.event.KeyboardEventRecognizer;
 import com.simulcraft.test.gui.recorder.event.MenuSelectionRecognizer;
 import com.simulcraft.test.gui.recorder.event.StyledTextClickRecognizer;
 import com.simulcraft.test.gui.recorder.event.TextClickRecognizer;
+import com.simulcraft.test.gui.recorder.event.TraversalRecognizer;
 import com.simulcraft.test.gui.recorder.event.WorkbenchPartCTabClickRecognizer;
 import com.simulcraft.test.gui.recorder.object.ButtonRecognizer;
 import com.simulcraft.test.gui.recorder.object.CTabFolderRecognizer;
@@ -137,6 +138,7 @@ public class GUIRecorder implements Listener {
         register(new ClickRecognizer(this));
         register(new TextClickRecognizer(this));
         register(new StyledTextClickRecognizer(this));
+        register(new TraversalRecognizer(this));
         register(new MenuSelectionRecognizer(this));
         register(new ComboSelectionRecognizer(this));
         register(new ContentAssistSelectionRecognizer(this));

@@ -40,15 +40,19 @@ public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRew
             return "pressKey('" + e.character + "')";
         }
         else {
-            String modifierString = KeyStroke.getInstance(modifierState, 0).toString();
-            modifierString = modifierString.replaceAll("\\+$", "").replace("+", " | ").replaceAll("\\b([A-Z])", "SWT.$1");
-            String keyString = KeyStroke.getInstance(0, e.keyCode).toString();
-            keyString = keyString.length()==1 ? ("'"+keyString+"'") : ("SWT."+keyString);
-            if (modifierState == 0)
-                return "pressKey(" + keyString + ")";
-            else 
-                return "pressKey(" + keyString + ", " + modifierString + ")";
+            return toPressKeyInvocation(e.keyCode, modifierState);
         }
+    }
+
+    public static String toPressKeyInvocation(int keyCode, int modifierState) {
+        String modifierString = KeyStroke.getInstance(modifierState, 0).toString();
+        modifierString = modifierString.replaceAll("\\+$", "").replace("+", " | ").replaceAll("\\b([A-Z])", "SWT.$1");
+        String keyString = KeyStroke.getInstance(0, keyCode).toString();
+        keyString = keyString.length()==1 ? ("'"+keyString+"'") : ("SWT."+keyString);
+        if (modifierState == 0)
+            return "pressKey(" + keyString + ")";
+        else 
+            return "pressKey(" + keyString + ", " + modifierString + ")";
     }
 
     public void rewrite(JavaSequence list) {
