@@ -230,3 +230,4 @@ whitespaces
 lowercase
 playback
 expr
+rewriters

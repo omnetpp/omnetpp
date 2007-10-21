@@ -12,6 +12,7 @@ import org.omnetpp.common.util.StringUtils;
 
 public class JavaSequence {
     private List<JavaExpr> list = new ArrayList<JavaExpr>();
+    private int modificationCount = 0;
 
     public JavaSequence() {
     }
@@ -24,6 +25,7 @@ public class JavaSequence {
     
     public void add(JavaExpr expr) {
         list.add(expr);
+        modificationCount++;
     }
 
     public boolean isEmpty() {
@@ -34,11 +36,73 @@ public class JavaSequence {
         list.clear();
     }
 
+    public int length() {
+        return list.size();
+    }
+    
+    /**
+     * Returns the given element. Returns null if out of bounds.
+     */
+    public JavaExpr get(int index) {
+        return index<0 || index>=list.size() ? null : list.get(index);
+    }
+
+    /**
+     * Convenience method for code rewriters.
+     */
+    public boolean endEquals(int index, String string) {
+        JavaExpr expr = getEnd(index);
+        return expr != null && expr.getJavaCode().equals(string);
+    }
+
+    /**
+     * Convenience method for code rewriters.
+     */
+    public boolean endMatches(int index, String regex) {
+        JavaExpr expr = getEnd(index);
+        return expr != null && expr.getJavaCode().matches(regex);
+    }
+
+    /**
+     * Returns an element, index being relative to the end of the list;
+     * index must be negative. Examples: index=-1: last, index=-2: last but one, etc.
+     * Returns null if out of bounds.
+     */
+    public JavaExpr getEnd(int index) {
+        Assert.isTrue(index<0);
+        return get(list.size() + index);
+    }
+
+    public void replaceEnd(int length, JavaSequence seq) {
+        Assert.isTrue(length<=list.size());
+        replaceEnd(-length, length, seq);
+    }
+
+    public void replaceEnd(int index, int length, JavaSequence seq) {
+        Assert.isTrue(index < 0 && index >= -list.size());
+        Assert.isTrue(index-length < 0 && index-length >= -list.size());
+        int pos = index + list.size(); // normal index
+        for (int i=0; i<length; i++)
+            list.remove(pos);
+        if (seq != null)
+            list.addAll(pos, seq.list);
+        modificationCount++;
+    }
+    
+    /**
+     * Returns a counter that gets incremented at every modification.
+     * Can be used to detect if the sequence was modified since a
+     * previous invocation.
+     */
+    public int getModificationCount() {
+        return modificationCount;
+    }
+    
     /**
      * Returns the expression which produces the given UI object,
      * or returns null.
      */
-    public JavaExpr lookup(Object uiObject) {
+    public JavaExpr lookupUIObject(Object uiObject) {
         for (JavaExpr expr : list)
             if (expr.getResultUIObject() == uiObject)
                 return expr;
@@ -48,10 +112,10 @@ public class JavaSequence {
     /**
      * Release stale (disposed) UI objects, held by member JavaExpr objects.
      */
-    public void cleanup() {
+    public void forgetDisposedUIObjects() {
         for (JavaExpr expr : list)
             if (expr.getResultUIObject() instanceof Widget && ((Widget)expr.getResultUIObject()).isDisposed())
-                expr.releaseUIObject();
+                expr.forgetUIObject();
     }
 
     /**
@@ -68,7 +132,6 @@ public class JavaSequence {
      * Generate Java code from the JavaExpr objects contained. 
      */
     public String generateCode() {
-        simplifySequence();
         makeVariablesUnique();
 
         // a "chain" is an expression like: "object.method1().method2().method3();"
@@ -127,22 +190,6 @@ public class JavaSequence {
     }
 
 
-    protected void simplifySequence() {
-        // replace "click, click, doubleClick" with "doubleClick"
-        for (int i=0; i<list.size(); i++) {
-            if (i<list.size()-2 && 
-                    list.get(i).getJavaCode().equals("click()") &&
-                    list.get(i+1).getJavaCode().equals("click()") &&
-                    list.get(i+2).getJavaCode().equals("doubleClick()") &&
-                    list.get(i).getCalledOn()==list.get(i+1).getCalledOn() &&
-                    list.get(i+1).getCalledOn()==list.get(i+2).getCalledOn()) 
-            {
-                list.remove(i+1);
-                list.remove(i);
-            }
-        }
-    }
-    
     protected void makeVariablesUnique() {
         Set<String> varnames = new HashSet<String>();
         for (JavaExpr expr : list) {

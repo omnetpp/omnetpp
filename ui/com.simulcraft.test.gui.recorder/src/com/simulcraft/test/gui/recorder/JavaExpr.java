@@ -46,7 +46,7 @@ public class JavaExpr {
         return resultUIObject;
     }
     
-    public void releaseUIObject() {
+    public void forgetUIObject() {
         resultUIObject = null;
     }
 

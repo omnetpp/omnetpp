@@ -115,6 +115,7 @@ public class GUIRecorder implements Listener {
 
     private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
     private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
+    private List<ICodeRewriter> codeRewriters = new ArrayList<ICodeRewriter>();
 
     private static final int[] eventTypes = { 
             SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseMove, 
@@ -129,37 +130,50 @@ public class GUIRecorder implements Listener {
     };
 
     public GUIRecorder() {
-        eventRecognizers.add(new KeyboardEventRecognizer(this));
-        eventRecognizers.add(new ButtonEventRecognizer(this));
-        eventRecognizers.add(new ClickRecognizer(this));
-        eventRecognizers.add(new TextClickRecognizer(this));
-        eventRecognizers.add(new StyledTextClickRecognizer(this));
-        eventRecognizers.add(new MenuSelectionRecognizer(this));
-        eventRecognizers.add(new ComboSelectionRecognizer(this));
-        eventRecognizers.add(new ContentAssistSelectionRecognizer(this));
-        eventRecognizers.add(new WorkbenchPartCTabClickRecognizer(this));
+        // event recognizers
+        register(new KeyboardEventRecognizer(this));
+        register(new ButtonEventRecognizer(this));
+        register(new ClickRecognizer(this));
+        register(new TextClickRecognizer(this));
+        register(new StyledTextClickRecognizer(this));
+        register(new MenuSelectionRecognizer(this));
+        register(new ComboSelectionRecognizer(this));
+        register(new ContentAssistSelectionRecognizer(this));
+        register(new WorkbenchPartCTabClickRecognizer(this));
         
-        objectRecognizers.add(new ItemRecognizer(this));
-        objectRecognizers.add(new ShellRecognizer(this));
-        objectRecognizers.add(new MenuItemRecognizer(this));
-        objectRecognizers.add(new ButtonRecognizer(this));
-        objectRecognizers.add(new ComboRecognizer(this));
-        objectRecognizers.add(new TextRecognizer(this));
-        objectRecognizers.add(new StyledTextRecognizer(this));
-        objectRecognizers.add(new TableRecognizer(this));
-        objectRecognizers.add(new TreeRecognizer(this));
-        objectRecognizers.add(new TabFolderRecognizer(this));
-        objectRecognizers.add(new CTabFolderRecognizer(this));
-        objectRecognizers.add(new IDBasedControlRecognizer(this));
-        objectRecognizers.add(new WorkbenchWindowRecognizer(this));
-        objectRecognizers.add(new WorkbenchWindowShellRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartCTabRecognizer(this));
-        objectRecognizers.add(new WorkbenchPartCompositeRecognizer(this));
-        objectRecognizers.add(new MultiPageEditorCTabRecognizer(this));
+        // object recognizers
+        register(new ItemRecognizer(this));
+        register(new ShellRecognizer(this));
+        register(new MenuItemRecognizer(this));
+        register(new ButtonRecognizer(this));
+        register(new ComboRecognizer(this));
+        register(new TextRecognizer(this));
+        register(new StyledTextRecognizer(this));
+        register(new TableRecognizer(this));
+        register(new TreeRecognizer(this));
+        register(new TabFolderRecognizer(this));
+        register(new CTabFolderRecognizer(this));
+        register(new IDBasedControlRecognizer(this));
+        register(new WorkbenchWindowRecognizer(this));
+        register(new WorkbenchWindowShellRecognizer(this));
+        register(new WorkbenchPartRecognizer(this));
+        register(new WorkbenchPartCTabRecognizer(this));
+        register(new WorkbenchPartCompositeRecognizer(this));
+        register(new MultiPageEditorCTabRecognizer(this));
+        
         createPanel();
     }
 
+    protected void register(Object object) {
+        Assert.isTrue(object instanceof IEventRecognizer || object instanceof IObjectRecognizer || object instanceof ICodeRewriter);
+        if (object instanceof IEventRecognizer)
+            eventRecognizers.add((IEventRecognizer)object);
+        if (object instanceof IObjectRecognizer)
+            objectRecognizers.add((IObjectRecognizer)object);
+        if (object instanceof ICodeRewriter)
+            codeRewriters.add((ICodeRewriter)object);
+    }
+    
     public void hookListeners() {
         for (int eventType : eventTypes)
             Display.getCurrent().addFilter(eventType, this);
@@ -195,14 +209,11 @@ public class GUIRecorder implements Listener {
 
     protected void recordEvent(Event e) {
         // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
-        if (e.type == SWT.KeyDown || e.type == SWT.KeyUp) {
-            if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
-                if (e.type==SWT.KeyDown) modifierState |= e.keyCode;
-                if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
-            }
-        }
+        updateModifierState(e);
 
         // collect the best one of the guesses
+        int modificationCount = result.getModificationCount();
+
         List<JavaSequence> proposals = new ArrayList<JavaSequence>();
         for (IEventRecognizer eventRecognizer : eventRecognizers) {
             JavaSequence proposal = eventRecognizer.recognizeEvent(e);
@@ -222,11 +233,29 @@ public class GUIRecorder implements Listener {
                 add(new JavaExpr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(e, modifierState)+ "; //TODO unrecognized keypress - revise", 1.0, null, null));
         }
         
-        result.cleanup(); // may be called less frequently if proves to be slow
+        // invoke code rewriters if anything changed
+        while (result.getModificationCount() != modificationCount) {
+            modificationCount = result.getModificationCount();
+            for (ICodeRewriter rewriter : codeRewriters)
+                rewriter.rewrite(result);
+        }
+        
+        // release stale UI objects
+        result.forgetDisposedUIObjects();
+    }
+
+    private void updateModifierState(Event e) {
+        if (e.type == SWT.KeyDown || e.type == SWT.KeyUp) {
+            //FIXME meta keys as well?
+            if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
+                if (e.type==SWT.KeyDown) modifierState |= e.keyCode;
+                if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
+            }
+        }
     }
 
     public JavaExpr lookup(Object uiObject) {
-        return result.lookup(uiObject);
+        return result.lookupUIObject(uiObject);
     }
     
     public JavaSequence identifyObject(Object uiObject) {
@@ -235,7 +264,7 @@ public class GUIRecorder implements Listener {
         for (IObjectRecognizer objectRecognizer : objectRecognizers) {
             JavaSequence proposal = objectRecognizer.identifyObject(uiObject);
             if (proposal != null && !proposal.isEmpty()) {
-                Assert.isTrue(proposal.lookup(uiObject) != null); // otherwise it doesn't identify uiObject
+                Assert.isTrue(proposal.lookupUIObject(uiObject) != null); // otherwise it doesn't identify uiObject
                 proposals.add(proposal);
             }
         }

@@ -63,13 +63,13 @@ public class RecognizerBase  {
         // first, check if uiObject was already identified somewhere
         JavaExpr uiObjectExpr = recorder.lookup(uiObject);
         if (uiObjectExpr == null)
-            uiObjectExpr = base.lookup(uiObject);
+            uiObjectExpr = base.lookupUIObject(uiObject);
         if (uiObjectExpr == null) {
             // no, generate code to identify it here
             JavaSequence seq = recorder.identifyObject(uiObject);
             if (seq != null) {
                 base.merge(seq);
-                uiObjectExpr = base.lookup(uiObject);
+                uiObjectExpr = base.lookupUIObject(uiObject);
             }
         }
 
