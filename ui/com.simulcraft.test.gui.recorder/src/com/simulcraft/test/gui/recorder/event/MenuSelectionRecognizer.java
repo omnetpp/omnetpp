@@ -14,9 +14,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
+import com.simulcraft.test.gui.recorder.ICodeRewriter;
+import com.simulcraft.test.gui.recorder.JavaExpr;
 import com.simulcraft.test.gui.recorder.JavaSequence;
 
-public class MenuSelectionRecognizer extends EventRecognizer {
+public class MenuSelectionRecognizer extends EventRecognizer implements ICodeRewriter {
     public MenuSelectionRecognizer(GUIRecorder recorder) {
         super(recorder);
     }
@@ -74,6 +76,15 @@ public class MenuSelectionRecognizer extends EventRecognizer {
             }
         }
         return null;
+    }
+
+    public void rewrite(JavaSequence list) {
+        // remove right-click preceding chooseFromContextMenu()
+        if (list.endMatches(-1, "chooseFromContextMenu\\(.*") && list.endEquals(-2, "click(RIGHT_MOUSE_BUTTON)")) {
+            JavaExpr itemRightClicked = list.getEnd(-2).getCalledOn();
+            list.getEnd(-1).setCalledOn(itemRightClicked);
+            list.replaceEnd(-2, 1, null);
+        }
     }
 }
 
