@@ -163,7 +163,11 @@ public class RecognizerBase  {
         }
     }
 
-    public static IFigure findDescendantControl(IFigure figure, IPredicate predicate) {
+    public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
+        return findDescendantFigure(figure, new InstanceofPredicate(clazz));
+    }
+    
+    public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {
         return (IFigure) theOnlyObject(collectDescendantFigures(figure, predicate));
     }
 

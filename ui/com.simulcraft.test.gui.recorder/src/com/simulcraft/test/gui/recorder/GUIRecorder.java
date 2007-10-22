@@ -88,6 +88,7 @@ import com.simulcraft.test.gui.recorder.object.IDBasedControlRecognizer;
 import com.simulcraft.test.gui.recorder.object.ItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.MenuItemRecognizer;
 import com.simulcraft.test.gui.recorder.object.MultiPageEditorCTabRecognizer;
+import com.simulcraft.test.gui.recorder.object.RootFigureRecognizer;
 import com.simulcraft.test.gui.recorder.object.ShellRecognizer;
 import com.simulcraft.test.gui.recorder.object.StyledTextRecognizer;
 import com.simulcraft.test.gui.recorder.object.TabFolderRecognizer;
@@ -164,6 +165,7 @@ public class GUIRecorder implements Listener {
         register(new ContentAssistPopupRecognizer(this));
         register(new FigureCanvasRecognizer(this));
         register(new FigureRecognizer(this));
+        register(new RootFigureRecognizer(this));
         register(new IDBasedControlRecognizer(this));
         register(new WorkbenchWindowRecognizer(this));
         register(new WorkbenchWindowShellRecognizer(this));

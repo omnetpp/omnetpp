@@ -1,10 +1,8 @@
 package com.simulcraft.test.gui.recorder.object;
 
-import org.eclipse.draw2d.FigureCanvas;
+import java.util.List;
+
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.omnetpp.common.util.IPredicate;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaSequence;
@@ -14,36 +12,31 @@ public class FigureRecognizer extends ObjectRecognizer {
         super(recorder);
     }
 
+    @SuppressWarnings("unchecked")
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof IFigure) {
             IFigure figure = (IFigure)uiObject;
-           
-            FigureCanvas figureCanvas = findParentCanvas(figure);
 
-            return makeMethodCall(figureCanvas, expr("findFigure(blablabla)", 0.8, figure));
+            // go up the parent chain, and find the highest one within which this figure is still identifiable
+            // try to identify figure as the only figure with that class within the ancestor:
+            IFigure ancestor = figure;
+            while (ancestor.getParent() != null && findDescendantFigure(ancestor.getParent(), figure.getClass()) == figure)
+                ancestor = ancestor.getParent();
+            if (ancestor != figure)
+                return makeMethodCall(ancestor, expr("findOnlyDescendantFigure("+figure.getClass().getSimpleName()+")", 0.5, figure));
+
+            // try to identify figure as the kth figure with that class within its parent:
+            if (figure.getParent() != null) {
+                IFigure parent = figure.getParent();
+                int k = 0;
+                for (IFigure child : (List<IFigure>)parent.getChildren())
+                    if (child == figure)
+                        break;
+                    else if (child.getClass() == figure.getClass())
+                        k++;
+                return makeMethodCall(parent, expr("findChildFigure("+figure.getClass().getSimpleName()+", " + k + ")", 0.5, figure));
+            }
         }
         return null;
-    }
-
-    protected FigureCanvas findParentCanvas(IFigure figure) {
-        final IFigure rootFigure = getRootFigure(figure);
-        dumpFigureHierarchy(rootFigure);
-
-        Shell workbenchWindowShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        FigureCanvas figureCanvas = (FigureCanvas) findDescendantControl(workbenchWindowShell, new IPredicate() {
-            public boolean matches(Object object) {
-                if (object instanceof FigureCanvas && ((FigureCanvas)object).getLightweightSystem().getRootFigure() == rootFigure)
-                    return true;
-                return false;
-            }
-        });
-        return figureCanvas;
-    }
-
-    protected IFigure getRootFigure(IFigure figure) {
-        IFigure rootFigure = figure;
-        while (rootFigure.getParent() != null)
-            rootFigure = rootFigure.getParent();
-        return rootFigure;
     }
 }
