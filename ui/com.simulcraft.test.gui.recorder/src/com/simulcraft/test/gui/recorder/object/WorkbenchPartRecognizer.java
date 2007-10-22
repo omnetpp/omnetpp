@@ -8,6 +8,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.recorder.GUIRecorder;
 import com.simulcraft.test.gui.recorder.JavaSequence;
@@ -24,10 +25,10 @@ public class WorkbenchPartRecognizer extends ObjectRecognizer {
             
             // if editor is in a multipage editor, identify it like that
             if (workbenchPart instanceof IEditorPart) {
-                MultiPageEditorPart parentMultiPageEditor = findParentMultiPageEditorFor(workbenchPart);
+                MultiPageEditorPart parentMultiPageEditor = findParentMultiPageEditorFor((IEditorPart)workbenchPart);
                 if (parentMultiPageEditor != null) {
-                    String label = "FIXME-FIXME-FIXME";
-                    return makeSeq(parentMultiPageEditor, expr("getActivePageEditor("+quoteLabel(label)+")", 0.9, workbenchPart));
+                    String label = findPageEditorLabel(parentMultiPageEditor, (IEditorPart)workbenchPart);
+                    return makeSeq(parentMultiPageEditor, expr("getPageEditor("+quoteLabel(label)+")", 0.9, workbenchPart));
                 }
             }
             
@@ -43,22 +44,24 @@ public class WorkbenchPartRecognizer extends ObjectRecognizer {
         return null;
     }
 
-    protected MultiPageEditorPart findParentMultiPageEditorFor(final IWorkbenchPart workbenchPart) {
+    protected MultiPageEditorPart findParentMultiPageEditorFor(final IEditorPart editorPart) {
         return (MultiPageEditorPart) findWorkbenchPart(false, new IPredicate() {
             public boolean matches(Object object) {
-                if (object instanceof MultiPageEditorPart && containsPageEditor(((MultiPageEditorPart)object), workbenchPart))
+                if (object instanceof MultiPageEditorPart && findPageEditorLabel(((MultiPageEditorPart)object), editorPart) != null)
                     return true;
                 return false;
             }
         });
     }
 
-    protected boolean containsPageEditor(MultiPageEditorPart multiPageEditor, final IWorkbenchPart workbenchPart) {
-        return findPageEditor(multiPageEditor, new IPredicate() {
-            public boolean matches(Object object) {
-                return object == workbenchPart;
-            }
-        }) != null;
+    protected String findPageEditorLabel(MultiPageEditorPart multiPageEditor, IEditorPart pageEditor) {
+        int numPages = (Integer) ReflectionUtils.invokeMethod(multiPageEditor, "getPageCount");
+        for (int i=0; i<numPages; i++) {
+            IEditorPart part = (IEditorPart) ReflectionUtils.invokeMethod(multiPageEditor, "getEditor", i);
+            if (part == pageEditor)
+                return (String) ReflectionUtils.invokeMethod(multiPageEditor, "getPageText", i);
+        }
+        return null;
     }
 
 }
