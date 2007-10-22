@@ -17,11 +17,11 @@ public class ButtonEventRecognizer extends EventRecognizer {
         if (e.type == SWT.MouseDown && e.widget instanceof Button) {
             Button button = (Button)e.widget;
             if ((button.getStyle() & SWT.PUSH) != 0) {
-                return makeSeq(button, expr("selectWithMouseClick()", 0.8, null));
+                return makeMethodCall(button, expr("selectWithMouseClick()", 0.8, null));
             }
             if ((button.getStyle() & (SWT.CHECK|SWT.RADIO)) != 0) {
                 String methodText = button.getSelection() ? "deselectWithMouseClick()" : "selectWithMouseClick()"; //XXX no such methods yet
-                return makeSeq(button, expr(methodText, 0.8, null));
+                return makeMethodCall(button, expr(methodText, 0.8, null));
             }
         }
         return null;

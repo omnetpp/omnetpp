@@ -18,13 +18,13 @@ public class ContentAssistSelectionRecognizer extends EventRecognizer {
         if (e.widget instanceof Table && (e.type == SWT.MouseDoubleClick) && e.button == 1) {
             Table table = (Table) e.widget;
             if (ContentAssistPopupRecognizer.isContentAssist(table) && getSelectedText(table) != null)
-                return makeSeq(table, expr("chooseWithMouse("+quoteRegexText(getSelectedText(table))+")", 0.7, null));
+                return makeMethodCall(table, expr("chooseWithMouse("+quoteRegexText(getSelectedText(table))+")", 0.7, null));
         }
         if (e.widget instanceof Table && e.type == SWT.KeyDown && e.keyCode == SWT.CR) {
             //FIXME the following does not work, because the focusControl is the text NOT the content assist popup
             Table table = (Table) e.widget;
             if (ContentAssistPopupRecognizer.isContentAssist(table) && getSelectedText(table) != null)
-                return makeSeq(table, expr("chooseWithKeyboard("+quoteRegexText(getSelectedText(table))+")", 0.7, null));
+                return makeMethodCall(table, expr("chooseWithKeyboard("+quoteRegexText(getSelectedText(table))+")", 0.7, null));
         }
         return null;
     }

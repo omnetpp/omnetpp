@@ -23,9 +23,9 @@ public class WorkbenchPartCTabRecognizer extends ObjectRecognizer {
             //FIXME check that label uniquely identifies item
             IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             if (isEditorTabItem(item))
-                return makeSeq(workbenchWindow, expr("findEditorPartByTitle("+quoteLabel(item.getText())+").getCTabItem()", 0.9, item));
+                return makeMethodCall(workbenchWindow, expr("findEditorPartByTitle("+quoteLabel(item.getText())+").getCTabItem()", 0.9, item));
             if (isViewTabItem(item))
-                return makeSeq(workbenchWindow, expr("findViewPartByTitle("+quoteLabel(item.getText())+").getCTabItem()", 0.9, item));
+                return makeMethodCall(workbenchWindow, expr("findViewPartByTitle("+quoteLabel(item.getText())+").getCTabItem()", 0.9, item));
         }
         return null;
     }

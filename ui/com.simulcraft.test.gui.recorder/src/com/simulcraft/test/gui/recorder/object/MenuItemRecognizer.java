@@ -29,7 +29,7 @@ public class MenuItemRecognizer extends ObjectRecognizer {
             // FIXME code not really good (e.g. parent is some widget NOT a shell)
             // an EventRecognizer should produce: control.chooseFromContextMenu(menuPath)
             String menuPath = StringUtils.join(path, "|");
-            return makeSeq(item.getParent().getShell(), expr("findMenuItemByPath("+quoteMenuPath(menuPath)+")", 0.8, item));
+            return makeMethodCall(item.getParent().getShell(), expr("findMenuItemByPath("+quoteMenuPath(menuPath)+")", 0.8, item));
         }
         return null;
     }

@@ -17,10 +17,10 @@ public class TableRecognizer extends ObjectRecognizer {
             Table table = (Table)uiObject;
             Composite container = findContainer(table);
             if (findDescendantControl(container, Table.class) == uiObject)
-                return makeSeq(container, expr("findTable()", 0.8, table));
+                return makeMethodCall(container, expr("findTable()", 0.8, table));
             Label label = getPrecedingUniqueLabel(container, table);
             if (label != null)
-                return makeSeq(container, expr("findTableAfterLabel("+quoteRegexText(label.getText()) + ")", 0.8, table)); //FIXME no such method yet
+                return makeMethodCall(container, expr("findTableAfterLabel("+quoteRegexText(label.getText()) + ")", 0.8, table)); //FIXME no such method yet
         }
         return null;
     }

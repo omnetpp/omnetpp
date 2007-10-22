@@ -22,7 +22,7 @@ public class MultiPageEditorCTabRecognizer extends ObjectRecognizer {
             CTabItem item = (CTabItem)uiObject;
             MultiPageEditorPart editor = findMultiPageEditorOwnerOf(item);
             if (editor != null)
-                return makeSeq(editor, expr("getCTabItem("+quoteLabel(item.getText())+")", 0.9, item));
+                return makeMethodCall(editor, expr("getCTabItem("+quoteLabel(item.getText())+")", 0.9, item));
         }
         return null;
     }

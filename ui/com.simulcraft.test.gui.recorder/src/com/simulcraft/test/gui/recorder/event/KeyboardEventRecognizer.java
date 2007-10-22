@@ -28,9 +28,9 @@ public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRew
         if (e.type == SWT.KeyDown && (e.keyCode & ~SWT.MODIFIER_MASK) != 0) {
             Control focusControl = Display.getCurrent().getFocusControl();
             if (focusControl == null)
-                return makeSeq(expr("Access." + toPressKeyInvocation(e, modifierState), 0.7, null));
+                return makeStatement(expr("Access." + toPressKeyInvocation(e, modifierState), 0.7, null));
             else
-                return makeSeq(focusControl, expr(toPressKeyInvocation(e, modifierState), 0.7, null));
+                return makeMethodCall(focusControl, expr(toPressKeyInvocation(e, modifierState), 0.7, null));
         }
         return null;
     }
@@ -64,7 +64,7 @@ public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRew
 
             JavaExpr newExpr = expr("typeIn("+toJavaLiteral(arg2+arg1)+")", 1.0, null);
             newExpr.setCalledOn(list.getEnd(-1).getCalledOn());
-            list.replaceEnd(-2, 2, makeSeq(newExpr));
+            list.replaceEnd(-2, 2, makeStatement(newExpr));
         }
         if (list.endMatches(-1, "pressKey\\('.'\\)") && list.endMatches(-2, "typeIn\\(\".*\"\\)") &&
                 list.getEnd(-1).getCalledOn()==list.getEnd(-2).getCalledOn()) { 
@@ -73,7 +73,7 @@ public class KeyboardEventRecognizer extends EventRecognizer implements ICodeRew
 
             JavaExpr newExpr = expr("typeIn("+toJavaLiteral(arg2+arg1)+")", 1.0, null);
             newExpr.setCalledOn(list.getEnd(-1).getCalledOn());
-            list.replaceEnd(-2, 2, makeSeq(newExpr));
+            list.replaceEnd(-2, 2, makeStatement(newExpr));
         }
     }
 }

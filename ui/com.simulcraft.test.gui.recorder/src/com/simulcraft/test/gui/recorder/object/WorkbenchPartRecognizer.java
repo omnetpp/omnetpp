@@ -28,16 +28,16 @@ public class WorkbenchPartRecognizer extends ObjectRecognizer {
                 MultiPageEditorPart parentMultiPageEditor = findParentMultiPageEditorFor((IEditorPart)workbenchPart);
                 if (parentMultiPageEditor != null) {
                     String label = findPageEditorLabel(parentMultiPageEditor, (IEditorPart)workbenchPart);
-                    return makeSeq(parentMultiPageEditor, expr("getPageEditor("+quoteLabel(label)+")", 0.9, workbenchPart));
+                    return makeMethodCall(parentMultiPageEditor, expr("getPageEditor("+quoteLabel(label)+")", 0.9, workbenchPart));
                 }
             }
             
             // identify by title
             IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
             if (workbenchPart instanceof IEditorPart)
-                return makeSeq(workbenchWindow, expr("findEditorPartByTitle("+quoteLabel(workbenchPart.getTitle())+")", 0.9, workbenchPart));
+                return makeMethodCall(workbenchWindow, expr("findEditorPartByTitle("+quoteLabel(workbenchPart.getTitle())+")", 0.9, workbenchPart));
             else if (workbenchPart instanceof IViewPart)
-                return makeSeq(workbenchWindow, expr("findViewPartByTitle("+quoteLabel(workbenchPart.getTitle())+")", 0.9, workbenchPart));
+                return makeMethodCall(workbenchWindow, expr("findViewPartByTitle("+quoteLabel(workbenchPart.getTitle())+")", 0.9, workbenchPart));
             else if (workbenchPart != null)
                 Assert.isTrue(false, "Unknown workbenchpart: " + workbenchPart);
         }

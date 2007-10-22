@@ -17,10 +17,10 @@ public class TreeRecognizer extends ObjectRecognizer {
             Tree tree = (Tree)uiObject;
             Composite container = findContainer(tree);
             if (findDescendantControl(container, Tree.class) == uiObject)
-                return makeSeq(container, expr("findTree()", 0.8, tree));
+                return makeMethodCall(container, expr("findTree()", 0.8, tree));
             Label label = getPrecedingUniqueLabel(container, tree);
             if (label != null)
-                return makeSeq(container, expr("findTreeAfterLabel("+quoteRegexText(label.getText()) + ")", 0.8, tree)); //FIXME no such method yet
+                return makeMethodCall(container, expr("findTreeAfterLabel("+quoteRegexText(label.getText()) + ")", 0.8, tree)); //FIXME no such method yet
         }
         return null;
     }

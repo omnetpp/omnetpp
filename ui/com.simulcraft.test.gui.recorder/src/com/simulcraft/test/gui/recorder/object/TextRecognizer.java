@@ -18,7 +18,7 @@ public class TextRecognizer extends ObjectRecognizer {
             Composite container = findContainer(text);
             Label label = getPrecedingUniqueLabel(container, text);
             if (label != null)
-                return makeSeq(container, expr("findTextAfterLabel("+quoteLabel(label.getText()) + ")", 0.8, text));
+                return makeMethodCall(container, expr("findTextAfterLabel("+quoteLabel(label.getText()) + ")", 0.8, text));
         }
         return null;
     }

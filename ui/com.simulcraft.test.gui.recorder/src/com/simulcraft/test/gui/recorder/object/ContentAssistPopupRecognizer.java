@@ -15,7 +15,7 @@ public class ContentAssistPopupRecognizer extends ObjectRecognizer {
 
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof Table && isContentAssist((Table)uiObject)) {
-            return makeSeq(expr("Access.findContentAssistPopup()", 0.8, uiObject));
+            return makeStatement(expr("Access.findContentAssistPopup()", 0.8, uiObject));
         }
         return null;
     }

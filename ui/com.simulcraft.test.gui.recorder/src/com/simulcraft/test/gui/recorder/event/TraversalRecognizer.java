@@ -32,7 +32,7 @@ public class TraversalRecognizer extends EventRecognizer {
     }
 
     private JavaSequence pressKey(int keyCode, int modifierState) {
-        return makeSeq(expr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(keyCode, modifierState), 0.5, null));
+        return makeStatement(expr("Access." + KeyboardEventRecognizer.toPressKeyInvocation(keyCode, modifierState), 0.5, null));
     }
 
  }

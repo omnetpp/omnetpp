@@ -12,7 +12,7 @@ public class WorkbenchWindowRecognizer extends ObjectRecognizer {
 
     public JavaSequence identifyObject(Object uiObject) {
         if (uiObject instanceof IWorkbenchWindow) {
-            return makeSeq(expr("Access.getWorkbenchWindow()", 0.5, uiObject));
+            return makeStatement(expr("Access.getWorkbenchWindow()", 0.5, uiObject));
         }
         return null;
     }

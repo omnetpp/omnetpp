@@ -17,10 +17,10 @@ public class TabFolderRecognizer extends ObjectRecognizer {
             TabFolder tabFolder = (TabFolder)uiObject;
             Composite container = findContainer(tabFolder);
             if (findDescendantControl(container, TabFolder.class) == uiObject)
-                return makeSeq(container, expr("findTabFolder()", 0.8, tabFolder)); //FIXME no such method yet
+                return makeMethodCall(container, expr("findTabFolder()", 0.8, tabFolder)); //FIXME no such method yet
             Label label = getPrecedingUniqueLabel(container, tabFolder);
             if (label != null)
-                return makeSeq(container, expr("findTabFolderAfterLabel("+quoteRegexText(label.getText()) + ")", 0.8, tabFolder)); //FIXME no such method yet
+                return makeMethodCall(container, expr("findTabFolderAfterLabel("+quoteRegexText(label.getText()) + ")", 0.8, tabFolder)); //FIXME no such method yet
         }
         return null;
     }

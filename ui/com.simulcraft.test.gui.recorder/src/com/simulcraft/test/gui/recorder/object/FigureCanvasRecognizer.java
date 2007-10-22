@@ -31,7 +31,7 @@ public class FigureCanvasRecognizer extends ObjectRecognizer {
             });
 
             if (editorParent != null)
-                return makeSeq(editorParent, expr("getFigureCanvas()", 0.8, figureCanvas));
+                return makeMethodCall(editorParent, expr("getFigureCanvas()", 0.8, figureCanvas));
         }
         return null;
     }

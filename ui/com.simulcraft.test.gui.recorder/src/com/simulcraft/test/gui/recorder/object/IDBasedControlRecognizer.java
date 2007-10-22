@@ -22,7 +22,7 @@ public class IDBasedControlRecognizer extends ObjectRecognizer {
             Composite container = findContainer(control); 
             String widgetID = widget.getData(WIDGET_ID).toString();
             //FIXME check WIDGET_ID uniquely identifies widget within the container
-            return makeSeq(container, expr("findWidgetWithID("+toJavaLiteral(widgetID) + ")", 0.8, widget));
+            return makeMethodCall(container, expr("findWidgetWithID("+toJavaLiteral(widgetID) + ")", 0.8, widget));
         }
         return null;
     }

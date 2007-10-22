@@ -15,7 +15,7 @@ public class ComboSelectionRecognizer extends EventRecognizer {
     public JavaSequence recognizeEvent(Event e) {
         if (e.type == SWT.Selection && e.widget instanceof Combo) {
             Combo combo = (Combo)e.widget;
-            return makeSeq(combo, expr("selectItem("+quoteRegexText(combo.getText())+")", 0.8, null));
+            return makeMethodCall(combo, expr("selectItem("+quoteRegexText(combo.getText())+")", 0.8, null));
         }
         return null;
     }

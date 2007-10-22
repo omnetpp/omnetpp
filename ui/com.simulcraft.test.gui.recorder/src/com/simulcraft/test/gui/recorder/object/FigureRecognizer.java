@@ -20,7 +20,7 @@ public class FigureRecognizer extends ObjectRecognizer {
            
             FigureCanvas figureCanvas = findParentCanvas(figure);
 
-            return makeSeq(figureCanvas, expr("findFigure(blablabla)", 0.8, figure));
+            return makeMethodCall(figureCanvas, expr("findFigure(blablabla)", 0.8, figure));
         }
         return null;
     }
