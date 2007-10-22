@@ -296,7 +296,7 @@ public class CompoundModuleFigure extends NedFigure
         return innerTypeContainer;
     }
 
-    public IFigure getConectionContainer() {
+    public IFigure getConnectionContainer() {
         return connectionLayer;
     }
     /**

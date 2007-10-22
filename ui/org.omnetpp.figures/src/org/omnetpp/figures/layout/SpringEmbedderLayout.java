@@ -46,7 +46,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	@SuppressWarnings("unchecked")
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter() {
 	    IFigure nodeParent = compoundFigure.getSubmoduleContainer(); 
-	    IFigure edgeParent = compoundFigure.getConectionContainer();
+	    IFigure edgeParent = compoundFigure.getConnectionContainer();
 	    BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
 		autoLayouter.setRepulsiveForce(500.0);
