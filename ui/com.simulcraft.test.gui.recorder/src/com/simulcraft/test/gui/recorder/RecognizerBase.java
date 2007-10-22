@@ -163,6 +163,25 @@ public class RecognizerBase  {
         }
     }
 
+    public static IFigure findDescendantControl(IFigure figure, IPredicate predicate) {
+        return (IFigure) theOnlyObject(collectDescendantFigures(figure, predicate));
+    }
+
+    public static List<IFigure> collectDescendantFigures(IFigure figure, IPredicate predicate) {
+        ArrayList<IFigure> figures = new ArrayList<IFigure>();
+        collectDescendantFigures(figure, predicate, figures);
+        return figures;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static void collectDescendantFigures(IFigure figure, IPredicate predicate, List<IFigure> figures) {
+        for (IFigure child : (List<IFigure>)figure.getChildren()) {
+            if (predicate.matches(child))
+                figures.add(child);
+            collectDescendantFigures(child, predicate, figures);
+        }
+    }
+
     public static IWorkbenchPart findWorkbenchPart(boolean includeMultipageEditorPages, IPredicate predicate) {
         return (IWorkbenchPart) theOnlyObject(collectWorkbenchParts(includeMultipageEditorPages, predicate));
     }
