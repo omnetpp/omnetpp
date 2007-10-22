@@ -428,6 +428,20 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	}
 
     /**
+     * Returns "1st", "2nd", "3rd" etc.
+     */
+    public static String ordinal(int k) {
+        String suffix;
+        switch (k%10) {
+            case 1: suffix = "st"; break; 
+            case 2: suffix = "nd"; break; 
+            case 3: suffix = "rd"; break; 
+            default: suffix = "th"; break;
+        }
+        return k + suffix;
+    }
+
+    /**
      * Joins the elements of a {@code collection} separated by {@code separator} and
      * {@code lastSeparator}.
      * Example:

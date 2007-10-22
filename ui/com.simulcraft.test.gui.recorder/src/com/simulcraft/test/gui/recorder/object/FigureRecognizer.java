@@ -23,7 +23,7 @@ public class FigureRecognizer extends ObjectRecognizer {
             while (ancestor.getParent() != null && findDescendantFigure(ancestor.getParent(), figure.getClass()) == figure)
                 ancestor = ancestor.getParent();
             if (ancestor != figure)
-                return makeMethodCall(ancestor, expr("findOnlyDescendantFigure("+figure.getClass().getSimpleName()+")", 0.5, figure));
+                return makeMethodCall(ancestor, expr("getDescendantFigure("+figure.getClass().getSimpleName()+")", 0.5, figure));
 
             // try to identify figure as the kth figure with that class within its parent:
             if (figure.getParent() != null) {
@@ -34,8 +34,13 @@ public class FigureRecognizer extends ObjectRecognizer {
                         break;
                     else if (child.getClass() == figure.getClass())
                         k++;
-                return makeMethodCall(parent, expr("findChildFigure("+figure.getClass().getSimpleName()+", " + k + ")", 0.5, figure));
+                return makeMethodCall(parent, expr("getChildFigure("+figure.getClass().getSimpleName()+", " + k + ")", 0.5, figure));
             }
+            
+            //FIXME improve! 
+            // e.g. may identify a Label figure with its label;
+            // or may identify as container as getFigureContainingLabelFigure(clazz, labelText, depth)
+            
         }
         return null;
     }

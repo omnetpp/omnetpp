@@ -39,6 +39,7 @@ import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.core.NotInUIThread;
 
 
+//XXX move static functions out into an AccessUtils class? there's just too much stuff inherited into subclasses...
 public class Access
 {
     public final static int LEFT_MOUSE_BUTTON = 1;

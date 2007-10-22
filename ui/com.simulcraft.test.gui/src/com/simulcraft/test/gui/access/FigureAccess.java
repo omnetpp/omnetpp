@@ -1,5 +1,9 @@
 package com.simulcraft.test.gui.access;
 
+import java.util.List;
+
+import junit.framework.Assert;
+
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
@@ -8,7 +12,9 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.core.InUIThread;
 
@@ -39,6 +45,27 @@ public class FigureAccess
 		LightweightSystem lightweightSystem = (LightweightSystem)ReflectionUtils.getFieldValue(rootFigure, "this$0");
 		return (Canvas)ReflectionUtils.getFieldValue(lightweightSystem, "canvas");
 	}
+
+    public FigureAccess getDescendantFigure(Class<? extends IFigure> clazz) {
+        return (FigureAccess) createAccess(findDescendantFigure(figure, clazz));
+    }
+
+    public FigureAccess getDescendantFigure(IPredicate predicate) {
+        return (FigureAccess) createAccess(findDescendantFigure(figure, predicate));
+    }
+
+    @SuppressWarnings("unchecked")
+    public FigureAccess getChildFigure(Class<? extends IFigure> clazz, int index) {
+        int k = 0;
+        for (IFigure child : (List<IFigure>)figure.getChildren())
+            if (child.getClass() == figure.getClass())
+                    if (k == index)
+                        return (FigureAccess) createAccess(child);
+                    else
+                        k++;
+        Assert.assertTrue("no "+StringUtils.ordinal(index)+" "+clazz.toString()+" child in "+figure.toString(), false);
+        return null;
+    }
 
 	@InUIThread
 	public void click(int button) {
