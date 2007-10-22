@@ -27,6 +27,8 @@ public class FigureRecognizer extends ObjectRecognizer {
 
     protected FigureCanvas findParentCanvas(IFigure figure) {
         final IFigure rootFigure = getRootFigure(figure);
+        dumpFigureHierarchy(rootFigure);
+
         Shell workbenchWindowShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
         FigureCanvas figureCanvas = (FigureCanvas) findDescendantControl(workbenchWindowShell, new IPredicate() {
             public boolean matches(Object object) {

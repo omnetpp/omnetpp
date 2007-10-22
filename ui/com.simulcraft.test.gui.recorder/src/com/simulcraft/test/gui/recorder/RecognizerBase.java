@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -268,5 +269,31 @@ public class RecognizerBase  {
                 dumpMenu(menuItem.getMenu(), level + 1);
         }
     }
+
+    public static void dumpFigureHierarchy(IFigure figure) {
+        dumpFigureHierarchy(figure, 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static void dumpFigureHierarchy(IFigure figure, int level) {
+        System.out.println(StringUtils.repeat("  ", level) + toString(figure));
+        
+        for (IFigure child : (List<IFigure>)figure.getChildren())
+            dumpFigureHierarchy(child, level+1);
+    }
+
+    public static String toString(IFigure figure) {
+        // most figures don't define a toString, and the default toString() is useless.
+        // we can recognize the default because it starts with the class name
+        if (figure.toString().startsWith(figure.getClass().getCanonicalName())) {
+            return figure.getClass().getSimpleName();
+        }
+        else {
+            return figure.toString();
+        }
+        
+    }
+
+    
 
 }
