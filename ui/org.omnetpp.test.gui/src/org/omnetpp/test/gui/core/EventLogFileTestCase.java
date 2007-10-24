@@ -1,5 +1,9 @@
 package org.omnetpp.test.gui.core;
 
+import org.omnetpp.eventlogtable.widgets.EventLogTable;
+import org.omnetpp.test.gui.access.EventLogTableAccess;
+
+import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 
@@ -7,7 +11,11 @@ public class EventLogFileTestCase
     extends ProjectFileTestCase
 {
     public EventLogFileTestCase() {
-        super("test.log");
+        this("test.log");
+    }
+    
+    public EventLogFileTestCase(String fileName) {
+        super(fileName);
     }
     
     protected void createFileWithOneEvent() throws Exception {
@@ -31,6 +39,16 @@ public class EventLogFileTestCase
         		"ES t 1\r\n" + 
         		"\r\n" + 
         		"E # 1 t 1 m 1 msg 2\r\n");
+    }
+
+    protected EventLogTableAccess findEventLogTable() {
+        EventLogTableAccess eventLogTable = (EventLogTableAccess)Access.createAccess(Access.findDescendantControl(findEditorPart().getComposite().getControl(), EventLogTable.class));
+        return eventLogTable;
+    }
+
+    protected void selectFilterMode(String text) {
+        findEditorPart().getToolBarManager().getToolBar().findToolItemWithTooltip("Filter mode").
+            activateDropDownMenu().activateMenuItemWithMouse(text);
     }
 
     protected void openFileFromProjectExplorerViewInEventLogTableEditor() {

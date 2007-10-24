@@ -6,20 +6,19 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
+
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.GUITestCase;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
-
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-
-import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
 
 
 public class ProjectFileTestCase
@@ -34,7 +33,10 @@ public class ProjectFileTestCase
 	}
 	
 	public void setFileName(String fileName) {
-	    Assert.assertTrue("Filename must start with 'test'", fileName.startsWith("test"));
+	    // I think the following assert does not always hold true, because there might be files 
+	    // checked in without starting with 'test' so that they don't get deleted in cleanup
+	    // FIXME: remove this commented assert eventually
+	    // Assert.assertTrue("Filename must start with 'test'", fileName.startsWith("test"));
 		this.fileName = fileName;
 		this.filePath = projectName + "/" + fileName;
 	}

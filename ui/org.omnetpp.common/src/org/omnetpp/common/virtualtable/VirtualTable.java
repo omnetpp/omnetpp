@@ -840,7 +840,21 @@ public class VirtualTable<T>
 		return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint() + index);
 	}
 	
-	/**
+    public Point getVisibleElementLocation(T visibleElement) {
+        int visibleElementCount = getVisibleElementCount();
+        int rowNumber = (int)contentProvider.getDistanceToElement(getTopVisibleElement(), visibleElement, visibleElementCount);
+        
+        if (rowNumber == visibleElementCount)
+            throw new IllegalArgumentException("Element is not visisble: " + visibleElement);
+
+        int rowHeight = getRowHeight();
+        int x = getSize().x / 2;
+        int y = getHeaderHeight() + rowHeight * rowNumber + rowHeight / 2;
+
+        return new Point(x, y);
+    }
+
+    /**
 	 * Returns the top visible element.
 	 */
 	public T getTopVisibleElement() {
