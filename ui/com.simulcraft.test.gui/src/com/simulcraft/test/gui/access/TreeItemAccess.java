@@ -78,7 +78,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         if (!getWidget().getExpanded()) {
             reveal();
             click();
-            pressKey(SWT.ARROW_RIGHT);
+            pressKey(SWT.KEYPAD_ADD);  // ARROW_RIGHT doesn't work on Linux
         }
     }
     
