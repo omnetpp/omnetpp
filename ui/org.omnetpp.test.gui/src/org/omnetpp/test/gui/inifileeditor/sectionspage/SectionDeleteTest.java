@@ -25,7 +25,7 @@ public class SectionDeleteTest extends InifileEditorTestCase {
             case CONTEXTMENU: treeItem.chooseFromContextMenu("Remove"); break;
         }
         // confirmation dialog
-        WorkbenchWindowAccess.getActiveShell().findButtonWithLabel("Yes").selectWithMouseClick();
+        WorkbenchWindowAccess.findShellWithTitle("Delete Section.*").findButtonWithLabel("Yes").selectWithMouseClick();
     }
 
     private void assertTextEditorContentMatches(String content) {
