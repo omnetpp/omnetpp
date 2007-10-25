@@ -3,7 +3,6 @@ package com.simulcraft.test.gui.core;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.ReflectionUtils;
 
