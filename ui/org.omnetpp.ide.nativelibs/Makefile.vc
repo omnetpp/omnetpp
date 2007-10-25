@@ -10,8 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
 JDK="$(TOOLS_DIR)\jdk1.5.0"
-SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
-#SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"
+SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"
 
 COMMON=$(OMNETPP_ROOT)\src\common
 NEDXML=$(OMNETPP_ROOT)\src\nedxml

@@ -105,40 +105,27 @@ namespace std {
    %template(PStringSet) set<const char *>;
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
+   %template(PStringVector) vector<const char *>;
 
    //specialize_std_map_on_both(string,,,,string,,,);
-
    //%template(StringMap) map<string,string>;
 
-   specialize_std_vector(IMessageDependency*);
    %template(IMessageDependencyList) vector<IMessageDependency*>;
-
-   specialize_std_vector(MessageDependency*);
    %template(MessageDependencyList) vector<MessageDependency*>;
-
-   specialize_std_vector(FilteredMessageDependency*);
    %template(FilteredMessageDependencyList) vector<FilteredMessageDependency*>;
-
-   specialize_std_vector(const char *);
-
-   %template(PStringVector) vector<const char *>;
 
    %template(IntSet) set<int>;
 
    %template(LongSet) set<int64>;
 
    specialize_std_map_on_both(int,,,,int,,,);
-
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
    %template(LongVector) vector<long>;
-
-   specialize_std_vector(int64);
    %template(Int64Vector) vector<int64>;
 };
 
-/*
 %ignore EventLog::writeTrace;
 
 %define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
@@ -155,7 +142,6 @@ namespace std {
    const char * get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
 }
 %enddef
-*/
 
 %{
    JNIEnv *progressDelegateJenv;
@@ -236,12 +222,12 @@ import java.lang.reflect.Constructor;
          if (cPtr == 0)
             return null;
 
-         int index = EventLogEngineJNI.EventLogEntry_getClassIndex(cPtr);
+         int index = EventLogEngineJNI.EventLogEntry_getClassIndex(cPtr, null);
          Constructor constructor = eventLogEntryConstructors[index];
 
          if (constructor == null)
          {
-            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.EventLogEntry_getClassName(cPtr);
+            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.EventLogEntry_getClassName(cPtr, null);
             Class clazz = Class.forName(name);
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
             eventLogEntryConstructors[index] = constructor;
@@ -286,12 +272,12 @@ import java.lang.reflect.Constructor;
          if (cPtr == 0)
             return null;
 
-         int index = EventLogEngineJNI.IMessageDependency_getClassIndex(cPtr);
+         int index = EventLogEngineJNI.IMessageDependency_getClassIndex(cPtr, null);
          Constructor constructor = messageDependencyConstructors[index];
 
          if (constructor == null)
          {
-            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.IMessageDependency_getClassName(cPtr);
+            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.IMessageDependency_getClassName(cPtr, null);
             Class clazz = Class.forName(name);
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
             messageDependencyConstructors[index] = constructor;

@@ -89,7 +89,7 @@ import java.lang.reflect.Constructor;
          if (cPtr == 0)
             return null;
 
-         String className = LayoutEngineJNI.IBody_getClassName(cPtr);
+         String className = LayoutEngineJNI.IBody_getClassName(cPtr, null);
          Constructor constructor = null;
          for (int i = 0; i < bodyConstructors.size(); i++)
             if (bodyConstructors.get(i).getName().equals(className))
@@ -137,7 +137,7 @@ import java.lang.reflect.Constructor;
             return null;
 
          // we implement polymorphic return types:
-         String className = LayoutEngineJNI.IForceProvider_getClassName(cPtr);
+         String className = LayoutEngineJNI.IForceProvider_getClassName(cPtr, null);
          Constructor constructor = null;
          for (int i = 0; i < forceProviderConstructors.size(); i++)
             if (forceProviderConstructors.get(i).getName().equals(className))
@@ -160,19 +160,10 @@ import java.lang.reflect.Constructor;
 %}
 
 namespace std {
-   specialize_std_vector(Cc);
    %template(CcList) vector<Cc>;
-
-   specialize_std_vector(IBody *);
    %template(IBodyList) vector<IBody *>;
-
-   specialize_std_vector(IForceProvider *);
    %template(IForceProviderList) vector<IForceProvider *>;
-
-   specialize_std_vector(Pt);
    %template(PtList) vector<Pt>;
-
-   specialize_std_vector(Variable *);
    %template(VariableList) vector<Variable *>;
 };
 

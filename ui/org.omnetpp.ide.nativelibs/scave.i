@@ -135,21 +135,11 @@ namespace std {
 
    //%template(StringMap) map<string,string>;
 
-   specialize_std_vector(ID);
-
    %template(IDVector) vector<ID>;
    %template(IDVectorVector) vector<vector<ID> >;
-
-   specialize_std_vector(Run*);
-   specialize_std_vector(ResultFile*);
-   specialize_std_vector(FileRun*);
-
    %template(RunList) vector<Run*>;
    %template(ResultFileList) vector<ResultFile*>;
    %template(FileRunList) vector<FileRun*>;
-
-   specialize_std_vector(const char *);
-
    %template(IntSet) set<int>;
 
    specialize_std_map_on_both(int,,,,int,,,);
@@ -157,8 +147,6 @@ namespace std {
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
-
-   specialize_std_vector(XYDataset);
    %template(XYDatasetVector) vector<XYDataset>;
 };
 
@@ -400,7 +388,6 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 /* ------------- indexedvectorfile.h  ----------------- */
 
 namespace std {
-  specialize_std_vector(OutputVectorEntry);
   %template(EntryVector) vector<OutputVectorEntry>;
 };
 %ignore IndexedVectorFileWriterNode;

@@ -23,7 +23,6 @@ namespace std {
    // get() to return T so it'll be just string. Same with NodeType*.
    //
    specialize_std_map_on_both(std::string,,,,std::string,,,);
-   specialize_std_vector(NodeType*);
 
    // generate needed template specializations
    %template(StringMap) map<string,string>;
