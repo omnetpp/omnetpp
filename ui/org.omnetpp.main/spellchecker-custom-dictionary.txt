@@ -232,3 +232,4 @@ playback
 expr
 rewriters
 hotkeys
+linux
