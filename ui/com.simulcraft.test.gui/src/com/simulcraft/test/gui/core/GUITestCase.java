@@ -1,19 +1,18 @@
 package com.simulcraft.test.gui.core;
 
 import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.eclipse.swt.internal.win32.MSG;
-import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.access.Access;
 
 
 public abstract class GUITestCase extends TestCase {
 	private final static boolean debug = false;
-	
+
 	private Throwable testThrowable;
 	
 	public abstract class Test {
@@ -158,8 +157,7 @@ public abstract class GUITestCase extends TestCase {
 
 	public static void waitUntilEventQueueBecomesEmpty() {
 		Assert.assertTrue("This method must not be called from the UI thread", Display.getCurrent()==null);
-		MSG msg = new MSG();
-		while (OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE))
+		while (PlatformUtils.hasPendingUIEvents())
 			Thread.yield();
 	}
 }
