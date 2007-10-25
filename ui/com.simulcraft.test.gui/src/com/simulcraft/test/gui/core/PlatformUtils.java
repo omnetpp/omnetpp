@@ -49,10 +49,25 @@ public class PlatformUtils {
             //      =1  Shift is pressed
             //      =2  Mode_switch is pressed
             //      =3  Both Shift and Mode_switch are pressed
-            // see http://homepage3.nifty.com/tsato/xvkbd/events.html,
-            // http://tronche.com/gui/x/xlib/utilities/keyboard/XKeycodeToKeysym.html,
-            // http://tronche.com/gui/x/xlib/input/keyboard-encoding.html#KeySym, etc.
-            // 
+            // Looks like mode_switch is a keysim which has to be looked up separately.
+            //
+            // See also:
+            //  http://homepage3.nifty.com/tsato/xvkbd/events.html
+            //  http://lists.freedesktop.org/archives/xorg/2007-February/022193.html
+            //  http://tronche.com/gui/x/xlib/utilities/keyboard/XKeycodeToKeysym.html
+            //  http://tronche.com/gui/x/xlib/input/keyboard-encoding.html#KeySym
+            //
+//for step 3:            
+//            for (col = 0; (k = XKeycodeToKeysym (GDK_DISPLAY(), keycode, col)) != NoSymbol; col++)
+//            {
+//              if (k == keysym && col == 1)
+//                return TRUE;
+//              
+//              if (k == keysym)
+//                break;
+//            }
+//-----
+            
             //  int keyCode = 0;
             //  int /*long*/ keysym = untranslateKey (event.keyCode);
             //  if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
@@ -80,6 +95,9 @@ public class PlatformUtils {
         }
 	}
 
+	/**
+	 * Class.forName without typed exceptions
+	 */
     private static Class<?> classForName(String className) {
         try {
             return Class.forName(className);
