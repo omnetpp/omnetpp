@@ -67,9 +67,11 @@ public class EventUtils {
         EventType eventType = EventType.lookup(event.type);
         String result = eventType.name()+" ";
         if (ArrayUtils.contains(EventType.getKeyboardEventTypes(), eventType))
-            result +=  String.format("char: '%c' (0x%x) key: 0x%x  mask: 0x%x KeyStroke: %s", event.character, (int)event.character, event.keyCode, event.stateMask, KeyStroke.getInstance(event.keyCode, (int)event.character).format());
+            result +=  String.format("char: '%c' (0x%x) key: 0x%x  mask: 0x%x KeyStroke: %s", (32<=event.character && event.character<127) ? event.character : '?', (int)event.character, event.keyCode, event.stateMask, KeyStroke.getInstance(event.keyCode, (int)event.character).format());
         if (ArrayUtils.contains(EventType.getMouseEventTypes(), eventType))
-            result +=  String.format("button: 0x%x coord: (%d,%d)",event.button, event.x, event.y);
+            result +=  String.format("button: 0x%x  coord: (%d,%d)",event.button, event.x, event.y);
+        result += "  widget: " + event.widget + " item: " + event.item;
+        result += "  detail: " + event.detail;
         return result;
     }
     
