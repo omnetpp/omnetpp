@@ -4,7 +4,6 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.access.Access;
 
