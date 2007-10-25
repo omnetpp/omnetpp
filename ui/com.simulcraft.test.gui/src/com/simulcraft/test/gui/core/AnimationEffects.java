@@ -12,6 +12,15 @@ import org.omnetpp.common.color.ColorFactory;
 
 import com.simulcraft.test.gui.access.ClickableAccess;
 
+// Notes for Linux/GTK:
+//   - XOR mode doesn't work   
+//   - can only draw on ONE control, EXLUDING its children! ie. drawing on a Shell
+//     will only draw on a few empty pixel strips not covered by children... setting clipRect doesn't help
+// Workarounds: 
+//   - XOR: save bg image and restore it?
+//   - clipping: draw on cursorControl (AND maybe all its parents and siblings??? crazy!)
+//
+
 public class AnimationEffects  {
     
     public static void displayTextBox(String text, long delayMillis) {
