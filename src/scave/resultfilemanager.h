@@ -233,7 +233,7 @@ class SCAVE_API ResultFileManager
     static int _pos(ID id)    {return id & 0xffffffffUL;}
     static ID _mkID(bool computed, int type, int fileid, int pos) {
         assert((type>>7)==0 && (fileid>>24)==0 && (pos>>31)<=1);
-        return ((computed ? 1 << 63 : 0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
+        return ((computed ? (ID)1 << 63 : (ID)0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
     }
 
     // utility functions called while loading a result file

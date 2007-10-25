@@ -12,12 +12,16 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+// turn off 'Deprecated std::copy()' warning (MSVC80)
+#ifdef _MSC_VER
+#pragma warning(disable:4996)
+#endif
+
 #include <stdlib.h>
 #include <algorithm>
 #include "idlist.h"
 #include "resultfilemanager.h"
 #include "stringutil.h"
-
 
 IDList::IDList(const IDList& ids)
 {
