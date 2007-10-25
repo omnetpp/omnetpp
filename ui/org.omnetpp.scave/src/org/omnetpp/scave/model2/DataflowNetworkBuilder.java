@@ -26,7 +26,6 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.StringMap;
-import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
@@ -39,6 +38,7 @@ import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.Param;
+import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -159,14 +159,14 @@ public class DataflowNetworkBuilder {
 	{
 		PortWrapper inPort;
 		PortWrapper outPort;
-		int computationID;
+		ProcessingOp operation;
 		
-		public FilterNode(String type, List<Param> params) {
-			super(type, EMPTY_ATTRS);
+		public FilterNode(ProcessingOp operation) {
+			super(operation.getOperation(), EMPTY_ATTRS);
 			attrs = new StringMap();
-			for (Param param : params)
+			for (Param param : operation.getParams())
 				attrs.set(param.getName(), param.getValue());
-			computationID = calculateComputationID();
+			this.operation = operation;
 			addInputPort(inPort = new PortWrapper(-1, "in"));
 			addOutputPort(outPort = new PortWrapper(-1, "out"));
 			
@@ -175,26 +175,15 @@ public class DataflowNetworkBuilder {
 		@Override
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
-			outPort.id = resultfileManager.getComputedVector(computationID, inPort.id);
-			if (outPort.id == -1) {
-				VectorResult vector = resultfileManager.getVector(inPort.id);
-				String name = String.format("%s(%s)", type, vector.getName());
-				outPort.id = resultfileManager.addComputedVector(name, computationID, inPort.id);
-			}
-			if (!(inPort.channel.out.owner instanceof TeeNode)) // XXX
+			//System.out.format("Connecting %x%n", inPort.id);
+			outPort.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, resultfileManager); 
+
+			PortWrapper out = inPort.channel.out;  
+			if (!(out.owner instanceof TeeNode) || out == ((TeeNode)out.owner).outPort1) { // XXX
+				//System.out.format("Removing port %x from map%n", inPort.id);
 				idToOutputPortMap.remove(inPort.id);
-			idToOutputPortMap.put(outPort.id, outPort);
-		}
-		
-		private int calculateComputationID() {
-			String str = type;
-			StringVector attrNames = attrs.keys();
-			long size = attrNames.size();
-			for (int i = 0; i < size; ++i) {
-				String name = attrNames.get(i);
-				str += attrs.get(name);
 			}
-			return str.hashCode(); // XXX should use the string as id
+			idToOutputPortMap.put(outPort.id, outPort);
 		}
 	}
 	
@@ -404,7 +393,7 @@ public class DataflowNetworkBuilder {
 				if (apply.getOperation() != null) {
 					IDList idlist = select(getIDs(), apply.getFilters());
 					for (int i = 0; i < idlist.size(); ++i) {
-						addFilterNode(idlist.get(i), apply.getOperation(), apply.getParams());
+						addFilterNode(idlist.get(i), apply);
 					}
 				}
 				return this;
@@ -414,7 +403,7 @@ public class DataflowNetworkBuilder {
 				if (compute.getOperation() != null) {
 					IDList idlist = select(getIDs(), compute.getFilters());
 					for (int i = 0; i < idlist.size(); ++i) {
-						addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
+						addTeeNode(idlist.get(i), compute);
 
 						//TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
 						//addFilterNode(teeNode.outPort2.id, compute.getOperation(), compute.getParams());
@@ -617,22 +606,21 @@ public class DataflowNetworkBuilder {
 		return node;
 	}
 	
-	private TeeNode addTeeNode(long id, String operation, List<Param> params) {
+	private TeeNode addTeeNode(long id, ProcessingOp operation) {
 		PortWrapper port = getOutputPort(id);
 		TeeNode teeNode = new TeeNode();
 		connect(port, teeNode.inPort);
-		addFilterNode(teeNode.outPort2, operation, params);
+		addFilterNode(teeNode.outPort2, operation);
 		return teeNode;
 	}
 	
-	private FilterNode addFilterNode(long id, String operation, List<Param> params) {
-		PortWrapper port = getOutputPort(id);
-		return addFilterNode(port, operation, params);
+	private FilterNode addFilterNode(long id, ProcessingOp operation) {
+		return addFilterNode(getOutputPort(id), operation);
 	}
 	
 
-	private FilterNode addFilterNode(PortWrapper port, String operation, List<Param> params) {
-		FilterNode filterNode = new FilterNode(operation, params);
+	private FilterNode addFilterNode(PortWrapper port, ProcessingOp operation) {
+		FilterNode filterNode = new FilterNode(operation);
 		connect(port, filterNode.inPort);
 		return filterNode;
 	}

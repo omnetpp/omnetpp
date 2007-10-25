@@ -281,7 +281,8 @@ IDList ResultFileManager::getAllScalars() const
         {
             ScalarResults& v = fileList[k]->scalarResults;
             for (int i=0; i<(int)v.size(); i++)
-                out.uncheckedAdd(_mkID(SCALAR,k,i));
+            	if (!v[i].computed)
+            		out.uncheckedAdd(_mkID(false,SCALAR,k,i));
         }
     }
     return out;
@@ -296,7 +297,8 @@ IDList ResultFileManager::getAllVectors() const
         {
             VectorResults& v = fileList[k]->vectorResults;
             for (int i=0; i<(int)v.size(); i++)
-                out.uncheckedAdd(_mkID(VECTOR,k,i));
+            	if (!v[i].computed)
+            		out.uncheckedAdd(_mkID(false,VECTOR,k,i));
         }
     }
     return out;
@@ -311,7 +313,8 @@ IDList ResultFileManager::getAllHistograms() const
         {
             HistogramResults& v = fileList[k]->histogramResults;
             for (int i=0; i<(int)v.size(); i++)
-                out.uncheckedAdd(_mkID(HISTOGRAM,k,i));
+            	if (!v[i].computed)
+            		out.uncheckedAdd(_mkID(false,HISTOGRAM,k,i));
         }
     }
     return out;
@@ -323,8 +326,8 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i=0; i<(int)v.size(); i++)
-        if (v[i].fileRunRef==fileRun)
-            out.uncheckedAdd(_mkID(SCALAR,fileId,i));
+        if (v[i].fileRunRef==fileRun && !v[i].computed)
+       		out.uncheckedAdd(_mkID(false,SCALAR,fileId,i));
     return out;
 }
 
@@ -334,8 +337,8 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     VectorResults& v = fileRun->fileRef->vectorResults;
     for (int i=0; i<(int)v.size(); i++)
-        if (v[i].fileRunRef==fileRun)
-            out.uncheckedAdd(_mkID(VECTOR,fileId,i));
+        if (v[i].fileRunRef==fileRun && !v[i].computed)
+            out.uncheckedAdd(_mkID(false,VECTOR,fileId,i));
     return out;
 }
 
@@ -345,8 +348,8 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     HistogramResults& v = fileRun->fileRef->histogramResults;
     for (int i=0; i<(int)v.size(); i++)
-        if (v[i].fileRunRef==fileRun)
-            out.uncheckedAdd(_mkID(HISTOGRAM,fileId,i));
+        if (v[i].fileRunRef==fileRun && !v[i].computed)
+            out.uncheckedAdd(_mkID(false,HISTOGRAM,fileId,i));
     return out;
 }
 
@@ -404,7 +407,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = scalarResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(SCALAR, fileRunRef->fileRef->id, i);
+            return _mkID(d.computed, SCALAR, fileRunRef->fileRef->id, i);
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
@@ -412,7 +415,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = vectorResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(VECTOR, fileRunRef->fileRef->id, i);
+            return _mkID(d.computed, VECTOR, fileRunRef->fileRef->id, i);
     }
 
     HistogramResults& histogramResults = fileRunRef->fileRef->histogramResults;
@@ -420,7 +423,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = histogramResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(HISTOGRAM, fileRunRef->fileRef->id, i);
+            return _mkID(d.computed, HISTOGRAM, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
@@ -713,24 +716,27 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
     fileRunRef->fileRef->scalarResults.push_back(d);
 }
 
-ID ResultFileManager::addComputedVector(const char *name, long computationID, ID input)
+
+// create a file for each dataset?
+ID ResultFileManager::addComputedVector(const char *name, FilterNodeID nodeID, ID input)
 {
     assert(getTypeOf(input) == VECTOR);
 
     const VectorResult& vector = getVector(input);
     ResultFile *fileRef = vector.fileRunRef->fileRef;
     VectorResult newVector = VectorResult(vector);
+    newVector.computed = true;
     newVector.nameRef = stringSetFindOrInsert(names, name);
     fileRef->vectorResults.push_back(newVector);
-    ID id = _mkID(VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
-    std::pair<long, ID> key = std::make_pair(computationID, input);
+    ID id = _mkID(true, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
+    std::pair<FilterNodeID, ID> key = std::make_pair(nodeID, input);
     computedIDCache[key] = id;
     return id;
 }
 
-ID ResultFileManager::getComputedVector(long computationID, ID input)
+ID ResultFileManager::getComputedVector(FilterNodeID nodeID, ID input)
 {
-    std::pair<long, ID> key = std::make_pair(computationID, input);
+    std::pair<FilterNodeID, ID> key = std::make_pair(nodeID, input);
     ComputedIDCache::iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())
       return it->second; 

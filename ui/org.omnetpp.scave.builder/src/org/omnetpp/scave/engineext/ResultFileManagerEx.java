@@ -340,7 +340,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public long addComputedVector(String name, int computation, long input) {
+	public long addComputedVector(String name, long computation, long input) {
 		checkDeleted();
 		long id = super.addComputedVector(name, computation, input);
 		notifyListeners();

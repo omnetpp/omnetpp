@@ -48,6 +48,9 @@ struct SCAVE_API ResultItem
     std::string *moduleNameRef; // points into ResultFileManager's StringSet
     std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
+    bool computed;
+    
+    ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computed(false) {}
 
     /**
      * Returns the type of this result item (INT,DOUBLE,ENUM).
@@ -177,7 +180,10 @@ struct SCAVE_API FileRun
 
 typedef std::set<std::string> StringSet;
 typedef std::vector<std::string> StringVector;
-typedef std::map<std::pair<long, ID> , ID> ComputedIDCache;
+
+typedef int64 FilterNodeID;
+typedef std::map<std::pair<FilterNodeID, ID> , ID> ComputedIDCache;
+
 
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
@@ -220,13 +226,14 @@ class SCAVE_API ResultFileManager
   private:
     static std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
 
-    // ID: 8 bit type, 24 bit fileid, 32 bit pos
-    static int _type(ID id)   {return id >> 56;}
+    // ID: 1 bit computed, 7 bit type, 24 bit fileid, 32 bit pos
+    static bool _computed(ID id) { return (id >> 63) != 0; }
+    static int _type(ID id)   {return (id >> 56) & 0x7fUL;}
     static int _fileid(ID id) {return (id >> 32) & 0x00fffffful;}
     static int _pos(ID id)    {return id & 0xffffffffUL;}
-    static ID _mkID(int type, int fileid, int pos) {
-        assert((type>>8)==0 && (fileid>>24)==0 && (pos>>31)<=1);
-        return ((ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
+    static ID _mkID(bool computed, int type, int fileid, int pos) {
+        assert((type>>7)==0 && (fileid>>24)==0 && (pos>>31)<=1);
+        return ((computed ? 1 << 63 : 0) | (ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
     }
 
     // utility functions called while loading a result file
@@ -298,8 +305,8 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     // computed data 
-    ID addComputedVector(const char *name, long nodeID, ID inputID);
-    ID getComputedVector(long nodeID, ID inputID);
+    ID addComputedVector(const char *name, FilterNodeID nodeID, ID inputID);
+    ID getComputedVector(FilterNodeID nodeID, ID inputID);
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;

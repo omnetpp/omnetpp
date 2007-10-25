@@ -33,6 +33,7 @@ import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.StringVector;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYDatasetVector;
 import org.omnetpp.scave.model.Add;
@@ -48,6 +49,7 @@ import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -134,12 +136,19 @@ public class DatasetManager {
 		}
 
 		public Object caseApply(Apply apply) {
-			// IDs are not changed
+			for (int i = 0; i < idlist.size(); ++i) {
+				long id = idlist.get(i);
+				idlist.set(i, ensureComputedResultItem(apply, id, manager));
+			}
 			return this;
 		}
 
 		public Object caseCompute(Compute compute) {
-			// TODO
+			int size = (int)idlist.size();
+			for (int i = 0; i < size; ++i) {
+				long id = idlist.get(i);
+				idlist.add(ensureComputedResultItem(compute, id, manager));
+			}
 			return this;
 		}
 
@@ -427,5 +436,27 @@ public class DatasetManager {
 							  DatasetManager.getIDListFromDataset(manager, sourceDataset, null, type);
 
 		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(filterPattern), manager);
+	}
+	
+	
+	static long ensureComputedResultItem(ProcessingOp operation, long inputID, ResultFileManager manager) {
+		long nodeID = getFilterNodeID(operation);
+		long id = manager.getComputedVector(nodeID, inputID);
+		if (id == -1) {
+			//System.out.format("Add computed vector: (%x,%x)%n", nodeID, inputID);
+			VectorResult vector = manager.getVector(inputID);
+			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
+			id = manager.addComputedVector(name, nodeID, inputID);
+		}
+		return id;
+	}
+	
+	static long getFilterNodeID(ProcessingOp operation) {
+		return operation.hashCode();
+//		Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
+//		Assert.isNotNull(dataset);
+//		long datasetID = (long)dataset.hashCode();
+//		long operationID = (long)operation.hashCode();
+//		return (datasetID << 32) | (operationID & 0xFFFFFFFF);
 	}
 }

@@ -218,8 +218,8 @@ public class ScaveModelUtil {
 		return null;
 	}
 
-	public static Dataset findEnclosingDataset(Chart chart) {
-		EObject parent = chart.eContainer();
+	public static Dataset findEnclosingDataset(EObject eobject) {
+		EObject parent = eobject.eContainer();
 		while (parent != null && !(parent instanceof Dataset))
 			parent = parent.eContainer();
 		return (Dataset)parent;
