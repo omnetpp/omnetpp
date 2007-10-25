@@ -42,13 +42,11 @@ public class EventLogFileTestCase
     }
 
     protected EventLogTableAccess findEventLogTable() {
-        EventLogTableAccess eventLogTable = (EventLogTableAccess)Access.createAccess(Access.findDescendantControl(findEditorPart().getComposite().getControl(), EventLogTable.class));
-        return eventLogTable;
+        return (EventLogTableAccess)Access.createAccess(Access.findDescendantControl(findEditorPart().getComposite().getControl(), EventLogTable.class));
     }
 
     protected void selectFilterMode(String text) {
-        findEditorPart().getToolBarManager().getToolBar().findToolItemWithTooltip("Filter mode").
-            activateDropDownMenu().activateMenuItemWithMouse(text);
+        findToolItemWithToolTip("Filter mode").activateDropDownMenu().activateMenuItemWithMouse(text);
     }
 
     protected void openFileFromProjectExplorerViewInEventLogTableEditor() {

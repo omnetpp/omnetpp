@@ -15,6 +15,7 @@ import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditorPartAccess;
+import com.simulcraft.test.gui.access.ToolItemAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.GUITestCase;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
@@ -56,6 +57,10 @@ public class ProjectFileTestCase
     protected EditorPartAccess findEditorPart() {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         return workbenchWindow.findEditorPartByTitle(fileName);
+    }
+
+    protected ToolItemAccess findToolItemWithToolTip(String text) {
+        return findEditorPart().getToolBarManager().getToolBar().findToolItemWithToolTip(text);
     }
 
     protected void assertFileExists() {

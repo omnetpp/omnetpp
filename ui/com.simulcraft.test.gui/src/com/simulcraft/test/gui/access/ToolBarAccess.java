@@ -29,7 +29,7 @@ public class ToolBarAccess
 
     @InUIThread
     @Override
-    public ToolItemAccess findToolItemWithTooltip(final String text) {
+    public ToolItemAccess findToolItemWithToolTip(final String text) {
         return new ToolItemAccess((ToolItem)findObject(getControl().getItems(), new IPredicate() {
             public boolean matches(Object object) {
                 return ((ToolItem)object).getToolTipText().matches(text);

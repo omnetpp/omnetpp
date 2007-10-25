@@ -3,7 +3,6 @@ package org.omnetpp.test.gui.access;
 import junit.framework.Assert;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
@@ -18,8 +17,8 @@ import com.simulcraft.test.gui.core.NotInUIThread;
 public class EventLogTableAccess
     extends CompositeAccess
 {
-    public EventLogTableAccess(Composite composite) {
-        super(composite);
+    public EventLogTableAccess(EventLogTable eventLogTable) {
+        super(eventLogTable);
     }
     
     @Override

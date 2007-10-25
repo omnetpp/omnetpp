@@ -484,7 +484,7 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		Composite panel = createTabItem(tabFolder, "Module filter");
 
 		enableModuleFilter = new Button(panel, SWT.CHECK);
-		enableModuleFilter.setText("Filter for events occured in any of the select modules");
+		enableModuleFilter.setText("Filter for events occured in any of the selected modules");
 		enableModuleFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         enableModuleFilter.addSelectionListener(new SelectionAdapter() {
 			@Override

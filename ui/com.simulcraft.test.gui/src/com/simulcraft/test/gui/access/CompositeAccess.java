@@ -153,7 +153,7 @@ public class CompositeAccess extends ControlAccess
     }
     
     @InUIThread
-    public ToolItemAccess findToolItemWithTooltip(final String tooltip) {
+    public ToolItemAccess findToolItemWithToolTip(final String tooltip) {
         ToolBar toolBar = (ToolBar)findDescendantControl(new IPredicate() {
             public boolean matches(Object object) {
                 if (object instanceof ToolBar) {

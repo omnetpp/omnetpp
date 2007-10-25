@@ -32,6 +32,7 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -1057,12 +1058,17 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 								found = true;
 							}
 
-						if (!found) {
-							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-							marker.setAttribute("EventNumber", event.getEventNumber());
-						}
+                        if (!found) {
+                            InputDialog dialog = new InputDialog(null, "Add Bookmark", "Enter Bookmark name:", "", null);
 
+                            if (dialog.open() == Window.OK) {
+                                IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+                                marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+                                marker.setAttribute("EventNumber", event.getEventNumber());
+                                marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
+                            }
+                        }
+						
 						update();
 						sequenceChart.redraw();
 					}

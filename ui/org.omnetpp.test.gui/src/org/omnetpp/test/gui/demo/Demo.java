@@ -136,7 +136,7 @@ public class Demo extends GUITestCase {
             ((TreeAccess)cTabFolder.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
             TextAccess text = cTabFolder.findTextAfterLabel("Eventlog file:");
             text.clickAndTypeOver("demo.log");
-            workbenchWindow.getShell().findToolItemWithTooltip("Save \\(Ctrl\\+S\\)");
+            workbenchWindow.getShell().findToolItemWithToolTip("Save \\(Ctrl\\+S\\)");
             // or much cleaner:
             // workbenchWindow.findEditorPartByTitle("omnetpp\\.ini").saveWithHotKey();
         }
@@ -147,7 +147,7 @@ public class Demo extends GUITestCase {
             ShellAccess shell = Access.findShellWithTitle("Run");
             
             shell.findTree().findTreeItemByContent("OMNeT\\+\\+ Simulation").click();
-            shell.findToolItemWithTooltip("New launch configuration").click();
+            shell.findToolItemWithToolTip("New launch configuration").click();
             shell.findTextAfterLabel("Name:").clickAndTypeOver("demo");
 
             CompositeAccess cTabFolder = shell.findCTabFolder();
