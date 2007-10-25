@@ -12,8 +12,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.TCHAR;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -37,6 +35,7 @@ import com.simulcraft.test.gui.core.EventTracer;
 import com.simulcraft.test.gui.core.EventUtils;
 import com.simulcraft.test.gui.core.InUIThread;
 import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.PlatformUtils;
 
 
 //XXX move static functions out into an AccessUtils class? there's just too much stuff inherited into subclasses...
@@ -47,8 +46,6 @@ public class Access
     public final static int RIGHT_MOUSE_BUTTON = 3;
     private static final String TEST_RUNNING = "com.simulcraft.test.running"; 
 	
-    public static double delayBetweenPostEvents;
-
     public static boolean debug = false;
     
     protected static ArrayList<IAccessFactory> accessFactories = new ArrayList<IAccessFactory>();
@@ -59,8 +56,6 @@ public class Access
     
 	static {
         System.setProperty(TEST_RUNNING, "1");
-	    String value = System.getProperty("com.simulcraft.test.gui.DelayBetweenPostEvents");
-	    delayBetweenPostEvents = value == null ? 0 : Double.parseDouble(value);
 
 	    addAccessFactory(new IAccessFactory() {
             public Class<?> findAccessClass(Class<?> instanceClass) throws ClassNotFoundException {
@@ -139,18 +134,8 @@ public class Access
         activeShell.forceActive();
 
         log(debug, "Posting event: " + event);
-
-		Assert.assertTrue("Cannot post event: "+event.toString(), getDisplay().post(event));
-
-		if (event.type != SWT.MouseDown && event.type != SWT.MouseUp) {
-		    // TODO: this is may not be the best way to slow down replay
-            try {
-                Thread.sleep((long)(delayBetweenPostEvents * 1000));
-            }
-            catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-		}
+		boolean ok = getDisplay().post(event);
+		Assert.assertTrue("Cannot post event: "+event.toString(), ok);
 	}
 
 	@InUIThread
@@ -202,7 +187,7 @@ public class Access
             if (character == '\n')
                 pressEnter();  // \n would post LF instead of CR
             else
-                pressKey(character, getModifiersFor(character));
+                pressKey(character, PlatformUtils.getModifiersFor(character));
         }
     }
 
@@ -231,25 +216,6 @@ public class Access
 		pressKey(character, 0, modifierKeys);
 	}
 
-	public static int getModifiersFor(char ch) {
-	    // see VkKeyScan documentation in the Windows API, and usage in Display.post()
-        short vkKeyScan = OS.VkKeyScan ((short) wcsToMbcs (ch, 0)); //XXX platform specific (Windows only)
-        byte vkModifier = (byte)(vkKeyScan >> 8);
-        int modifier = 0;
-        if ((vkModifier & 1) !=0) modifier |= SWT.SHIFT;
-        if ((vkModifier & 2) !=0) modifier |= SWT.CONTROL;
-        if ((vkModifier & 4) !=0) modifier |= SWT.ALT;
-        return modifier;
-	}
-	
-	private static int wcsToMbcs (char ch, int codePage) {
-	    // from Display (win32)
-	    if (OS.IsUnicode) return ch;
-	    if (ch <= 0x7F) return ch;
-	    TCHAR buffer = new TCHAR (codePage, ch, false);
-	    return buffer.tcharAt (0);
-	}
-
 	@InUIThread
 	public void pressKey(char character, int keyCode, int modifierKeys) {
 		Event event;
@@ -263,8 +229,9 @@ public class Access
 		postEvent(event);
 
 		event = newEvent(SWT.KeyUp);
+		event.character = character;
 		event.keyCode = keyCode;
-		event.character = (char)keyCode;
+		//event.character = (char)keyCode; --???? Andras
 		postEvent(event);
 
 		if (modifierKeys != 0)
@@ -318,12 +285,27 @@ public class Access
     }
 
 	protected void postMouseEvent(int type, int button, int x, int y) {
+		postMouseEvent(type, button, x, y, 0);
+	}
+	
+	protected void postMouseEvent(int type, int button, int x, int y, int delayMillis) {
+		//TODO: suggest SWT maintainers to introduce post() method with a delayMillis parameter
+		if (PlatformUtils.isGtk && type == SWT.MouseMove && delayMillis != 0) {
+			// OS.XTestFakeMotionEvent(OS.GDK_DISPLAY(), -1, x, y, delayMillis); -- see Display.postEvent()
+			int xDisplay = (Integer)ReflectionUtils.invokeStaticMethod(PlatformUtils.OS, "GDK_DISPLAY");
+			ReflectionUtils.invokeStaticMethod(PlatformUtils.OS, "XTestFakeMotionEvent", xDisplay, -1, x, y, delayMillis);
+		}
+		
 		Event event = newEvent(type); // e.g. SWT.MouseMove
 		event.button = button;
 		event.x = x;
 		event.y = y;
 		event.count = 1;
 		postEvent(event);
+
+		if (PlatformUtils.isWindows) {
+			try { Thread.sleep(delayMillis); } catch (InterruptedException e) { }
+		}
 	}
 
 	@InUIThread

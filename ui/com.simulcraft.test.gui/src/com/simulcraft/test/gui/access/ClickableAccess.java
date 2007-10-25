@@ -51,12 +51,11 @@ public class ClickableAccess
 	            if (steps > mouseMoveMaxSteps) steps = mouseMoveMaxSteps;
 	            int stepMillis = max( (int)(mouseMoveDurationMillis / steps), 1);
 	            double dt = 1.0 / steps;
-	            for (double t = 0; t < 1.0; t += dt) {
-	                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(xt.f(t)*(x-p.x)), p.y + (int)(yt.f(t)*(y-p.y)));
-	                try { Thread.sleep(stepMillis); } catch (InterruptedException e) { break; }
-	            }
+	            for (double t = 0; t < 1.0; t += dt)
+	                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(xt.f(t)*(x-p.x)), p.y + (int)(yt.f(t)*(y-p.y)), stepMillis);
 	        }
 	        postMouseEvent(SWT.MouseMove, 0, x, y);
+
 	    }
 	}
 
