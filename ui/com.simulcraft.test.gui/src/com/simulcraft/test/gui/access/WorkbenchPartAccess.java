@@ -24,20 +24,31 @@ public class WorkbenchPartAccess
 		return workbenchPart;
 	}
 	
+	protected PartSite getPartSite() {
+		IWorkbenchPartSite site = workbenchPart.getSite();
+
+		if (site instanceof PartSite)
+			return ((PartSite)site);
+		else if (site instanceof MultiPageEditorSite)
+			return (PartSite)((MultiPageEditorSite)site).getMultiPageEditor().getSite();
+
+		Assert.fail("Unknown site " + site);
+		return null;
+	}
+	
+	/**
+	 * Returns the name of the part. This is the name visible on tabs.
+	 */
+	public String getPartName() {
+		return getPartSite().getPartReference().getPartName();
+	}
+	
 	public CompositeAccess getComposite() {
 		return (CompositeAccess)createAccess(getCompositeInternal());
 	}
 
 	protected Composite getCompositeInternal() {
-		IWorkbenchPartSite site = workbenchPart.getSite();
-
-		if (site instanceof PartSite)
-			return (Composite)((PartSite)site).getPane().getControl();
-		else if (site instanceof MultiPageEditorSite)
-			return (Composite)((PartSite)((MultiPageEditorSite)site).getMultiPageEditor().getSite()).getPane().getControl();
-
-		Assert.fail("Unknown site " + site);
-		return null;
+		return (Composite)getPartSite().getPane().getControl();
 	}
 
 	@InUIThread
@@ -57,7 +68,7 @@ public class WorkbenchPartAccess
 
     @InUIThread
     public CTabItemAccess getCTabItem() {
-        return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), workbenchPart.getSite().getRegisteredName()));
+        return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), getPartName()));
     }
     
     @InUIThread
@@ -72,7 +83,7 @@ public class WorkbenchPartAccess
     public void assertActivated() {
     	Assert.assertTrue("The workbench part '" + getPart().getSite().getRegisteredName() + "' is not activated", isActivated());
     }
-
+    
     @InUIThread
     public void ensureActivated() {
         if (!isActivated())
