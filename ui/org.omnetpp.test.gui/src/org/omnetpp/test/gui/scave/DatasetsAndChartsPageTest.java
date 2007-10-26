@@ -67,7 +67,6 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 					n("chart sheet test-chartsheet (0 charts)")));
 	}
 	
-	
 	protected void createFiles() throws Exception {
 		createFile(
 				fileName,
