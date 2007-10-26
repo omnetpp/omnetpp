@@ -121,6 +121,12 @@ public class WorkspaceUtils
         if (!folder.exists())
             folder.create(true, false, null);
     }
+
+    public static void ensureProjectNotExists(String projectName) throws CoreException {
+        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+        if (project != null)
+            project.delete(true, null);
+    }
     
     //XXX this function probably not needed, can be replaced by prepending the regex with "(?s)"
     public static boolean matchesRegexp(String text, String regexp) {

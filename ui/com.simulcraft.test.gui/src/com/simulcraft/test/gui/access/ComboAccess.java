@@ -76,7 +76,9 @@ public class ComboAccess extends ControlAccess
         int index = findString(getComboItems(), content);
         for (int i=0; i<index; i++)
             pressKey(SWT.ARROW_DOWN);
-        pressKey(SWT.CR);
+
+        if (!isEditable())
+            pressEnter();
         
         assertTextContent(content);
     }

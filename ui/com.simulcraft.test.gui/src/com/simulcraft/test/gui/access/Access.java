@@ -612,7 +612,7 @@ public class Access
                 index = i;
             }
         }
-        Assert.assertTrue("more than one match found for string "+regex, index != -1);
+        Assert.assertTrue("no match found for string "+regex, index != -1);
         return index;
     }
 
