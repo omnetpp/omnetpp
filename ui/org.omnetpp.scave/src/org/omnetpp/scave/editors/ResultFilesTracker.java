@@ -29,6 +29,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.common.ScaveMarkers;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
@@ -292,11 +293,13 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * When not, it generates the index first and then loads it from the index.
 	 */
 	private void loadFileInternal(final IFile file) {
+		ResultFileFormatException fileFormatException = null;
+		Exception exception = null;
+		
 		try {
 			final String resourcePath = file.getFullPath().toString();
 			final String osPath = file.getLocation().toOSString();
-			file.deleteMarkers(MARKERTYPE_SCAVEPROBLEM, true, IResource.DEPTH_ZERO);
-			
+
 			synchronized (lock) {
 				// Do not try to load from the vector file whose index is not up-to-date,
 				// because the ResultFileManager loads it from the vector file and it takes too much time
@@ -330,18 +333,31 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			}
 		}
 		catch (ResultFileFormatException e) {
-			IFile indexFile = IndexFile.getIndexFileFor(file);
-			addMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+e.getMessage(), e.getLineNo());
-			addMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+e.getMessage(), -1);
+			fileFormatException = e;
 			ScavePlugin.logError("Wrong file: " + file.getLocation().toOSString(), e);
 			if (debug) System.out.format("exception: %s ", e);
 		}
 		catch (Exception e) {
-			addMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+e.getMessage(), -1);
+			exception = e;
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
 			if (debug) System.out.format("exception: %s ", e);
 		}
+		
+		if (fileFormatException != null) {
+			IFile indexFile = IndexFile.getIndexFileFor(file);
+			String message = fileFormatException.getMessage();
+			int lineNo = fileFormatException.getLineNo();
+			setMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
+			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+message, -1);
+		}
+		else if (exception != null) {
+			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+exception.getMessage(), -1);
+		}
+		else {
+			deleteMarkers(file, MARKERTYPE_SCAVEPROBLEM);
+		}
 	}
+	
 
 	/**
 	 * Returns true iff <code>file</code> is a result file (scalar or vector).
