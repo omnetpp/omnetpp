@@ -91,32 +91,12 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 	protected void createScalarFile(int runNumber) throws Exception {
 		createFile(
 				String.format("test-%d.sca", runNumber),
-				
-				String.format(
-					"run run-%1$d\n" +
-					"attr run-number %1$d\n" +
-					"attr config config-%1$d\n" +
-					"attr experiment %1$d\n" +
-					"attr measurement %1$d\n" +
-					"attr replication %1$d\n" +
-					"scalar module-%1$d scalar-%1$d %1$d\n",
-					runNumber));
+				createScalarFileContent(runNumber));
 	}
 	
 	protected void createVectorFile(int runNumber) throws Exception {
 		createFile(
 				String.format("test-%d.vec", runNumber),
-				
-				String.format(
-					"run run-%1$d\n" +
-					"attr run-number %1$d\n" +
-					"attr config config-%1$d\n" +
-					"attr experiment %1$d\n" +
-					"attr measurement %1$d\n" +
-					"attr replication %1$d\n" +
-					"vector 1 module-%1$d vector-%1$d TV\n" +
-					"1	0.0	%2$f\n",
-					runNumber, (double)runNumber));
+				createVectorFileContent(runNumber));
 	}
-	
 }
