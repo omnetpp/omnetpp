@@ -20,7 +20,7 @@ public class MultiPageEditorPartAccess
 	}
 	
     @Override
-	public MultiPageEditorPart getPart() {
+	public MultiPageEditorPart getWorkbenchPart() {
 		return (MultiPageEditorPart)workbenchPart;
 	}
     
@@ -31,19 +31,19 @@ public class MultiPageEditorPartAccess
     
 	@InUIThread
 	public CTabItemAccess getCTabItem(int pageIndex) {
-		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getPart(), "getItem", pageIndex); 
+		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex); 
 		return (CTabItemAccess)createAccess(item); 
 	}
 	
 	@InUIThread
 	public ControlAccess getControl(int pageIndex) {
-		Control control = (Control)ReflectionUtils.invokeMethod(getPart(), "getControl", pageIndex);
+		Control control = (Control)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getControl", pageIndex);
 		return (ControlAccess)createAccess(control);
 	}
 
 	@InUIThread
 	public EditorPartAccess getEditor(int pageIndex) {
-	    IEditorPart part = (IEditorPart)ReflectionUtils.invokeMethod(getPart(), "getEditor", pageIndex);
+	    IEditorPart part = (IEditorPart)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getEditor", pageIndex);
 	    return (EditorPartAccess)createAccess(part);
 	}
 
@@ -55,18 +55,18 @@ public class MultiPageEditorPartAccess
 
 	@InUIThread
 	public EditorPartAccess getActivePageEditor() {
-		return (EditorPartAccess)createAccess(ReflectionUtils.invokeMethod(getPart(), "getActiveEditor"));
+		return (EditorPartAccess)createAccess(ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActiveEditor"));
 	}
 
 	@InUIThread
 	public ControlAccess getActivePageControl() {
-		int activePage = (Integer)ReflectionUtils.invokeMethod(getPart(), "getActivePage");
+		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getControl(activePage) : null;
 	}
 	
 	@InUIThread
 	public CTabItemAccess getActiveCTabItem() {
-		int activePage = (Integer)ReflectionUtils.invokeMethod(getPart(), "getActivePage");
+		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getCTabItem(activePage) : null;
 	}
 	

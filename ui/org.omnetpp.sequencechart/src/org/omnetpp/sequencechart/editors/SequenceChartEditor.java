@@ -222,7 +222,8 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
             	Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						sequenceChart.clearCanvasCacheAndRedraw();
+                        if (!sequenceChart.isDisposed())
+                            sequenceChart.clearCanvasCacheAndRedraw();
 					}
             	});
             }

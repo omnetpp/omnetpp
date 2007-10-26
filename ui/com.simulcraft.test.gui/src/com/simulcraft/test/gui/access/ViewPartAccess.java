@@ -14,7 +14,7 @@ public class ViewPartAccess extends WorkbenchPartAccess {
 	}
 
     @Override
-	public IViewPart getPart() {
+	public IViewPart getWorkbenchPart() {
 		return (IViewPart)workbenchPart;
 	}
     

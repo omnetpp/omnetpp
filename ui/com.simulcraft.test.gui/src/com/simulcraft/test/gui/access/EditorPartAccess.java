@@ -15,7 +15,7 @@ public class EditorPartAccess
 	}
 
 	@Override
-	public IEditorPart getPart() {
+	public IEditorPart getWorkbenchPart() {
 		return (IEditorPart)workbenchPart;
 	}
 	
@@ -36,16 +36,16 @@ public class EditorPartAccess
 	
     @InUIThread
 	public ToolBarManagerAccess getToolBarManager() {
-        return new ToolBarManagerAccess(getPart().getEditorSite().getActionBars().getToolBarManager());
+        return new ToolBarManagerAccess(getWorkbenchPart().getEditorSite().getActionBars().getToolBarManager());
 	}
 
 	@InUIThread
     public void assertDirty() {
-        Assert.assertTrue("editor is not dirty", getPart().isDirty());
+        Assert.assertTrue("editor is not dirty", getWorkbenchPart().isDirty());
     }
 
 	@InUIThread
     public void assertNotDirty() {
-        Assert.assertTrue("editor is dirty", !getPart().isDirty());
+        Assert.assertTrue("editor is dirty", !getWorkbenchPart().isDirty());
     }
 }

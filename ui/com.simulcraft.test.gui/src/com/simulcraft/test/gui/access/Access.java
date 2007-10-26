@@ -48,6 +48,8 @@ public class Access
 	
     public static boolean debug = false;
     
+    public static boolean mustHaveActiveShell = true;
+    
     protected static ArrayList<IAccessFactory> accessFactories = new ArrayList<IAccessFactory>();
     
     public interface IAccessFactory {
@@ -73,7 +75,14 @@ public class Access
         accessFactories.add(factory);
 	}
 
-	public static Access createAccess(Object instance) {
+    public static Access createAccess(Object instance) {
+        return createAccess(instance, false);
+    }
+
+	public static Access createAccess(Object instance, boolean allowMissing) {
+	    if (allowMissing && instance == null)
+	        return null;
+	    
 		Class<?> clazz = instance.getClass();
 
 		while (clazz != Object.class) {
@@ -115,23 +124,30 @@ public class Access
 		return new ShellAccess(getDisplay().getActiveShell());
 	}
 
+    @InUIThread
+    public static ShellAccess findShellWithTitle(final String title) {
+        return findShellWithTitle(title, false);
+    }
+
 	@InUIThread
-	public static ShellAccess findShellWithTitle(final String title) {
-		return new ShellAccess((Shell)findObject(getDisplay().getShells(), new IPredicate() {
+	public static ShellAccess findShellWithTitle(final String title, boolean allowMissing) {
+		return (ShellAccess)createAccess(findObject(getDisplay().getShells(), allowMissing, new IPredicate() {
 			public boolean matches(Object object) {
 				Shell shell = (Shell)object;
 				log(debug, "Trying to collect shell: " + shell.getText());
 				return shell.getText().matches(title);
 			}
-		}));
+		}), allowMissing);
 	}
 
     @InUIThread
 	public static void postEvent(Event event) {
-        Shell activeShell = getDisplay().getActiveShell();
-        // log(debug, "Active shell at post event is " + activeShell);
-		Assert.assertTrue("no active shell", activeShell != null);
-        activeShell.forceActive();
+        if (mustHaveActiveShell) {
+            Shell activeShell = getDisplay().getActiveShell();
+            // log(debug, "Active shell at post event is " + activeShell);
+    		Assert.assertTrue("no active shell", activeShell != null);
+            activeShell.forceActive();
+        }
 
         log(debug, "Posting event: " + event);
 		boolean ok = getDisplay().post(event);
@@ -355,6 +371,11 @@ public class Access
 	}
 
     @InUIThread
+    public static Object findObject(Object[] objects, boolean allowMissing, IPredicate predicate) {
+        return theOnlyObject(collectObjects(objects, predicate), allowMissing);
+    }
+
+    @InUIThread
     public static boolean hasObject(List<Object> objects, IPredicate predicate) {
         return collectObjects(objects, predicate).size() == 1;
     }
@@ -540,10 +561,18 @@ public class Access
 		}
 	}
 
-	protected static Object theOnlyObject(List<? extends Object> objects) {
+    protected static Object theOnlyObject(List<? extends Object> objects) {
+        return theOnlyObject(objects, false);
+    }
+
+	protected static Object theOnlyObject(List<? extends Object> objects, boolean allowMissing) {
 		Assert.assertTrue("Found "+objects.size()+" objects when exactly one is expected ["+StringUtils.join(objects, ", ")+"]", objects.size() < 2);
-		Assert.assertTrue("Found zero object when exactly one is expected", objects.size() > 0);
-		return objects.get(0);
+		Assert.assertTrue("Found zero object when exactly one is expected", allowMissing || objects.size() > 0);
+		
+		if (objects.size() == 0)
+		    return null;
+		else
+		    return objects.get(0);
 	}
 
 	protected static Widget theOnlyWidget(List<? extends Widget> widgets) {
@@ -656,5 +685,4 @@ public class Access
 				dumpMenu(menuItem.getMenu(), level + 1);
 		}
 	}
-
 }

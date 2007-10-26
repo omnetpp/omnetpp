@@ -119,11 +119,11 @@ public class WorkbenchWindowAccess extends Access {
 
 	@InUIThread
     public boolean hasEditorPartWithTitle(String title) {
-	    return hasEditorPartByTitle(title, false);
+	    return hasEditorPartWithTitle(title, false);
 	}
 
     @InUIThread
-    public boolean hasEditorPartByTitle(String title, boolean restore) {
+    public boolean hasEditorPartWithTitle(String title, boolean restore) {
         return collectEditorPartsByTitle(title, restore).size() == 1;
     }
 
@@ -173,5 +173,28 @@ public class WorkbenchWindowAccess extends Access {
                 Assert.fail("Editor part " + editorReference.getTitle() + " still open");
         }
     }
-    
+
+    @InUIThread
+    public void saveAllEditorPartsWithHotKey() {
+        pressKey('s', SWT.CONTROL + SWT.SHIFT);
+    }
+
+    public void ensureAllEditorPartsAreSaved() {
+        for (IWorkbenchPage page : workbenchWindow.getPages()) {
+            for (IEditorReference editorReference : page.getEditorReferences()) {
+                if (editorReference.getEditor(false).isDirty()) {
+                    saveAllEditorPartsWithHotKey();
+                    return;
+                }
+            }
+        }
+    }
+
+    @InUIThread
+    public void assertNoDirtyEditorParts() {
+        for (IWorkbenchPage page : workbenchWindow.getPages()) {
+            for (IEditorReference editorReference : page.getEditorReferences())
+                Assert.assertTrue("Editor part " + editorReference.getTitle() + " still dirty", !editorReference.getEditor(false).isDirty());
+        }
+    }
 }

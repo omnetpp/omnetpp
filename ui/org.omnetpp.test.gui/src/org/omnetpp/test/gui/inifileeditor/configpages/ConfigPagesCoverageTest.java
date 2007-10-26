@@ -29,7 +29,7 @@ public class ConfigPagesCoverageTest extends InifileEditorTestCase {
         // see also InifileFormEditor.dumpForgottenConfigKeys()
         prepareTest("");
         InifileFormEditorAccess formEditor = findInifileEditor().ensureActiveFormEditor();
-        InifileFormEditor formEditorPart = ((InifileEditor)findInifileEditor().getPart()).getFormEditor();
+        InifileFormEditor formEditorPart = ((InifileEditor)findInifileEditor().getWorkbenchPart()).getFormEditor();
 
         List<String> categories = new ArrayList<String>();
         categories.add(InifileFormEditor.PARAMETERS_PAGE);

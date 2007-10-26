@@ -14,7 +14,7 @@ public class TextEditorAccess extends EditorPartAccess
 	}
 	
     @Override
-	public ITextEditor getPart() {
+	public ITextEditor getWorkbenchPart() {
 	    return (ITextEditor)workbenchPart;
 	}
 
@@ -30,7 +30,7 @@ public class TextEditorAccess extends EditorPartAccess
 
     @InUIThread
     public String getTextContent() {
-        return getPart().getDocumentProvider().getDocument(getPart().getEditorInput()).get();
+        return getWorkbenchPart().getDocumentProvider().getDocument(getWorkbenchPart().getEditorInput()).get();
     }
 
     /**

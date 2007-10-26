@@ -1,12 +1,11 @@
 package org.omnetpp.test.gui.sequencechart;
 
-import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.test.gui.access.SequenceChartAccess;
 import org.omnetpp.test.gui.core.EventLogFileTestCase;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.BookmarkViewAccess;
-import com.simulcraft.test.gui.access.EditorPartAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class BookmarkTest
@@ -17,7 +16,7 @@ public class BookmarkTest
 
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInSequenceChartEditor();
-        addBookmark(findEditorPart(), 1, "test");
+        addBookmark(1, "test");
         
         WorkbenchUtils.ensureViewActivated("General", "Bookmarks").findTree().assertNotEmpty();
     }
@@ -27,8 +26,7 @@ public class BookmarkTest
 
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInSequenceChartEditor();
-        EditorPartAccess editorPart = findEditorPart();
-        addBookmark(editorPart, 1, "test");
+        addBookmark(1, "test");
 
         BookmarkViewAccess bookmarkView = ensureBookmarkView();
         bookmarkView.deleteBookmark("test");
@@ -45,22 +43,20 @@ public class BookmarkTest
 
         createFileWithTwoEvents();
         openFileFromProjectExplorerViewInSequenceChartEditor();
-        EditorPartAccess editorPart = findEditorPart();
-        addBookmark(editorPart, 1, "test");
-        editorPart.closeWithHotKey();
+        addBookmark(1, "test");
+        findEditorPart().closeWithHotKey();
         
         ensureBookmarkView().gotoBookmark("test");
         findEditorPart();
     }
 
-    private void addBookmark(EditorPartAccess editorPart, int eventNumber, String description) {
-        SequenceChartAccess sequenceChart = (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), SequenceChart.class));
+    protected void addBookmark(int eventNumber, String description) {
+        SequenceChartAccess sequenceChart = findSequenceChart();
         sequenceChart.selectEventWithMouseClick(eventNumber);
         sequenceChart.selectEventWithMouseClick(eventNumber);
         sequenceChart.activateContextMenuWithMouseClick(eventNumber).findMenuItemByLabel("Toggle bookmark").activateWithMouseClick();
-// TODO: add text description
-//        ShellAccess shell = Access.findShellWithTitle(".*Bookmark.*");
-//        shell.findTextAfterLabel(".*Bookmark.*").typeIn(description);
-//        shell.findButtonWithLabel("OK").click();
+        ShellAccess shell = Access.findShellWithTitle(".*Bookmark.*");
+        shell.findTextAfterLabel(".*Bookmark.*").typeIn(description);
+        shell.findButtonWithLabel("OK").click();
     }
 }

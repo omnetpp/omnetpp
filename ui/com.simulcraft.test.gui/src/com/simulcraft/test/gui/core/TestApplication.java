@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.core;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -48,15 +49,24 @@ public class TestApplication extends IDEApplication
             int returnCode = PlatformUI.createAndRunWorkbench(display, new IDEWorkbenchAdvisor() {
             	@Override
             	public void eventLoopException(Throwable exception) {
-            		if (exception instanceof TestException ||
-            		    exception.getCause() instanceof TestException ||
-            		    (exception.getCause() != null && exception.getCause().getCause() instanceof TestException))
+            		if (isTestException(exception))
             		{
             		    Access.log(debug, "Rethrowing exception from event loop");
-            			throw (RuntimeException)exception;
+            		    throw (RuntimeException)exception;
             		}
 
             		super.eventLoopException(exception);
+            	}
+            	
+            	private boolean isTestException(Throwable t) {
+            	    if (t instanceof TestException)
+                        return true;
+            	    else if (t instanceof SWTException)
+            	        return isTestException(((SWTException)t).throwable);
+            	    else if (t instanceof RuntimeException)
+            	        return isTestException(((RuntimeException)t).getCause());
+            	    else
+            	        return false;
             	}
             });
 

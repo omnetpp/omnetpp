@@ -20,7 +20,7 @@ public class WorkbenchPartAccess
 		this.workbenchPart = workbenchPart;
 	}
 
-	public IWorkbenchPart getPart() {
+	public IWorkbenchPart getWorkbenchPart() {
 		return workbenchPart;
 	}
 	
@@ -74,14 +74,14 @@ public class WorkbenchPartAccess
     @InUIThread
     public boolean isActivated() {
         CTabItem cTabItem = getCTabItem().getWidget();
-        IWorkbenchPart workbenchPart = getPart();
+        IWorkbenchPart workbenchPart = getWorkbenchPart();
         return cTabItem.getParent().getSelection() == cTabItem &&
         		workbenchPart.getSite().getPage().getActivePart() == workbenchPart;
     }
     
     @InUIThread
     public void assertActivated() {
-    	Assert.assertTrue("The workbench part '" + getPart().getSite().getRegisteredName() + "' is not activated", isActivated());
+    	Assert.assertTrue("The workbench part '" + getWorkbenchPart().getSite().getRegisteredName() + "' is not activated", isActivated());
     }
     
     @InUIThread

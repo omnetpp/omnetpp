@@ -17,16 +17,16 @@ public class InifileEditorAccess
 	}
 	
     @Override
-	public InifileEditor getPart() {
+	public InifileEditor getWorkbenchPart() {
 	    return (InifileEditor)workbenchPart;
     }
 
     public TextEditorAccess getTextEditor() {
-        return (TextEditorAccess) createAccess(getPart().getTextEditor());
+        return (TextEditorAccess) createAccess(getWorkbenchPart().getTextEditor());
     }
 
     public InifileFormEditorAccess getFormEditor() {
-        return (InifileFormEditorAccess) createAccess(getPart().getFormEditor());
+        return (InifileFormEditorAccess) createAccess(getWorkbenchPart().getFormEditor());
     }
 
     public TextEditorAccess activateTextEditor() {

@@ -14,12 +14,12 @@ public class NedEditorAccess
 	}
 	
     @Override
-	public NedEditor getPart() {
+	public NedEditor getWorkbenchPart() {
 	    return (NedEditor)workbenchPart;
     }
 
     public TextEditorAccess getTextualNedEditor() {
-        return (TextEditorAccess) createAccess(getPart().getTextEditor());
+        return (TextEditorAccess) createAccess(getWorkbenchPart().getTextEditor());
     }
 
     public TextEditorAccess activateTextEditor() {

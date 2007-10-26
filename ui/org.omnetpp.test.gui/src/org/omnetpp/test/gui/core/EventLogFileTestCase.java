@@ -1,7 +1,9 @@
 package org.omnetpp.test.gui.core;
 
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
+import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.test.gui.access.EventLogTableAccess;
+import org.omnetpp.test.gui.access.SequenceChartAccess;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
@@ -43,6 +45,10 @@ public class EventLogFileTestCase
 
     protected EventLogTableAccess findEventLogTable() {
         return (EventLogTableAccess)Access.createAccess(Access.findDescendantControl(findEditorPart().getComposite().getControl(), EventLogTable.class));
+    }
+
+    protected SequenceChartAccess findSequenceChart() {
+        return (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(findEditorPart().getComposite().getControl(), SequenceChart.class));
     }
 
     protected void selectFilterMode(String text) {

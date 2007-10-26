@@ -40,12 +40,12 @@ public class GraphicalNedEditorAccess
 	}
 	
     @Override
-	public GraphicalNedEditor getPart() {
+	public GraphicalNedEditor getWorkbenchPart() {
 		return (GraphicalNedEditor)workbenchPart;
 	}
 	
 	public FlyoutPaletteCompositeAccess getFlyoutPaletteComposite() {
-		return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)ReflectionUtils.getFieldValue(getPart(), "splitter"));
+		return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)ReflectionUtils.getFieldValue(getWorkbenchPart(), "splitter"));
 	}
 
 	@NotInUIThread
@@ -76,7 +76,7 @@ public class GraphicalNedEditorAccess
 
 	@InUIThread
 	private void typeInNewName(String name) {
-		FigureCanvas figureCanvas = getPart().getFigureCanvas();
+		FigureCanvas figureCanvas = getWorkbenchPart().getFigureCanvas();
 		Text text = (Text)Access.findDescendantControl(figureCanvas, Text.class);
 		TextAccess textAccess = new TextAccess(text);
 		textAccess.pressKey(SWT.F6);
@@ -180,7 +180,7 @@ public class GraphicalNedEditorAccess
     }
 
     private GraphicalViewer getGraphicalViewer() {
-        GraphicalViewer graphicalViewer = (GraphicalViewer)ReflectionUtils.invokeMethod(getPart(), "getGraphicalViewer");
+        GraphicalViewer graphicalViewer = (GraphicalViewer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getGraphicalViewer");
         return graphicalViewer;
     }
 
@@ -189,7 +189,7 @@ public class GraphicalNedEditorAccess
     }
     
     private IFigure getRootFigure() {
-        FigureCanvas figureCanvas = getPart().getFigureCanvas();
+        FigureCanvas figureCanvas = getWorkbenchPart().getFigureCanvas();
         IFigure rootFigure = figureCanvas.getLightweightSystem().getRootFigure();
         return rootFigure;
     }

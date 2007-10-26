@@ -55,8 +55,7 @@ public class ProjectFileTestCase
 	}
 
     protected EditorPartAccess findEditorPart() {
-        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-        return workbenchWindow.findEditorPartByTitle(fileName);
+        return Access.getWorkbenchWindow().findEditorPartByTitle(fileName);
     }
 
     protected ToolItemAccess findToolItemWithToolTip(String text) {
@@ -70,7 +69,7 @@ public class ProjectFileTestCase
     /**
      * Deletes all test generated files, folders and projects. (those starting with "test*") 
      */
-    public void cleanupWorkspace() {
+    protected void cleanupWorkspace() {
         try {
             final List<IResource> toBeDeleted = new ArrayList<IResource>();
 
@@ -114,12 +113,19 @@ public class ProjectFileTestCase
 	 * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
 	 */
 	protected void setUpInternal() throws Exception {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		workbenchWindow.ensureAllEditorPartsAreClosed();
-		workbenchWindow.assertNoOpenEditorParts();
+        ensureAllEditorPartsAreSaved();
+        ensureAllEditorPartsAreClosed();
 		cleanupWorkspace();
 		assertProjectCorrect();
 	}
+    
+    /**
+     * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
+     */
+    protected void tearDownInternal() throws Exception {
+        ensureEditorPartIsSaved();
+        ensureAllEditorPartsAreClosed();
+    }
 
     private void assertProjectCorrect() throws Exception {
         WorkspaceUtils.assertProjectExists(projectName);
@@ -147,16 +153,25 @@ public class ProjectFileTestCase
         		));
 		WorkspaceUtils.ensureFileNotExists(projectName+"/.nedfolders");
     }
-	
-    /**
-     * This has to be a separate method so that the aspect is not applied to it each time it is overridden.
-     */
-	protected void tearDownInternal() throws Exception {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		if (workbenchWindow.hasEditorPartWithTitle(fileName))
-		    workbenchWindow.findEditorPartByTitle(fileName).saveWithHotKey();
-		Thread.sleep(1000);
-		workbenchWindow.ensureAllEditorPartsAreClosed();
+
+    protected void ensureAllEditorPartsAreSaved() {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        workbenchWindow.ensureAllEditorPartsAreSaved();
+        workbenchWindow.assertNoDirtyEditorParts();
+    }
+
+    protected void ensureAllEditorPartsAreClosed() {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        workbenchWindow.ensureAllEditorPartsAreClosed();
         workbenchWindow.assertNoOpenEditorParts();
-	}
+    }
+    
+    protected void ensureEditorPartIsSaved() {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        if (workbenchWindow.hasEditorPartWithTitle(fileName)) {
+            EditorPartAccess editorPart = findEditorPart();
+            editorPart.saveWithHotKey();
+            editorPart.assertNotDirty();
+        }
+    }
 }

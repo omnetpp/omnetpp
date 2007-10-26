@@ -4,15 +4,17 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.internal.Workbench;
 
 import com.simulcraft.test.gui.access.Access;
 
 
-public abstract class GUITestCase extends TestCase {
+public abstract class GUITestCase
+    extends TestCase
+{
 	private final static boolean debug = false;
 
-	private Throwable testThrowable;
-	
 	public abstract class Test {
 		public abstract void run() throws Exception;
 	}
@@ -33,34 +35,56 @@ public abstract class GUITestCase extends TestCase {
 	 * loop, e.g. inside modal dialogs.
 	 */
 	public void runTest(final Test test) throws Throwable {
-		testThrowable = null;
+        String testName = new Throwable().getStackTrace()[1].getMethodName();
 
-		Throwable throwable = new Throwable();
-		String testName = throwable.getStackTrace()[1].getMethodName();
-		
-		Access.log(debug, "Starting test: " + testName);
+        try {
+	        Access.log(debug, "Starting test: " + testName);
 
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-				try {
-					test.run();
-				}
-				catch (Throwable t) {
-					// we caught an exception from the test
-					// we need to store it to be able to re-throw the exception at the end of the test code to notify JUnit about it
-					testThrowable = t;
-				}
-			}
-		}, testName);
-		thread.start();
+	        // start the background thread which will query the gui and post events
+	        Thread thread = new Thread(new Runnable() {
+	            public void run() {
+	                try {
+	                    test.run();
+	                }
+	                catch (final Throwable t) {
+	                    // we caught an exception from the background thread
+	                    // we need to re-throw the exception from the UI thread, so the same handling takes place
+	                    try {
+    	                    Display.getDefault().syncExec(new Runnable() {
+    	                        public void run() {
+    	                            throw new TestException(t);
+    	                        }
+    	                    });
+	                    }
+	                    catch (Throwable th) {
+	                        // void, ignore the exception just been thrown and got back here
+	                        // because we are in the background thread
+	                    }
+	                }
+	            }
+	        }, testName);
+	        // start the background thread immediately
+	        thread.start();
 
-		while (thread.isAlive())
-			Display.getCurrent().readAndDispatch();
+	        // start processing gui events
+    		while (thread.isAlive())
+    			Display.getCurrent().readAndDispatch();
+		}
+        catch (Throwable t) {
+            // KLUDGE: close all shells except the workbench window's shell
+            // so that there are no hanging windows left open
+            // SWT does not close open windows when exceptions pass through the event loop
+            for (Shell shell : Display.getCurrent().getShells()) {
+                if (shell != Workbench.getInstance().getActiveWorkbenchWindow().getShell())
+                    shell.close();
+            }
 
-		Access.log(debug, "Finished test: " + testName);
-
-		if (testThrowable != null)
-			throw testThrowable;
+            // propagate the exception to JUnit
+            throw t;
+        }
+		finally {
+		    Access.log(debug, "Finished test: " + testName);
+		}
 	}
 
 	public static Object runStep(final Step step) {
@@ -83,8 +107,8 @@ public abstract class GUITestCase extends TestCase {
 				step.run();
 				return step.runAndReturn();
 			} 
-			catch (Exception e) {
-				throw new TestException(e);
+			catch (Throwable t) {
+				throw new TestException(t);
 			}
 		}
 
@@ -138,13 +162,12 @@ public abstract class GUITestCase extends TestCase {
 		stepThrowables[0] = new TestException(firstThrowable);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				
 				AnimationEffects.displayError(stepThrowables[0].getCause(), 2000);
 				Access.log(debug, "Rethrowing exception from step: " + stepThrowables[0]);
 
 				// TODO: this does not hide popup menus since the code doesn't use try/catch/finally there and will not hide
 				// the popup menu upon receiving an exception
-				throw new TestException(stepThrowables[0]);
+				throw (TestException)stepThrowables[0];
 			}
 		});
 
