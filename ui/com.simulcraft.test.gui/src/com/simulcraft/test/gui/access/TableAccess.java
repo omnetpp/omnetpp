@@ -137,6 +137,10 @@ public class TableAccess extends ControlAccess
 						return true;
 				return false;
 			}
+			
+			public String toString() {
+			    return "a " + TableItem.class.getName() + " with content: " + content;
+			}
 		}));
 	}
 
