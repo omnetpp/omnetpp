@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.core;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.Workbench;
@@ -71,6 +72,8 @@ public abstract class GUITestCase
     			Display.getCurrent().readAndDispatch();
 		}
         catch (Throwable t) {
+            AnimationEffects.displayError(getInterestingCause(t), 2000);
+
             // KLUDGE: close all shells except the workbench window's shell
             // so that there are no hanging windows left open
             // SWT does not close open windows when exceptions pass through the event loop
@@ -86,6 +89,15 @@ public abstract class GUITestCase
 		    Access.log(debug, "Finished test: " + testName);
 		}
 	}
+
+    private static Throwable getInterestingCause(Throwable t) {
+        if (t instanceof TestException)
+            return getInterestingCause(((TestException)t).getCause());
+        else if (t instanceof SWTException)
+            return getInterestingCause(((SWTException)t).throwable);
+        else
+            return t;
+    }
 
 	public static Object runStep(final Step step) {
 		return runStepWithTimeout(-1, step);
@@ -156,24 +168,7 @@ public abstract class GUITestCase
 		}
 
 	    Access.log(debug, "Step failed");
-
-		// the special WorkspaceAdvisor will let the exception go up through readAndDispatch event loops and unwind the
-		// stack until the top level test code is reached, see above
-		stepThrowables[0] = new TestException(firstThrowable);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				AnimationEffects.displayError(stepThrowables[0].getCause(), 2000);
-				Access.log(debug, "Rethrowing exception from step: " + stepThrowables[0]);
-
-				// TODO: this does not hide popup menus since the code doesn't use try/catch/finally there and will not hide
-				// the popup menu upon receiving an exception
-				throw (TestException)stepThrowables[0];
-			}
-		});
-
-		// normal execution should have been already returned, this will terminate the background test thread
-		Assert.assertTrue("Unreachable code reached", false);
-		return null;
+	    throw new TestException(firstThrowable);
 	}
 
 	public static void waitUntilEventQueueBecomesEmpty() {

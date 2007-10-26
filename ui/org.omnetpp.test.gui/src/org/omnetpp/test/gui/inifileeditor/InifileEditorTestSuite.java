@@ -3,12 +3,12 @@ package org.omnetpp.test.gui.inifileeditor;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.omnetpp.test.gui.inifileeditor.parameterspage.TreeCellEditorTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.DeleteParameterTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.EditParameterTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.NewParameterTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.ParameterDragDropTest;
 import org.omnetpp.test.gui.inifileeditor.parameterspage.ParametersPageTest;
+import org.omnetpp.test.gui.inifileeditor.parameterspage.TreeCellEditorTest;
 import org.omnetpp.test.gui.inifileeditor.sectionspage.SectionDeleteTest;
 import org.omnetpp.test.gui.inifileeditor.sectionspage.SectionDialogTest;
 import org.omnetpp.test.gui.inifileeditor.sectionspage.SectionDragDropTest;
