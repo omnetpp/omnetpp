@@ -58,7 +58,7 @@ public class WorkbenchUtils
 	}
 	
 	public static void refreshProjectFromProjectExplorerView(String projectName) {
-		findInProjectExplorerView(projectName).reveal().pressKey(SWT.F5);
+		findInProjectExplorerView(projectName).reveal().chooseFromContextMenu("Refresh.*");;
 	}
 
 	public static void assertNoErrorMessageInProblemsView() {
