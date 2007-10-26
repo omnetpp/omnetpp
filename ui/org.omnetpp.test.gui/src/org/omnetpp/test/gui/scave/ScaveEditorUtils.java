@@ -27,6 +27,6 @@ public class ScaveEditorUtils {
 	
 	public static DatasetViewAccess ensureDatasetView() {
 		ViewPartAccess viewPart = Access.getWorkbenchWindow().findViewPartByTitle("Dataset.*", true);
-		return new DatasetViewAccess(viewPart.getPart());
+		return new DatasetViewAccess(viewPart.getWorkbenchPart());
 	}
 }
