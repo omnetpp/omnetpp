@@ -233,3 +233,6 @@ expr
 rewriters
 hotkeys
 linux
+keysym
+keysyms
+keycode

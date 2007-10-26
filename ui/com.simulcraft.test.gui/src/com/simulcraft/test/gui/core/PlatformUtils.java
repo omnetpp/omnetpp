@@ -40,16 +40,16 @@ public class PlatformUtils {
 	    }
         else if (isGtk) {
             // looks like it roughly goes like this:
-            // 1. determine the keysim to be produced (see code in post(Event), also copied below)
-            // 2. determine keycode from keysim using XKeysymToKeycode -- this is the "main" key only
-            // 3. look up what keysims that keycode can generate, using XKeycodeToKeysym(display, keycode, index),
-            //    and determine which index generates the desired keysim
+            // 1. determine the keysym to be produced (see code in post(Event), also copied below)
+            // 2. determine keycode from keysym using XKeysymToKeycode -- this is the "main" key only
+            // 3. look up what keysyms that keycode can generate, using XKeycodeToKeysym(display, keycode, index),
+            //    and determine which index generates the desired keysym
             // 4. then decode index as follows:
             //      =0  None of Shift and Mode_switch are pressed
             //      =1  Shift is pressed
             //      =2  Mode_switch is pressed
             //      =3  Both Shift and Mode_switch are pressed
-            // Looks like mode_switch is a keysim which has to be looked up separately.
+            // Looks like mode_switch is a keysym which has to be looked up separately.
             //
             // See also:
             //  http://homepage3.nifty.com/tsato/xvkbd/events.html
@@ -57,38 +57,40 @@ public class PlatformUtils {
             //  http://tronche.com/gui/x/xlib/utilities/keyboard/XKeycodeToKeysym.html
             //  http://tronche.com/gui/x/xlib/input/keyboard-encoding.html#KeySym
             //
-//for step 3:            
-//            for (col = 0; (k = XKeycodeToKeysym (GDK_DISPLAY(), keycode, col)) != NoSymbol; col++)
-//            {
-//              if (k == keysym && col == 1)
-//                return TRUE;
-//              
-//              if (k == keysym)
-//                break;
-//            }
-//-----
-            
-            //  int keyCode = 0;
-            //  int /*long*/ keysym = untranslateKey (event.keyCode);
-            //  if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-            //  if (keyCode == 0) {
-            //              char key = event.character;
-            //              switch (key) {
-            //                  case SWT.BS: keysym = OS.GDK_BackSpace; break;
-            //                  case SWT.CR: keysym = OS.GDK_Return; break;
-            //                  case SWT.DEL: keysym = OS.GDK_Delete; break;
-            //                  case SWT.ESC: keysym = OS.GDK_Escape; break;
-            //                  case SWT.TAB: keysym = OS.GDK_Tab; break;
-            //                  case SWT.LF: keysym = OS.GDK_Linefeed; break;
-            //                  default:
-            //                      keysym = wcsToMbcs (key);
-            //              }
-            //              keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-            //              if (keyCode == 0) return false;
-            //  }
-            //  OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
-            //
-            return 0; //FIXME
+
+//        	// 1. determine keysym (code largely copied out of Display.post(Event))
+//        	int keysym;
+//       		switch (ch) {
+//        		case SWT.BS: keysym = org.eclipse.swt.internal.gtk.OS.GDK_BackSpace; break;
+//        		case SWT.CR: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Return; break;
+//        		case SWT.DEL: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Delete; break;
+//        		case SWT.ESC: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Escape; break;
+//        		case SWT.TAB: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Tab; break;
+//        		case SWT.LF: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Linefeed; break;
+//        		default: keysym = (Integer) ReflectionUtils.invokeStaticMethod(Display.class, "wcsToMbcs", ch);
+//       		}
+//       		
+//       		// 2. get keyCode for keysym
+//       		int xDisplay = org.eclipse.swt.internal.gtk.OS.GDK_DISPLAY();
+//       		int keyCode = org.eclipse.swt.internal.gtk.OS.XKeysymToKeycode(xDisplay, keysym);
+//       		if (keyCode == 0) return 0;  // sorry
+//
+//       		// 3. look up our keysym in the keysyms that keyCode can generate
+//       		int col;
+//       		int k;
+//       		final int NoSymbol = 0; // from X.h
+//       		for (col = 0; (k = org.eclipse.swt.internal.gtk.OS.XKeycodeToKeysym(xDisplay, keyCode, col)) != NoSymbol; col++) //FIXME sucks!!! no XKeycodeToKeysym() in the OS class!
+//       			if (k == keysym)
+//       				break;
+//       		
+//       		// 4. devise modifiers from the column
+//       		switch(col) {
+//	       		case 0: return 0;
+//	       		case 1: return SWT.SHIFT;
+//	       		case 2: return Mode_Switch; //XXX whatever that is
+//	       		case 3: return SWT.SHIFT | Mode_Switch;  //XXX
+//       		}
+        	return 0; // we don't know
         }
         else {
             throw new RuntimeException("unsupported window system: " + SWT.getPlatform());
