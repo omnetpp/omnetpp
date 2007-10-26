@@ -11,6 +11,8 @@ public class ScaveTestSuite
         addTestSuite(InputsPageTest.class);
         addTestSuite(BrowseDataPageTest.class);
         addTestSuite(DatasetsAndChartsPageTest.class);
+        addTestSuite(DatasetViewTest.class);
+        addTestSuite(ExportTest.class);
     }
 
     public static Test suite() {
