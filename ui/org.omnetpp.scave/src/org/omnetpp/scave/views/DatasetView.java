@@ -1,5 +1,12 @@
 package org.omnetpp.scave.views;
 
+import static org.omnetpp.scave.TestSupport.DATASET_VIEW_HISTOGRAMS_PANEL_ID;
+import static org.omnetpp.scave.TestSupport.DATASET_VIEW_MAIN_PANEL_ID;
+import static org.omnetpp.scave.TestSupport.DATASET_VIEW_SCALARS_PANEL_ID;
+import static org.omnetpp.scave.TestSupport.DATASET_VIEW_VECTORS_PANEL_ID;
+import static org.omnetpp.scave.TestSupport.WIDGET_ID;
+import static org.omnetpp.scave.TestSupport.enableGuiTest;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
@@ -115,6 +122,14 @@ public class DatasetView extends ViewWithMessagePart {
 		showFilter(false);
 
 		viewControlCreated = true;
+		
+		if (enableGuiTest) {
+			panel.setData(WIDGET_ID, DATASET_VIEW_MAIN_PANEL_ID);
+			scalarsPanel.setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
+			vectorsPanel.setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
+			histogramsPanel.setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
+		}
+		
 		return panel;
 	}
 	
