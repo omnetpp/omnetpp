@@ -312,8 +312,8 @@ public class Access
 		//TODO: suggest SWT maintainers to introduce post() method with a delayMillis parameter
 		if (PlatformUtils.isGtk && type == SWT.MouseMove && delayMillis != 0) {
 			// OS.XTestFakeMotionEvent(OS.GDK_DISPLAY(), -1, x, y, delayMillis); -- see Display.postEvent()
-			int xDisplay = (Integer)ReflectionUtils.invokeStaticMethod(PlatformUtils.OS, "GDK_DISPLAY");
-			ReflectionUtils.invokeStaticMethod(PlatformUtils.OS, "XTestFakeMotionEvent", xDisplay, -1, x, y, delayMillis);
+			int xDisplay = (Integer)ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "GDK_DISPLAY");
+			ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "XTestFakeMotionEvent", xDisplay, -1, x, y, delayMillis);
 		}
 		
 		Event event = newEvent(type); // e.g. SWT.MouseMove

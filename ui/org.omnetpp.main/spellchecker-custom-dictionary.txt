@@ -236,3 +236,4 @@ linux
 keysym
 keysyms
 keycode
+swt

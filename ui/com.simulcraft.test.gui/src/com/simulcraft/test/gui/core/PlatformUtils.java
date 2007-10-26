@@ -1,6 +1,9 @@
 package com.simulcraft.test.gui.core;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.ReflectionUtils;
 
 public class PlatformUtils {
@@ -8,17 +11,19 @@ public class PlatformUtils {
     public final static boolean isWindows = "win32".equals(SWT.getPlatform());
     public final static boolean isCarbon = "carbon".equals(SWT.getPlatform());
     
-    public final static Class<?> OS = classForName("org.eclipse.swt.internal." + SWT.getPlatform() + ".OS"); 
+    public final static Class<?> OS_ = classForName("org.eclipse.swt.internal." + SWT.getPlatform() + ".OS"); 
+
+    private static int _XKeycodeToKeysym;
     
     public static boolean hasPendingUIEvents() {
         // some method like this is supposed to be part of SWT's Display class
         if (isWindows) {
             // return OS.PeekMessage(new MSG(), 0, 0, 0, OS.PM_NOREMOVE);
-            return (Boolean)ReflectionUtils.invokeStaticMethod(OS, "PeekMessage", ReflectionUtils.newInstance("org.eclipse.swt.internal.win32.MSG"), 0, 0, 0, 0x0 /*OS.PM_NOREMOVE*/);
+            return (Boolean)ReflectionUtils.invokeStaticMethod(OS_, "PeekMessage", ReflectionUtils.newInstance("org.eclipse.swt.internal.win32.MSG"), 0, 0, 0, 0x0 /*OS.PM_NOREMOVE*/);
         }
         else if (isGtk) {
             // return OS._g_main_context_pending(0);
-            return (Boolean)ReflectionUtils.invokeStaticMethod(OS, "_g_main_context_pending", 0);
+            return (Boolean)ReflectionUtils.invokeStaticMethod(OS_, "_g_main_context_pending", 0);
         }
         else {
         	throw new RuntimeException("unsupported window system: " + SWT.getPlatform());
@@ -30,7 +35,7 @@ public class PlatformUtils {
 	        // see VkKeyScan documentation in the Windows API, and usage in Display.post()
             // short vkKeyScan = OS.VkKeyScan((short)wcsToMbcs(ch, 0));
 	        Class<?> display = classForName("org.eclipse.swt.widgets.Display"); 
-	        short vkKeyScan = (Short)ReflectionUtils.invokeStaticMethod(OS, "VkKeyScan", (short)(int)(Integer)ReflectionUtils.invokeStaticMethod(display, "wcsToMbcs", ch, 0)); 
+	        short vkKeyScan = (Short)ReflectionUtils.invokeStaticMethod(OS_, "VkKeyScan", (short)(int)(Integer)ReflectionUtils.invokeStaticMethod(display, "wcsToMbcs", ch, 0)); 
 	        byte vkModifier = (byte)(vkKeyScan >> 8);
 	        int modifier = 0;
 	        if ((vkModifier & 1) !=0) modifier |= SWT.SHIFT;
@@ -58,39 +63,53 @@ public class PlatformUtils {
             //  http://tronche.com/gui/x/xlib/input/keyboard-encoding.html#KeySym
             //
 
-//        	// 1. determine keysym (code largely copied out of Display.post(Event))
-//        	int keysym;
-//       		switch (ch) {
-//        		case SWT.BS: keysym = org.eclipse.swt.internal.gtk.OS.GDK_BackSpace; break;
-//        		case SWT.CR: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Return; break;
-//        		case SWT.DEL: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Delete; break;
-//        		case SWT.ESC: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Escape; break;
-//        		case SWT.TAB: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Tab; break;
-//        		case SWT.LF: keysym = org.eclipse.swt.internal.gtk.OS.GDK_Linefeed; break;
-//        		default: keysym = (Integer) ReflectionUtils.invokeStaticMethod(Display.class, "wcsToMbcs", ch);
-//       		}
-//       		
-//       		// 2. get keyCode for keysym
-//       		int xDisplay = org.eclipse.swt.internal.gtk.OS.GDK_DISPLAY();
-//       		int keyCode = org.eclipse.swt.internal.gtk.OS.XKeysymToKeycode(xDisplay, keysym);
-//       		if (keyCode == 0) return 0;  // sorry
-//
-//       		// 3. look up our keysym in the keysyms that keyCode can generate
-//       		int col;
-//       		int k;
-//       		final int NoSymbol = 0; // from X.h
-//       		for (col = 0; (k = org.eclipse.swt.internal.gtk.OS.XKeycodeToKeysym(xDisplay, keyCode, col)) != NoSymbol; col++) //FIXME sucks!!! no XKeycodeToKeysym() in the OS class!
-//       			if (k == keysym)
-//       				break;
-//       		
-//       		// 4. devise modifiers from the column
-//       		switch(col) {
-//	       		case 0: return 0;
-//	       		case 1: return SWT.SHIFT;
-//	       		case 2: return Mode_Switch; //XXX whatever that is
-//	       		case 3: return SWT.SHIFT | Mode_Switch;  //XXX
-//       		}
-        	return 0; // we don't know
+        	// 1. determine keysym (code largely copied out of Display.post(Event))
+        	int keysym;
+       		switch (ch) {
+        		case SWT.BS:  keysym = (Integer) ReflectionUtils.getFieldValue(OS_, "GDK_BackSpace"); break;
+        		case SWT.CR:  keysym = (Integer) ReflectionUtils.getFieldValue(OS_, "GDK_Return"); break;
+        		case SWT.DEL: keysym = (Integer) ReflectionUtils.getFieldValue(OS_, "GDK_Delete"); break;
+        		case SWT.ESC: keysym = (Integer) ReflectionUtils.getFieldValue(OS_, "GDK_Escape"); break;
+        		case SWT.TAB: keysym = (Integer) ReflectionUtils.getFieldValue(OS_, "GDK_Tab"); break;
+        		case SWT.LF:  keysym = (Integer) ReflectionUtils.getFieldValue(OS_, "GDK_Linefeed"); break;
+        		default: keysym = (Character) ReflectionUtils.invokeStaticMethod(Display.class, "wcsToMbcs", ch);
+       		}
+
+       		// 2. get keyCode for keysym
+       		int xDisplay = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "GDK_DISPLAY");
+       		int keyCode = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "XKeysymToKeycode", xDisplay, keysym);
+       		if (keyCode == 0) 
+       			return 0;  // sorry, cannot be produced on the keyboard
+
+       		// 3. look up our keysym in the keysyms that keyCode can generate
+        	if (_XKeycodeToKeysym == 0) {
+        		// get a pointer to the XKeycodeToKeysym() function in X11, as that one isn't included in SWT's GTK-specific OS class...
+        	    Class<?> Converter_ = classForName("org.eclipse.swt.internal.Converter");
+        		byte[] filename = (byte[]) ReflectionUtils.invokeStaticMethod(Converter_, "wcsToMbcs", "UTF8", "libX11.so", true);
+        		int libX11 = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "dlopen", filename, 1 /*OS.RTLD_LAZY*/ );
+        		Assert.assertTrue("cannot load libX11.so", libX11 != 0);
+        		byte[] symbol = (byte[]) ReflectionUtils.invokeStaticMethod(Converter_, "wcsToMbcs", "UTF8", "XKeycodeToKeysym", true);
+        		_XKeycodeToKeysym = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "dlsym", libX11, symbol);
+        		Assert.assertTrue("cannot find XKeycodeToKeysym in libX11.so", _XKeycodeToKeysym != 0);
+        	}
+
+       		int column;
+       		int k;
+       		final int NoSymbol = 0; // from X.h
+       		for (column = 0; (k = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "Call", _XKeycodeToKeysym, xDisplay, keyCode, column)) != NoSymbol; column++) 
+       			if (k == keysym)
+       				break;
+       		System.out.printf("MODIFIERS: char '%c' --> keysym %x --> keyCode %x --> column %d\n", ch, keysym, keyCode, column);
+       		
+       		// 4. devise modifiers from the column
+       		int modeSwitch = 0; //FIXME ask Xlib somehow...
+       		switch(column) {
+	       		case 0: return 0;
+	       		case 1: return SWT.SHIFT;
+	       		case 2: return modeSwitch;
+	       		case 3: return SWT.SHIFT | modeSwitch;
+	       		default: System.out.println("cannot figure out which modifiers to hold down to produce '"+ch+"' on the keyboard"); return 0;
+       		}
         }
         else {
             throw new RuntimeException("unsupported window system: " + SWT.getPlatform());
