@@ -81,9 +81,8 @@ public class PlatformUtils {
        		if (keyCode == 0) 
        			return 0;  // sorry, cannot be produced on the keyboard
 
-       		// 3. look up our keysym in the keysyms that keyCode can generate
+       		// get a pointer to the XKeycodeToKeysym() function in X11, as that one isn't included in SWT's GTK-specific OS class...
         	if (_XKeycodeToKeysym == 0) {
-        		// get a pointer to the XKeycodeToKeysym() function in X11, as that one isn't included in SWT's GTK-specific OS class...
         	    Class<?> Converter_ = classForName("org.eclipse.swt.internal.Converter");
         		byte[] filename = (byte[]) ReflectionUtils.invokeStaticMethod(Converter_, "wcsToMbcs", "UTF8", "libX11.so", true);
         		int libX11 = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "dlopen", filename, 1 /*OS.RTLD_LAZY*/ );
@@ -93,6 +92,7 @@ public class PlatformUtils {
         		Assert.assertTrue("cannot find XKeycodeToKeysym in libX11.so", _XKeycodeToKeysym != 0);
         	}
 
+        	// 3. look up our keysym in the keysyms that keyCode can generate
        		int column;
        		int k;
        		final int NoSymbol = 0; // from X.h
