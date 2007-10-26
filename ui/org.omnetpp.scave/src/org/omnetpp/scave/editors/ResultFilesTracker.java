@@ -1,8 +1,10 @@
 package org.omnetpp.scave.editors;
 
+import static org.omnetpp.scave.common.ScaveMarkers.MARKERTYPE_SCAVEPROBLEM;
+import static org.omnetpp.scave.common.ScaveMarkers.deleteMarkers;
+import static org.omnetpp.scave.common.ScaveMarkers.setMarker;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
-import static org.omnetpp.scave.common.ScaveMarkers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.common.ScaveMarkers;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
