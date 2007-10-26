@@ -97,14 +97,15 @@ inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) c
 {
 	switch (id)
 	{
-	case FILE_ID:		return d1.fileRunRef->fileRef != d2.fileRunRef->fileRef;
-	case RUN_ID:		return d1.fileRunRef->runRef != d2.fileRunRef->runRef;
-	case MODULE_ID:		return d1.moduleNameRef != d2.moduleNameRef;
-	case NAME_ID:		return d1.nameRef != d2.nameRef;
+	case FILE_ID:		return d1.fileRunRef->fileRef == d2.fileRunRef->fileRef;
+	case RUN_ID:		return d1.fileRunRef->runRef == d2.fileRunRef->runRef;
+	case MODULE_ID:		return d1.moduleNameRef == d2.moduleNameRef;
+	case NAME_ID:		return d1.nameRef == d2.nameRef;
                         // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
 	case RUN_ATTR_ID:	return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
-	default:			return true;
 	}
+	// not reached
+	return true;
 }
 
 inline int ResultItemField::compare(const ResultItem &d1, const ResultItem &d2) const

@@ -133,7 +133,7 @@ ResultItemFields ResultItemFields::complement()
 
 bool ResultItemFields::equal(ID id1, ID id2, ResultFileManager *manager) const
 {
-    if (id1==-1 || id2==-1) return id1==id2;
+    if (id1==-1 || id2==-1 || id1 == id2) return id1==id2;
     const ResultItem& d1 = manager->getItem(id1);
     const ResultItem& d2 = manager->getItem(id2);
     return equal(d1, d2);
@@ -150,6 +150,7 @@ bool ResultItemFields::equal(const ResultItem& d1, const ResultItem& d2) const
 bool ResultItemFields::less(ID id1, ID id2, ResultFileManager *manager) const
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    if (id1 == id2) return false;
     const ResultItem& d1 = manager->getItem(id1);
     const ResultItem& d2 = manager->getItem(id2);
     return less(d1, d2);
