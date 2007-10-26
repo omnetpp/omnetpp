@@ -24,7 +24,8 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 	
 	@InUIThread
 	public void clickButtonFigureWithLabel(final String label) {
-		findButtonFigureWithLabel(label).click(LEFT_MOUSE_BUTTON);
+        findButtonFigureWithLabel(label).reveal();
+        findButtonFigureWithLabel(label).click(LEFT_MOUSE_BUTTON);
 	}
 
     @InUIThread

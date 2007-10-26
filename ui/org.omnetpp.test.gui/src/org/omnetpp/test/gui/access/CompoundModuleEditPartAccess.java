@@ -40,7 +40,8 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 	public void createSubModuleWithPalette(String type, String name, int x, int y) {
 		getFlyoutPaletteComposite().clickButtonFigureWithLabel(type);
 		clickBackground(x, y);
-		typeInNewName(name);
+		if (name != null)
+		    typeInNewName(name);
 	}
 
 	@InUIThread

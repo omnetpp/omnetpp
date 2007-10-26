@@ -2,13 +2,18 @@ package org.omnetpp.test.gui.demo;
 
 import com.simulcraft.test.gui.access.*;
 import com.simulcraft.test.gui.core.GUITestCase;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 import org.eclipse.swt.SWT;
 
+import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
+import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.access.NedEditorAccess;
+
 public class Demo extends GUITestCase {
-    public void testPlay() {
+    public void testPlay() throws Throwable {
         // open perspective
-        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
+      Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
         
         {
             //create project
@@ -24,14 +29,17 @@ public class Demo extends GUITestCase {
             ShellAccess shell2 = Access.findShellWithTitle("Properties for demo");
             TreeAccess tree2 = shell2.findTree();
             tree2.findTreeItemByContent("Project References").click();
-            shell2.findTable().findTableItemByContent("queueinglib").click();
+            shell2.findTable().findTableItemByContent("queueinglib").ensureChecked(true);
+            
             tree2.findTreeItemByContent("NED Source Folders").click();
             shell2.findButtonWithLabel("OK").selectWithMouseClick();
 
             // open dependent project
-            TreeItemAccess treeItem2 = tree.findTreeItemByContent("queueinglib");
-            treeItem2.reveal().chooseFromContextMenu("Open Project");
+            // TreeItemAccess treeItem2 = tree.findTreeItemByContent("queueinglib");
+            // treeItem2.reveal().chooseFromContextMenu("Open Project");
+            Access.sleep(3);
         }
+        
         // create new ned file
         {
             TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
@@ -39,57 +47,35 @@ public class Demo extends GUITestCase {
             ShellAccess shell = Access.findShellWithTitle("New NED File");
             shell.findTree().findTreeItemByContent("demo").click();
             TextAccess text = shell.findTextAfterLabel("File name:");
-            text.typeOver("demo");
+            text.clickAndTypeOver("demo");
             shell.findButtonWithLabel("A new toplevel Network").selectWithMouseClick();
             shell.findButtonWithLabel("Finish").selectWithMouseClick();
-            
         }
         
         // create demo network
         {
-            String code = "import org.omnetpp.samples.queueing.Source;\r\n" + 
-            		"import org.omnetpp.samples.queueing.Sink;\r\n" + 
-            		"import org.omnetpp.samples.queueing.Queue;\r\n" + 
-            		"import org.omnetpp.samples.queueing.Delay;\r\n" + 
-            		"import org.omnetpp.samples.queueing.Classifier;\r\n" + 
-            		"\r\n" + 
-            		"import org.omnetpp.samples.queueing.Router;\r\n" + 
-            		"network example\r\n" + 
-            		"{\r\n" + 
-            		"    parameters:\r\n" + 
-            		"        @display(\"bgb=386,257;i=block/network2\");\r\n" + 
-            		"    gates:\r\n" + 
-            		"    submodules:\r\n" + 
-            		"        source: Source {\r\n" + 
-            		"            @display(\"p=98,101\");\r\n" + 
-            		"        }\r\n" + 
-            		"        queue: Queue {\r\n" + 
-            		"            @display(\"p=157,172\");\r\n" + 
-            		"        }\r\n" + 
-            		"        queue1: Queue {\r\n" + 
-            		"            @display(\"p=269,59\");\r\n" + 
-            		"        }\r\n" + 
-            		"        queue2: Queue {\r\n" + 
-            		"            @display(\"p=317,189\");\r\n" + 
-            		"        }\r\n" + 
-            		"    connections:\r\n" + 
-            		"        source.out --> queue.in++;\r\n" + 
-            		"        queue.out --> queue1.in++;\r\n" + 
-            		"        queue1.out --> queue2.in++;\r\n" + 
-            		"        queue2.out --> queue.in++;\r\n" + 
-            		"}\r\n";
+            NedEditorAccess editor = (NedEditorAccess)Access.getWorkbenchWindow().findEditorPartByTitle("demo\\.ned");
+            GraphicalNedEditorAccess graphEd = editor.ensureActiveGraphicalEditor();
+
+            CompoundModuleEditPartAccess compoundModule = graphEd.findCompoundModule("demo");
+            compoundModule.createSubModuleWithPalette("Queue.*", "queue1", 180, 150);
+            compoundModule.createSubModuleWithPalette("Queue.*", "queue2", 300, 210);
+            compoundModule.createSubModuleWithPalette("Queue.*", "queue3", 300, 90);
+            compoundModule.createSubModuleWithPalette("Source.*", null, 60, 150);
+            compoundModule.createConnectionWithPalette("source", "queue1", ".*");
+            compoundModule.createConnectionWithPalette("queue1", "queue2", ".*");
+            compoundModule.createConnectionWithPalette("queue3", "queue1", ".*");
+            compoundModule.createConnectionWithPalette("queue2", "queue3", ".*");
             
-            MultiPageEditorPartAccess editor = (MultiPageEditorPartAccess)Access.getWorkbenchWindow().findEditorPartByTitle("demo\\.ned");
-            editor.activatePageEditor("Text");
-            editor.pressKey('a', SWT.CTRL);
-            editor.getComposite().findStyledText().typeIn(code);
             editor.saveWithHotKey();
         }
+        
         
         // create INI file
         {
             // create with wizard
             WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+            WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
             TreeAccess tree = workbenchWindow.findViewPartByTitle("Navigator").getComposite().findTree();
             tree.findTreeItemByContent("demo").reveal().chooseFromContextMenu("New|Initialization File \\(ini\\)");
             ShellAccess shell = Access.findShellWithTitle("New Ini File");
@@ -97,19 +83,27 @@ public class Demo extends GUITestCase {
             shell.findButtonWithLabel("Finish").selectWithMouseClick();
             
             // add source parameters
-            CTabFolderAccess cTabFolder = workbenchWindow.findEditorPartByTitle("omnetpp\\.ini").getComposite().findCTabFolder();
-            ButtonAccess addKeysButton = cTabFolder.findButtonWithLabel("Add.*");
+            MultiPageEditorPartAccess iniEditor = (MultiPageEditorPartAccess)workbenchWindow.findEditorPartByTitle("omnetpp\\.ini");
+            CompositeAccess form = (CompositeAccess)iniEditor.getActivePageControl();
+            ButtonAccess addKeysButton = form.findButtonWithLabel("Add.*");
             addKeysButton.selectWithMouseClick();
             ShellAccess shell2 = Access.findShellWithTitle("Add Inifile Keys");
             shell2.findButtonWithLabel("Deselect All").selectWithMouseClick();
             TableAccess table = shell2.findTable();
-            table.findTableItemByContent("\\*\\*\\.source\\.interArrivalTime").click();
-            table.findTableItemByContent("\\*\\*\\.source\\.numJobs").click();
+            TableItemAccess tableItem = table.findTableItemByContent("\\*\\*\\.source\\.interArrivalTime");
+            tableItem.ensureChecked(true);
+            tableItem = table.findTableItemByContent("\\*\\*\\.source\\.numJobs");
+            tableItem.ensureChecked(true);
             shell2.findButtonWithLabel("OK").selectWithMouseClick();
             
-            TreeAccess tree2 = cTabFolder.findTreeAfterLabel("HINT: Drag the icons to change the order of entries\\.");
+            // we should use table item access here
+            TreeAccess tree2 = form.findTreeAfterLabel("HINT: Drag the icons to change the order of entries\\.");
             tree2.findTreeItemByContent("\\*\\*\\.source\\.numJobs").activateCellEditor().typeOver("60\n");
-            tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").activateCellEditor().typeIn("0\n");
+            tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").activateCellEditor().typeIn("0\n");                        
+
+            TableAccess table2 = iniEditor.findTable();
+            table2.findTableItemByContent(1, "\\*\\*\\.source\\.numJobs").activateCellEditor().typeOver("60\n");
+            table2.findTableItemByContent(1,"\\*\\*\\.source\\.interArrivalTime").activateCellEditor().typeIn("0\n");                        
             
             // add queue parameters from dialog
             addKeysButton.selectWithMouseClick();
@@ -133,8 +127,8 @@ public class Demo extends GUITestCase {
             cellEditor.typeIn("2)\n");
             
             // set event logging file
-            ((TreeAccess)cTabFolder.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
-            TextAccess text = cTabFolder.findTextAfterLabel("Eventlog file:");
+            ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
+            TextAccess text = form.findTextAfterLabel("Eventlog file:");
             text.clickAndTypeOver("demo.log");
             workbenchWindow.getShell().findToolItemWithToolTip("Save \\(Ctrl\\+S\\)");
             // or much cleaner:

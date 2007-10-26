@@ -70,6 +70,8 @@ public class FigureAccess
 	@InUIThread
 	public void click(int button) {
         reveal();
+        // TODO center is NOT necessarily OK. It can happen that the center of the figure is
+        // covered by another figure (e.g connection)
 	    click(button, getCenter(getAbsoluteBounds()));
 	}
 	

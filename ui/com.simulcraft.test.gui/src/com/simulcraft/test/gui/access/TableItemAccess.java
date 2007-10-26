@@ -72,6 +72,7 @@ public class TableItemAccess extends ClickableWidgetAccess
     @InUIThread
     public void ensureChecked(boolean state) {
         if (getWidget().getChecked() != state) {
+            reveal();
             click();
             pressKey(' ');
         }
