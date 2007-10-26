@@ -99,7 +99,8 @@ public class PlatformUtils {
        		for (column = 0; (k = (Integer) ReflectionUtils.invokeStaticMethod(OS_, "Call", _XKeycodeToKeysym, xDisplay, keyCode, column)) != NoSymbol; column++) 
        			if (k == keysym)
        				break;
-       		System.out.printf("MODIFIERS: char '%c' --> keysym %x --> keyCode %x --> column %d\n", ch, keysym, keyCode, column);
+
+       		//System.out.printf("MODIFIERS: char '%c' --> keysym %x --> keyCode %x --> column %d\n", ch, keysym, keyCode, column);
        		
        		// 4. devise modifiers from the column
        		int modeSwitch = 0; //FIXME ask Xlib somehow...

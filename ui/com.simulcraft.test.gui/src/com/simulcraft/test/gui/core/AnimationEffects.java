@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.color.ColorFactory;
 
 import com.simulcraft.test.gui.access.ClickableAccess;
@@ -26,8 +27,19 @@ public class AnimationEffects  {
     public static void displayTextBox(String text, long delayMillis) {
     	displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
     }
-    
+
+    public static void displayError(Throwable error, long delayMillis) {
+    	displayTextBox(error.toString(), ColorFactory.RED, 12, delayMillis);
+    }
+
     public static void displayTextBox(String text, Color textColor, int fontSize, long delayMillis) {
+    	if (PlatformUtils.isWindows)
+    		displayTextBox1(text, textColor, fontSize, delayMillis); // draw directly on the display
+    	else
+    		displayTextBox2(text, textColor, fontSize, delayMillis);  // draw on a temporary shell
+    }
+
+    public static void displayTextBox1(String text, Color textColor, int fontSize, long delayMillis) {
         // choose font, calculate position and size
         Display display = Display.getCurrent();
         GC gc = new GC(display);
@@ -65,11 +77,45 @@ public class AnimationEffects  {
         font.dispose();
         gc.dispose();
     }
-    
-    public static void displayError(Throwable error, long delayMillis) {
-        displayTextBox(error.toString(), ColorFactory.RED, 12, delayMillis);
+
+    public static void displayTextBox2(String text, Color textColor, int fontSize, long delayMillis) {
+    	System.out.println("SHOWING: " + text); Display.getCurrent().beep();
+    	
+        Shell shell = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
+        Display display = Display.getCurrent();
+
+        //Point p = getPositionNearFocusWidget();
+        Point p = display.getCursorLocation();  
+        shell.setLocation(p.x + 20, p.y + 10);
+        
+        // choose font, calculate position and size
+        GC gc = new GC(shell);
+        Font font = new Font(display, "Arial", fontSize, SWT.NORMAL);
+        gc.setFont(font);
+        Point textExtent = gc.textExtent(text);
+        shell.setSize(textExtent.x, textExtent.y);
+        shell.open();
+
+        Rectangle r = new Rectangle(1, 1, textExtent.x-2, textExtent.y-2);
+
+        // draw text box
+        gc.setBackground(ColorFactory.LIGHT_YELLOW);
+        gc.setForeground(ColorFactory.BLACK);
+        gc.setLineWidth(2);
+        gc.fillRectangle(r);
+        gc.drawRectangle(r);
+        gc.setForeground(textColor);
+        gc.drawText(text, r.x + r.width/2 - textExtent.x/2, r.y + r.height/2 - textExtent.y/2);
+        font.dispose();
+        gc.dispose();
+
+        // wait
+        try { Thread.sleep(delayMillis); } catch (InterruptedException e) { }
+
+        // dispose
+        shell.dispose();
     }
-    
+
     @SuppressWarnings("deprecation")
     public static void animateClick(int x, int y) {
         // draw inflating red circle 
