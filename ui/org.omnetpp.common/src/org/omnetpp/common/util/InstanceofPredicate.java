@@ -12,4 +12,8 @@ public class InstanceofPredicate
     public boolean matches(Object object) {
         return clazz.isInstance(object);
     }
+    
+    public String toString() {
+        return "an instance of " + clazz.getName();
+    }
 }

@@ -42,16 +42,21 @@ public class MenuAccess extends WidgetAccess {
 	@InUIThread
 	public MenuItemAccess findMenuItemByLabel(final String label) {
 		try {
-			return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItems(getWidget(), new IPredicate() {
+			return new MenuItemAccess((MenuItem)findMenuItem(getWidget(), new IPredicate() {
 				public boolean matches(Object object) {
 					String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
 					return menuItemLabel.matches(label);
 				}
-			})));
+			}));
 		} catch (RuntimeException e) {
 			closeMenus();
 			throw e;
 		}
+	}
+
+	@InUIThread
+    public MenuItem findMenuItem(Menu menu, IPredicate predicate) {
+        return (MenuItem)theOnlyWidget(collectMenuItems(getWidget(), predicate), predicate);
 	}
 
 	@InUIThread

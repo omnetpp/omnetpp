@@ -75,16 +75,21 @@ public class WorkbenchWindowAccess extends Access {
 
 	@InUIThread
 	public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
-		return (ViewPartAccess)theOnlyObject(collectViewPartsByTitle(title, restore));
+	    IPredicate predicate = getViewPartsByTitlePredicate(title);
+		return (ViewPartAccess)theOnlyObject(collectViewParts(predicate, restore), predicate);
 	}
 
 	@InUIThread
-    public List<ViewPartAccess> collectViewPartsByTitle(final String title, boolean restore) {
-        return collectViewParts(new IPredicate() {
+    public List<ViewPartAccess> collectViewPartsByTitle(String title, boolean restore) {
+        return collectViewParts(getViewPartsByTitlePredicate(title), restore);
+    }
+
+    protected IPredicate getViewPartsByTitlePredicate(final String title) {
+        return new IPredicate() {
             public boolean matches(Object object) {
                 return ((IViewReference)object).getPartName().matches(title);
             }
-        }, restore);
+        };
     }
 
     @InUIThread
@@ -114,7 +119,8 @@ public class WorkbenchWindowAccess extends Access {
 	
 	@InUIThread
 	public EditorPartAccess findEditorPartByTitle(final String title, boolean restore) {
-		return (EditorPartAccess)theOnlyObject(collectEditorPartsByTitle(title, restore));
+	    IPredicate predicate = getEditorPartsByTitlePredicate(title);
+		return (EditorPartAccess)theOnlyObject(collectEditorParts(predicate, restore), predicate);
 	}
 
 	@InUIThread
@@ -128,14 +134,18 @@ public class WorkbenchWindowAccess extends Access {
     }
 
     @InUIThread
-    public List<EditorPartAccess> collectEditorPartsByTitle(final String title, boolean restore) {
-        return collectEditorParts(new IPredicate() {
+    public List<EditorPartAccess> collectEditorPartsByTitle(String title, boolean restore) {
+        return collectEditorParts(getEditorPartsByTitlePredicate(title), restore);
+    }
+
+    protected IPredicate getEditorPartsByTitlePredicate(final String title) {
+        return new IPredicate() {
             public boolean matches(Object object) {
                 return ((IEditorReference)object).getTitle().matches(title);
             }
-        }, restore);
+        };
     }
-	
+
     @InUIThread
     public List<EditorPartAccess> collectEditorParts(IPredicate predicate, boolean restore) {
         ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
@@ -182,7 +192,8 @@ public class WorkbenchWindowAccess extends Access {
     public void ensureAllEditorPartsAreSaved() {
         for (IWorkbenchPage page : workbenchWindow.getPages()) {
             for (IEditorReference editorReference : page.getEditorReferences()) {
-                if (editorReference.getEditor(false).isDirty()) {
+                IEditorPart editorPart = editorReference.getEditor(false);
+                if (editorPart != null && editorPart.isDirty()) {
                     saveAllEditorPartsWithHotKey();
                     return;
                 }
@@ -193,8 +204,10 @@ public class WorkbenchWindowAccess extends Access {
     @InUIThread
     public void assertNoDirtyEditorParts() {
         for (IWorkbenchPage page : workbenchWindow.getPages()) {
-            for (IEditorReference editorReference : page.getEditorReferences())
-                Assert.assertTrue("Editor part " + editorReference.getTitle() + " still dirty", !editorReference.getEditor(false).isDirty());
+            for (IEditorReference editorReference : page.getEditorReferences()) {
+                IEditorPart editorPart = editorReference.getEditor(false);
+                Assert.assertTrue("Editor part " + editorReference.getTitle() + " still dirty", editorPart == null || !editorPart.isDirty());
+            }
         }
     }
 }

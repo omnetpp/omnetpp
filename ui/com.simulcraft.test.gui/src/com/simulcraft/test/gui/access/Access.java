@@ -137,6 +137,10 @@ public class Access
 				log(debug, "Trying to collect shell: " + shell.getText());
 				return shell.getText().matches(title);
 			}
+			
+			public String toString() {
+			    return "a " + Shell.class.getName() + " with title: " + title;
+			}
 		}), allowMissing);
 	}
 
@@ -327,19 +331,24 @@ public class Access
 	@InUIThread
     public static ContentAssistAccess findContentAssistPopup() {
         // Content Assist popup is a Table in a Composite in a nameless Shell
-	    Shell shell = (Shell) theOnlyObject(collectContentAssistPopups());
+	    IPredicate predicate = getContentAssisPredicate();
+	    Shell shell = (Shell) theOnlyObject(collectContentAssistPopups(predicate), predicate);
         return new ContentAssistAccess(new ShellAccess(shell).findTable().getControl());
     }
 	
 	@NotInUIThread
 	public static void assertHasNoContentAssistPopup() {
 	    Access.sleep(0.5);
-	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups().size() == 0);
+	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups(getContentAssisPredicate()).size() == 0);
 	}
 	
 	@InUIThread
-    protected static List<Object> collectContentAssistPopups() {
-        return collectObjects(getDisplay().getShells(), new IPredicate() {
+    protected static List<Object> collectContentAssistPopups(IPredicate predicate) {
+        return collectObjects(getDisplay().getShells(), predicate);
+    }
+	
+	protected static IPredicate getContentAssisPredicate() {
+	    return new IPredicate() {
             public boolean matches(Object object) {
                 log(debug, "Trying to find content assist popup");
                 Shell shell = (Shell)object;
@@ -357,22 +366,26 @@ public class Access
                 }
                 return false;
             }
-        });
-    }
+            
+            public String toString() {
+                return "a content assist " + Shell.class.getName();
+            }
+        };
+	}
 	
     @InUIThread
 	public static Object findObject(List<Object> objects, IPredicate predicate) {
-		return theOnlyObject(collectObjects(objects, predicate));
+		return theOnlyObject(collectObjects(objects, predicate), predicate);
 	}
 
 	@InUIThread
 	public static Object findObject(Object[] objects, IPredicate predicate) {
-		return theOnlyObject(collectObjects(objects, predicate));
+		return theOnlyObject(collectObjects(objects, predicate), predicate);
 	}
 
     @InUIThread
     public static Object findObject(Object[] objects, boolean allowMissing, IPredicate predicate) {
-        return theOnlyObject(collectObjects(objects, predicate), allowMissing);
+        return theOnlyObject(collectObjects(objects, predicate), predicate, allowMissing);
     }
 
     @InUIThread
@@ -408,7 +421,7 @@ public class Access
 
 	@InUIThread
 	public static Control findDescendantControl(Composite composite, IPredicate predicate) {
-		return theOnlyControl(collectDescendantControls(composite, predicate));
+		return theOnlyControl(collectDescendantControls(composite, predicate), predicate);
 	}
 
     @InUIThread
@@ -448,7 +461,6 @@ public class Access
 	private static Item findDescendantTabItemByLabel(Composite composite, final String label, final boolean custom) {
 		Composite folder = (Composite)findDescendantControl(composite, new IPredicate() {
 			public boolean matches(Object object) {
-				
 				if (object instanceof CTabFolder && custom || object instanceof TabFolder && !custom) {
 					List<Object> matchingItems = collectObjects(getTabItems((Composite)object), new IPredicate() {
 						public boolean matches(Object object) {
@@ -465,12 +477,20 @@ public class Access
 				}
 				return false;
 			}
+            
+            public String toString() {
+                return "a " + (custom ? CTabItem.class : TabItem.class).getName() + " with label: " + label;
+            }
 		});
 
 		return (Item)findObject(getTabItems(folder), new IPredicate() {
 			public boolean matches(Object object) {
 				return ((Item)object).getText().matches(label);
 			}
+            
+            public String toString() {
+                return "an " + Item.class.getName() + " with label: " + label;
+            }
 		});
 	}
 	
@@ -504,7 +524,7 @@ public class Access
 
 	@InUIThread
 	public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {
-		return theOnlyFigure(collectDescendantFigures(figure, predicate));
+		return theOnlyFigure(collectDescendantFigures(figure, predicate), predicate);
 	}
 
     @InUIThread
@@ -536,7 +556,7 @@ public class Access
 
 	@InUIThread
 	public static EditPart findDescendantEditPart(EditPart editPart, IPredicate predicate) {
-		return theOnlyEditPart(collectDescendantEditParts(editPart, predicate));
+		return theOnlyEditPart(collectDescendantEditParts(editPart, predicate), predicate);
 	}
 
     @InUIThread
@@ -561,13 +581,14 @@ public class Access
 		}
 	}
 
-    protected static Object theOnlyObject(List<? extends Object> objects) {
-        return theOnlyObject(objects, false);
+    protected static Object theOnlyObject(List<? extends Object> objects, IPredicate predicate) {
+        return theOnlyObject(objects, predicate, false);
     }
 
-	protected static Object theOnlyObject(List<? extends Object> objects, boolean allowMissing) {
-		Assert.assertTrue("Found "+objects.size()+" objects when exactly one is expected ["+StringUtils.join(objects, ", ")+"]", objects.size() < 2);
-		Assert.assertTrue("Found zero object when exactly one is expected", allowMissing || objects.size() > 0);
+	protected static Object theOnlyObject(List<? extends Object> objects, IPredicate predicate, boolean allowMissing) {
+	    String predicateString = predicate == null ?  "<unknown>" : predicate.toString();
+		Assert.assertTrue("While searching for " + predicateString + ", found " + objects.size() + " objects when exactly one is expected [" + StringUtils.join(objects, ", ") + "]", objects.size() < 2);
+		Assert.assertTrue("While searching for " + predicateString + ", found zero object when exactly one is expected", allowMissing || objects.size() > 0);
 		
 		if (objects.size() == 0)
 		    return null;
@@ -575,20 +596,20 @@ public class Access
 		    return objects.get(0);
 	}
 
-	protected static Widget theOnlyWidget(List<? extends Widget> widgets) {
-		return (Widget)theOnlyObject(widgets);
+	protected static Widget theOnlyWidget(List<? extends Widget> widgets, IPredicate predicate) {
+		return (Widget)theOnlyObject(widgets, predicate);
 	}
 
-	protected static Control theOnlyControl(List<? extends Control> controls) {
-		return (Control)theOnlyObject(controls);
+	protected static Control theOnlyControl(List<? extends Control> controls, IPredicate predicate) {
+		return (Control)theOnlyObject(controls, predicate);
 	}
 
-	protected static IFigure theOnlyFigure(List<? extends IFigure> controls) {
-		return (IFigure)theOnlyObject(controls);
+	protected static IFigure theOnlyFigure(List<? extends IFigure> controls, IPredicate predicate) {
+		return (IFigure)theOnlyObject(controls, predicate);
 	}
 
-	protected static EditPart theOnlyEditPart(List<? extends EditPart> controls) {
-		return (EditPart)theOnlyObject(controls);
+	protected static EditPart theOnlyEditPart(List<? extends EditPart> controls, IPredicate predicate) {
+		return (EditPart)theOnlyObject(controls, predicate);
 	}
 	
 	protected static Object atMostOneObject(List<? extends Object> objects) {
