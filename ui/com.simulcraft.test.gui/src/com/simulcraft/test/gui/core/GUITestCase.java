@@ -72,7 +72,7 @@ public abstract class GUITestCase
     			Display.getCurrent().readAndDispatch();
 		}
         catch (Throwable t) {
-            AnimationEffects.displayError(getInterestingCause(t), 2000);
+            AnimationEffects.displayError(getInterestingCause(t), 3000);
 
             // KLUDGE: close all shells except the workbench window's shell
             // so that there are no hanging windows left open

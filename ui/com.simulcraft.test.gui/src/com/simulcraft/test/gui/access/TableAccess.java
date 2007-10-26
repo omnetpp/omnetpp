@@ -139,7 +139,7 @@ public class TableAccess extends ControlAccess
 			}
 			
 			public String toString() {
-			    return "a " + TableItem.class.getName() + " with content: " + content;
+			    return "a TableItem with content: " + content;
 			}
 		}));
 	}

@@ -139,7 +139,7 @@ public class Access
 			}
 			
 			public String toString() {
-			    return "a " + Shell.class.getName() + " with title: " + title;
+			    return "a Shell with title: " + title;
 			}
 		}), allowMissing);
 	}
@@ -368,7 +368,7 @@ public class Access
             }
             
             public String toString() {
-                return "a content assist " + Shell.class.getName();
+                return "a content assist Shell";
             }
         };
 	}
@@ -489,7 +489,7 @@ public class Access
 			}
             
             public String toString() {
-                return "an " + Item.class.getName() + " with label: " + label;
+                return "an Item with label: " + label;
             }
 		});
 	}

@@ -102,6 +102,10 @@ public class TreeAccess extends ControlAccess
 				String treeItemContent = treeItem.getText();
 				return treeItemContent.matches(content);
 			}
+			
+			public String toString() {
+			    return "a TreeItem with content: " + content;
+			}
 		});
 		log(debug, treeItem + ":" + treeItem.getBounds()); 
 		return new TreeItemAccess(treeItem);
