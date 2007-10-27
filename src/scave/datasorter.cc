@@ -109,9 +109,10 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
     if (values.size() > 0)
     {
         vector<ValueAndIndex> vals;
-        for (int i = 0; i < (int)values[0].size(); ++i)
+        int firstRow = rowOrder[0];
+        for (int i = 0; i < (int)values[firstRow].size(); ++i)
         {
-            double mean = values[0][i].mean();
+            double mean = values[firstRow][i].mean();
             if (!isNaN(mean))
                 vals.push_back(ValueAndIndex(mean, i));
         }
