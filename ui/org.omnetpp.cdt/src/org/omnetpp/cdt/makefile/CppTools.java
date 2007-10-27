@@ -13,7 +13,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -47,7 +49,11 @@ public class CppTools {
         Map<IContainer,List<IContainer>> deps = calculateDependencies(fileIncludes);
         
         for (IContainer folder : deps.keySet()) {
-            System.out.println("Folder " + folder + " depends on: " + StringUtils.join(deps.get(folder), " "));
+            System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
+            for (IContainer dep : deps.get(folder)) {
+                System.out.print(" " + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
+            }
+            System.out.println();
         }
     }
 
@@ -135,6 +141,12 @@ public class CppTools {
                 return true;
         }
         return false;
+    }
+    
+    public static IPath makeRelativePath(IPath base, IPath target) {
+        int commonPrefixLen = target.matchingFirstSegments(base);
+        int upLevels = base.segmentCount() - commonPrefixLen;
+        return new Path(StringUtils.repeat("../", upLevels)).append(target.removeFirstSegments(commonPrefixLen));
     }
 
     /**
