@@ -1,3 +1,31 @@
+2007-10-27
+----------
+
+Fixes:
+
+   + Crash during indexing.
+
+   + Analysis file extension is ".anf" now. ("make clean" deleted ".scave" files on Windows,
+      because their extension starts with ".sca")
+
+   + Ctrl+A selects all items in tables, trees, editable combos too.
+     (Worked only for data table.)
+
+   + Fix default setting of "antialias" and "caching" checkboxes in chart edit dialogs.
+
+   + NullPointerException in DataflowNetworkBuilder if the operation of Apply/Compute is
+     not set.
+
+   + Computed IDs was displayed on "Browse Data" page and sometimes was duplicated.
+
+   + Adding markers to index/vector file did not worked with the recent Eclipse version.
+
+   + Exporting functionality was broken.
+
+   + Scalar datasets was not ordered according to the X data.
+
+
+
 2007-09-28
 ----------
 
