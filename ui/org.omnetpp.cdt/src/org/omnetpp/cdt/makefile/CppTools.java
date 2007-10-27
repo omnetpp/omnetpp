@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,6 +37,7 @@ public class CppTools {
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h" 
 
         public Include(String filename, boolean isSysInclude) {
+            Assert.isTrue(filename != null);
             this.isSysInclude = isSysInclude;
             this.filename = filename;
         }
@@ -47,31 +49,15 @@ public class CppTools {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((filename == null) ? 0 : filename.hashCode());
-            result = prime * result + (isSysInclude ? 1231 : 1237);
-            return result;
+            return filename.hashCode()*31 + (isSysInclude ? 1231 : 1237);
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
+            if (obj == null || getClass() != obj.getClass())
                 return false;
-            if (getClass() != obj.getClass())
-                return false;
-            final Include other = (Include) obj;
-            if (filename == null) {
-                if (other.filename != null)
-                    return false;
-            }
-            else if (!filename.equals(other.filename))
-                return false;
-            if (isSysInclude != other.isSysInclude)
-                return false;
-            return true;
+            Include other = (Include) obj;
+            return this == obj || (filename.equals(other.filename) && isSysInclude == other.isSysInclude);
         }
     }
 
@@ -151,12 +137,20 @@ public class CppTools {
         final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
         container.accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (isCppFile(resource)) {
+                if (isCppFile(resource) || isMsgFile(resource)) {
                     monitor.subTask(resource.getFullPath().toString());
                     try {
                         IFile file = (IFile)resource;
                         List<Include> includes = CppTools.parseIncludes(file);
                         result.put(file, includes);
+                        
+                        if (isMsgFile(file)) {
+                            // pretend that the generated _m.h file also exists
+                            String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");
+                            IFile msgHFile = file.getParent().getFile(new Path(msgHFileName));
+                            if (!msgHFile.exists()) // otherwise it'll be visited as well
+                                result.put(msgHFile, includes);
+                        }
                     }
                     catch (IOException e) {
                         throw new RuntimeException("Could not process file " + resource.getFullPath().toString(), e);
@@ -180,7 +174,11 @@ public class CppTools {
         }
         return false;
     }
-    
+
+    public static boolean isMsgFile(IResource resource) {
+        return resource instanceof IFile && "msg".equals(((IFile)resource).getFileExtension());
+    }
+
     public static IPath makeRelativePath(IPath base, IPath target) {
         int commonPrefixLen = target.matchingFirstSegments(base);
         int upLevels = base.segmentCount() - commonPrefixLen;
