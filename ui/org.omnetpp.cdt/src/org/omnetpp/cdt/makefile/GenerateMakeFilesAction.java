@@ -1,10 +1,7 @@
 package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -28,9 +25,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
 
 /**
  * Scans all C++ files, etc....
@@ -47,7 +41,7 @@ public class GenerateMakeFilesAction implements IWorkbenchWindowActionDelegate {
     
     public void run(IAction action) {
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
+        ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Select project to generate Makefiles for:");
         if (dialog.open() == ListDialog.OK) {
             IPath path = (IPath) dialog.getResult()[0];
             final IContainer container = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(path);
@@ -107,14 +101,7 @@ public class GenerateMakeFilesAction implements IWorkbenchWindowActionDelegate {
     }
 
     protected void processFile(IFile file) throws CoreException, IOException {
-        String contents = FileUtils.readTextFile(file.getContents()) + "\n";
-        Matcher matcher = Pattern.compile("(?m)^\\s*#\\s*include\\s+([\"<])(.*?)[\">].*$").matcher(contents);
-        while (matcher.find()) {
-            boolean isSysInclude = matcher.group(1).equals("<");
-            String includedFileName = matcher.group(2);
-            System.out.println("FOUND: " + includedFileName + (isSysInclude ? " <.>" : "\".\""));
-            //TODO collect stuff in a hash table or something
-        }
+        CppTools.parseIncludes(file);
     }
 
     public void selectionChanged(IAction action, ISelection selection) {
