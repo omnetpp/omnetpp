@@ -19,6 +19,12 @@ public class EditorPartAccess
 		return (IEditorPart)workbenchPart;
 	}
 	
+	@Override @InUIThread
+    public CTabItemAccess getCTabItem() {
+		String tabLabel = getWorkbenchPart().isDirty() ? "\\*" + getPartName() : getPartName();
+        return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), tabLabel));
+    }
+	
 	@InUIThread
 	public void saveWithHotKey() {
 		pressKey('s', SWT.CONTROL);
