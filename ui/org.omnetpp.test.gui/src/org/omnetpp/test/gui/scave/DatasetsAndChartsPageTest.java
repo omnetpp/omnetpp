@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.scave;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
@@ -60,7 +62,21 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
         editor.releaseModifiers(SWT.SHIFT);
         tree.chooseFromContextMenu("Group");
         
-        // TODO assert content
+        GenericTreeNode content = buildDatasetsTreeContent();
+        groupNodes(content.getChildren(3,6), n("group"));
+        tree.assertContent(content);
+        
+        editor.executeUndo();
+        tree.assertContent(buildDatasetsTreeContent());
+    }
+    
+    public void testUngroup() {
+        TreeAccess tree = datasetsPage.getDatasetsTree();
+        tree.findTreeItemByContent("group").reveal().chooseFromContextMenu("Ungroup");
+        
+        GenericTreeNode content = buildDatasetsTreeContent();
+        ungroupNode(content.getChild(2));
+        tree.assertContent(content);
         
         editor.executeUndo();
         tree.assertContent(buildDatasetsTreeContent());
@@ -118,5 +134,32 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 					n("bar chart test-barchart"),
 					n("histogram chart test-histogramchart"),
 					n("scatter chart test-scatterchart"));
+	}
+	
+	protected static void groupNodes(GenericTreeNode[] children, GenericTreeNode wrapper) {
+		GenericTreeNode parent = children[0].getParent();
+		int index = children[0].indexInParent();
+		
+		for (GenericTreeNode child : children) {
+			child.unlink();
+			wrapper.addChild(child);
+		}
+		
+		parent.addChild(index, wrapper);
+	}
+	
+	protected static void ungroupNode(GenericTreeNode node) {
+		Assert.assertTrue(node.getParent() != null);
+		
+		GenericTreeNode parent = node.getParent();
+		int index = node.indexInParent();
+		
+		node.unlink();
+		int count = node.getChildCount();
+		for (int i = 0; i < count; ++i) {
+			GenericTreeNode child = node.getChild(0);
+			child.unlink();
+			parent.addChild(index + i, child);
+		}
 	}
 }
