@@ -39,14 +39,14 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 	}
 	
 	protected void testOpenPageFromMenu(String nodeLabel, String pageLabel) {
-		datasetsPage.getDatasetsTree().findTreeItemByContent(nodeLabel).chooseFromContextMenu("Open.*");
+		datasetsPage.getDatasetsTree().findTreeItemByContent(nodeLabel).reveal().chooseFromContextMenu("Open.*");
 		editor.assertActivePage(pageLabel);
 		editor.closePage(pageLabel);
 		editor.assertActivePage("Datasets");
 	}
 	
 	protected void testOpenPageWithDoubleClick(String nodeLabel, String pageLabel) {
-		datasetsPage.getDatasetsTree().findTreeItemByContent(nodeLabel).doubleClick();
+		datasetsPage.getDatasetsTree().findTreeItemByContent(nodeLabel).reveal().doubleClick();
 		editor.assertActivePage(pageLabel);
 		editor.closePage(pageLabel);
 		editor.assertActivePage("Datasets");
@@ -54,9 +54,9 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 	
     public void testGroup() {
         TreeAccess tree = datasetsPage.getDatasetsTree();
-        tree.findTreeItemByContent("bar chart test-barchart").click();
+        tree.findTreeItemByContent("bar chart test-barchart").reveal().click();
         editor.holdDownModifiers(SWT.SHIFT);
-        tree.findTreeItemByContent("scatter chart test-scatterchart").click();
+        tree.findTreeItemByContent("scatter chart test-scatterchart").reveal().click();
         editor.releaseModifiers(SWT.SHIFT);
         tree.chooseFromContextMenu("Group");
         
