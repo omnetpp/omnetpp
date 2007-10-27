@@ -1,5 +1,6 @@
 package org.omnetpp.test.gui.access;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.simulcraft.test.gui.access.CTabItemAccess;
@@ -28,5 +29,10 @@ public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 	public void closePage(String label) {
 		CTabItemAccess item = getCTabItem(label);
 		item.clickOnCloseIcon();
+	}
+	
+	public void executeUndo() {
+		assertActivated();
+        pressKey('z', SWT.CTRL);
 	}
 }
