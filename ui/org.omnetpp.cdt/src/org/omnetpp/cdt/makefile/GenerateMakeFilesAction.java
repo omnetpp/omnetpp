@@ -60,7 +60,7 @@ public class GenerateMakeFilesAction implements IWorkbenchWindowActionDelegate {
 
     protected void processFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
-            new CppTools().generateMakefiles(container, monitor);
+            CppTools.generateMakefiles(container, monitor);
             monitor.done();
         }
         catch (CoreException e) {

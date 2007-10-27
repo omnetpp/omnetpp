@@ -141,11 +141,12 @@ public class CppTools {
             List<IContainer> currentDeps = result.get(container);
             
             for (Include include : fileIncludes.get(file)) {
-                if (include.filename.contains("/")) {
-                    //TODO deal with it separately. interpret as relative path to the current file?
-                }
-                else if (include.isSysInclude && standardHeaders.contains(include.filename)) {
+                if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore
+                }
+                else if (include.filename.contains("/")) {
+                    //TODO deal with it separately. interpret as relative path to the current file?
+                    System.out.println("CONTAINS SLASH: " + include.filename);
                 }
                 else {
                     // determine which IFile(s) the include maps to
