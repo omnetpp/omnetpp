@@ -1,13 +1,9 @@
 package org.omnetpp.cdt.makefile;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -64,23 +60,7 @@ public class GenerateMakeFilesAction implements IWorkbenchWindowActionDelegate {
 
     protected void processFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
-            container.accept(new IResourceVisitor() {
-                public boolean visit(IResource resource) throws CoreException {
-                    if (isCppFile(resource)) {
-                        monitor.subTask(resource.getFullPath().toString());
-                        try {
-                            processFile((IFile)resource);
-                        }
-                        catch (IOException e) {
-                            throw new RuntimeException("Could not process file " + resource.getFullPath().toString(), e);
-                        }
-                        monitor.worked(1);
-                    }
-                    if (monitor.isCanceled())
-                        return false;
-                    return true;
-                }
-            });
+            new CppTools().generateMakefiles(container, monitor);
             monitor.done();
         }
         catch (CoreException e) {
@@ -88,20 +68,6 @@ public class GenerateMakeFilesAction implements IWorkbenchWindowActionDelegate {
             Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
             ErrorDialog.openError(shell, "Error", "An error occurred during scanning C++ files.", e.getStatus());
         }
-    }
-
-    public boolean isCppFile(IResource resource) {
-        if (resource instanceof IFile) {
-            //TODO: ask CDT about registered file extensions?
-            String fileExtension = ((IFile)resource).getFileExtension();
-            if ("cc".equalsIgnoreCase(fileExtension) || "cpp".equals(fileExtension) || "h".equals(fileExtension))
-                return true;
-        }
-        return false;
-    }
-
-    protected void processFile(IFile file) throws CoreException, IOException {
-        CppTools.parseIncludes(file);
     }
 
     public void selectionChanged(IAction action, ISelection selection) {
