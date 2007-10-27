@@ -23,16 +23,157 @@ public class ExportTest extends ScaveFileTestCase {
 	}
 	
     public void testCsvExportScalars() throws Exception {
-    	testCsvExport("add scalars: all", "test-scalars.csv",
+    	testExport(".*scalar-dataset.*", "test-scalars.csv", "CSV",
             	"/project/test-1.sca_run-1_module-1_scalar-1,/project/test-2.sca_run-2_module-2_scalar-2\n" +
             	"1,2\n");
     }
     
-    protected void testCsvExport(String datasetLabel, String fileName, String content) throws Exception {
+    public void testCsvExportVectors() throws Exception {
+    	testExport(".*vector-dataset.*", "test-vectors.csv", "CSV",
+    			"time,module-2.vector-2\n" +
+    			"0,2\n" +
+    			"time,module-1.vector-1\n" +
+    			"0,1\n");
+    }
+
+    public void testMatlabExportScalars() throws Exception {
+    	testExport(".*scalar-dataset.*", "test-scalars.m", "Matlab",
+    			"scalars.description=\"\"\n" +
+    			"scalars._project_test_1_sca_run_1_module_1_scalar_1=[\n" +
+    			"1;\n" +
+    			"]\n" +
+    			"\n" +
+    			"scalars._project_test_2_sca_run_2_module_2_scalar_2=[\n" +
+    			"2;\n" +
+    			"]\n" +
+    			"\n");
+    }
+    
+    public void testMatlabExportVectors() throws Exception {
+    	testExport(".*vector-dataset.*", "test-vectors.m", "Matlab",
+    			"vector_2.description=\"\"\n" +
+    			"vector_2.X=[\n" +
+    			"0;\n" +
+    			"]\n" +
+    			"\n" +
+    			"vector_2.Y=[\n" +
+    			"2;\n" +
+    			"]\n" +
+    			"\n" +
+    			"vector_1.description=\"\"\n" +
+    			"vector_1.X=[\n" +
+    			"0;\n" +
+    			"]\n" +
+    			"\n" +
+    			"vector_1.Y=[\n" +
+    			"1;\n" +
+    			"]\n" +
+    			"\n");
+    }
+    
+    public void testOctaveExportScalars() throws Exception {
+    	testExport(".*scalar-dataset.*", "test-scalars.octave", "Octave",
+    			"# name: scalars\n" +
+    			"# type: struct\n" +
+    			"# length: 3\n" +
+    			"# name: description\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: string\n" +
+    			"# elements: 1\n" +
+    			"# length: 0\n" +
+    			"\n" +
+    			"# name: _project_test_1_sca_run_1_module_1_scalar_1\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: matrix\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"1\n" +
+    			"# name: _project_test_2_sca_run_2_module_2_scalar_2\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: matrix\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"2\n");
+    }
+    
+    public void testOctaveExportVectors() throws Exception {
+    	testExport(".*vector-dataset.*", "test-vectors.octave", "Octave",
+    			"# name: vector_2\n" +
+    			"# type: struct\n" +
+    			"# length: 3\n" +
+    			"# name: description\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: string\n" +
+    			"# elements: 1\n" +
+    			"# length: 0\n" +
+    			"\n" +
+    			"# name: X\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: matrix\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"0\n" +
+    			"# name: Y\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: matrix\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"2\n" +
+    			"# name: vector_1\n" +
+    			"# type: struct\n" +
+    			"# length: 3\n" +
+    			"# name: description\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: string\n" +
+    			"# elements: 1\n" +
+    			"# length: 0\n" +
+    			"\n" +
+    			"# name: X\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: matrix\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"0\n" +
+    			"# name: Y\n" +
+    			"# type: cell\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"# name: <cell-element>\n" +
+    			"# type: matrix\n" +
+    			"# rows: 1\n" +
+    			"# columns: 1\n" +
+    			"1\n");
+    }
+    
+    protected void testExport(String datasetLabel, String fileName, String fileType, String content) throws Exception {
     	String path = "/" + projectName + "/" + fileName;
     	
         TreeAccess tree = datasetsPage.getDatasetsTree();
-        tree.findTreeItemByContent(datasetLabel).chooseFromContextMenu("Export to File|CSV.*");
+        tree.findTreeItemByContent(datasetLabel).chooseFromContextMenu("Export to File|" + fileType + ".*");
 
         ShellAccess dialog = Access.findShellWithTitle("Export");
         dialog.findTextAfterLabel("To file.*").clickAndTypeOver(getAbsolutePathForWorkspaceFile(path));
