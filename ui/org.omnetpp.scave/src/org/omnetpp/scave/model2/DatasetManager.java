@@ -136,18 +136,22 @@ public class DatasetManager {
 		}
 
 		public Object caseApply(Apply apply) {
-			for (int i = 0; i < idlist.size(); ++i) {
-				long id = idlist.get(i);
-				idlist.set(i, ensureComputedResultItem(apply, id, manager));
+			if (apply.getOperation() != null) {
+				for (int i = 0; i < idlist.size(); ++i) {
+					long id = idlist.get(i);
+					idlist.set(i, ensureComputedResultItem(apply, id, manager));
+				}
 			}
 			return this;
 		}
 
 		public Object caseCompute(Compute compute) {
-			int size = (int)idlist.size();
-			for (int i = 0; i < size; ++i) {
-				long id = idlist.get(i);
-				idlist.add(ensureComputedResultItem(compute, id, manager));
+			if (compute.getOperation() != null) {
+				int size = (int)idlist.size();
+				for (int i = 0; i < size; ++i) {
+					long id = idlist.get(i);
+					idlist.add(ensureComputedResultItem(compute, id, manager));
+				}
 			}
 			return this;
 		}
