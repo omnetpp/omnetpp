@@ -3,6 +3,7 @@ package org.omnetpp.common.ui;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 
 /**
@@ -77,6 +78,12 @@ public class GenericTreeNode {
 		child.parent = this;
 		children = childrenNew;
 	}
+	
+	public void addChild(int index, GenericTreeNode child) {
+		Assert.isTrue(childOrder == null);
+		children = (GenericTreeNode[])ArrayUtils.add(children, index, child);
+		child.parent = this;
+	}
 
 	/**
 	 * Returns the payload object, which cannot be null.
@@ -92,12 +99,34 @@ public class GenericTreeNode {
 		Assert.isTrue(payload!=null);
 		this.payload = payload;
 	}
+	
+	public int getChildCount() {
+		return children.length;
+	}
 
 	/**
 	 * Returns the children. The result is never null. 
 	 */
 	public GenericTreeNode[] getChildren() {
 		return children;
+	}
+	
+	/**
+	 * Returns the children of the node in the specified range.
+	 * 
+	 * @param start index of the first child, inclusive
+	 * @param end index of the last child, exclusive
+	 * @return an array of the children
+	 */
+	public GenericTreeNode[] getChildren(int start, int end) {
+		Assert.isLegal(0 <= start && start < children.length);
+		Assert.isLegal(start <= end && end <= children.length);
+		return Arrays.copyOfRange(children, start, end);
+	}
+	
+	public GenericTreeNode getChild(int index) {
+		Assert.isLegal(0 <= index && index < children.length);
+		return children[index];
 	}
 
 	/**
@@ -144,6 +173,12 @@ public class GenericTreeNode {
 		addChild(child);
 		
 		return child;
+	}
+	
+	public void unlink() {
+		Assert.isLegal(parent != null);
+		parent.children = (GenericTreeNode[])ArrayUtils.remove(parent.children, indexInParent());
+		parent = null;
 	}
 
 	/**
