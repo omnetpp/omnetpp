@@ -481,11 +481,18 @@ public class VectorChart extends ChartCanvas {
 			for (int series = 0; series < dataset.getSeriesCount(); series++) {
 				int n = dataset.getItemCount(series);
 				if (n > 0) {
-					// X must be increasing
-					minX = Math.min(minX, transformX(dataset.getX(series, 0)));
-					maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
+					// KLUDGE until sorting properly implemented
+					
+//					// X must be increasing
+//					minX = Math.min(minX, transformX(dataset.getX(series, 0)));
+//					maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
 					for (int i = 0; i < n; i++) {
+						double x = transformX(dataset.getX(series, i));
 						double y = transformY(dataset.getY(series, i));
+						if (!Double.isNaN(x)) {
+							minX = Math.min(minX, x);
+							maxX = Math.max(maxX, x);
+						}
 						if (!Double.isNaN(y)) {
 							minY = Math.min(minY, y);
 							maxY = Math.max(maxY, y);
