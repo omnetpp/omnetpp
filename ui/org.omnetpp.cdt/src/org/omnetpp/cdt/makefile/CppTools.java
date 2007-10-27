@@ -3,8 +3,10 @@ package org.omnetpp.cdt.makefile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,35 @@ public class CppTools {
         public String toString() {
             return isSysInclude ? ("<" + filename + ">") : ("\"" + filename + "\"");
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((filename == null) ? 0 : filename.hashCode());
+            result = prime * result + (isSysInclude ? 1231 : 1237);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            final Include other = (Include) obj;
+            if (filename == null) {
+                if (other.filename != null)
+                    return false;
+            }
+            else if (!filename.equals(other.filename))
+                return false;
+            if (isSysInclude != other.isSysInclude)
+                return false;
+            return true;
+        }
     }
 
     public void generateMakefiles(IContainer container, IProgressMonitor monitor) throws CoreException {
@@ -72,6 +103,8 @@ public class CppTools {
 
         // process each file, and gradually expand dependencies list
         Map<IContainer,List<IContainer>> result = new HashMap<IContainer,List<IContainer>>();
+        Set<Include> unresolvedIncludes = new HashSet<Include>();
+        Set<Include> ambiguousIncludes = new HashSet<Include>();
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
             if (!result.containsKey(container))
@@ -87,9 +120,11 @@ public class CppTools {
                     List<IFile> list = filesByName.get(include.filename);
                     if (list == null || list.isEmpty()) {
                         // oops, included file not found. what do we do?
+                        unresolvedIncludes.add(include);
                     }
                     else if (list.size() > 1) {
                         // oops, ambiguous include file.  what do we do?
+                        ambiguousIncludes.add(include);
                     }
                     else {
                         // include resolved successfully and unambiguously
@@ -103,6 +138,9 @@ public class CppTools {
                 }
             }
         }
+
+        System.out.println("includes not found: " + StringUtils.join(unresolvedIncludes, " "));
+        System.out.println("ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
 
         //TODO calculate transitive closure here...
         
