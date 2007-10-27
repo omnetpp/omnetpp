@@ -17,4 +17,6 @@ Require-Bundle: org.omnetpp.common,
  org.omnetpp.scave,
  org.omnetpp.scave.builder,
  org.omnetpp.scave.model,
- org.omnetpp.sequencechart
+ org.omnetpp.sequencechart,
+ org.omnetpp.cdt,
+ org.eclipse.core.runtime
