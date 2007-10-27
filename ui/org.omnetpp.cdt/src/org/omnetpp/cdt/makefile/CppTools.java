@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Scans all C++ files, etc....
@@ -42,15 +43,64 @@ public class CppTools {
     }
 
     public void generateMakefiles(IContainer container, IProgressMonitor monitor) throws CoreException {
-        Map<IFile, List<Include>> includes = processFilesIn(container, monitor);
-        Map<IContainer,List<IContainer>> deps = calculateDependencies(includes);
+        Map<IFile, List<Include>> fileIncludes = processFilesIn(container, monitor);
+        Map<IContainer,List<IContainer>> deps = calculateDependencies(fileIncludes);
+        
+        for (IContainer folder : deps.keySet()) {
+            System.out.println("Folder " + folder + " depends on: " + StringUtils.join(deps.get(folder), " "));
+        }
     }
 
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      */
-    public static Map<IContainer,List<IContainer>> calculateDependencies(Map<IFile,List<Include>> includes) {
-        return null;
+    public static Map<IContainer,List<IContainer>> calculateDependencies(Map<IFile,List<Include>> fileIncludes) {
+        // build a hash table of all files, for easy lookup by name
+        Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
+        for (IFile file : fileIncludes.keySet()) {
+            String name = file.getName();
+            if (!filesByName.containsKey(name))
+                filesByName.put(name, new ArrayList<IFile>());
+            filesByName.get(name).add(file);
+        }
+
+        // process each file, and gradually expand dependencies list
+        Map<IContainer,List<IContainer>> result = new HashMap<IContainer,List<IContainer>>();
+        for (IFile file : fileIncludes.keySet()) {
+            IContainer container = file.getParent();
+            if (!result.containsKey(container))
+                result.put(container, new ArrayList<IContainer>());
+            List<IContainer> currentDeps = result.get(container);
+            
+            for (Include include : fileIncludes.get(file)) {
+                if (include.filename.contains("/")) {
+                    // deal with it separately. interpret as relative path to the current file?
+                }
+                else {
+                    // determine which IFile(s) the include maps to
+                    List<IFile> list = filesByName.get(include.filename);
+                    if (list == null || list.isEmpty()) {
+                        // oops, included file not found. what do we do?
+                    }
+                    else if (list.size() > 1) {
+                        // oops, ambiguous include file.  what do we do?
+                    }
+                    else {
+                        // include resolved successfully and unambiguously
+                        IFile includedFile = list.get(0);
+
+                        // add its folder to the dependent folders
+                        IContainer dependentContainer = includedFile.getParent();
+                        if (!currentDeps.contains(dependentContainer))
+                            currentDeps.add(dependentContainer);
+                    }
+                }
+            }
+        }
+
+        //TODO calculate transitive closure here...
+        
+        return result;
     }
 
     public static Map<IFile,List<Include>> processFilesIn(IContainer container, final IProgressMonitor monitor) throws CoreException {
@@ -104,7 +154,7 @@ public class CppTools {
         while (matcher.find()) {
             boolean isSysInclude = matcher.group(1).equals("<");
             String fileName = matcher.group(2);
-            result.add(new Include(fileName, isSysInclude));
+            result.add(new Include(fileName.trim().replace('\\','/'), isSysInclude));
         }
         return result;
     }
