@@ -61,9 +61,11 @@ public class CppTools {
         }
     }
 
-    public void generateMakefiles(IContainer container, IProgressMonitor monitor) throws CoreException {
+    public static void generateMakefiles(IContainer container, IProgressMonitor monitor) throws CoreException {
         Map<IFile, List<Include>> fileIncludes = processFilesIn(container, monitor);
         Map<IContainer,List<IContainer>> deps = calculateDependencies(fileIncludes);
+        
+        String makeMakeFile = generateMakeMakeFile(deps);
         
         for (IContainer folder : deps.keySet()) {
             System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
@@ -72,6 +74,20 @@ public class CppTools {
             }
             System.out.println();
         }
+        
+        System.out.println("\n\n" + makeMakeFile);
+    }
+
+    public static String generateMakeMakeFile(Map<IContainer, List<IContainer>> deps) {
+        String result = "";
+        for (IContainer folder : deps.keySet()) {
+            List<String> includeOptions = new ArrayList<String>();
+            for (IContainer dep : deps.get(folder))
+                includeOptions.add("-I" + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
+            String folderPath = folder.getProjectRelativePath().toString();  //XXX refine
+            result += "\tcd " + folderPath + " && $(MAKEMAKE) $(OPTS) -n -r " + StringUtils.join(includeOptions, " ") + "\n";
+        }
+        return result;
     }
 
     /**
@@ -118,7 +134,7 @@ public class CppTools {
 
                         // add its folder to the dependent folders
                         IContainer dependentContainer = includedFile.getParent();
-                        if (!currentDeps.contains(dependentContainer))
+                        if (dependentContainer != container && !currentDeps.contains(dependentContainer))
                             currentDeps.add(dependentContainer);
                     }
                 }
@@ -180,9 +196,11 @@ public class CppTools {
     }
 
     public static IPath makeRelativePath(IPath base, IPath target) {
+        if (base.equals(target))
+            return new Path(".");
         int commonPrefixLen = target.matchingFirstSegments(base);
         int upLevels = base.segmentCount() - commonPrefixLen;
-        return new Path(StringUtils.repeat("../", upLevels)).append(target.removeFirstSegments(commonPrefixLen));
+        return new Path(StringUtils.removeEnd(StringUtils.repeat("../", upLevels), "/")).append(target.removeFirstSegments(commonPrefixLen));
     }
 
     /**
