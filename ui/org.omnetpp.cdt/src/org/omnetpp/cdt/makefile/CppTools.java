@@ -2,6 +2,7 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,29 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class CppTools {
+    // standard C headers, see e.g. http://www-ccs.ucsd.edu/c/lib_over.html
+    public static final String C_HEADERS = 
+        "assert.h ctype.h errno.h float.h iso646.h limits.h locale.h " +
+        "math.h setjmp.h signal.h stdarg.h stddef.h stdio.h stdlib.h " +
+        "string.h time.h wchar.h wctype.h";
+    // C headers added by C99, see http://en.wikipedia.org/wiki/C_standard_library
+    public static final String C99_HEADERS = 
+        "complex.h fenv.h inttypes.h stdbool.h stdint.h tgmath.h";
+    // standard C++ headers, see http://en.wikipedia.org/wiki/C++_standard_library#Standard_headers
+    public static final String CPLUSPLUS_HEADERS = 
+        "bitset deque list map queue set stack vector algorithm functional iterator " + 
+        "locale memory stdexcept utility string fstream ios iostream iosfwd iomanip " + 
+        "istream ostream sstream streambuf complex numeric valarray exception limits " + 
+        "new typeinfo cassert cctype cerrno cfloat climits cmath csetjmp csignal " + 
+        "cstdlib cstddef cstdarg ctime cstdio cstring cwchar cwctype";
+    // POSIX headers, see http://en.wikipedia.org/wiki/C_POSIX_library
+    public static final String POSIX_HEADERS = 
+        "cpio.h dirent.h fcntl.h grp.h pwd.h sys/ipc.h sys/msg.h sys/sem.h " + 
+        "sys/stat.h sys/time.h sys/types.h sys/utsname.h sys/wait.h tar.h termios.h " + 
+        "unistd.h utime.h";
+    public static final String ALL_STANDARD_HEADERS = 
+        C_HEADERS + " " + C99_HEADERS + " " + CPLUSPLUS_HEADERS + " " + POSIX_HEADERS;
+    
     /**
      * Represents an #include in a C++ file
      */
@@ -94,6 +118,9 @@ public class CppTools {
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      */
     public static Map<IContainer,List<IContainer>> calculateDependencies(Map<IFile,List<Include>> fileIncludes) {
+        // we'll ignore the standard C/C++ headers
+        final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(ALL_STANDARD_HEADERS.split(" ")));
+
         // build a hash table of all files, for easy lookup by name
         Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
         for (IFile file : fileIncludes.keySet()) {
@@ -115,7 +142,10 @@ public class CppTools {
             
             for (Include include : fileIncludes.get(file)) {
                 if (include.filename.contains("/")) {
-                    // deal with it separately. interpret as relative path to the current file?
+                    //TODO deal with it separately. interpret as relative path to the current file?
+                }
+                else if (include.isSysInclude && standardHeaders.contains(include.filename)) {
+                    // this is a standard C/C++ header file, just ignore
                 }
                 else {
                     // determine which IFile(s) the include maps to
