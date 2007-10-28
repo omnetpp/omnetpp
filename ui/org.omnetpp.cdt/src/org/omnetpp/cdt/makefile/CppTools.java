@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -95,9 +96,13 @@ public class CppTools {
     public static void generateMakefiles(IContainer container, IProgressMonitor monitor) throws CoreException {
         Map<IFile, List<Include>> fileIncludes = processFilesIn(container, monitor);
         Map<IContainer,List<IContainer>> deps = calculateDependencies(fileIncludes);
+        // dumpDeps(deps);
         
         String makeMakeFile = generateMakeMakeFile(deps);
-        
+        System.out.println("\n\n" + makeMakeFile);
+    }
+
+    public static void dumpDeps(Map<IContainer, List<IContainer>> deps) {
         for (IContainer folder : deps.keySet()) {
             System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {
@@ -105,8 +110,6 @@ public class CppTools {
             }
             System.out.println();
         }
-        
-        System.out.println("\n\n" + makeMakeFile);
     }
 
     public static String generateMakeMakeFile(Map<IContainer, List<IContainer>> deps) {
@@ -141,6 +144,7 @@ public class CppTools {
         Map<IContainer,List<IContainer>> result = new HashMap<IContainer,List<IContainer>>();
         Set<Include> unresolvedIncludes = new HashSet<Include>();
         Set<Include> ambiguousIncludes = new HashSet<Include>();
+        Set<Include> unsupportedIncludes = new HashSet<Include>();
         
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
@@ -153,7 +157,14 @@ public class CppTools {
                     // this is a standard C/C++ header file, just ignore
                 }
                 if (include.filename.contains("..")) {
-                    System.out.println("CANNOT HANDLE INCLUDE WITH '..': " + include.filename); //XXX
+                    // we only recognize an include containing ".." if it's relative to the current dir
+                    String filename = include.filename.replaceFirst("_m\\.h$", ".msg");
+                    IPath includeFileLocation = container.getLocation().append(new Path(filename));
+                    IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
+                    if (f.length == 0 || !f[0].exists()) {
+                        System.out.println("CANNOT HANDLE INCLUDE WITH '..' UNLESS IT'S RELATIVE TO THE CURRENT DIR: " + include.filename); //XXX
+                        unsupportedIncludes.add(include);
+                    }
                 }
                 else {
                     // determine which IFile(s) the include maps to
@@ -182,6 +193,7 @@ public class CppTools {
                             dependency = dependency.getParent();
                         if (dependency instanceof IWorkspaceRoot) {
                             //XXX error: cannot represent included dir in the workspace: it is higher than project root
+                            unsupportedIncludes.add(include);
                         }
                         Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
                         
@@ -195,6 +207,7 @@ public class CppTools {
 
         System.out.println("includes not found: " + StringUtils.join(unresolvedIncludes, " "));
         System.out.println("ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
+        System.out.println("unsupported cases: " + StringUtils.join(unsupportedIncludes, " "));
 
         //TODO calculate transitive closure here...
         
