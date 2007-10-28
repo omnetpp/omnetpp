@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -134,6 +135,7 @@ public class CppTools {
         Map<IContainer,List<IContainer>> result = new HashMap<IContainer,List<IContainer>>();
         Set<Include> unresolvedIncludes = new HashSet<Include>();
         Set<Include> ambiguousIncludes = new HashSet<Include>();
+        
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
             if (!result.containsKey(container))
@@ -144,29 +146,42 @@ public class CppTools {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore
                 }
-                else if (include.filename.contains("/")) {
-                    //TODO deal with it separately. interpret as relative path to the current file?
-                    System.out.println("CONTAINS SLASH: " + include.filename);
+                if (include.filename.contains("..")) {
+                    System.out.println("CANNOT HANDLE INCLUDE WITH '..': " + include.filename); //XXX
                 }
                 else {
                     // determine which IFile(s) the include maps to
-                    List<IFile> list = filesByName.get(include.filename);
-                    if (list == null || list.isEmpty()) {
-                        // oops, included file not found. what do we do?
+                    List<IFile> list = filesByName.get(include.filename.replaceFirst("^.*/", ""));
+                    if (list == null) list = new ArrayList<IFile>();
+                    
+                    int count = 0;
+                    IFile includedFile = null;
+                    for (IFile i : list)
+                        if (i.getLocation().toString().endsWith("/"+include.filename)) // note: we check "real" path (ie. location) not the workspace path!
+                            {count++; includedFile = i;}
+                    
+                    if (count == 0) {
+                        // included file not found. XXX what do we do?
                         unresolvedIncludes.add(include);
                     }
-                    else if (list.size() > 1) {
-                        // oops, ambiguous include file.  what do we do?
+                    else if (count > 1) {
+                        // ambiguous include file.  XXX what do we do?
                         ambiguousIncludes.add(include);
                     }
                     else {
                         // include resolved successfully and unambiguously
-                        IFile includedFile = list.get(0);
-
-                        // add its folder to the dependent folders
-                        IContainer dependentContainer = includedFile.getParent();
-                        if (dependentContainer != container && !currentDeps.contains(dependentContainer))
-                            currentDeps.add(dependentContainer);
+                        IContainer dependency = includedFile.getParent();
+                        int numSubdirs = StringUtils.countMatches(include.filename, "/");
+                        for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
+                            dependency = dependency.getParent();
+                        if (dependency instanceof IWorkspaceRoot) {
+                            //XXX error: cannot represent included dir in the workspace: it is higher than project root
+                        }
+                        Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
+                        
+                        // add folder to the dependent folders
+                        if (dependency != container && !currentDeps.contains(dependency))
+                            currentDeps.add(dependency);
                     }
                 }
             }
