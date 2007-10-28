@@ -116,14 +116,14 @@ public class CppTools {
     public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
         IContainer[] containers = collectFolders(rootContainer);
         Map<IFile, List<Include>> fileIncludes = processFilesIn(containers, monitor);
-        Map<IContainer,List<IContainer>> deps = calculateDependencies(fileIncludes);
+        Map<IContainer,Set<IContainer>> deps = calculateDependencies(fileIncludes);
         // dumpDeps(deps);
         
         String makeMakeFile = generateMakeMakeFile(containers, deps);
         System.out.println("\n\n" + makeMakeFile);
     }
 
-    public static void dumpDeps(Map<IContainer, List<IContainer>> deps) {
+    public static void dumpDeps(Map<IContainer, Set<IContainer>> deps) {
         for (IContainer folder : deps.keySet()) {
             System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {
@@ -133,7 +133,7 @@ public class CppTools {
         }
     }
 
-    public static String generateMakeMakeFile(IContainer[] containers, Map<IContainer, List<IContainer>> deps) {
+    public static String generateMakeMakeFile(IContainer[] containers, Map<IContainer, Set<IContainer>> deps) {
         String result = BOILERPLATE;
         for (IContainer folder : containers) {
             List<String> includeOptions = new ArrayList<String>();
@@ -149,7 +149,7 @@ public class CppTools {
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      */
-    public static Map<IContainer,List<IContainer>> calculateDependencies(Map<IFile,List<Include>> fileIncludes) {
+    public static Map<IContainer,Set<IContainer>> calculateDependencies(Map<IFile,List<Include>> fileIncludes) {
         // we'll ignore the standard C/C++ headers
         final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(ALL_STANDARD_HEADERS.split(" ")));
 
@@ -163,7 +163,7 @@ public class CppTools {
         }
 
         // process each file, and gradually expand dependencies list
-        Map<IContainer,List<IContainer>> result = new HashMap<IContainer,List<IContainer>>();
+        Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
         Set<Include> unresolvedIncludes = new HashSet<Include>();
         Set<Include> ambiguousIncludes = new HashSet<Include>();
         Set<Include> unsupportedIncludes = new HashSet<Include>();
@@ -171,8 +171,8 @@ public class CppTools {
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
             if (!result.containsKey(container))
-                result.put(container, new ArrayList<IContainer>());
-            List<IContainer> currentDeps = result.get(container);
+                result.put(container, new HashSet<IContainer>());
+            Set<IContainer> currentDeps = result.get(container);
             
             for (Include include : fileIncludes.get(file)) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
@@ -231,13 +231,22 @@ public class CppTools {
         System.out.println("ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
         System.out.println("unsupported cases: " + StringUtils.join(unsupportedIncludes, " "));
 
-        //TODO calculate transitive closure here...
-        
+        // calculate transitive closure
+        boolean again = true;
+        while (again) {
+            again = false;
+            for (IContainer x : result.keySet())
+                for (IContainer y : result.keySet())
+                    if (x != y && result.get(y).contains(x))  // if y depends on x
+                        if (result.get(y).addAll(result.get(x)))  // then add x's dependencies to y 
+                            again = true; // and if anything changed, repeat the whole thing
+        }
+
         return result;
     }
-    
-    public static IContainer[] collectFolders(IContainer container) throws CoreException {
-        final List<IContainer> result = new ArrayList<IContainer>();
+
+public static IContainer[] collectFolders(IContainer container) throws CoreException {
+    final List<IContainer> result = new ArrayList<IContainer>();
         container.accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
                 if (resource instanceof IContainer && !resource.getName().startsWith(".") && !((IContainer)resource).isTeamPrivateMember()) { 
