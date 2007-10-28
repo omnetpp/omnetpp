@@ -3,6 +3,8 @@ package org.omnetpp.cdt.makefile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +62,24 @@ public class CppTools {
         "unistd.h utime.h";
     public static final String ALL_STANDARD_HEADERS = 
         C_HEADERS + " " + C99_HEADERS + " " + CPLUSPLUS_HEADERS + " " + POSIX_HEADERS;
+
+    public static final String BOILERPLATE = 
+        "#\n" + 
+        "# Makefile to create all other makefiles for the project.\n" + 
+        "# This same file is used on all platforms including Linux (gnu make) and Windows (nmake).\n" + 
+        "#\n" + 
+        "# GENERATED FILE -- DO NOT MODIFY.\n" + 
+        "#\n" + 
+        "# The vars ROOT, MAKEMAKE and EXT have to be specified externally, on the 'make' command line.\n" + 
+        "#ROOT=/home/user/projects/foo\n" + 
+        "#MAKEMAKE=opp_nmakemake\n" + 
+        "#EXT=.vc\n" + 
+        "\n" + 
+        "# To build Windows DLLs, add this to OPTS below: -PINET_API\n" + 
+        "OPTS=-f -b $(ROOT) -c $(ROOT)/inetconfig$(EXT)\n" + 
+        "\n" + 
+        "all:\n";
+    
     
     /**
      * Represents an #include in a C++ file
@@ -93,12 +113,13 @@ public class CppTools {
         }
     }
 
-    public static void generateMakefiles(IContainer container, IProgressMonitor monitor) throws CoreException {
-        Map<IFile, List<Include>> fileIncludes = processFilesIn(container, monitor);
+    public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
+        IContainer[] containers = collectFolders(rootContainer);
+        Map<IFile, List<Include>> fileIncludes = processFilesIn(containers, monitor);
         Map<IContainer,List<IContainer>> deps = calculateDependencies(fileIncludes);
         // dumpDeps(deps);
         
-        String makeMakeFile = generateMakeMakeFile(deps);
+        String makeMakeFile = generateMakeMakeFile(containers, deps);
         System.out.println("\n\n" + makeMakeFile);
     }
 
@@ -112,13 +133,14 @@ public class CppTools {
         }
     }
 
-    public static String generateMakeMakeFile(Map<IContainer, List<IContainer>> deps) {
-        String result = "";
-        for (IContainer folder : deps.keySet()) {
+    public static String generateMakeMakeFile(IContainer[] containers, Map<IContainer, List<IContainer>> deps) {
+        String result = BOILERPLATE;
+        for (IContainer folder : containers) {
             List<String> includeOptions = new ArrayList<String>();
-            for (IContainer dep : deps.get(folder))
-                includeOptions.add("-I" + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
-            String folderPath = folder.getProjectRelativePath().toString();  //XXX refine
+            if (deps.containsKey(folder))
+                for (IContainer dep : deps.get(folder))
+                    includeOptions.add("-I" + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
+            String folderPath = folder.getProjectRelativePath().toString();  //XXX refine: only relative if it fits best
             result += "\tcd " + folderPath + " && $(MAKEMAKE) $(OPTS) -n -r " + StringUtils.join(includeOptions, " ") + "\n";
         }
         return result;
@@ -213,15 +235,34 @@ public class CppTools {
         
         return result;
     }
-
-    public static Map<IFile,List<Include>> processFilesIn(IContainer container, final IProgressMonitor monitor) throws CoreException {
-        final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
+    
+    public static IContainer[] collectFolders(IContainer container) throws CoreException {
+        final List<IContainer> result = new ArrayList<IContainer>();
         container.accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (isCppFile(resource) || isMsgFile(resource)) {
-                    monitor.subTask(resource.getFullPath().toString());
+                if (resource instanceof IContainer && !resource.getName().startsWith(".") && !((IContainer)resource).isTeamPrivateMember()) { 
+                    result.add((IContainer)resource);
+                    return true;
+                }
+                return false;
+            }
+        });
+        Collections.sort(result, new Comparator<IContainer>() {
+            public int compare(IContainer o1, IContainer o2) {
+                return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
+            }});
+        return result.toArray(new IContainer[]{});
+    }
+
+    public static Map<IFile,List<Include>> processFilesIn(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
+        final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
+
+        for (IContainer container : containers) {
+            for (IResource member : container.members()) {
+                if (isCppFile(member) || isMsgFile(member)) {
+                    monitor.subTask(member.getFullPath().toString());
                     try {
-                        IFile file = (IFile)resource;
+                        IFile file = (IFile)member;
                         List<Include> includes = CppTools.parseIncludes(file);
                         result.put(file, includes);
                         
@@ -234,15 +275,14 @@ public class CppTools {
                         }
                     }
                     catch (IOException e) {
-                        throw new RuntimeException("Could not process file " + resource.getFullPath().toString(), e);
+                        throw new RuntimeException("Could not process file " + member.getFullPath().toString(), e);
                     }
                     monitor.worked(1);
+                    if (monitor.isCanceled())
+                        return null;
                 }
-                if (monitor.isCanceled())
-                    return false;
-                return true;
             }
-        });
+        }
         return result;
     }
 
