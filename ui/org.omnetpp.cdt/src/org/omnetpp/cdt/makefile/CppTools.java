@@ -30,6 +30,12 @@ import org.omnetpp.common.util.StringUtils;
  *  
  * @author Andras
  */
+//XXX requirements: 
+// - ability to ignore some folders (i.e. pass in explicit folder list? .cppfolders file?)
+// - ability to re-use hand-written makefiles in certain dirs
+// - dependencies on other projects
+// - compile-time flags (ie. -I for external libs)
+// - ... ?
 public class CppTools {
     // standard C headers, see e.g. http://www-ccs.ucsd.edu/c/lib_over.html
     public static final String C_HEADERS = 
