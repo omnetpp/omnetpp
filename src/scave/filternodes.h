@@ -469,7 +469,7 @@ class SCAVE_API TimeAverageNode : public FilterNode
 class SCAVE_API TimeAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "time-average";}
+        virtual const char *name() const {return "timeavg";}
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
@@ -494,7 +494,7 @@ class SCAVE_API DivideByTimeNode : public FilterNode
 class SCAVE_API DivideByTimeNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "divide-by-time";}
+        virtual const char *name() const {return "divtime";}
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

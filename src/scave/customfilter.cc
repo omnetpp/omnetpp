@@ -24,14 +24,14 @@
 
 /**
  * Resolves variables (x, y) and functions (sin, fabs, etc) in
- * CustomFilterNode expressions.
+ * ExpressionFilterNode expressions.
  */
 class Resolver : public Expression::Resolver
 {
   private:
-    CustomFilterNode *hostnode;
+    ExpressionFilterNode *hostnode;
   public:
-    Resolver(CustomFilterNode *node) {hostnode = node;}
+    Resolver(ExpressionFilterNode *node) {hostnode = node;}
     virtual ~Resolver() {};
     virtual Expression::Functor *resolveVariable(const char *varname);
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount);
@@ -40,7 +40,7 @@ class Resolver : public Expression::Resolver
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
     if (strcmp(varname, "x")==0 || strcmp(varname, "y")==0)
-        return new CustomFilterNode::NodeVar(hostnode, varname);
+        return new ExpressionFilterNode::NodeVar(hostnode, varname);
     else
         throw opp_runtime_error("Unrecognized variable: %s", varname);
 }
@@ -54,24 +54,24 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
         throw opp_runtime_error("Unrecognized function: %s()", funcname);
 }
 
-CustomFilterNode::CustomFilterNode(const char *text)
+ExpressionFilterNode::ExpressionFilterNode(const char *text)
 {
     expr = new Expression();
     Resolver resolver(this);
     expr->parse(text, &resolver);
 }
 
-CustomFilterNode::~CustomFilterNode()
+ExpressionFilterNode::~ExpressionFilterNode()
 {
     delete expr;
 }
 
-bool CustomFilterNode::isReady() const
+bool ExpressionFilterNode::isReady() const
 {
     return in()->length()>0;
 }
 
-void CustomFilterNode::process()
+void ExpressionFilterNode::process()
 {
     int n = in()->length();
     for (int i=0; i<n; i++)
@@ -83,7 +83,7 @@ void CustomFilterNode::process()
     }
 }
 
-double CustomFilterNode::getVariable(const char *varname)
+double ExpressionFilterNode::getVariable(const char *varname)
 {
     if (varname[0]=='x' && varname[1]==0)
         return currentDatum.x;
@@ -95,21 +95,21 @@ double CustomFilterNode::getVariable(const char *varname)
 
 //--
 
-const char *CustomFilterNodeType::description() const
+const char *ExpressionFilterNodeType::description() const
 {
     return "Evaluates an arbitrary expression";
 }
 
-void CustomFilterNodeType::getAttributes(StringMap& attrs) const
+void ExpressionFilterNodeType::getAttributes(StringMap& attrs) const
 {
     attrs["expression"] = "The expression to evaluate. Use x for time, and y for value."; //FIXME use "t" and "x" instead?
 }
 
-Node *CustomFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+Node *ExpressionFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    Node *node = new CustomFilterNode(attrs["expression"].c_str());
+    Node *node = new ExpressionFilterNode(attrs["expression"].c_str());
     node->setNodeType(this);
     mgr->addNode(node);
     return node;

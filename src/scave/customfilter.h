@@ -33,20 +33,20 @@
  *    "init-expression" attr where user could initialize variables;
  *    possibly implement array variables as well.
  */
-class SCAVE_API CustomFilterNode : public FilterNode
+class SCAVE_API ExpressionFilterNode : public FilterNode
 {
     public:
         /**
          * Implements a variable in the expression. Currently just delegates
-         * to CustomFilterNode::getVariable().
+         * to ExpressionFilterNode::getVariable().
          */
         class NodeVar : public Expression::Functor
         {
           private:
-            CustomFilterNode *hostnode;
+            ExpressionFilterNode *hostnode;
             std::string varname;
           public:
-            NodeVar(CustomFilterNode *node, const char *name) {hostnode = node; varname = name;}
+            NodeVar(ExpressionFilterNode *node, const char *name) {hostnode = node; varname = name;}
             virtual ~NodeVar() {}
             virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
             virtual const char *name() const {return varname.c_str();}
@@ -60,17 +60,17 @@ class SCAVE_API CustomFilterNode : public FilterNode
         Expression *expr;
         Datum currentDatum;
     public:
-        CustomFilterNode(const char *expression);
-        virtual ~CustomFilterNode();
+        ExpressionFilterNode(const char *expression);
+        virtual ~ExpressionFilterNode();
         virtual bool isReady() const;
         virtual void process();
         double getVariable(const char *varname);
 };
 
-class SCAVE_API CustomFilterNodeType : public FilterNodeType
+class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "custom";}
+        virtual const char *name() const {return "expression";}
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

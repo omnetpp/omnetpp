@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
@@ -560,13 +559,12 @@ public class DataflowNetworkBuilder {
 				}
 			}
 			return dataflowManager;
-		} catch (Exception e) {
-			ScavePlugin.logError(e);
-			if (dataflowManager != null) {
+		} 
+		catch (RuntimeException e) {
+		    // clean up before re-throwing exception
+			if (dataflowManager != null)
 				dataflowManager.delete();
-				dataflowManager = null;
-			}
-			return null;
+			throw e;
 		}
 	}
 

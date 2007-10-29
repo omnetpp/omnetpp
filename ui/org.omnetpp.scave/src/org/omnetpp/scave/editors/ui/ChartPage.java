@@ -215,12 +215,15 @@ public class ChartPage extends ScaveEditorPage {
 		submenuManager.add(new NewChartProcessingOpAction("Window Batch Average", createOp(isApply, "winavg", "windowSize", "10")));
 		submenuManager.add(new NewChartProcessingOpAction("Sliding Window Average", createOp(isApply, "slidingwinavg", "windowSize", "10")));
 		submenuManager.add(new NewChartProcessingOpAction("Moving Average", createOp(isApply, "movingavg", "alpha", "0.1")));
+		submenuManager.add(new NewChartProcessingOpAction("Time Average", createOp(isApply, "timeavg")));
 		submenuManager.add(new Separator());
 		submenuManager.add(new NewChartProcessingOpAction("Remove Repeated Values", createOp(isApply, "removerepeats")));
 		submenuManager.add(new Separator());
 		submenuManager.add(new NewChartProcessingOpAction("Sum", createOp(isApply, "sum")));
+		submenuManager.add(new NewChartProcessingOpAction("Integrate", createOp(isApply, "integrate")));
 		submenuManager.add(new NewChartProcessingOpAction("Difference", createOp(isApply, "difference")));
 		submenuManager.add(new NewChartProcessingOpAction("Time Difference", createOp(isApply, "timediff")));
+		submenuManager.add(new NewChartProcessingOpAction("Divide By Time", createOp(isApply, "divtime")));
 		submenuManager.add(new NewChartProcessingOpAction("Difference Quotient", createOp(isApply, "diffquot")));
 		submenuManager.add(new Separator());
 		submenuManager.add(new NewChartProcessingOpAction("Other...", createOp(isApply, null)));

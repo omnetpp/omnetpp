@@ -90,7 +90,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new TimeAverageNodeType());
     add(new DivideByTimeNodeType());
 
-    add(new CustomFilterNodeType());
+    add(new ExpressionFilterNodeType());
 
     add(new TeeNodeType());
 }
