@@ -76,7 +76,7 @@ public class MultiPageEditorPartAccess
 
     @InUIThread
 	public CTabItemAccess getCTabItem(String label) {
-        return (CTabItemAccess) createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), label));
+        return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal(), label));
     }
 	
 	@NotInUIThread

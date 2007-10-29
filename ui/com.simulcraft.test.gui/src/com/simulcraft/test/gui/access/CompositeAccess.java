@@ -57,11 +57,16 @@ public class CompositeAccess extends ControlAccess
 				}
 				return false;
 			}
+			
+			@Override
+			public String toString() {
+			    return "button with label '"+label+"'";
+			}
 		}));
 	}
 	
     @InUIThread
-    public ButtonAccess findButtonAfterLabel(String labelText, final String buttonText) {
+    public ButtonAccess findButtonAfterLabel(final String labelText, final String buttonText) {
         final LabelAccess labelAccess = findLabel(labelText);
         return new ButtonAccess((Button)labelAccess.findNextControl(new IPredicate() {
             public boolean matches(Object object) {
@@ -70,6 +75,10 @@ public class CompositeAccess extends ControlAccess
                     return button.getText().replace("&", "").matches(buttonText);
                 }
                 return false;
+            }
+            @Override
+            public String toString() {
+                return "button with label '"+buttonText+"' after label '"+labelText+"'";
             }
         }));
     }
@@ -84,6 +93,11 @@ public class CompositeAccess extends ControlAccess
 				}
 				return false;
 			}
+            
+			@Override
+            public String toString() {
+                return "button with label '"+label+"'";
+            }
 		});
 		Button button = (Button)atMostOneObject(buttons);
 		return button != null ? (ButtonAccess)createAccess(button) : null;
@@ -99,6 +113,11 @@ public class CompositeAccess extends ControlAccess
 				}
 				return false;
 			}
+
+			@Override
+            public String toString() {
+                return "label '"+label+"'";
+            }
 		});
 		return new LabelAccess(labelControl);
 	}
@@ -181,10 +200,14 @@ public class CompositeAccess extends ControlAccess
     }
 
     private ToolItem findToolItem(ToolBar toolBar, final String tooltip) {
-        return (ToolItem)findObject(toolBar.getItems(), new IPredicate() {
+        return (ToolItem)findObject(toolBar.getItems(), true, new IPredicate() {
             public boolean matches(Object object) {
                 ToolItem toolItem = (ToolItem)object;
                 return toolItem.getToolTipText() != null && toolItem.getToolTipText().matches(tooltip);
+            }
+
+            public String toString() {
+                return "a ToolItem with tool tip: " + tooltip;
             }
         });
     }
