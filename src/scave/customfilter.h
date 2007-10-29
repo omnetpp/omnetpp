@@ -58,7 +58,7 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
         };
     private:
         Expression *expr;
-        Datum currentDatum;
+        Datum currentDatum, prevDatum;
     public:
         ExpressionFilterNode(const char *expression);
         virtual ~ExpressionFilterNode();

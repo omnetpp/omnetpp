@@ -19,6 +19,7 @@
 #include <math.h>
 #include "channel.h"
 #include "customfilter.h"
+#include "scaveutils.h"
 
 
 
@@ -39,7 +40,7 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    if (strcmp(varname, "x")==0 || strcmp(varname, "y")==0)
+    if (strcmp(varname, "x")==0 || strcmp(varname, "y")==0 || strcmp(varname, "xprev")==0 || strcmp(varname, "yprev")==0)
         return new ExpressionFilterNode::NodeVar(hostnode, varname);
     else
         throw opp_runtime_error("Unrecognized variable: %s", varname);
@@ -59,6 +60,7 @@ ExpressionFilterNode::ExpressionFilterNode(const char *text)
     expr = new Expression();
     Resolver resolver(this);
     expr->parse(text, &resolver);
+    prevDatum.x = prevDatum.y = dblNaN;
 }
 
 ExpressionFilterNode::~ExpressionFilterNode()
@@ -76,9 +78,10 @@ void ExpressionFilterNode::process()
     int n = in()->length();
     for (int i=0; i<n; i++)
     {
-        Datum d;
         in()->read(&currentDatum,1);
-        currentDatum.y = expr->doubleValue();
+        double value = expr->doubleValue();
+        prevDatum = currentDatum;
+        currentDatum.y = value;
         out()->write(&currentDatum,1);
     }
 }
@@ -89,6 +92,10 @@ double ExpressionFilterNode::getVariable(const char *varname)
         return currentDatum.x;
     else if (varname[0]=='y' && varname[1]==0)
         return currentDatum.y;
+    else if (varname[0]=='x' && strcmp(varname, "xprev")==0)
+        return prevDatum.x;
+    else if (varname[0]=='y' && strcmp(varname, "yprev")==0)
+        return prevDatum.y;
     else
         return 0.0;  // cannot happen, as validation has already taken place in Resolver
 }
@@ -102,7 +109,7 @@ const char *ExpressionFilterNodeType::description() const
 
 void ExpressionFilterNodeType::getAttributes(StringMap& attrs) const
 {
-    attrs["expression"] = "The expression to evaluate. Use x for time, and y for value."; //FIXME use "t" and "x" instead?
+    attrs["expression"] = "The expression to evaluate. Use x for time and y for value, and xprev, yprev for the previous values."; //FIXME use "t" and "x" instead?
 }
 
 Node *ExpressionFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) const

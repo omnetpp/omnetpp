@@ -32,15 +32,15 @@ import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Creates a chart template from a temporary chart.
+ * Creates a dataset from a temporary chart.
  *
  * @author tomi
  */
 public class CreateChartTemplateAction extends AbstractScaveAction {
 
 	public CreateChartTemplateAction() {
-		setText("Create Template...");
-		setDescription("Create a chart template from a temporary chart");
+		setText("Convert to Dataset...");
+		setDescription("Create dataset from a temporary chart");
 		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
 	}
 
