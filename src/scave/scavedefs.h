@@ -25,9 +25,16 @@
 #  define SCAVE_API  OPP_DLLIMPORT
 #endif
 
+
 #define DEFAULT_PRECISION  14
 
 typedef BigDecimal simultime_t;
+
+/**
+ * Used by VectorResult as well as filter nodes e.g. Integrate
+ */
+enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
+
 
 #endif
 

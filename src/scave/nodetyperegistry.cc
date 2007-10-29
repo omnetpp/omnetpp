@@ -85,7 +85,10 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new CropNodeType());
     add(new MeanNodeType());
     add(new RemoveRepeatsNodeType());
-    add(new ComparatorNodeType());
+    add(new CompareNodeType());
+    add(new IntegrateNodeType());
+    add(new TimeAverageNodeType());
+    add(new DivideByTimeNodeType());
 
     add(new CustomFilterNodeType());
 

@@ -384,7 +384,7 @@ class SCAVE_API RemoveRepeatsNodeType : public FilterNodeType
 /**
  * Processing node which compares the value against a constant.
  */
-class SCAVE_API ComparatorNode : public FilterNode
+class SCAVE_API CompareNode : public FilterNode
 {
     protected:
         double threshold;
@@ -395,8 +395,8 @@ class SCAVE_API ComparatorNode : public FilterNode
         double valueIfGreater;
         double valueIfEqual;
     public:
-        ComparatorNode()  {replaceIfLess = replaceIfGreater = replaceIfEqual = false;}
-        virtual ~ComparatorNode() {}
+        CompareNode()  {replaceIfLess = replaceIfGreater = replaceIfEqual = false;}
+        virtual ~CompareNode() {}
 
         void setThreshold(double d)  {threshold = d;}
         void setLessValue(double d)  {valueIfLess = d; replaceIfLess = true;}
@@ -407,13 +407,96 @@ class SCAVE_API ComparatorNode : public FilterNode
         virtual void process();
 };
 
-class SCAVE_API ComparatorNodeType : public FilterNodeType
+class SCAVE_API CompareNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "compare";}
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node which regards the input as a step function
+ * ("sample-hold"), and integrates it.
+ */
+class SCAVE_API IntegrateNode : public FilterNode
+{
+    protected:
+        InterpolationMode interpolationmode;
+        double integral;
+        double prevx, prevy;
+    public:
+        IntegrateNode(InterpolationMode mode)  {interpolationmode = mode; integral = prevx = prevy = 0;}
+        virtual ~IntegrateNode() {}
+
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SCAVE_API IntegrateNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "integrate";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node which calculates time average
+ */
+class SCAVE_API TimeAverageNode : public FilterNode
+{
+    protected:
+        InterpolationMode interpolationmode;
+        double integral;
+        double prevx, prevy;
+    public:
+        TimeAverageNode(InterpolationMode mode)  {interpolationmode = mode; integral = prevx = prevy = 0;}
+        virtual ~TimeAverageNode() {}
+
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SCAVE_API TimeAverageNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "time-average";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node that divides each value by t.
+ */
+class SCAVE_API DivideByTimeNode : public FilterNode
+{
+    public:
+        DivideByTimeNode()  {}
+        virtual ~DivideByTimeNode() {}
+
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SCAVE_API DivideByTimeNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "divide-by-time";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
 

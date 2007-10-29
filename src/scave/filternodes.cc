@@ -683,12 +683,12 @@ Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
 
 //-----
 
-bool ComparatorNode::isReady() const
+bool CompareNode::isReady() const
 {
     return in()->length()>0;
 }
 
-void ComparatorNode::process()
+void CompareNode::process()
 {
     int n = in()->length();
     for (int i=0; i<n; i++)
@@ -717,13 +717,12 @@ void ComparatorNode::process()
 
 //--
 
-const char *ComparatorNodeType::description() const
+const char *CompareNodeType::description() const
 {
-    return "Compares value against a constant, and optionally replaces "
-           "it with a constant if less, equal or greater.";
+    return "Compares value against a threshold, and optionally replaces it with a constant";
 }
 
-void ComparatorNodeType::getAttributes(StringMap& attrs) const
+void CompareNodeType::getAttributes(StringMap& attrs) const
 {
     attrs["threshold"] = "constaint to compare against";
     attrs["ifLess"] = "number to output if y < threshold (empty=no change)";
@@ -731,15 +730,15 @@ void ComparatorNodeType::getAttributes(StringMap& attrs) const
     attrs["ifGreater"] = "number to output if y > threshold (empty=no change)";
 }
 
-void ComparatorNodeType::getAttrDefaults(StringMap& attrs) const
+void CompareNodeType::getAttrDefaults(StringMap& attrs) const
 {
 }
 
-Node *ComparatorNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+Node *CompareNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    ComparatorNode *node = new ComparatorNode();
+    CompareNode *node = new CompareNode();
     node->setNodeType(this);
 
     node->setThreshold(atof(attrs["threshold"].c_str()));
@@ -753,3 +752,174 @@ Node *ComparatorNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     mgr->addNode(node);
     return node;
 }
+
+//-----
+
+bool IntegrateNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void IntegrateNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        switch (interpolationmode) {
+            case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
+            case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
+            case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
+        }
+        prevx = d.x;
+        prevy = d.y;
+        d.y = integral;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *IntegrateNodeType::description() const
+{
+    return "Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation";
+}
+
+void IntegrateNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["interpolation-mode"] = "sample-hold, backward-sample-hold, or linear";
+}
+
+void IntegrateNodeType::getAttrDefaults(StringMap& attrs) const
+{
+    attrs["interpolation-mode"] = "sample-hold";
+}
+
+Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    //TODO we should really support combobox selection on the UI for this...
+    InterpolationMode mode;
+    const std::string modeString = attrs["interpolationmode"];
+    if (modeString == "sample-hold")
+        mode = SAMPLE_HOLD;
+    else if (modeString == "backward-sample-hold")
+        mode = BACKWARD_SAMPLE_HOLD;
+    else if (modeString == "linear")
+        mode = LINEAR;
+    else
+        throw opp_runtime_error("unknown interpolation mode: %s", modeString.c_str());
+
+    Node *node = new IntegrateNode(mode);
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+//-----
+
+bool TimeAverageNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void TimeAverageNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        switch (interpolationmode) {
+            case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
+            case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
+            case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
+        }
+        prevx = d.x;
+        prevy = d.y;
+        d.y = integral / d.x;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *TimeAverageNodeType::description() const
+{
+    return "Calculates the time average of the input (integral divided by time)";
+}
+
+void TimeAverageNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["interpolation-mode"] = "sample-hold, backward-sample-hold, or linear";
+}
+
+void TimeAverageNodeType::getAttrDefaults(StringMap& attrs) const
+{
+    attrs["interpolation-mode"] = "sample-hold";
+}
+
+Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    //TODO we should really support combobox selection on the UI for this...
+    InterpolationMode mode;
+    const std::string modeString = attrs["interpolationmode"];
+    if (modeString == "sample-hold")
+        mode = SAMPLE_HOLD;
+    else if (modeString == "backward-sample-hold")
+        mode = BACKWARD_SAMPLE_HOLD;
+    else if (modeString == "linear")
+        mode = LINEAR;
+    else
+        throw opp_runtime_error("unknown interpolation mode: %s", modeString.c_str());
+
+    Node *node = new TimeAverageNode(mode);
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+//-----
+
+bool DivideByTimeNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void DivideByTimeNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        d.y /= d.x;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *DivideByTimeNodeType::description() const
+{
+    return "Divides input by the current time: y(t) = x(t)/t";
+}
+
+void DivideByTimeNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+Node *DivideByTimeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new DivideByTimeNode();
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+

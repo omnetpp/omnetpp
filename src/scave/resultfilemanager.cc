@@ -40,12 +40,12 @@
 static double zero = 0.0;
 static double NaN = zero / zero;
 
-static class SetPosixLocale 
+static class SetPosixLocale
 {
   public:
-	SetPosixLocale() {
-		setPosixLocale();
-	}
+    SetPosixLocale() {
+        setPosixLocale();
+    }
 } instance;
 
 
@@ -88,7 +88,7 @@ EnumType* ResultItem::getEnum() const
     }
 }
 
-VectorResult::InterpolationMode VectorResult::getInterpolationMode() const
+InterpolationMode VectorResult::getInterpolationMode() const
 {
     StringMap::const_iterator it = attributes.find("interpolationmode");
     if (it != attributes.end())
@@ -281,8 +281,8 @@ IDList ResultFileManager::getAllScalars() const
         {
             ScalarResults& v = fileList[k]->scalarResults;
             for (int i=0; i<(int)v.size(); i++)
-            	if (!v[i].computed)
-            		out.uncheckedAdd(_mkID(false,SCALAR,k,i));
+                if (!v[i].computed)
+                    out.uncheckedAdd(_mkID(false,SCALAR,k,i));
         }
     }
     return out;
@@ -297,8 +297,8 @@ IDList ResultFileManager::getAllVectors() const
         {
             VectorResults& v = fileList[k]->vectorResults;
             for (int i=0; i<(int)v.size(); i++)
-            	if (!v[i].computed)
-            		out.uncheckedAdd(_mkID(false,VECTOR,k,i));
+                if (!v[i].computed)
+                    out.uncheckedAdd(_mkID(false,VECTOR,k,i));
         }
     }
     return out;
@@ -313,8 +313,8 @@ IDList ResultFileManager::getAllHistograms() const
         {
             HistogramResults& v = fileList[k]->histogramResults;
             for (int i=0; i<(int)v.size(); i++)
-            	if (!v[i].computed)
-            		out.uncheckedAdd(_mkID(false,HISTOGRAM,k,i));
+                if (!v[i].computed)
+                    out.uncheckedAdd(_mkID(false,HISTOGRAM,k,i));
         }
     }
     return out;
@@ -327,7 +327,7 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun && !v[i].computed)
-       		out.uncheckedAdd(_mkID(false,SCALAR,fileId,i));
+            out.uncheckedAdd(_mkID(false,SCALAR,fileId,i));
     return out;
 }
 
@@ -739,9 +739,9 @@ ID ResultFileManager::getComputedVector(FilterNodeID nodeID, ID input)
     std::pair<FilterNodeID, ID> key = std::make_pair(nodeID, input);
     ComputedIDCache::iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())
-      return it->second; 
+      return it->second;
     else
-    	return -1;
+        return -1;
 }
 
 /*
@@ -1099,7 +1099,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
     for (ComputedIDCache::iterator it = computedIDCache.begin(); it != computedIDCache.end();)
     {
         ID id = it->first.second;
-        if (_fileid(id) == file->id) 
+        if (_fileid(id) == file->id)
         {
             ComputedIDCache::iterator oldIt = it;
             it++;

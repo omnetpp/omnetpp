@@ -49,7 +49,7 @@ struct SCAVE_API ResultItem
     std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
     bool computed;
-    
+
     ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computed(false) {}
 
     /**
@@ -78,8 +78,6 @@ struct SCAVE_API ScalarResult : public ResultItem
  */
 struct SCAVE_API VectorResult : public ResultItem
 {
-    enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
-
     int vectorId;
     std::string columns;
     Statistics stat;
@@ -88,7 +86,7 @@ struct SCAVE_API VectorResult : public ResultItem
     double min()      const { return stat.min(); }
     double max()      const { return stat.max(); }
     double mean()     const { return stat.mean(); }
-    double variance() const { return stat.variance(); } 
+    double variance() const { return stat.variance(); }
     double stddev()   const { return stat.stddev(); }
 
     /**
@@ -304,7 +302,7 @@ class SCAVE_API ResultFileManager
      */
     static void checkPattern(const char *pattern);
 
-    // computed data 
+    // computed data
     ID addComputedVector(const char *name, FilterNodeID nodeID, ID inputID);
     ID getComputedVector(FilterNodeID nodeID, ID inputID);
 
