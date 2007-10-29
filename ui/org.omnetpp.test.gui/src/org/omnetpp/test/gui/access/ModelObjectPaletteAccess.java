@@ -7,8 +7,8 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.access.CompositeAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class ModelObjectPaletteAccess extends CompositeAccess {
 	
@@ -40,7 +40,7 @@ public class ModelObjectPaletteAccess extends CompositeAccess {
 		return (CompositeAccess)createAccess(getControl().getContent());
 	}
 	
-	@InUIThread
+	@UIStep
 	public CompositeAccess getButton(final String label) {
 		return (CompositeAccess)createAccess(getComposite().findDescendantControl(
 						new IPredicate() {
@@ -60,12 +60,12 @@ public class ModelObjectPaletteAccess extends CompositeAccess {
 		revealButton(getButton(label));
 	}
 	
-	@InUIThread
+	@UIStep
 	public void revealButton(CompositeAccess button) {
 		getControl().setOrigin(button.getControl().getLocation());
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public void clickButton(String label) {
 		CompositeAccess button = getButton(label);
 		revealButton(button);

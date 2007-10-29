@@ -1,6 +1,6 @@
 package com.simulcraft.test.gui.access;
 
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
@@ -11,12 +11,12 @@ public class ContentAssistAccess extends TableAccess {
         super(control);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void chooseWithMouse(String label) {
         findTableItemByContent(label).reveal().doubleClick();
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void chooseWithKeyboard(String label) {
         TableItemAccess item = findTableItemByContent(label);
 

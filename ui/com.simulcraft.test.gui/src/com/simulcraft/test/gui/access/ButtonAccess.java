@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class ButtonAccess extends ControlAccess
 {
@@ -18,13 +18,13 @@ public class ButtonAccess extends ControlAccess
 		return (Button)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public void selectWithMouseClick() {
 		assertEnabled();
 		click();
 	}
 	
-	@InUIThread
+	@UIStep
 	public void assertIsCheckbox() {
 		Assert.assertTrue("Checkbox expected", (getControl().getStyle() & SWT.CHECK) != 0);
 	}

@@ -7,7 +7,7 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 import com.simulcraft.test.gui.core.GUITestCase;
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 import org.eclipse.swt.SWT;
 
@@ -132,12 +132,12 @@ public class ExecuteUndoRedoUndoTestSuite
             ensureActiveEditor(designator).pressKey('Y', SWT.CONTROL);
         }
 
-        @InUIThread
+        @UIStep
         private void assertMatches(String content) {
             Assert.assertTrue(getText().matches(content));
         }
 
-        @InUIThread
+        @UIStep
         private void assertDoesNotMatch(String content) {
             Assert.assertFalse(getText().matches(content));
         }

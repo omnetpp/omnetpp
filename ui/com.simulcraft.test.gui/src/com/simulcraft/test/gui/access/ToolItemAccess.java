@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class ToolItemAccess 
     extends ClickableWidgetAccess
@@ -36,7 +36,7 @@ public class ToolItemAccess
         return null;
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     public MenuAccess activateDropDownMenu() {
         Control parent = (Control)ReflectionUtils.getFieldValue(getWidget(), "parent");
         return MenuAccess.withOpeningContextMenu(parent,

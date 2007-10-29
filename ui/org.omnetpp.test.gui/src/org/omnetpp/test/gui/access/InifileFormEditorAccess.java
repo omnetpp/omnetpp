@@ -9,8 +9,8 @@ import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 import com.simulcraft.test.gui.util.Predicate;
 
 //XXX not sure we really need this class. All method could just be added into InifileEditorAccess
@@ -34,19 +34,19 @@ public class InifileFormEditorAccess
 	                    Predicate.hasID(TestSupport.CATEGORY_TREE)));
 	}
 
-    @InUIThread
+    @UIStep
     public CompositeAccess getActiveCategoryPage() {
         return (CompositeAccess)createAccess(getControl().getActiveCategoryPage());
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public CompositeAccess activateCategoryPage(String category) {
         getCategoryTree().findTreeItemByContent(category).click();
         Access.sleep(1); //XXX no idea why this is needed. should work without it too (because click() is a "step" which includes the processing of the event, and there's no asyncExec in the inifile code here) 
         return (CompositeAccess)createAccess(getControl().getActiveCategoryPage());
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public CompositeAccess ensureActiveCategoryPage(String category) {
         FormPage activeFormPage = getControl().getActiveCategoryPage();
         if (activeFormPage.getPageCategory().equals(category))
@@ -55,7 +55,7 @@ public class InifileFormEditorAccess
             return activateCategoryPage(category);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void createSectionByDialog(String sectionName, String description, String baseSection, String networkName) {
         CompositeAccess sectionsPage = ensureActiveCategoryPage("Sections");
         sectionsPage.findButtonWithLabel("New.*").click();
@@ -63,7 +63,7 @@ public class InifileFormEditorAccess
         fillSectionDialog(dialog, sectionName, description, baseSection, networkName);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void editSectionByDialog(String sectionName, boolean usingContextMenu, 
             String newSectionName, String description, String baseSection, String networkName) {
         CompositeAccess sectionsPage = ensureActiveCategoryPage("Sections");
@@ -80,7 +80,7 @@ public class InifileFormEditorAccess
         fillSectionDialog(dialog, newSectionName, description, baseSection, networkName);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public static void fillSectionDialog(ShellAccess dialog, String sectionName, String description, String baseSection, String networkName) {
         if (sectionName != null)
             dialog.findTextAfterLabel("Section Name.*").clickAndTypeOver(sectionName);

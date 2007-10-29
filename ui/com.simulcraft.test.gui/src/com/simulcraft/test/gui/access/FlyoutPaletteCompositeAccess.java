@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 
 public class FlyoutPaletteCompositeAccess extends CompositeAccess
@@ -22,13 +22,13 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 		return (FlyoutPaletteComposite)widget;
 	}
 	
-	@InUIThread
+	@UIStep
 	public void clickButtonFigureWithLabel(final String label) {
         findButtonFigureWithLabel(label).reveal();
         findButtonFigureWithLabel(label).click(LEFT_MOUSE_BUTTON);
 	}
 
-    @InUIThread
+    @UIStep
     public FigureAccess findButtonFigureWithLabel(final String label) {
         ensurePinnedOpen();
         return new FigureAccess(findDescendantFigure(getRootFigure(getPaletteViewer()), new IPredicate() {
@@ -38,7 +38,7 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
         }));
     }
 
-    @InUIThread
+    @UIStep
     public boolean hasButtonFigureWithLabel(final String label) {
         ensurePinnedOpen();
         IFigure rootFigure = getRootFigure(getPaletteViewer());
@@ -51,14 +51,14 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
         return hasDescendantFigure(rootFigure, predicate) && findDescendantFigure(rootFigure, predicate).isVisible();
     }
 
-	@InUIThread
+	@UIStep
 	public void ensurePinnedOpen() {
 		Object stateExpanded = ReflectionUtils.getFieldValue(FlyoutPaletteComposite.class, "STATE_PINNED_OPEN");
 		if (!(Boolean)ReflectionUtils.invokeMethod(getFlyoutPaletteComposite(), "isInState", stateExpanded))
 			clickFlyoutControlButton();
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickFlyoutControlButton() {
 		Control sash = (Control)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "sash");
 		Canvas button = (Canvas)ReflectionUtils.getFieldValue(sash, "button");

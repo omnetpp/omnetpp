@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class CTabItemAccess extends ClickableWidgetAccess
 {
@@ -21,12 +21,12 @@ public class CTabItemAccess extends ClickableWidgetAccess
 		return (CTabItem)widget;
 	}
     
-    @InUIThread
+    @UIStep
     public CTabFolderAccess getCTabFolder() {
         return (CTabFolderAccess)createAccess(getWidget().getParent());
     }
     
-    @InUIThread
+    @UIStep
     public boolean isClosable() {
 		return (Boolean)ReflectionUtils.getFieldValue(getWidget(), "showClose");
     }
@@ -46,7 +46,7 @@ public class CTabItemAccess extends ClickableWidgetAccess
         return getWidget().getParent().toDisplay(point);
 	}
 	
-	@InUIThread
+	@UIStep
 	public void clickOnCloseIcon() {
 		Assert.assertTrue("CTabItem is not closable", isClosable());
 		Rectangle rect = (Rectangle)ReflectionUtils.getFieldValue(getWidget(), "closeRect");
@@ -55,7 +55,7 @@ public class CTabItemAccess extends ClickableWidgetAccess
 		clickAbsolute(LEFT_MOUSE_BUTTON, getWidget().getParent().toDisplay(center));
 	}
 	
-    @InUIThread
+    @UIStep
     public CTabItemAccess reveal() {
         getWidget().getParent().showItem(getWidget());
         return this;

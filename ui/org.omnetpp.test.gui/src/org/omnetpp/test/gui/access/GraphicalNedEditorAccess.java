@@ -27,8 +27,8 @@ import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.FigureAccess;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.TextAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 
 public class GraphicalNedEditorAccess
@@ -48,33 +48,33 @@ public class GraphicalNedEditorAccess
 		return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)ReflectionUtils.getFieldValue(getWorkbenchPart(), "splitter"));
 	}
 
-	@NotInUIThread
+	@InBackgroundThread
 	public void createSimpleModuleWithPalette(String name) {
 		createElementWithPalette("Simple"+NBSP+"Module", name);
 	}
 
-    @NotInUIThread
+    @InBackgroundThread
     public void createModuleInterfaceWithPalette(String name) {
         createElementWithPalette("Module"+NBSP+"Interface", name);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void createChannelWithPalette(String name) {
         createElementWithPalette("Channel", name);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void createChannelInterfaceWithPalette(String name) {
         createElementWithPalette("Channel"+NBSP+"Interface", name);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
 	public void renameElement(String oldName, String newName) {
 		clickLabelFigure(oldName);
 		typeInNewName(newName);
 	}
 
-	@InUIThread
+	@UIStep
 	private void typeInNewName(String name) {
 		FigureCanvas figureCanvas = getWorkbenchPart().getFigureCanvas();
 		Text text = (Text)Access.findDescendantControl(figureCanvas, Text.class);
@@ -84,7 +84,7 @@ public class GraphicalNedEditorAccess
 		textAccess.pressEnter();
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickLabelFigure(final String name) {
 		IFigure labelFigure = findDescendantFigure(getRootFigure(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -96,7 +96,7 @@ public class GraphicalNedEditorAccess
 	}
 
     @SuppressWarnings("unchecked")
-    @InUIThread
+    @UIStep
     public void clickConnectionFigure(final String label1, final String label2) {
         final IPredicate predicate = new IPredicate() {
             public boolean matches(Object object) {
@@ -128,17 +128,17 @@ public class GraphicalNedEditorAccess
         new FigureAccess(connectionFigure).click(LEFT_MOUSE_BUTTON);
     }
 
-	@InUIThread
+	@UIStep
 	public void clickBackground() {
 		getComposite().clickAbsolute(LEFT_MOUSE_BUTTON, getCompositeInternal().toDisplay(1, 1));
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickPaletteItem(String label) {
 		getFlyoutPaletteComposite().clickButtonFigureWithLabel(label);
 	}
 
-    @NotInUIThread
+    @InBackgroundThread
 	public CompoundModuleEditPartAccess createCompoundModuleWithPalette(String name) {
 		clickPaletteItem("Compound"+NBSP+"Module");
 		clickBackground();
@@ -147,7 +147,7 @@ public class GraphicalNedEditorAccess
 		return findCompoundModule(name);
 	}
 
-    @InUIThread
+    @UIStep
     public EditPartAccess findModule(final String name, final Class<?> type) {
         return (EditPartAccess)createAccess((EditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
             public boolean matches(Object object) {

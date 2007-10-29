@@ -5,8 +5,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
@@ -36,13 +36,13 @@ public class MenuAccess extends WidgetAccess {
 	 * Activates the menu item with the given label. If it opens a submenu,
 	 * return it, otherwise returns null.
 	 */
-	@InUIThread
+	@UIStep
 	public MenuAccess activateMenuItemWithMouse(String label) {
 		log(debug, "Activating menu item: " + label);
 		return findMenuItemByLabel(label).activateWithMouseClick();
 	}
 
-	@InUIThread
+	@UIStep
 	public MenuItemAccess findMenuItemByLabel(final String label) {
 		try {
 			return new MenuItemAccess((MenuItem)findMenuItem(getWidget(), new IPredicate() {
@@ -62,12 +62,12 @@ public class MenuAccess extends WidgetAccess {
 		}
 	}
 
-	@InUIThread
+	@UIStep
     public MenuItem findMenuItem(Menu menu, IPredicate predicate) {
         return (MenuItem)theOnlyWidget(collectMenuItems(getWidget(), predicate), predicate);
 	}
 
-	@InUIThread
+	@UIStep
 	public List<MenuItem> collectMenuItems(Menu menu, IPredicate predicate) {
 		ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
 		for (MenuItem menuItem : menu.getItems())
@@ -76,7 +76,7 @@ public class MenuAccess extends WidgetAccess {
 		return resultMenuItems;
 	}
 
-	@InUIThread
+	@UIStep
 	public static void closeMenus() {
 		// we need to manually close the menus whenever an error occurs during 
 		// menu processing (e.g. assert failed: menu item not found or 
@@ -99,36 +99,36 @@ public class MenuAccess extends WidgetAccess {
 		}
 	}
 	
-    @InUIThread
+    @UIStep
     public void assertMenuItemsEnabled(String[] labels) {
         for (String label : labels) 
             findMenuItemByLabel(label).assertEnabled();        
     }
 
-    @InUIThread
+    @UIStep
     public void assertMenuItemsDisabled(String[] labels) {
         for (String label : labels) 
             findMenuItemByLabel(label).assertDisabled();        
     }
 
-    @InUIThread
+    @UIStep
     public void assertVisible() {
         Assert.assertTrue("menu not visible", getWidget().isVisible());
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public static MenuAccess withOpeningContextMenu(Control control, Runnable runnable) {
         int i = MenuAccess.findNextMenuShellIndex(control);
         runOpeningContextMenuBody(runnable);
         return new MenuAccess(getMenuShellMenu(control, i));
     }
 
-    @InUIThread
+    @UIStep
     private static Menu getMenuShellMenu(Control control, int i) {
         return MenuAccess.getMenuShellMenus(control)[i];
     }
     
-    @InUIThread
+    @UIStep
     private static void runOpeningContextMenuBody(Runnable runnable) {
         runnable.run();
     }
@@ -150,13 +150,13 @@ public class MenuAccess extends WidgetAccess {
 
     
 // the following code searches in the menus recursively -- retained just in case it might be needed somewhere...
-//	@InUIThread
+//	@UIStep
 //	public MenuAccess activateMenuItemWithMouse_Recursive(String label) {
 //		printIf(debug, "Activating menu item: " + label);
 //		return findMenuItemByLabelRecursive(label).activateWithMouseClick();
 //	}
 //
-//	@InUIThread
+//	@UIStep
 //	public MenuItemAccess findMenuItemByLabelRecursive(final String label) {
 //		return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItemsRecursive(widget, new IPredicate() {
 //			public boolean matches(Object object) {
@@ -166,7 +166,7 @@ public class MenuAccess extends WidgetAccess {
 //		})));
 //	}
 //
-//	@InUIThread
+//	@UIStep
 //	public List<MenuItem> collectMenuItemsRecursive(Menu menu, IPredicate predicate) {
 //		ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
 //		collectMenuItemsRecursive(menu, predicate, resultMenuItems);

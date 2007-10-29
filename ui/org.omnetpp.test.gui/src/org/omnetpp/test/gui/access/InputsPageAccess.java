@@ -12,7 +12,7 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CTabItemAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.util.Predicate;
 
 public class InputsPageAccess extends CompositeAccess {
@@ -49,12 +49,12 @@ public class InputsPageAccess extends CompositeAccess {
 						Predicate.hasID(LOGICAL_VIEW_TREE_ID)));
 	}
 	
-	@InUIThread
+	@UIStep
 	public CTabItem findTab(String label) {
 		return Access.findDescendantCTabItemByLabel(getControl(), label);
 	}
 	
-	@InUIThread
+	@UIStep
 	public boolean isTabSelected(String label) {
 		CTabItem item = findTab(label);
 		return item.getParent().getSelection() == item;

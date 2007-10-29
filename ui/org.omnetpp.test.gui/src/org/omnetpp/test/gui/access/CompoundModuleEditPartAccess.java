@@ -17,8 +17,8 @@ import com.simulcraft.test.gui.access.FigureAccess;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
 import com.simulcraft.test.gui.access.TextAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class CompoundModuleEditPartAccess extends EditPartAccess
 {
@@ -30,13 +30,13 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 		return (CompoundModuleEditPart)editPart;
 	}
 
-	@InUIThread
+	@UIStep
 	public FlyoutPaletteCompositeAccess getFlyoutPaletteComposite() {
 		Composite composite = editPart.getRoot().getViewer().getControl().getParent().getParent();
 		return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)findDescendantControl(composite, FlyoutPaletteComposite.class));
 	}
 
-	@NotInUIThread
+	@InBackgroundThread
 	public void createSubModuleWithPalette(String type, String name, int x, int y) {
 		getFlyoutPaletteComposite().clickButtonFigureWithLabel(type);
 		clickBackground(x, y);
@@ -44,19 +44,19 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 		    typeInNewName(name);
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickBackground(int x, int y) {
 		FigureAccess figureAccess = new FigureAccess(getFigure());
 		figureAccess.clickAbsolute(LEFT_MOUSE_BUTTON, figureAccess.toDisplay(x, y));
 	}
 
-	@NotInUIThread
+	@InBackgroundThread
 	public void renameSubmodule(String oldName, String newName) {
 		clickSubmoduleFigureWithName(oldName);
 		typeInNewName(newName);
 	}
 
-	@NotInUIThread
+	@InBackgroundThread
 	public void typeInNewName(String name) {
         pressKey(SWT.F6);
 		Canvas canvas = new FigureAccess(getFigure()).getCanvas();
@@ -66,12 +66,12 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 		textAccess.pressEnter();
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickSubmoduleFigureWithName(final String name) {
 		findSubmoduleFigureByName(name).click(LEFT_MOUSE_BUTTON);
 	}
 
-    @InUIThread
+    @UIStep
     public FigureAccess findSubmoduleFigureByName(final String name) {
         IFigure compoundModuleFigure = getFigure();
 		return new FigureAccess(findDescendantFigure(compoundModuleFigure, new IPredicate() {
@@ -81,12 +81,12 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 		}));
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void createConnectionWithPalette(String name1, String name2, String connectionOptionLabel) {
         createConnectionWithPalette("Connection", name1, name2, connectionOptionLabel);
     }
 
-	@NotInUIThread
+	@InBackgroundThread
     public void createConnectionWithPalette(String channel, String name1, String name2, String connectionOptionLabel) {
 	    FlyoutPaletteCompositeAccess flyoutPaletteComposite = getFlyoutPaletteComposite();
         flyoutPaletteComposite.clickButtonFigureWithLabel(channel);
@@ -95,7 +95,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
         clickConnectionOption(connectionOptionLabel);
 	}
 
-	@InUIThread
+	@UIStep
 	protected void clickConnectionOption(String label) {
 		new MenuAccess(getDisplay().getActiveShell().getMenu()).activateMenuItemWithMouse(label);
 	}

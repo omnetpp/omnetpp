@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.util.Predicate;
 
 
@@ -25,32 +25,32 @@ public class TableAccess extends ControlAccess
 		return (Table)widget;
 	}
 
-    @InUIThread
+    @UIStep
     public void assertEmpty() {
         Assert.assertTrue("table is not empty", getControl().getItemCount() == 0);
     }
 
-    @InUIThread
+    @UIStep
     public void assertNotEmpty() {
         Assert.assertTrue("table is empty", getControl().getItemCount() != 0);
     }
     
-    @InUIThread
+    @UIStep
     public void assertItemCount(int count) {
         Assert.assertTrue("Expected " + count + " item, found " + getControl().getItemCount() + " in table", getControl().getItemCount() == count);
     }
 
-    @InUIThread
+    @UIStep
     public void assertHeaderVisible() {
         Assert.assertTrue("table header not visible", getControl().getHeaderVisible());
     }
 
-    @InUIThread
+    @UIStep
     public void assertHeaderNotVisible() {
         Assert.assertTrue("table header visible", !getControl().getHeaderVisible());
     }
 
-    @InUIThread
+    @UIStep
     public void assertContent(String items[]) {
         Assert.assertEquals("Table item count does not match.", items.length, getControl().getItemCount());
         for (int i = 0; i< items.length; ++i) {
@@ -59,7 +59,7 @@ public class TableAccess extends ControlAccess
         }
     }
     
-    @InUIThread
+    @UIStep
     public void assertContent(String[]... items) {
         Assert.assertEquals("Table item count does not match.", items.length, getControl().getItemCount());
         for (int i = 0; i< items.length; ++i) {
@@ -77,12 +77,12 @@ public class TableAccess extends ControlAccess
      * Table starts with the provided items, the rest of the table should match restShouldMatch or can be anything
      * if restShouldMatch is NULL.
      */
-    @InUIThread
+    @UIStep
     public void assertContentStartWith(String items[], String restShouldMatch) {
     	assertContentStartWith(0, items, restShouldMatch);
     }
     
-    @InUIThread
+    @UIStep
     public void assertContentStartWith(int columnIndex, String items[], String restShouldMatch) {
         Assert.assertTrue("Table item count less than expected.", items.length <= getControl().getItemCount());
         for (int i = 0; i< items.length; ++i) {
@@ -104,12 +104,12 @@ public class TableAccess extends ControlAccess
     	assertColumnContentStartWith(getTableColumnIndex(column), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
     }
     
-    @InUIThread
+    @UIStep
     public void assertColumnContentStartWith(int columnIndex, String[] items, String restShouldMatch) {
     	assertContentStartWith(columnIndex, items, restShouldMatch);
     }
     
-    @InUIThread
+    @UIStep
     public void assertSelectionCount(int count) {
     	Assert.assertEquals("Selection count does not match,", count, getControl().getSelectionCount());
     }
@@ -118,12 +118,12 @@ public class TableAccess extends ControlAccess
 		return findTableItemByContent(0, content);
 	}
 	
-	@InUIThread
+	@UIStep
 	public TableItemAccess findTableItemByContent(String columnName, String content) {
 		return findTableItemByContent(getTableColumnIndex(columnName), content);
 	}
 	
-    @InUIThread
+    @UIStep
 	public TableItemAccess findTableItemByContent(int columnIndex, final String content) {
 		return new TableItemAccess((TableItem)findObject(getControl().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -144,7 +144,7 @@ public class TableAccess extends ControlAccess
 		}));
 	}
 
-    @InUIThread
+    @UIStep
     public TableColumnAccess[] getTableColumns() {
         ArrayList<TableColumnAccess> result = new ArrayList<TableColumnAccess>(); 
         for (TableColumn item : getControl().getColumns())
@@ -155,32 +155,32 @@ public class TableAccess extends ControlAccess
     /**
      * Return the given column; columns are in creation order. 
      */
-    @InUIThread
+    @UIStep
     public TableColumnAccess getTableColumn(int index) {
         return new TableColumnAccess(getControl().getColumns()[index]);
     }
     
-    @InUIThread
+    @UIStep
     public TableColumnAccess getTableColumn(String columnName) {
     	return wrapTableColumn(findObject(getControl().getColumns(), Predicate.itemWithText(columnName)));
     }
     
-    @InUIThread
+    @UIStep
     public int getTableColumnIndex(String columnName) {
     	return getTableColumnIndex(getTableColumn(columnName));
     }
     
-    @InUIThread
+    @UIStep
     public int getTableColumnIndex(TableColumnAccess column) {
     	return getControl().indexOf(column.getWidget());
     }
 
-    @InUIThread
+    @UIStep
     public int[] getTableColumnOrder() {
         return getControl().getColumnOrder();
     }
 
-    @InUIThread
+    @UIStep
     public TableItemAccess[] getSelection() {
         ArrayList<TableItemAccess> result = new ArrayList<TableItemAccess>(); 
         for (TableItem item : getControl().getSelection())

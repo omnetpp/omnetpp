@@ -4,8 +4,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public abstract class ClickableWidgetAccess
     extends WidgetAccess
@@ -20,27 +20,27 @@ public abstract class ClickableWidgetAccess
 
 	protected abstract Menu getContextMenu();
 
-	@InUIThread
+	@UIStep
 	public void click(int button) {
 		clickAbsolute(button, getAbsolutePointToClick());
 	}
 
-	@InUIThread
+	@UIStep
 	public void click() {
 		click(Access.LEFT_MOUSE_BUTTON);
 	}
 
-	@InUIThread
+	@UIStep
 	public void rightClick() {
 		click(Access.RIGHT_MOUSE_BUTTON);
 	}
 
-	@InUIThread
+	@UIStep
 	public void doubleClick() {
 		doubleClickAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick());
 	}
 
-	@InUIThread
+	@UIStep
 	public MenuAccess activateContextMenuWithMouseClick() {
         rightClick();
         MenuAccess menu = new MenuAccess(getContextMenu());
@@ -48,7 +48,7 @@ public abstract class ClickableWidgetAccess
         return menu;
 	}
 
-	@InUIThread
+	@UIStep
     public MenuAccess activateContextMenuWithMouseClick(Point point) {
         clickAbsolute(Access.RIGHT_MOUSE_BUTTON, toAbsolute(point));
         MenuAccess menu = new MenuAccess(getContextMenu());
@@ -56,19 +56,19 @@ public abstract class ClickableWidgetAccess
         return menu;
     }
 
-	@NotInUIThread
+	@InBackgroundThread
 	public void chooseFromContextMenu(String labelPath) {
 		MenuAccess menuAccess = activateContextMenuWithMouseClick();
 		for (String label : labelPath.split("\\|"))
 			menuAccess = menuAccess.activateMenuItemWithMouse(label);
 	}
 	
-    @InUIThread
+    @UIStep
 	public void dragToAbsolute(int x, int y) {
 	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));    
 	}
 
-    @InUIThread
+    @UIStep
 	public void dragTo(ClickableWidgetAccess target) {
 	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());    
 	}

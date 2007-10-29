@@ -6,7 +6,7 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class SequenceChartAccess
     extends CompositeAccess
@@ -20,14 +20,14 @@ public class SequenceChartAccess
         return (SequenceChart)widget;
     }
 
-    @InUIThread
+    @UIStep
     public MenuAccess activateContextMenuWithMouseClick(int eventNumber) {
         activateContextMenuWithMouseClick(getEventLocation(getEventCPtr(eventNumber)));
 
         return new MenuAccess(getContextMenu());
     }
 
-    @InUIThread
+    @UIStep
     public void selectEventWithMouseClick(int eventNumber) {
         clickAbsolute(Access.LEFT_MOUSE_BUTTON, getControl().toDisplay(getEventLocation(getEventCPtr(eventNumber))));
     }

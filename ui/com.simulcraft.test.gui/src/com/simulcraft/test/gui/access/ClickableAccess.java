@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.simulcraft.test.gui.core.AnimationEffects;
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class ClickableAccess
 	extends Access 
@@ -36,12 +36,12 @@ public class ClickableAccess
     private Ft01 xt = new Ft01() { public double f(double t) { return sin(t*PI/2); } };
     private Ft01 yt = new Ft01() { public double f(double t) { return sqrt(sin(t*PI/2)); } };
 
-	@InUIThread
+	@UIStep
 	public void moveMouseAbsolute(Point p) {
 		moveMouseAbsolute(p.x, p.y);
 	}
 	
-	@InUIThread
+	@UIStep
 	public void moveMouseAbsolute(int x, int y) {
 	    Point p = Display.getCurrent().getCursorLocation();
 	    if (p.x != x || p.y != y) {
@@ -59,46 +59,46 @@ public class ClickableAccess
 	    }
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickAbsolute(int button, Point point) {
 		clickAbsolute(button, point.x, point.y);
 	}
 
-	@InUIThread
+	@UIStep
 	public void clickAbsolute(int button, int x, int y) {
 		moveMouseAbsolute(x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
 
-    @InUIThread
+    @UIStep
     public void clickCenterAbsolute(int button, Rectangle rectangle) {
         clickAbsolute(button, getCenter(rectangle));
     }
 
-	@InUIThread
+	@UIStep
 	public void doubleClickAbsolute(int button, int x, int y) {
 		clickAbsolute(button, x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
 
-	@InUIThread
+	@UIStep
 	public void doubleClickAbsolute(int button, Point point) {
 		doubleClickAbsolute(button, point.x, point.y);
 	}
 
-	@InUIThread
+	@UIStep
 	public void doubleClickCenterAbsolute(int button, Rectangle rectangle) {
 		doubleClickAbsolute(button, getCenter(rectangle));
 	}
 	   
-	@InUIThread
+	@UIStep
 	public void dragMouseAbsolute(int button, Point fromPoint, Point toPoint) {
 	    dragMouseAbsolute(button, fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
 	}
 
-	@InUIThread
+	@UIStep
 	public void dragMouseAbsolute(int button, int x, int y, int x2, int y2) {
         moveMouseAbsolute(x, y);
 

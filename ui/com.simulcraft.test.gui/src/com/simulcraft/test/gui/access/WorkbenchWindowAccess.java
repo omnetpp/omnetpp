@@ -18,8 +18,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 
 public class WorkbenchWindowAccess extends Access {
@@ -29,32 +29,32 @@ public class WorkbenchWindowAccess extends Access {
 		this.workbenchWindow = workbenchWindow;
 	}
 	
-    @InUIThread
+    @UIStep
 	public ShellAccess getShell() {
 		return new ShellAccess(workbenchWindow.getShell());
 	}
 
-	@InUIThread
+	@UIStep
 	public MenuAccess getMenuBar() {
 		return getShell().getMenuBar();
 	}
 	
-    @InUIThread
+    @UIStep
     public IPerspectiveDescriptor getPerspective() {
         return workbenchWindow.getWorkbench().getActiveWorkbenchWindow().getActivePage().getPerspective();
     }
 
-	@NotInUIThread
+	@InBackgroundThread
 	public void chooseFromMainMenu(String labelPath) {
 	    getShell().chooseFromMainMenu(labelPath);
 	}
 	
-	@InUIThread
+	@UIStep
 	public EditorPartAccess getActiveEditorPart() {
 		return new EditorPartAccess(workbenchWindow.getPages()[0].getActiveEditor());
 	}
 
-	@InUIThread
+	@UIStep
 	public WorkbenchPartAccess getActivePart() {
 		IWorkbenchPart activePart = workbenchWindow.getPages()[0].getActivePart();
 		if (activePart instanceof IEditorPart)
@@ -63,23 +63,23 @@ public class WorkbenchWindowAccess extends Access {
 			return (WorkbenchPartAccess)createAccess((IViewPart)activePart);
 	}
 
-	@InUIThread
+	@UIStep
 	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
 		return new ViewPartAccess(workbenchWindow.getPages()[0].showView(viewId));
 	}
 
-	@InUIThread
+	@UIStep
 	public ViewPartAccess findViewPartByTitle(String title) {
 		return findViewPartByTitle(title, true);
 	}
 
-	@InUIThread
+	@UIStep
 	public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
 	    IPredicate predicate = getViewPartsByTitlePredicate(title);
 		return (ViewPartAccess)theOnlyObject(collectViewParts(predicate, restore), predicate);
 	}
 
-	@InUIThread
+	@UIStep
     public List<ViewPartAccess> collectViewPartsByTitle(String title, boolean restore) {
         return collectViewParts(getViewPartsByTitlePredicate(title), restore);
     }
@@ -92,7 +92,7 @@ public class WorkbenchWindowAccess extends Access {
         };
     }
 
-    @InUIThread
+    @UIStep
     public List<ViewPartAccess> collectViewParts(IPredicate predicate, boolean restore) {
         ArrayList<ViewPartAccess> result = new ArrayList<ViewPartAccess>();
 
@@ -107,33 +107,33 @@ public class WorkbenchWindowAccess extends Access {
         return result;
     }
 
-	@InUIThread
+	@UIStep
 	public EditorPartAccess findEditorPartByTitle(String title) {
 		return findEditorPartByTitle(title, true);
 	}
 	
-	@InUIThread
+	@UIStep
 	public MultiPageEditorPartAccess findMultiPageEditorPartByTitle(String title) {
 		return (MultiPageEditorPartAccess)findEditorPartByTitle(title, true);
 	}
 	
-	@InUIThread
+	@UIStep
 	public EditorPartAccess findEditorPartByTitle(final String title, boolean restore) {
 	    IPredicate predicate = getEditorPartsByTitlePredicate(title);
 		return (EditorPartAccess)theOnlyObject(collectEditorParts(predicate, restore), predicate);
 	}
 
-	@InUIThread
+	@UIStep
     public boolean hasEditorPartWithTitle(String title) {
 	    return hasEditorPartWithTitle(title, false);
 	}
 
-    @InUIThread
+    @UIStep
     public boolean hasEditorPartWithTitle(String title, boolean restore) {
         return collectEditorPartsByTitle(title, restore).size() == 1;
     }
 
-    @InUIThread
+    @UIStep
     public List<EditorPartAccess> collectEditorPartsByTitle(String title, boolean restore) {
         return collectEditorParts(getEditorPartsByTitlePredicate(title), restore);
     }
@@ -146,7 +146,7 @@ public class WorkbenchWindowAccess extends Access {
         };
     }
 
-    @InUIThread
+    @UIStep
     public List<EditorPartAccess> collectEditorParts(IPredicate predicate, boolean restore) {
         ArrayList<EditorPartAccess> result = new ArrayList<EditorPartAccess>();
 
@@ -161,7 +161,7 @@ public class WorkbenchWindowAccess extends Access {
         return result;
     }
 
-	@InUIThread
+	@UIStep
 	public void closeAllEditorPartsWithHotKey() {
 		pressKey('w', SWT.CONTROL + SWT.SHIFT);
 	}
@@ -176,7 +176,7 @@ public class WorkbenchWindowAccess extends Access {
         }
     }
 
-    @InUIThread
+    @UIStep
     public void assertNoOpenEditorParts() {
         for (IWorkbenchPage page : workbenchWindow.getPages()) {
             for (IEditorReference editorReference : page.getEditorReferences())
@@ -184,7 +184,7 @@ public class WorkbenchWindowAccess extends Access {
         }
     }
 
-    @InUIThread
+    @UIStep
     public void saveAllEditorPartsWithHotKey() {
         pressKey('s', SWT.CONTROL + SWT.SHIFT);
     }
@@ -201,7 +201,7 @@ public class WorkbenchWindowAccess extends Access {
         }
     }
 
-    @InUIThread
+    @UIStep
     public void assertNoDirtyEditorParts() {
         for (IWorkbenchPage page : workbenchWindow.getPages()) {
             for (IEditorReference editorReference : page.getEditorReferences()) {

@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class ToolBarAccess
     extends CompositeAccess
@@ -18,7 +18,7 @@ public class ToolBarAccess
         return (ToolBar)widget;
     }
     
-    @InUIThread
+    @UIStep
     public ToolItemAccess findToolItem(final String text) {
         return new ToolItemAccess((ToolItem)findObject(getControl().getItems(), new IPredicate() {
             public boolean matches(Object object) {
@@ -27,7 +27,7 @@ public class ToolBarAccess
         }));
     }
 
-    @InUIThread
+    @UIStep
     @Override
     public ToolItemAccess findToolItemWithToolTip(final String text) {
         return new ToolItemAccess((ToolItem)findObject(getControl().getItems(), new IPredicate() {

@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class MenuItemAccess extends ClickableWidgetAccess
 {
@@ -21,7 +21,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
 		return (MenuItem)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertEnabled() {
 		if (!getWidget().isEnabled()) {
 	    	MenuAccess.closeMenus();
@@ -29,7 +29,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
 		}
 	}
 	
-    @InUIThread
+    @UIStep
     public void assertDisabled() {
         if (getWidget().isEnabled()) {
             MenuAccess.closeMenus();
@@ -37,7 +37,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
         }
     }
     
-	@InUIThread
+	@UIStep
 	public MenuAccess activateWithMouseClick() {
 		assertEnabled();
 		click();

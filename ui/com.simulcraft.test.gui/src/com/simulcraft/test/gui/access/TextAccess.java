@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class TextAccess extends ControlAccess
 {
@@ -18,23 +18,23 @@ public class TextAccess extends ControlAccess
 		return (Text)widget;
 	}
 	
-	@InUIThread
+	@UIStep
 	public String getTextContent() {
 		return getControl().getText();
 	}
 
-    @InUIThread
+    @UIStep
 	public void assertEditable() {
 		Assert.assertTrue("text control is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
 	}
 
-    @InUIThread
+    @UIStep
     public void assertTextContent(String regex) {
         Assert.assertTrue("text control content does not match "+regex, getTextContent().matches(regex));
     }
 
     
-    @InUIThread
+    @UIStep
     public void typeOver(String content) {
         assertEnabled();
         assertEditable();

@@ -8,8 +8,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 
 public class MultiPageEditorPartAccess
@@ -24,47 +24,47 @@ public class MultiPageEditorPartAccess
 		return (MultiPageEditorPart)workbenchPart;
 	}
     
-    @InUIThread
+    @UIStep
     public void assertActivePage(String label) {
     	Assert.assertTrue("Page is not active: " + label, isPageActive(label));
     }
     
-	@InUIThread
+	@UIStep
 	public CTabItemAccess getCTabItem(int pageIndex) {
 		CTabItem item = (CTabItem)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getItem", pageIndex); 
 		return (CTabItemAccess)createAccess(item); 
 	}
 	
-	@InUIThread
+	@UIStep
 	public ControlAccess getControl(int pageIndex) {
 		Control control = (Control)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getControl", pageIndex);
 		return (ControlAccess)createAccess(control);
 	}
 
-	@InUIThread
+	@UIStep
 	public EditorPartAccess getEditor(int pageIndex) {
 	    IEditorPart part = (IEditorPart)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getEditor", pageIndex);
 	    return (EditorPartAccess)createAccess(part);
 	}
 
-	@InUIThread
+	@UIStep
 	public boolean isPageActive(String label) {
 		CTabItemAccess activeCTabItem = getActiveCTabItem();
 		return activeCTabItem != null && activeCTabItem.getWidget().getText().matches(label);
 	}
 
-	@InUIThread
+	@UIStep
 	public EditorPartAccess getActivePageEditor() {
 		return (EditorPartAccess)createAccess(ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActiveEditor"));
 	}
 
-	@InUIThread
+	@UIStep
 	public ControlAccess getActivePageControl() {
 		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getControl(activePage) : null;
 	}
 	
-	@InUIThread
+	@UIStep
 	public CTabItemAccess getActiveCTabItem() {
 		int activePage = (Integer)ReflectionUtils.invokeMethod(getWorkbenchPart(), "getActivePage");
 		return activePage >= 0 ? getCTabItem(activePage) : null;
@@ -74,31 +74,31 @@ public class MultiPageEditorPartAccess
 	    getCTabItem(label).click();
 	}
 
-    @InUIThread
+    @UIStep
 	public CTabItemAccess getCTabItem(String label) {
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal(), label));
     }
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public EditorPartAccess activatePageEditor(String label) {
 		activatePageWithMouseClick(label);
 		return getActivePageEditor();
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public ControlAccess activatePageControl(String label) {
 		activatePageWithMouseClick(label);
 		return getActivePageControl();
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public EditorPartAccess ensureActiveEditor(String label) {
 		if (!isPageActive(label))
 			activatePageWithMouseClick(label);
 		return getActivePageEditor();
 	}
 
-	@NotInUIThread
+	@InBackgroundThread
 	public ControlAccess ensureActivePage(String label) {
 		if (!isPageActive(label))
 			activatePageWithMouseClick(label);

@@ -5,8 +5,8 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class ComboAccess extends ControlAccess
 {
@@ -19,17 +19,17 @@ public class ComboAccess extends ControlAccess
 		return (Combo)widget;
 	}
     
-    @InUIThread
+    @UIStep
     public boolean isEditable() {
     	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
     }
 	
-    @InUIThread
+    @UIStep
 	public String[] getComboItems() {
 	    return getControl().getItems();
 	}
 	
-	@InUIThread
+	@UIStep
 	public String getTextContent() {
 		return getControl().getText();
 	}
@@ -38,12 +38,12 @@ public class ComboAccess extends ControlAccess
 		Assert.assertTrue("combo is readonly", isEditable());
 	}
 
-    @InUIThread
+    @UIStep
     public void assertTextContent(String regex) {
         Assert.assertTrue("combo content does not match "+regex, getTextContent().matches(regex));
     }
 
-    @InUIThread
+    @UIStep
     public void typeOver(String content) {
         assertEnabled();
         assertEditable();
@@ -56,13 +56,13 @@ public class ComboAccess extends ControlAccess
             typeIn(content);
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     public void clickAndTypeOver(String content) {
         click();
         typeOver(content);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void selectItem(String content) {
         click();
         
@@ -83,12 +83,12 @@ public class ComboAccess extends ControlAccess
         assertTextContent(content);
     }
     
-    @InUIThread
+    @UIStep
     public void assertContainsItem(String regex) {
         Assert.assertTrue("combo does not contain item: " + regex, findString(getComboItems(), regex) != -1);
     }
 
-    @InUIThread
+    @UIStep
     public void assertNotContainsItem(String regex) {
         Assert.assertTrue("combo contains item: " + regex, findString(getComboItems(), regex) == -1);
     }

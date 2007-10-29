@@ -9,8 +9,8 @@ import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 
 /**
@@ -99,7 +99,7 @@ public class ConnectionChooserTest
         compoundModuleEditPart.createConnectionWithPalette(channel, moduleName1, moduleName2, menuItem);
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     private void assertConnectionChooserItemsEnabledState(String moduleName1, String moduleName2, String[] enabledItems, String[] disabledItems, boolean doNotAllowExtraItems) {
         CompoundModuleEditPartAccess compoundModuleEditPart = graphicalNedEditor.findCompoundModule("TestCompoundModule");
         FlyoutPaletteCompositeAccess flyoutPaletteComposite = compoundModuleEditPart.getFlyoutPaletteComposite();
@@ -110,7 +110,7 @@ public class ConnectionChooserTest
         MenuAccess.closeMenus();
      }
 
-    @InUIThread
+    @UIStep
     private void assertMenuState(String[] enabledLabels, String[] disabledLabels, boolean doNotAllowExtraItems) {
         MenuAccess menuAccess = new MenuAccess(Access.getDisplay().getActiveShell().getMenu());
         menuAccess.assertMenuItemsEnabled(enabledLabels);

@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 
 public class ControlAccess extends ClickableWidgetAccess
@@ -23,47 +23,47 @@ public class ControlAccess extends ClickableWidgetAccess
 		return (Control)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertEnabled() {
 		Assert.assertTrue("control is disabled", getControl().getEnabled());
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertDisabled() {
 	    Assert.assertTrue("control is enabled", !getControl().getEnabled());
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertHasFocus() {
 		Assert.assertTrue("control has no focus", getControl().isFocusControl());
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertHasNoFocus() {
 	    Assert.assertTrue("control has focus", !getControl().isFocusControl());
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertVisible() {
 		Assert.assertTrue("control not visible", getControl().isVisible());
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertNotVisible() {
 	    Assert.assertTrue("control visible", !getControl().isVisible());
 	}
 
-	@Override @InUIThread
+	@Override @UIStep
 	protected Point getAbsolutePointToClick() {
 		return toAbsolute(getCenter(getControl().getBounds()));
 	}
 
-    @Override @InUIThread
+    @Override @UIStep
 	protected Point toAbsolute(Point point) {
         return getControl().getParent().toDisplay(point);
     }
 
-	@InUIThread
+	@UIStep
 	public Rectangle getAbsoluteBounds() {
 	    Rectangle bounds = getControl().getBounds();
 	    Point topLeftAbsolute = getControl().getParent().toDisplay(bounds.x, bounds.y);
@@ -80,7 +80,7 @@ public class ControlAccess extends ClickableWidgetAccess
 		pressKeySequence(text);
 	}
 
-	@InUIThread
+	@UIStep
 	public Control findNextControl(final IPredicate predicate) {
 		// Returns the first control after this one that matches the predicate
 		// TODO: should consider layout
@@ -96,7 +96,7 @@ public class ControlAccess extends ClickableWidgetAccess
 		return objects.get(0);
 	}
 
-	@InUIThread
+	@UIStep
 	public Control findNextControl(final Class<? extends Control> clazz) {
 		return findNextControl(new IPredicate() {
 			public boolean matches(Object object) {

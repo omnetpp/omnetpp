@@ -4,7 +4,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.ToolBar;
 import org.omnetpp.common.util.ReflectionUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class ToolBarManagerAccess
     extends Access
@@ -15,7 +15,7 @@ public class ToolBarManagerAccess
         this.toolBarManager = toolBarManager;
     }
     
-    @InUIThread
+    @UIStep
     public ToolBarAccess getToolBar() {
         return new ToolBarAccess((ToolBar)ReflectionUtils.getFieldValue(toolBarManager, "toolBar"));
     }

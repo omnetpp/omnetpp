@@ -16,8 +16,8 @@ import com.simulcraft.test.gui.access.TabItemAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.TableColumnAccess;
 import com.simulcraft.test.gui.access.TextAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class BrowseDataPageAccess extends CompositeAccess {
 	
@@ -50,34 +50,34 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		super(composite);
 	}
 	
-	@InUIThread
+	@UIStep
 	public TabFolderAccess getTabFolder() {
 		return (TabFolderAccess)createAccess(
 					findDescendantControl(TabFolder.class));
 	}
 	
-	@InUIThread
+	@UIStep
 	public TabItemAccess getTabItem(String label) {
 		return getTabFolder().findItemByText(label);
 	}
 	
-	@InUIThread
+	@UIStep
 	public TabItemAccess getSelectedTabItem() {
 		return getTabFolder().getSelection();
 	}
 	
-	@InUIThread
+	@UIStep
 	public CompositeAccess getSelectedTabControl() {
 		return (CompositeAccess) getSelectedTabItem().getClientControl();
 	}
 
-	@InUIThread
+	@UIStep
 	public TableAccess getTable(String label) {
 		TabItem tabitem = getTabItem(label).getWidget();
 		return findDataTable((Composite)tabitem.getControl());
 	}
 	
-	@InUIThread
+	@UIStep
 	public TableAccess getSelectedTable() {
 		return findDataTable(getSelectedTabControl().getControl());
 	}
@@ -94,7 +94,7 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		return getTable(HISTOGRAMS);
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public void showAllTableColumns() {
 		TableAccess table = getSelectedTable();
 		MenuAccess menu = table.activateContextMenuWithMouseClick();
@@ -105,12 +105,12 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		shell.findButtonWithLabel("OK").selectWithMouseClick();
 	}
 	
-	@InUIThread
+	@UIStep
 	public void selectTab(String label) {
 		getTabFolder().selectItem(label);
 	}
 	
-	@InUIThread
+	@UIStep
 	public void ensureTabSelected(String label) {
 		if (!getTabFolder().isSelected(label))
 			selectTab(label);
@@ -128,14 +128,14 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		ensureTabSelected(HISTOGRAMS);
 	}
 	
-	@InUIThread
+	@UIStep
 	public void ensureBasicFilterSelected() {
 		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Basic");
 		if (button != null)
 			button.selectWithMouseClick();
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public TextAccess ensureAdvancedFilterSelected() {
 		ButtonAccess button = getSelectedTabControl().tryToFindButtonWithLabel("Advanced");
 		if (button != null)
@@ -143,27 +143,27 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		return getAdvancedFilterText();
 	}
 	
-	@InUIThread
+	@UIStep
 	public ComboAccess getRunNameFilter() {
 		return getSelectedTabControl().findComboAfterLabel("Run.*");
 	}
 	
-	@InUIThread
+	@UIStep
 	public ComboAccess getModuleNameFilter() {
 		return getSelectedTabControl().findComboAfterLabel("Module.*");
 	}
 	
-	@InUIThread
+	@UIStep
 	public ComboAccess getDataNameFilter() {
 		return getSelectedTabControl().findComboAfterLabel("Name.*");
 	}
 	
-	@InUIThread
+	@UIStep
 	public TextAccess getAdvancedFilterText() {
 		return getSelectedTabControl().findTextAfterLabel("Filter.*");
 	}
 	
-	@InUIThread
+	@UIStep
 	public TableColumnAccess getColumn(String columnName) {
 		return getSelectedTable().getTableColumn(columnName);
 	}

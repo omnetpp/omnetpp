@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class TreeItemAccess extends ClickableWidgetAccess
 {
@@ -24,12 +24,12 @@ public class TreeItemAccess extends ClickableWidgetAccess
 		return (TreeItem)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public TreeAccess getTree() {
 	    return (TreeAccess) createAccess(getWidget().getParent());
 	}
 	
-	@InUIThread
+	@UIStep
 	public TreeItemAccess reveal() {
    		getWidget().getParent().showItem(getWidget());
 		return this;
@@ -51,7 +51,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 	/**
 	 * Useful for selecting a tree item without incidentally activating its cell editor.
 	 */
-	@InUIThread
+	@UIStep
 	public void clickLeftEdge() {
         Rectangle bounds = getWidget().getBounds();
         Point point = getWidget().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
@@ -65,7 +65,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 		return (Menu)getWidget().getParent().getMenu();
 	}
 
-    @InUIThread
+    @UIStep
     public void ensureChecked(boolean state) {
         if (getWidget().getChecked() != state) {
             click();
@@ -73,7 +73,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         }
     }
 
-    @InUIThread
+    @UIStep
     public void ensureExpanded() {
         if (!getWidget().getExpanded()) {
             reveal();
@@ -82,14 +82,14 @@ public class TreeItemAccess extends ClickableWidgetAccess
         }
     }
     
-    @InUIThread
+    @UIStep
     public void clickColumn(int index) {
         Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public TextAccess activateCellEditor() {
         Control oldFocusControl = getFocusControl().getControl();
         click();
@@ -99,7 +99,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         return (TextAccess)createAccess(focusControl);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public TextAccess activateCellEditor(int index) {
         Control oldFocusControl = getFocusControl().getControl();
         clickColumn(index);
@@ -109,7 +109,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         return (TextAccess)createAccess(focusControl);
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     public void clickAndTypeOver(String content) {
         TextAccess cellEditor = activateCellEditor();
         cellEditor.typeOver(content);
@@ -117,7 +117,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
         //assertTextContent(Pattern.quote(content));  //XXX this would assume text gets stored "as is"
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void clickAndTypeOver(int index, String content) {
         TextAccess cellEditor = activateCellEditor(index);
         cellEditor.typeOver(content);
@@ -125,12 +125,12 @@ public class TreeItemAccess extends ClickableWidgetAccess
         //assertTextContent(index, Pattern.quote(content));  //XXX this would assume text gets stored "as is"
     }
 
-    @InUIThread
+    @UIStep
     public void assertTextContent(String content) {
         Assert.assertTrue(getWidget().getText().matches(content));
     }
 
-    @InUIThread
+    @UIStep
     public void assertTextContent(int index, String content) {
         Assert.assertTrue(getWidget().getText(index).matches(content));
     }

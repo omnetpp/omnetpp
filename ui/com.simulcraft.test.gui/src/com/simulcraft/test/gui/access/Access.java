@@ -33,8 +33,8 @@ import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.core.EventTracer;
 import com.simulcraft.test.gui.core.EventUtils;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 import com.simulcraft.test.gui.core.PlatformUtils;
 
 
@@ -107,29 +107,29 @@ public class Access
 		return display != null ? display : Display.getDefault();
 	}
 	
-    @InUIThread
+    @UIStep
 	public static ControlAccess getFocusControl() {
 	    return (ControlAccess) createAccess(Display.getCurrent().getFocusControl());
 	}
 	
-	@InUIThread
+	@UIStep
 	public static WorkbenchWindowAccess getWorkbenchWindow() {
 		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		Assert.assertNotNull("no active workbench window", workbenchWindow);
 		return new WorkbenchWindowAccess(workbenchWindow);
 	}
 
-	@InUIThread
+	@UIStep
 	public static ShellAccess getActiveShell() {
 		return new ShellAccess(getDisplay().getActiveShell());
 	}
 
-    @InUIThread
+    @UIStep
     public static ShellAccess findShellWithTitle(final String title) {
         return findShellWithTitle(title, false);
     }
 
-	@InUIThread
+	@UIStep
 	public static ShellAccess findShellWithTitle(final String title, boolean allowMissing) {
 		return (ShellAccess)createAccess(findObject(getDisplay().getShells(), allowMissing, new IPredicate() {
 			public boolean matches(Object object) {
@@ -144,7 +144,7 @@ public class Access
 		}), allowMissing);
 	}
 
-    @InUIThread
+    @UIStep
 	public static void postEvent(Event event) {
         if (mustHaveActiveShell) {
             Shell activeShell = getDisplay().getActiveShell();
@@ -158,7 +158,7 @@ public class Access
 		Assert.assertTrue("Cannot post event: "+event.toString(), ok);
 	}
 
-	@InUIThread
+	@UIStep
 	public static void processEvents() {
 	    log(debug, "Processing events started");
 
@@ -168,7 +168,7 @@ public class Access
 		log(debug, "Processing events finished");
 	}
 
-	@NotInUIThread
+	@InBackgroundThread
 	public static void sleep(double seconds) {
 	    Assert.assertTrue(seconds >= 0);
 
@@ -182,7 +182,7 @@ public class Access
 	    }
 	}
 
-	@InUIThread
+	@UIStep
 	public static void startTracingEvents() {
 		EventTracer.start();
 	}
@@ -200,7 +200,7 @@ public class Access
 		return event;
 	}
 
-    @InUIThread
+    @UIStep
     public void pressKeySequence(String text) {
         for (int i = 0; i < text.length(); i++) {
             char character = text.charAt(i);
@@ -211,32 +211,32 @@ public class Access
         }
     }
 
-	@InUIThread
+	@UIStep
 	public void pressEnter() {
 		pressKey(SWT.KEYPAD_CR);
 	}
 	
-	@InUIThread
+	@UIStep
 	public void pressKey(int keyCode) {
 		pressKey(keyCode, SWT.None);
 	}
 
-	@InUIThread
+	@UIStep
 	public void pressKey(int keyCode, int modifierKeys) {
 		pressKey((char)0, keyCode, modifierKeys);
 	}
 
-	@InUIThread
+	@UIStep
 	public void pressKey(char character) {
 		pressKey(character, SWT.None);
 	}
 
-	@InUIThread
+	@UIStep
 	public void pressKey(char character, int modifierKeys) {
 		pressKey(character, 0, modifierKeys);
 	}
 
-	@InUIThread
+	@UIStep
 	public void pressKey(char character, int keyCode, int modifierKeys) {
 		Event event;
 
@@ -258,7 +258,7 @@ public class Access
 			releaseModifiers(modifierKeys);
 	}
 
-    @InUIThread
+    @UIStep
     public void holdDownModifiers(int modifierKeys) {
         Event event;
         
@@ -281,7 +281,7 @@ public class Access
         }
     }
 
-    @InUIThread
+    @UIStep
     public void releaseModifiers(int modifierKeys) {
         Event event;
 
@@ -328,7 +328,7 @@ public class Access
 		}
 	}
 
-	@InUIThread
+	@UIStep
     public static ContentAssistAccess findContentAssistPopup() {
         // Content Assist popup is a Table in a Composite in a nameless Shell
 	    IPredicate predicate = getContentAssisPredicate();
@@ -336,13 +336,13 @@ public class Access
         return new ContentAssistAccess(new ShellAccess(shell).findTable().getControl());
     }
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public static void assertHasNoContentAssistPopup() {
 	    Access.sleep(0.5);
 	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups(getContentAssisPredicate()).size() == 0);
 	}
 	
-	@InUIThread
+	@UIStep
     protected static List<Object> collectContentAssistPopups(IPredicate predicate) {
         return collectObjects(getDisplay().getShells(), predicate);
     }
@@ -373,37 +373,37 @@ public class Access
         };
 	}
 	
-    @InUIThread
+    @UIStep
 	public static Object findObject(List<Object> objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate), predicate);
 	}
 
-	@InUIThread
+	@UIStep
 	public static Object findObject(Object[] objects, IPredicate predicate) {
 		return theOnlyObject(collectObjects(objects, predicate), predicate);
 	}
 
-    @InUIThread
+    @UIStep
     public static Object findObject(Object[] objects, boolean allowMissing, IPredicate predicate) {
         return theOnlyObject(collectObjects(objects, predicate), predicate, allowMissing);
     }
 
-    @InUIThread
+    @UIStep
     public static boolean hasObject(List<Object> objects, IPredicate predicate) {
         return collectObjects(objects, predicate).size() == 1;
     }
 
-    @InUIThread
+    @UIStep
     public static Object hasObject(Object[] objects, IPredicate predicate) {
         return collectObjects(objects, predicate).size() == 1;
     }
 
-	@InUIThread
+	@UIStep
 	public static List<Object> collectObjects(List<Object> objects, IPredicate predicate) {
 		return collectObjects(objects.toArray(new Object[0]), predicate);
 	}
 	
-	@InUIThread
+	@UIStep
 	public static List<Object> collectObjects(Object[] objects, IPredicate predicate) {
 		ArrayList<Object> resultObjects = new ArrayList<Object>();
 
@@ -414,22 +414,22 @@ public class Access
 		return resultObjects;
 	}
 
-	@InUIThread
+	@UIStep
 	public static Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
 		return findDescendantControl(composite, new InstanceofPredicate(clazz));
 	}
 
-	@InUIThread
+	@UIStep
 	public static Control findDescendantControl(Composite composite, IPredicate predicate) {
 		return theOnlyControl(collectDescendantControls(composite, predicate), predicate);
 	}
 
-    @InUIThread
+    @UIStep
     public static boolean hasDescendantControl(Composite composite, IPredicate predicate) {
         return collectDescendantControls(composite, predicate).size() == 1;
     }
 
-	@InUIThread
+	@UIStep
 	public static List<Control> collectDescendantControls(Composite composite, IPredicate predicate) {
 		ArrayList<Control> controls = new ArrayList<Control>();
 		collectDescendantControls(composite, predicate, controls);
@@ -498,7 +498,7 @@ public class Access
 	    public double valueOf(Object object);
 	}
 
-    @InUIThread
+    @UIStep
     public static Control findControlMaximizing(List<Control> controls, IValue valueFunction) {
         Control result = null;
         double max = Double.NEGATIVE_INFINITY;
@@ -517,22 +517,22 @@ public class Access
         return result;
     }
 
-	@InUIThread
+	@UIStep
 	public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
 		return findDescendantFigure(figure, new InstanceofPredicate(clazz));
 	}
 
-	@InUIThread
+	@UIStep
 	public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {
 		return theOnlyFigure(collectDescendantFigures(figure, predicate), predicate);
 	}
 
-    @InUIThread
+    @UIStep
     public static boolean hasDescendantFigure(IFigure figure, IPredicate predicate) {
         return collectDescendantFigures(figure, predicate).size() == 1;
     }
 
-	@InUIThread
+	@UIStep
 	public static List<IFigure> collectDescendantFigures(IFigure figure, IPredicate predicate) {
 		ArrayList<IFigure> figures = new ArrayList<IFigure>();
 		collectDescendantFigures(figure, predicate, figures);
@@ -549,22 +549,22 @@ public class Access
 		}
 	}
 	
-	@InUIThread
+	@UIStep
 	public static EditPart findDescendantEditPart(EditPart editPart, final Class<? extends EditPart> clazz) {
 	    return findDescendantEditPart(editPart, new InstanceofPredicate(clazz));
 	}
 
-	@InUIThread
+	@UIStep
 	public static EditPart findDescendantEditPart(EditPart editPart, IPredicate predicate) {
 		return theOnlyEditPart(collectDescendantEditParts(editPart, predicate), predicate);
 	}
 
-    @InUIThread
+    @UIStep
     public static boolean hasDescendantEditPart(EditPart editPart, IPredicate predicate) {
         return collectDescendantEditParts(editPart, predicate).size() == 1;
     }
 
-	@InUIThread
+	@UIStep
 	public static List<EditPart> collectDescendantEditParts(EditPart editPart, IPredicate predicate) {
 		ArrayList<EditPart> editParts = new ArrayList<EditPart>();
 		collectDescendantEditParts(editPart, predicate, editParts);
@@ -642,7 +642,7 @@ public class Access
 	 * Unfortunately, it's all nulls in the arrays. (This is due to runPopups() running
 	 * before all syncExec()/asyncExec() code...)
 	 */
-	@InUIThread
+	@UIStep
 	public static void dumpCurrentMenus() {
 		Display display = Display.getDefault();
 		Menu[] bars = (Menu[]) ReflectionUtils.getFieldValue(display, "bars");
@@ -671,14 +671,14 @@ public class Access
 	 * Dumps all widgets of all known shells. Note: active popup menus are
 	 * sadly not listed (not returned by Display.getShells()).
 	 */
-	@InUIThread
+	@UIStep
 	public static void dumpWidgetHierarchy() {
 	    System.out.println("display-root");
 		for (Shell shell : Display.getDefault().getShells())
 			dumpWidgetHierarchy(shell, 1);
 	}
 
-	@InUIThread
+	@UIStep
 	public static void dumpWidgetHierarchy(Control control) {
 		dumpWidgetHierarchy(control, 0);
 	}

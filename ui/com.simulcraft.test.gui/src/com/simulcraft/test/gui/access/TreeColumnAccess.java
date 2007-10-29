@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class TreeColumnAccess extends ClickableWidgetAccess
 {
@@ -20,12 +20,12 @@ public class TreeColumnAccess extends ClickableWidgetAccess
 		return (TreeColumn)widget;
 	}
 
-    @InUIThread
+    @UIStep
     public TreeAccess getTree() {
         return (TreeAccess) createAccess(getWidget().getParent());
     }
 	
-	@InUIThread
+	@UIStep
 	public TreeColumnAccess reveal() {
 		//TODO horizontally scroll there
 		return this;
@@ -57,7 +57,7 @@ public class TreeColumnAccess extends ClickableWidgetAccess
 	 * Returns the x coordinate of the left edge of the column, relative to the tree.
 	 * Horizontal scrolling of tree is also taken into account.
 	 */
-	@InUIThread
+	@UIStep
 	public int getX() {
 	    Tree tree = (Tree)getWidget().getParent();
 	    TreeColumn[] columns = tree.getColumns();

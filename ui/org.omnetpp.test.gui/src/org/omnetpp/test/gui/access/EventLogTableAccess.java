@@ -11,8 +11,8 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class EventLogTableAccess
     extends CompositeAccess
@@ -26,35 +26,35 @@ public class EventLogTableAccess
         return (EventLogTable)widget;
     }
     
-    @Override @InUIThread
+    @Override @UIStep
     protected Menu getContextMenu() {
         return getControl().getCanvas().getMenu();
     }
     
-    @InUIThread
+    @UIStep
     public void assertTopVisibleEventNumber(int eventNumber) {
         EventLogTable eventLogTable = getControl();
         Assert.assertTrue(eventLogTable.getTopVisibleElement().getEventNumber() == eventNumber);
     }
 
-    @InUIThread
+    @UIStep
     public void assertBottomFullyVisibleEventNumber(int eventNumber) {
         EventLogTable eventLogTable = getControl();
         Assert.assertTrue(eventLogTable.getBottomFullyVisibleElement().getEventNumber() == eventNumber);
     }
 
-    @InUIThread
+    @UIStep
     public void assertSelectedEventNumber(int eventNumber) {
         EventLogTable eventLogTable = getControl();
         Assert.assertTrue(eventLogTable.getSelectionElement().getEventNumber() == eventNumber);
     }
 
-    @InUIThread
+    @UIStep
     public int getPageJumpCount() {
         return getControl().getPageJumpCount();
     }
     
-    @InUIThread
+    @UIStep
     public MenuAccess activateContextMenuWithMouseClickAtSelectedElement() {
         EventLogTable eventLogTable = getControl();
         Point point = eventLogTable.getVisibleElementLocation(eventLogTable.getSelectionElement());
@@ -63,7 +63,7 @@ public class EventLogTableAccess
         return new MenuAccess(getContextMenu());
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public MenuAccess activateContextMenuWithMouseClick(int eventNumber) {
         if (isEventNumberVisible(eventNumber))
             activateContextMenuWithMouseClickForVisibleEvent(eventNumber);
@@ -75,14 +75,14 @@ public class EventLogTableAccess
         return new MenuAccess(getContextMenu());
     }
     
-    @InUIThread
+    @UIStep
     public boolean isEventNumberVisible(int eventNumber) {
         EventLogTable eventLogTable = getControl();
         return eventLogTable.getTopVisibleElement().getEventNumber() <= eventNumber &&
                eventNumber <= eventLogTable.getBottomFullyVisibleElement().getEventNumber();
     }
 
-    @InUIThread
+    @UIStep
     public void activateContextMenuWithMouseClickForVisibleEvent(int eventNumber) {
         EventLogTable eventLogTable = getControl();
         
@@ -99,7 +99,7 @@ public class EventLogTableAccess
         Assert.fail("Event number " + eventNumber + " not visible");
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     public void gotoEventNumber(int eventNumber) {
         activateContextMenuWithMouseClick().activateMenuItemWithMouse("Goto event...");
         ShellAccess shell = Access.findShellWithTitle("Goto event");

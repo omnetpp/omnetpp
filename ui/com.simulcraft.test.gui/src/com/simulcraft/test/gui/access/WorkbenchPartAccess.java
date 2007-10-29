@@ -9,7 +9,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class WorkbenchPartAccess
 	extends Access
@@ -51,27 +51,27 @@ public class WorkbenchPartAccess
 		return (Composite)getPartSite().getPane().getControl();
 	}
 
-	@InUIThread
+	@UIStep
 	public TreeAccess findTree() {
 		return getComposite().findTree();
 	}
 
-    @InUIThread
+    @UIStep
     public TableAccess findTable() {
         return getComposite().findTable();
     }
 
-	@InUIThread
+	@UIStep
 	public void activateWithMouseClick() {
 		getCTabItem().click();
 	}
 
-    @InUIThread
+    @UIStep
     public CTabItemAccess getCTabItem() {
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), getPartName()));
     }
     
-    @InUIThread
+    @UIStep
     public boolean isActivated() {
         CTabItem cTabItem = getCTabItem().getWidget();
         IWorkbenchPart workbenchPart = getWorkbenchPart();
@@ -79,12 +79,12 @@ public class WorkbenchPartAccess
         		workbenchPart.getSite().getPage().getActivePart() == workbenchPart;
     }
     
-    @InUIThread
+    @UIStep
     public void assertActivated() {
     	Assert.assertTrue("The workbench part '" + getWorkbenchPart().getSite().getRegisteredName() + "' is not activated", isActivated());
     }
     
-    @InUIThread
+    @UIStep
     public void ensureActivated() {
         if (!isActivated())
             activateWithMouseClick();

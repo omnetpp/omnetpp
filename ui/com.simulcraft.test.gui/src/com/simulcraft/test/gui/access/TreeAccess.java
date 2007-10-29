@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 
 public class TreeAccess extends ControlAccess
@@ -28,22 +28,22 @@ public class TreeAccess extends ControlAccess
 		return (Tree)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertEmpty() {
 		Assert.assertTrue("tree is not empty", getControl().getItemCount() == 0);
 	}
 
-    @InUIThread
+    @UIStep
     public void assertNotEmpty() {
         Assert.assertTrue("tree is empty", getControl().getItemCount() != 0);
     }
 
-    @InUIThread
+    @UIStep
     public void assertHeaderVisible() {
         Assert.assertTrue("tree header not visible", getControl().getHeaderVisible());
     }
 
-    @InUIThread
+    @UIStep
     public void assertHeaderNotVisible() {
         Assert.assertTrue("tree header visible", !getControl().getHeaderVisible());
     }
@@ -54,18 +54,18 @@ public class TreeAccess extends ControlAccess
      * If you need literal (non-regex) match, quote the strings beforehand using
      * Pattern.quote().
      */
-    @NotInUIThread
+    @InBackgroundThread
     public void assertContent(GenericTreeNode... content) {
     	expandAll(); // expand all items because the Tree can be virtual
     	doAssertContent(content);
     }
 
-    @InUIThread
+    @UIStep
     protected void doAssertContent(GenericTreeNode... content) {
         Assert.assertTrue("tree content does not match expected content", compareContent(getControl().getItems(), content));
     }
 
-    @InUIThread
+    @UIStep
     public TreeItemAccess[] getItems() {
     	TreeItem[] items = getControl().getItems();
     	TreeItemAccess[] treeItems = new TreeItemAccess[items.length];
@@ -74,7 +74,7 @@ public class TreeAccess extends ControlAccess
     	return treeItems;
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     public void expandAll() {
     	for (TreeItemAccess item : getItems()) {
     		item.reveal();
@@ -83,7 +83,7 @@ public class TreeAccess extends ControlAccess
     	}
     }
 	
-    @InUIThread
+    @UIStep
 	public TreeItemAccess findTreeItemByPath(String path) {
         // TODO: Note that findTreeItemByContent() does deep search, so this code won't work
         // if any segment is not fully unique in the tree!
@@ -93,7 +93,7 @@ public class TreeAccess extends ControlAccess
         return findTreeItemByContent(new Path(path).lastSegment()).reveal();
 	}
 
-	@InUIThread
+	@UIStep
 	public TreeItemAccess findTreeItemByContent(final String content) {
 		TreeItem treeItem = findTreeItem(getControl().getItems(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -111,12 +111,12 @@ public class TreeAccess extends ControlAccess
 		return new TreeItemAccess(treeItem);
 	}
 
-    @InUIThread
+    @UIStep
     public TreeItem findTreeItem(TreeItem[] treeItems, IPredicate predicate) {
         return (TreeItem)theOnlyWidget(collectTreeItems(getControl().getItems(), predicate), predicate);
     }
 
-	@InUIThread
+	@UIStep
 	public List<TreeItem> collectTreeItems(TreeItem[] treeItems, IPredicate predicate) {
 		ArrayList<TreeItem> resultTreeItems = new ArrayList<TreeItem>();
 		collectTreeItems(treeItems, predicate, resultTreeItems);
@@ -132,7 +132,7 @@ public class TreeAccess extends ControlAccess
 		}
 	}
 	
-	@InUIThread
+	@UIStep
 	protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
 		if (treeItems.length != expectedItems.length) {
             System.out.format("Tree content mismatch. Expected %d children, found %d", expectedItems.length, treeItems.length);
@@ -154,7 +154,7 @@ public class TreeAccess extends ControlAccess
 		return true;
 	}
 
-    @InUIThread
+    @UIStep
     public TreeColumnAccess[] getTreeColumns() {
         ArrayList<TreeColumnAccess> result = new ArrayList<TreeColumnAccess>(); 
         for (TreeColumn item : getControl().getColumns())
@@ -165,17 +165,17 @@ public class TreeAccess extends ControlAccess
     /**
      * Return the given column; columns are in creation order. 
      */
-	@InUIThread
+	@UIStep
 	public TreeColumnAccess getTreeColumn(int index) {
 	    return new TreeColumnAccess(getControl().getColumns()[index]);
 	}
 
-	@InUIThread
+	@UIStep
 	public int[] getTreeColumnOrder() {
 	    return getControl().getColumnOrder();
 	}
 
-    @InUIThread
+    @UIStep
     public TreeItemAccess[] getSelection() {
         ArrayList<TreeItemAccess> result = new ArrayList<TreeItemAccess>(); 
         for (TreeItem item : getControl().getSelection())

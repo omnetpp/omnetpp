@@ -5,7 +5,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.simulcraft.test.gui.access.CTabItemAccess;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 
@@ -25,7 +25,7 @@ public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 		return (DatasetsAndChartsPageAccess)ensureActivePage("Datasets");
 	}
 	
-	@InUIThread
+	@UIStep
 	public void closePage(String label) {
 		CTabItemAccess item = getCTabItem(label);
 		item.clickOnCloseIcon();

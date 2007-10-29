@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorPart;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class EditorPartAccess
 	extends WorkbenchPartAccess
@@ -19,38 +19,38 @@ public class EditorPartAccess
 		return (IEditorPart)workbenchPart;
 	}
 	
-	@Override @InUIThread
+	@Override @UIStep
     public CTabItemAccess getCTabItem() {
 		String tabLabel = getWorkbenchPart().isDirty() ? "\\*" + getPartName() : getPartName();
         return (CTabItemAccess)createAccess(findDescendantCTabItemByLabel(getCompositeInternal().getParent(), tabLabel));
     }
 	
-	@InUIThread
+	@UIStep
 	public void saveWithHotKey() {
 		pressKey('s', SWT.CONTROL);
 	}
 
-	@InUIThread
+	@UIStep
 	public void closeWithHotKey() {
 		pressKey(SWT.F4, SWT.CONTROL);
 	}
 
-	@InUIThread
+	@UIStep
 	public StyledTextAccess findStyledText() {
 		return getComposite().findStyledText();
 	}
 	
-    @InUIThread
+    @UIStep
 	public ToolBarManagerAccess getToolBarManager() {
         return new ToolBarManagerAccess(getWorkbenchPart().getEditorSite().getActionBars().getToolBarManager());
 	}
 
-	@InUIThread
+	@UIStep
     public void assertDirty() {
         Assert.assertTrue("editor is not dirty", getWorkbenchPart().isDirty());
     }
 
-	@InUIThread
+	@UIStep
     public void assertNotDirty() {
         Assert.assertTrue("editor is dirty", !getWorkbenchPart().isDirty());
     }

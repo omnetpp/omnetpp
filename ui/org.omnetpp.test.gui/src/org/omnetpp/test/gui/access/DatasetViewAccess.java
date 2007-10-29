@@ -10,8 +10,8 @@ import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.ToolItemAccess;
 import com.simulcraft.test.gui.access.ViewPartAccess;
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class DatasetViewAccess extends ViewPartAccess {
 
@@ -19,12 +19,12 @@ public class DatasetViewAccess extends ViewPartAccess {
 		super(viewPart);
 	}
 	
-	@InUIThread
+	@UIStep
 	public CompositeAccess getMainPanel() {
 		return (CompositeAccess)getComposite().findControlWithID(TestSupport.DATASET_VIEW_MAIN_PANEL_ID);
 	}
 	
-	@InUIThread
+	@UIStep
 	public CompositeAccess getActivePanel() {
 		CompositeAccess mainPanel = getMainPanel();
 		Assert.assertTrue(mainPanel.getControl().getLayout() instanceof StackLayout);
@@ -32,69 +32,69 @@ public class DatasetViewAccess extends ViewPartAccess {
 		return (CompositeAccess)createAccess(layout.topControl);
 	}
 	
-	@InUIThread
+	@UIStep
 	public CompositeAccess getScalarsPanel() {
 		return (CompositeAccess)getComposite().findControlWithID(TestSupport.DATASET_VIEW_SCALARS_PANEL_ID);
 	}
 	
-	@InUIThread
+	@UIStep
 	public CompositeAccess getVectorsPanel() {
 		return (CompositeAccess)getComposite().findControlWithID(TestSupport.DATASET_VIEW_VECTORS_PANEL_ID);
 	}
 	
-	@InUIThread
+	@UIStep
 	public boolean isScalarsPanelActivated() {
 		return getActivePanel() != null && getActivePanel().getControl() == getScalarsPanel().getControl();
 	}
 	
-	@InUIThread
+	@UIStep
 	public boolean isVectorsPanelActivated() {
 		return getActivePanel() != null && getActivePanel().getControl() == getVectorsPanel().getControl();
 	}
 
-	@InUIThread
+	@UIStep
 	public void assertScalarsPanelActivated() {
 		Assert.assertTrue("Scalars panel is not active", isScalarsPanelActivated());
 	}
 	
-	@InUIThread
+	@UIStep
 	public void assertVectorsPanelActivated() {
 		Assert.assertTrue("Vectors panel is not active", isVectorsPanelActivated());
 	}
 	
-	@InUIThread
+	@UIStep
 	public void activateScalarsPanel() {
 		getShowScalarsButton().click();
 	}
 	
-	@InUIThread
+	@UIStep
 	public void activateVectorsPanel() {
 		getShowVectorsButton().click();
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public void ensureScalarsPanelActivated() {
 		if (!isScalarsPanelActivated())
 			activateScalarsPanel();
 	}
 	
-	@NotInUIThread
+	@InBackgroundThread
 	public void ensureVectorsPanelActivated() {
 		if (!isVectorsPanelActivated())
 			activateVectorsPanel();
 	}
 	
-	@InUIThread
+	@UIStep
 	public TableAccess getScalarsTable() {
 		return getScalarsPanel().findTable();
 	}
 	
-	@InUIThread
+	@UIStep
 	public TableAccess getVectorsTable() {
 		return getVectorsPanel().findTable();
 	}
 	
-	@InUIThread
+	@UIStep
 	protected ToolItemAccess findToolButton(String tooltip) {
 		return getViewToolbar().findToolItemWithToolTip(tooltip);
 	}

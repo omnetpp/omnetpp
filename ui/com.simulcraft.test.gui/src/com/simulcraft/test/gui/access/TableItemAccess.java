@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class TableItemAccess extends ClickableWidgetAccess
 {
@@ -25,12 +25,12 @@ public class TableItemAccess extends ClickableWidgetAccess
 		return (TableItem)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public TableAccess getTable() {
 	    return (TableAccess) createAccess(getWidget().getParent());
 	}
 
-	@InUIThread
+	@UIStep
 	public TableItemAccess reveal() {
 		Table table = getWidget().getParent();
 		int myIndex = ArrayUtils.indexOf(table.getItems(), getWidget());
@@ -54,7 +54,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 	/**
      * Useful for selecting a table item without incidentally activating its cell editor.
      */
-    @InUIThread
+    @UIStep
     public void clickLeftEdge() {
         Rectangle bounds = getWidget().getBounds();
         Point point = getWidget().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
@@ -69,7 +69,7 @@ public class TableItemAccess extends ClickableWidgetAccess
 		return (Menu)getWidget().getParent().getMenu();
 	}
 	
-    @InUIThread
+    @UIStep
     public void ensureChecked(boolean state) {
         if (getWidget().getChecked() != state) {
             reveal();
@@ -78,14 +78,14 @@ public class TableItemAccess extends ClickableWidgetAccess
         }
     }
 	
-    @InUIThread
+    @UIStep
     public void clickColumn(int index) {
         Point point = getWidget().getParent().toDisplay(getCenter(getWidget().getTextBounds(index)));
         Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public TextAccess activateCellEditor() {
         Control oldFocusControl = getFocusControl().getControl();
         click();
@@ -95,7 +95,7 @@ public class TableItemAccess extends ClickableWidgetAccess
         return (TextAccess)createAccess(focusControl);
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public TextAccess activateCellEditor(int index) {
         Control oldFocusControl = getFocusControl().getControl();
         clickColumn(index);
@@ -105,7 +105,7 @@ public class TableItemAccess extends ClickableWidgetAccess
         return (TextAccess)createAccess(focusControl);
     }
     
-    @NotInUIThread
+    @InBackgroundThread
     public void clickAndTypeOver(String content) {
         TextAccess cellEditor = activateCellEditor();
         cellEditor.typeOver(content);
@@ -113,7 +113,7 @@ public class TableItemAccess extends ClickableWidgetAccess
         //assertTextContent(Pattern.quote(content));  //XXX this would assume text gets stored "as is"
     }
 
-    @NotInUIThread
+    @InBackgroundThread
     public void clickAndTypeOver(int index, String content) {
         TextAccess cellEditor = activateCellEditor(index);
         cellEditor.typeOver(content);
@@ -121,12 +121,12 @@ public class TableItemAccess extends ClickableWidgetAccess
         //assertTextContent(index, Pattern.quote(content));  //XXX this would assume text gets stored "as is"
     }
 
-    @InUIThread
+    @UIStep
     public void assertTextContent(String content) {
         Assert.assertTrue(getWidget().getText().matches(content));
     }
 
-    @InUIThread
+    @UIStep
     public void assertTextContent(int index, String content) {
         Assert.assertTrue(getWidget().getText(index).matches(content));
     }

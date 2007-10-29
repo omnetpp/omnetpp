@@ -7,7 +7,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.*;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.util.Predicate;
 
 
@@ -22,22 +22,22 @@ public class CompositeAccess extends ControlAccess
 		return (Composite)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public Control findDescendantControl(Class<? extends Control> clazz) {
 		return findDescendantControl(getControl(), clazz);
 	}
 
-	@InUIThread
+	@UIStep
 	public Control findDescendantControl(IPredicate predicate) {
 		return findDescendantControl(getControl(), predicate);
 	}
 
-	@InUIThread
+	@UIStep
 	public List<Control> collectDescendantControls(IPredicate predicate) {
 		return collectDescendantControls(getControl(), predicate);
 	}
 
-	@InUIThread
+	@UIStep
 	public ButtonAccess findButtonWithLabel(final String label) {
 		return new ButtonAccess((Button)findDescendantControl(getControl(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -55,7 +55,7 @@ public class CompositeAccess extends ControlAccess
 		}));
 	}
 	
-    @InUIThread
+    @UIStep
     public ButtonAccess findButtonAfterLabel(final String labelText, final String buttonText) {
         final LabelAccess labelAccess = findLabel(labelText);
         return new ButtonAccess((Button)labelAccess.findNextControl(new IPredicate() {
@@ -73,7 +73,7 @@ public class CompositeAccess extends ControlAccess
         }));
     }
 
-    @InUIThread
+    @UIStep
 	public ButtonAccess tryToFindButtonWithLabel(final String label) {
 		List<Control> buttons = collectDescendantControls(getControl(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -93,7 +93,7 @@ public class CompositeAccess extends ControlAccess
 		return button != null ? (ButtonAccess)createAccess(button) : null;
 	}
 
-	@InUIThread
+	@UIStep
 	public LabelAccess findLabel(final String label) {
 		Label labelControl = (Label)findDescendantControl(getControl(), new IPredicate() {
 			public boolean matches(Object object) {
@@ -112,70 +112,70 @@ public class CompositeAccess extends ControlAccess
 		return new LabelAccess(labelControl);
 	}
 
-	@InUIThread
+	@UIStep
 	public TreeAccess findTree() {
 		return new TreeAccess((Tree)findDescendantControl(Tree.class));
 	}
 
-	@InUIThread
+	@UIStep
 	public TableAccess findTable() {
 		return new TableAccess((Table)findDescendantControl(Table.class));
 	}
 
-	   @InUIThread
+	   @UIStep
 	public CanvasAccess findCanvas() {
 	        return new CanvasAccess((Canvas)findDescendantControl(Canvas.class));
     }
 
-    @InUIThread
+    @UIStep
     public CTabFolderAccess findCTabFolder() {
         return (CTabFolderAccess)createAccess(findDescendantControl(getControl(), CTabFolder.class));
     }
 
-    @InUIThread
+    @UIStep
     public TabFolderAccess findTabFolder() {
         return (TabFolderAccess)createAccess(findDescendantControl(getControl(), TabFolder.class));
     }
 
-    @InUIThread
+    @UIStep
 	public StyledTextAccess findStyledText() {
 		return new StyledTextAccess((StyledText)findDescendantControl(StyledText.class));
 	}
 	
-	@InUIThread
+	@UIStep
 	public ComboAccess findCombo() {
 		return (ComboAccess)createAccess(findDescendantControl(Combo.class));
 	}
 
-	@InUIThread
+	@UIStep
 	public TextAccess findTextAfterLabel(String label) {
 		final LabelAccess labelAccess = findLabel(label);
 		return new TextAccess((Text)labelAccess.findNextControl(Text.class));
 	}
 
-    @InUIThread
+    @UIStep
     public TextAccess findText() {
         return new TextAccess((Text)Access.findDescendantControl(getControl(), Text.class));
     }
 
-	@InUIThread
+	@UIStep
 	public ComboAccess findComboAfterLabel(String label) {
 		final LabelAccess labelAccess = findLabel(label);
 		return new ComboAccess((Combo)labelAccess.findNextControl(Combo.class));
 	}
 
-	@InUIThread
+	@UIStep
 	public TreeAccess findTreeAfterLabel(String label) {
 		final LabelAccess labelAccess = findLabel(label);
 		return new TreeAccess((Tree)labelAccess.findNextControl(Tree.class));
 	}
 	
-    @InUIThread
+    @UIStep
     public ControlAccess findControlWithID(String id) {
         return (ControlAccess)createAccess(findDescendantControl(Predicate.hasID(id)));
     }
     
-    @InUIThread
+    @UIStep
     public ToolItemAccess findToolItemWithToolTip(final String toolTip) {
         ToolBar toolBar = (ToolBar)findDescendantControl(new IPredicate() {
             public boolean matches(Object object) {

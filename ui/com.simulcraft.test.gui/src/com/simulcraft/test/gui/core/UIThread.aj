@@ -28,7 +28,7 @@ public aspect UIThread {
 	 * When the code is already executing in the UI thread, just
 	 * proceed with the call.
 	 */
-	Object around(): execution(@InUIThread * *(..)) {
+	Object around(): execution(@UIStep * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 	    if (Display.getCurrent() != null) {
 	        Access.log(debug, "AJ: doing " + method + " (already in UI thread)");
@@ -44,7 +44,7 @@ public aspect UIThread {
 	    }
 	}
 	
-	before(): execution(@NotInUIThread * *(..)) {
+	before(): execution(@InBackgroundThread * *(..)) {
 	    String method = thisJoinPointStaticPart.getSignature().getDeclaringType().getName() + "." + thisJoinPointStaticPart.getSignature().getName();
 		Assert.assertTrue("Must be in a background thread to call: " + method + " (make sure AspectJ advises your test case classes!)", Display.getCurrent()==null);
 	}

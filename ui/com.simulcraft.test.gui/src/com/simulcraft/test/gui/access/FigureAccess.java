@@ -16,7 +16,7 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class FigureAccess
 	extends ClickableAccess
@@ -67,7 +67,7 @@ public class FigureAccess
         return null;
     }
 
-	@InUIThread
+	@UIStep
 	public void click(int button) {
         reveal();
         // TODO center is NOT necessarily OK. It can happen that the center of the figure is
@@ -75,12 +75,12 @@ public class FigureAccess
 	    click(button, getCenter(getAbsoluteBounds()));
 	}
 	
-    @InUIThread
+    @UIStep
     public void click(int button, org.eclipse.swt.graphics.Point point) {
         click(button, point.x, point.y);
     }
 
-    @InUIThread
+    @UIStep
     public void click(int button, int x, int y) {
         clickAbsolute(button, getCanvas().toDisplay(x, y));
     }	
@@ -106,7 +106,7 @@ public class FigureAccess
 	}
 	
 	
-	@InUIThread
+	@UIStep
 	public void reveal() {
 	    // copied from ScrollingGraphicalViewer.reveal(EditPart)
 	    IFigure target = getFigure();

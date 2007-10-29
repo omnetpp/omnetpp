@@ -9,7 +9,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.util.StringUtils;
 
-import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class StyledTextAccess extends CompositeAccess
 {
@@ -22,12 +22,12 @@ public class StyledTextAccess extends CompositeAccess
 		return (StyledText)widget;
 	}
 
-	@InUIThread
+	@UIStep
 	public String getTextContent() {
 		return getControl().getText();
 	}
 
-	@InUIThread
+	@UIStep
 	public void moveCursorAfter(String patternString) {
 	    int targetOffset = getOffsetAfter(patternString);
 	    reveal(targetOffset);
@@ -35,7 +35,7 @@ public class StyledTextAccess extends CompositeAccess
 		clickAbsolute(LEFT_MOUSE_BUTTON, loc);
 	}
 	
-	@InUIThread
+	@UIStep
 	public void reveal(int offset) {
 	    // FIXME it moves the offset at the top. it would be enough to show only on the screen
 	    // need to scroll horizontally as well
@@ -43,7 +43,7 @@ public class StyledTextAccess extends CompositeAccess
         getControl().setTopIndex(lineAtOffset);
 	}
 
-    @InUIThread
+    @UIStep
     public int getOffsetAfter(String patternString) {
         String text = getTextContent();
 		Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
@@ -60,7 +60,7 @@ public class StyledTextAccess extends CompositeAccess
      * Checks StyledText contents with String.equals(). Note: the StyledText
      * control does NOT contain the content of collapsed folding regions.
      */
-    @InUIThread
+    @UIStep
     public void assertContent(String expectedContent) {
         String actualContent = getTextContent();
         Assert.assertTrue("StyledText content does not match", actualContent.equals(expectedContent));
@@ -71,7 +71,7 @@ public class StyledTextAccess extends CompositeAccess
      * the StyledText control does NOT contain the content of collapsed 
      * folding regions.
      */
-    @InUIThread
+    @UIStep
     public void assertContentIgnoringWhiteSpace(String expectedContent) {
         String actualContent = getTextContent();
         Assert.assertTrue("StyledText content does not match", StringUtils.areEqualIgnoringWhiteSpace(actualContent, expectedContent));
@@ -81,7 +81,7 @@ public class StyledTextAccess extends CompositeAccess
      * Checks StyledText contents with regex match. Note: the StyledText
      * control does NOT contain the content of collapsed folding regions.
      */
-    @InUIThread
+    @UIStep
     public void assertContentMatches(String regex) {
         String actualContent = getTextContent();
         Assert.assertTrue("StyledText content does not match", actualContent.matches(regex));
