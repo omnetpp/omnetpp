@@ -4,17 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.*;
 import org.omnetpp.common.util.IPredicate;
 
 import com.simulcraft.test.gui.core.InUIThread;
@@ -131,6 +121,11 @@ public class CompositeAccess extends ControlAccess
 	public TableAccess findTable() {
 		return new TableAccess((Table)findDescendantControl(Table.class));
 	}
+
+	   @InUIThread
+	public CanvasAccess findCanvas() {
+	        return new CanvasAccess((Canvas)findDescendantControl(Canvas.class));
+    }
 
     @InUIThread
     public CTabFolderAccess findCTabFolder() {

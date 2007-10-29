@@ -22,4 +22,5 @@ Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Bundle-ClassPath: .
 Export-Package: org.omnetpp.scave,
+ org.omnetpp.scave.charting,
  org.omnetpp.scave.model2

@@ -6,6 +6,7 @@ import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
 
 import com.simulcraft.test.gui.access.LabelAccess;
 import com.simulcraft.test.gui.access.TextAccess;
+import com.simulcraft.test.gui.access.TextEditorAccess;
 
 public class TextFieldEditorTest extends InifileEditorTestCase {
     private TextAccess prepareTest() throws Exception {
@@ -46,7 +47,7 @@ public class TextFieldEditorTest extends InifileEditorTestCase {
     public void testShiftHome() throws Exception {
         TextAccess text = prepareTest();
 
-        text.clickAndTypeOver("fooooo");
+        text.clickAndTypeOver("FooOoo");
 
         text.pressKey(SWT.END);
         text.pressKey(SWT.HOME, SWT.SHIFT);
@@ -55,4 +56,14 @@ public class TextFieldEditorTest extends InifileEditorTestCase {
         text.assertTextContent(""); // must be empty now
     }
 
+    public void testShiftHomeInTextEditor() throws Exception {
+        createFileWithContent("");
+        openFileFromProjectExplorerView();
+        TextEditorAccess textEditor = findInifileEditor().ensureActiveTextEditor();
+        textEditor.typeIn("hello world");
+
+        textEditor.pressKey(SWT.END);
+        textEditor.pressKey(SWT.HOME, SWT.SHIFT);
+        textEditor.pressKey(SWT.BS);
+    }
 }

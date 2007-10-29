@@ -3,6 +3,11 @@ package com.simulcraft.test.gui.access;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
+import com.simulcraft.test.gui.core.InUIThread;
+import com.simulcraft.test.gui.core.NotInUIThread;
+
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Decorations;
@@ -11,11 +16,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
-
-import com.simulcraft.test.gui.core.InUIThread;
-import com.simulcraft.test.gui.core.NotInUIThread;
 
 
 public class MenuAccess extends WidgetAccess {
@@ -46,6 +49,11 @@ public class MenuAccess extends WidgetAccess {
 				public boolean matches(Object object) {
 					String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
 					return menuItemLabel.matches(label);
+				}
+				
+				@Override
+				public String toString() {
+				    return "menu item with label: "+label;
 				}
 			}));
 		} catch (RuntimeException e) {
@@ -101,6 +109,11 @@ public class MenuAccess extends WidgetAccess {
     public void assertMenuItemsDisabled(String[] labels) {
         for (String label : labels) 
             findMenuItemByLabel(label).assertDisabled();        
+    }
+
+    @InUIThread
+    public void assertVisible() {
+        Assert.assertTrue("menu not visible", getWidget().isVisible());
     }
 
     @NotInUIThread

@@ -41,9 +41,9 @@ public class TextAccess extends ControlAccess
         assertHasFocus();
         Text text = getControl();
         if (text.getSelectionCount() != text.getText().length()) {
-            //pressKey('a', SWT.CONTROL); -- doesn't appear to work everywhere, e.g. in the inifile editor form pages
-            pressKey(SWT.END);
-            pressKey(SWT.HOME, SWT.SHIFT);
+            pressKey('a', SWT.CONTROL); // -- doesn't appear to work everywhere, e.g. in the inifile editor form pages
+//            pressKey(SWT.END);
+//            pressKey(SWT.HOME, SWT.SHIFT);
         }
         if (text.getText().length() > 0 && content.equals(""))
             pressKey(SWT.DEL);
