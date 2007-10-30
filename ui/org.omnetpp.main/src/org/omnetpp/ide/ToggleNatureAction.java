@@ -21,6 +21,7 @@ import org.eclipse.ui.IWorkbenchPart;
  * 
  * @author Andras
  */
+//FIXME "Add Nature" should rather be a wizard? Like CDT's "Convert to C++ project" wizard. What about "Remove Nature"?
 public class ToggleNatureAction implements IObjectActionDelegate {
     private ISelection selection;
 
