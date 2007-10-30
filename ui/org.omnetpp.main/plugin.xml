@@ -134,5 +134,20 @@
          </enabledWhen>
       </page>
    </extension>
-
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.omnetpp.main.contribution1"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="org.omnetpp.ide.ToggleNatureAction"
+               enablesFor="+"
+               id="org.omnetpp.ide.addRemoveNatureAction"
+               label="Add/Remove OMNeT++ Nature"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
+   </extension>
 </plugin>
