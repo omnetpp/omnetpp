@@ -33,9 +33,9 @@ public class AnimationEffects  {
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
         "html   { font-family: 'Tahoma',sans-serif; font-size: 16pt; font-style: normal; font-weight: normal; }\n" +
         "pre    { font-family: monospace; }\n" +
-        "body   { overflow: auto; margin-top: 0px; margin-bottom: 0.5em; margin-left: 0.3em; margin-right: 0px; }\n" +
+        "body   { overflow: auto; margin: 10px;}\n" +
         "</style></head>\n" +
-        "<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
+        "<body text=\"#000000\" bgcolor=\"#cde1f9\">\n";
     private static final String HTML_EPILOG =
         "</body></html>\n";
     
@@ -191,7 +191,7 @@ public class AnimationEffects  {
     @UIStep
     private static IInformationControl showInformationControl(String msg, int x, int y, int w, int h) {
         IInformationControl informationControl = getInformationPresenterControlCreator().createInformationControl(Display.getCurrent().getActiveShell());
-        informationControl.setSizeConstraints(400, 300);
+        informationControl.setSizeConstraints(800, 600);
         informationControl.setInformation(msg);
         informationControl.setSize(w, h);
         informationControl.setLocation(new Point(x,y));

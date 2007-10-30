@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.access;
 import junit.framework.Assert;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -25,6 +26,12 @@ public class ShellAccess extends CompositeAccess
         return getCenter(getControl().getBounds());
     }
 
+    @Override
+    @UIStep
+    public Rectangle getAbsoluteBounds() {
+        return getControl().getBounds();
+    }
+    
 	@UIStep
 	public MenuAccess getMenuBar() {
 		return new MenuAccess(getControl().getMenuBar());

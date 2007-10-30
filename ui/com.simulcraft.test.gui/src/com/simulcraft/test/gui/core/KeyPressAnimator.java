@@ -76,7 +76,7 @@ public class KeyPressAnimator implements Listener {
                  || e.character >= ' '))
             return false;
         // if we press a normal key plus SHIFT or ALTGR (SHIFT+CTRL) we do not need feedback
-        if ((modifierState == SWT.SHIFT || modifierState == (SWT.SHIFT | SWT.CTRL))&& e.character >= ' ')
+        if (e.character >= ' ' && e.character <= 127)
             return false;
         return true;
     }
