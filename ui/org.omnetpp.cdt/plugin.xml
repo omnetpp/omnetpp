@@ -20,5 +20,21 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.omnetpp.cdt.makefile.CPlusPlusSourceFoldersPropertyPage"
+            id="org.omnetpp.cdt.CPlusPlusSourceFolders"
+            name="C++ Source Folders (OMNEST/OMNeT++)">
+         <enabledWhen>
+             <adapt type="org.eclipse.core.resources.IProject">
+               <and>
+                  <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
+                  <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.ccnature"/>
+               </and>
+             </adapt>         
+         </enabledWhen>
+      </page>
+   </extension>
 
 </plugin>

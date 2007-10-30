@@ -39,7 +39,7 @@ import org.omnetpp.common.util.StringUtils;
 // - dependencies on other projects
 // - compile-time flags (ie. -I for external libs)
 // - ... ?
-public class CppTools {
+public class MakefileTools {
     // standard C headers, see e.g. http://www-ccs.ucsd.edu/c/lib_over.html
     public static final String C_HEADERS = 
         "assert.h ctype.h errno.h float.h iso646.h limits.h locale.h " +
@@ -272,7 +272,7 @@ public static IContainer[] collectFolders(IContainer container) throws CoreExcep
                     monitor.subTask(member.getFullPath().toString());
                     try {
                         IFile file = (IFile)member;
-                        List<Include> includes = CppTools.parseIncludes(file);
+                        List<Include> includes = MakefileTools.parseIncludes(file);
                         result.put(file, includes);
                         
                         if (isMsgFile(file)) {
