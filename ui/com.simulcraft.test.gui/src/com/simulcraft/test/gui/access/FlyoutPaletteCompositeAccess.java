@@ -1,5 +1,8 @@
 package com.simulcraft.test.gui.access;
 
+import junit.framework.Assert;
+
+import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
@@ -27,6 +30,18 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
         findButtonFigureWithLabel(label).reveal();
         findButtonFigureWithLabel(label).click(LEFT_MOUSE_BUTTON);
 	}
+
+    @UIStep
+    public void ensureButtonFigureWithLabelSelected(final String label) {
+        findButtonFigureWithLabel(label).reveal();
+        FigureAccess fa = findButtonFigureWithLabel(label);
+        IFigure fig;
+        for(fig = fa.getFigure(); !(fig instanceof Clickable) && fig != null; fig = fig.getParent());
+        Assert.assertNotNull("Figure must be clickable", fig);
+        
+        if (!((Clickable)fig).isSelected())
+            fa.click(LEFT_MOUSE_BUTTON);
+    }
 
     @UIStep
     public FigureAccess findButtonFigureWithLabel(final String label) {

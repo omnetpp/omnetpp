@@ -1,5 +1,12 @@
 package com.simulcraft.test.gui.core;
 
+import com.simulcraft.test.gui.access.ClickableAccess;
+
+import org.eclipse.jface.internal.text.html.BrowserInformationControl;
+import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
+import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -9,9 +16,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.omnetpp.common.color.ColorFactory;
 
-import com.simulcraft.test.gui.access.ClickableAccess;
+import org.omnetpp.common.color.ColorFactory;
 
 // Notes for Linux/GTK:
 //   - XOR mode doesn't work   
@@ -23,6 +29,15 @@ import com.simulcraft.test.gui.access.ClickableAccess;
 //
 
 public class AnimationEffects  {
+    private static final String HTML_PROLOG =
+        "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
+        "html   { font-family: 'Tahoma',sans-serif; font-size: 16pt; font-style: normal; font-weight: normal; }\n" +
+        "pre    { font-family: monospace; }\n" +
+        "body   { overflow: auto; margin-top: 0px; margin-bottom: 0.5em; margin-left: 0.3em; margin-right: 0px; }\n" +
+        "</style></head>\n" +
+        "<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
+    private static final String HTML_EPILOG =
+        "</body></html>\n";
     
     public static void displayTextBox(String text, long delayMillis) {
     	displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
@@ -152,6 +167,62 @@ public class AnimationEffects  {
         gc.setLineWidth(2);
         gc.setXORMode(true); // won't work on Mac
         gc.drawLine(x1, y1, x2, y2);
+    }
+
+    @InBackgroundThread
+    public static void showMessage(String msg, Rectangle bounds, long delayMillis) {
+        showMessage(msg, bounds.x, bounds.y, bounds.width, bounds.height, delayMillis);
+    }
+
+    @InBackgroundThread
+    public static void showMessage(String msg, int x, int y, int w, int h, long delayMillis) {
+            IInformationControl informationControl = showInformationControl(addHTMLStyleSheet(msg), x, y, w, h);
+            try {
+                Thread.sleep(delayMillis);
+            } catch (InterruptedException e) {}
+            disposeInformationControl(informationControl);
+    }
+
+    @UIStep
+    private static void disposeInformationControl(IInformationControl informationControl) {
+        informationControl.dispose();
+    }
+
+    @UIStep
+    private static IInformationControl showInformationControl(String msg, int x, int y, int w, int h) {
+        IInformationControl informationControl = getInformationPresenterControlCreator().createInformationControl(Display.getCurrent().getActiveShell());
+        informationControl.setSizeConstraints(400, 300);
+        informationControl.setInformation(msg);
+        informationControl.setSize(w, h);
+        informationControl.setLocation(new Point(x,y));
+        
+        informationControl.setVisible(true);
+        informationControl.setFocus();
+        return informationControl;
+    }
+
+    private static IInformationControlCreator getInformationPresenterControlCreator() {
+        return new IInformationControlCreator() {
+            @SuppressWarnings("restriction")
+            public IInformationControl createInformationControl(Shell parent) {
+                // for more info, see JavadocHover class in JDT
+                int shellStyle = SWT.RESIZE | SWT.TOOL;
+                int style = SWT.NONE;
+                if (BrowserInformationControl.isAvailable(parent))
+                    return new BrowserInformationControl(parent, shellStyle, style);
+                else
+                    return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
+            }
+        };
+    }
+
+    /**
+     * Wraps an HTML formatted string with a stylesheet for hover display
+     * @param htmlText
+     * @return
+     */
+    public static String addHTMLStyleSheet(String htmlText) {
+        return htmlText != null ? HTML_PROLOG + htmlText + HTML_EPILOG : null;
     }
 
 }

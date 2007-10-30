@@ -89,7 +89,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 	@InBackgroundThread
     public void createConnectionWithPalette(String channel, String name1, String name2, String connectionOptionLabel) {
 	    FlyoutPaletteCompositeAccess flyoutPaletteComposite = getFlyoutPaletteComposite();
-        flyoutPaletteComposite.clickButtonFigureWithLabel(channel);
+        flyoutPaletteComposite.ensureButtonFigureWithLabelSelected(channel);
         clickSubmoduleFigureWithName(name1);
         clickSubmoduleFigureWithName(name2);
         clickConnectionOption(connectionOptionLabel);

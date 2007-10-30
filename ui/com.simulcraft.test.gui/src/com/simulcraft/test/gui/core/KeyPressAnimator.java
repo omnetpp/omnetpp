@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -53,18 +54,31 @@ public class KeyPressAnimator implements Listener {
             Control focusControl = Display.getCurrent().getFocusControl();
             boolean inTextControl = 
                 focusControl instanceof Text || focusControl instanceof StyledText || 
-                focusControl instanceof Combo || focusControl instanceof CCombo;
+                focusControl instanceof Combo || focusControl instanceof CCombo || 
+                focusControl instanceof Spinner;
 
-            if (!inTextControl || e.character < ' ' || e.character >= 128) {
-                String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                AnimationEffects.displayTextBox(string, longDelayMillis);
-            } 
-            else {
+            if (inTextControl && !needsVisualFeedback(e)) {
                 // typing: just wait a little to slow down the typing
                 long delay = (long) (shortDelayMillis/2 + Math.random()*shortDelayMillis);
                 try { Thread.sleep(delay); } catch (InterruptedException e1) { }
             }
+            else {
+                String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
+                AnimationEffects.displayTextBox(string, longDelayMillis);
+            } 
         }
+    }
+    
+    private boolean needsVisualFeedback(Event e) {
+        if (modifierState == SWT.NONE && 
+                (e.keyCode == SWT.BS || e.keyCode == SWT.ARROW_LEFT || e.keyCode == SWT.ARROW_RIGHT 
+                 || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP 
+                 || e.character >= ' '))
+            return false;
+        // if we press a normal key plus SHIFT or ALTGR (SHIFT+CTRL) we do not need feedback
+        if ((modifierState == SWT.SHIFT || modifierState == (SWT.SHIFT | SWT.CTRL))&& e.character >= ' ')
+            return false;
+        return true;
     }
 
     protected Point getPositionNearFocusWidget() {

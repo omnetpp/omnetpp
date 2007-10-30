@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.access;
 import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Combo;
 
 import com.simulcraft.test.gui.core.UIStep;
@@ -34,6 +35,7 @@ public class ComboAccess extends ControlAccess
 		return getControl().getText();
 	}
 
+    @UIStep
 	public void assertEditable() {
 		Assert.assertTrue("combo is readonly", isEditable());
 	}
@@ -62,9 +64,17 @@ public class ComboAccess extends ControlAccess
         typeOver(content);
     }
 
+    @UIStep
+    public void clickOnArrow() {
+        Rectangle bounds = getControl().getBounds();
+        int x = bounds.x + bounds.width - 5;
+        int y = bounds.y + bounds.height / 2;
+        clickAbsolute(LEFT_MOUSE_BUTTON, getControl().getParent().toDisplay(x, y));
+    }
+    
     @InBackgroundThread
     public void selectItem(String content) {
-        click();
+        clickOnArrow();
         
         if (isEditable()) {
         	typeOver("");
@@ -77,12 +87,11 @@ public class ComboAccess extends ControlAccess
         for (int i=0; i<index; i++)
             pressKey(SWT.ARROW_DOWN);
 
-        if (!isEditable())
-            pressEnter();
+        pressEnter();
         
         assertTextContent(content);
     }
-    
+
     @UIStep
     public void assertContainsItem(String regex) {
         Assert.assertTrue("combo does not contain item: " + regex, findString(getComboItems(), regex) != -1);

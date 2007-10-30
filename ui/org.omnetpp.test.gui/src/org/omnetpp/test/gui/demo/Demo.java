@@ -1,12 +1,15 @@
 package org.omnetpp.test.gui.demo;
 
 import com.simulcraft.test.gui.access.*;
+import com.simulcraft.test.gui.core.AnimationEffects;
 import com.simulcraft.test.gui.core.GUITestCase;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
 
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
@@ -19,7 +22,8 @@ import org.omnetpp.test.gui.scave.ScaveEditorUtils;
 
 public class Demo extends GUITestCase {
     protected String name = "demo";
-    protected boolean delayed = false;
+    protected boolean delayed = true;
+    protected Rectangle defPos = new Rectangle(200, 150, 450, 100);
     
     @Override
     protected void setUp() throws Exception {
@@ -32,8 +36,26 @@ public class Demo extends GUITestCase {
     
     public void testPlay() throws Throwable {
         // open perspective
-      Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
-        
+        if (delayed) 
+            AnimationEffects.showMessage("Welcome to the OMNeT++/OMNEST video demo.", defPos, 5000);
+        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
+        createProject();
+        createNedFile();
+        createDemoNetwork();
+        createIniFile();
+        createLaunchConfigAndLaunch();
+
+        // refresh the workspace to continue with analysis
+        {
+            TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
+            TreeItemAccess treeItem = tree.findTreeItemByContent(name);
+            treeItem.reveal().chooseFromContextMenu("Refresh");
+        }
+
+        analyseResults();
+    }
+
+    private void createProject() {
         {
             //create project
             Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNEST/OMNeT\\+\\+ Project");
@@ -43,7 +65,7 @@ public class Demo extends GUITestCase {
             
             TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
             TreeItemAccess treeItem = tree.findTreeItemByContent(name);
-
+    
             // set dependent projects
             treeItem.reveal().chooseFromContextMenu("Properties");
             ShellAccess shell2 = Access.findShellWithTitle("Properties for demo");
@@ -53,11 +75,12 @@ public class Demo extends GUITestCase {
             
             tree2.findTreeItemByContent("NED Source Folders").click();
             shell2.findButtonWithLabel("OK").selectWithMouseClick();
-
+    
             if (delayed) Access.sleep(3);
         }
-        
-        // create new ned file
+    }
+
+    private void createNedFile() {
         {
             TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
             tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Network Description File \\(ned\\)");
@@ -68,12 +91,13 @@ public class Demo extends GUITestCase {
             shell.findButtonWithLabel("A new toplevel Network").selectWithMouseClick();
             shell.findButtonWithLabel("Finish").selectWithMouseClick();
         }
-        
-        // create demo network
+    }
+
+    private void createDemoNetwork() {
         {
             NedEditorAccess editor = (NedEditorAccess)Access.getWorkbenchWindow().findEditorPartByTitle("demo\\.ned");
             GraphicalNedEditorAccess graphEd = editor.ensureActiveGraphicalEditor();
-
+    
             CompoundModuleEditPartAccess compoundModule = graphEd.findCompoundModule("demo");
             compoundModule.createSubModuleWithPalette("Queue.*", "queue1", 180, 150);
             compoundModule.createSubModuleWithPalette("Queue.*", "queue2", 300, 210);
@@ -86,8 +110,9 @@ public class Demo extends GUITestCase {
             
             Access.getWorkbenchWindow().getShell().findToolItemWithToolTip("Save.*").click();
         }
-        
-        // create INI file
+    }
+
+    private void createIniFile() {
         {
             // create with wizard
             WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
@@ -125,7 +150,7 @@ public class Demo extends GUITestCase {
             if (delayed) Access.sleep(2);
             tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").clickAndTypeOver(1, "0\n");                        
             if (delayed) Access.sleep(1);
-
+    
             // add queue parameters from dialog
             addKeysButton.selectWithMouseClick();
             if (delayed) Access.sleep(2);
@@ -160,27 +185,28 @@ public class Demo extends GUITestCase {
             TextAccess text = form.findTextAfterLabel("Eventlog file:");
             text.clickAndTypeOver("demo.log");
             if (delayed) Access.sleep(2);
-
+    
             // set simulation time limit
             ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("General.*").click();
             if (delayed) Access.sleep(2);
             text = form.findTextAfterLabel("Simulation.*");
             text.clickAndTypeOver("20000");
-
+    
             // set simulation time limit
             ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("Cmdenv.*").click();
             if (delayed) Access.sleep(2);
             form.findLabel("Status frequency.*").click();
             form.findTextAfterLabel("Status frequency.*").typeIn("500");
-
+    
             if (delayed) Access.sleep(3);
             
             iniEditor.activatePageEditor("Text");
             workbenchWindow.getShell().findToolItemWithToolTip("Save.*").click();
             if (delayed) Access.sleep(2);
         }
-        
-        // launch the simulation
+    }
+
+    private void createLaunchConfigAndLaunch() {
         {
             Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Run|Open Run Dialog.*");
             if (delayed) Access.sleep(2);
@@ -192,7 +218,7 @@ public class Demo extends GUITestCase {
             if (delayed) Access.sleep(1);
             shell.findTextAfterLabel("Name:").clickAndTypeOver(name);
             if (delayed) Access.sleep(1);
-
+    
             CompositeAccess cTabFolder = shell.findCTabFolder();
             cTabFolder.findTextAfterLabel("Simulation Program:").click();
             shell.pressKey(SWT.TAB);
@@ -212,7 +238,7 @@ public class Demo extends GUITestCase {
             tree2.pressKey(SWT.ARROW_RIGHT);
             if (delayed) Access.sleep(1);
             tree2.findTreeItemByContent("omnetpp\\.ini").doubleClick();
-
+    
             if (delayed) Access.sleep(3);
             ComboAccess combo = cTabFolder.findComboAfterLabel("Configuration name:");
             combo.selectItem("General.*");
@@ -229,89 +255,56 @@ public class Demo extends GUITestCase {
             WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
             Access.sleep(25);
         }
+    }
 
-        // refresh the workspace to contionue with analysis
+    private void analyseResults() {
         {
-            TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
-            TreeItemAccess treeItem = tree.findTreeItemByContent(name);
-            treeItem.reveal().chooseFromContextMenu("Refresh");
-        }
-        
-      // results analysis
-      {
-          WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-          workbenchWindow.getShell().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|Analysis File \\(anf\\)");
-          ShellAccess shell1 = Access.findShellWithTitle("New Analysis File");
-          shell1.findTree().findTreeItemByContent("demo").click();
-          TextAccess text1 = shell1.findTextAfterLabel("File name:");
-          text1.clickAndTypeOver("demo");
-          shell1.findButtonWithLabel("Finish").selectWithMouseClick();
+              WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+              workbenchWindow.getShell().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|Analysis File \\(anf\\)");
+              ShellAccess shell1 = Access.findShellWithTitle("New Analysis File");
+              shell1.findTree().findTreeItemByContent("demo").click();
+              TextAccess text1 = shell1.findTextAfterLabel("File name:");
+              text1.clickAndTypeOver("demo");
+              shell1.findButtonWithLabel("Finish").selectWithMouseClick();
 
-          // create an analysis file
-          ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
-          InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
-          ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
-          Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
-          
-          // browse data
-          BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
-          bdp.ensureVectorsSelected();
-          bdp.getRunNameFilter().selectItem("General-4.*");
-          bdp.getDataNameFilter().selectItem("length");
-          
-          bdp.click();
-          bdp.pressKey('a', SWT.CTRL);
-          workbenchWindow.getShell().findToolItemWithToolTip("Plot.*").click();
-          
-          // show and play with the chart
-          CompositeAccess chart = (CompositeAccess)scaveEditor.ensureActivePage("Chart: temp1");
-          if (delayed) Access.sleep(3);
-          ControlAccess canvas = ((ControlAccess)Access.createAccess(chart.findDescendantControl(VectorChart.class)));
-          canvas.chooseFromContextMenu("Apply|Mean");
-          if (delayed) Access.sleep(3);
-          
-          // create a dataset from the chart
-          canvas.chooseFromContextMenu("Convert to Dataset.*");
-          ShellAccess shell = Access.findShellWithTitle("Create chart template");
-          shell.findTextAfterLabel("Dataset name:").typeOver("queue length mean");
-          shell.findTextAfterLabel("Chart name:").clickAndTypeOver("queue length");
-          shell.findButtonWithLabel("OK").selectWithMouseClick();
-
-          // manipulate the dataset
-          DatasetsAndChartsPageAccess dp = scaveEditor.ensureDatasetsPageActive();
-          
-          // create dataset
-//          TableAccess table = bdp.getSelectedTable();
-//          MenuAccess menu = table.activateContextMenuWithMouseClick();
-//          menu.activateMenuItemWithMouse("Add [fF]ilter.*");
+              // create an analysis file
+              ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
+              InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
+              ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
+              Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
+              
+              // browse data
+              BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
+              bdp.ensureVectorsSelected();
+              bdp.getRunNameFilter().selectItem("General-4.*");
+              bdp.getDataNameFilter().selectItem("length");
+              
+              bdp.click();
+              bdp.pressKey('a', SWT.CTRL);
+              workbenchWindow.getShell().findToolItemWithToolTip("Plot.*").click();
+              
+              // show and play with the chart
+              CompositeAccess chart = (CompositeAccess)scaveEditor.ensureActivePage("Chart: temp1");
+              if (delayed) Access.sleep(3);
+              ControlAccess canvas = ((ControlAccess)Access.createAccess(chart.findDescendantControl(VectorChart.class)));
+              canvas.chooseFromContextMenu("Apply|Mean");
+              if (delayed) Access.sleep(3);
+              
+              // create a dataset from the chart
+//          canvas.chooseFromContextMenu("Convert to Dataset.*");
+//          ShellAccess shell = Access.findShellWithTitle("Create chart template");
+//          shell.findTextAfterLabel("Dataset name:").typeOver("queue length mean");
+//          shell.findTextAfterLabel("Chart name:").clickAndTypeOver("queue length");
+//          shell.findButtonWithLabel("OK").selectWithMouseClick();
 //
-//          ShellAccess dialogShell = Access.findShellWithTitle("Select.*[dD]ataset.*"); 
-//          dialogShell.findButtonWithLabel("New.*").selectWithMouseClick();
-//          ShellAccess dialogShell2 = Access.findShellWithTitle("New [dD]ataset.*");
-//          TextAccess text = dialogShell2.findTextAfterLabel("Enter.*name.*");
-//          text.typeIn("queue length");
-//          dialogShell2.findButtonWithLabel("OK").selectWithMouseClick();
-//          dialogShell.findButtonWithLabel("OK").selectWithMouseClick();
-          
-//          Access.clickAbsolute(36, 14); //TODO unrecognized click - revise
-//          Access.clickAbsolute(249, 7); //TODO unrecognized click - revise
-//          Access.findShellWithTitle("New Object").findButtonWithLabel("Finish").selectWithMouseClick();
-//          Access.clickAbsolute(62, 12); //TODO unrecognized click - revise
-//          ShellAccess newObjectShell = Access.findShellWithTitle("New Object");
-//          TabFolderAccess tabFolder = newObjectShell.findTabFolder();
-//          TextAccess text = tabFolder.findTextAfterLabel("Chart name:");
-//          text.typeIn("queue length");
-//          tabFolder.click();
-//          tabFolder.findTextAfterLabel("X axis title:").clickAndTypeOver("time");
-//          tabFolder.findTextAfterLabel("Y axis title:").clickAndTypeOver("queue length");
-//          newObjectShell.findButtonWithLabel("Finish").selectWithMouseClick();
-//          composite.findWidgetWithID("Datasets").findTreeItemByContent("line chart queue length").chooseFromContextMenu("Open");
-          
-          if (delayed) Access.sleep(3);
-          workbenchWindow.getShell().findToolItemWithToolTip("Save.*").click();
-          Access.sleep(10);
-          
-          
-      }
+//          // manipulate the dataset
+//          DatasetsAndChartsPageAccess dp = scaveEditor.ensureDatasetsPageActive();
+              
+              if (delayed) Access.sleep(3);
+              workbenchWindow.getShell().findToolItemWithToolTip("Save.*").click();
+              Access.sleep(10);
+              
+              
+          }
     }
 }
