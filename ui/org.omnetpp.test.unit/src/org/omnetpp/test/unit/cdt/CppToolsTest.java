@@ -6,8 +6,8 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.omnetpp.cdt.makefile.CppTools;
-import org.omnetpp.cdt.makefile.CppTools.Include;
+import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.util.StringUtils;
 
 public class CppToolsTest extends TestCase {
@@ -27,7 +27,7 @@ public class CppToolsTest extends TestCase {
             "#include \"six.h\"\n" +
             " \t # \t  include \"../seven.h\"//something\n" +
             "#include \"last.h\"  ";  // note unterminated last line (no \n) 
-        List<Include> includes = CppTools.parseIncludes(src);
+        List<Include> includes = MakefileTools.parseIncludes(src);
         String concat = StringUtils.join(includes, ",");
         Assert.assertEquals(concat, "<one.h>,<two.h>,<two.h>,<three.h>,<sys/four.h>,<../sys/five.h>,\"six.h\",\"../seven.h\",\"last.h\"");
 
