@@ -30,7 +30,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
      */
     @SuppressWarnings("unchecked")
     public void run(IAction action) {
-        List<IProject> projects = getSelectedProjects();
+        List<IProject> projects = getSelectedOpenProjects();
         if (anyProjectMissesNature(projects)) {
             // add OMNeT++ Nature
             for (IProject project : projects)
@@ -51,7 +51,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
      */
     public void selectionChanged(IAction action, ISelection selection) {
         this.selection = selection;
-        List<IProject> projects = getSelectedProjects();
+        List<IProject> projects = getSelectedOpenProjects();
         
         if (action.isEnabled() == projects.isEmpty())
             action.setEnabled(!projects.isEmpty());
@@ -82,7 +82,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
     }
     
     @SuppressWarnings("unchecked")
-    private List<IProject> getSelectedProjects() {
+    private List<IProject> getSelectedOpenProjects() {
         List<IProject> projects = new ArrayList<IProject>();
         if (selection instanceof IStructuredSelection) {
             for (Iterator it = ((IStructuredSelection) selection).iterator(); it.hasNext();) {
@@ -92,7 +92,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
                     project = (IProject) element;
                 else if (element instanceof IAdaptable)
                     project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
-                if (project != null)
+                if (project != null && project.isOpen())
                     projects.add(project);
             }
         }
