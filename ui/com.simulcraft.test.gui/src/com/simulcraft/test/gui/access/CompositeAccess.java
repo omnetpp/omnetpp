@@ -176,7 +176,7 @@ public class CompositeAccess extends ControlAccess
     }
     
     @UIStep
-    public ToolItemAccess findToolItemWithToolTip(final String toolTip) {
+    public ToolItemAccess findToolItemWithTooltip(final String toolTip) {
         ToolBar toolBar = (ToolBar)findDescendantControl(new IPredicate() {
             public boolean matches(Object object) {
                 if (object instanceof ToolBar) {

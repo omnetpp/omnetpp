@@ -452,6 +452,8 @@ public class GUIRecorder implements Listener {
             return "TreeColumnAccess";
         if (resultUIObject instanceof TreeItem)
             return "TreeItemAccess";
+        if (resultUIObject instanceof ToolItem)
+            return "ToolItemAccess";
         if (resultUIObject instanceof Composite)
             return "CompositeAccess";
         if (resultUIObject instanceof Widget)

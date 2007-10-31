@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.Workbench;
 
 import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.ClickableAccess;
 
 
 public abstract class GUITestCase
@@ -19,8 +20,51 @@ public abstract class GUITestCase
 	public abstract class Test {
 		public abstract void run() throws Exception;
 	}
+	
+	/**
+	 * scales ALL time and delay in the test case. ie. setting it 2 will result in a testcase
+	 * running two times slower 
+	 */
+	public void setTimeScale(double timeScale) {
+	    Access.setTimeScale(timeScale);
+	}
+	
+    /**
+     * The average time between keypresses during typing
+     */
+    public void setKeyboardTypeDelay(int delay) {
+        KeyPressAnimator.typingDelay = delay;
+    }
 
-	public static class Step {
+    /**
+     * The time until the shortcut keys are displayed in a tooltip box
+     */
+    public void setShortcutDisplayDelay(int delay) {
+        KeyPressAnimator.shortcutDisplayDelay = delay;
+    }
+    
+    /**
+     * A little delay before the mouse start moving
+     */
+    public void setDelayBeforeMouseMove(int delay) {
+        ClickableAccess.delayBeforeMouseMove = delay;
+    }
+    
+    /**
+     * A delay after the mouse stopped the movement
+     */
+    public void setDelayAfterMouseMove(int delay) {
+        ClickableAccess.delayAfterMouseMove = delay;
+    }
+    
+    /**
+     * How long does it take to move the mouse from the start to the end location
+     */
+    public void setMouseMoveDuration(int delay) {
+        ClickableAccess.mouseMoveDurationMillis = delay;
+    }
+
+    public static class Step {
 		public Object runAndReturn() throws Exception {
 			return null;
 		}

@@ -59,7 +59,7 @@ public class ProjectFileTestCase
     }
 
     protected ToolItemAccess findToolItemWithToolTip(String text) {
-        return findEditorPart().getToolBarManager().getToolBar().findToolItemWithToolTip(text);
+        return findEditorPart().getToolBarManager().getToolBar().findToolItemWithTooltip(text);
     }
 
     protected void assertFileExists() {

@@ -44,7 +44,8 @@ public class Access
     public final static int LEFT_MOUSE_BUTTON = 1;
     public final static int MIDDLE_MOUSE_BUTTON = 2;
     public final static int RIGHT_MOUSE_BUTTON = 3;
-    private static final String TEST_RUNNING = "com.simulcraft.test.running"; 
+    private static final String TEST_RUNNING = "com.simulcraft.test.running";
+    private static double timeScale = 1.0;
 	
     public static boolean debug = false;
     
@@ -71,7 +72,19 @@ public class Access
 	        System.out.println(text);
 	}
 	
-	public static void addAccessFactory(IAccessFactory factory) {
+    public static double getTimeScale() {
+        return timeScale;
+    }
+
+    public static void setTimeScale(double timeScale) {
+        Access.timeScale = timeScale;
+    }
+    
+    public static int rescaleTime(int virtualMs) {
+        return (int)(timeScale * virtualMs);
+    }
+
+    public static void addAccessFactory(IAccessFactory factory) {
         accessFactories.add(factory);
 	}
 
@@ -171,10 +184,12 @@ public class Access
 	@InBackgroundThread
 	public static void sleep(double seconds) {
 	    Assert.assertTrue(seconds >= 0);
-
-	    if (seconds > 0) {
+	 
+	    int milliSec = rescaleTime((int)(seconds * 1000));
+	    
+	    if (milliSec > 0) {
     		try {
-    			Thread.sleep((long)(seconds * 1000));
+    			Thread.sleep(milliSec);
     		}
     		catch (InterruptedException e) {
     			throw new RuntimeException(e);
@@ -313,7 +328,7 @@ public class Access
 		if (PlatformUtils.isGtk && type == SWT.MouseMove && delayMillis != 0) {
 			// OS.XTestFakeMotionEvent(OS.GDK_DISPLAY(), -1, x, y, delayMillis); -- see Display.postEvent()
 			int xDisplay = (Integer)ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "GDK_DISPLAY");
-			ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "XTestFakeMotionEvent", xDisplay, -1, x, y, delayMillis);
+			ReflectionUtils.invokeStaticMethod(PlatformUtils.OS_, "XTestFakeMotionEvent", xDisplay, -1, x, y, rescaleTime(delayMillis));
 		}
 		
 		Event event = newEvent(type); // e.g. SWT.MouseMove
@@ -324,7 +339,7 @@ public class Access
 		postEvent(event);
 
 		if (PlatformUtils.isWindows) {
-			try { Thread.sleep(delayMillis); } catch (InterruptedException e) { }
+			try { Thread.sleep(rescaleTime(delayMillis)); } catch (InterruptedException e) { }
 		}
 	}
 
@@ -706,4 +721,5 @@ public class Access
 				dumpMenu(menuItem.getMenu(), level + 1);
 		}
 	}
+
 }

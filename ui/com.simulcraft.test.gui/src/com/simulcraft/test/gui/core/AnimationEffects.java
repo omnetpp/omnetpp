@@ -1,5 +1,6 @@
 package com.simulcraft.test.gui.core;
 
+import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ClickableAccess;
 
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
@@ -39,22 +40,22 @@ public class AnimationEffects  {
     private static final String HTML_EPILOG =
         "</body></html>\n";
     
-    public static void displayTextBox(String text, long delayMillis) {
+    public static void displayTextBox(String text, int delayMillis) {
     	displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
     }
 
-    public static void displayError(Throwable error, long delayMillis) {
+    public static void displayError(Throwable error, int delayMillis) {
     	displayTextBox(error.toString(), ColorFactory.RED, 12, delayMillis);
     }
 
-    public static void displayTextBox(String text, Color textColor, int fontSize, long delayMillis) {
+    public static void displayTextBox(String text, Color textColor, int fontSize, int delayMillis) {
     	if (PlatformUtils.isWindows)
     		displayTextBox1(text, textColor, fontSize, delayMillis); // draw directly on the display
     	else
     		displayTextBox2(text, textColor, fontSize, delayMillis);  // draw on a temporary shell
     }
 
-    public static void displayTextBox1(String text, Color textColor, int fontSize, long delayMillis) {
+    public static void displayTextBox1(String text, Color textColor, int fontSize, int delayMillis) {
         // choose font, calculate position and size
         Display display = Display.getCurrent();
         GC gc = new GC(display);
@@ -82,7 +83,7 @@ public class AnimationEffects  {
         gc.drawText(text, r.x + r.width/2 - textExtent.x/2, r.y + r.height/2 - textExtent.y/2);
 
         // wait
-        try { Thread.sleep(delayMillis); } catch (InterruptedException e) { }
+        try { Thread.sleep(Access.rescaleTime(delayMillis)); } catch (InterruptedException e) { }
 
         // restore background
         gc.drawImage(savedBackground, r.x, r.y);
@@ -93,7 +94,7 @@ public class AnimationEffects  {
         gc.dispose();
     }
 
-    public static void displayTextBox2(String text, Color textColor, int fontSize, long delayMillis) {
+    public static void displayTextBox2(String text, Color textColor, int fontSize, int delayMillis) {
     	System.out.println("SHOWING: " + text); Display.getCurrent().beep();
     	
         Shell shell = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
@@ -125,7 +126,7 @@ public class AnimationEffects  {
         gc.dispose();
 
         // wait
-        try { Thread.sleep(delayMillis); } catch (InterruptedException e) { }
+        try { Thread.sleep(Access.rescaleTime(delayMillis)); } catch (InterruptedException e) { }
 
         // dispose
         shell.dispose();
@@ -140,7 +141,7 @@ public class AnimationEffects  {
         gc.setXORMode(true); // won't work on Mac
         for (int r = 2; r < 25; r++) {
             gc.drawOval(x-r, y-r, 2*r, 2*r);
-            try { Thread.sleep(5); } catch (InterruptedException e) { break; }
+            try { Thread.sleep(Access.rescaleTime(5)); } catch (InterruptedException e) { break; }
             gc.drawOval(x-r, y-r, 2*r, 2*r);
         }
     }
@@ -149,11 +150,11 @@ public class AnimationEffects  {
         // note: normal drag&drop animation (the SWT one) is missing because we don't call readAndDispatch() between posting mouse events
         drawXorLine(x1, y1, x2, y2);
         displayTextBox("dragging...", 500);
-        ClickableAccess.mouseMoveDurationMillis *= 2;
+        ClickableAccess.setMouseMoveDurationMillis(ClickableAccess.getMouseMoveDurationMillis()*2);
     }
 
     public static void endAnimateDragDrop(int x1, int y1, int x2, int y2) {
-        ClickableAccess.mouseMoveDurationMillis /= 2;
+        ClickableAccess.setMouseMoveDurationMillis(ClickableAccess.getMouseMoveDurationMillis()/2);
         drawXorLine(x1, y1, x2, y2);
         displayTextBox("drop", 300);
         animateClick(x2, y2);
@@ -170,15 +171,15 @@ public class AnimationEffects  {
     }
 
     @InBackgroundThread
-    public static void showMessage(String msg, Rectangle bounds, long delayMillis) {
+    public static void showMessage(String msg, Rectangle bounds, int delayMillis) {
         showMessage(msg, bounds.x, bounds.y, bounds.width, bounds.height, delayMillis);
     }
 
     @InBackgroundThread
-    public static void showMessage(String msg, int x, int y, int w, int h, long delayMillis) {
+    public static void showMessage(String msg, int x, int y, int w, int h, int delayMillis) {
             IInformationControl informationControl = showInformationControl(addHTMLStyleSheet(msg), x, y, w, h);
             try {
-                Thread.sleep(delayMillis);
+                Thread.sleep(Access.rescaleTime(delayMillis));
             } catch (InterruptedException e) {}
             disposeInformationControl(informationControl);
     }

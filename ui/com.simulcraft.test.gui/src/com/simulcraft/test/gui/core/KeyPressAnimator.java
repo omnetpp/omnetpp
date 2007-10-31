@@ -1,5 +1,7 @@
 package com.simulcraft.test.gui.core;
 
+import com.simulcraft.test.gui.access.Access;
+
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -22,26 +24,10 @@ import org.eclipse.swt.widgets.Text;
  * @author Andras
  */
 public class KeyPressAnimator implements Listener {
-    private long longDelayMillis = 500; // box stays up this long
-    private long shortDelayMillis = 50; // average time between keypresses during typing
+    public static int shortcutDisplayDelay = 500; // box stays up this long
+    public static int typingDelay = 50; // average time between keypresses during typing
     
     private int modifierState = 0;
-
-    public long getLongDelayMillis() {
-        return longDelayMillis;
-    }
-
-    public void setLongDelayMillis(long longDelayMillis) {
-        this.longDelayMillis = longDelayMillis;
-    }
-
-    public long getShortDelayMillis() {
-        return shortDelayMillis;
-    }
-
-    public void setShortDelayMillis(long shortDelayMillis) {
-        this.shortDelayMillis = shortDelayMillis;
-    }
 
     public void handleEvent(Event e) {
         if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CONTROL || e.keyCode == SWT.ALT) {
@@ -59,12 +45,12 @@ public class KeyPressAnimator implements Listener {
 
             if (inTextControl && !needsVisualFeedback(e)) {
                 // typing: just wait a little to slow down the typing
-                long delay = (long) (shortDelayMillis/2 + Math.random()*shortDelayMillis);
-                try { Thread.sleep(delay); } catch (InterruptedException e1) { }
+                int delay = (int) (typingDelay/2 + Math.random()*typingDelay);
+                try { Thread.sleep(Access.rescaleTime(delay)); } catch (InterruptedException e1) { }
             }
             else {
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
-                AnimationEffects.displayTextBox(string, longDelayMillis);
+                AnimationEffects.displayTextBox(string, shortcutDisplayDelay);
             } 
         }
     }

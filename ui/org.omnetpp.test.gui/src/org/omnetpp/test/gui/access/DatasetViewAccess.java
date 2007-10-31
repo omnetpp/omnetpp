@@ -96,7 +96,7 @@ public class DatasetViewAccess extends ViewPartAccess {
 	
 	@UIStep
 	protected ToolItemAccess findToolButton(String tooltip) {
-		return getViewToolbar().findToolItemWithToolTip(tooltip);
+		return getViewToolbar().findToolItemWithTooltip(tooltip);
 	}
 	
 	public ToolItemAccess getShowScalarsButton() {

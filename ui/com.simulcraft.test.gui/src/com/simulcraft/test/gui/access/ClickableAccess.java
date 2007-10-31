@@ -6,18 +6,19 @@ import static java.lang.Math.max;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
+import com.simulcraft.test.gui.core.AnimationEffects;
+import com.simulcraft.test.gui.core.UIStep;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
-import com.simulcraft.test.gui.core.AnimationEffects;
-import com.simulcraft.test.gui.core.UIStep;
-
 public class ClickableAccess
 	extends Access 
 {
-    public static boolean smoothMouseMovement = true;
+    public static int delayBeforeMouseMove = 500;
+    public static int delayAfterMouseMove = 500;
     public static int mouseMoveDurationMillis = 500;
     public static int mouseMoveMaxSteps = 30;
 
@@ -45,17 +46,17 @@ public class ClickableAccess
 	public void moveMouseAbsolute(int x, int y) {
 	    Point p = Display.getCurrent().getCursorLocation();
 	    if (p.x != x || p.y != y) {
-	        if (smoothMouseMovement) {
+            postMouseEvent(SWT.MouseMove, 0, p.x, p.y, Access.rescaleTime(delayBeforeMouseMove));
+	        if (mouseMoveDurationMillis > 0) {
 	            log(debug, "moving mouse smoothly from "+p+" to "+new Point(x,y));
                 int steps = max(abs(x-p.x), abs(y-p.y));
 	            if (steps > mouseMoveMaxSteps) steps = mouseMoveMaxSteps;
-	            int stepMillis = max( (int)(mouseMoveDurationMillis / steps), 1);
+	            int stepMillis = max( (int)(Access.rescaleTime(mouseMoveDurationMillis) / steps), 1);
 	            double dt = 1.0 / steps;
 	            for (double t = 0; t < 1.0; t += dt)
 	                postMouseEvent(SWT.MouseMove, 0, p.x + (int)(xt.f(t)*(x-p.x)), p.y + (int)(yt.f(t)*(y-p.y)), stepMillis);
 	        }
-	        postMouseEvent(SWT.MouseMove, 0, x, y);
-
+	        postMouseEvent(SWT.MouseMove, 0, x, y, Access.rescaleTime(delayAfterMouseMove));
 	    }
 	}
 
@@ -66,7 +67,7 @@ public class ClickableAccess
 
 	@UIStep
 	public void clickAbsolute(int button, int x, int y) {
-		moveMouseAbsolute(x, y);
+	    moveMouseAbsolute(x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
@@ -78,7 +79,9 @@ public class ClickableAccess
 
 	@UIStep
 	public void doubleClickAbsolute(int button, int x, int y) {
-		clickAbsolute(button, x, y);
+	    moveMouseAbsolute(x, y);
+        postMouseEvent(SWT.MouseDown, button, x, y);
+        postMouseEvent(SWT.MouseUp, button, x, y);
 		postMouseEvent(SWT.MouseDown, button, x, y);
 		postMouseEvent(SWT.MouseUp, button, x, y);
 	}
@@ -110,5 +113,13 @@ public class ClickableAccess
 
         postMouseEvent(SWT.MouseUp, button, x2, y2);
 	}
+
+    public static int getMouseMoveDurationMillis() {
+        return mouseMoveDurationMillis;
+    }
+
+    public static void setMouseMoveDurationMillis(int mouseMoveDurationMillis) {
+        ClickableAccess.mouseMoveDurationMillis = mouseMoveDurationMillis;
+    }
 
 }
