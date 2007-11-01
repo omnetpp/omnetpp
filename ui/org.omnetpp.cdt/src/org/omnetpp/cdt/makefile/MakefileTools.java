@@ -1,5 +1,6 @@
 package org.omnetpp.cdt.makefile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -121,6 +123,12 @@ public class MakefileTools {
         
         String makeMakeFile = generateMakeMakeFile(containers, deps);
         System.out.println("\n\n" + makeMakeFile);
+        
+        IFile file = rootContainer.getProject().getFile("Makemakefile");
+        if (!file.exists())
+            file.create(new ByteArrayInputStream(makeMakeFile.getBytes()), true, monitor);
+        else 
+            file.setContents(new ByteArrayInputStream(makeMakeFile.getBytes()), true, false, monitor);
     }
 
     public static void dumpDeps(Map<IContainer, Set<IContainer>> deps) {
@@ -134,18 +142,45 @@ public class MakefileTools {
     }
 
     public static String generateMakeMakeFile(IContainer[] containers, Map<IContainer, Set<IContainer>> deps) {
+        // generate unique target name for each folder
+        String reservedNames = "all clean makefiles dist";
+        for (IContainer folder : containers)
+            reservedNames += " " + folder.getName(); 
+        Map<IContainer,String> targetNames = new LinkedHashMap<IContainer, String>();
+        for (IContainer folder : containers) {
+            String targetName = folder.getName().toString().replaceAll("[^a-zA-Z0-9]+", "_") + "_dir";
+            targetName = targetName.replaceFirst("_$", "");
+            if (targetNames.values().contains(targetName)) {
+                int k = 2;
+                while (targetNames.values().contains(tweakName(targetName,k)) || reservedNames.contains(tweakName(targetName,k)))
+                    k++;
+                targetName = tweakName(targetName,k);
+            }
+            targetNames.put(folder, targetName);
+        }
+
+        // generate the makefile
         String result = BOILERPLATE;
+        String allTargetNames = StringUtils.join(targetNames.values(), " ");
+        result += StringUtils.indentLines(StringUtils.breakLines(allTargetNames, 90), "\t") + "\n\n";
         for (IContainer folder : containers) {
             List<String> includeOptions = new ArrayList<String>();
             if (deps.containsKey(folder))
                 for (IContainer dep : deps.get(folder))
                     includeOptions.add("-I" + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
             String folderPath = folder.getProjectRelativePath().toString();  //XXX refine: only relative if it fits best
+
+            result += targetNames.get(folder) + ":\n";
             result += "\tcd " + folderPath + " && $(MAKEMAKE) $(OPTS) -n -r " + StringUtils.join(includeOptions, " ") + "\n";
         }
         return result;
     }
 
+    private static String tweakName(String name, int k) {
+        Assert.isTrue(name.endsWith("_dir"));
+        return name.replaceAll("_dir$", "_" + k + "_dir");
+    }
+    
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      */
@@ -249,7 +284,9 @@ public static IContainer[] collectFolders(IContainer container) throws CoreExcep
     final List<IContainer> result = new ArrayList<IContainer>();
         container.accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (resource instanceof IContainer && !resource.getName().startsWith(".") && !((IContainer)resource).isTeamPrivateMember()) { 
+                if (resource instanceof IContainer && !resource.getName().startsWith(".") && 
+                        !resource.getName().equals("CVS") && !resource.getName().equals("backups") &&
+                        !((IContainer)resource).isTeamPrivateMember()) { 
                     result.add((IContainer)resource);
                     return true;
                 }
