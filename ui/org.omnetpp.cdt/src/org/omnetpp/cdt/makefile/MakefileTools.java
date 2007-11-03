@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -36,11 +37,11 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //XXX requirements: 
-// - ability to ignore some folders (i.e. pass in explicit folder list? .cppfolders file?)
-// - ability to re-use hand-written makefiles in certain dirs
-// - dependencies on other projects
-// - compile-time flags (ie. -I for external libs)
-// - ... ?
+//- ability to ignore some folders (i.e. pass in explicit folder list? .cppfolders file?)
+//- ability to re-use hand-written makefiles in certain dirs
+//- dependencies on other projects
+//- compile-time flags (ie. -I for external libs)
+//- ... ?
 public class MakefileTools {
     // standard C headers, see e.g. http://www-ccs.ucsd.edu/c/lib_over.html
     public static final String C_HEADERS = 
@@ -81,8 +82,8 @@ public class MakefileTools {
         "OPTS=-f -b $(ROOT) -c $(ROOT)/inetconfig$(EXT)\n" + 
         "\n" + 
         "all:\n";
-    
-    
+
+
     /**
      * Represents an #include in a C++ file
      */
@@ -116,19 +117,31 @@ public class MakefileTools {
     }
 
     public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
-        IContainer[] containers = collectFolders(rootContainer);
-        Map<IFile, List<Include>> fileIncludes = processFilesIn(containers, monitor);
+        IContainer[] folders = collectFolders(rootContainer);
+        Map<IFile, List<Include>> fileIncludes = processFilesIn(folders, monitor);
         Map<IContainer,Set<IContainer>> deps = calculateDependencies(fileIncludes);
         // dumpDeps(deps);
-        
-        String makeMakeFile = generateMakeMakeFile(containers, deps);
+
+        Map<IContainer, String> targetNames = generateTargetNames(folders);
+        String makeMakeFile = generateMakeMakeFile(folders, deps, targetNames);
         System.out.println("\n\n" + makeMakeFile);
-        
+
         IFile file = rootContainer.getProject().getFile("Makemakefile");
-        if (!file.exists())
-            file.create(new ByteArrayInputStream(makeMakeFile.getBytes()), true, monitor);
-        else 
-            file.setContents(new ByteArrayInputStream(makeMakeFile.getBytes()), true, false, monitor);
+        ensureFileContent(file, makeMakeFile.getBytes(), monitor);
+    }
+
+    protected static void ensureFileContent(IFile file, byte[] bytes, IProgressMonitor monitor) throws CoreException {
+        // only overwrites file if its content is not already what's desired
+        //XXX check!!!
+        try {
+            if (!file.exists())
+                file.create(new ByteArrayInputStream(bytes), true, monitor);
+            else if (!FileUtils.readBinaryFile(file.getContents()).equals(bytes))
+                file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
+        }
+        catch (IOException e) {
+            throw Activator.wrap(e);
+        }
     }
 
     public static void dumpDeps(Map<IContainer, Set<IContainer>> deps) {
@@ -141,24 +154,7 @@ public class MakefileTools {
         }
     }
 
-    public static String generateMakeMakeFile(IContainer[] containers, Map<IContainer, Set<IContainer>> deps) {
-        // generate unique target name for each folder
-        String reservedNames = "all clean makefiles dist";
-        for (IContainer folder : containers)
-            reservedNames += " " + folder.getName(); 
-        Map<IContainer,String> targetNames = new LinkedHashMap<IContainer, String>();
-        for (IContainer folder : containers) {
-            String targetName = folder.getName().toString().replaceAll("[^a-zA-Z0-9]+", "_") + "_dir";
-            targetName = targetName.replaceFirst("_$", "");
-            if (targetNames.values().contains(targetName)) {
-                int k = 2;
-                while (targetNames.values().contains(tweakName(targetName,k)) || reservedNames.contains(tweakName(targetName,k)))
-                    k++;
-                targetName = tweakName(targetName,k);
-            }
-            targetNames.put(folder, targetName);
-        }
-
+    public static String generateMakeMakeFile(IContainer[] containers, Map<IContainer, Set<IContainer>> deps,Map<IContainer, String> targetNames) {
         // generate the makefile
         String result = BOILERPLATE;
         String allTargetNames = StringUtils.join(targetNames.values(), " ");
@@ -176,11 +172,31 @@ public class MakefileTools {
         return result;
     }
 
+    public static Map<IContainer, String> generateTargetNames(IContainer[] containers) {
+        // generate unique target name for each folder
+        String reservedNames = "all clean makefiles dist";
+        for (IContainer folder : containers)
+            reservedNames += " " + folder.getName(); 
+        Map<IContainer,String> targetNames = new LinkedHashMap<IContainer, String>();
+        for (IContainer folder : containers) {
+            String targetName = folder.getName().toString().replaceAll("[^a-zA-Z0-9]+", "_") + "_dir";
+            targetName = targetName.replaceFirst("_$", "");
+            if (targetNames.values().contains(targetName)) {
+                int k = 2;
+                while (targetNames.values().contains(tweakName(targetName,k)) || reservedNames.contains(tweakName(targetName,k)))
+                    k++;
+                targetName = tweakName(targetName,k);
+            }
+            targetNames.put(folder, targetName);
+        }
+        return targetNames;
+    }
+
     private static String tweakName(String name, int k) {
         Assert.isTrue(name.endsWith("_dir"));
         return name.replaceAll("_dir$", "_" + k + "_dir");
     }
-    
+
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      */
@@ -202,13 +218,13 @@ public class MakefileTools {
         Set<Include> unresolvedIncludes = new HashSet<Include>();
         Set<Include> ambiguousIncludes = new HashSet<Include>();
         Set<Include> unsupportedIncludes = new HashSet<Include>();
-        
+
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
             if (!result.containsKey(container))
                 result.put(container, new HashSet<IContainer>());
             Set<IContainer> currentDeps = result.get(container);
-            
+
             for (Include include : fileIncludes.get(file)) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore
@@ -227,13 +243,13 @@ public class MakefileTools {
                     // determine which IFile(s) the include maps to
                     List<IFile> list = filesByName.get(include.filename.replaceFirst("^.*/", ""));
                     if (list == null) list = new ArrayList<IFile>();
-                    
+
                     int count = 0;
                     IFile includedFile = null;
                     for (IFile i : list)
                         if (i.getLocation().toString().endsWith("/"+include.filename)) // note: we check "real" path (ie. location) not the workspace path!
-                            {count++; includedFile = i;}
-                    
+                        {count++; includedFile = i;}
+
                     if (count == 0) {
                         // included file not found. XXX what do we do?
                         unresolvedIncludes.add(include);
@@ -253,7 +269,7 @@ public class MakefileTools {
                             unsupportedIncludes.add(include);
                         }
                         Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
-                        
+
                         // add folder to the dependent folders
                         if (dependency != container && !currentDeps.contains(dependency))
                             currentDeps.add(dependency);
@@ -280,8 +296,8 @@ public class MakefileTools {
         return result;
     }
 
-public static IContainer[] collectFolders(IContainer container) throws CoreException {
-    final List<IContainer> result = new ArrayList<IContainer>();
+    public static IContainer[] collectFolders(IContainer container) throws CoreException {
+        final List<IContainer> result = new ArrayList<IContainer>();
         container.accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
                 if (resource instanceof IContainer && !resource.getName().startsWith(".") && 
@@ -311,7 +327,7 @@ public static IContainer[] collectFolders(IContainer container) throws CoreExcep
                         IFile file = (IFile)member;
                         List<Include> includes = MakefileTools.parseIncludes(file);
                         result.put(file, includes);
-                        
+
                         if (isMsgFile(file)) {
                             // pretend that the generated _m.h file also exists
                             String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");

@@ -36,5 +36,16 @@
          </enabledWhen>
       </page>
    </extension>
+   <extension
+         id="MakefileBuilder"
+         name="OMNeT++ Makefile Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="false">
+         <run
+               class="org.omnetpp.cdt.makefile.MakefileBuilder">
+         </run>
+      </builder>
+   </extension>
 
 </plugin>

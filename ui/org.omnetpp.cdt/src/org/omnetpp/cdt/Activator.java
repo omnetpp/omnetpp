@@ -1,5 +1,6 @@
 package org.omnetpp.cdt;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -42,8 +43,6 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Returns the shared instance
-     *
-     * @return the shared instance
      */
     public static Activator getDefault() {
         return plugin;
@@ -63,4 +62,12 @@ public class Activator extends AbstractUIPlugin {
         }
     }
 
+    public static CoreException wrap(Throwable exception) {
+        return wrap(exception.toString(), exception);
+    }
+
+    public static CoreException wrap(String message, Throwable exception) {
+        return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+    }
+    
 }
