@@ -1,5 +1,6 @@
 package org.omnetpp.common.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -96,6 +97,10 @@ public class FileUtils {
 		copyFilesOf(sourceDir, null, targetDir, new byte[4096]);
 	}
 
+    public static byte[] readBinaryFile(File file) throws IOException {
+        return readBinaryFile(new FileInputStream(file));
+    }
+
     public static byte[] readBinaryFile(String fileName) throws IOException {
     	return readBinaryFile(new FileInputStream(fileName));
     }
@@ -108,7 +113,11 @@ public class FileUtils {
 
         return b;
     }
-	
+
+    public static String readTextFile(File file) throws IOException {
+        return readTextFile(new FileInputStream(file), null);
+    }
+
     public static String readTextFile(String fileName) throws IOException {
     	return readTextFile(new FileInputStream(fileName), null);
     }
@@ -123,4 +132,13 @@ public class FileUtils {
     	else
     		return new String(readBinaryFile(stream), charset);
     }
+
+    public static void writeBinaryFile(byte[] content, File target) throws IOException {
+        copy(new ByteArrayInputStream(content), target);
+    }
+    
+    public static void writeTextFile(String content, File target) throws IOException {
+        writeBinaryFile(content.getBytes(), target);
+    }
+
 }

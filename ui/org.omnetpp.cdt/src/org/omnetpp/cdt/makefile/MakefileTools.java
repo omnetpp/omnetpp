@@ -136,7 +136,7 @@ public class MakefileTools {
         try {
             if (!file.exists())
                 file.create(new ByteArrayInputStream(bytes), true, monitor);
-            else if (!FileUtils.readBinaryFile(file.getContents()).equals(bytes))
+            else if (!Arrays.equals(FileUtils.readBinaryFile(file.getContents()), bytes)) // NOTE: byte[].equals does NOT compare content, only references!!!
                 file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
         }
         catch (IOException e) {

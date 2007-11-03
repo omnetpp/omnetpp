@@ -1,6 +1,7 @@
 package org.omnetpp.cdt.makefile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,13 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     private Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
 
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+        //FIXME just testing:
+        try {
+            new MakefileGenerator().run(getProject().getLocation().toFile(), new String[]{"-r"});
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         if (kind == FULL_BUILD) {
             fullBuild(monitor);
         } else {
@@ -45,6 +53,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 incrementalBuild(delta, monitor);
             }
         }
+        
         return null;
     }
 
@@ -71,12 +80,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
         String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, deps, targetNames);
-        System.out.println("\n\n" + makeMakeFile);
+      //  System.out.println("\n\n" + makeMakeFile);
 
         IFile file = rootContainer.getProject().getFile("Makemakefile");
         MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
         //...
-        invokeMakemake();
+        //invokeMakemake();
 
     }
 
@@ -117,12 +126,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
         String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, deps, targetNames);
-        System.out.println("\n\n" + makeMakeFile);
+     //   System.out.println("\n\n" + makeMakeFile);
 
         IFile file = rootContainer.getProject().getFile("Makemakefile");
         MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
         
-        invokeMakemake();
+        //invokeMakemake();
     }
 
     private void invokeMakemake() throws CoreException {

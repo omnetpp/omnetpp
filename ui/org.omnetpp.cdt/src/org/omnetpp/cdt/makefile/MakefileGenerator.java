@@ -1,12 +1,16 @@
 package org.omnetpp.cdt.makefile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -32,7 +36,7 @@ public class MakefileGenerator {
     private String ccext;
     private String cfgfile;
     private boolean ignorened;
-    private String exportdefopt;
+    private String exportdefopt = "";
     private String importlibs;
     private boolean fordll;
     private String makecommand;
@@ -68,7 +72,7 @@ public class MakefileGenerator {
         ccext = ""; // we'll try to autodetect it
     }
 
-    public void run(File directory, String[] argv) {
+    public void run(File directory, String[] argv) throws IOException {
         parseArgs(directory, argv);
         generateMakefile();
     }
@@ -81,7 +85,7 @@ public class MakefileGenerator {
         boolean force = true;
         boolean tstamp = true;
         List<String> tstampdirs = new ArrayList<String>();
-        List<String> exceptdirs = new ArrayList<String>();
+        final List<String> exceptdirs = new ArrayList<String>();
 
         this.directory = directory;
         outfile = directory.getName();
@@ -233,50 +237,38 @@ public class MakefileGenerator {
         // }
         // }
 
-        // // try to determine if .cc or .cpp files are used
-        // @ccfiles = glob("*.cc");
-        // @cppfiles = glob("*.cpp");
-        // if ($ccext eq '"))
-        // {
-        // @ccfiles = glob("*.cc");
-        // @cppfiles = glob("*.cpp");
-        // if (@ccfiles==() && @cppfiles!=()) {
-        // $ccext = "cpp";
-        // }
-        // else if (@ccfiles!=() && @cppfiles==()) {
-        // $ccext = "cc";
-        // }
-        // else if (@ccfiles!=() && @cppfiles!=()) {
-        // print STDERR "opp_nmakemake: you have both .cc and .cpp files -- ".
-        // "use -e cc or -e cpp option to select which set of files to use\n";
-        // exit(1);
-        // }
-        // else {
-        // # if no files, use .cc extension
-        // $ccext = "cc";
-        // }
-        // }
-        // else
-        // {
-        // if ($ccext eq "cc" && @ccfiles==() && @cppfiles!=()) {
-        // print STDERR "opp_nmakemake: warning: you specified -e cc but you
-        // have only .cpp files in this directory!\n";
-        // }
-        // if ($ccext eq "cpp" && @cppfiles==() && @ccfiles!=()) {
-        // print STDERR "opp_nmakemake: warning: you specified -e cpp but you
-        // have only .cc files in this directory!\n";
-        // }
-        // }
+        // try to determine if .cc or .cpp files are used
+        List<String> ccfiles = glob("*.cc");
+        List<String> cppfiles = glob("*.cpp");
+        if (StringUtils.isEmpty(ccext)) {
+            if (ccfiles.isEmpty() && !cppfiles.isEmpty())
+                ccext = "cpp";
+            else if (!ccfiles.isEmpty() && cppfiles.isEmpty())
+                ccext = "cc";
+            else if (!ccfiles.isEmpty() && !cppfiles.isEmpty())
+                throw new RuntimeException("opp_nmakemake: you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
+            else
+                ccext = "cc";  // if no files, use .cc extension
+        }
+        else {
+            if (ccext.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
+                System.out.println("opp_nmakemake: warning: you specified -e cc but you have only .cpp files in this directory!");
+            if (ccext.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
+                System.out.println("opp_nmakemake: warning: you specified -e cpp but you have only .cc files in this directory!");
+        }
 
         if (recursive) {
-            // foreach $i (glob("*"))
-            // {
-            // if (-d $i && $i ne "CVS" && $i ne "backups" && $i ne "." && $i ne
-            // ".." && !grep(/$i/,@exceptdirs))
-            // {
-            // push(@subdirs, $i);
-            // }
-            // }
+            File[] list = directory.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    if (file.isDirectory()) {
+                        String name = file.getName();
+                        if (!name.startsWith(".") && !name.equals("CVS") && !name.equals("backups") && !exceptdirs.contains(name))
+                            return true;
+                    }
+                    return false;
+                }});
+            for (File i : list)
+                subdirs.add(i.getName());
         }
 
         if (linkwithobjects) {
@@ -296,31 +288,29 @@ public class MakefileGenerator {
             extdirtstamps.add(quote(i + "/.tstamp"));
         }
 
-        String objpatts = (ignorened ? "" : "*.ned") + "*.msg *." + ccext;
-        for (String objpatt : objpatts.split(" ")) {
+        String[] objpatts = ignorened ? new String[] {"*.msg", "*." + ccext} : new String[] {"*.ned", "*.msg", "*." + ccext};
+        for (String objpatt : objpatts) {
             for (String i : glob(objpatt)) {
                 i = i.replaceAll("\\*[^ ]*", "");
-                i = i.replaceAll("[^ ]*_n\\." + ccext, "");
-                i = i.replaceAll("[^ ]*_m\\." + ccext, "");
-                i = i.replaceAll("\\.ned", "_n.obj");
-                i = i.replaceAll("\\.msg", "_m.obj");
-                i = i.replaceAll("\\." + ccext, ".obj");
+                i = i.replaceAll("[^ ]*_n\\." + ccext + "$", "");
+                i = i.replaceAll("[^ ]*_m\\." + ccext + "$", "");
+                i = i.replaceAll("\\.ned$", "_n.obj");
+                i = i.replaceAll("\\.msg$", "_m.obj");
+                i = i.replaceAll("\\." + ccext + "$", ".obj");
                 if (!i.equals(""))
                     objs.add(i);
             }
         }
 
         for (String i : glob("*.msg")) {
-            i = i.replaceAll("\\.msg", "_m.h");
+            i = i.replaceAll("\\.msg$", "_m.h");
             generatedheaders.add(i);
         }
     }
 
-    public void generateMakefile() {
-        //
-        // now the Makefile creation
-        //
-        PrintStream out = System.out; // FIXME
+    public void generateMakefile() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(bos);
 
         out.print("#\n");
         out.print("# Makefile for " + outfile + "\n");
@@ -365,30 +355,30 @@ public class MakefileGenerator {
             fordllopt = "/DWIN32_DLL";
         }
 
-        out.print("// Name of target to be created (-o option)\n");
+        out.print("# Name of target to be created (-o option)\n");
         out.print("TARGET = " + outfile + suffix + "\n");
         out.print("\n");
-        out.print("// User interface (uncomment one) (-u option)\n");
+        out.print("# User interface (uncomment one) (-u option)\n");
         out.print(c_all + "USERIF_LIBS=$(TKENV_LIBS) $(CMDENV_LIBS)\n");
         out.print(c_cmd + "USERIF_LIBS=$(CMDENV_LIBS)\n");
         out.print(c_tk + "USERIF_LIBS=$(TKENV_LIBS)\n");
         out.print("\n");
-        out.print("// .ned or .h include paths with -I\n");
+        out.print("# .ned or .h include paths with -I\n");
         out.print("INCLUDE_PATH=" + includes + "\n");
         out.print("\n");
-        out.print("// misc additional object and library files to link\n");
+        out.print("# misc additional object and library files to link\n");
         out.print("EXTRA_OBJS=" + xobjs2 + "\n");
         out.print("\n");
-        out.print("// object files from other directories to link with\n");
+        out.print("# object files from other directories to link with\n");
         out.print("EXT_DIR_OBJS=" + extdirobjs2 + "\n");
         out.print("\n");
-        out.print("// time stamps of other directories (used as dependency)\n");
+        out.print("# time stamps of other directories (used as dependency)\n");
         out.print("EXT_DIR_TSTAMPS=" + extdirtstamps2 + "\n");
         out.print("\n");
-        out.print("// Additional libraries (-L, -l, -t options)\n");
+        out.print("# Additional libraries (-L, -l, -t options)\n");
         out.print("LIBS=" + libpath + libs + importlibs + "\n");
         out.print("\n");
-        out.print("//------------------------------------------------------------------------------\n");
+        out.print("#------------------------------------------------------------------------------\n");
 
         // Makefile
         out.print("!include \"" + cfgfile + "\"\n");
@@ -590,18 +580,25 @@ public class MakefileGenerator {
         out.print("\tif not \"$(SUBDIRS)\"==\"\" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && " + makecommand
                 + " makefiles && cd .. || exit /b 1\n");
         out.print("\n");
-        out.print("// \"re-makemake\" is a deprecated, historic name of the above target\n");
+        out.print("# \"re-makemake\" is a deprecated, historic name of the above target\n");
         out.print("re-makemake: makefiles\n");
         out.print("\n");
-        out.print("// DO NOT DELETE THIS LINE -- make depend depends on it.\n");
+        out.print("# DO NOT DELETE THIS LINE -- make depend depends on it.\n");
         out.print("\n");
 
-        // close OUT;
+        out.close();
+        byte[] content = bos.toByteArray();
+
+        // only overwrite file if it does not already exist with the same content,
+        // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
+        File file = new File(directory.getPath() + File.separator + makefile);
+        if (!file.exists() || !Arrays.equals(FileUtils.readBinaryFile(file), content))  // NOTE: byte[].equals does NOT compare the bytes, only the two object references!!!
+            FileUtils.writeBinaryFile(content, file);
     }
 
     private boolean isValidDir(String arg) {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     private boolean exists(String string) {
@@ -675,9 +672,10 @@ public class MakefileGenerator {
     }
 
     private List<String> glob(String pattern) {
-        final String regex = pattern.replace("*", ".*").replace("?", ".?"); // good enough for what we need here
+        final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
         return Arrays.asList(directory.list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
+                System.out.println(name + " ~ " + regex + "-->" + name.matches(regex));
                 return name.matches(regex);
             }}));
     }
