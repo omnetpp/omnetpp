@@ -20,9 +20,22 @@ public class BuildSpecification {
         public String additionalMakeMakeOptions; //XXX refine
     }
 
+    private String configuserLocation;
     private Map<IContainer,FolderInfo> folders = new HashMap<IContainer,FolderInfo>();
+
+    public BuildSpecification() {
+    }
     
+    public String getConfiguserLocation() {
+        return configuserLocation;
+    }
+
+    public void setConfiguserLocation(String configuserLocation) {
+        this.configuserLocation = configuserLocation;
+    }
+
     public FolderInfo getFolderInfo(IContainer folder) {
         return folders.get(folder);
     }
+
 }

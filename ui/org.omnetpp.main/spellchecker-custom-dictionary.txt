@@ -237,3 +237,6 @@ keysym
 keysyms
 keycode
 swt
+phony
+nmake
+filesystem

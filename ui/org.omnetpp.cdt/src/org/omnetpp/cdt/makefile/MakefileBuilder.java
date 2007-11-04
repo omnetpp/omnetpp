@@ -1,7 +1,5 @@
 package org.omnetpp.cdt.makefile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +18,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 
@@ -30,35 +27,32 @@ import org.omnetpp.cdt.makefile.MakefileTools.Include;
  * @author Andras
  */
 public class MakefileBuilder extends IncrementalProjectBuilder {
-    public static final String BUILDER_ID = "org.omnetpp.cdt.sampleBuilder";
+    public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
 
     private BuildSpecification buildSpec = new BuildSpecification();
-    private Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
+    private Map<IFile,List<Include>> fileIncludes = null; // created by first full build
 
+    private boolean generateMakemakefile = false;
+
+    /**
+     * Method declared on IncrementalProjectBuilder. Main entry point.
+     */
+    @Override @SuppressWarnings("unchecked")
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-        //FIXME just testing:
-        try {
-            new MakefileGenerator().run(getProject().getLocation().toFile(), new String[]{"-r"});
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (kind == FULL_BUILD) {
+        if (fileIncludes == null || kind == FULL_BUILD) {
             fullBuild(monitor);
         } else {
             IResourceDelta delta = getDelta(getProject());
-            if (delta == null) {
+            if (delta == null)
                 fullBuild(monitor);
-            } else {
+            else 
                 incrementalBuild(delta, monitor);
-            }
         }
-        
         return null;
     }
 
     protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
-        fileIncludes.clear();
+        fileIncludes = new HashMap<IFile, List<Include>>();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
                 if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE)
@@ -67,89 +61,79 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             }
         });
         
-        //TODO:
-        // get folderlist
-        // generate makemakefile
-        // invoke makemakefile with target "all"
-        // invoke make depend ?
-        IProject rootContainer = getProject();
-        IContainer[] folders = MakefileTools.collectFolders(rootContainer);
-        Map<IFile, List<Include>> fileIncludes = MakefileTools.processFilesIn(folders, monitor);
-        Map<IContainer,Set<IContainer>> deps = MakefileTools.calculateDependencies(fileIncludes);
-        // dumpDeps(deps);
-
-        Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
-        String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, deps, targetNames);
-      //  System.out.println("\n\n" + makeMakeFile);
-
-        IFile file = rootContainer.getProject().getFile("Makemakefile");
-        MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
-        //...
-        //invokeMakemake();
+        generateMakefiles(monitor);
 
     }
 
     protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
-        List<IContainer> changedFolders = new ArrayList<IContainer>();
+        processDelta(delta);
+        generateMakefiles(monitor);  //XXX maybe only in directories affected by the delta
+    }
+
+    protected void generateMakefiles(IProgressMonitor monitor) throws CoreException {
+        // get folder list
+        long startTime1 = System.currentTimeMillis();
+        IProject rootContainer = getProject();
+        IContainer[] folders = MakefileTools.collectFolders(rootContainer);
+        Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
+        //MakefileTools.dumpDeps(folderDeps);
+        System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
+
+        buildSpec.setConfiguserLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
+        
+        if (generateMakemakefile) {
+            //XXX this should probably become body of an Action
+            Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
+            String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, folderDeps, targetNames);
+            IFile file = rootContainer.getProject().getFile("Makemakefile");
+            MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
+        }
+
+        // generate Makefiles in all folders
+        long startTime = System.currentTimeMillis();
+        for (IContainer folder : folders) {
+            try {
+                //System.out.println("Generating makefile in: " + folder.getFullPath());
+                List<String> args = new ArrayList<String>();
+                args.add("-r");  //FIXME rather: explicit subfolder list
+                args.add("-n"); //FIXME from folderType
+                args.add("-c");
+                args.add(buildSpec.getConfiguserLocation());
+                if (folderDeps.containsKey(folder))
+                    for (IContainer dep : folderDeps.get(folder))
+                        args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
+                new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{})); 
+            }
+            catch (IOException e) {
+                e.printStackTrace(); //FIXME more sophisticated
+            }
+        }
+        System.out.println("Generated " + folders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
+        
+        //FIXME refresh workspace if we changed anything....
+    }
+
+    private void processDelta(IResourceDelta delta) throws CoreException {
         delta.accept(new IResourceDeltaVisitor() {
             public boolean visit(IResourceDelta delta) throws CoreException {
                 IResource resource = delta.getResource();
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE)
+                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE) 
                             processFileIncludes((IFile)resource);
                         break;
                     case IResourceDelta.REMOVED: 
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE)
+                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE) 
                             fileIncludes.remove(resource);
                         break;
                     case IResourceDelta.CHANGED:
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE)
+                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE) 
                             processFileIncludes((IFile)resource);
                         break;
                 }
-                //return true to continue visiting children.
-                return true;
+                return true; // continue visiting children
             }
         });
-
-        //TODO:
-        // get folderlist
-        // generate makemakefile
-        // invoke makemakefile with list of changed folders!
-        // invoke make depend ?
-        IProject rootContainer = getProject();
-        IContainer[] folders = MakefileTools.collectFolders(rootContainer);
-        Map<IFile, List<Include>> fileIncludes = MakefileTools.processFilesIn(folders, monitor);
-        Map<IContainer,Set<IContainer>> deps = MakefileTools.calculateDependencies(fileIncludes);
-        // dumpDeps(deps);
-
-        Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
-        String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, deps, targetNames);
-     //   System.out.println("\n\n" + makeMakeFile);
-
-        IFile file = rootContainer.getProject().getFile("Makemakefile");
-        MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
-        
-        //invokeMakemake();
-    }
-
-    private void invokeMakemake() throws CoreException {
-        String command = "makemake.cmd";
-        String envp[] = null;
-        File dir = getProject().getLocation().toFile();
-        try {
-            Process process = Runtime.getRuntime().exec(command, envp, dir);
-            int exitCode = process.waitFor();
-            if (exitCode != 0)
-                throw new RuntimeException("exit code: " + exitCode);
-        }
-        catch (InterruptedException e) {
-            throw Activator.wrap(e);
-        }
-        catch (IOException e) {
-            throw Activator.wrap(e);
-        }
     }
 
     protected int getFolderType(IContainer folder) {
@@ -178,6 +162,4 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         }
         return false;
     }
-
-
 }

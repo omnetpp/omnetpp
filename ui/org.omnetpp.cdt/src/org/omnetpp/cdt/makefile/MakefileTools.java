@@ -118,7 +118,7 @@ public class MakefileTools {
 
     public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
         IContainer[] folders = collectFolders(rootContainer);
-        Map<IFile, List<Include>> fileIncludes = processFilesIn(folders, monitor);
+        Map<IFile, List<Include>> fileIncludes = collectIncludes(folders, monitor);
         Map<IContainer,Set<IContainer>> deps = calculateDependencies(fileIncludes);
         // dumpDeps(deps);
 
@@ -145,6 +145,7 @@ public class MakefileTools {
     }
 
     public static void dumpDeps(Map<IContainer, Set<IContainer>> deps) {
+        System.out.println("Folder dependencies:");
         for (IContainer folder : deps.keySet()) {
             System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {
@@ -278,9 +279,9 @@ public class MakefileTools {
             }
         }
 
-        System.out.println("includes not found: " + StringUtils.join(unresolvedIncludes, " "));
-        System.out.println("ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
-        System.out.println("unsupported cases: " + StringUtils.join(unsupportedIncludes, " "));
+        System.out.println("calculateDependencies: unresolved includes: " + StringUtils.join(unresolvedIncludes, " "));
+        System.out.println("calculateDependencies: ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
+        System.out.println("calculateDependencies: cannot process: " + StringUtils.join(unsupportedIncludes, " "));
 
         // calculate transitive closure
         boolean again = true;
@@ -316,7 +317,7 @@ public class MakefileTools {
         return result.toArray(new IContainer[]{});
     }
 
-    public static Map<IFile,List<Include>> processFilesIn(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
+    public static Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
         final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
 
         for (IContainer container : containers) {

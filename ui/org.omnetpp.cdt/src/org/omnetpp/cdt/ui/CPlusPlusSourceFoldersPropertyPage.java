@@ -1,4 +1,4 @@
-package org.omnetpp.cdt.makefile;
+package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;

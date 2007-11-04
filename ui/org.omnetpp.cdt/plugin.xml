@@ -2,28 +2,9 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            description="All actions global to OMNEST/OMNeT++ C++ Development"
-            id="org.omnetpp.cdt.actionSet"
-            label="OMNEST/OMNeT++ CDT"
-            visible="true">
-         <action
-               class="org.omnetpp.cdt.makefile.GenerateMakeFilesAction"
-               definitionId="org.omnetpp.cdt.generateMakeFiles"
-               id="generateMakeFiles"
-               label="Generate Makefiles"
-               menubarPath="navigate/open.ext2"
-               style="push"
-               toolbarPath="org.eclipse.search.searchActionSet/Search"
-               tooltip="Generate Makefiles">
-         </action>
-      </actionSet>
-   </extension>
-   <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="org.omnetpp.cdt.makefile.CPlusPlusSourceFoldersPropertyPage"
+            class="org.omnetpp.cdt.ui.CPlusPlusSourceFoldersPropertyPage"
             id="org.omnetpp.cdt.CPlusPlusSourceFolders"
             name="C++ Source Folders (OMNEST/OMNeT++)">
          <enabledWhen>
