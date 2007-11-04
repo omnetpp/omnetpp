@@ -202,40 +202,21 @@ public class MakefileGenerator {
         if (exists(makefile) && !force)
             throw new IllegalStateException("opp_nmakemake: use -f to force overwriting existing " + makefile);
 
-        // TODO
-        // if (StringUtils.isEmpty(cfgfile))
-        // {
-        // // try to find it
-        // String progdir = $0;
-        // progdir = progdir.replaceAll("s|\\|/|g");
-        // progdir = progdir.replaceAll("s|/?[^/:]*$||g");
-        // $progdir = "." if ($progdir eq "");
-        // $progparentdir = $progdir;
-        // progparentdir = progparentdir.replaceAll("s|/?[^/:]*/?$||");
-        // foreach $f ("configuser.vc", "../configuser.vc",
-        // "../../configuser.vc",
-        // "../../../configuser.vc", "../../../../configuser.vc",
-        // "../../../../../configuser.vc", "$progparentdir/configuser.vc",
-        // "$progdir/configuser.vc")
-        // {
-        // if (-f $f) {
-        // $cfgfile = $f;
-        // last;
-        // }
-        // }
-        // if ($cfgfile eq "") {
-        // print STDERR "opp_nmakemake: warning: configuser.vc file not found --
-        // try -c option or edit generated makefile\n";
-        // }
-
-        // }
-        // else
-        // {
-        // if (! -f $cfgfile) {
-        // print STDERR "opp_nmakemake: error: file $cfgfile not found\n";
-        // exit(1);
-        // }
-        // }
+         if (StringUtils.isEmpty(cfgfile)) {
+             // try to find it
+             for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
+                 if (new File(directory.getPath() + f).exists()) {
+                     cfgfile = directory.getPath() + f;
+                     break;
+                 }
+             }
+             if (StringUtils.isEmpty(cfgfile))
+                 System.out.println("opp_nmakemake: warning: configuser.vc file not found -- try -c option or edit generated makefile");
+         }
+         else {
+             if (!new File(cfgfile).exists())
+                 throw new RuntimeException("opp_nmakemake: error: file " + cfgfile + " not found");
+         }
 
         // try to determine if .cc or .cpp files are used
         List<String> ccfiles = glob("*.cc");
@@ -607,7 +588,7 @@ public class MakefileGenerator {
     }
 
     private String abs2rel(String abs, String base) {
-        return abs; // XXX see below the perl version
+        return abs2rel(abs, base, null);
     }
 
     /** 
@@ -675,7 +656,6 @@ public class MakefileGenerator {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
         return Arrays.asList(directory.list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                System.out.println(name + " ~ " + regex + "-->" + name.matches(regex));
                 return name.matches(regex);
             }}));
     }
