@@ -89,7 +89,8 @@ public class MakefileTools {
      */
     public static class Include {
         public String filename;
-        public boolean isSysInclude; // true: <foo.h>, false: "foo.h" 
+        public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
+        public IFile resolvesTo;
 
         public Include(String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
@@ -198,10 +199,7 @@ public class MakefileTools {
         return name.replaceAll("_dir$", "_" + k + "_dir");
     }
 
-    /**
-     * For each folder, it determines which other folders it depends on (i.e. includes files from).
-     */
-    public static Map<IContainer,Set<IContainer>> calculateDependencies(Map<IFile,List<Include>> fileIncludes) {
+    public static void resolveIncludes(Map<IFile,List<Include>> fileIncludes) {
         // we'll ignore the standard C/C++ headers
         final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(ALL_STANDARD_HEADERS.split(" ")));
 
@@ -215,18 +213,14 @@ public class MakefileTools {
         }
 
         // process each file, and gradually expand dependencies list
-        Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
         Set<Include> unresolvedIncludes = new HashSet<Include>();
         Set<Include> ambiguousIncludes = new HashSet<Include>();
         Set<Include> unsupportedIncludes = new HashSet<Include>();
 
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
-            if (!result.containsKey(container))
-                result.put(container, new HashSet<IContainer>());
-            Set<IContainer> currentDeps = result.get(container);
-
             for (Include include : fileIncludes.get(file)) {
+                include.resolvesTo = null;
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore
                 }
@@ -261,27 +255,56 @@ public class MakefileTools {
                     }
                     else {
                         // include resolved successfully and unambiguously
-                        IContainer dependency = includedFile.getParent();
-                        int numSubdirs = StringUtils.countMatches(include.filename, "/");
-                        for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
-                            dependency = dependency.getParent();
-                        if (dependency instanceof IWorkspaceRoot) {
-                            //XXX error: cannot represent included dir in the workspace: it is higher than project root
-                            unsupportedIncludes.add(include);
-                        }
-                        Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
-
-                        // add folder to the dependent folders
-                        if (dependency != container && !currentDeps.contains(dependency))
-                            currentDeps.add(dependency);
+                        include.resolvesTo = includedFile;
                     }
                 }
             }
         }
 
-        System.out.println("calculateDependencies: unresolved includes: " + StringUtils.join(unresolvedIncludes, " "));
-        System.out.println("calculateDependencies: ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
-        System.out.println("calculateDependencies: cannot process: " + StringUtils.join(unsupportedIncludes, " "));
+        System.out.println("resolveIncludes: unresolved includes: " + StringUtils.join(unresolvedIncludes, " "));
+        System.out.println("resolveIncludes: ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
+        System.out.println("resolveIncludes: cannot process: " + StringUtils.join(unsupportedIncludes, " "));
+    }
+
+    /**
+     * For each folder, it determines which other folders it depends on (i.e. includes files from).
+     */
+    public static Map<IContainer,Set<IContainer>> calculateDependencies(Map<IFile,List<Include>> fileIncludes) {
+        // find out which files the #includes correspond to
+        resolveIncludes(fileIncludes);
+
+        // process each file, and gradually expand dependencies list
+        Set<Include> unsupportedIncludes = new HashSet<Include>();
+        Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
+
+        for (IFile file : fileIncludes.keySet()) {
+            IContainer container = file.getParent();
+            if (!result.containsKey(container))
+                result.put(container, new HashSet<IContainer>());
+            Set<IContainer> currentDeps = result.get(container);
+
+            for (Include include : fileIncludes.get(file)) {
+                if (include.resolvesTo != null) {
+                    // include resolved successfully and unambiguously
+                    IFile includedFile = include.resolvesTo;
+                    IContainer dependency = includedFile.getParent();
+                    int numSubdirs = StringUtils.countMatches(include.filename, "/");
+                    for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
+                        dependency = dependency.getParent();
+                    if (dependency instanceof IWorkspaceRoot) {
+                        //XXX error: cannot represent included dir in the workspace: it is higher than project root
+                        unsupportedIncludes.add(include);
+                    }
+                    Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
+
+                    // add folder to the dependent folders
+                    if (dependency != container && !currentDeps.contains(dependency))
+                        currentDeps.add(dependency);
+                }
+            }
+        }
+
+        System.out.println("calculateDependencies: cannot represent with -I: " + StringUtils.join(unsupportedIncludes, " "));
 
         // calculate transitive closure
         boolean again = true;
@@ -393,5 +416,34 @@ public class MakefileTools {
         return result;
     }
 
+    /**
+     * For each folder, it determines which other folders it depends on (i.e. includes files from).
+     */
+    //FIXME shouldn't we use location IPaths everywhere for included files?? make understands the file system only... 
+    public static Map<IFile,Set<IFile>> calculatePerFileDependencies(Map<IFile,List<Include>> fileIncludes) {
+        resolveIncludes(fileIncludes); // in case it was not already done in calculateDependencies()...
+
+        Map<IFile,Set<IFile>> result = new HashMap<IFile, Set<IFile>>();
+        for (IFile file : fileIncludes.keySet()) {
+            Set<IFile> includedFiles = new HashSet<IFile>();
+            for (Include include : fileIncludes.get(file))
+                if (include.resolvesTo != null)
+                    includedFiles.add(include.resolvesTo);
+            result.put(file, includedFiles);
+        }
+
+        // calculate transitive closure
+        boolean again = true;
+        while (again) {
+            again = false;
+            // if x includes y, add y's includes to x as well.
+            // and if anything changed, repeat the whole thing
+            for (IFile x : result.keySet())
+                for (IFile y : result.get(x).toArray(new IFile[]{}))
+                    if (result.get(x).addAll(result.get(y))) 
+                        again = true; 
+        }
+        return result;
+    }
 
 }

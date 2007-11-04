@@ -77,6 +77,9 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         IContainer[] folders = MakefileTools.collectFolders(rootContainer);
         Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
         //MakefileTools.dumpDeps(folderDeps);
+
+        //FIXME shouldn't we use location IPaths everywhere for included files?? make understands the file system only... 
+        Map<IFile, Set<IFile>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
         System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
 
         buildSpec.setConfiguserLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
@@ -102,7 +105,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 if (folderDeps.containsKey(folder))
                     for (IContainer dep : folderDeps.get(folder))
                         args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
-                new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{})); 
+                new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps); 
             }
             catch (IOException e) {
                 e.printStackTrace(); //FIXME more sophisticated

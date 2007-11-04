@@ -9,7 +9,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -24,7 +29,8 @@ import org.omnetpp.common.util.StringUtils;
 //- add "-d" option
 //- rename old "-d" to "-S"
 //FIXME support Linux too
-//TODO add dependencies!
+//TODO optimize per-file dependencies -- bulk of execution time is spent there!
+//
 public class MakeMake {
     enum Type {EXE, SO, NOLINK};
     private List<String> args;
@@ -42,7 +48,7 @@ public class MakeMake {
     private String cfgfile = null;
     private String exportdefopt = "";
     private boolean compilefordll;
-    private boolean ignorened; // note: no option for this
+    private boolean ignorened = true; // note: no option for this
     private List<String> fragmentfiles = new ArrayList<String>();
     private List<String> subdirs = new ArrayList<String>();
     private List<String> exceptsubdirs = new ArrayList<String>();
@@ -57,9 +63,9 @@ public class MakeMake {
     public MakeMake() {
     }
 
-    public void run(File directory, String[] argv) throws IOException {
+    public void run(File directory, String[] argv, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
         parseArgs(directory, argv);
-        generateMakefile();
+        generateMakefile(perFileDeps);
     }
 
     public void parseArgs(File directory, String[] argv) {
@@ -182,7 +188,7 @@ public class MakeMake {
         }
     }
 
-    public void generateMakefile() throws IOException {
+    public void generateMakefile(Map<IFile, Set<IFile>> perFileDeps) throws IOException {
         String doxyconf = "doxy.cfg";
         String makecommand = "nmake /nologo /f Makefile.vc";
         List<String> extdirobjs = new ArrayList<String>();
@@ -484,7 +490,7 @@ public class MakeMake {
             String h = i.replaceAll("\\.msg$", "_m.h");
 
             out.println(obj + ": " + c);
-            out.println("\t$(CXX) -c $(NEDCOPTS) /Tp " + c);
+            out.println("\t$(CXX) -c $(COPTS) /Tp " + c);
             out.println();
 
             out.println(c + " " + h + ": " + i);
@@ -542,6 +548,15 @@ public class MakeMake {
         out.println("re-makemake: makefiles");
         out.println();
         out.println("# DO NOT DELETE THIS LINE -- make depend depends on it.");
+        IPath directoryPath = new Path(directory.getPath());
+        for (IFile f : perFileDeps.keySet()) {
+            if (f.getParent().getLocation().equals(directoryPath)) {  //FIXME THIS LINE IS VERY COSTLY!!! with INET, 1000ms out of total 1500ms is spent here 
+                out.print(f.getName() + ":");
+                for (IFile f2 : perFileDeps.get(f))
+                    out.print(" " + f2.getLocation().toString());  //XXX make it relative to this folder or to the project
+                out.println();
+            }
+        }
         out.println();
 
         out.close();
@@ -559,10 +574,11 @@ public class MakeMake {
     }
 
     private String join(List<String> args, String prefix) {
-        String result = "";
+        StringBuilder result = new StringBuilder(args.size() * 32);
         for (String i : args)
-            result += " " + prefix + quote(i);
-        return result.trim();  //XXX split to several backslashed lines if too long?
+            result.append(" ").append(prefix).append(quote(i));
+        //XXX split to several backslashed lines if too long?
+        return result.length()==0 ? "" : result.substring(1); // chop off leading space
     }
 
     private String quote(String string) {
