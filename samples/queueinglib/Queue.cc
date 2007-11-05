@@ -76,9 +76,9 @@ void Queue::handleMessage(cMessage *msg)
 
         job->setTimestamp();
 
-        // processor was idle
         if (!jobServiced)
         {
+        // processor was idle
             arrival( job );
             jobServiced = job;
             processorStateWillChange();
@@ -138,7 +138,7 @@ void Queue::queueLengthWillChange()
 
 void Queue::processorStateWillChange()
 {
-    scalarUtilizationStats.collect2((jobServiced ? 1 : 0), simTime()-prevServiceEventTimeStamp);
+    scalarUtilizationStats.collect2((jobServiced ? 0 : 1), simTime()-prevServiceEventTimeStamp);
     prevServiceEventTimeStamp = simTime();
 }
 
