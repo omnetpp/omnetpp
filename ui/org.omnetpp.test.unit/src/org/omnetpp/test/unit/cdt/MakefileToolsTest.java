@@ -10,7 +10,7 @@ import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.util.StringUtils;
 
-public class CppToolsTest extends TestCase {
+public class MakefileToolsTest extends TestCase {
 
     @Test
     public void testParseIncludes() {
