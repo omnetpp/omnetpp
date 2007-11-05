@@ -1,0 +1,281 @@
+/**
+ * 
+ */
+package org.omnetpp.cdt.makefile;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.omnetpp.common.util.StringUtils;
+
+public class MakemakeOptions {
+    enum Type {EXE, SO, NOLINK};
+    public List<String> args;
+    public File directory = null;
+    public String makefile = "Makefile.vc";
+    public String baseDir = "";
+    public Type type = Type.EXE;
+    public String targetFile = "simulation";
+    public boolean force = false;
+    public boolean linkWithObjects = false;
+    public boolean tstamp = true;
+    public boolean recursive = false;
+    public String userInterface = "ALL";
+    public String ccext = null;
+    public String configFile = null;
+    public String exportDefOpt = "";
+    public boolean compileForDll;
+    public boolean ignoreNedFiles = true; // note: no option for this
+    public List<String> fragmentFiles = new ArrayList<String>();
+    public List<String> subdirs = new ArrayList<String>();
+    public List<String> exceptSubdirs = new ArrayList<String>();
+    public List<String> includeDirs = new ArrayList<String>();
+    public List<String> libDirs = new ArrayList<String>();
+    public List<String> libs = new ArrayList<String>();
+    public List<String> importLibs = new ArrayList<String>();
+    public List<String> tstampDirs = new ArrayList<String>();   //FIXME should become local variable in Makemake!!!
+    public List<String> linkDirs = new ArrayList<String>();
+    public List<String> externalObjects = new ArrayList<String>();
+
+    /**
+     * Create makemake options with the default settings.
+     */
+    public MakemakeOptions(File directory) {
+        this.args = new ArrayList<String>();
+        this.directory = directory;
+        targetFile = directory.getName();
+    }
+    
+    /**
+     * Create makemake options by parsing the given argument list.
+     */
+    public MakemakeOptions(File directory, String[] argv) {
+        parseArgs(directory, argv);
+    }
+
+    /**
+     * Parse the argument list into the member variables
+     */
+    public void parseArgs(File directory, String[] argv) {
+        this.args = Arrays.asList(argv);
+        this.directory = directory;
+        targetFile = directory.getName();
+
+        // process arguments
+        for (int i = 0; i < argv.length; i++) {
+            String arg = argv[i];
+            if (arg.equals("-h") || arg.equals("--help")) {
+                // TODO
+            }
+            else if (arg.equals("-f") || arg.equals("--force")) {
+                force = true;
+            }
+            else if (arg.equals("-e") || arg.equals("--ext")) {
+                ccext = argv[++i];
+            }
+            else if (arg.equals("-o") || arg.equals("--outputfile")) {
+                targetFile = argv[++i];
+                targetFile = abs2rel(targetFile, baseDir);
+            }
+            else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
+                throw new IllegalArgumentException("opp_nmakemake: "+arg+": obsolete option, please remove (dynamic NED loading is now the default)");
+            }
+            else if (arg.equals("-r") || arg.equals("--recurse")) {
+                recursive = true;
+            }
+            else if (arg.equals("-X") || arg.equals("--except")) {
+                String dir = argv[++i]; //FIXME possible out-of-bounds
+                exceptSubdirs.add(dir);
+            }
+            else if (arg.startsWith("-X")) {
+                String dir = StringUtils.removeStart(arg, "-X");
+                exceptSubdirs.add(dir);
+            }
+            else if (arg.equals("-b") || arg.equals("--basedir")) {
+                baseDir = argv[++i];
+            }
+            else if (arg.equals("-c") || arg.equals("--configfile")) {
+                configFile = argv[++i];
+                configFile = abs2rel(configFile, baseDir);
+            }
+            else if (arg.equals("-n") || arg.equals("--nolink")) {
+                type = Type.NOLINK;
+            }
+            else if (arg.equals("-d") || arg.equals("--subdir")) {
+                subdirs.add(argv[++i]);
+            }
+            else if (arg.startsWith("-d")) {
+                String dir = StringUtils.removeStart(arg, "-d");
+                subdirs.add(dir);
+            }
+            else if (arg.equals("-s") || arg.equals("--make-so")) {
+                compileForDll = true;
+                type = Type.SO;
+            }
+            else if (arg.equals("-t") || arg.equals("--importlib")) {
+                importLibs.add(argv[++i]);
+            }
+            else if (arg.equals("-S") || arg.equals("--fordll")) {
+                compileForDll = true;
+            }
+            else if (arg.equals("-w") || arg.equals("--withobjects")) {
+                linkWithObjects = true;
+            }
+            else if (arg.equals("-x") || arg.equals("--notstamp")) {
+                tstamp = false;
+            }
+            else if (arg.equals("-u") || arg.equals("--userinterface")) {
+                userInterface = argv[++i];
+                userInterface = userInterface.toUpperCase();
+                if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("TKENV"))
+                    throw new IllegalArgumentException("opp_nmakemake: -u: specify all, Cmdenv or Tkenv");
+            }
+            else if (arg.equals("-i") || arg.equals("--includefragment")) {
+                String frag = argv[++i];
+                frag = abs2rel(frag, baseDir);
+                fragmentFiles.add(frag);
+            }
+            else if (arg.equals("-I")) {
+                String dir = argv[++i];
+                dir = abs2rel(dir, baseDir);
+                includeDirs.add(dir);
+                if (tstamp && !dir.equals("."))
+                    tstampDirs.add(dir);
+            }
+            else if (arg.startsWith("-I")) {
+                String dir = StringUtils.removeStart(arg, "-I");
+                dir = abs2rel(dir, baseDir);
+                includeDirs.add(dir);
+                if (tstamp && !dir.equals("."))
+                    tstampDirs.add(dir);
+            }
+            else if (arg.equals("-L")) {
+                String dir = argv[++i];
+                dir = abs2rel(dir, baseDir);
+                libDirs.add(dir);
+            }
+            else if (arg.startsWith("-L")) {
+                String dir = StringUtils.removeStart(arg, "-L");
+                dir = abs2rel(dir, baseDir);
+                libDirs.add(dir);
+            }
+            else if (arg.startsWith("-l")) {
+                String lib = StringUtils.removeStart(arg, "-l");
+                libs.add(lib);
+            }
+            else if (arg.equals("-P")) {
+                exportDefOpt = argv[++i];
+            }
+            else if (arg.startsWith("-P")) {
+                exportDefOpt = StringUtils.removeStart(arg, "-P");
+            }
+            else {
+                arg = arg.replaceAll("/", "\\");
+                if (file(arg).isDirectory()) {
+                    arg = abs2rel(arg, baseDir);
+                    linkDirs.add(arg);
+                    if (tstamp)
+                        tstampDirs.add(arg);
+                }
+                else if (file(arg).isFile()) {
+                    arg = abs2rel(arg, baseDir);
+                    externalObjects.add(arg);
+                }
+                else {
+                    throw new IllegalArgumentException("opp_nmakemake: " + arg + " is neither an existing file/dir nor a valid option");
+                }
+            }
+        }
+    }
+
+    /**
+     * Re-generate the argument list from the member variables
+     */
+    public String[] toArgs() {
+        List<String> result = new ArrayList<String>();
+
+        if (!StringUtils.isEmpty(baseDir))
+            add(result, "-b", baseDir);
+
+        if (!directory.getName().equals(targetFile) && type != Type.NOLINK)
+            add(result, "-o", targetFile);
+
+        if (force)
+            add(result, "-f");
+
+        if (linkWithObjects)
+            add(result, "-w");
+
+        if (!tstamp)
+            add(result, "-x"); // no-tstamp
+
+        if (recursive)
+            add(result, "-r");
+
+        if (!"ALL".equals(userInterface))
+            add(result, "-u", userInterface);
+
+        if (type == Type.SO)
+            add(result, "-s");
+        else if (type == Type.NOLINK)
+            add(result, "-n");
+
+        if (!StringUtils.isEmpty(ccext))
+            add(result, "-e", ccext);  //XXX detect?
+
+        if (!StringUtils.isEmpty(configFile))
+            add(result, "-c", configFile); //XXX omit if can be detected?
+
+        if (!StringUtils.isEmpty(exportDefOpt))
+            add(result, "-P"+exportDefOpt);
+
+        if (compileForDll && type != Type.SO)
+            add(result, "-S");
+
+        if (!ignoreNedFiles)
+            add(result, "???"); //XXX
+
+        addOpts2(result, fragmentFiles, "-i");
+        addOpts2(result, subdirs, "-d");
+        addOpts2(result, exceptSubdirs, "-X");
+        addOpts1(result, includeDirs, "-I");
+        addOpts1(result, libDirs, "-L");
+        addOpts1(result, libs, "-l");
+        addOpts2(result, importLibs, "-t");
+        result.addAll(linkDirs);
+        result.addAll(externalObjects);
+
+        return result.toArray(new String[]{});
+    }
+
+    private void add(List<String> argList, String...args) {
+        argList.addAll(Arrays.asList(args));
+    }
+
+    private void addOpts1(List<String> argList, List<String> args, String option) {
+        for (String arg : args)
+            argList.add(option + arg);
+    }
+    
+    private void addOpts2(List<String> argList, List<String> args, String option) {
+        for (String arg : args) {
+            argList.add(option);
+            argList.add(arg);
+        }
+    }
+
+    private String abs2rel(String abs, String base) {
+        return abs; //FIXME
+    }
+
+    private File file(String path) {
+        File file = new File(path);
+        if (!file.isAbsolute())
+            file = new File(directory.getPath() + File.separator + path);
+        return file;
+    }
+
+}
+

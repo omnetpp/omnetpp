@@ -16,7 +16,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
 
 /**
  * An opp_nmakemake implementation. May be invoked as a command-line tool
@@ -28,250 +27,113 @@ import org.omnetpp.common.util.StringUtils;
 //FIXME adjust perl/bash versions: 
 //- add "-d" option
 //- rename old "-d" to "-S"
+//- here we store -P option (p.exportDefOpt) without the "-P"
+//- here we understand "-I" and "-L" both with and without space
 //FIXME support Linux too
 //TODO optimize per-file dependencies -- bulk of execution time is spent there!
 //
 public class MakeMake {
-    enum Type {EXE, SO, NOLINK};
-    private List<String> args;
-    private File directory = null;
-    private String makefile = "Makefile.vc";
-    private String basedir = "";
-    private String targetfile = "simulation";
-    private boolean force = true;
-    private boolean linkwithobjects = false;
-    private boolean tstamp = true;
-    private boolean recursive = false;
-    private String userif = "ALL";
-    private Type type = Type.EXE;
-    private String ccext = null;
-    private String cfgfile = null;
-    private String exportdefopt = "";
-    private boolean compilefordll;
-    private boolean ignorened = true; // note: no option for this
-    private List<String> fragmentfiles = new ArrayList<String>();
-    private List<String> subdirs = new ArrayList<String>();
-    private List<String> exceptsubdirs = new ArrayList<String>();
-    private List<String> includedirs = new ArrayList<String>();
-    private List<String> libdirs = new ArrayList<String>();
-    private List<String> libs = new ArrayList<String>();
-    private List<String> importlibs = new ArrayList<String>();
-    private List<String> tstampdirs = new ArrayList<String>();
-    private List<String> linkdirs = new ArrayList<String>();
-    private List<String> externalobjs = new ArrayList<String>();
+    // parameters for the makemake function
+    private MakemakeOptions p;
 
     public MakeMake() {
     }
 
-    public void run(File directory, String[] argv, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
-        parseArgs(directory, argv);
-        generateMakefile(perFileDeps);
+    /**
+     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     */
+    public boolean run(File directory, String[] argv, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
+        p = new MakemakeOptions(directory, argv);
+        return generateMakefile(perFileDeps);
     }
 
-    public void parseArgs(File directory, String[] argv) {
-        this.args = Arrays.asList(argv);
-        this.directory = directory;
-        targetfile = directory.getName();
-
-        // process arguments
-        for (int i = 0; i < argv.length; i++) {
-            String arg = argv[i];
-            if (arg.equals("-h") || arg.equals("--help")) {
-                // TODO
-            }
-            else if (arg.equals("-f") || arg.equals("--force")) {
-                force = true;
-            }
-            else if (arg.equals("-e") || arg.equals("--ext")) {
-                ccext = argv[++i];
-            }
-            else if (arg.equals("-o") || arg.equals("--outputfile")) {
-                targetfile = argv[++i];
-                targetfile = abs2rel(targetfile, basedir);
-            }
-            else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
-                throw new IllegalArgumentException("opp_nmakemake: "+arg+": obsolete option, please remove (dynamic NED loading is now the default)");
-            }
-            else if (arg.equals("-r") || arg.equals("--recurse")) {
-                recursive = true;
-            }
-            else if (arg.equals("-X") || arg.equals("--except")) {
-                String dir = argv[++i]; //FIXME possible out-of-bounds
-                exceptsubdirs.add(dir);
-            }
-            else if (arg.startsWith("-X")) {
-                String dir = StringUtils.removeStart(arg, "-X");
-                exceptsubdirs.add(dir);
-            }
-            else if (arg.equals("-b") || arg.equals("--basedir")) {
-                basedir = argv[++i];
-            }
-            else if (arg.equals("-c") || arg.equals("--configfile")) {
-                cfgfile = argv[++i];
-                cfgfile = abs2rel(cfgfile, basedir);
-            }
-            else if (arg.equals("-n") || arg.equals("--nolink")) {
-                type = Type.NOLINK;
-            }
-            else if (arg.equals("-d") || arg.equals("--subdir")) {
-                subdirs.add(argv[++i]);
-            }
-            else if (arg.startsWith("-d")) {
-                String dir = StringUtils.removeStart(arg, "-d");
-                subdirs.add(dir);
-            }
-            else if (arg.equals("-s") || arg.equals("--make-so")) {
-                compilefordll = true;
-                type = Type.SO;
-            }
-            else if (arg.equals("-t") || arg.equals("--importlib")) {
-                importlibs.add(argv[++i]);
-            }
-            else if (arg.equals("-S") || arg.equals("--fordll")) {
-                compilefordll = true;
-            }
-            else if (arg.equals("-w") || arg.equals("--withobjects")) {
-                linkwithobjects = true;
-            }
-            else if (arg.equals("-x") || arg.equals("--notstamp")) {
-                tstamp = false;
-            }
-            else if (arg.equals("-u") || arg.equals("--userinterface")) {
-                userif = argv[++i];
-                userif = userif.toUpperCase();
-                if (!userif.equals("ALL") && !userif.equals("CMDENV") && !userif.equals("TKENV"))
-                    throw new IllegalArgumentException("opp_nmakemake: -u: specify all, Cmdenv or Tkenv");
-            }
-            else if (arg.equals("-i") || arg.equals("--includefragment")) {
-                String frag = argv[++i];
-                frag = abs2rel(frag, basedir);
-                fragmentfiles.add(frag);
-            }
-            else if (arg.startsWith("-I")) {
-                String dir = StringUtils.removeStart(arg, "-I");
-                dir = abs2rel(dir, basedir);
-                includedirs.add(dir);
-                if (tstamp && !dir.equals("."))
-                    tstampdirs.add(dir);
-            }
-            else if (arg.startsWith("-L")) {
-                String dir = StringUtils.removeStart(arg, "-L");
-                dir = abs2rel(dir, basedir);
-                libdirs.add(dir);
-            }
-            else if (arg.startsWith("-l")) {
-                String lib = StringUtils.removeStart(arg, "-l");
-                libs.add(lib);
-            }
-            else if (arg.equals("-P")) {
-                exportdefopt = "-P" + argv[++i];
-            }
-            else if (arg.startsWith("-P")) {
-                exportdefopt = arg;
-            }
-            else {
-                arg = arg.replaceAll("/", "\\");
-                if (file(arg).isDirectory()) {
-                    arg = abs2rel(arg, basedir);
-                    linkdirs.add(arg);
-                    if (tstamp)
-                        tstampdirs.add(arg);
-                }
-                else if (file(arg).isFile()) {
-                    arg = abs2rel(arg, basedir);
-                    externalobjs.add(arg);
-                }
-                else {
-                    throw new IllegalArgumentException("opp_nmakemake: " + arg + " is neither an existing file/dir nor a valid option");
-                }
-            }
-        }
-    }
-
-    public void generateMakefile(Map<IFile, Set<IFile>> perFileDeps) throws IOException {
+    /**
+     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     */
+    public boolean generateMakefile(Map<IFile, Set<IFile>> perFileDeps) throws IOException {
         String doxyconf = "doxy.cfg";
         String makecommand = "nmake /nologo /f Makefile.vc";
-        List<String> extdirobjs = new ArrayList<String>();
-        List<String> extdirtstamps = new ArrayList<String>();
+        List<String> externaldirobjs = new ArrayList<String>();
+        List<String> externaldirtstamps = new ArrayList<String>();
         List<String> objs = new ArrayList<String>();
-        List<String> generatedheaders = new ArrayList<String>();
+        List<String> generatedHeaders = new ArrayList<String>();
 
-        if (file(makefile).isFile() && !force)
-            throw new IllegalStateException("opp_nmakemake: use -f to force overwriting existing " + makefile);
+        if (file(p.makefile).isFile() && !p.force)
+            throw new IllegalStateException("opp_nmakemake: use -f to force overwriting existing " + p.makefile);
 
-        if (cfgfile == null) {
+        if (p.configFile == null) {
             // try to find it in obvious places
             for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
-                if (new File(directory.getPath() + File.separator + f).exists()) {
-                    cfgfile = f;
+                if (new File(p.directory.getPath() + File.separator + f).exists()) {
+                    p.configFile = f;
                     break;
                 }
             }
-            if (cfgfile == null)
+            if (p.configFile == null)
                 throw new RuntimeException("opp_nmakemake: warning: configuser.vc file not found -- specify its location with the -c option");
         }
         else {
-            if (!new File(cfgfile).exists())
-                throw new RuntimeException("opp_nmakemake: error: file " + cfgfile + " not found");
+            if (!new File(p.configFile).exists())
+                throw new RuntimeException("opp_nmakemake: error: file " + p.configFile + " not found");
         }
 
         // try to determine if .cc or .cpp files are used
         List<String> ccfiles = glob("*.cc");
         List<String> cppfiles = glob("*.cpp");
-        if (ccext == null) {
+        if (p.ccext == null) {
             if (ccfiles.isEmpty() && !cppfiles.isEmpty())
-                ccext = "cpp";
+                p.ccext = "cpp";
             else if (!ccfiles.isEmpty() && cppfiles.isEmpty())
-                ccext = "cc";
+                p.ccext = "cc";
             else if (!ccfiles.isEmpty() && !cppfiles.isEmpty())
                 throw new RuntimeException("opp_nmakemake: you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
             else
-                ccext = "cc";  // if no files, use .cc extension
+                p.ccext = "cc";  // if no files, use .cc extension
         }
         else {
-            if (ccext.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
+            if (p.ccext.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
                 System.out.println("opp_nmakemake: warning: you specified -e cc but you have only .cpp files in this directory!");
-            if (ccext.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
+            if (p.ccext.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
                 System.out.println("opp_nmakemake: warning: you specified -e cpp but you have only .cc files in this directory!");
         }
 
-        if (recursive) {
-            File[] list = directory.listFiles(new FileFilter() {
+        if (p.recursive) {
+            File[] list = p.directory.listFiles(new FileFilter() {
                 public boolean accept(File file) {
                     if (file.isDirectory()) {
                         String name = file.getName();
-                        if (!name.startsWith(".") && !name.equals("CVS") && !name.equals("backups") && !exceptsubdirs.contains(name))
+                        if (!name.startsWith(".") && !name.equals("CVS") && !name.equals("backups") && !p.exceptSubdirs.contains(name))
                             return true;
                     }
                     return false;
                 }});
             for (File i : list)
-                subdirs.add(i.getName());
+                p.subdirs.add(i.getName());
         }
 
-        if (linkwithobjects) {
-            for (String i : includedirs)
+        if (p.linkWithObjects) {
+            for (String i : p.includeDirs)
                 if (!i.equals("."))
-                    extdirobjs.add(i + "/*.obj");
+                    externaldirobjs.add(i + "/*.obj");
         }
 
-        for (String i : linkdirs) {
-            extdirobjs.add(i + "/*.obj");
+        for (String i : p.linkDirs) {
+            externaldirobjs.add(i + "/*.obj");
         }
 
-        for (String i : tstampdirs) {
-            extdirtstamps.add(quote(i + "/.tstamp"));
+        for (String i : p.tstampDirs) {
+            externaldirtstamps.add(quote(i + "/.tstamp"));
         }
 
-        String[] objpatts = ignorened ? new String[] {"*.msg", "*." + ccext} : new String[] {"*.ned", "*.msg", "*." + ccext};
+        String[] objpatts = p.ignoreNedFiles ? new String[] {"*.msg", "*." + p.ccext} : new String[] {"*.ned", "*.msg", "*." + p.ccext};
         for (String objpatt : objpatts) {
             for (String i : glob(objpatt)) {
                 i = i.replaceAll("\\*[^ ]*", "");
-                i = i.replaceAll("[^ ]*_n\\." + ccext + "$", "");
-                i = i.replaceAll("[^ ]*_m\\." + ccext + "$", "");
+                i = i.replaceAll("[^ ]*_n\\." + p.ccext + "$", "");
+                i = i.replaceAll("[^ ]*_m\\." + p.ccext + "$", "");
                 i = i.replaceAll("\\.ned$", "_n.obj");
                 i = i.replaceAll("\\.msg$", "_m.obj");
-                i = i.replaceAll("\\." + ccext + "$", ".obj");
+                i = i.replaceAll("\\." + p.ccext + "$", ".obj");
                 if (!i.equals(""))
                     objs.add(i);
             }
@@ -279,7 +141,7 @@ public class MakeMake {
 
         for (String i : glob("*.msg")) {
             i = i.replaceAll("\\.msg$", "_m.h");
-            generatedheaders.add(i);
+            generatedHeaders.add(i);
         }
 
         // now generate the makefile
@@ -287,15 +149,15 @@ public class MakeMake {
         PrintStream out = new PrintStream(bos);
 
         out.println("#");
-        out.println("# Makefile for " + targetfile);
+        out.println("# Makefile for " + p.targetFile);
         out.println("#");
         out.println("#  ** This file was automatically generated by the command:");
-        out.println("#  opp_nmakemake " + join(args));
+        out.println("#  opp_nmakemake " + join(p.args));
         out.println("#");
         out.println();
 
         String suffix = null;
-        switch (type) {
+        switch (p.type) {
             case EXE: suffix = ".exe"; break;
             case SO: suffix = ".dll"; break;
             case NOLINK: suffix = ""; break;
@@ -305,29 +167,27 @@ public class MakeMake {
         String c_cmd = "# ";
         String c_tk = "# ";
 
-        if (userif.equals("ALL")) {
+        if (p.userInterface.equals("ALL")) {
             c_all = "";
             c_cmd = "# ";
             c_tk = "# ";
         }
-        else if (userif.equals("CMDENV")) {
+        else if (p.userInterface.equals("CMDENV")) {
             c_all = "#";
             c_cmd = "";
             c_tk = "# ";
         }
-        else if (userif.equals("TKENV")) {
+        else if (p.userInterface.equals("TKENV")) {
             c_all = "#";
             c_cmd = "# ";
             c_tk = "";
         }
 
-        String fordllopt = "";
-        if (compilefordll) {
-            fordllopt = "/DWIN32_DLL";
-        }
+        String fordllopt = p.compileForDll ? "/DWIN32_DLL" : "";
+        String exportDefOpt = p.exportDefOpt==null ? "" : ("-P" + p.exportDefOpt);
 
         out.println("# Name of target to be created (-o option)");
-        out.println("TARGET = " + targetfile + suffix);
+        out.println("TARGET = " + p.targetFile + suffix);
         out.println();
         out.println("# User interface (uncomment one) (-u option)");
         out.println(c_all + "USERIF_LIBS=$(TKENV_LIBS) $(CMDENV_LIBS)");
@@ -335,24 +195,24 @@ public class MakeMake {
         out.println(c_tk + "USERIF_LIBS=$(TKENV_LIBS)");
         out.println();
         out.println("# .ned or .h include paths with -I");
-        out.println("INCLUDE_PATH=" + join(includedirs, "-I"));
+        out.println("INCLUDE_PATH=" + join(p.includeDirs, "-I"));
         out.println();
         out.println("# misc additional object and library files to link");
-        out.println("EXTRA_OBJS=" + join(externalobjs));
+        out.println("EXTRA_OBJS=" + join(p.externalObjects));
         out.println();
         out.println("# object files from other directories to link with");
-        out.println("EXT_DIR_OBJS=" + join(extdirobjs));
+        out.println("EXT_DIR_OBJS=" + join(externaldirobjs));
         out.println();
         out.println("# time stamps of other directories (used as dependency)");
-        out.println("EXT_DIR_TSTAMPS=" + join(extdirtstamps));
+        out.println("EXT_DIR_TSTAMPS=" + join(externaldirtstamps));
         out.println();
         out.println("# Additional libraries (-L, -l, -t options)");
-        out.println("LIBS=" + join(libdirs, "/libpath:") + join(libs) + join(importlibs));
+        out.println("LIBS=" + join(p.libDirs, "/libpath:") + join(p.libs) + join(p.importLibs));
         out.println();
         out.println("#------------------------------------------------------------------------------");
 
         // Makefile
-        out.println("!include \"" + cfgfile + "\"");
+        out.println("!include \"" + p.configFile + "\"");
         out.println();
         out.println("# User interface libs");
         out.println("CMDENV_LIBS=/include:_cmdenv_lib envir.lib cmdenv.lib");
@@ -373,7 +233,7 @@ public class MakeMake {
         out.println("OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)");
         out.println();
         out.println("COPTS=$(CFLAGS) " + fordllopt + " $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)");
-        out.println("MSGCOPTS=" + exportdefopt + " $(INCLUDE_PATH)");
+        out.println("MSGCOPTS=" + exportDefOpt + " $(INCLUDE_PATH)");
         out.println();
         out.println("#------------------------------------------------------------------------------");
 
@@ -383,21 +243,21 @@ public class MakeMake {
         out.println();
 
         out.println("# header files generated (from msg files)");
-        out.println("GENERATEDHEADERS= " + join(generatedheaders));
+        out.println("GENERATEDHEADERS= " + join(generatedHeaders));
         out.println();
 
         out.println("# subdirectories to recurse into");
-        out.println("SUBDIRS= " + join(subdirs));
+        out.println("SUBDIRS= " + join(p.subdirs));
         out.print("SUBDIR_TARGETS= ");
-        for (String i : subdirs) {
+        for (String i : p.subdirs) {
             out.print(" " + i + "_dir");
         }
         out.println("\n");
 
         // include external Makefile fragments at top, so that they can
         // override the default target if they want
-        if (!fragmentfiles.isEmpty()) {
-            for (String frag : fragmentfiles) {
+        if (!p.fragmentFiles.isEmpty()) {
+            for (String frag : p.fragmentFiles) {
                 out.println("# inserted from file '" + frag + "':");
                 String text = FileUtils.readTextFile(file(frag));
                 out.println(text);
@@ -415,21 +275,21 @@ public class MakeMake {
 
         // note: if "subdirs" were always among the target dependencies, it
         // would cause the executable to re-link every time (which is not good).
-        String subdirs_target = subdirs.isEmpty() ? "" : "subdirs";
+        String subdirs_target = p.subdirs.isEmpty() ? "" : "subdirs";
 
-        switch (type) {
+        switch (p.type) {
             case EXE:
-                out.println("$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) " + subdirs_target + " " + makefile);
+                out.println("$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) " + subdirs_target + " " + p.makefile);
                 out.println("\t$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)");
                 out.println("\t@echo.>.tstamp");
                 break;
             case SO:
-                out.println("$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) " + subdirs_target + " " + makefile);
+                out.println("$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) " + subdirs_target + " " + p.makefile);
                 out.println("\t$(SHLIB_LD) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) /out:$(TARGET)");
                 out.println("\t@echo.>.tstamp");
                 break;
             case NOLINK:
-                out.println("$(TARGET): $(OBJS) " + makefile + " " + subdirs_target + " .tstamp");
+                out.println("$(TARGET): $(OBJS) " + p.makefile + " " + subdirs_target + " .tstamp");
                 out.println();
                 out.println(".tstamp: $(OBJS)");
                 out.println("\t@echo.>.tstamp");
@@ -443,11 +303,11 @@ public class MakeMake {
         }
 
         // rule for Purify
-        out.println("# purify: $(OBJS) $(EXTRA_OBJS) " + subdirs_target + " " + makefile);
+        out.println("# purify: $(OBJS) $(EXTRA_OBJS) " + subdirs_target + " " + p.makefile);
         out.println("# \tpurify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure");
         out.println();
 
-        if (!extdirtstamps.isEmpty()) {
+        if (!externaldirtstamps.isEmpty()) {
             out.println("$(EXT_DIR_TSTAMPS):");
             out.println("\t@echo Error: $(@:/=\\) does not exist.");
             out.println("\t@echo This means that at least the above dependency directory has not been built.");
@@ -462,23 +322,23 @@ public class MakeMake {
         out.println("subdirs: $(SUBDIR_TARGETS)");
         out.println();
 
-        for (String i : subdirs) {
+        for (String i : p.subdirs) {
             out.println(i + "_dir:");
             out.println("\tcd " + i + " && echo [Entering " + i + "] && " + makecommand + " && echo [Leaving " + i + "]\n");
         }
 
         // rules for ned files
-        if (!ignorened) {
+        if (!p.ignoreNedFiles) {
             for (String i : glob("*.ned")) {
                 String obj = i.replaceAll("\\.ned$", "_n.obj");
-                String c = i.replaceAll("\\.ned$", "_n." + ccext);
+                String c = i.replaceAll("\\.ned$", "_n." + p.ccext);
 
                 out.println(obj + ": " + c);
                 out.println("\t$(CXX) -c $(NEDCOPTS) /Tp " + c);
                 out.println();
 
                 out.println(c + ": " + i);
-                out.println("\t$(NEDC:/=\\) -s _n." + ccext + " $(INCLUDE_PATH) " + i);
+                out.println("\t$(NEDC:/=\\) -s _n." + p.ccext + " $(INCLUDE_PATH) " + i);
                 out.println();
             }
         }
@@ -486,7 +346,7 @@ public class MakeMake {
         // rules for msg files
         for (String i : glob("*.msg")) {
             String obj = i.replaceAll("\\.msg$", "_m.obj");
-            String c = i.replaceAll("\\.msg$", "_m." + ccext);
+            String c = i.replaceAll("\\.msg$", "_m." + p.ccext);
             String h = i.replaceAll("\\.msg$", "_m.h");
 
             out.println(obj + ": " + c);
@@ -494,17 +354,17 @@ public class MakeMake {
             out.println();
 
             out.println(c + " " + h + ": " + i);
-            out.println("\t$(MSGC:/=\\) -s _m." + ccext + " $(MSGCOPTS) " + i);
+            out.println("\t$(MSGC:/=\\) -s _m." + p.ccext + " $(MSGCOPTS) " + i);
             out.println();
         }
 
         // rules for normal (not generated) C++ files
-        for (String i : glob("*." + ccext)) {
-            if (i.endsWith("_n." + ccext) || i.endsWith("_m." + ccext))
+        for (String i : glob("*." + p.ccext)) {
+            if (i.endsWith("_n." + p.ccext) || i.endsWith("_m." + p.ccext))
                 continue;
 
             String obj = i;
-            obj = obj.replaceAll("\\." + ccext, ".obj");
+            obj = obj.replaceAll("\\." + p.ccext, ".obj");
             out.println(obj + ": " + i);
             out.println("\t$(CXX) -c $(COPTS) /Tp " + i);
             out.println();
@@ -529,18 +389,18 @@ public class MakeMake {
         out.println();
         out.println("clean:");
         out.println("\t-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL");
-        out.println("\t-del *_n." + ccext + " *_n.h *_m." + ccext + " *_m.h 2>NUL");
+        out.println("\t-del *_n." + p.ccext + " *_n.h *_m." + p.ccext + " *_m.h 2>NUL");
         out.println("\t-del *.vec *.sca 2>NUL");
         out.print("\t-for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && " + makecommand
                 + " clean && cd .. || exit /b 1\n");
         out.println();
         out.println("depend:");
-        out.println("\t$(MAKEDEPEND) $(INCLUDE_PATH) -f " + makefile + " -- *." + ccext);
+        out.println("\t$(MAKEDEPEND) $(INCLUDE_PATH) -f " + p.makefile + " -- *." + p.ccext);
         out.print("\tif not \"$(SUBDIRS)\"==\"\" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && " + makecommand
                 + " depend && cd .. || exit /b 1\n");
         out.println();
         out.println("makefiles:");
-        out.println("\topp_nmakemake " + (args.contains("-f") ? "" : "-f ") + join(args));
+        out.println("\topp_nmakemake " + (p.args.contains("-f") ? "" : "-f ") + join(p.args));
         out.println("\tif not \"$(SUBDIRS)\"==\"\" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && " + makecommand
                 + " makefiles && cd .. || exit /b 1");
         out.println();
@@ -548,7 +408,7 @@ public class MakeMake {
         out.println("re-makemake: makefiles");
         out.println();
         out.println("# DO NOT DELETE THIS LINE -- make depend depends on it.");
-        IPath directoryPath = new Path(directory.getPath());
+        IPath directoryPath = new Path(p.directory.getPath());
         for (IFile f : perFileDeps.keySet()) {
             if (f.getParent().getLocation().equals(directoryPath)) {  //FIXME THIS LINE IS VERY COSTLY!!! with INET, 1000ms out of total 1500ms is spent here 
                 out.print(f.getName() + ":");
@@ -564,9 +424,12 @@ public class MakeMake {
 
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
-        File file = new File(directory.getPath() + File.separator + makefile);
-        if (!file.exists() || !Arrays.equals(FileUtils.readBinaryFile(file), content))  // NOTE: byte[].equals does NOT compare the bytes, only the two object references!!!
+        File file = new File(p.directory.getPath() + File.separator + p.makefile);
+        if (!file.exists() || !Arrays.equals(FileUtils.readBinaryFile(file), content)) { // NOTE: byte[].equals does NOT compare the bytes, only the two object references!!!
             FileUtils.writeBinaryFile(content, file);
+            return true;  // no change
+        }
+        return false;  // it was already OK
     }
 
     private String join(List<String> args) {
@@ -588,19 +451,19 @@ public class MakeMake {
     private File file(String path) {
         File file = new File(path);
         if (!file.isAbsolute())
-            file = new File(directory.getPath() + File.separator + path);
+            file = new File(p.directory.getPath() + File.separator + path);
         return file;
     }
 
     private List<String> glob(String pattern) {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
-        return Arrays.asList(directory.list(new FilenameFilter() {
+        return Arrays.asList(p.directory.list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.matches(regex);
             }}));
     }
 
-    private String abs2rel(String abs, String base) {
+    String abs2rel(String abs, String base) {
         return abs2rel(abs, base, null);
     }
 

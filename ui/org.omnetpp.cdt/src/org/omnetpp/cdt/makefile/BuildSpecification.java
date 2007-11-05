@@ -17,7 +17,7 @@ public class BuildSpecification {
 
     public static class FolderInfo {
         public int folderType;
-        public String additionalMakeMakeOptions; //XXX refine
+        public MakemakeOptions additionalMakeMakeOptions; //XXX refine
     }
 
     private String configuserLocation;

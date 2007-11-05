@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 
@@ -73,6 +74,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void generateMakefiles(IProgressMonitor monitor) throws CoreException {
         // get folder list
         long startTime1 = System.currentTimeMillis();
+        monitor.subTask("Analyzing dependencies...");
         IProject rootContainer = getProject();
         IContainer[] folders = MakefileTools.collectFolders(rootContainer);
         Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
@@ -94,6 +96,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
+        monitor.subTask("Updating makefiles...");
+        boolean changed = false;
         for (IContainer folder : folders) {
             try {
                 //System.out.println("Generating makefile in: " + folder.getFullPath());
@@ -105,15 +109,24 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 if (folderDeps.containsKey(folder))
                     for (IContainer dep : folderDeps.get(folder))
                         args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
-                new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps); 
+                changed |= new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps); 
             }
             catch (IOException e) {
-                e.printStackTrace(); //FIXME more sophisticated
+                e.printStackTrace(); //FIXME more sophisticated: propagate up?
             }
         }
         System.out.println("Generated " + folders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
         
-        //FIXME refresh workspace if we changed anything....
+        // refresh workspace
+        if (changed) {
+            monitor.subTask("Updating project..."); //XXX needed? CDT's MakeBuilder will do it anyway
+            try {
+                getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
+            } catch (CoreException e) {
+                Activator.logError(e);
+            }
+        }
+        
     }
 
     private void processDelta(IResourceDelta delta) throws CoreException {
