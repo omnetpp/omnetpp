@@ -297,6 +297,10 @@ public class SequenceChart
             public void controlResized(ControlEvent e) {
 				if (eventLogInput != null) {
 					org.eclipse.swt.graphics.Rectangle r = getClientArea();
+
+					if (pixelPerTimelineCoordinate == 0)
+			            calculatePixelPerTimelineUnit(r.width);
+					
 					setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
 					calculateAxisSpacing();
 				}
@@ -965,9 +969,6 @@ public class SequenceChart
 						}
 
 						calculateAxisYs();
-						calculatePixelPerTimelineUnit();
-						configureScrollBars();
-						adjustHorizontalScrollBar();
 					}
 
 					clearCanvasCache();
@@ -1282,21 +1283,18 @@ public class SequenceChart
 	/**
 	 * Calculates initial pixelPerTimelineUnit.
 	 */
-	private void calculatePixelPerTimelineUnit() {
-		if (pixelPerTimelineCoordinate == 0) {
-			int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
+	private void calculatePixelPerTimelineUnit(int viewportWidth) {
+		int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
 
-			if (distance > 1) {
-				IEvent firstEvent = eventLog.getFirstEvent();
-				double firstEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(firstEvent);
-				double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(firstEvent, distance - 1));
-				double timelineCoordinateDelta = otherEventTimelineCoordinate - firstEventTimelineCoordinate;
-				double value = timelineCoordinateDelta / getViewportWidth();
-				setPixelPerTimelineCoordinate(value);
-			}
-			else
-                setPixelPerTimelineCoordinate(1);
+		if (distance > 1) {
+			IEvent firstEvent = eventLog.getFirstEvent();
+			double firstEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(firstEvent);
+			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(firstEvent, distance - 1));
+			double timelineCoordinateDelta = otherEventTimelineCoordinate - firstEventTimelineCoordinate;
+			setPixelPerTimelineCoordinate(viewportWidth / timelineCoordinateDelta);
 		}
+		else
+            setPixelPerTimelineCoordinate(1);
 	}
 
 	/**
@@ -1323,7 +1321,7 @@ public class SequenceChart
 
 	private void calculateStuff() {
 		if (pixelPerTimelineCoordinate == 0)
-			calculatePixelPerTimelineUnit();
+			calculatePixelPerTimelineUnit(getViewportWidth());
 
 		if (invalidVirtualSize)
 			calculateVirtualSize();
