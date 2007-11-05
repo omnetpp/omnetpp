@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
+import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 
 /**
@@ -56,7 +57,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         fileIncludes = new HashMap<IFile, List<Include>>();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE)
+                if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE)
                     processFileIncludes((IFile)resource);
                 return true;  //FIXME skip cvs/svn folder, "dot" folders, folders where no makefile is generated
             }
@@ -84,7 +85,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         Map<IFile, Set<IFile>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
         System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
 
-        buildSpec.setConfiguserLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
+        buildSpec.setConfigFileLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
         
         if (generateMakemakefile) {
             //XXX this should probably become body of an Action
@@ -105,7 +106,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 args.add("-r");  //FIXME rather: explicit subfolder list
                 args.add("-n"); //FIXME from folderType
                 args.add("-c");
-                args.add(buildSpec.getConfiguserLocation());
+                args.add(buildSpec.getConfigFileLocation());
                 if (folderDeps.containsKey(folder))
                     for (IContainer dep : folderDeps.get(folder))
                         args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
@@ -135,15 +136,15 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 IResource resource = delta.getResource();
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE) 
+                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
                             processFileIncludes((IFile)resource);
                         break;
                     case IResourceDelta.REMOVED: 
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE) 
+                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
                             fileIncludes.remove(resource);
                         break;
                     case IResourceDelta.CHANGED:
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==BuildSpecification.GENERATED_MAKEFILE) 
+                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
                             processFileIncludes((IFile)resource);
                         break;
                 }
@@ -152,12 +153,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         });
     }
 
-    protected int getFolderType(IContainer folder) {
+    protected FolderType getFolderType(IContainer folder) {
         // inherit folderType from parent folder
         while (buildSpec.getFolderInfo(folder) == null && !(folder.getParent() instanceof IWorkspaceRoot))
             folder = folder.getParent();
         FolderInfo folderInfo = buildSpec.getFolderInfo(folder);
-        return folderInfo==null ? BuildSpecification.GENERATED_MAKEFILE : folderInfo.folderType;
+        return folderInfo==null ? FolderType.GENERATED_MAKEFILE : folderInfo.folderType;
     }
     
     /**

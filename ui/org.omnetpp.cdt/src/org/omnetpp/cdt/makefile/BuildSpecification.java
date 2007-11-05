@@ -10,32 +10,42 @@ import org.eclipse.core.resources.IContainer;
  * @author Andras
  */
 public class BuildSpecification {
-    // folder types:
-    public static final int GENERATED_MAKEFILE = 0;
-    public static final int SUPPLIED_MAKEFILE = 1;
-    public static final int EXCLUDED_FROM_BUILD = 2;
+    public enum FolderType {GENERATED_MAKEFILE, SUPPLIED_MAKEFILE, EXCLUDED_FROM_BUILD};
 
     public static class FolderInfo {
-        public int folderType;
+        public FolderType folderType;
         public MakemakeOptions additionalMakeMakeOptions; //XXX refine
     }
 
-    private String configuserLocation;
+    private String configFileLocation;
     private Map<IContainer,FolderInfo> folders = new HashMap<IContainer,FolderInfo>();
 
     public BuildSpecification() {
     }
     
-    public String getConfiguserLocation() {
-        return configuserLocation;
+    public String getConfigFileLocation() {
+        return configFileLocation;
     }
 
-    public void setConfiguserLocation(String configuserLocation) {
-        this.configuserLocation = configuserLocation;
+    public void setConfigFileLocation(String configFileLocation) {
+        this.configFileLocation = configFileLocation;
     }
 
     public FolderInfo getFolderInfo(IContainer folder) {
         return folders.get(folder);
     }
+
+    public void setFolderInfo(IContainer folder, FolderInfo info) {
+        folders.put(folder, info);
+    }
+    
+    public void removeFolderInfo(IContainer folder) {
+        folders.remove(folder);
+    }
+    
+    public IContainer[] getFolders() {
+        return folders.keySet().toArray(new IContainer[]{});
+    }
+    
 
 }

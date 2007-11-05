@@ -12,7 +12,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -49,7 +48,7 @@ public class ProjectUtils {
 	public static IProject[] getOmnetppProjects() {
 		List<IProject> omnetppProjects = new ArrayList<IProject>();
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
-        	if (ProjectUtils.isOpenOmnetppProject(project))
+        	if (isOpenOmnetppProject(project))
         		omnetppProjects.add(project);
         return omnetppProjects.toArray(new IProject[]{});
 	}
@@ -92,7 +91,7 @@ public class ProjectUtils {
 	 */
 	public static IContainer[] readNedFoldersFile(IProject project) throws IOException, CoreException {
 		List<IContainer> result = new ArrayList<IContainer>();
-		IFile nedFoldersFile = project.getFile(ProjectUtils.NEDFOLDERS_FILENAME);
+		IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
 		if (nedFoldersFile.exists()) {
 			String contents = FileUtils.readTextFile(nedFoldersFile.getContents());
 			for (String line : StringUtils.splitToLines(contents)) {
@@ -126,11 +125,7 @@ public class ProjectUtils {
 	}
 
 	private static String getProjectRelativePathOf(IProject project, IContainer container) {
-		Assert.isTrue(container != null);
-		if (container.equals(project))
-			return ".";
-		else
-			return StringUtils.removeStart(container.getFullPath().toString(), project.getFullPath().toString()+"/");
+		return container.equals(project) ? "." : container.getProjectRelativePath().toString();
 	}
 
 }
