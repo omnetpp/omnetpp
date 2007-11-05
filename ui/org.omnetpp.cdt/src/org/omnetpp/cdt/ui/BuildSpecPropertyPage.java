@@ -27,7 +27,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
+import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -59,9 +59,9 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 		final IProject project = (IProject) getElement();
 
-        createWrapLabel(composite, 
-                "C++ project properties....", //FIXME 
-                2, 300);
+//        createWrapLabel(composite, 
+//                "C++ project properties....", //FIXME 
+//                2, 300);
 
         Label label = new Label(composite, SWT.NONE);
         label.setText("&Build specification for project '" + project.getName() + "':");
@@ -87,12 +87,15 @@ public class BuildSpecPropertyPage extends PropertyPage {
             @Override
             protected String decorateText(String input, Object element) {
                 IContainer folder = (IContainer) element;
-                FolderInfo folderInfo = buildSpec.getFolderInfo(folder);
-                String additionalText;
-                if (folderInfo == null) 
-                    additionalText = "(nothing)";
-                else
-                    additionalText = folderInfo.folderType + StringUtils.join(folderInfo.additionalMakeMakeOptions.toArgs());
+                String additionalText = "";
+                switch (buildSpec.getFolderType(folder)) {
+                    case CUSTOM_MAKEFILE: additionalText = "custom"; break;
+                    case EXCLUDED_FROM_BUILD: additionalText = "exclude"; break;
+                    case GENERATED_MAKEFILE: additionalText = "makemake"; break;
+                }
+                MakemakeOptions makemakeOptions = buildSpec.getMakemakeOptions(folder);
+                if (makemakeOptions != null)
+                    additionalText += ": " + StringUtils.join(makemakeOptions.toArgs(), " ");
                 
                 if (additionalText.length() > 0)
                     return super.decorateText(input, element) + " -- " + additionalText;

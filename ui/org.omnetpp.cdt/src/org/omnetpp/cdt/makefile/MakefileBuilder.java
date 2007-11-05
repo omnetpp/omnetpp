@@ -14,12 +14,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 
@@ -57,7 +55,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         fileIncludes = new HashMap<IFile, List<Include>>();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE)
+                if (MakefileTools.isCppFile(resource) && buildSpec.getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
                     processFileIncludes((IFile)resource);
                 return true;  //FIXME skip cvs/svn folder, "dot" folders, folders where no makefile is generated
             }
@@ -134,17 +132,18 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         delta.accept(new IResourceDeltaVisitor() {
             public boolean visit(IResourceDelta delta) throws CoreException {
                 IResource resource = delta.getResource();
+                boolean isSourceFile = MakefileTools.isCppFile(resource) && buildSpec.getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE;
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
+                        if (isSourceFile) 
                             processFileIncludes((IFile)resource);
                         break;
                     case IResourceDelta.REMOVED: 
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
+                        if (isSourceFile) 
                             fileIncludes.remove(resource);
                         break;
                     case IResourceDelta.CHANGED:
-                        if (MakefileTools.isCppFile(resource) && getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
+                        if (isSourceFile) 
                             processFileIncludes((IFile)resource);
                         break;
                 }
@@ -153,14 +152,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         });
     }
 
-    protected FolderType getFolderType(IContainer folder) {
-        // inherit folderType from parent folder
-        while (buildSpec.getFolderInfo(folder) == null && !(folder.getParent() instanceof IWorkspaceRoot))
-            folder = folder.getParent();
-        FolderInfo folderInfo = buildSpec.getFolderInfo(folder);
-        return folderInfo==null ? FolderType.GENERATED_MAKEFILE : folderInfo.folderType;
-    }
-    
     /**
      * Parses the file for the list of #includes, and returns true if it changed 
      * since the previous state.

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IWorkspaceRoot;
 
 /**
  * Represents contents of the ".omnetppcproject" file
@@ -31,11 +32,23 @@ public class BuildSpecification {
         this.configFileLocation = configFileLocation;
     }
 
-    public FolderInfo getFolderInfo(IContainer folder) {
-        return folders.get(folder);
+    public FolderType getFolderType(IContainer folder) {
+        // if folder type is not set, inherit it from parent folder
+        while (!folders.containsKey(folder) && !(folder.getParent() instanceof IWorkspaceRoot))
+                folder = folder.getParent();
+        FolderInfo info = folders.get(folder);
+        return info==null ? FolderType.GENERATED_MAKEFILE : info.folderType;
     }
 
-    public void setFolderInfo(IContainer folder, FolderInfo info) {
+    public MakemakeOptions getMakemakeOptions(IContainer folder) {
+        FolderInfo info = folders.get(folder);
+        return info==null ? null : info.additionalMakeMakeOptions;
+    }
+
+    public void setFolderInfo(IContainer folder, FolderType folderType, MakemakeOptions options) {
+        FolderInfo info = new FolderInfo();
+        info.folderType = folderType;
+        info.additionalMakeMakeOptions = options;
         folders.put(folder, info);
     }
     

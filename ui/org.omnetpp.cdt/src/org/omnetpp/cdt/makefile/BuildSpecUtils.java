@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -45,19 +44,19 @@ public class BuildSpecUtils {
                     if (matcher.matches()) {
                         String folderPath = matcher.group(1).trim();
                         String folderType = matcher.group(2).trim();
-                        String optionString = StringUtils.nullToEmpty(matcher.group(4));
+                        String argString = StringUtils.nullToEmpty(matcher.group(4));
                         
                         IContainer folder = project.getFolder(new Path(folderPath));
-                        FolderInfo folderInfo = new FolderInfo();
+                        FolderType type;
                         if (folderType.equals("custom"))
-                            folderInfo.folderType = FolderType.CUSTOM_MAKEFILE;
+                            type = FolderType.CUSTOM_MAKEFILE;
                         else if (folderType.equals("exclude"))
-                            folderInfo.folderType = FolderType.EXCLUDED_FROM_BUILD;
+                            type = FolderType.EXCLUDED_FROM_BUILD;
                         else
-                            folderInfo.folderType = FolderType.GENERATED_MAKEFILE;
-                        String[] options = optionString.split(" ");  //XXX honor any quotes
-                        folderInfo.additionalMakeMakeOptions = new MakemakeOptions(folder.getLocation().toFile(), options);
-                        result.setFolderInfo(folder, folderInfo);
+                            type = FolderType.GENERATED_MAKEFILE;
+                        String[] args = argString.split(" ");  //XXX honor any quotes
+                        MakemakeOptions makemakeOptions = new MakemakeOptions(folder.getLocation().toFile(), args);
+                        result.setFolderInfo(folder, type, makemakeOptions);
                     }
                     else {
                         //XXX log: wrong line format
@@ -76,17 +75,18 @@ public class BuildSpecUtils {
         // assemble file content to save
         String content = "version 4.0\n";
         for (IContainer folder : spec.getFolders()) {
-            FolderInfo folderInfo = spec.getFolderInfo(folder);
-            String folderType;
-            if (folderInfo.folderType == FolderType.CUSTOM_MAKEFILE)
-                folderType = "custom";
-            else if (folderInfo.folderType == FolderType.EXCLUDED_FROM_BUILD)
-                folderType = "exclude";
+            FolderType folderType = spec.getFolderType(folder);
+            String folderTypeText;
+            if (folderType == FolderType.CUSTOM_MAKEFILE)
+                folderTypeText = "custom";
+            else if (folderType == FolderType.EXCLUDED_FROM_BUILD)
+                folderTypeText = "exclude";
             else
-                folderType = "makemake";
-            String[] args = folderInfo.additionalMakeMakeOptions == null ? new String[0] : folderInfo.additionalMakeMakeOptions.toArgs();
+                folderTypeText = "makemake";
+            MakemakeOptions makemakeOptions = spec.getMakemakeOptions(folder);
+            String[] args = makemakeOptions == null ? new String[0] : makemakeOptions.toArgs();
             String options = StringUtils.join(args, " "); //XXX add quotes if needed
-            content += getProjectRelativePathOf(project, folder) + ": " + folderType + ", " + options + "\n";
+            content += getProjectRelativePathOf(project, folder) + ": " + folderTypeText + ", " + options + "\n";
         }
 
         // save it
