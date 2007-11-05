@@ -27,7 +27,7 @@ public class BuildSpecUtils {
     /**
      * Reads the build spec file from the given OMNeT++ project.
      */
-    public static BuildSpecification readNedFoldersFile(IProject project) throws IOException, CoreException {
+    public static BuildSpecification readBuildSpecFile(IProject project) throws IOException, CoreException {
         BuildSpecification result = new BuildSpecification();
         IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
         if (buildSpecFile.exists()) {
@@ -41,15 +41,20 @@ public class BuildSpecUtils {
                     //TODO version check
                 }
                 else {
-                    Matcher matcher = Pattern.compile("(.*?):(.*?),(.*)").matcher(line);
+                    Matcher matcher = Pattern.compile("(.*?):(.*?)(,(.*))?").matcher(line);
                     if (matcher.matches()) {
                         String folderPath = matcher.group(1).trim();
                         String folderType = matcher.group(2).trim();
-                        String optionString = matcher.group(3).trim();
+                        String optionString = StringUtils.nullToEmpty(matcher.group(4));
                         
                         IContainer folder = project.getFolder(new Path(folderPath));
                         FolderInfo folderInfo = new FolderInfo();
-                        folderInfo.folderType = FolderType.valueOf(folderType);
+                        if (folderType.equals("custom"))
+                            folderInfo.folderType = FolderType.CUSTOM_MAKEFILE;
+                        else if (folderType.equals("exclude"))
+                            folderInfo.folderType = FolderType.EXCLUDED_FROM_BUILD;
+                        else
+                            folderInfo.folderType = FolderType.GENERATED_MAKEFILE;
                         String[] options = optionString.split(" ");  //XXX honor any quotes
                         folderInfo.additionalMakeMakeOptions = new MakemakeOptions(folder.getLocation().toFile(), options);
                         result.setFolderInfo(folder, folderInfo);
@@ -67,14 +72,21 @@ public class BuildSpecUtils {
     /**
      * Saves the build spec file in the given OMNeT++ project.
      */
-    public static void saveNedFoldersFile(IProject project, BuildSpecification spec) throws CoreException {
+    public static void saveBuildSpecFile(IProject project, BuildSpecification spec) throws CoreException {
         // assemble file content to save
         String content = "version 4.0\n";
         for (IContainer folder : spec.getFolders()) {
             FolderInfo folderInfo = spec.getFolderInfo(folder);
-            String[] args = folderInfo.additionalMakeMakeOptions.toArgs();
+            String folderType;
+            if (folderInfo.folderType == FolderType.CUSTOM_MAKEFILE)
+                folderType = "custom";
+            else if (folderInfo.folderType == FolderType.EXCLUDED_FROM_BUILD)
+                folderType = "exclude";
+            else
+                folderType = "makemake";
+            String[] args = folderInfo.additionalMakeMakeOptions == null ? new String[0] : folderInfo.additionalMakeMakeOptions.toArgs();
             String options = StringUtils.join(args, " "); //XXX add quotes if needed
-            content += getProjectRelativePathOf(project, folder) + ": " + folderInfo.folderType + ", " + options + "\n";
+            content += getProjectRelativePathOf(project, folder) + ": " + folderType + ", " + options + "\n";
         }
 
         // save it

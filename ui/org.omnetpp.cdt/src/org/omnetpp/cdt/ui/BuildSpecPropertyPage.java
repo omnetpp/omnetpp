@@ -4,20 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,7 +25,10 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.cdt.makefile.BuildSpecUtils;
+import org.omnetpp.cdt.makefile.BuildSpecification;
+import org.omnetpp.cdt.makefile.BuildSpecification.FolderInfo;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * FIXME
@@ -39,13 +38,14 @@ import org.omnetpp.common.project.ProjectUtils;
  *
  * @author Andras
  */
-public class CPlusPlusSourceFoldersPropertyPage extends PropertyPage {
-	private CheckboxTreeViewer treeViewer;
+public class BuildSpecPropertyPage extends PropertyPage {
+	private TreeViewer treeViewer;
+	private BuildSpecification buildSpec;
 
 	/**
 	 * Constructor.
 	 */
-	public CPlusPlusSourceFoldersPropertyPage() {
+	public BuildSpecPropertyPage() {
 		super();
 	}
 
@@ -64,14 +64,12 @@ public class CPlusPlusSourceFoldersPropertyPage extends PropertyPage {
                 2, 300);
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("&NED Source Folders for project '" + project.getName() + "':");
+        label.setText("&Build specification for project '" + project.getName() + "':");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         
-		treeViewer = new CheckboxTreeViewer(composite, SWT.BORDER);
+		treeViewer = new TreeViewer(composite, SWT.BORDER);
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		((GridData)treeViewer.getTree().getLayoutData()).heightHint = 300;
-		
-		treeViewer.setLabelProvider(new WorkbenchLabelProvider());
 		
 		treeViewer.setContentProvider(new WorkbenchContentProvider() {
 	        @Override
@@ -84,23 +82,28 @@ public class CPlusPlusSourceFoldersPropertyPage extends PropertyPage {
 	            return filteredChildren.toArray();
 	        }
 	    });
-	
-		treeViewer.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				if (event.getChecked()) {
-			        // when a folder is checked, uncheck its subtree and all parents up to the root  
-					IResource e = (IResource)event.getElement();
-					treeViewer.setSubtreeChecked(e, false);
-					treeViewer.setChecked(e, true);
-				    for (IResource current=e.getParent(); current!=null; current=current.getParent())
-				    	treeViewer.setChecked(current, false);
-				}
-			}
+
+		treeViewer.setLabelProvider(new WorkbenchLabelProvider() {
+            @Override
+            protected String decorateText(String input, Object element) {
+                IContainer folder = (IContainer) element;
+                FolderInfo folderInfo = buildSpec.getFolderInfo(folder);
+                String additionalText;
+                if (folderInfo == null) 
+                    additionalText = "(nothing)";
+                else
+                    additionalText = folderInfo.folderType + StringUtils.join(folderInfo.additionalMakeMakeOptions.toArgs());
+                
+                if (additionalText.length() > 0)
+                    return super.decorateText(input, element) + " -- " + additionalText;
+                else
+                    return super.decorateText(input, element);
+            }
 		});
+	        
+		loadBuildSpecFile();
 
 		treeViewer.setInput(project.getParent());
-
-		loadNedFoldersFile();
 		
 		return composite;
 	}
@@ -118,45 +121,36 @@ public class CPlusPlusSourceFoldersPropertyPage extends PropertyPage {
 	}
 
 	protected void performDefaults() {
-		treeViewer.setAllChecked(false);
-		IProject project = (IProject) getElement();
-		treeViewer.setChecked(project, true);
+	    buildSpec = new BuildSpecification();
+	    treeViewer.refresh();
 	}
 	
 	public boolean performOk() {
-		saveNedFoldersFile();
+		saveBuildSpecFile();
 		return true;
 	}
 
-	private void loadNedFoldersFile() {
+	private void loadBuildSpecFile() {
 		try {
-			IProject project = (IProject) getElement();
-			IContainer[] folders = ProjectUtils.readNedFoldersFile(project);
-
-			for (IContainer folder : folders) {
-				treeViewer.setChecked(folder, true);
-				for (IResource current=folder.getParent(); current!=null; current=current.getParent())
-					treeViewer.setExpandedState(current, true);
-			}
-			if (treeViewer.getCheckedElements().length == 0)
-				treeViewer.setChecked(project, true);
+		    IProject project = (IProject) getElement();
+		    buildSpec = BuildSpecUtils.readBuildSpecFile(project);
+		    treeViewer.refresh();
 		} 
 		catch (IOException e) {
-			errorDialog("Cannot read NED Source Paths: ", e);
+			errorDialog("Cannot read build specification: ", e);
 		} catch (CoreException e) {
-			errorDialog("Cannot read NED Source Paths: ", e);
+			errorDialog("Cannot read build specification: ", e);
 		}
 		
 	}
 
-	private void saveNedFoldersFile() {
+	private void saveBuildSpecFile() {
 		try {
 			IProject project = (IProject)getElement();
-			IContainer[] folders = (IContainer[]) ArrayUtils.addAll(new IContainer[]{}, treeViewer.getCheckedElements());
-			ProjectUtils.saveNedFoldersFile(project, folders);
+            BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
 		} 
 		catch (CoreException e) {
-			errorDialog("Cannot store NED Source Folder list: ", e);
+			errorDialog("Cannot store build specification: ", e);
 		}
 	} 
 

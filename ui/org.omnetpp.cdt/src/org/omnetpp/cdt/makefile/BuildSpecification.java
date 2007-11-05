@@ -10,7 +10,7 @@ import org.eclipse.core.resources.IContainer;
  * @author Andras
  */
 public class BuildSpecification {
-    public enum FolderType {GENERATED_MAKEFILE, SUPPLIED_MAKEFILE, EXCLUDED_FROM_BUILD};
+    public enum FolderType {GENERATED_MAKEFILE, CUSTOM_MAKEFILE, EXCLUDED_FROM_BUILD};
 
     public static class FolderInfo {
         public FolderType folderType;

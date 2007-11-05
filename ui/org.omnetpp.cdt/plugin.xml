@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="org.omnetpp.cdt.ui.CPlusPlusSourceFoldersPropertyPage"
+            class="org.omnetpp.cdt.ui.BuildSpecPropertyPage"
             id="org.omnetpp.cdt.CPlusPlusSourceFolders"
             name="C++ Source Folders (OMNEST/OMNeT++)">
          <enabledWhen>
