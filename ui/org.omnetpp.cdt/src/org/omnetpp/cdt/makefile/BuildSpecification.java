@@ -51,7 +51,23 @@ public class BuildSpecification {
         info.additionalMakeMakeOptions = options;
         folders.put(folder, info);
     }
-    
+
+    public void setFolderType(IContainer folder, FolderType folderType) {
+        if (!folders.containsKey(folder))
+            folders.put(folder, new FolderInfo());
+        FolderInfo info = folders.get(folder);
+        info.folderType = folderType;
+    }
+
+    public void setFolderOptions(IContainer folder, MakemakeOptions options) {
+        if (!folders.containsKey(folder))
+            folders.put(folder, new FolderInfo());
+        FolderInfo info = folders.get(folder);
+        info.folderType = FolderType.GENERATED_MAKEFILE;
+        info.additionalMakeMakeOptions = options;
+        folders.put(folder, info);
+    }
+
     public void removeFolderInfo(IContainer folder) {
         folders.remove(folder);
     }
