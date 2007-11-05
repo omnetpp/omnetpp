@@ -12,11 +12,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -143,7 +145,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
                     case GENERATED_MAKEFILE: additionalText = "makemake"; break;
                 }
                 MakemakeOptions makemakeOptions = buildSpec.getMakemakeOptions(folder);
-                if (makemakeOptions != null)
+                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && makemakeOptions != null)
                     additionalText += ": " + StringUtils.join(makemakeOptions.toArgs(), " ");
                 
                 if (additionalText.length() > 0)
@@ -204,17 +206,34 @@ public class BuildSpecPropertyPage extends PropertyPage {
     protected void setFolderType(FolderType folderType) {
         IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
         for (Object o : sel.toArray())
-            buildSpec.setFolderInfo((IContainer)o, folderType, null); //FIXME
+            buildSpec.setFolderType((IContainer)o, folderType);
         treeViewer.refresh();
         updateButtonStates();
     }
 
+    @SuppressWarnings("unchecked")
     protected void editFolderOptions() {
-//        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
-//        for (Object o : sel.toArray())
-//            buildSpec.setFolderInfo((IContainer)o, folderType, null); //FIXME
-        treeViewer.refresh();
-        updateButtonStates();
+        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
+
+        // dialog default value: take it from first suitable folder 
+        MakemakeOptions options = null;
+        for (IContainer folder : (List<IContainer>)sel.toList())
+            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getMakemakeOptions(folder) != null)
+                options = buildSpec.getMakemakeOptions(folder);
+        String value = options == null ? "" : StringUtils.join(options.toArgs(), " ");
+
+        // open dialog  
+        //TODO something more sophisticated...
+        InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, null);
+        if (dialog.open() == Window.OK) {
+            String[] args = dialog.getValue().split(" ");
+            for (IContainer folder : (List<IContainer>)sel.toList())
+                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE)
+                    buildSpec.setFolderOptions(folder, new MakemakeOptions(folder.getLocation().toFile(), args));
+            
+            treeViewer.refresh();
+            updateButtonStates();
+        }
     }
 
     protected void removeFolderOptions() {

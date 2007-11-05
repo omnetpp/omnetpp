@@ -46,7 +46,7 @@ public class BuildSpecUtils {
                         String folderType = matcher.group(2).trim();
                         String argString = StringUtils.nullToEmpty(matcher.group(4));
                         
-                        IContainer folder = project.getFolder(new Path(folderPath));
+                        IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                         FolderType type;
                         if (folderType.equals("custom"))
                             type = FolderType.CUSTOM_MAKEFILE;
