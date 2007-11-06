@@ -41,7 +41,7 @@ public class OmnetppNature implements IProjectNature {
 	}
 	
 	public void addBuilder(IProjectDescription desc, String builderId) throws CoreException {
-	    if (findIndexOf(desc.getBuildSpec(), builderId) == -1) {
+	    if (findBuilderIndex(desc.getBuildSpec(), builderId) == -1) {
 	        ICommand command = desc.newCommand();
 	        command.setBuilderName(builderId);
 	        desc.setBuildSpec((ICommand[])ArrayUtils.add(desc.getBuildSpec(), command));
@@ -49,12 +49,12 @@ public class OmnetppNature implements IProjectNature {
 	}
 	
 	private void removeBuilder(IProjectDescription desc, String builderId) throws CoreException {
-        int index = findIndexOf(desc.getBuildSpec(), builderId);
+        int index = findBuilderIndex(desc.getBuildSpec(), builderId);
         if (index != -1)
             desc.setBuildSpec((ICommand[])ArrayUtils.remove(desc.getBuildSpec(), index));
 	}
 
-	private int findIndexOf(ICommand[] commands, String builderId) {
+	private int findBuilderIndex(ICommand[] commands, String builderId) {
         for (int i = 0; i < commands.length; ++i)
             if (commands[i].getBuilderName().equals(builderId))
                 return i;
