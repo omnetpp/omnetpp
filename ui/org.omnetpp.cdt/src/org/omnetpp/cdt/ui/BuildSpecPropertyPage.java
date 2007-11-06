@@ -94,8 +94,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         
 		treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.MULTI);
-		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		((GridData)treeViewer.getTree().getLayoutData()).heightHint = 300;
+		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// create buttons
 		Composite buttons = new Composite(composite, SWT.NONE);
@@ -182,7 +181,11 @@ public class BuildSpecPropertyPage extends PropertyPage {
 		loadBuildSpecFile();
 
 		treeViewer.setInput(project.getParent());
+
+		// expand so that all "interesting" points are visible, but open at least the project node
 		treeViewer.expandToLevel(2);
+		for (IContainer folder : buildSpec.getFolders())
+	        treeViewer.expandToLevel(folder, 0);
 		
 		return composite;
 	}
