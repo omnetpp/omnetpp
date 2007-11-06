@@ -47,9 +47,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//TODO: expand all nodes where somrething is set
-//TODO: nature: omnetpp wizard should add it
-//TODO: property page: into an "OMNeT++" tree node in the dialog
+//FIXME builder should build the TOP of each non-excluded folder subtree (??) 
 public class BuildSpecPropertyPage extends PropertyPage {
     // widgets
 	private TreeViewer treeViewer;
@@ -226,12 +224,30 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	}
 
     protected void setFolderType(FolderType folderType) {
-        //FIXME: if EXCLUDE or CUSTOM, all folders below must be also EXCLUDE or CUSTOM!
         IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
-        for (Object o : sel.toArray())
+        for (Object o : sel.toArray()) {
             buildSpec.setFolderType((IContainer)o, folderType);
+            if (folderType == FolderType.EXCLUDED_FROM_BUILD)
+                setFolderTypeInSubtree((IContainer)o, null); // if EXCLUDED, all folders below must be also EXCLUDED
+            else
+                ; //FIXME ensure it has not EXCLUDED parent! if so, don't let it change the 
+        }
         treeViewer.refresh();
         updateButtonStates();
+    }
+
+    protected void setFolderTypeInSubtree(IContainer parentFolder, FolderType folderType) {
+        for (IContainer folder : buildSpec.getFolders())
+            if (containsFolder(parentFolder, folder))
+                buildSpec.setFolderType(folder, folderType);
+    }
+
+    private boolean containsFolder(IContainer parentFolder, IContainer folder) {
+        boolean isChild = false;
+        for (IContainer cur = folder.getParent(); cur != null; cur = cur.getParent())
+            if (cur.equals(parentFolder))
+                {isChild = true; break;}
+        return isChild;
     }
 
     @SuppressWarnings("unchecked")
