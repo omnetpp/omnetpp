@@ -93,9 +93,13 @@ public class BuildSpecUtils {
             else
                 folderTypeText = "makemake";
 
-            MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-            String[] args = makemakeOptions == null ? new String[0] : makemakeOptions.toArgs();
-            String options = StringUtils.join(args, " "); //XXX add quotes if needed
+
+            String options = "";
+            if (!buildSpec.isFolderOptionsInherited(folder)) {
+                MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
+                String[] args = makemakeOptions == null ? new String[0] : makemakeOptions.toArgs();
+                options = StringUtils.join(args, " "); //XXX add quotes if needed
+            }
 
             content += getProjectRelativePathOf(project, folder) + ": " + folderTypeText; 
             if (!StringUtils.isEmpty(options))

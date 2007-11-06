@@ -56,7 +56,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
     private Button generatedMakefileButton;
     private Button customMakefileButton;
     private Button excludeButton;
-    private Button sameAsParentButton;
+    private Button defaultButton;
     private Button optionsButton;
     private Button removeOptionsButton;
     
@@ -99,7 +99,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
         generatedMakefileButton = createButton(buttons, "Generated Makefile");
         customMakefileButton = createButton(buttons, "Custom Makefile");
         excludeButton = createButton(buttons, "Exclude From Build");
-        sameAsParentButton = createButton(buttons, "Same As Parent");
+        defaultButton = createButton(buttons, "Default");
         new Label(buttons, SWT.PUSH);
         optionsButton = createButton(buttons, "Options...");
         removeOptionsButton = createButton(buttons, "Remove Options");
@@ -117,7 +117,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             public void widgetSelected(SelectionEvent e) {
                 setFolderType(FolderType.EXCLUDED_FROM_BUILD);
             }});
-        sameAsParentButton.addSelectionListener(new SelectionAdapter() {
+        defaultButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 setFolderType(null);
             }});
@@ -209,7 +209,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	    generatedMakefileButton.setEnabled(!sel.isEmpty());
 	    customMakefileButton.setEnabled(!sel.isEmpty());
 	    excludeButton.setEnabled(!sel.isEmpty());
-	    sameAsParentButton.setEnabled(!sel.isEmpty());
+	    defaultButton.setEnabled(!sel.isEmpty());
 	    optionsButton.setEnabled(generatedMakefileCount > 0);
 	    removeOptionsButton.setEnabled(generatedMakefileCount > 0);
 	}
