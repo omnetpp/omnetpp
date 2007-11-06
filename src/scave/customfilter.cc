@@ -57,6 +57,7 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
 
 ExpressionFilterNode::ExpressionFilterNode(const char *text)
 {
+	skipFirstDatum = false;
     expr = new Expression();
     Resolver resolver(this);
     expr->parse(text, &resolver);
@@ -76,6 +77,11 @@ bool ExpressionFilterNode::isReady() const
 void ExpressionFilterNode::process()
 {
     int n = in()->length();
+    if (skipFirstDatum && n > 0) {
+    	in()->read(&prevDatum,1);
+    	n--;
+    	skipFirstDatum = false;
+    }
     for (int i=0; i<n; i++)
     {
         in()->read(&currentDatum,1);
