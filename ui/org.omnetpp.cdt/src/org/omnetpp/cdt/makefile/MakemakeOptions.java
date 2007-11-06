@@ -3,7 +3,6 @@
  */
 package org.omnetpp.cdt.makefile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,11 +12,10 @@ import org.omnetpp.common.util.StringUtils;
 public class MakemakeOptions {
     enum Type {EXE, SO, NOLINK};
     public List<String> args;
-    public File directory = null;
     public String makefile = "Makefile.vc";
     public String baseDir = "";
     public Type type = Type.EXE;
-    public String targetFile = "simulation";
+    public String target = null;
     public boolean force = false;
     public boolean linkWithObjects = false;
     public boolean tstamp = true;
@@ -35,33 +33,27 @@ public class MakemakeOptions {
     public List<String> libDirs = new ArrayList<String>();
     public List<String> libs = new ArrayList<String>();
     public List<String> importLibs = new ArrayList<String>();
-    public List<String> tstampDirs = new ArrayList<String>();   //FIXME should become local variable in Makemake!!!
-    public List<String> linkDirs = new ArrayList<String>();
-    public List<String> externalObjects = new ArrayList<String>();
+    public List<String> extraArgs = new ArrayList<String>();
 
     /**
      * Create makemake options with the default settings.
      */
-    public MakemakeOptions(File directory) {
+    public MakemakeOptions() {
         this.args = new ArrayList<String>();
-        this.directory = directory;
-        targetFile = directory.getName();
     }
     
     /**
      * Create makemake options by parsing the given argument list.
      */
-    public MakemakeOptions(File directory, String[] argv) {
-        parseArgs(directory, argv);
+    public MakemakeOptions(String[] argv) {
+        parseArgs(argv);
     }
 
     /**
      * Parse the argument list into the member variables
      */
-    public void parseArgs(File directory, String[] argv) {
+    public void parseArgs(String[] argv) {
         this.args = Arrays.asList(argv);
-        this.directory = directory;
-        targetFile = directory.getName();
 
         // process arguments
         for (int i = 0; i < argv.length; i++) {
@@ -73,20 +65,23 @@ public class MakemakeOptions {
                 force = true;
             }
             else if (arg.equals("-e") || arg.equals("--ext")) {
+                checkArg(argv, i);
                 ccext = argv[++i];
             }
             else if (arg.equals("-o") || arg.equals("--outputfile")) {
-                targetFile = argv[++i];
-                targetFile = abs2rel(targetFile, baseDir);
+                checkArg(argv, i);
+                target = argv[++i];
+                target = abs2rel(target, baseDir);
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
-                throw new IllegalArgumentException("opp_nmakemake: "+arg+": obsolete option, please remove (dynamic NED loading is now the default)");
+                throw new IllegalArgumentException("opp_makemake: " + arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
             }
             else if (arg.equals("-r") || arg.equals("--recurse")) {
                 recursive = true;
             }
             else if (arg.equals("-X") || arg.equals("--except")) {
-                String dir = argv[++i]; //FIXME possible out-of-bounds
+                checkArg(argv, i);
+                String dir = argv[++i];
                 exceptSubdirs.add(dir);
             }
             else if (arg.startsWith("-X")) {
@@ -94,9 +89,11 @@ public class MakemakeOptions {
                 exceptSubdirs.add(dir);
             }
             else if (arg.equals("-b") || arg.equals("--basedir")) {
+                checkArg(argv, i);
                 baseDir = argv[++i];
             }
             else if (arg.equals("-c") || arg.equals("--configfile")) {
+                checkArg(argv, i);
                 configFile = argv[++i];
                 configFile = abs2rel(configFile, baseDir);
             }
@@ -104,6 +101,7 @@ public class MakemakeOptions {
                 type = Type.NOLINK;
             }
             else if (arg.equals("-d") || arg.equals("--subdir")) {
+                checkArg(argv, i);
                 subdirs.add(argv[++i]);
             }
             else if (arg.startsWith("-d")) {
@@ -115,6 +113,7 @@ public class MakemakeOptions {
                 type = Type.SO;
             }
             else if (arg.equals("-t") || arg.equals("--importlib")) {
+                checkArg(argv, i);
                 importLibs.add(argv[++i]);
             }
             else if (arg.equals("-S") || arg.equals("--fordll")) {
@@ -127,31 +126,31 @@ public class MakemakeOptions {
                 tstamp = false;
             }
             else if (arg.equals("-u") || arg.equals("--userinterface")) {
+                checkArg(argv, i);
                 userInterface = argv[++i];
                 userInterface = userInterface.toUpperCase();
                 if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("TKENV"))
-                    throw new IllegalArgumentException("opp_nmakemake: -u: specify all, Cmdenv or Tkenv");
+                    throw new IllegalArgumentException("opp_makemake: -u: specify all, Cmdenv or Tkenv");
             }
             else if (arg.equals("-i") || arg.equals("--includefragment")) {
+                checkArg(argv, i);
                 String frag = argv[++i];
                 frag = abs2rel(frag, baseDir);
                 fragmentFiles.add(frag);
             }
             else if (arg.equals("-I")) {
+                checkArg(argv, i);
                 String dir = argv[++i];
                 dir = abs2rel(dir, baseDir);
                 includeDirs.add(dir);
-                if (tstamp && !dir.equals("."))
-                    tstampDirs.add(dir);
             }
             else if (arg.startsWith("-I")) {
                 String dir = StringUtils.removeStart(arg, "-I");
                 dir = abs2rel(dir, baseDir);
                 includeDirs.add(dir);
-                if (tstamp && !dir.equals("."))
-                    tstampDirs.add(dir);
             }
             else if (arg.equals("-L")) {
+                checkArg(argv, i);
                 String dir = argv[++i];
                 dir = abs2rel(dir, baseDir);
                 libDirs.add(dir);
@@ -166,28 +165,24 @@ public class MakemakeOptions {
                 libs.add(lib);
             }
             else if (arg.equals("-P")) {
+                checkArg(argv, i);
                 exportDefOpt = argv[++i];
             }
             else if (arg.startsWith("-P")) {
                 exportDefOpt = StringUtils.removeStart(arg, "-P");
             }
             else {
-                arg = arg.replaceAll("/", "\\");
-                if (file(arg).isDirectory()) {
-                    arg = abs2rel(arg, baseDir);
-                    linkDirs.add(arg);
-                    if (tstamp)
-                        tstampDirs.add(arg);
-                }
-                else if (file(arg).isFile()) {
-                    arg = abs2rel(arg, baseDir);
-                    externalObjects.add(arg);
-                }
-                else {
-                    throw new IllegalArgumentException("opp_nmakemake: " + arg + " is neither an existing file/dir nor a valid option");
-                }
+                //FIXME add support for "--" after which everything is extraArg
+                if (arg.startsWith("-"))
+                    throw new IllegalArgumentException("opp_makemake: unrecognized option: " + arg);
+                extraArgs.add(arg);
             }
         }
+    }
+
+    protected void checkArg(String[] argv, int i) {
+        if (i+1 >= argv.length)
+            throw new IllegalArgumentException("opp_makemake: option " + argv[i] +  " requires an argument");
     }
 
     /**
@@ -199,8 +194,8 @@ public class MakemakeOptions {
         if (!StringUtils.isEmpty(baseDir))
             add(result, "-b", baseDir);
 
-        if (!directory.getName().equals(targetFile) && type != Type.NOLINK)
-            add(result, "-o", targetFile);
+        if (target != null)
+            add(result, "-o", target);
 
         if (force)
             add(result, "-f");
@@ -244,8 +239,7 @@ public class MakemakeOptions {
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
         addOpts2(result, importLibs, "-t");
-        result.addAll(linkDirs);
-        result.addAll(externalObjects);
+        result.addAll(extraArgs);
 
         return result.toArray(new String[]{});
     }
@@ -269,13 +263,5 @@ public class MakemakeOptions {
     private String abs2rel(String abs, String base) {
         return abs; //FIXME
     }
-
-    private File file(String path) {
-        File file = new File(path);
-        if (!file.isAbsolute())
-            file = new File(directory.getPath() + File.separator + path);
-        return file;
-    }
-
 }
 

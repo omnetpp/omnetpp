@@ -61,7 +61,7 @@ public class BuildSpecUtils {
                         
                         String[] args = argString.split(" ");  //XXX honor any quotes
                         if (!StringUtils.isEmpty(argString)) {
-                            MakemakeOptions makemakeOptions = new MakemakeOptions(folder.getLocation().toFile(), args);
+                            MakemakeOptions makemakeOptions = new MakemakeOptions(args);
                             buildSpec.setFolderOptions(folder, makemakeOptions);
                         }
                     }

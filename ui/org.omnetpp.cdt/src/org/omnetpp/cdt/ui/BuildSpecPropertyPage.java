@@ -240,7 +240,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             public String isValid(String newText) {
                 String args[] = newText.split(" ");
                 try {
-                    new MakemakeOptions(new File("C:/"), args); //FIXME options need the folder! that's not good
+                    new MakemakeOptions(args);
                 } catch (Exception e) {
                     return e.getMessage();
                 }
@@ -251,7 +251,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             String[] args = dialog.getValue().split(" ");
             for (IContainer folder : (List<IContainer>)sel.toList())
                 if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE)
-                    buildSpec.setFolderOptions(folder, new MakemakeOptions(folder.getLocation().toFile(), args));
+                    buildSpec.setFolderOptions(folder, new MakemakeOptions(args));
             
             treeViewer.refresh();
             updateButtonStates();

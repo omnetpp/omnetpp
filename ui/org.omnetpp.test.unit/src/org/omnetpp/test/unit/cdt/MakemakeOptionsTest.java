@@ -1,7 +1,5 @@
 package org.omnetpp.test.unit.cdt;
 
-import java.io.File;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -16,7 +14,7 @@ public class MakemakeOptionsTest extends TestCase {
     
     private void checkArgs(String args, String expectedArgs) {
         System.out.println("checking: " + args);
-        MakemakeOptions obj = new MakemakeOptions(new File("c:\\tmp"), args.split(" "));
+        MakemakeOptions obj = new MakemakeOptions(args.split(" "));
         String resultArgs = StringUtils.join(obj.toArgs(), " ");
         Assert.assertEquals(expectedArgs, resultArgs);
     }
