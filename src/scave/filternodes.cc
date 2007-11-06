@@ -868,7 +868,7 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     //TODO we should really support combobox selection on the UI for this...
     InterpolationMode mode;
     const std::string modeString = attrs["interpolation-mode"];
-    if (modeString == "sample-hold")
+    if (modeString == "" || modeString == "sample-hold")
         mode = SAMPLE_HOLD;
     else if (modeString == "backward-sample-hold")
         mode = BACKWARD_SAMPLE_HOLD;
