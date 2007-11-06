@@ -38,13 +38,17 @@ import org.omnetpp.scave.charting.IChartSelectionListener;
 import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
+import org.omnetpp.scave.editors.forms.BarChartEditForm;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.editors.forms.LineChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.LineID;
@@ -188,7 +192,10 @@ public class ChartPage extends ScaveEditorPage {
 			contextMenuManager.add(editorContributor.getZoomOutAction());
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
-			contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
+			if (chart instanceof LineChart || chart instanceof ScatterChart)
+				contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
+			else if (chart instanceof BarChart)
+				contextMenuManager.add(new EditAction("Bars...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, BarChartEditForm.TAB_BARS)));
 			contextMenuManager.add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
 			contextMenuManager.add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
 			contextMenuManager.add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
