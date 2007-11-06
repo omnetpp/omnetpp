@@ -74,6 +74,9 @@ Options::Options()
     outputFileName = NULL;
     outputFile = NULL;
 
+    moduleExpression = NULL;
+    messageExpression = NULL;
+
     firstEventNumber = -2;
     lastEventNumber = -2;
 

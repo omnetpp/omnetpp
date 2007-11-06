@@ -84,13 +84,13 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
 
         void setEnableModuleFilter(bool enableModuleFilter) { this->enableModuleFilter = enableModuleFilter; }
-        void setModuleExpression(const char *moduleExpression) { this->moduleExpression.setPattern(moduleExpression, false, true, false); }
+        void setModuleExpression(const char *moduleExpression) { if (moduleExpression) this->moduleExpression.setPattern(moduleExpression, false, true, false); }
         void setModuleNames(std::vector<std::string> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames, true); }
         void setModuleClassNames(std::vector<std::string> &moduleClassNames) { setPatternMatchers(this->moduleClassNames, moduleClassNames); }
         void setModuleIds(std::vector<int> &moduleIds) { this->moduleIds = moduleIds; }
 
         void setEnableMessageFilter(bool enableMessageFilter) { this->enableMessageFilter = enableMessageFilter; }
-        void setMessageExpression(const char *messageExpression) { this->messageExpression.setPattern(messageExpression, false, true, false); }
+        void setMessageExpression(const char *messageExpression) { if (messageExpression) this->messageExpression.setPattern(messageExpression, false, true, false); }
         void setMessageNames(std::vector<std::string> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
         void setMessageClassNames(std::vector<std::string> &messageClassNames) { setPatternMatchers(this->messageClassNames, messageClassNames); }
         void setMessageIds(std::vector<long> &messageIds) { this->messageIds = messageIds; }
