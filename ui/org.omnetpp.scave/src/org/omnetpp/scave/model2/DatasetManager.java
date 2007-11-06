@@ -32,11 +32,9 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
-import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.engine.XYDataset;
 import org.omnetpp.scave.engine.XYDatasetVector;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
@@ -139,9 +137,11 @@ public class DatasetManager {
 
 		public Object caseApply(Apply apply) {
 			if (apply.getOperation() != null) {
-				for (int i = 0; i < idlist.size(); ++i) {
-					long id = idlist.get(i);
-					idlist.set(i, ensureComputedResultItem(apply, id, manager));
+				IDList selected = select(idlist, apply.getFilters());
+				idlist.substract(selected);
+				for (int i = 0; i < selected.size(); ++i) {
+					long id = selected.get(i);
+					idlist.add(ensureComputedResultItem(apply, id, manager));
 				}
 			}
 			return this;
@@ -149,9 +149,10 @@ public class DatasetManager {
 
 		public Object caseCompute(Compute compute) {
 			if (compute.getOperation() != null) {
-				int size = (int)idlist.size();
+				IDList selected = select(idlist, compute.getFilters());
+				int size = (int)selected.size();
 				for (int i = 0; i < size; ++i) {
-					long id = idlist.get(i);
+					long id = selected.get(i);
 					idlist.add(ensureComputedResultItem(compute, id, manager));
 				}
 			}
