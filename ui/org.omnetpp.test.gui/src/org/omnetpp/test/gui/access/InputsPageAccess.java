@@ -5,12 +5,14 @@ import static org.omnetpp.scave.TestSupport.INPUT_FILES_TREE;
 import static org.omnetpp.scave.TestSupport.LOGICAL_VIEW_TREE_ID;
 import static org.omnetpp.scave.TestSupport.RUN_FILE_VIEW_TREE_ID;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CTabItemAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.util.Predicate;
@@ -80,5 +82,20 @@ public class InputsPageAccess extends CompositeAccess {
 	
 	public void ensureLogicalViewVisible() {
 		ensureTabSelected(".*[lL]ogical.*");
+	}
+	
+	public InputsPageAccess addFileWithWildcard(String wildcard) {
+        findButtonWithLabel("Wildcard.*").selectWithMouseClick();
+        ShellAccess dialog = Access.findShellWithTitle("Add files with wildcard"); 
+        dialog.findTextAfterLabel("Enter the file name.*").typeOver(wildcard);
+        dialog.pressKey(SWT.CR);
+        return this;
+	}
+	
+	public InputsPageAccess removeInputFile(String pattern) {
+    	TreeAccess inputFilesTree = getInputFilesViewTree();
+        inputFilesTree.findTreeItemByContent("file " + pattern).click();
+        inputFilesTree.pressKey(SWT.DEL);
+        return this;
 	}
 }

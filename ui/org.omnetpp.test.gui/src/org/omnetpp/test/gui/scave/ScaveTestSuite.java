@@ -14,6 +14,7 @@ public class ScaveTestSuite
         addTestSuite(DatasetsAndChartsPageTest.class);
         addTestSuite(DatasetViewTest.class);
         addTestSuite(ExportTest.class);
+        addTestSuite(RefreshTest.class);
     }
 
     public static Test suite() {
