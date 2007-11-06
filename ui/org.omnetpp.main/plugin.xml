@@ -124,6 +124,7 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
+            category="org.omnetpp.main.OmnetppCategory"
             class="org.omnetpp.ide.properties.NEDSourceFoldersPropertyPage"
             id="org.omnetpp.main.NEDSourceFolders"
             name="NED Source Folders">
@@ -132,6 +133,11 @@
                   <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
              </adapt>         
          </enabledWhen>
+      </page>
+      <page
+            class="org.omnetpp.ide.properties.EmptyPropertyPage"
+            id="org.omnetpp.main.OmnetppCategory"
+            name="OMNEST/OMNeT++">
       </page>
    </extension>
    <extension

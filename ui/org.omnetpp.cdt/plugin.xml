@@ -4,9 +4,10 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
+            category="org.omnetpp.main.OmnetppCategory"
             class="org.omnetpp.cdt.ui.BuildSpecPropertyPage"
             id="org.omnetpp.cdt.BuildSpec"
-            name="C++ Makefile Generation (OMNEST/OMNeT++)">
+            name="C++ Makefile Generation">
          <enabledWhen>
              <adapt type="org.eclipse.core.resources.IProject">
                <and>
