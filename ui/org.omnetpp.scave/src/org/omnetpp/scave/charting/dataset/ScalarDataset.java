@@ -27,7 +27,7 @@ import org.omnetpp.scave.model2.StatUtils;
  */
 public class ScalarDataset implements IScalarDataset {
 	
-	private static ResultItemFields defaultGrouping = new ResultItemFields(MODULE).complement();
+	private static ResultItemFields defaultGrouping =  new ResultItemFields(new StringVector()); //new ResultItemFields(MODULE).complement();
 
 	/** The row keys. */
     private List<String> rowKeys;

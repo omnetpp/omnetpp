@@ -103,8 +103,10 @@ public class EditDialog extends TitleAreaDialog {
 		setMessage(form.getDescription());
 		form.populatePanel(panel);
 		features = form.getFeatures();
-		for (int i = 0; i < features.length; ++i)
-			form.setValue(features[i], object.eGet(features[i]));
+		for (int i = 0; i < features.length; ++i) {
+			if (object.eIsSet(features[i]))
+				form.setValue(features[i], object.eGet(features[i]));
+		}
 		return composite;
 	}
 	
