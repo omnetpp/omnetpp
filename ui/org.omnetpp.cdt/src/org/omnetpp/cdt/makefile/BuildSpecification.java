@@ -1,25 +1,25 @@
 package org.omnetpp.cdt.makefile;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IWorkspaceRoot;
 
+
 /**
- * Represents contents of the ".omnetppcproject" file
+ * Represents contents of the OMNeT++ build specification file
  * @author Andras
  */
+//XXX  - property sheet: make it possible to edit the "makefrag" file
 public class BuildSpecification {
     public enum FolderType {GENERATED_MAKEFILE, CUSTOM_MAKEFILE, EXCLUDED_FROM_BUILD};
 
-    public static class FolderInfo {
-        public FolderType folderType;
-        public MakemakeOptions additionalMakeMakeOptions; //XXX refine
-    }
-
     private String configFileLocation;
-    private Map<IContainer,FolderInfo> folders = new HashMap<IContainer,FolderInfo>();
+    private Map<IContainer,FolderType> folderTypes = new HashMap<IContainer,FolderType>();
+    private Map<IContainer,MakemakeOptions> folderOptions = new HashMap<IContainer,MakemakeOptions>();
 
     public BuildSpecification() {
     }
@@ -34,47 +34,48 @@ public class BuildSpecification {
 
     public FolderType getFolderType(IContainer folder) {
         // if folder type is not set, inherit it from parent folder
-        while (!folders.containsKey(folder) && !(folder.getParent() instanceof IWorkspaceRoot))
-                folder = folder.getParent();
-        FolderInfo info = folders.get(folder);
-        return info==null ? FolderType.GENERATED_MAKEFILE : info.folderType;
+        FolderType folderType = null;
+        while ((folderType=folderTypes.get(folder)) == null && !(folder.getParent() instanceof IWorkspaceRoot))
+            folder = folder.getParent();
+        return folderType != null ? folderType : FolderType.GENERATED_MAKEFILE;
     }
 
-    public MakemakeOptions getMakemakeOptions(IContainer folder) {
-        FolderInfo info = folders.get(folder);
-        return info==null ? null : info.additionalMakeMakeOptions;
-    }
-
-    public void setFolderInfo(IContainer folder, FolderType folderType, MakemakeOptions options) {
-        FolderInfo info = new FolderInfo();
-        info.folderType = folderType;
-        info.additionalMakeMakeOptions = options;
-        folders.put(folder, info);
+    public MakemakeOptions getFolderOptions(IContainer folder) {
+        // if folder options are not set, inherit from parent folder
+        MakemakeOptions options = null;
+        while ((options=folderOptions.get(folder)) == null && !(folder.getParent() instanceof IWorkspaceRoot))
+            folder = folder.getParent();
+        return options;
     }
 
     public void setFolderType(IContainer folder, FolderType folderType) {
-        if (!folders.containsKey(folder))
-            folders.put(folder, new FolderInfo());
-        FolderInfo info = folders.get(folder);
-        info.folderType = folderType;
+        if (folderType == null)
+            folderTypes.remove(folder);
+        else 
+            folderTypes.put(folder, folderType);
     }
 
     public void setFolderOptions(IContainer folder, MakemakeOptions options) {
-        if (!folders.containsKey(folder))
-            folders.put(folder, new FolderInfo());
-        FolderInfo info = folders.get(folder);
-        info.folderType = FolderType.GENERATED_MAKEFILE;
-        info.additionalMakeMakeOptions = options;
-        folders.put(folder, info);
+        if (options == null)
+            folderOptions.remove(folder);
+        else 
+            folderOptions.put(folder, options);
     }
 
-    public void removeFolderInfo(IContainer folder) {
-        folders.remove(folder);
+    public boolean isFolderTypeInherited(IContainer folder) {
+        return !folderTypes.containsKey(folder);
     }
-    
+
+    public boolean isFolderOptionsInherited(IContainer folder) {
+        return !folderOptions.containsKey(folder);
+    }
+
     public IContainer[] getFolders() {
-        return folders.keySet().toArray(new IContainer[]{});
+        // return the union of the two hashtables
+        Set<IContainer> set = new HashSet<IContainer>();
+        set.addAll(folderTypes.keySet());
+        set.addAll(folderOptions.keySet());
+        return set.toArray(new IContainer[]{});
     }
-    
 
 }

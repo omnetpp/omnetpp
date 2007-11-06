@@ -57,7 +57,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             public boolean visit(IResource resource) throws CoreException {
                 if (MakefileTools.isCppFile(resource) && buildSpec.getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) 
                     processFileIncludes((IFile)resource);
-                return true;  //FIXME skip cvs/svn folder, "dot" folders, folders where no makefile is generated
+                return MakefileTools.isGoodFolder(resource);  //FIXME skip folders where no makefile is generated
             }
         });
         

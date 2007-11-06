@@ -240,3 +240,5 @@ swt
 phony
 nmake
 filesystem
+hashtables
+makefrag

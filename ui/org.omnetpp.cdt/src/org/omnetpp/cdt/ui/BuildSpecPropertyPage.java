@@ -1,17 +1,19 @@
 package org.omnetpp.cdt.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -35,6 +37,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
+import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.common.util.StringUtils;
@@ -53,6 +56,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
     private Button generatedMakefileButton;
     private Button customMakefileButton;
     private Button excludeButton;
+    private Button sameAsParentButton;
     private Button optionsButton;
     private Button removeOptionsButton;
     
@@ -95,6 +99,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
         generatedMakefileButton = createButton(buttons, "Generated Makefile");
         customMakefileButton = createButton(buttons, "Custom Makefile");
         excludeButton = createButton(buttons, "Exclude From Build");
+        sameAsParentButton = createButton(buttons, "Same As Parent");
         new Label(buttons, SWT.PUSH);
         optionsButton = createButton(buttons, "Options...");
         removeOptionsButton = createButton(buttons, "Remove Options");
@@ -112,6 +117,10 @@ public class BuildSpecPropertyPage extends PropertyPage {
             public void widgetSelected(SelectionEvent e) {
                 setFolderType(FolderType.EXCLUDED_FROM_BUILD);
             }});
+        sameAsParentButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                setFolderType(null);
+            }});
         optionsButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 editFolderOptions();
@@ -126,10 +135,9 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	        @Override
 	        public Object[] getChildren(Object element) {
 	            List<Object> filteredChildren = new ArrayList<Object>();
-	            for (Object child : super.getChildren(element)) {
-	                if (child==project || child instanceof IFolder)
+	            for (Object child : super.getChildren(element))
+	                if (child instanceof IProject ? child==project : MakefileTools.isGoodFolder((IResource)child))
 	                    filteredChildren.add(child);
-	            }
 	            return filteredChildren.toArray();
 	        }
 	    });
@@ -139,12 +147,14 @@ public class BuildSpecPropertyPage extends PropertyPage {
             protected String decorateText(String input, Object element) {
                 IContainer folder = (IContainer) element;
                 String additionalText = "";
+
+                boolean isInherited = buildSpec.isFolderTypeInherited(folder);
                 switch (buildSpec.getFolderType(folder)) {
-                    case CUSTOM_MAKEFILE: additionalText = "custom"; break;
-                    case EXCLUDED_FROM_BUILD: additionalText = "exclude"; break;
-                    case GENERATED_MAKEFILE: additionalText = "makemake"; break;
+                    case CUSTOM_MAKEFILE: additionalText = isInherited ? "(custom)" : "CUSTOM"; break;
+                    case EXCLUDED_FROM_BUILD: additionalText = isInherited ? "(exclude)" : "EXCLUDE"; break;
+                    case GENERATED_MAKEFILE: additionalText = isInherited ? "(makemake)" : "MAKEMAKE"; break;
                 }
-                MakemakeOptions makemakeOptions = buildSpec.getMakemakeOptions(folder);
+                MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
                 if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && makemakeOptions != null)
                     additionalText += ": " + StringUtils.join(makemakeOptions.toArgs(), " ");
                 
@@ -199,11 +209,13 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	    generatedMakefileButton.setEnabled(!sel.isEmpty());
 	    customMakefileButton.setEnabled(!sel.isEmpty());
 	    excludeButton.setEnabled(!sel.isEmpty());
+	    sameAsParentButton.setEnabled(!sel.isEmpty());
 	    optionsButton.setEnabled(generatedMakefileCount > 0);
 	    removeOptionsButton.setEnabled(generatedMakefileCount > 0);
 	}
 
     protected void setFolderType(FolderType folderType) {
+        //FIXME: if EXCLUDE or CUSTOM, all folders below must be also EXCLUDE or CUSTOM!
         IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
         for (Object o : sel.toArray())
             buildSpec.setFolderType((IContainer)o, folderType);
@@ -218,13 +230,23 @@ public class BuildSpecPropertyPage extends PropertyPage {
         // dialog default value: take it from first suitable folder 
         MakemakeOptions options = null;
         for (IContainer folder : (List<IContainer>)sel.toList())
-            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getMakemakeOptions(folder) != null)
-                options = buildSpec.getMakemakeOptions(folder);
+            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null)
+                options = buildSpec.getFolderOptions(folder);
         String value = options == null ? "" : StringUtils.join(options.toArgs(), " ");
 
         // open dialog  
         //TODO something more sophisticated...
-        InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, null);
+        InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, new IInputValidator() {
+            public String isValid(String newText) {
+                String args[] = newText.split(" ");
+                try {
+                    new MakemakeOptions(new File("C:/"), args); //FIXME options need the folder! that's not good
+                } catch (Exception e) {
+                    return e.getMessage();
+                }
+                return null;
+            }
+        });
         if (dialog.open() == Window.OK) {
             String[] args = dialog.getValue().split(" ");
             for (IContainer folder : (List<IContainer>)sel.toList())

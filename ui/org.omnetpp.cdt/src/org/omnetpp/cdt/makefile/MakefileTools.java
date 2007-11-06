@@ -324,9 +324,7 @@ public class MakefileTools {
         final List<IContainer> result = new ArrayList<IContainer>();
         container.accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (resource instanceof IContainer && !resource.getName().startsWith(".") && 
-                        !resource.getName().equals("CVS") && !resource.getName().equals("backups") &&
-                        !((IContainer)resource).isTeamPrivateMember()) { 
+                if (isGoodFolder(resource)) { 
                     result.add((IContainer)resource);
                     return true;
                 }
@@ -386,6 +384,20 @@ public class MakefileTools {
         return resource instanceof IFile && "msg".equals(((IFile)resource).getFileExtension());
     }
 
+    /**
+     * Returns true if the resource is a potential source folder (not team private or
+     * backups folder)
+     */
+    public static boolean isGoodFolder(IResource resource) {
+        return (resource instanceof IContainer && 
+                !resource.getName().startsWith(".") && 
+                !resource.getName().equals("CVS") && 
+                !resource.getName().equals("_darcs") && 
+                !resource.getName().equals("backups") &&
+                !((IContainer)resource).isTeamPrivateMember()); 
+    }
+
+    
     public static IPath makeRelativePath(IPath base, IPath target) {
         if (base.equals(target))
             return new Path(".");
