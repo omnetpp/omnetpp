@@ -20,7 +20,21 @@ public class EventLogFilterParameters implements Serializable {
 
 	public boolean enableModuleFilter;
 
-	public boolean enableMessageFilter;
+	public boolean enableModuleExpressionFilter;
+
+	public boolean enableModuleClassNameFilter;
+
+	public boolean enableModuleNameFilter;
+
+	public boolean enableModuleIdFilter;
+
+    public boolean enableMessageFilter;
+
+	public boolean enableMessageExpressionFilter;
+
+	public boolean enableMessageClassNameFilter;
+
+	public boolean enableMessageNameFilter;
 
 	public boolean enableMessageIdFilter;
 

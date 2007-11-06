@@ -15,12 +15,12 @@ import static org.omnetpp.test.gui.access.ModelObjectPaletteAccess.LINE_CHART_BU
 import static org.omnetpp.test.gui.access.ModelObjectPaletteAccess.SCATTER_CHART_BUTTON;
 
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.util.Predicate;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
-import com.simulcraft.test.gui.util.Predicate;
 
 public class DatasetsAndChartsPageAccess extends CompositeAccess {
 	

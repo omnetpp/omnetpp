@@ -8,12 +8,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -22,41 +26,55 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.ui.EditableList;
+import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 
-public class FilterEventLogDialog extends TitleAreaDialog {
-
+@SuppressWarnings("unused")
+public class FilterEventLogDialog
+    extends TitleAreaDialog
+{
 	private EventLogInput eventLogInput;
 
 	private EventLogFilterParameters filterParameters;
+	
+	private CheckboxTreeViewer panelCheckboxTree;
 
-	private Button enableTraceFilter;
+    private FilterDialogTreeNode enableEventNumberFilter;
 
-	private Button enableEventNumberFilter;
+	private FilterDialogTreeNode enableSimulationTimeFilter;
 
-	private Button enableSimulationTimeFilter;
+	private FilterDialogTreeNode enableModuleFilter;
 
-	private Button enableModuleFilter;
+    private FilterDialogTreeNode enableModuleExpressionFilter;
 
-	private Button enableMessageFilter;
+    private FilterDialogTreeNode enableModuleClassNameFilter;
 
-	@SuppressWarnings("unused")
-	private Button enableMessageIdFilter;
+    private FilterDialogTreeNode enableModuleNameFilter;
 
-	@SuppressWarnings("unused")
-	private Button enableMessageTreeIdFilter;
+    private FilterDialogTreeNode enableModuleIdFilter;
 
-	@SuppressWarnings("unused")
-	private Button enableMessageEncapsulationIdFilter;
+    private FilterDialogTreeNode enableMessageFilter;
+	
+	private FilterDialogTreeNode enableMessageExpressionFilter;
 
-	@SuppressWarnings("unused")
-	private Button enableMessageEncapsulationTreeIdFilter;
+    private FilterDialogTreeNode enableMessageClassNameFilter;
+
+    private FilterDialogTreeNode enableMessageNameFilter;
+
+    private FilterDialogTreeNode enableMessageIdFilter;
+
+	private FilterDialogTreeNode enableMessageTreeIdFilter;
+
+	private FilterDialogTreeNode enableMessageEncapsulationIdFilter;
+
+	private FilterDialogTreeNode enableMessageEncapsulationTreeIdFilter;
+
+    private FilterDialogTreeNode enableTraceFilter;
 
 	private Text lowerEventNumberLimit;
 
@@ -86,15 +104,11 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 
 	private Text moduleFilterExpression;
 
-	private TabFolder moduleTabFolder;
-
 	private CheckboxTableViewer moduleClassNames;
 
 	private ModuleTreeViewer moduleNameIds;
 
 	private CheckboxTableViewer moduleIds;
-
-	private TabFolder messageTabFolder;
 
 	private Text messageFilterExpression;
 
@@ -102,21 +116,17 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 
 	private CheckboxTableViewer messageNames;
 
-	@SuppressWarnings("unused")
 	private EditableList messageIds;
 
-	@SuppressWarnings("unused")
 	private EditableList messageTreeIds;
 
-	@SuppressWarnings("unused")
 	private EditableList messageEncapsulationIds;
 
-	@SuppressWarnings("unused")
 	private EditableList messageEncapsulationTreeIds;
 
 	public FilterEventLogDialog(Shell parentShell, EventLogInput eventLogInput, EventLogFilterParameters filterParameters) {
 		super(parentShell);
-        setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
+        setShellStyle(getShellStyle() | SWT.RESIZE);
 		this.eventLogInput = eventLogInput;
 		this.filterParameters = filterParameters;
 	}
@@ -130,8 +140,16 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 					Class<?> parameterFieldType = parameterField.getType();
 					Field guiField = getClass().getDeclaredField(parameterField.getName());
 	
-					if (parameterFieldType == boolean.class)
-						unparseBoolean((Button)guiField.get(this), parameterField.getBoolean(filterParameters));
+					if (parameterFieldType == boolean.class) {
+					    Object guiFieldValue = guiField.get(this);
+					    boolean value = parameterField.getBoolean(filterParameters);
+                        if (guiFieldValue instanceof Button)
+                            unparseBoolean((Button)guiFieldValue, value);
+                        else if (guiFieldValue instanceof FilterDialogTreeNode)
+					        unparseBoolean((FilterDialogTreeNode)guiFieldValue, value);
+                        else
+                            throw new RuntimeException("Unknown gui field type");
+					}
 					else if (parameterFieldType == int.class)
 						unparseInt((Text)guiField.get(this), parameterField.getInt(filterParameters));
 					else if (parameterFieldType == BigDecimal.class)
@@ -171,9 +189,14 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 	}
 
 	private void unparseBoolean(Button button, boolean value) {
-		button.setSelection(value);
+	    button.setSelection(value);
 	}
 	
+    private void unparseBoolean(FilterDialogTreeNode treeNode, boolean value) {
+        panelCheckboxTree.setChecked(treeNode, value);
+        treeNode.checkStateChanged(value);
+    }
+    
 	private void unparseInt(Text text, int value) {
 		if (value != -1)
 			text.setText(String.valueOf(value));
@@ -239,8 +262,16 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 					Class<?> parameterFieldType = parameterField.getType();
 					Field guiField = getClass().getDeclaredField(parameterField.getName());
 	
-					if (parameterFieldType == boolean.class)
-						parameterField.setBoolean(filterParameters, parseBoolean((Button)guiField.get(this)));
+					if (parameterFieldType == boolean.class) {
+					    Object guiFieldValue = guiField.get(this);
+					    
+					    if (guiFieldValue instanceof Button)
+					        parameterField.setBoolean(filterParameters, parseBoolean((Button)guiFieldValue));
+					    else if (guiFieldValue instanceof FilterDialogTreeNode)
+	                        parameterField.setBoolean(filterParameters, parseBoolean((FilterDialogTreeNode)guiFieldValue));
+                        else
+                            throw new RuntimeException("Unknown gui field type");
+					}
 					else if (parameterFieldType == int.class)
 						parameterField.setInt(filterParameters, parseInt((Text)guiField.get(this)));
 					else if (parameterFieldType == BigDecimal.class)
@@ -283,6 +314,10 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		return button.getSelection();
 	}
 	
+    private boolean parseBoolean(FilterDialogTreeNode treeNode) {
+        return panelCheckboxTree.getChecked(treeNode);
+    }
+    
 	private int parseInt(Text text) {
 		if (text.getText().length() != 0)
 			return Integer.parseInt(text.getText());
@@ -344,36 +379,86 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		
 		return moduleClassNames;
 	}
-	
+
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		container.setLayout(new GridLayout());
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridData.heightHint = 400;
+		container.setLayoutData(gridData);
+		container.setLayout(new GridLayout(2, false));
 
 		setHelpAvailable(false);
 		setTitle("Select filter criteria");
 		setMessage("The event log will be filtered for events that match all criteria");
 
-		TabFolder tabFolder = new TabFolder(container, SWT.NONE);
-		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// create left hand side tree viewer
+		panelCheckboxTree = new CheckboxTreeViewer(container);
 
-		createGeneralTabItem(tabFolder);
-		createModuleTabItem(tabFolder);
-		createMessageTabItem(tabFolder);
-		createEventTraceTabItem(tabFolder);
+		// create right hand side panel container
+        final Composite panelContainer = new Composite(container, SWT.NONE);
+        panelContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        final StackLayout stackLayout = new StackLayout();
+        panelContainer.setLayout(stackLayout);
+        final Label defaultPanel = new Label(panelContainer, SWT.None);
+        defaultPanel.setText("Please select an option from the tree on the left");
+        stackLayout.topControl = defaultPanel;
+
+        // create tree
+        GenericTreeNode treeRoot = new GenericTreeNode("root");
+        treeRoot.addChild(createGeneralFilterTreeNode(panelContainer));
+        treeRoot.addChild(createModuleFilterTreeNode(panelContainer));
+        treeRoot.addChild(createMessageFilterTreeNode(panelContainer));
+        treeRoot.addChild(createEventTraceFilterTreeNode(panelContainer));
+
+        panelCheckboxTree.setContentProvider(new GenericTreeContentProvider());
+        panelCheckboxTree.setInput(treeRoot);
+        panelCheckboxTree.expandAll();
+        panelCheckboxTree.getTree().setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
+
+        panelCheckboxTree.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                Object firstSelection = ((ITreeSelection)event.getSelection()).getFirstElement();
+                
+                if (firstSelection != null) {
+                    FilterDialogTreeNode treeNode = (FilterDialogTreeNode)firstSelection;
+                    
+                    if (treeNode.getPanel() != null)
+                        stackLayout.topControl = treeNode.getPanel();
+                    else
+                        stackLayout.topControl = defaultPanel;
+
+                    panelContainer.layout();
+                }
+            }
+        });
+        
+        panelCheckboxTree.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                GenericTreeNode treeNode = (GenericTreeNode)event.getElement();
+
+                if (event.getChecked()) {
+                    while (treeNode != null) {
+                        if (treeNode instanceof FilterDialogTreeNode)
+                            ((FilterDialogTreeNode)treeNode).checkStateChanged(true);
+                        panelCheckboxTree.setChecked(treeNode, true);
+                        treeNode = treeNode.getParent();
+                    }
+                }
+                else
+                    treeNodeDeselected(new GenericTreeNode[] {treeNode});
+            }
+            
+            private void treeNodeDeselected(GenericTreeNode[] treeNodes) {
+                for (GenericTreeNode treeNode : treeNodes) {
+                    ((FilterDialogTreeNode)treeNode).checkStateChanged(false);
+                    panelCheckboxTree.setChecked(treeNode, false);
+                    treeNodeDeselected(treeNode.getChildren());
+                }
+            }
+        });
 
 		unparseFilterParameters();
-		
-		enableEventNumberFilter.notifyListeners(SWT.Selection, null);
-		enableSimulationTimeFilter.notifyListeners(SWT.Selection, null);
-        enableModuleFilter.notifyListeners(SWT.Selection, null);
-		enableMessageFilter.notifyListeners(SWT.Selection, null);
-		enableMessageIdFilter.notifyListeners(SWT.Selection, null);
-		enableMessageTreeIdFilter.notifyListeners(SWT.Selection, null);
-		enableMessageEncapsulationIdFilter.notifyListeners(SWT.Selection, null);
-		enableMessageEncapsulationTreeIdFilter.notifyListeners(SWT.Selection, null);
-		enableTraceFilter.notifyListeners(SWT.Selection, null);
 
 		return container;
 	}
@@ -390,131 +475,109 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		super.okPressed();
 	}
 	
-	private Composite createTabItem(TabFolder tabFolder, String tabText) {
-		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-		tabItem.setText(tabText);
-		Composite panel = new Composite(tabFolder, SWT.NONE);
-		panel.setLayout(new GridLayout(2, false));
-		tabItem.setControl(panel);
-		
-		return panel;
-	}
+	private GenericTreeNode createGeneralFilterTreeNode(Composite parent) {
+	    // generic filter
+	    Label label = new Label(parent, SWT.NONE);
+        label.setText("Filter for a range of events");
+	    FilterDialogTreeNode generalFilter = new FilterDialogTreeNode("General filter", label);
 
-	private void createGeneralTabItem(TabFolder tabFolder) {
-		Composite panel = createTabItem(tabFolder, "General filter");
-		
-		Label label = new Label(panel, SWT.NONE);
-		label.setText("The following limits if specified filter out ranges of events from the result");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
+		// event number filter
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
 
-		// event number limits
-		Group group = new Group(panel, SWT.NONE);
-		group.setText("Event number limits");
-		group.setLayout(new GridLayout(2, false));
-		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
+        generalFilter.addChild(enableEventNumberFilter = new FilterDialogTreeNode("by event numbers", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                lowerEventNumberLimit.setEnabled(checked);
+                upperEventNumberLimit.setEnabled(checked);
+            }
+        });
 
-		enableEventNumberFilter = new Button(group, SWT.CHECK);
-		enableEventNumberFilter.setText("Limit event log by event numbers");
-		enableEventNumberFilter.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
-		enableEventNumberFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean selection = enableEventNumberFilter.getSelection();
-				lowerEventNumberLimit.setEnabled(selection);
-				upperEventNumberLimit.setEnabled(selection);
-			}
-		});
-
-		label = new Label(group, SWT.NONE);
+		label = new Label(panel, SWT.NONE);
 		label.setText("Lower event number limit");
-		label.setToolTipText("Events with event number less than this will be filtered out from the result");
+		label.setToolTipText("Events with event number less than the provided will be filtered out");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
-		lowerEventNumberLimit = new Text(group, SWT.BORDER);
+		lowerEventNumberLimit = new Text(panel, SWT.BORDER);
 		lowerEventNumberLimit.setToolTipText(label.getToolTipText());
 		lowerEventNumberLimit.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		label = new Label(group, SWT.NONE);
+		label = new Label(panel, SWT.NONE);
 		label.setText("Upper event number limit");
-		label.setToolTipText("Events with event number greater than this will be filtered out from the result");
+		label.setToolTipText("Events with event number greater than the provided will be filtered out");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-		upperEventNumberLimit = new Text(group, SWT.BORDER);
+		upperEventNumberLimit = new Text(panel, SWT.BORDER);
 		upperEventNumberLimit.setToolTipText(label.getToolTipText());
 		upperEventNumberLimit.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		// simulation time limits
-		group = new Group(panel, SWT.NONE);
-		group.setText("Simulation time limits");
-		group.setLayout(new GridLayout(2, false));
-		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
-
-		enableSimulationTimeFilter = new Button(group, SWT.CHECK);
-		enableSimulationTimeFilter.setText("Limit event log by simulation time");
-		enableSimulationTimeFilter.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
-		enableSimulationTimeFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean selection = enableSimulationTimeFilter.getSelection();
-				lowerSimulationTimeLimit.setEnabled(selection);
-				upperSimulationTimeLimit.setEnabled(selection);
-			}
-		});
+		// simulation time filter
+		panel = new Composite(parent, SWT.NONE);
+		panel.setLayout(new GridLayout(2, false));
+        generalFilter.addChild(enableSimulationTimeFilter = new FilterDialogTreeNode("by simulation time", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                lowerSimulationTimeLimit.setEnabled(checked);
+                upperSimulationTimeLimit.setEnabled(checked);
+            }
+        });
 		
-		label = new Label(group, SWT.NONE);
+		label = new Label(panel, SWT.NONE);
 		label.setText("Lower simulation time limit in seconds");
 		label.setToolTipText("Events occured before this simulation time will be filtered out from the result");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
-		lowerSimulationTimeLimit = new Text(group, SWT.BORDER);
+		lowerSimulationTimeLimit = new Text(panel, SWT.BORDER);
 		lowerSimulationTimeLimit.setToolTipText(label.getToolTipText());
 		lowerSimulationTimeLimit.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		label = new Label(group, SWT.NONE);
+		label = new Label(panel, SWT.NONE);
 		label.setText("Upper simulation time limit in seconds");
 		label.setToolTipText("Events occured after this simulation time will be filtered out from the result");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
-		upperSimulationTimeLimit = new Text(group, SWT.BORDER);
+		upperSimulationTimeLimit = new Text(panel, SWT.BORDER);
 		upperSimulationTimeLimit.setToolTipText(label.getToolTipText());
 		upperSimulationTimeLimit.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		
+		return generalFilter;
 	}
 
-	private void createModuleTabItem(TabFolder tabFolder) {
-		Composite panel = createTabItem(tabFolder, "Module filter");
+	private FilterDialogTreeNode createModuleFilterTreeNode(Composite parent) {
+	    // module filter 
+        Label label = new Label(parent, SWT.NONE);
+        label.setText("Filter for events occured in any of the selected modules");
+        enableModuleFilter = new FilterDialogTreeNode("Module filter", label);
 
-		enableModuleFilter = new Button(panel, SWT.CHECK);
-		enableModuleFilter.setText("Filter for events occured in any of the selected modules");
-		enableModuleFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        enableModuleFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean selection = enableModuleFilter.getSelection();
-				moduleFilterExpression.setEnabled(selection);
-				moduleTabFolder.setEnabled(selection);
-				moduleNameIds.getTree().setEnabled(selection);
-				moduleClassNames.getTable().setEnabled(selection);
-				moduleIds.getTable().setEnabled(selection);
-			}
-		});
-		
-		Label label = new Label(panel, SWT.NONE);
+        // expression filter
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableModuleFilter.addChild(enableModuleExpressionFilter = new FilterDialogTreeNode("by expression", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                moduleFilterExpression.setEnabled(checked);
+            }
+        });
+
+		label = new Label(panel, SWT.NONE);
 		label.setText("Module filter expression");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
 		moduleFilterExpression = new Text(panel, SWT.BORDER);
 		moduleFilterExpression.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		// tab folder
-		panel = new Composite(panel, SWT.NONE);
-		panel.setLayout(new FillLayout());
-		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		moduleTabFolder = new TabFolder(panel, SWT.NONE);
-		IEventLog eventLog = eventLogInput.getEventLog();
-
 		// module class name filter
-		panel = createTabItem(moduleTabFolder, "Filter by class name");
-		int count = eventLog.getNumModuleCreatedEntries();
+        IEventLog eventLog = eventLogInput.getEventLog();
+        panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableModuleFilter.addChild(enableModuleClassNameFilter = new FilterDialogTreeNode("by class name", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                moduleClassNames.getTable().setEnabled(checked);
+            }
+        });
+
+        int count = eventLog.getNumModuleCreatedEntries();
 		Set<String> moduleClassNameSet = new HashSet<String>();
 		for (int i = 0; i < count; i++) {
 			ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(i);
@@ -530,17 +593,29 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 			moduleClassNames.add(moduleClassName);
 
 		// module name filter
-		panel = createTabItem(moduleTabFolder, "Filter by name");
+		panel = new Composite(parent, SWT.NONE);
+		panel.setLayout(new GridLayout(2, false));
+        enableModuleFilter.addChild(enableModuleNameFilter = new FilterDialogTreeNode("by name", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                moduleNameIds.getTree().setEnabled(checked);
+            }
+        });
 
 		moduleNameIds = new ModuleTreeViewer(panel, eventLogInput.getModuleTreeRoot());
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-        gridData.widthHint = 500;
-        gridData.heightHint = 400;
-        moduleNameIds.getTree().setLayoutData(gridData);
+        moduleNameIds.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         
         // module id filter
-        panel = createTabItem(moduleTabFolder, "Filter by id");
-		moduleIds = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+        panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableModuleFilter.addChild(enableModuleIdFilter = new FilterDialogTreeNode("by id", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                moduleIds.getTable().setEnabled(checked);
+            }
+        });
+
+        moduleIds = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		moduleIds.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		moduleIds.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
@@ -555,41 +630,44 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 			if (moduleCreatedEntry != null)
 				moduleIds.add(moduleCreatedEntry.getModuleId());
 		}
+		
+		return enableModuleFilter;
 	}
 
-	private void createMessageTabItem(TabFolder tabFolder) {
-		Composite panel = createTabItem(tabFolder, "Message filter");
+	private FilterDialogTreeNode createMessageFilterTreeNode(Composite parent) {
+        // message filter 
+        Label label = new Label(parent, SWT.NONE);
+        label.setText("Filter for events processing a message where any of the following criteria holds");
+        enableMessageFilter = new FilterDialogTreeNode("Message filter", label);
 
-		enableMessageFilter = new Button(panel, SWT.CHECK);
-		enableMessageFilter.setText("Filter for events processing a message where any of the following criteria holds");
-		enableMessageFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		enableMessageFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean selection = enableMessageFilter.getSelection();
-				messageFilterExpression.setEnabled(selection);
-				messageTabFolder.setEnabled(selection);
-				messageClassNames.getTable().setEnabled(selection);
-				messageNames.getTable().setEnabled(selection);
-			}
-		});
-		
-		Label label = new Label(panel, SWT.NONE);
+		// expression filter
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableMessageFilter.addChild(enableMessageExpressionFilter = new FilterDialogTreeNode("by expression", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                messageFilterExpression.setEnabled(checked);
+            }
+        });
+
+        label = new Label(panel, SWT.NONE);
 		label.setText("Message filter expression");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
 		messageFilterExpression = new Text(panel, SWT.BORDER);
 		messageFilterExpression.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		// tab folder
-		panel = new Composite(panel, SWT.NONE);
-		panel.setLayout(new FillLayout());
-		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		messageTabFolder = new TabFolder(panel, SWT.NONE);
-		IEventLog eventLog = eventLogInput.getEventLog();
-
 		// message class name filter
-		panel = createTabItem(messageTabFolder, "Filter by class name");
+        IEventLog eventLog = eventLogInput.getEventLog();
+        panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableMessageFilter.addChild(enableMessageClassNameFilter = new FilterDialogTreeNode("by class name", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                messageClassNames.getTable().setEnabled(checked);
+            }
+        });
+
 		label = new Label(panel, SWT.NONE);
 		label.setText("The following message class names have been encountered so far");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
@@ -600,8 +678,16 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 			messageClassNames.add(names.get(i));
 
 		// message name filter
-		panel = createTabItem(messageTabFolder, "Filter by name");
-		label = new Label(panel, SWT.NONE);
+        panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableMessageFilter.addChild(enableMessageNameFilter = new FilterDialogTreeNode("by name", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                messageNames.getTable().setEnabled(checked);
+            }            
+        });
+
+        label = new Label(panel, SWT.NONE);
 		label.setText("The following message names have been encountered so far");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		messageNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
@@ -611,78 +697,68 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 			messageNames.add(names.get(i));
 
 		// message id filter
-		panel = createTabItem(messageTabFolder, "Filter by id");
-		
-		Object[] values = createEditableList(panel, "Trace messages with ids");
-		enableMessageIdFilter = (Button)values[0];
+		Object[] values = createEditableList(parent, "by id");
+		enableMessageIdFilter = (FilterDialogTreeNode)values[0];
 		messageIds = (EditableList)values[1];
 		
-		values = createEditableList(panel, "Trace messages with tree ids");
-		enableMessageTreeIdFilter = (Button)values[0];
+		values = createEditableList(parent, "by tree id");
+		enableMessageTreeIdFilter = (FilterDialogTreeNode)values[0];
 		messageTreeIds = (EditableList)values[1];
 
-		values = createEditableList(panel, "Trace messages with encapsulation ids");
-		enableMessageEncapsulationIdFilter = (Button)values[0];
+		values = createEditableList(parent, "by encapsulation id");
+		enableMessageEncapsulationIdFilter = (FilterDialogTreeNode)values[0];
 		messageEncapsulationIds = (EditableList)values[1];
 		
-		values = createEditableList(panel, "Trace messages with encapsulation tree ids");
-		enableMessageEncapsulationTreeIdFilter = (Button)values[0];
+		values = createEditableList(parent, "by encapsulation tree id");
+		enableMessageEncapsulationTreeIdFilter = (FilterDialogTreeNode)values[0];
 		messageEncapsulationTreeIds = (EditableList)values[1];
+		
+		return enableMessageFilter;
 	}
 
-	private Object[] createEditableList(Composite panel, String label) {
-		final Button enableButton = new Button(panel, SWT.CHECK);
-		enableButton.setText(label);
-		enableButton.setSelection(true);
-		enableButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		
-		final EditableList editableList = new EditableList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
-		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		gridData.widthHint = 200;
-		gridData.heightHint = 100;
-		editableList.setLayoutData(gridData);
+	private Object[] createEditableList(Composite parent, String label) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
 
-		enableButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				editableList.setEnabled(enableMessageFilter.getSelection() && enableButton.getSelection());
-			}
-		});
-		
-		enableMessageFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				editableList.setEnabled(enableMessageFilter.getSelection() && enableButton.getSelection());
-				enableButton.setEnabled(enableMessageFilter.getSelection());
-			}
-		});
+        final EditableList editableList = new EditableList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+        editableList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		return new Object[] {enableButton, editableList};
+        FilterDialogTreeNode treeNode = new FilterDialogTreeNode(label, panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                editableList.setEnabled(checked);
+            }
+        };
+        enableMessageFilter.addChild(treeNode);
+        
+		return new Object[] {treeNode, editableList};
 	}
 
-	private void createEventTraceTabItem(TabFolder tabFolder) {
-		Composite panel = createTabItem(tabFolder, "Cause/consequence filter");
+	private FilterDialogTreeNode createEventTraceFilterTreeNode(Composite parent) {
+        // trace filter 
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableTraceFilter = new FilterDialogTreeNode("Cause/consequence filter", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                tracedEventNumber.setEnabled(checked);
+                traceCauses.setEnabled(checked);
+                traceConsequences.setEnabled(checked);
+                traceMessageReuses.setEnabled(checked);
+                traceSelfMessages.setEnabled(checked);
+                causeEventNumberDelta.setEnabled(checked);
+                consequenceEventNumberDelta.setEnabled(checked);
+                causeSimulationTimeDelta.setEnabled(checked);
+                consequenceSimulationTimeDelta.setEnabled(checked);
+            }
+        };
 
-		enableTraceFilter = new Button(panel, SWT.CHECK);
-		enableTraceFilter.setText("Trace causes and/or consequences for a particular event");
-		enableTraceFilter.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
-		enableTraceFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean selection = enableTraceFilter.getSelection();
-				tracedEventNumber.setEnabled(selection);
-				traceCauses.setEnabled(selection);
-				traceConsequences.setEnabled(selection);
-				traceMessageReuses.setEnabled(selection);
-				traceSelfMessages.setEnabled(selection);
-				causeEventNumberDelta.setEnabled(selection);
-				consequenceEventNumberDelta.setEnabled(selection);
-				causeSimulationTimeDelta.setEnabled(selection);
-				consequenceSimulationTimeDelta.setEnabled(selection);
-			}
-		});
 
-		Label label = new Label(panel, SWT.NONE);
+        Label label = new Label(panel, SWT.NONE);
+        label.setText("Trace causes and/or consequences for a particular event");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false, 2, 1));
+
+		label = new Label(panel, SWT.NONE);
 		label.setText("Event number to be traced");
 		label.setToolTipText("An event which is neither cause nor consequence of this event will be filtered out from the result");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
@@ -756,5 +832,23 @@ public class FilterEventLogDialog extends TitleAreaDialog {
 		consequenceSimulationTimeDelta = new Text(group, SWT.BORDER);
 		consequenceSimulationTimeDelta.setToolTipText(label.getToolTipText());
 		consequenceSimulationTimeDelta.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		
+		return enableTraceFilter;
+	}
+	
+	private class FilterDialogTreeNode extends GenericTreeNode {
+	    private Control panel;
+
+	    public FilterDialogTreeNode(Object payload, Control panel) {
+            super(payload);
+            this.panel = panel;
+        }
+	    
+	    public Control getPanel() {
+            return panel;
+        }
+	    
+	    public void checkStateChanged(boolean checked) {
+	    }
 	}
 }

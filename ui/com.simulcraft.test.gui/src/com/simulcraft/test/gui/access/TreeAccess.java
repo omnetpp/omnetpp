@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.IPredicate;
 
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 
 public class TreeAccess extends ControlAccess
@@ -85,13 +85,38 @@ public class TreeAccess extends ControlAccess
 	
     @UIStep
 	public TreeItemAccess findTreeItemByPath(String path) {
-        // TODO: Note that findTreeItemByContent() does deep search, so this code won't work
-        // if any segment is not fully unique in the tree!
-        for (String pathSegment : new Path(path).removeLastSegments(1).segments())
-            findTreeItemByContent(pathSegment).ensureExpanded();
+        TreeItemAccess parentTreeItem = null;
+        String[] pathSegments = new Path(path).segments();
 
-        return findTreeItemByContent(new Path(path).lastSegment()).reveal();
+        for (int i = 0; i < pathSegments.length; i++) {
+            parentTreeItem = findChildTreeItemByContent(parentTreeItem == null ? null : parentTreeItem.getWidget(), pathSegments[i]);
+
+            if (i == pathSegments.length - 1)
+                parentTreeItem.reveal();
+            else
+                parentTreeItem.ensureExpanded();
+        }
+
+        return parentTreeItem;
 	}
+
+    @UIStep
+    public TreeItemAccess findChildTreeItemByContent(final TreeItem parentTreeItem, final String content) {
+        TreeItem treeItem = findTreeItem(getControl().getItems(), new IPredicate() {
+            public boolean matches(Object object) {
+                TreeItem treeItem = (TreeItem)object;
+                log(debug, "  checking: " + treeItem);
+                String treeItemContent = treeItem.getText();
+                return parentTreeItem == treeItem.getParentItem() && treeItemContent.matches(content);
+            }
+            
+            public String toString() {
+                return "a TreeItem with content: " + content + " under: " + parentTreeItem;
+            }
+        });
+        log(debug, treeItem + ":" + treeItem.getBounds()); 
+        return new TreeItemAccess(treeItem);
+    }
 
 	@UIStep
 	public TreeItemAccess findTreeItemByContent(final String content) {

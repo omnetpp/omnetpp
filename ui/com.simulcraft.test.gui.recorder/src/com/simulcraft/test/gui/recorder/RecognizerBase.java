@@ -24,9 +24,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import static org.omnetpp.common.util.Predicate.instanceOf;
 
 /**
  * @author Andras
@@ -136,7 +136,7 @@ public class RecognizerBase  {
     }
 
     public static Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
-        return findDescendantControl(composite, new InstanceofPredicate(clazz));
+        return findDescendantControl(composite, instanceOf(clazz));
     }
 
     public static Control findDescendantControl(Composite composite, IPredicate predicate) {
@@ -164,7 +164,7 @@ public class RecognizerBase  {
     }
 
     public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
-        return findDescendantFigure(figure, new InstanceofPredicate(clazz));
+        return findDescendantFigure(figure, instanceOf(clazz));
     }
     
     public static IFigure findDescendantFigure(IFigure figure, IPredicate predicate) {

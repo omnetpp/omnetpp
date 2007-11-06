@@ -1,5 +1,9 @@
 package com.simulcraft.test.gui.access;
 
+import static org.omnetpp.common.util.Predicate.and;
+import static org.omnetpp.common.util.Predicate.instanceOf;
+import static org.omnetpp.common.util.Predicate.visible;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +31,14 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 
 import com.simulcraft.test.gui.core.EventTracer;
 import com.simulcraft.test.gui.core.EventUtils;
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
 import com.simulcraft.test.gui.core.PlatformUtils;
+import com.simulcraft.test.gui.core.UIStep;
 
 
 //XXX move static functions out into an AccessUtils class? there's just too much stuff inherited into subclasses...
@@ -47,7 +50,7 @@ public class Access
     private static final String TEST_RUNNING = "com.simulcraft.test.running";
     private static double timeScale = 1.0;
 	
-    public static boolean debug = false;
+    public static boolean debug = true;
     
     public static boolean mustHaveActiveShell = true;
     
@@ -431,7 +434,7 @@ public class Access
 
 	@UIStep
 	public static Control findDescendantControl(Composite composite, final Class<? extends Control> clazz) {
-		return findDescendantControl(composite, new InstanceofPredicate(clazz));
+		return findDescendantControl(composite, and(instanceOf(clazz), visible()));
 	}
 
 	@UIStep
@@ -534,7 +537,7 @@ public class Access
 
 	@UIStep
 	public static IFigure findDescendantFigure(IFigure figure, final Class<? extends IFigure> clazz) {
-		return findDescendantFigure(figure, new InstanceofPredicate(clazz));
+		return findDescendantFigure(figure, instanceOf(clazz));
 	}
 
 	@UIStep
@@ -566,7 +569,7 @@ public class Access
 	
 	@UIStep
 	public static EditPart findDescendantEditPart(EditPart editPart, final Class<? extends EditPart> clazz) {
-	    return findDescendantEditPart(editPart, new InstanceofPredicate(clazz));
+	    return findDescendantEditPart(editPart, instanceOf(clazz));
 	}
 
 	@UIStep

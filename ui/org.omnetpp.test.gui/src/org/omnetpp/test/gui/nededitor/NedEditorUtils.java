@@ -1,12 +1,13 @@
 package org.omnetpp.test.gui.nededitor;
 
+import static org.omnetpp.common.util.Predicate.instanceOf;
+
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.common.util.InstanceofPredicate;
 import org.omnetpp.test.gui.access.NedEditorAccess;
 
 import com.simulcraft.test.gui.access.Access;
@@ -49,7 +50,7 @@ public class NedEditorUtils
     
     public static void setNedPath(String projectName, String path) {
         ShellAccess shell = WorkbenchUtils.openProjectPropertiesFromProjectExplorerView(projectName);
-        List<Control> trees = shell.collectDescendantControls(new InstanceofPredicate(Tree.class));
+        List<Control> trees = shell.collectDescendantControls(instanceOf(Tree.class));
         final TreeAccess panelSelectorTree = new TreeAccess((Tree)Access.findControlMaximizing(trees, new Access.IValue() {
             public double valueOf(Object object) {
                 return -((Control)object).getBounds().x;

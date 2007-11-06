@@ -33,7 +33,11 @@ Features:
    + marked lines are colored
  - context menu:
    + go to the given event number if present in the file
-   + search forward and backward for the given text
+   - search for the given text
+     + forward
+     - backward
+     - continue search
+     - remember last search string
    - go to next/previous selected/marked line
  + filter lines
    + events

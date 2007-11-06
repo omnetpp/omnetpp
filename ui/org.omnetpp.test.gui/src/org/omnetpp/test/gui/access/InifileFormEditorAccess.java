@@ -1,5 +1,6 @@
 package org.omnetpp.test.gui.access;
 
+import org.omnetpp.common.util.Predicate;
 import org.omnetpp.inifile.editor.TestSupport;
 import org.omnetpp.inifile.editor.form.FormPage;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
@@ -11,7 +12,6 @@ import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
-import com.simulcraft.test.gui.util.Predicate;
 
 //XXX not sure we really need this class. All method could just be added into InifileEditorAccess
 public class InifileFormEditorAccess

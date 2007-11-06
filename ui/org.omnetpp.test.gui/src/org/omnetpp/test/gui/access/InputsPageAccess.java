@@ -8,6 +8,7 @@ import static org.omnetpp.scave.TestSupport.RUN_FILE_VIEW_TREE_ID;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.util.Predicate;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.CTabItemAccess;
@@ -15,7 +16,6 @@ import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.core.UIStep;
-import com.simulcraft.test.gui.util.Predicate;
 
 public class InputsPageAccess extends CompositeAccess {
 

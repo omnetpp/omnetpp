@@ -4,8 +4,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Widget;
 
-import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.core.InAnyThread;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public abstract class ClickableWidgetAccess
     extends WidgetAccess
@@ -62,15 +63,14 @@ public abstract class ClickableWidgetAccess
 		for (String label : labelPath.split("\\|"))
 			menuAccess = menuAccess.activateMenuItemWithMouse(label);
 	}
-	
-    @UIStep
+
+    @InAnyThread
 	public void dragToAbsolute(int x, int y) {
 	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));    
 	}
 
-    @UIStep
+    @InAnyThread
 	public void dragTo(ClickableWidgetAccess target) {
 	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());    
 	}
-
 }

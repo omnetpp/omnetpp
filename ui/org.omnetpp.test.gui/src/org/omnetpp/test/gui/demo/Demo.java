@@ -1,22 +1,36 @@
 package org.omnetpp.test.gui.demo;
 
-import com.simulcraft.test.gui.access.*;
-import com.simulcraft.test.gui.core.AnimationEffects;
-import com.simulcraft.test.gui.core.GUITestCase;
-import com.simulcraft.test.gui.util.WorkbenchUtils;
-import com.simulcraft.test.gui.util.WorkspaceUtils;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
-
 import org.omnetpp.scave.charting.VectorChart;
+import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 import org.omnetpp.test.gui.access.InputsPageAccess;
 import org.omnetpp.test.gui.access.NedEditorAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
+import org.omnetpp.test.gui.access.SequenceChartAccess;
 import org.omnetpp.test.gui.scave.ScaveEditorUtils;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.ButtonAccess;
+import com.simulcraft.test.gui.access.ComboAccess;
+import com.simulcraft.test.gui.access.CompositeAccess;
+import com.simulcraft.test.gui.access.ControlAccess;
+import com.simulcraft.test.gui.access.EditorPartAccess;
+import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
+import com.simulcraft.test.gui.access.TableAccess;
+import com.simulcraft.test.gui.access.TableItemAccess;
+import com.simulcraft.test.gui.access.TextAccess;
+import com.simulcraft.test.gui.access.ToolItemAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.TreeItemAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.core.AnimationEffects;
+import com.simulcraft.test.gui.core.GUITestCase;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class Demo extends GUITestCase {
     protected String name = "demo";
@@ -29,9 +43,10 @@ public class Demo extends GUITestCase {
         Access.getWorkbenchWindow().closeAllEditorPartsWithHotKey();
 //        WorkspaceUtils.ensureProjectNotExists(name);
 //        WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
-//      WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
-//        setMouseMoveDuration(1000);
-//        setTimeScale(0.5);
+//        WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
+        // TODO: sequencechart: PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID).removeProperty(resource, STATE_PROPERTY);
+        setMouseMoveDuration(1000);
+        setTimeScale(1);
     }
     
     void sleep(double time) {
@@ -62,7 +77,7 @@ public class Demo extends GUITestCase {
 //            		"setup, run and analyze a closed queuing network " +
 //            		"using the OMNeT++ IDE", 3);
 //        
-        openPerspective();
+//        openPerspective();
 //        createProject();
 //        createNedFile();
 //        createDemoNetwork();
@@ -393,34 +408,61 @@ public class Demo extends GUITestCase {
     }
     
     private void showSequenceChart() {
-        Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree().findTreeItemByContent("demo\\.log").doubleClick();
-//        ClickableAccess.clickAbsolute(521, 185); //TODO unrecognized click - revise
-        ShellAccess shell = Access.getWorkbenchWindow().getShell();
-        ToolItemAccess toolItem = shell.findToolItemWithTooltip("Zoom In");
-        toolItem.click();
-        toolItem.click();
-        shell.findToolItemWithTooltip("Show Message Names").click();
-        ToolItemAccess toolItem2 = shell.findToolItemWithTooltip("Show Event Numbers");
-        toolItem2.click();
-        ToolItemAccess toolItem3 = shell.findToolItemWithTooltip("Timeline Mode");
-        toolItem3.click();
-        toolItem3.click();
-        toolItem3.click();
-        toolItem3.click();
-        toolItem2.click();
-//        Access.clickAbsolute(469, 84); //TODO unrecognized click - revise
-//        Access.clickAbsolute(382, 7); //TODO unrecognized click - revise
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
-//        Access.pressKey(SWT.ARROW_DOWN);
+        String logFileName = name + ".log";
+
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        ShellAccess workbenchShell = workbenchWindow.getShell();
+
+        showMessage("Take a look at the sequence chart\n", 1);
+
+        TreeAccess tree = workbenchWindow.findViewPartByTitle("Navigator").getComposite().findTree();
+        TreeItemAccess treeItem = tree.findTreeItemByContent(name);
+        treeItem.ensureExpanded();
+        tree.findTreeItemByContent(logFileName).doubleClick();
+
+        showMessage("Here you can see the initial 60 messages being pushed into one of the queues.\n", 2);
+
+        showMessage("Go to where the first message is first processed by a queue\n", 2);
+
+        EditorPartAccess editorPart = workbenchWindow.findEditorPartByTitle(logFileName);
+        SequenceChartAccess sequenceChart = (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), SequenceChart.class));
+        sequenceChart.activateContextMenuWithMouseClick(2).activateMenuItemWithMouse("Sending.*cMessage.*").activateMenuItemWithMouse("Goto Consequence.*");
         
+        showMessage("Zoom out to see more\n", 1);
+
+        ToolItemAccess toolItem = workbenchShell.findToolItemWithTooltip("Zoom Out");
+        for (int i = 0; i < 5; i++)
+            toolItem.click();
+
+        showMessage("Switch to linear timeline mode and see the initial messages being sent in zero simulation time\n", 2);
+        
+        toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
+        toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
+
+        showMessage("Filter for the first message to see how it goes around and around in the closed network...\n", 2);
+
+        workbenchShell.findToolItemWithTooltip("Filter").click();
+        ShellAccess filterShell = Access.findShellWithTitle("Filter event log");
+        treeItem = filterShell.findTree().findTreeItemByPath("Message filter/by name");
+        treeItem.click();
+        treeItem.pressKey(' ');
+        TableAccess table = filterShell.findTable();
+        table.findTableItemByContent("source 1").click();
+        table.pressKey(' ');
+        filterShell.findButtonWithLabel("OK").selectWithMouseClick();
+
+        showMessage("Switch to non linear to see the message going around several times at once\n", 2);
+
+        toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
+        toolItem.activateDropDownMenu().activateMenuItemWithMouse("Nonlinear");
+
+        toolItem = workbenchShell.findToolItemWithTooltip("Zoom Out");
+        for (int i = 0; i < 5; i++)
+            toolItem.click();
+
+        Rectangle r = sequenceChart.getAbsoluteBounds();
+        sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, r.width - 1, r.height / 2, 1, r.height / 2);
+
+        Access.sleep(10);
     }
 }

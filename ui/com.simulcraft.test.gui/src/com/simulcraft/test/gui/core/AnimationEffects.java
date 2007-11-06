@@ -1,8 +1,5 @@
 package com.simulcraft.test.gui.core;
 
-import com.simulcraft.test.gui.access.Access;
-import com.simulcraft.test.gui.access.ClickableAccess;
-
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -17,8 +14,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-
 import org.omnetpp.common.color.ColorFactory;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.ClickableAccess;
 
 // Notes for Linux/GTK:
 //   - XOR mode doesn't work   

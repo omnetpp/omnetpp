@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class TreeItemAccess extends ClickableWidgetAccess
 {
@@ -35,7 +35,7 @@ public class TreeItemAccess extends ClickableWidgetAccess
 		return this;
 	}
 	
-	@Override
+	@Override @UIStep
 	protected Point getAbsolutePointToClick() {
 	    Point point = toAbsolute(getCenter(getWidget().getBounds()));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));

@@ -135,10 +135,22 @@ public abstract class GUITestCase
 	}
 
     private static Throwable getInterestingCause(Throwable t) {
-        if (t instanceof TestException)
-            return getInterestingCause(((TestException)t).getCause());
-        else if (t instanceof SWTException)
-            return getInterestingCause(((SWTException)t).throwable);
+        if (t instanceof TestException) {
+            Throwable cause = ((TestException)t).getCause();
+
+            if (cause != null)
+                return getInterestingCause(cause);
+            else
+                return t;
+        }
+        else if (t instanceof SWTException) {
+            Throwable cause = ((SWTException)t).throwable;
+            
+            if (cause != null)
+                return getInterestingCause(cause);
+            else
+                return t;
+        }
         else
             return t;
     }

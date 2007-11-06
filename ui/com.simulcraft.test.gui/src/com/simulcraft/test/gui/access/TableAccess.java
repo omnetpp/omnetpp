@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.Predicate;
 
 import com.simulcraft.test.gui.core.UIStep;
-import com.simulcraft.test.gui.util.Predicate;
 
 
 public class TableAccess extends ControlAccess

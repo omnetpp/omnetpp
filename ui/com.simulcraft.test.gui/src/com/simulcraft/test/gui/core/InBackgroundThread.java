@@ -7,5 +7,4 @@ package com.simulcraft.test.gui.core;
  * @author Andras
  */
 public @interface InBackgroundThread {
-
 }

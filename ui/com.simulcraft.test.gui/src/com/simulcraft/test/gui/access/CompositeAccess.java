@@ -6,9 +6,9 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.*;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.Predicate;
 
 import com.simulcraft.test.gui.core.UIStep;
-import com.simulcraft.test.gui.util.Predicate;
 
 
 public class CompositeAccess extends ControlAccess

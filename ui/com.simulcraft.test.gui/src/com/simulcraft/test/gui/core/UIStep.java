@@ -12,10 +12,10 @@ package com.simulcraft.test.gui.core;
  *          using Display.readAndDispatch() until the queue becomes empty.
  *          Then the method returns.       
  * </ul> 
- * @UIStep does NOT nest: If there there are nested @UIStep method calls, 
+ * @UIStep does NOT nest: If there are nested @UIStep method calls, 
  * only the toplevel one (entered first) will get special treatment, all nested
  * ones are treated like plain method calls.
- *          
+ *
  * NOTE: no UI events (mouse clicks, keypresses) get processed while control is
  * in the body of the method annotated with @UIStep -- only after it finished.
  * So if you click a button or type something in the method, that will only
@@ -28,5 +28,4 @@ package com.simulcraft.test.gui.core;
  * @author Andras
  */
 public @interface UIStep {
-
 }

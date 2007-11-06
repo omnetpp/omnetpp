@@ -259,7 +259,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
-
+				
 				if (dialog.open() == Window.OK) {
 					
 					// TODO: add case sensitivity, forward/backward search, etc.
