@@ -101,6 +101,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             try {
                 //System.out.println("Generating makefile in: " + folder.getFullPath());
                 List<String> args = new ArrayList<String>();
+                args.add("-f");
                 args.add("-r");  //FIXME rather: explicit subfolder list
                 args.add("-n"); //FIXME from folderType
                 args.add("-c");
@@ -125,7 +126,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 Activator.logError(e);
             }
         }
-        
     }
 
     private void processDelta(IResourceDelta delta) throws CoreException {

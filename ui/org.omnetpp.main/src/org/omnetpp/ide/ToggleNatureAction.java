@@ -113,6 +113,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
             String[] natures = description.getNatureIds();
             description.setNatureIds((String[])ArrayUtils.add(natures, OmnetppNature.NATURE_ID));
             project.setDescription(description, null);
+            // note: builders are added automatically, by OmnetppNature.configure()
         } 
         catch (CoreException e) {
             Activator.getDefault().logError(e);
@@ -126,6 +127,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
             String[] natures = description.getNatureIds();
             description.setNatureIds((String[])ArrayUtils.removeElement(natures, OmnetppNature.NATURE_ID));
             project.setDescription(description, null);
+            // note: builders are removed automatically, by OmnetppNature.deconfigure()
         } 
         catch (CoreException e) {
             Activator.getDefault().logError(e);

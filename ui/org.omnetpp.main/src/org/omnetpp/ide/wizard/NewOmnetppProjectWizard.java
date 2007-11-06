@@ -2,7 +2,6 @@ package org.omnetpp.ide.wizard;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -22,7 +21,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.ide.Activator;
 import org.omnetpp.ide.OmnetppNature;
 
@@ -46,12 +44,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 	@Override
 	public boolean performFinish() {
         IProject project = createNewProject();
-        if (project != null) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return project != null;
 	}
 	
 	private IProject createNewProject() {
@@ -62,21 +55,17 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         // get a project descriptor
         IPath defaultPath = Platform.getLocation();
         IPath newPath = page.getLocationPath();
-        if (defaultPath.equals(newPath)) {
+        if (defaultPath.equals(newPath))
 			newPath = null;
-		}
         
+        // create project description. Note: we'add the nature after project creation,
+        // so that builders get properly configured (Project.create() doesn't do it).
         final IProjectDescription description = workspace.newProjectDescription(projectName);
         description.setLocation(newPath);
-        description.setNatureIds(new String[] {OmnetppNature.NATURE_ID});
-        ICommand vciBuildSpec = description.newCommand();
-        vciBuildSpec.setBuilderName(IConstants.VECTORFILEINDEXER_BUILDER_ID);
-        description.setBuildSpec(new ICommand[] {vciBuildSpec});
 		
         // define the operation to create a new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-            protected void execute(IProgressMonitor monitor)
-                    throws CoreException {
+            protected void execute(IProgressMonitor monitor) throws CoreException {
                 createProject(description, projectHandle, monitor);
             }
         };
@@ -108,20 +97,23 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         return projectHandle;
 	}
 	
-    private void createProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor)
-            throws CoreException, OperationCanceledException {
+    private void createProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
         try {
             monitor.beginTask("", 2000);
 
             projectHandle.create(description, new SubProgressMonitor(monitor, 1000));
-
-            if (monitor.isCanceled()) {
+            if (monitor.isCanceled())
 				throw new OperationCanceledException();
-			}
 
             projectHandle.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 
-        } finally {
+            // add the project nature after now, after project creation, so that builders 
+            // get properly configured (Project.create() doesn't do it).
+            IProjectDescription description2 = projectHandle.getDescription();
+            description2.setNatureIds(new String[] {OmnetppNature.NATURE_ID});
+            projectHandle.setDescription(description2, monitor);
+        } 
+        finally {
             monitor.done();
         }
     }

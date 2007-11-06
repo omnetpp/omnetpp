@@ -42,13 +42,14 @@ import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * FIXME
- * This property page is shown for OMNeT++ Projects (projects with the
- * omnetpp nature), and lets the user edit the contents of the ".nedfolders" 
- * file.
+ * This property page is shown for OMNeT++ CDT Projects, and lets the user 
+ * edit the contents of the ".oppbuildspec" file.
  *
  * @author Andras
  */
+//TODO: expand all nodes where somrething is set
+//TODO: nature: omnetpp wizard should add it
+//TODO: property page: into an "OMNeT++" tree node in the dialog
 public class BuildSpecPropertyPage extends PropertyPage {
     // widgets
 	private TreeViewer treeViewer;
@@ -89,7 +90,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 		// create treeviewer and label above it
         Label label = new Label(composite, SWT.NONE);
-        label.setText("&Makefile generation for project '" + project.getName() + "':");
+        label.setText("&Build specification for project '" + project.getName() + "':");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         
 		treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.MULTI);

@@ -5,8 +5,8 @@
          point="org.eclipse.ui.propertyPages">
       <page
             class="org.omnetpp.cdt.ui.BuildSpecPropertyPage"
-            id="org.omnetpp.cdt.CPlusPlusSourceFolders"
-            name="C++ Source Folders (OMNEST/OMNeT++)">
+            id="org.omnetpp.cdt.BuildSpec"
+            name="C++ Makefile Generation (OMNEST/OMNeT++)">
          <enabledWhen>
              <adapt type="org.eclipse.core.resources.IProject">
                <and>

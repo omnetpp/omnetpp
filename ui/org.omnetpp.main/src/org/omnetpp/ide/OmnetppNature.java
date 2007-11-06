@@ -1,5 +1,6 @@
 package org.omnetpp.ide;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -8,7 +9,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.IConstants;
 
 public class OmnetppNature implements IProjectNature {
-
 	/**
 	 * ID of this project nature
 	 */
@@ -23,19 +23,9 @@ public class OmnetppNature implements IProjectNature {
 	 */
 	public void configure() throws CoreException {
 		IProjectDescription desc = project.getDescription();
-		ICommand[] commands = desc.getBuildSpec();
-
-		boolean hasNEDBuidler = false;
-		boolean hasIndexer = false;
-		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(IConstants.VECTORFILEINDEXER_BUILDER_ID))
-				hasIndexer = true;
-			if (hasNEDBuidler && hasIndexer)
-				break;
-		}
-		
-		if (!hasIndexer)
-			addBuilderToProject(IConstants.VECTORFILEINDEXER_BUILDER_ID);
+		addBuilder(desc, IConstants.VECTORFILEINDEXER_BUILDER_ID);
+		addBuilder(desc, IConstants.MAKEFILEBUILDER_BUILDER_ID);
+		project.setDescription(desc, null);
 	}
 
 	/*
@@ -44,38 +34,33 @@ public class OmnetppNature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
 	public void deconfigure() throws CoreException {
-		removeBuilderFromProject(IConstants.VECTORFILEINDEXER_BUILDER_ID);
+        IProjectDescription desc = project.getDescription();
+        removeBuilder(desc, IConstants.VECTORFILEINDEXER_BUILDER_ID);
+        removeBuilder(desc, IConstants.MAKEFILEBUILDER_BUILDER_ID);
+        project.setDescription(desc, null);
 	}
 	
-	public void addBuilderToProject(String id) throws CoreException {
-		IProjectDescription desc = project.getDescription();
-		ICommand[] commands = desc.getBuildSpec();
-		ICommand[] newCommands = new ICommand[commands.length + 1];
-		System.arraycopy(commands, 0, newCommands, 0, commands.length);
-		ICommand command = desc.newCommand();
-		command.setBuilderName(id);
-		newCommands[newCommands.length - 1] = command;
-		desc.setBuildSpec(newCommands);
-		project.setDescription(desc, null);
-		
+	public void addBuilder(IProjectDescription desc, String builderId) throws CoreException {
+	    if (findIndexOf(desc.getBuildSpec(), builderId) == -1) {
+	        ICommand command = desc.newCommand();
+	        command.setBuilderName(builderId);
+	        desc.setBuildSpec((ICommand[])ArrayUtils.add(desc.getBuildSpec(), command));
+	    }
 	}
 	
-	private void removeBuilderFromProject(String id) throws CoreException {
-		IProjectDescription description = getProject().getDescription();
-		ICommand[] commands = description.getBuildSpec();
-		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(id)) {
-				ICommand[] newCommands = new ICommand[commands.length - 1];
-				System.arraycopy(commands, 0, newCommands, 0, i);
-				System.arraycopy(commands, i + 1, newCommands, i,
-						commands.length - i - 1);
-				description.setBuildSpec(newCommands);
-				project.setDescription(description, null);
-				return;
-			}
-		}
+	private void removeBuilder(IProjectDescription desc, String builderId) throws CoreException {
+        int index = findIndexOf(desc.getBuildSpec(), builderId);
+        if (index != -1)
+            desc.setBuildSpec((ICommand[])ArrayUtils.remove(desc.getBuildSpec(), index));
 	}
 
+	private int findIndexOf(ICommand[] commands, String builderId) {
+        for (int i = 0; i < commands.length; ++i)
+            if (commands[i].getBuilderName().equals(builderId))
+                return i;
+        return -1;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
