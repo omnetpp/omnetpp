@@ -25,11 +25,12 @@ import org.omnetpp.common.util.FileUtils;
  * @author Andras
  */
 //FIXME adjust perl/bash versions: 
-//- add "-d" option
-//- rename old "-d" to "-S"
+//- commandline: rename old "-d" to "-S"
+//- commandline: add "-d" option
 //- here we store -P option (p.exportDefOpt) without the "-P"
 //- here we understand "-I" and "-L" both with and without space
-//- commandline: "--notstamp" should take effect with linkDirs as well! 
+//- commandline: "--notstamp" should take effect with linkDirs as well!
+//- todo: must add support for "-DSYMBOL=value"
 //FIXME support Linux too
 //TODO optimize per-file dependencies -- bulk of execution time is spent there!
 //

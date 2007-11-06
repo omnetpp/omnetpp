@@ -1,6 +1,5 @@
 package org.omnetpp.cdt.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,11 +79,17 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 		final IProject project = (IProject) getElement();
 
-        //createWrapLabel(composite, "Some explanation....", 2, 300);
+        createWrapLabel(composite, 
+                "Makefiles will be automatically generated in folders marked so. " +
+        		"Makefiles can be configured via options for opp_makemake, and " +
+        		"via \"makefrag\" files whose contents will be inserted into the " +
+        		"generated Makefile in the same folder. " +
+        		"Cross-folder include paths need not be specified, they will be discovered " +
+        		"and added automatically.", 2, 300);
 
 		// create treeviewer and label above it
         Label label = new Label(composite, SWT.NONE);
-        label.setText("&Build specification for project '" + project.getName() + "':");
+        label.setText("&Makefile generation for project '" + project.getName() + "':");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         
 		treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.MULTI);
@@ -155,8 +160,10 @@ public class BuildSpecPropertyPage extends PropertyPage {
                     case GENERATED_MAKEFILE: additionalText = isInherited ? "(makemake)" : "MAKEMAKE"; break;
                 }
                 MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && makemakeOptions != null)
-                    additionalText += ": " + StringUtils.join(makemakeOptions.toArgs(), " ");
+                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && makemakeOptions != null) {
+                    String args = StringUtils.join(makemakeOptions.toArgs(), " ");
+                    additionalText += ": " + (buildSpec.isFolderOptionsInherited(folder) ? "("+args+")" : args);
+                }
                 
                 if (additionalText.length() > 0)
                     return super.decorateText(input, element) + " -- " + additionalText;
@@ -230,7 +237,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
         // dialog default value: take it from first suitable folder 
         MakemakeOptions options = null;
         for (IContainer folder : (List<IContainer>)sel.toList())
-            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null)
+            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null && !buildSpec.isFolderOptionsInherited(folder))
                 options = buildSpec.getFolderOptions(folder);
         String value = options == null ? "" : StringUtils.join(options.toArgs(), " ");
 

@@ -86,7 +86,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         buildSpec.setConfigFileLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
         
         if (generateMakemakefile) {
-            //XXX this should probably become body of an Action
+            //XXX this should probably become body of some Action
             Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
             String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, folderDeps, targetNames);
             IFile file = rootContainer.getProject().getFile("Makemakefile");
@@ -110,8 +110,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                         args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
                 changed |= new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps); 
             }
-            catch (IOException e) {
-                e.printStackTrace(); //FIXME more sophisticated: propagate up?
+            catch (Exception e) {
+                e.printStackTrace(); //FIXME more sophisticated: propagate up? dialog? marker?
             }
         }
         System.out.println("Generated " + folders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
