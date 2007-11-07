@@ -3,8 +3,15 @@ package com.simulcraft.test.gui.access;
 import junit.framework.Assert;
 
 import org.eclipse.draw2d.Clickable;
+import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.Viewport;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.text.TextFlow;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.swt.widgets.Canvas;
@@ -27,13 +34,25 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
 	
 	@UIStep
 	public void clickButtonFigureWithLabel(final String label) {
-        findButtonFigureWithLabel(label).reveal();
-        findButtonFigureWithLabel(label).click(LEFT_MOUSE_BUTTON);
+        FigureAccess fig = findButtonFigureWithLabel(label);
+        reveal(fig.getFigure());
+        fig.click(LEFT_MOUSE_BUTTON);
 	}
 
     @UIStep
+    private void reveal(IFigure figure) {
+        // look for an editpart in the ancestors of the figure
+        EditPart editpart = null;
+        while (editpart == null && figure != null) {
+            editpart = (EditPart)getPaletteViewer().getVisualPartMap().get(figure);
+            figure = figure.getParent();
+        }
+        getPaletteViewer().reveal(editpart);
+    }
+	
+    @UIStep
     public void ensureButtonFigureWithLabelSelected(final String label) {
-        findButtonFigureWithLabel(label).reveal();
+        reveal(findButtonFigureWithLabel(label).getFigure());
         FigureAccess fa = findButtonFigureWithLabel(label);
         IFigure fig;
         for(fig = fa.getFigure(); !(fig instanceof Clickable) && fig != null; fig = fig.getParent());

@@ -70,13 +70,27 @@ public class FigureAccess
 	@UIStep
 	public void click(int button) {
         reveal();
-        // TODO center is NOT necessarily OK. It can happen that the center of the figure is
-        // covered by another figure (e.g connection)
-	    click(button, getCenter(getAbsoluteBounds()));
+        IFigure rootFigure = getRootFigure();
+        Rectangle bounds = getAbsoluteBounds();
+        Point[] testSpots = { bounds.getCenter(), 
+                              bounds.getTop().translate(0, 1), bounds.getBottom().translate(0, -1),
+                              bounds.getLeft().translate(1, 0), bounds.getRight().translate(-1, 0),
+                              bounds.getTopLeft().translate(1,1), bounds.getTopRight().translate(-1,0),
+                              bounds.getBottomLeft().translate(1,-1), bounds.getBottomRight().translate(-1,-1)};
+        for (Point p : testSpots)
+            if (rootFigure.findFigureAt(p) == getFigure()) {
+                click(button, p);
+                return;
+            }
 	}
 	
     @UIStep
     public void click(int button, org.eclipse.swt.graphics.Point point) {
+        click(button, point.x, point.y);
+    }
+
+    @UIStep
+    public void click(int button, Point point) {
         click(button, point.x, point.y);
     }
 
@@ -108,7 +122,8 @@ public class FigureAccess
 	
 	@UIStep
 	public void reveal() {
-	    // copied from ScrollingGraphicalViewer.reveal(EditPart)
+	    // TODO rather call the viewer's reveal (see. FlyoutPaletteCompositeAccess.reveal()
+	    // copied from ScrollingGraphicalViewer.reveal(EditPart)	    
 	    IFigure target = getFigure();
 	    Viewport port = ((FigureCanvas)getCanvas()).getViewport();
 	    Rectangle exposeRegion = target.getBounds().getCopy();
@@ -134,7 +149,7 @@ public class FigureAccess
 	    else
 	        finalLocation.y = Math.min(topLeft.y, Math.max(bottomRight.y, port.getViewLocation().y));
 
-	    ((FigureCanvas)getCanvas()).scrollTo(finalLocation.x, finalLocation.y); 
+	    ((FigureCanvas)getCanvas()).scrollSmoothTo(finalLocation.x, finalLocation.y); 
 	}
 
     public Rectangle getBounds() {

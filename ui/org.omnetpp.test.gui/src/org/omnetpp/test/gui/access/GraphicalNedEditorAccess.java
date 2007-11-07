@@ -147,6 +147,8 @@ public class GraphicalNedEditorAccess
 		return findCompoundModule(name);
 	}
 
+    
+    
     @UIStep
     public EditPartAccess findModule(final String name, final Class<?> type) {
         return (EditPartAccess)createAccess((EditPart)findDescendantEditPart(getRootEditPart(), new IPredicate() {
