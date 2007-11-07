@@ -255,12 +255,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * since the previous state.
      */
     protected boolean processFileIncludes(IFile file) throws CoreException {
-        List<Include> includes;
-        try {
-            includes = MakefileTools.parseIncludes(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e); //FIXME marker?
-        }
+        List<Include> includes = MakefileTools.parseIncludes(file);
 
         if (!includes.equals(fileIncludes.get(file))) {
             fileIncludes.put(file, includes);

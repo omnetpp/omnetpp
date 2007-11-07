@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -33,21 +34,17 @@ import org.omnetpp.common.util.StringUtils;
  *  
  * @author Andras
  */
-//XXX requirements: 
-//- ability to ignore some folders (i.e. pass in explicit folder list? .cppfolders file?)
-//- ability to re-use hand-written makefiles in certain dirs
-//- dependencies on other projects
-//- compile-time flags (ie. -I for external libs)
-//- ... ?
 public class MakefileTools {
     // standard C headers, see e.g. http://www-ccs.ucsd.edu/c/lib_over.html
     public static final String C_HEADERS = 
         "assert.h ctype.h errno.h float.h iso646.h limits.h locale.h " +
         "math.h setjmp.h signal.h stdarg.h stddef.h stdio.h stdlib.h " +
         "string.h time.h wchar.h wctype.h";
+    
     // C headers added by C99, see http://en.wikipedia.org/wiki/C_standard_library
     public static final String C99_HEADERS = 
         "complex.h fenv.h inttypes.h stdbool.h stdint.h tgmath.h";
+    
     // standard C++ headers, see http://en.wikipedia.org/wiki/C++_standard_library#Standard_headers
     public static final String CPLUSPLUS_HEADERS = 
         "bitset deque list map queue set stack vector algorithm functional iterator " + 
@@ -55,14 +52,21 @@ public class MakefileTools {
         "istream ostream sstream streambuf complex numeric valarray exception limits " + 
         "new typeinfo cassert cctype cerrno cfloat climits cmath csetjmp csignal " + 
         "cstdlib cstddef cstdarg ctime cstdio cstring cwchar cwctype";
+    
     // POSIX headers, see http://en.wikipedia.org/wiki/C_POSIX_library
     public static final String POSIX_HEADERS = 
         "cpio.h dirent.h fcntl.h grp.h pwd.h sys/ipc.h sys/msg.h sys/sem.h " + 
         "sys/stat.h sys/time.h sys/types.h sys/utsname.h sys/wait.h tar.h termios.h " + 
         "unistd.h utime.h";
+    
+    // all standard C/C++ headers -- we'll ignore these #includes when looking for cross-folder dependencies
     public static final String ALL_STANDARD_HEADERS = 
         C_HEADERS + " " + C99_HEADERS + " " + CPLUSPLUS_HEADERS + " " + POSIX_HEADERS;
 
+    // directories we'll not search for source files
+    public static final String IGNORABLE_DIRS[] = "CVS RCS SCCS _darcs blib .git .svn .git .bzr .hg backups".split(" ");
+
+    // boilerplate code for Makemakefile
     public static final String BOILERPLATE = 
         "#\n" + 
         "# Makefile to create all other makefiles for the project.\n" + 
@@ -114,24 +118,8 @@ public class MakefileTools {
         }
     }
 
-//XXX remove
-//    public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
-//        IContainer[] folders = collectFolders(rootContainer);
-//        Map<IFile, List<Include>> fileIncludes = collectIncludes(folders, monitor);
-//        Map<IContainer,Set<IContainer>> deps = calculateDependencies(fileIncludes);
-//        // dumpDeps(deps);
-//
-//        Map<IContainer, String> targetNames = generateTargetNames(folders);
-//        String makeMakeFile = generateMakeMakeFile(folders, deps, targetNames);
-//        System.out.println("\n\n" + makeMakeFile);
-//
-//        IFile file = rootContainer.getProject().getFile("Makemakefile");
-//        ensureFileContent(file, makeMakeFile.getBytes(), monitor);
-//    }
-
     protected static void ensureFileContent(IFile file, byte[] bytes, IProgressMonitor monitor) throws CoreException {
         // only overwrites file if its content is not already what's desired
-        //XXX check!!!
         try {
             if (!file.exists())
                 file.create(new ByteArrayInputStream(bytes), true, monitor);
@@ -325,21 +313,16 @@ public class MakefileTools {
             for (IResource member : container.members()) {
                 if (isCppFile(member) || isMsgFile(member)) {
                     monitor.subTask(member.getFullPath().toString());
-                    try {
-                        IFile file = (IFile)member;
-                        List<Include> includes = MakefileTools.parseIncludes(file);
-                        result.put(file, includes);
+                    IFile file = (IFile)member;
+                    List<Include> includes = MakefileTools.parseIncludes(file);
+                    result.put(file, includes);
 
-                        if (isMsgFile(file)) {
-                            // pretend that the generated _m.h file also exists
-                            String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");
-                            IFile msgHFile = file.getParent().getFile(new Path(msgHFileName));
-                            if (!msgHFile.exists()) // otherwise it'll be visited as well
-                                result.put(msgHFile, includes);
-                        }
-                    }
-                    catch (IOException e) {
-                        throw new RuntimeException("Could not process file " + member.getFullPath().toString(), e);
+                    if (isMsgFile(file)) {
+                        // pretend that the generated _m.h file also exists
+                        String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");
+                        IFile msgHFile = file.getParent().getFile(new Path(msgHFileName));
+                        if (!msgHFile.exists()) // otherwise it'll be visited as well
+                            result.put(msgHFile, includes);
                     }
                     monitor.worked(1);
                     if (monitor.isCanceled())
@@ -354,7 +337,7 @@ public class MakefileTools {
         if (resource instanceof IFile) {
             //TODO: ask CDT about registered file extensions?
             String fileExtension = ((IFile)resource).getFileExtension();
-            if ("cc".equalsIgnoreCase(fileExtension) || "cpp".equals(fileExtension) || "h".equals(fileExtension))
+            if ("cc".equalsIgnoreCase(fileExtension) || "cpp".equalsIgnoreCase(fileExtension) || "h".equalsIgnoreCase(fileExtension))
                 return true;
         }
         return false;
@@ -365,15 +348,15 @@ public class MakefileTools {
     }
 
     /**
-     * Returns true if the resource is a potential source folder (not team private or
-     * backups folder)
+     * Returns true if the resource is a potential source folder 
+     * (not team private or backups folder).
      */
     public static boolean isGoodFolder(IResource resource) {
+        // note: we explicitly check for "CVS", "_darcs" etc, because they are only recognized by 
+        // isTeamPrivateMember() if the corresponding plugin is installed
         return (resource instanceof IContainer && 
-                !resource.getName().startsWith(".") && 
-                !resource.getName().equals("CVS") && 
-                !resource.getName().equals("_darcs") && 
-                !resource.getName().equals("backups") &&
+                !resource.getName().startsWith(".") &&
+                !ArrayUtils.contains(IGNORABLE_DIRS, resource.getName()) &&
                 !((IContainer)resource).isTeamPrivateMember()); 
     }
 
@@ -389,9 +372,13 @@ public class MakefileTools {
     /**
      * Collect #includes from a C++ source file
      */
-    public static List<Include> parseIncludes(IFile file) throws CoreException, IOException {
-        String contents = FileUtils.readTextFile(file.getContents()) + "\n";
-        return parseIncludes(contents);
+    public static List<Include> parseIncludes(IFile file) throws CoreException {
+        try {
+            String contents = FileUtils.readTextFile(file.getContents()) + "\n";
+            return parseIncludes(contents);
+        } catch (IOException e) {
+            throw Activator.wrap("Error collecting #includes from " + file.getFullPath(), e); 
+        }
     }
 
     /**
