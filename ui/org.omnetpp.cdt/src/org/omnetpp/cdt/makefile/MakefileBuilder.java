@@ -18,9 +18,9 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -68,7 +68,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         catch (Exception e) {
             // This is expected to catch mostly IOExceptions. Other (non-fatal) errors 
             // are already converted to markers inside the build methods.
-            addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error during refreshing Makefiles: " + e.getMessage());
+            addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
         }
         finally {
             markerSynchronizer.runAsWorkspaceJob();
@@ -103,11 +103,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void processDelta(IResourceDelta delta) throws CoreException {
         // re-parse changed C++ source files for #include; also warn for linked-in files
         // (note: warning for linked-in folders will be issued in generateMakefiles())
-        //XXX skip excluded folders!
         delta.accept(new IResourceDeltaVisitor() {
             public boolean visit(IResourceDelta delta) throws CoreException {
                 IResource resource = delta.getResource();
-                boolean isSourceFile = MakefileTools.isCppFile(resource) && buildSpec.getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE;
+                boolean isSourceFile = MakefileTools.isCppFile(resource) && !buildSpec.isExcludedFromBuild(resource.getParent());
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
                         if (isSourceFile) {
@@ -126,7 +125,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                             fileIncludes.remove(resource);
                         break;
                 }
-                return MakefileTools.isGoodFolder(resource); // only go into good folders
+                return MakefileTools.isGoodFolder(resource) && !buildSpec.isExcludedFromBuild((IContainer)resource);
             }
         });
     }
@@ -149,7 +148,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
         //MakefileTools.dumpDeps(folderDeps);
 
-        //FIXME shouldn't we use location IPaths everywhere for included files?? make understands the file system only... 
         Map<IFile, Set<IFile>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
         System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
 
@@ -166,37 +164,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
         monitor.subTask("Updating makefiles...");
-        boolean changed = false;
-        for (IContainer folder : folders) {
-            try {
-                //System.out.println("Generating makefile in: " + folder.getFullPath());
-                List<String> args = new ArrayList<String>();
-                args.add("-f");
-                args.add("-r"); //FIXME rather: explicit subfolder list
-                args.add("-n"); //FIXME from folderType
-                args.add("-c");
-                args.add(buildSpec.getConfigFileLocation());
-                if (folderDeps.containsKey(folder))
-                    for (IContainer dep : folderDeps.get(folder))
-                        args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
-                changed |= new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps); 
-            }
-            catch (Exception e) {
-                e.printStackTrace(); //FIXME more sophisticated: propagate up? dialog? marker?
-            }
-        }
+        for (IContainer folder : folders)
+            if (folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder)) 
+                generateMakefileFor(folder, folderDeps, perFileDeps);
         System.out.println("Generated " + folders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
-        
-        // refresh workspace
-        //XXX needed? CDT's MakeBuilder will do it anyway
-        if (changed) {
-            monitor.subTask("Updating project..."); 
-            try {
-                getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
-            } catch (CoreException e) {
-                Activator.logError(e);
-            }
-        }
     }
 
     /**
@@ -237,6 +208,32 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         return result.toArray(new IContainer[]{});
     }
 
+    /**
+     * Generate makefile in the given folder.
+     */
+    protected boolean generateMakefileFor(IContainer folder, Map<IContainer, Set<IContainer>> folderDeps, Map<IFile, Set<IFile>> perFileDeps) {
+        try {
+            Assert.isTrue(buildSpec.isMakemakeFolder(folder));
+            //System.out.println("Generating makefile in: " + folder.getFullPath());
+            List<String> args = new ArrayList<String>();
+            args.add("-f");
+            args.add("-r"); //FIXME rather: explicit subfolder list
+            args.add("-n"); //FIXME from folderType
+            args.add("-c");
+            args.add(buildSpec.getConfigFileLocation());
+            if (folderDeps.containsKey(folder))
+                for (IContainer dep : folderDeps.get(folder))
+                    args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
+            boolean changed = new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps);
+            if (changed)
+                folder.refreshLocal(IResource.DEPTH_INFINITE, null);
+            return changed;
+        }
+        catch (Exception e) {
+            addMarker(folder, IMarker.SEVERITY_ERROR, "Error refreshing Makefile: " + e.getMessage());
+            return true;
+        }
+    }
 
     /**
      * Parses the file for the list of #includes, and returns true if it changed 
