@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.custom.Bullet;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -222,7 +221,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (options == null) 
                 options = new MakemakeOptions();
             
-            MakemakeOptions tmpOptions = options; //FIXME duplicate the object
+            MakemakeOptions tmpOptions = options.clone();
             
             tmpOptions.force = true;
             

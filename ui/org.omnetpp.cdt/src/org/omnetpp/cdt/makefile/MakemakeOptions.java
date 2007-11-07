@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.omnetpp.common.util.StringUtils;
 
-public class MakemakeOptions {
+public class MakemakeOptions implements Cloneable {
     enum Type {EXE, SO, NOLINK};
     public List<String> args;
     public String makefile = "Makefile.vc";
@@ -262,6 +262,35 @@ public class MakemakeOptions {
 
     private String abs2rel(String abs, String base) {
         return abs; //FIXME
+    }
+
+    @Override
+    public MakemakeOptions clone() {
+        MakemakeOptions result = new MakemakeOptions();
+        result.args = args;
+        result.makefile = makefile;
+        result.baseDir = baseDir;
+        result.type = type;
+        result.target = target;
+        result.force = force;
+        result.linkWithObjects = linkWithObjects;
+        result.tstamp = tstamp;
+        result.recursive = recursive;
+        result.userInterface = userInterface;
+        result.ccext = ccext;
+        result.configFile = configFile;
+        result.exportDefOpt = exportDefOpt;
+        result.compileForDll = compileForDll;
+        result.ignoreNedFiles = ignoreNedFiles;
+        result.fragmentFiles.addAll(fragmentFiles);
+        result.subdirs.addAll(subdirs);
+        result.exceptSubdirs.addAll(exceptSubdirs);
+        result.includeDirs.addAll(includeDirs);
+        result.libDirs.addAll(libDirs);
+        result.libs.addAll(libs);
+        result.importLibs.addAll(importLibs);
+        result.extraArgs.addAll(extraArgs);
+        return result;
     }
 }
 
