@@ -97,7 +97,7 @@ int LineTokenizer::tokenize(char *line, int length)
     if (length > lineBufferSize)
         throw opp_runtime_error("Cannot tokenize lines longer than %d", lineBufferSize);
 
-    strncpy(lineBuffer, line, lineBufferSize);
+    strncpy(lineBuffer, line, length);
 
     char *s = lineBuffer + length - 1;
     while (s >= lineBuffer && (*s == '\r' || *s == '\n'))
