@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.custom.Bullet;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -54,6 +55,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         try {
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecUtils.readBuildSpecFile(getProject());
+            if (buildSpec == null)
+                buildSpec = new BuildSpecification();
 
             if (fileIncludes == null || kind == FULL_BUILD)
                 fullBuild(monitor);
@@ -214,8 +217,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected boolean generateMakefileFor(IContainer folder, Map<IContainer, Set<IContainer>> folderDeps, Map<IFile, Set<IFile>> perFileDeps) {
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
-            Assert.isTrue(folder.getParent()==getProject() && buildSpec.isMakemakeFolder(folder));
+            Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
             MakemakeOptions options = buildSpec.getFolderOptions(folder);
+            if (options == null) 
+                options = new MakemakeOptions();
             
             MakemakeOptions tmpOptions = options; //FIXME duplicate the object
             
