@@ -33,15 +33,12 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
@@ -402,10 +399,7 @@ public class DataflowNetworkBuilder {
 				if (compute.getOperation() != null) {
 					IDList idlist = select(getIDs(), compute.getFilters());
 					for (int i = 0; i < idlist.size(); ++i) {
-						addTeeNode(idlist.get(i), compute);
-
-						//TeeNode teeNode = addTeeNode(idlist.get(i), compute.getOperation(), compute.getParams());
-						//addFilterNode(teeNode.outPort2.id, compute.getOperation(), compute.getParams());
+						addComputeNode(idlist.get(i), compute);
 					}
 				}
 				return this;
@@ -454,7 +448,6 @@ public class DataflowNetworkBuilder {
 							
 							addXYPlotNode(id, yData);
 						}
-						
 					}
 				}
 				return this;
@@ -607,7 +600,7 @@ public class DataflowNetworkBuilder {
 		return node;
 	}
 	
-	private TeeNode addTeeNode(long id, ProcessingOp operation) {
+	private TeeNode addComputeNode(long id, ProcessingOp operation) {
 		PortWrapper port = getOutputPort(id);
 		TeeNode teeNode = new TeeNode();
 		connect(port, teeNode.inPort);
@@ -618,7 +611,6 @@ public class DataflowNetworkBuilder {
 	private FilterNode addFilterNode(long id, ProcessingOp operation) {
 		return addFilterNode(getOutputPort(id), operation);
 	}
-	
 
 	private FilterNode addFilterNode(PortWrapper port, ProcessingOp operation) {
 		FilterNode filterNode = new FilterNode(operation);
@@ -669,16 +661,6 @@ public class DataflowNetworkBuilder {
 	}
 
 	private IDList select(IDList source, List<SelectDeselectOp> filters) {
-		// if no select, then interpret it as "select all" -- so we add an 
-		// artificial "Select All" node into filters[] before proceeding
-		if (filters.size() == 0 || filters.get(0) instanceof Deselect) {
-			Select selectAll = ScaveModelFactory.eINSTANCE.createSelect();
-			selectAll.setType(ResultType.VECTOR_LITERAL);
-			filters = new ArrayList<SelectDeselectOp>(filters);
-			filters.add(0, selectAll);
-		}
-
-		// now, actually evaluate the select/deselect stuff on the IDList
 		return DatasetManager.select(source, filters, resultfileManager, ResultType.VECTOR_LITERAL);
 	}
 

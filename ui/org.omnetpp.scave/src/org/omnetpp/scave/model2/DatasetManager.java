@@ -9,7 +9,6 @@ import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -53,7 +52,6 @@ import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
@@ -167,16 +165,6 @@ public class DatasetManager {
 		}
 
 		private IDList select(IDList source, List<SelectDeselectOp> filters) {
-			// if no select, then interpret it as "select all" -- so we add an 
-			// artificial "Select All" node into filters[] before proceeding
-			//XXX there is an almost identical function in DataflowNetworkBuilder
-			if (filters.size() == 0 || filters.get(0) instanceof Deselect) {
-				Select selectAll = ScaveModelFactory.eINSTANCE.createSelect();
-				selectAll.setType(type);
-				filters = new ArrayList<SelectDeselectOp>(filters);
-				filters.add(0, selectAll);
-			}
-
 			return DatasetManager.select(source, filters, manager, type);
 		}
 
@@ -431,8 +419,21 @@ public class DatasetManager {
 	}
 	
 
+	/**
+	 * Selects ids from a {@code source} IDList.
+	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly 
+	 * executed first.
+	 */
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, ResultType type) {
+		Assert.isNotNull(source);
+		Assert.isNotNull(filters);
+		
+		// Select all if no select at the beginning
 		IDList result = new IDList();
+		if (filters.isEmpty() || filters.get(0) instanceof Deselect) {
+			result.merge(source);
+		}
+		// Execute filters
 		for (SelectDeselectOp filter : filters) {
 			if (type == null || filter.getType()==type) {
 				if (filter instanceof Select) {
@@ -491,10 +492,5 @@ public class DatasetManager {
 	
 	static long getFilterNodeID(ProcessingOp operation) {
 		return operation.hashCode();
-//		Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
-//		Assert.isNotNull(dataset);
-//		long datasetID = (long)dataset.hashCode();
-//		long operationID = (long)operation.hashCode();
-//		return (datasetID << 32) | (operationID & 0xFFFFFFFF);
 	}
 }
