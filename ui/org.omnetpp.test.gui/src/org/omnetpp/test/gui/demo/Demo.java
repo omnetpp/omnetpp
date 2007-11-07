@@ -76,15 +76,15 @@ public class Demo extends GUITestCase {
 
     public void testPlay() throws Throwable {
         // open perspective
-//        showMessage("Welcome to the OMNeT++/OMNEST video demo.\n" +
-//                "This demo will show you, how to create, " +
-//                "setup, run and analyze a closed queuing network " +
-//                "using the OMNeT++ IDE", 3);
-//
+        showMessage("Welcome to the OMNeT++/OMNEST video demo.\n" +
+                "This demo will show you, how to create, " +
+                "setup, run and analyze a closed queuing network " +
+                "using the OMNeT++ IDE", 3);
+
         openPerspective();
-//        createProject();
-//        createNedFile();
-//        createDemoNetwork();
+        createProject();
+        createNedFile();
+        createDemoNetwork();
         createIniFile();
         createLaunchConfigAndLaunch();
         refreshNavigator();
@@ -304,7 +304,7 @@ public class Demo extends GUITestCase {
 
         sleep(3);
 
-        showMessage("Let's save our new INI file", 2);
+        showMessage("Let's save our new INI file", 1);
         iniEditor.activatePageEditor("Text");
         workbenchWindow.getShell().findToolItemWithTooltip("Save.*").click();
         sleep(2);
