@@ -45,16 +45,16 @@ public class MakeMake {
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean run(File directory, String[] argv, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
-        p = new MakemakeOptions(argv);
-        return generateMakefile(directory, perFileDeps);
+    public boolean generateMakefile(File directory, String[] argv, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
+        return generateMakefile(directory, new MakemakeOptions(argv), perFileDeps);
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(File dir, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
+    public boolean generateMakefile(File dir, MakemakeOptions options, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
         this.directory = dir;
+        this.p = options;
         String doxyconf = "doxy.cfg";
         String makecommand = "nmake /nologo /f Makefile.vc";
         String target = p.target == null ? directory.getName() : p.target;
@@ -65,7 +65,7 @@ public class MakeMake {
         List<String> linkDirs = new ArrayList<String>();
         List<String> externalObjects = new ArrayList<String>();
         List<String> tstampDirs = new ArrayList<String>();
-
+        
         if (file(p.makefile).isFile() && !p.force)
             throw new IllegalStateException("opp_nmakemake: use -f to force overwriting existing " + p.makefile);
 
@@ -86,24 +86,33 @@ public class MakeMake {
         }
 
         // try to determine if .cc or .cpp files are used
+        String ccext = p.ccext;
         List<String> ccfiles = glob("*.cc");
         List<String> cppfiles = glob("*.cpp");
-        if (p.ccext == null) {
+        if (ccext == null) {
             if (ccfiles.isEmpty() && !cppfiles.isEmpty())
-                p.ccext = "cpp";
+                ccext = "cpp";
             else if (!ccfiles.isEmpty() && cppfiles.isEmpty())
-                p.ccext = "cc";
+                ccext = "cc";
             else if (!ccfiles.isEmpty() && !cppfiles.isEmpty())
                 throw new RuntimeException("opp_nmakemake: you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
             else
-                p.ccext = "cc";  // if no files, use .cc extension
+                ccext = "cc";  // if no files, use .cc extension
         }
         else {
-            if (p.ccext.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
-                System.out.println("opp_nmakemake: warning: you specified -e cc but you have only .cpp files in this directory!");
-            if (p.ccext.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
-                System.out.println("opp_nmakemake: warning: you specified -e cpp but you have only .cc files in this directory!");
+            if (ccext.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
+                System.out.println("opp_nmakemake: warning: you specified -e cc but you have only .cpp files in this directory!"); //XXX
+            if (ccext.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
+                System.out.println("opp_nmakemake: warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
         }
+
+        // prepare subdirs. First, check that all specified subdirs exist
+        List<String> subdirs = new ArrayList<String>();
+        subdirs.addAll(p.subdirs);
+
+        for (String subdir : subdirs)
+            if (!file(subdir).isDirectory())
+                throw new IllegalArgumentException("opp_nmakemake: subdirectory '" + subdir + "' does not exist");
 
         if (p.recursive) {
             File[] list = directory.listFiles(new FileFilter() {
@@ -116,7 +125,7 @@ public class MakeMake {
                     return false;
                 }});
             for (File i : list)
-                p.subdirs.add(i.getName());
+                subdirs.add(i.getName());
         }
 
         for (String arg : p.extraArgs) {
@@ -133,15 +142,13 @@ public class MakeMake {
             }
         }
         
-        if (p.linkWithObjects) {
+        if (p.linkWithObjects)
             for (String i : p.includeDirs)
                 if (!i.equals("."))
                     externaldirobjs.add(i + "/*.obj");
-        }
 
-        for (String i : linkDirs) {
+        for (String i : linkDirs)
             externaldirobjs.add(i + "/*.obj");
-        }
 
         for (String i : p.includeDirs)
             if (p.tstamp && !i.equals("."))
@@ -150,19 +157,18 @@ public class MakeMake {
             if (p.tstamp)
                 tstampDirs.add(i);
         
-        for (String i : tstampDirs) {
+        for (String i : tstampDirs)
             externaldirtstamps.add(quote(i + "/.tstamp"));
-        }
 
-        String[] objpatts = p.ignoreNedFiles ? new String[] {"*.msg", "*." + p.ccext} : new String[] {"*.ned", "*.msg", "*." + p.ccext};
+        String[] objpatts = p.ignoreNedFiles ? new String[] {"*.msg", "*." + ccext} : new String[] {"*.ned", "*.msg", "*." + ccext};
         for (String objpatt : objpatts) {
             for (String i : glob(objpatt)) {
                 i = i.replaceAll("\\*[^ ]*", "");
-                i = i.replaceAll("[^ ]*_n\\." + p.ccext + "$", "");
-                i = i.replaceAll("[^ ]*_m\\." + p.ccext + "$", "");
+                i = i.replaceAll("[^ ]*_n\\." + ccext + "$", "");
+                i = i.replaceAll("[^ ]*_m\\." + ccext + "$", "");
                 i = i.replaceAll("\\.ned$", "_n.obj");
                 i = i.replaceAll("\\.msg$", "_m.obj");
-                i = i.replaceAll("\\." + p.ccext + "$", ".obj");
+                i = i.replaceAll("\\." + ccext + "$", ".obj");
                 if (!i.equals(""))
                     objs.add(i);
             }
@@ -276,11 +282,10 @@ public class MakeMake {
         out.println();
 
         out.println("# subdirectories to recurse into");
-        out.println("SUBDIRS= " + join(p.subdirs));
+        out.println("SUBDIRS= " + join(subdirs));
         out.print("SUBDIR_TARGETS= ");
-        for (String i : p.subdirs) {
+        for (String i : subdirs)
             out.print(" " + i + "_dir");
-        }
         out.println("\n");
 
         // include external Makefile fragments at top, so that they can
@@ -304,7 +309,7 @@ public class MakeMake {
 
         // note: if "subdirs" were always among the target dependencies, it
         // would cause the executable to re-link every time (which is not good).
-        String subdirs_target = p.subdirs.isEmpty() ? "" : "subdirs";
+        String subdirs_target = subdirs.isEmpty() ? "" : "subdirs";
 
         switch (p.type) {
             case EXE:
@@ -351,7 +356,7 @@ public class MakeMake {
         out.println("subdirs: $(SUBDIR_TARGETS)");
         out.println();
 
-        for (String i : p.subdirs) {
+        for (String i : subdirs) {
             out.println(i + "_dir:");
             out.println("\tcd " + i + " && echo [Entering " + i + "] && " + makecommand + " && echo [Leaving " + i + "]\n");
         }
@@ -360,14 +365,14 @@ public class MakeMake {
         if (!p.ignoreNedFiles) {
             for (String i : glob("*.ned")) {
                 String obj = i.replaceAll("\\.ned$", "_n.obj");
-                String c = i.replaceAll("\\.ned$", "_n." + p.ccext);
+                String c = i.replaceAll("\\.ned$", "_n." + ccext);
 
                 out.println(obj + ": " + c);
                 out.println("\t$(CXX) -c $(NEDCOPTS) /Tp " + c);
                 out.println();
 
                 out.println(c + ": " + i);
-                out.println("\t$(NEDC:/=\\) -s _n." + p.ccext + " $(INCLUDE_PATH) " + i);
+                out.println("\t$(NEDC:/=\\) -s _n." + ccext + " $(INCLUDE_PATH) " + i);
                 out.println();
             }
         }
@@ -375,7 +380,7 @@ public class MakeMake {
         // rules for msg files
         for (String i : glob("*.msg")) {
             String obj = i.replaceAll("\\.msg$", "_m.obj");
-            String c = i.replaceAll("\\.msg$", "_m." + p.ccext);
+            String c = i.replaceAll("\\.msg$", "_m." + ccext);
             String h = i.replaceAll("\\.msg$", "_m.h");
 
             out.println(obj + ": " + c);
@@ -383,17 +388,17 @@ public class MakeMake {
             out.println();
 
             out.println(c + " " + h + ": " + i);
-            out.println("\t$(MSGC:/=\\) -s _m." + p.ccext + " $(MSGCOPTS) " + i);
+            out.println("\t$(MSGC:/=\\) -s _m." + ccext + " $(MSGCOPTS) " + i);
             out.println();
         }
 
         // rules for normal (not generated) C++ files
-        for (String i : glob("*." + p.ccext)) {
-            if (i.endsWith("_n." + p.ccext) || i.endsWith("_m." + p.ccext))
+        for (String i : glob("*." + ccext)) {
+            if (i.endsWith("_n." + ccext) || i.endsWith("_m." + ccext))
                 continue;
 
             String obj = i;
-            obj = obj.replaceAll("\\." + p.ccext, ".obj");
+            obj = obj.replaceAll("\\." + ccext, ".obj");
             out.println(obj + ": " + i);
             out.println("\t$(CXX) -c $(COPTS) /Tp " + i);
             out.println();
@@ -418,13 +423,13 @@ public class MakeMake {
         out.println();
         out.println("clean:");
         out.println("\t-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL");
-        out.println("\t-del *_n." + p.ccext + " *_n.h *_m." + p.ccext + " *_m.h 2>NUL");
+        out.println("\t-del *_n." + ccext + " *_n.h *_m." + ccext + " *_m.h 2>NUL");
         out.println("\t-del *.vec *.sca 2>NUL");
         out.print("\t-for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && " + makecommand
                 + " clean && cd .. || exit /b 1\n");
         out.println();
         out.println("depend:");
-        out.println("\t$(MAKEDEPEND) $(INCLUDE_PATH) -f " + p.makefile + " -- *." + p.ccext);
+        out.println("\t$(MAKEDEPEND) $(INCLUDE_PATH) -f " + p.makefile + " -- *." + ccext);
         out.print("\tif not \"$(SUBDIRS)\"==\"\" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && " + makecommand
                 + " depend && cd .. || exit /b 1\n");
         out.println();

@@ -213,18 +213,29 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      */
     protected boolean generateMakefileFor(IContainer folder, Map<IContainer, Set<IContainer>> folderDeps, Map<IFile, Set<IFile>> perFileDeps) {
         try {
-            Assert.isTrue(buildSpec.isMakemakeFolder(folder));
             //System.out.println("Generating makefile in: " + folder.getFullPath());
-            List<String> args = new ArrayList<String>();
-            args.add("-f");
-            args.add("-r"); //FIXME rather: explicit subfolder list
-            args.add("-n"); //FIXME from folderType
-            args.add("-c");
-            args.add(buildSpec.getConfigFileLocation());
+            Assert.isTrue(folder.getParent()==getProject() && buildSpec.isMakemakeFolder(folder));
+            MakemakeOptions options = buildSpec.getFolderOptions(folder);
+            
+            MakemakeOptions tmpOptions = options; //FIXME duplicate the object
+            
+            tmpOptions.force = true;
+            
+            // use globally set config file, if not explicitly set
+            if (tmpOptions.configFile == null)
+                tmpOptions.configFile = buildSpec.getConfigFileLocation();
+
+            // add dependent folders
             if (folderDeps.containsKey(folder))
                 for (IContainer dep : folderDeps.get(folder))
-                    {args.add("-I"); args.add(dep.getLocation().toString());}
-            boolean changed = new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps);
+                    tmpOptions.includeDirs.add(dep.getLocation().toString());
+            
+            // add subfolders
+            for (IResource member : folder.members())
+                if (MakefileTools.isGoodFolder(member) && !buildSpec.isExcludedFromBuild((IContainer)member))
+                    tmpOptions.subdirs.add(member.getName());
+
+            boolean changed = new MakeMake().generateMakefile(folder.getLocation().toFile(), tmpOptions, perFileDeps);
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;
