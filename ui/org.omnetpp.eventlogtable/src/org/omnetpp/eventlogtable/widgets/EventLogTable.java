@@ -37,7 +37,9 @@ public class EventLogTable
 {
 	private static final boolean debug = true;
 
-	private static final String STATE_PROPERTY = "EventLogTableState";
+	public static final String STATE_PROPERTY = "EventLogTableState";
+	
+	private boolean normalPaintHasBeenRun = false;
 
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
@@ -92,8 +94,12 @@ public class EventLogTable
 	@Override
 	protected void paint(final GC gc)
 	{
-		if (eventLogInput == null)
+	    normalPaintHasBeenRun = false;
+	    
+		if (eventLogInput == null) {
 			super.paint(gc);
+			normalPaintHasBeenRun = true;
+		}
 		else if (eventLogInput.isCanceled())
 			drawCancelMessage(gc);
 		else if (eventLogInput.isLongRunningOperationInProgress())
@@ -102,6 +108,7 @@ public class EventLogTable
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
 					EventLogTable.super.paint(gc);
+					normalPaintHasBeenRun = true;
 				}
 			});
 	}
@@ -316,6 +323,8 @@ public class EventLogTable
 	}
 
 	public void eventLogLongOperationEnded() {
+	    if (!normalPaintHasBeenRun)
+	        canvas.redraw();
 	}
 
 	public void eventLogProgress() {

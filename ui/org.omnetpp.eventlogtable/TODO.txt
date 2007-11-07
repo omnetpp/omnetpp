@@ -63,5 +63,7 @@ Features:
  + follow log file changes
  + store and restore last known settings and position per file
  - timeout support
+ - find reused message (infinite lookahead)
+ - message reuse lookahead setting
 
 Known bugs:

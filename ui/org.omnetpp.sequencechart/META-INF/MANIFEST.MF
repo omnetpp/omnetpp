@@ -21,4 +21,6 @@ Require-Bundle: org.eclipse.core.resources,
  org.apache.batik.util
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
-Export-Package: org.omnetpp.sequencechart.widgets
+Export-Package: org.omnetpp.sequencechart,
+ org.omnetpp.sequencechart.editors,
+ org.omnetpp.sequencechart.widgets

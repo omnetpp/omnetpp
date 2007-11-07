@@ -20,7 +20,7 @@ public class EventLogProgressManager {
 	}
 
 	public boolean isCanceled() {
-		return progressMonitor.isCanceled();
+        return progressMonitor.isCanceled();
 	}
 
 	public boolean isInRunWithProgressMonitor() {
@@ -28,13 +28,6 @@ public class EventLogProgressManager {
 	}
 
 	public void runWithProgressMonitor(final Runnable runnable) throws InvocationTargetException, InterruptedException {
-		// avoid reentrant calls; the progress monitor is already set up and running
-		if (isInRunWithProgressMonitor()) {
-			runnable.run();
-
-			return;
-		}
-		
 		try {
 			progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
 			progressDialog.setOpenOnRun(false);

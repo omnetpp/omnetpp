@@ -23,7 +23,7 @@ public class EventLogInput
 {
 	private static final boolean debug = true;
 
-	private static final String STATE_PROPERTY = "EventLogInputState";
+	public static final String STATE_PROPERTY = "EventLogInputState";
 
 	/**
 	 * The event log file.
@@ -389,33 +389,43 @@ public class EventLogInput
 	}
 
 	public void runWithProgressMonitor(Runnable runnable) {
-		try {
-			eventLog.setJavaProgressMonitor(null, this);
-
-			if (!eventLogProgressManager.isInRunWithProgressMonitor()) {
-				canceled = false;
+	    // canceled flag should be cleared upon explicit request by the user
+	    if (canceled)
+	        return;
+        // avoid reentrant calls; the progress monitor is already set up and running
+	    else if (eventLogProgressManager.isInRunWithProgressMonitor())
+            runnable.run();
+        else {
+    		try {
+	            eventLog.setJavaProgressMonitor(null, this);
 				eventLog.setProgressCallInterval(3);
-			}
 
-			eventLogProgressManager.runWithProgressMonitor(runnable);
-		}
-		catch (InvocationTargetException e) {
-			Throwable t = e.getTargetException();
+	            eventLogProgressManager.runWithProgressMonitor(runnable);
+    		}
+    		catch (Throwable t) {
+    			if (isLongRunningOperationCanceledException(t))
+    				canceled = true;
+    			else
+    				throw new RuntimeException(t);
+    		}
+    		finally {
+                eventLog.setJavaProgressMonitor(null, null);
 
-			if (t != null && t.getMessage() != null && t.getMessage().contains("LongRunningOperationCanceled"))
-				canceled = true;
-			else
-				throw new RuntimeException(e);
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		finally {
-			eventLog.setJavaProgressMonitor(null, null);
-
-			longRunningOperationInProgress = false;
-			eventLogLongOperationEnded();
-		}
+                longRunningOperationInProgress = false;
+                eventLogLongOperationEnded();
+            }
+        }
+	}
+	
+	private boolean isLongRunningOperationCanceledException(Throwable t) {
+	    if (t instanceof LongRunningOperationCanceled)
+	        return true;
+	    else if (t instanceof InvocationTargetException)
+	        return isLongRunningOperationCanceledException(((InvocationTargetException)t).getTargetException());
+	    else if (t.getCause() != null)
+	        return isLongRunningOperationCanceledException(t.getCause());
+	    else
+	        return t.getMessage() != null && t.getMessage().contains("LongRunningOperationCanceled");
 	}
 
 	public void progress() {

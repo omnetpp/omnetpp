@@ -71,6 +71,7 @@ Features:
  + SVG export
  + store and restore last known settings and position per file
  + timeout support
+ - message reuse lookahead setting
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken

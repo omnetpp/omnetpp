@@ -1,8 +1,16 @@
 package org.omnetpp.test.gui.demo;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.util.PersistentResourcePropertyManager;
+import org.omnetpp.eventlogtable.EventLogTablePlugin;
+import org.omnetpp.eventlogtable.widgets.EventLogTable;
 import org.omnetpp.scave.charting.VectorChart;
+import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
@@ -34,17 +42,23 @@ import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class Demo extends GUITestCase {
     protected String name = "demo";
+    protected String logFileName = name + ".log";
     protected boolean delay = true;
     protected int readingSpeed = 70;
     
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Access.getWorkbenchWindow().closeAllEditorPartsWithHotKey();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        workbenchWindow.closeAllEditorPartsWithHotKey();
+        workbenchWindow.assertNoOpenEditorParts();
 //        WorkspaceUtils.ensureProjectNotExists(name);
 //        WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
 //        WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
-        // TODO: sequencechart: PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID).removeProperty(resource, STATE_PROPERTY);
+        IResource resource = ResourcesPlugin.getWorkspace().getRoot().getProject(name).getFile(logFileName);
+        new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID).removeProperty(resource, EventLogInput.STATE_PROPERTY);
+        new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID).removeProperty(resource, SequenceChart.STATE_PROPERTY);
+        new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID).removeProperty(resource, EventLogTable.STATE_PROPERTY);
         setMouseMoveDuration(1000);
         setTimeScale(1);
     }
@@ -408,14 +422,13 @@ public class Demo extends GUITestCase {
     }
     
     private void showSequenceChart() {
-        String logFileName = name + ".log";
 
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         ShellAccess workbenchShell = workbenchWindow.getShell();
 
         showMessage("Take a look at the sequence chart\n", 1);
 
-        TreeAccess tree = workbenchWindow.findViewPartByTitle("Navigator").getComposite().findTree();
+        TreeAccess tree = WorkbenchUtils.ensureViewActivated("General", "Navigator").getComposite().findTree();
         TreeItemAccess treeItem = tree.findTreeItemByContent(name);
         treeItem.ensureExpanded();
         tree.findTreeItemByContent(logFileName).doubleClick();
@@ -426,6 +439,7 @@ public class Demo extends GUITestCase {
 
         EditorPartAccess editorPart = workbenchWindow.findEditorPartByTitle(logFileName);
         SequenceChartAccess sequenceChart = (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), SequenceChart.class));
+        Rectangle r = sequenceChart.getAbsoluteBounds();
         sequenceChart.activateContextMenuWithMouseClick(2).activateMenuItemWithMouse("Sending.*cMessage.*").activateMenuItemWithMouse("Goto Consequence.*");
         
         showMessage("Zoom out to see more\n", 1);
@@ -439,6 +453,8 @@ public class Demo extends GUITestCase {
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
 
+        sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, 1, r.height / 2, r.width / 4, r.height / 2);
+
         showMessage("Filter for the first message to see how it goes around and around in the closed network...\n", 2);
 
         workbenchShell.findToolItemWithTooltip("Filter").click();
@@ -451,18 +467,22 @@ public class Demo extends GUITestCase {
         table.pressKey(' ');
         filterShell.findButtonWithLabel("OK").selectWithMouseClick();
 
+        sleep(5);
         showMessage("Switch to non linear to see the message going around several times at once\n", 2);
 
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Nonlinear");
 
         toolItem = workbenchShell.findToolItemWithTooltip("Zoom Out");
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
             toolItem.click();
 
-        Rectangle r = sequenceChart.getAbsoluteBounds();
         sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, r.width - 1, r.height / 2, 1, r.height / 2);
+        
+        showMessage("Show where message objects are reused by resending them\n", 2);
 
-        Access.sleep(10);
+        sequenceChart.activateContextMenuWithMouseClick().activateMenuItemWithMouse("Show Reuse.*");
+
+        sleep(3);
     }
 }

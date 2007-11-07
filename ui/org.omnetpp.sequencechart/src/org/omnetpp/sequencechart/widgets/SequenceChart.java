@@ -114,7 +114,7 @@ public class SequenceChart
 {
 	private static final boolean debug = false;
 
-	private static final String STATE_PROPERTY = "SequenceChartState";
+	public static final String STATE_PROPERTY = "SequenceChartState";
 
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
@@ -205,6 +205,8 @@ public class SequenceChart
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap = new HashMap<Integer, Integer>();
 	private boolean invalidVirtualSize = true;
+
+    private boolean normalPaintHasBeenRun = false;
 
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
@@ -1136,6 +1138,8 @@ public class SequenceChart
 	}
 
 	public void eventLogLongOperationEnded() {
+	    if (!normalPaintHasBeenRun)
+	        redraw();
 	}
 
 	public void eventLogProgress() {
@@ -1371,7 +1375,9 @@ public class SequenceChart
 
 	@Override
 	protected void paint(final GC gc) {
-		if (eventLogInput.isCanceled()) {
+	    normalPaintHasBeenRun = false;
+	    
+	    if (eventLogInput.isCanceled()) {
 			Graphics graphics = createGraphics(gc);
 			drawCancelMessage(graphics);
 			graphics.dispose();
@@ -1388,6 +1394,7 @@ public class SequenceChart
 						calculateStuff();
 
 					SequenceChart.super.paint(gc);
+					normalPaintHasBeenRun = true;
 
 					if (eventLogInput != null && debug)
 						System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
