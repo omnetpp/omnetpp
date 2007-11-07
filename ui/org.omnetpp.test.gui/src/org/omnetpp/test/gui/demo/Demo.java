@@ -33,7 +33,7 @@ public class Demo extends GUITestCase {
     protected String name = "demo";
     protected String logFileName = name + ".log";
     protected boolean delay = true;
-    protected int readingSpeed = 60;
+    protected int readingSpeed = 20;
 
     @Override
     protected void setUp() throws Exception {
@@ -41,15 +41,15 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
-        WorkspaceUtils.ensureProjectNotExists(name);
+//        WorkspaceUtils.ensureProjectNotExists(name);
         System.clearProperty("com.simulcraft.test.running");
 //      WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
-//      WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
-//      WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
+      WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
+      WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
 //      setMouseMoveDuration(1000);
 //      setTimeScale(0.0);
-//      setDelayAfterMouseMove(1000);
-//      setDelayBeforeMouseMove(1000);
+      setDelayAfterMouseMove(0);
+      setDelayBeforeMouseMove(0);
 
     }
 
@@ -76,15 +76,15 @@ public class Demo extends GUITestCase {
 
     public void testPlay() throws Throwable {
         // open perspective
-        showMessage("Welcome to the OMNeT++/OMNEST video demo.\n" +
-                "This demo will show you, how to create, " +
-                "setup, run and analyze a closed queuing network " +
-                "using the OMNeT++ IDE", 3);
-
+//        showMessage("Welcome to the OMNeT++/OMNEST video demo.\n" +
+//                "This demo will show you, how to create, " +
+//                "setup, run and analyze a closed queuing network " +
+//                "using the OMNeT++ IDE", 3);
+//
         openPerspective();
-        createProject();
-        createNedFile();
-        createDemoNetwork();
+//        createProject();
+//        createNedFile();
+//        createDemoNetwork();
         createIniFile();
         createLaunchConfigAndLaunch();
         refreshNavigator();
@@ -159,7 +159,6 @@ public class Demo extends GUITestCase {
         GraphicalNedEditorAccess graphEd = editor.ensureActiveGraphicalEditor();
 
         CompoundModuleEditPartAccess compoundModule = graphEd.findCompoundModule("demo");
-//        compoundModule.getFlyoutPaletteComposite().clickButtonFigureWithLabel("Types");
         
         compoundModule.createSubModuleWithPalette("Queue.*", "queue1", 180, 150);
         showMessage("Module types are available in the palette at the right side of the graphical editor", 2, 100);
@@ -291,7 +290,7 @@ public class Demo extends GUITestCase {
         sleep(2);
 
         // set simulation time limit
-        showMessage("Specify how long each simulation has to run (in simulation time)", 1);
+        showMessage("Specify how long each simulation has to run (in simulation time)", 2);
         ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("General.*").click();
         sleep(2);
         text = form.findTextAfterLabel("Simulation.*");
@@ -392,7 +391,7 @@ public class Demo extends GUITestCase {
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
 
         // browse data
-        showMessage("Now we will select all queue length data in run#4", 2);
+        showMessage("Now we will select all queue length data in run#4", 1);
         BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
         bdp.ensureVectorsSelected();
         bdp.getRunNameFilter().selectItem("General-4.*");
