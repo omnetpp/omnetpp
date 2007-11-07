@@ -504,16 +504,26 @@ public class DataTable extends Table {
 			}
 			else if (type == ResultType.VECTOR_LITERAL) {
 				VectorResult vector = manager.getVector(idlist.get(lineNumber));
-				if (COL_COUNT.equals(column))
-					writer.addField(String.valueOf(vector.count()));
-				else if (COL_MEAN.equals(column))
-					writer.addField(String.valueOf(vector.mean()));
-				else if (COL_STDDEV.equals(column))
-					writer.addField(String.valueOf(vector.stddev()));
-				else if (COL_MIN.equals(column))
-					writer.addField(String.valueOf(vector.min()));
-				else if (COL_MAX.equals(column))
-					writer.addField(String.valueOf(vector.max()));
+				if (COL_COUNT.equals(column)) {
+					int count = vector.count();
+					writer.addField(count >= 0 ? String.valueOf(count) : "n.a.");
+				}
+				else if (COL_MEAN.equals(column)) {
+					double mean = vector.mean();
+					writer.addField(Double.isNaN(mean) ? "n.a." : String.valueOf(mean));
+				}
+				else if (COL_STDDEV.equals(column)) {
+					double stddev = vector.stddev(); 
+					writer.addField(Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
+				}
+				else if (COL_MIN.equals(column)) {
+					double min = vector.min();
+					writer.addField(Double.isNaN(min) ? "n.a." : String.valueOf(min));
+				}
+				else if (COL_MAX.equals(column)) {
+					double max = vector.max();
+					writer.addField(Double.isNaN(max) ? "n.a." : String.valueOf(max));
+				}
 			}
 			else if (type == ResultType.HISTOGRAM_LITERAL) {
 				// TODO

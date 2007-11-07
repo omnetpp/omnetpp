@@ -727,6 +727,7 @@ ID ResultFileManager::addComputedVector(const char *name, FilterNodeID nodeID, I
     VectorResult newVector = VectorResult(vector);
     newVector.computed = true;
     newVector.nameRef = stringSetFindOrInsert(names, name);
+    newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(true, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
     std::pair<FilterNodeID, ID> key = std::make_pair(nodeID, input);
