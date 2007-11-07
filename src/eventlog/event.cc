@@ -117,8 +117,12 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             eventEntry = readEventEntry;
             contextModuleIds.push_back(eventEntry->moduleId);
         }
-        else if (readEventEntry)
-            break; // stop at the start of the next event
+        else if (readEventEntry) {
+            // stop at the start of the next event
+            delete eventLogEntry;
+            break;
+        }
+
         Assert(eventEntry);
 
         // handle module method end

@@ -153,8 +153,10 @@ void EventLog::parseInitializationLogEntries()
 
         EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line, reader->getLastLineLength());
 
-        if (dynamic_cast<EventEntry *>(eventLogEntry))
+        if (dynamic_cast<EventEntry *>(eventLogEntry)) {
+            delete eventLogEntry;
             break;
+        }
 
         if (eventLogEntry)
             initializationLogEntries.push_back(eventLogEntry);
