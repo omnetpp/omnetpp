@@ -34,7 +34,7 @@ LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum)
 LineTokenizer::~LineTokenizer()
 {
     delete [] vec;
-    delete lineBuffer;
+    delete [] lineBuffer;
 }
 
 inline int h2d(char c)
@@ -94,10 +94,11 @@ static void interpretBackslashes(char *buffer)
 
 int LineTokenizer::tokenize(char *line, int length)
 {
-    if (length > lineBufferSize)
-        throw opp_runtime_error("Cannot tokenize lines longer than %d", lineBufferSize);
+    if (length >= lineBufferSize)
+        throw opp_runtime_error("Cannot tokenize lines longer than %d", lineBufferSize - 1);
 
     strncpy(lineBuffer, line, length);
+    lineBuffer[length] = '\0'; // guard
 
     char *s = lineBuffer + length - 1;
     while (s >= lineBuffer && (*s == '\r' || *s == '\n'))
