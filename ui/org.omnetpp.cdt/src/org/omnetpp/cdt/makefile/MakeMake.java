@@ -442,12 +442,15 @@ public class MakeMake {
         out.println("re-makemake: makefiles");
         out.println();
         out.println("# DO NOT DELETE THIS LINE -- make depend depends on it.");
+        
+        // write dependencies
+        //FIXME must has into directories first, otherwise it's too slow!
         IPath directoryPath = new Path(directory.getPath());
         for (IFile f : perFileDeps.keySet()) {
             if (f.getParent().getLocation().equals(directoryPath)) {  //FIXME THIS LINE IS VERY COSTLY!!! with INET, 1000ms out of total 1500ms is spent here 
                 out.print(f.getName() + ":");
                 for (IFile f2 : perFileDeps.get(f))
-                    out.print(" " + f2.getLocation().toString());  //XXX make it relative to this folder or to the project
+                    out.print(" " + abs2rel(f2.getLocation().toString(), directory.getPath()));  //XXX make it relative to this folder or to the project
                 out.println();
             }
         }
@@ -491,13 +494,14 @@ public class MakeMake {
 
     private List<String> glob(String pattern) {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
-        return Arrays.asList(directory.list(new FilenameFilter() {
+        String[] files = directory.list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.matches(regex);
-            }}));
+            }});
+        return Arrays.asList(files==null ? new String[0] : files); 
     }
 
-    String abs2rel(String abs, String base) {
+    private String abs2rel(String abs, String base) {
         return abs2rel(abs, base, null);
     }
 
@@ -508,7 +512,8 @@ public class MakeMake {
      * All "\" are converted to "/".
      */
     private String abs2rel(String abs, String base, String cur) {
-        return abs;
+        //FIXME ignores base
+        return MakefileTools.makeRelativePath(new Path(base), new Path(abs)).toString();
         
 //         if (base == null)
 //             return abs;

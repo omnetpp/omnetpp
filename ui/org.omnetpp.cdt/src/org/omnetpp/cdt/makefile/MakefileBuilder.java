@@ -35,6 +35,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 //TODO properly do subdirs (as in BuildSpec's FolderType)
 //TODO take into account referenced projects as well
 //TODO Question: work with IFiles or location IPaths?
+//TODO .msg icon wrong! should be "m" like "c" and "h"!
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem";
@@ -266,7 +267,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     
     protected void warnIfLinkedResource(IResource resource) {
         if (resource.isLinked())
-            addMarker(resource, IMarker.SEVERITY_WARNING, "Linked resources are not supported by Makefiles");
+            addMarker(resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
     }
     
     protected void addMarker(IResource resource, int severity, String message) {
