@@ -68,7 +68,7 @@ while (<FILE>)
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
-         $fieldDefault = "-1";
+         $fieldDefault = "simtime_nil";
       }
 
       if ($5 ne "") {

@@ -375,7 +375,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
 {
     Assert(readStartOffset >= 0);
     eventNumber = -1;
-    simulationTime = -1;
+    simulationTime = simtime_nil;
     reader->seekTo(readStartOffset);
 
     char *line;

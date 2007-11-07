@@ -32,6 +32,8 @@ static inline bool isPositiveInfinity(double d) { return d==dblPositiveInfinity;
 static inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
 
 BigDecimal BigDecimal::Zero(0, 0);
+BigDecimal BigDecimal::One(1, 0);
+BigDecimal BigDecimal::MinusOne(-1, 0);
 BigDecimal BigDecimal::NaN(0, INT_MAX);
 BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);

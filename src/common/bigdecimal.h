@@ -72,6 +72,8 @@ class COMMON_API BigDecimal
     /** @name Constants */
     //@{
     static BigDecimal Zero;
+    static BigDecimal One;
+    static BigDecimal MinusOne;
     static BigDecimal NaN;
     static BigDecimal PositiveInfinity;
     static BigDecimal NegativeInfinity;
