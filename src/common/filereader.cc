@@ -93,9 +93,9 @@ void FileReader::ensureFileClosed()
 
 void FileReader::checkConsistence()
 {
-    bool ok = bufferEnd - bufferBegin == bufferSize &&
+    bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
               dataBegin <= dataEnd && dataBegin >= bufferBegin && dataEnd <= bufferEnd &&
-              strlen(dataBegin) == dataEnd - dataBegin;
+              strlen(dataBegin) == (size_t)(dataEnd - dataBegin);
     if (!ok)
         throw opp_runtime_error("FileReader: internal error");
 }
@@ -393,7 +393,7 @@ int64 FileReader::getFileSizeInternal()
     return fileSize;
 }
 
-void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
+void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
 {
     if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %lld\n", fileOffset);
 
@@ -403,7 +403,7 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
     ensureFileOpen();
 
     if (bufferFileOffset + ensureBufferSizeAround <= fileOffset &&
-        fileOffset <= bufferFileOffset + bufferSize - ensureBufferSizeAround)
+        fileOffset <= (file_offset_t)(bufferFileOffset + bufferSize - ensureBufferSizeAround))
     {
         currentDataPointer = fileOffsetToPointer(fileOffset);
         Assert(currentDataPointer);

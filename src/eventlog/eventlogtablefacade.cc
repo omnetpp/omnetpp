@@ -328,7 +328,7 @@ long EventLogTableFacade::getApproximateNumberOfEntries()
             }
 
             double average = (double)sum / count;
-            approximateNumberOfEntries = eventLog->getApproximateNumberOfEvents() * average;
+            approximateNumberOfEntries = (long)(eventLog->getApproximateNumberOfEvents() * average);
         }
     }
 

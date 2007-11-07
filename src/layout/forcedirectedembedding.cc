@@ -194,11 +194,11 @@ void ForceDirectedEmbedding::embed() {
                 parameters.minTimeStep < updatedTimeStep && updatedTimeStep < parameters.maxTimeStep)
                 break;
 
-            // find now to update time step
+            // find now the update time step
             if (lastAccelerationError < parameters.maxAccelerationError) {
                 if (hMultiplier == 0)
                     hMultiplier = parameters.timeStepMultiplier;
-                else if (hMultiplier = 1.0 / parameters.timeStepMultiplier)
+                else if (hMultiplier == 1.0 / parameters.timeStepMultiplier)
                     break;
             }
             else {

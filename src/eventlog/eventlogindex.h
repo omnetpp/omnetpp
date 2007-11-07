@@ -61,7 +61,7 @@ class EVENTLOG_API EventLogIndex
     public:
         // reader will be deleted
         EventLogIndex(FileReader *reader);
-        ~EventLogIndex();
+        virtual ~EventLogIndex();
 
         virtual void synchronize();
         long getFirstEventNumber();

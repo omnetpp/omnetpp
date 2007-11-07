@@ -30,7 +30,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
 {
     public:
         int contextModuleId;
-        unsigned char level;
+        unsigned int level;
 
     protected:
         Event* event; // back pointer

@@ -178,7 +178,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
     Assert(simulationTime >= 0);
     file_offset_t offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g for match kind: %d at offset: %lld\n", 12, simulationTime, matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g for match kind: %d at offset: %lld\n", 12, simulationTime.dbl(), matchKind, offset);
 
     return offset;
 }
@@ -402,13 +402,17 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     lineStartOffset = reader->getLastLineStartOffset();
     lineEndOffset = reader->getLastLineEndOffset();
 
-    for (int i = 1; i <tokenizer.numTokens() - 1; i += 2)
-    {
-        if (!strcmp(tokenizer.tokens()[i], "#"))
-            eventNumber = atol(tokenizer.tokens()[i+1]);
+    int numTokens = tokenizer.numTokens();
+    char **tokens = tokenizer.tokens();
 
-        if (!strcmp(tokenizer.tokens()[i], "t"))
-            simulationTime = BigDecimal::parse(tokenizer.tokens()[i+1]);
+    for (int i = 1; i < numTokens - 1; i += 2)
+    {
+        const char *token = tokens[i];
+
+        if (token[0] == '#' && token[1] == '\0')
+            eventNumber = atol(tokens[i+1]);
+        else if (token[0] == 't' && token[1] == '\0')
+            simulationTime = BigDecimal::parse(tokens[i+1]);
     }
 
     if (eventNumber != -1)

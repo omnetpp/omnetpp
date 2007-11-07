@@ -23,7 +23,8 @@ static int lastLineLength;
 
 EventLogEntry::EventLogEntry()
 {
-    this->contextModuleId;
+    contextModuleId = -1;
+    level = -1;
 }
 
 EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)

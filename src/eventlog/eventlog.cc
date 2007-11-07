@@ -107,7 +107,7 @@ long EventLog::getApproximateNumberOfEvents()
             }
 
             double average = (double)sum / count;
-            approximateNumberOfEvents = (endOffset - beginOffset) / average;
+            approximateNumberOfEvents = (long)((endOffset - beginOffset) / average);
         }
     }
 
@@ -124,7 +124,7 @@ Event *EventLog::getApproximateEventAt(double percentage)
     else {
         file_offset_t beginOffset = firstEvent->getBeginOffset();
         file_offset_t endOffset = lastEvent->getBeginOffset();
-        file_offset_t offset = beginOffset + (endOffset - beginOffset) * percentage;
+        file_offset_t offset = beginOffset + (file_offset_t)((endOffset - beginOffset) * percentage);
 
         long eventNumber;
         file_offset_t lineStartOffset = -1, lineEndOffset;
@@ -256,7 +256,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
             else if (line[0] != '\r' && line[0] != '\n')
                 index++;
         }
-        while (line = reader->getPreviousLineBufferPointer());
+        while ((line = reader->getPreviousLineBufferPointer()));
     }
 
     return NULL;

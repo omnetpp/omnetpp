@@ -198,7 +198,7 @@ class COMMON_API FileReader
     /**
      * Moves the current position to the given offset.
      */
-    void seekTo(file_offset_t offset, int ensureBufferSizeAround = 0);
+    void seekTo(file_offset_t offset, unsigned int ensureBufferSizeAround = 0);
 
     /**
      * Returns the total number of lines read in so far.

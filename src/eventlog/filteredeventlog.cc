@@ -119,7 +119,7 @@ long FilteredEventLog::getApproximateNumberOfEvents()
                 double averageMatching = (double)sumMatching / count;
                 double averageNotMatching = (double)sumNotMatching / count;
                 approximateMatchingEventRatio = averageMatching / (averageMatching + averageNotMatching);
-                approximateNumberOfEvents = (endOffset - beginOffset) / averageMatching * approximateMatchingEventRatio;
+                approximateNumberOfEvents = (long)((endOffset - beginOffset) / averageMatching * approximateMatchingEventRatio);
             }
         }
     }

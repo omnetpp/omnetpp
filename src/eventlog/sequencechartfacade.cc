@@ -112,7 +112,7 @@ double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelt
     if (timelineMode == STEP)
         return 1;
     else
-        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(abs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
+        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(fabs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
 }
 
 double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
@@ -448,8 +448,6 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 
 std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr)
 {
-    int i;
-    IEvent *event;
     std::set<int64> messageDependencies;
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
