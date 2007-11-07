@@ -97,8 +97,8 @@ Options::Options()
 IEventLog *Options::createEventLog(FileReader *fileReader)
 {
     if (eventNumbers.empty() &&
-        moduleNames.empty() && moduleClassNames.empty() && moduleIds.empty() &&
-        messageNames.empty() && messageClassNames.empty() &&
+        !moduleExpression && moduleNames.empty() && moduleClassNames.empty() && moduleIds.empty() &&
+        !messageExpression && messageNames.empty() && messageClassNames.empty() &&
         messageIds.empty() && messageTreeIds.empty() && messageEncapsulationIds.empty() && messageEncapsulationTreeIds.empty())
     {
         return new EventLog(fileReader);
@@ -354,10 +354,12 @@ void usage(char *message)
 "      -e      --event-numbers                    <integer>+\n"
 "         events must be present in the input file\n"
 "      -f      --file-offsets                     <integer>+\n"
+"      -me     --module-expression                <pattern>\n"
 "      -mn     --module-names                     <pattern>+\n"
 "      -mt     --module-class-names               <pattern>+\n"
 "      -mi     --module-ids                       <integer>+\n"
 "         compound module ids are allowed\n"
+"      -se     --message-expression               <pattern>\n"
 "      -sn     --message-names                    <pattern>+\n"
 "      -st     --message-class-names              <pattern>+\n"
 "      -si     --message-ids                      <integer>+\n"
@@ -445,7 +447,7 @@ int main(int argc, char **argv)
                 parseStringTokens(options.moduleClassNames, argv[++i]);
             else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
                 parseIntTokens(options.moduleIds, argv[++i]);
-            else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-expression"))
+            else if (!strcmp(argv[i], "-se") || !strcmp(argv[i], "--message-expression"))
                 options.messageExpression = argv[++i];
             else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-names"))
                 parseStringTokens(options.messageNames, argv[++i]);
