@@ -34,9 +34,10 @@ Features:
    + sequence chart
    + animation
  + support files greater than 2(4) Gbyte
- - memory management is completely ignored for now, anything that is loaded remains
-   in memory until the whole event log is deleted
+ - memory management is completely ignored for now, anything that is loaded remains in memory until the whole event log is deleted
  + int64 sim time
+ - prefetching events so that getEventForEventNumber and filtering will not call binary search all the time
+ - load small files (less then 100 Mbytes) at once? (or trust lazy loading to be efficient in this case too?)
 
 Known bugs:
  - filtering seems to be slower than expected, further investigation and measurements needed
