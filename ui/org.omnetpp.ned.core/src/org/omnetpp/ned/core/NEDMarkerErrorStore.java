@@ -33,7 +33,7 @@ public class NEDMarkerErrorStore extends AbstractNedErrorStore {
     	this.file = file;
     	this.markerType = markerType;
 		this.markerSync = markerSync;
-		markerSync.registerFile(file);
+		markerSync.register(file);
 	}
 
 	public void add(int severity, INEDElement context, int line, String message) {

@@ -224,7 +224,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         // parse
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDSYNTAXPROBLEM_MARKERID);
-        markerSync.registerFile(file);
+        markerSync.register(file);
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
         INEDElement targetTree = NEDTreeUtil.parseNedSource(text, errorStore, file.getLocation().toOSString());
 
@@ -783,7 +783,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			// validate all files
 			for (IFile file : nedFiles.keySet()) {
 				NedFileElementEx nedFileElement = nedFiles.get(file);
-				markerSync.registerFile(file);
+				markerSync.register(file);
 				INEDErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
 				//INEDErrorStore errorStore = new INEDErrorStore.SysoutNedErrorStore(); // for debugging
 				new NEDValidator(this, file.getProject(), errorStore).validate(nedFileElement);

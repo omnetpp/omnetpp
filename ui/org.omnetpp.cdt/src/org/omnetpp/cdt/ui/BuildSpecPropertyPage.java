@@ -230,7 +230,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             if (folderType == FolderType.EXCLUDED_FROM_BUILD)
                 setFolderTypeInSubtree((IContainer)o, null); // if EXCLUDED, all folders below must be also EXCLUDED
             else
-                ; //FIXME ensure it has not EXCLUDED parent! if so, don't let it change the 
+                ; //FIXME ensure it has no EXCLUDED parent! if so, don't let the user change the type 
         }
         treeViewer.refresh();
         updateButtonStates();
@@ -307,6 +307,8 @@ public class BuildSpecPropertyPage extends PropertyPage {
 		try {
 		    IProject project = (IProject) getElement();
 		    buildSpec = BuildSpecUtils.readBuildSpecFile(project);
+		    if (buildSpec == null)
+		        buildSpec = new BuildSpecification();
 		    treeViewer.refresh();
 		} 
 		catch (IOException e) {

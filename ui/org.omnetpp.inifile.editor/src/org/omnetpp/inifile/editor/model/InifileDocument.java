@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -198,12 +199,12 @@ public class InifileDocument implements IInifileDocument {
 
             // collect errors/warnings in a ProblemMarkerSynchronizer
             markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEPROBLEM_MARKER_ID);
-            markerSynchronizer.registerFile(documentFile);
+            markerSynchronizer.register(documentFile);
 
             // remove markers from include files: needed because an "include" directive 
             // might have gotten deleted from the file since last parsed
             for (IFile file : includedFiles)
-                markerSynchronizer.registerFile(file);
+                markerSynchronizer.register(file);
 
             sections.clear();
             mainFileKeyValueLines.clear();
@@ -286,7 +287,7 @@ public class InifileDocument implements IInifileDocument {
                         try {
                             IFile file = currentFile.getParent().getFile(new Path(line.includedFile));
                             includedFiles.add(file);
-                            markerSynchronizer.registerFile(file);
+                            markerSynchronizer.register(file);
                             new InifileParser().parse(file, new Callback(file));
                         } 
                         catch (ParseException e) {
@@ -337,9 +338,8 @@ public class InifileDocument implements IInifileDocument {
         addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line); 
     }
 
-    @SuppressWarnings("unchecked")
     private void addMarker(final IFile file, final String type, int severity, String message, int line) {
-        HashMap map = new HashMap();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put(IMarker.SEVERITY, severity);
         map.put(IMarker.LINE_NUMBER, line);
         map.put(IMarker.MESSAGE, message);

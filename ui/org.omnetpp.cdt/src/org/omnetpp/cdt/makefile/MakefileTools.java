@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -18,7 +16,6 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -117,19 +114,20 @@ public class MakefileTools {
         }
     }
 
-    public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
-        IContainer[] folders = collectFolders(rootContainer);
-        Map<IFile, List<Include>> fileIncludes = collectIncludes(folders, monitor);
-        Map<IContainer,Set<IContainer>> deps = calculateDependencies(fileIncludes);
-        // dumpDeps(deps);
-
-        Map<IContainer, String> targetNames = generateTargetNames(folders);
-        String makeMakeFile = generateMakeMakeFile(folders, deps, targetNames);
-        System.out.println("\n\n" + makeMakeFile);
-
-        IFile file = rootContainer.getProject().getFile("Makemakefile");
-        ensureFileContent(file, makeMakeFile.getBytes(), monitor);
-    }
+//XXX remove
+//    public static void generateMakefiles(IContainer rootContainer, IProgressMonitor monitor) throws CoreException {
+//        IContainer[] folders = collectFolders(rootContainer);
+//        Map<IFile, List<Include>> fileIncludes = collectIncludes(folders, monitor);
+//        Map<IContainer,Set<IContainer>> deps = calculateDependencies(fileIncludes);
+//        // dumpDeps(deps);
+//
+//        Map<IContainer, String> targetNames = generateTargetNames(folders);
+//        String makeMakeFile = generateMakeMakeFile(folders, deps, targetNames);
+//        System.out.println("\n\n" + makeMakeFile);
+//
+//        IFile file = rootContainer.getProject().getFile("Makemakefile");
+//        ensureFileContent(file, makeMakeFile.getBytes(), monitor);
+//    }
 
     protected static void ensureFileContent(IFile file, byte[] bytes, IProgressMonitor monitor) throws CoreException {
         // only overwrites file if its content is not already what's desired
@@ -318,24 +316,6 @@ public class MakefileTools {
         }
 
         return result;
-    }
-
-    public static IContainer[] collectFolders(IContainer container) throws CoreException {
-        final List<IContainer> result = new ArrayList<IContainer>();
-        container.accept(new IResourceVisitor() {
-            public boolean visit(IResource resource) throws CoreException {
-                if (isGoodFolder(resource)) { 
-                    result.add((IContainer)resource);
-                    return true;
-                }
-                return false;
-            }
-        });
-        Collections.sort(result, new Comparator<IContainer>() {
-            public int compare(IContainer o1, IContainer o2) {
-                return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
-            }});
-        return result.toArray(new IContainer[]{});
     }
 
     public static Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {

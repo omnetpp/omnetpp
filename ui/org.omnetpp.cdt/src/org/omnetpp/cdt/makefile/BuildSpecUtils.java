@@ -24,12 +24,16 @@ public class BuildSpecUtils {
     private static final String BUILDSPEC_FILENAME = ".oppbuildspec";
 
     /**
-     * Reads the build spec file from the given OMNeT++ project.
+     * Reads the build spec file from the given OMNeT++ project. 
+     * Returns null if there is no build spec file in the project.
      */
     public static BuildSpecification readBuildSpecFile(IProject project) throws IOException, CoreException {
         BuildSpecification buildSpec = new BuildSpecification();
         IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
-        if (buildSpecFile.exists()) {
+        if (!buildSpecFile.exists()) {
+            return null;
+        }
+        else {
             String contents = FileUtils.readTextFile(buildSpecFile.getContents());
             for (String line : StringUtils.splitToLines(contents)) {
                 line = line.trim();
@@ -71,8 +75,8 @@ public class BuildSpecUtils {
                     }
                 }
             }
+            return buildSpec;
         }
-        return buildSpec;
     }
 
     /**

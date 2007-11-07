@@ -167,9 +167,9 @@ public class InifileAnalyzer {
 
 			// collect errors/warnings in a ProblemMarkerSynchronizer
 			markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEANALYZERPROBLEM_MARKER_ID);
-			markerSynchronizer.registerFile(doc.getDocumentFile());
+			markerSynchronizer.register(doc.getDocumentFile());
 			for (IFile file : doc.getIncludedFiles())
-				markerSynchronizer.registerFile(file);
+				markerSynchronizer.register(file);
 
 			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ?
 
@@ -240,9 +240,8 @@ public class InifileAnalyzer {
 		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber());
 	}
 
-	@SuppressWarnings("unchecked")
 	private void addMarker(final IFile file, final String type, int severity, String message, int line) {
-		HashMap map = new HashMap();
+	    Map<String, Object> map = new HashMap<String, Object>();
 		map.put(IMarker.SEVERITY, severity);
 		map.put(IMarker.LINE_NUMBER, line);
 		map.put(IMarker.MESSAGE, message);

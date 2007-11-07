@@ -29,5 +29,16 @@
          </run>
       </builder>
    </extension>
+   <extension
+         id="makefileproblem"
+         name="Makefile Problem"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="false">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+   </extension>
 
 </plugin>

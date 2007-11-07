@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -24,10 +24,16 @@ import org.eclipse.core.runtime.jobs.Job;
  * and the Problems view).
  *
  * This class collects would-be markers in a table, and then
- * synchronizes this table to the actual IFile markers. This way,
+ * synchronizes this table to the actual IResource markers. This way,
  * only *real* marker changes reach the workspace, and excessive
  * updates are prevented.
  *
+ * Methods take IResource not IFile, so one can add markers to 
+ * folders and projects as well, not only to files.
+ * 
+ * ProblemMarkerSynchronizers are one-shot objects, they cannot be reused.
+ * Clients need to create a new instance for every synchronization.
+ * 
  * @author Andras
  */
 public class ProblemMarkerSynchronizer {
@@ -37,7 +43,7 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	// data for markers to synchronize
-	protected HashMap<IFile, List<MarkerData>> markerTable = new HashMap<IFile, List<MarkerData>>();
+	protected HashMap<IResource, List<MarkerData>> markerTable = new HashMap<IResource, List<MarkerData>>();
 	protected String markerBaseType;
 
 	// statistics
@@ -61,12 +67,12 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	/**
-	 * Include the given file in the synchronization process. This is not needed when
-	 * you call addMarker() for the file; however if there's no addMarker() for that file,
-	 * that file will be ignored (existing markers left untouched) unless you register them
-	 * with registerFile().
+	 * Include the given file (or other resource) in the synchronization process. 
+	 * This is not needed when you call addMarker() for the file; however if there's 
+	 * no addMarker() for that file, that file will be ignored (existing markers left 
+	 * untouched) unless you register them with registerFile().
 	 */
-	public void registerFile(IFile file) {
+	public void register(IResource file) {
 		if (!markerTable.containsKey(file))
 			markerTable.put(file, new ArrayList<MarkerData>());
 	}
@@ -79,10 +85,11 @@ public class ProblemMarkerSynchronizer {
     }
 
 	/**
-	 * Stores data for a marker to be added to the given file. Implies registerFile().
+	 * Stores data for a marker to be added to the given file (or other resource).
+	 * Implies registerFile().
 	 */
-	public void addMarker(IFile file, String markerType, Map<String, Object> markerAttrs) {
-		registerFile(file);
+	public void addMarker(IResource file, String markerType, Map<String, Object> markerAttrs) {
+		register(file);
 
 		MarkerData markerData = new MarkerData();
 		markerData.type = markerType;
@@ -95,7 +102,7 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	/**
-	 * Returns the number of markers registered in this synchronizer.
+	 * Returns the number of files (or other resources) registered in this synchronizer.
 	 */
 	public int getNumberOfFiles() {
 		return markerTable.size();
@@ -106,7 +113,7 @@ public class ProblemMarkerSynchronizer {
 	 */
 	public int getNumberOfMarkers() {
 		int count = 0;
-		for (IFile file : markerTable.keySet())
+		for (IResource file : markerTable.keySet())
 			count += markerTable.get(file).size();
 	    return count;
 	}
@@ -138,16 +145,16 @@ public class ProblemMarkerSynchronizer {
 
 	protected void addRemoveMarkers() throws CoreException {
 	    // process each file registered
-		for (IFile file : markerTable.keySet()) {
+		for (IResource file : markerTable.keySet()) {
 			if (file.exists()) {
 				List<MarkerData> list = markerTable.get(file);
 
-				// add markers that aren't on IFile yet
+				// add markers that aren't on IResource yet
 				for (MarkerData markerData : list)
 					if (!fileContainsMarker(file, markerData))
 						createMarker(file, markerData);
 
-				// remove IFile markers which aren't in our table
+				// remove IResource markers which aren't in our table
 				IMarker[] markers = file.findMarkers(markerBaseType, true, 0);
 				for (IMarker marker : markers)
 					if (!listContainsMarker(list, marker))
@@ -162,7 +169,7 @@ public class ProblemMarkerSynchronizer {
 //			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
 	}
 
-	protected boolean fileContainsMarker(IFile file, MarkerData markerData) throws CoreException {
+	protected boolean fileContainsMarker(IResource file, MarkerData markerData) throws CoreException {
 		IMarker[] markers = file.findMarkers(markerData.type, false, 0);
 		for (IMarker marker : markers)
 			if (markerAttributesAreEqual(marker.getAttributes(), markerData))
@@ -184,7 +191,7 @@ public class ProblemMarkerSynchronizer {
 		return markerAttributes.equals(markerData.attrs);
 	}
 
-	protected void createMarker(IFile file, MarkerData markerData) throws CoreException {
+	protected void createMarker(IResource file, MarkerData markerData) throws CoreException {
 		IMarker marker = file.createMarker(markerData.type);
 		marker.setAttributes(markerData.attrs);
 		markersAdded++;
