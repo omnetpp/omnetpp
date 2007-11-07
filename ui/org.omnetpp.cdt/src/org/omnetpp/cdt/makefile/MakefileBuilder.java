@@ -223,7 +223,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             args.add(buildSpec.getConfigFileLocation());
             if (folderDeps.containsKey(folder))
                 for (IContainer dep : folderDeps.get(folder))
-                    args.add("-I" + dep.getLocation().toString());  //FIXME what if contains a space?
+                    {args.add("-I"); args.add(dep.getLocation().toString());}
             boolean changed = new MakeMake().run(folder.getLocation().toFile(), args.toArray(new String[]{}), perFileDeps);
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
