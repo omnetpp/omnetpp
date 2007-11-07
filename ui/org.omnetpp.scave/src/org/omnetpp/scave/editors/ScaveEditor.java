@@ -37,12 +37,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -633,6 +635,21 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			}
 		}
 		return iFile;
+	}
+	
+	/**
+	 * Utility function to access the active editor in the workbench.
+	 */
+	public static ScaveEditor getActiveScaveEditor(IWorkbench workbench) {
+		if (workbench.getActiveWorkbenchWindow() != null) {
+			IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+			if (page != null) {
+				IEditorPart part = page.getActiveEditor();
+				if (part instanceof ScaveEditor)
+					return (ScaveEditor)part;
+			}
+		}
+		return null;
 	}
 
 	public void reportError(String message) {

@@ -595,6 +595,9 @@ public class DataflowNetworkBuilder {
 	}
 
 	private SourceNode addSourceNode(long id) {
+		ResultItem vector = resultfileManager.getVector(id);
+		Assert.isTrue(!vector.getComputed(), "Tried to read a computed vector from file.");
+		
 		if (getOutputPort(id) != null) {
 			removeSource(id);
 		}

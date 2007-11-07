@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.dataset.CompoundXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -259,6 +260,21 @@ public class DatasetManager {
 		return dataValues != null ?
 				new VectorDataset(idlist, dataValues, lineNameFormat, manager) :
 				new VectorDataset(idlist, lineNameFormat, manager);
+	}
+	
+	public static Pair<IDList,XYArray[]> readAndComputeVectorData(Dataset dataset, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
+		//TODO update progressMonitor
+		Assert.isNotNull(dataset);
+		
+		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+		DataflowManager dataflowManager = builder.build(dataset, target, true);
+		IDList idlist = builder.getDisplayedIDs();
+
+		List<Node> arrayBuilders = builder.getArrayBuilders();
+		dataflowManager.dump();
+		XYArray[] dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
+		
+		return new Pair<IDList, XYArray[]>(idlist, dataValues);
 	}
 	
 	public static IXYDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {

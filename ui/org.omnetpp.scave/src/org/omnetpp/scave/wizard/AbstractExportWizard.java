@@ -4,10 +4,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
@@ -30,6 +28,8 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 	protected IDList selectedScalars = IDList.EMPTY;
 	protected IDList selectedVectors = IDList.EMPTY;
 	protected IDList selectedHistograms = IDList.EMPTY;
+	protected Dataset selectedDataset;
+	protected DatasetItem selectedDatasetItem;
 	protected ResultFileManager manager;
 	protected ExportWizardPage page;
 	
@@ -57,22 +57,14 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 				(selection.getFirstElement() instanceof Dataset || selection.getFirstElement() instanceof DatasetItem)) {
 			// find resultfilemanager
 			Object selected = selection.getFirstElement();
-			if (workbench.getActiveWorkbenchWindow() != null) {
-				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-				if (page != null) {
-					IEditorPart part = page.getActiveEditor();
-					if (part instanceof ScaveEditor)
-						manager = ((ScaveEditor)part).getResultFileManager();
-				}
-			}
-			if (manager != null) {
-				Dataset dataset = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, Dataset.class);
-				DatasetItem item = selected instanceof DatasetItem ? (DatasetItem)selected : null;
-				if (dataset != null) {
-					selectedScalars = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.SCALAR_LITERAL);
-					selectedVectors = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.VECTOR_LITERAL);
-					selectedHistograms = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.HISTOGRAM_LITERAL);
-				}
+			ScaveEditor editor = ScaveEditor.getActiveScaveEditor(workbench);
+			if (editor != null && selected instanceof Dataset || selected instanceof DatasetItem) {
+				selectedDataset = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, Dataset.class);
+				selectedDatasetItem = (selected instanceof DatasetItem) ? (DatasetItem)selected : null;
+				manager = editor.getResultFileManager();
+				selectedScalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedDatasetItem, ResultType.SCALAR_LITERAL);
+				selectedVectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedDatasetItem, ResultType.VECTOR_LITERAL);
+				selectedHistograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedDatasetItem, ResultType.HISTOGRAM_LITERAL);
 			}
 		}
 	}
@@ -91,8 +83,9 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 				exporter.setPrecision(page.getPrecision());
 				String fileName = exporter.makeFileName(page.getFileName());
 				ExportJob job = new ExportJob(fileName, exporter, 
-						selectedScalars, selectedVectors, selectedHistograms,
-						page.getGroupBy(), manager);
+										selectedScalars, selectedVectors, selectedHistograms,
+										selectedDataset, selectedDatasetItem,
+										page.getGroupBy(), manager);
 				job.schedule();
 				// save the control values before the dialog gets closed
 				saveDialogSettings();

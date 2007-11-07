@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -14,6 +15,8 @@ import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScaveExport;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model2.DatasetManager;
 
 /**
@@ -27,10 +30,13 @@ public class ExportJob extends WorkspaceJob
 	private ScaveExport exporter;
 	private ResultFileManager manager;
 	private IDList scalars, vectors, histograms;
+	private Dataset dataset;
+	private DatasetItem datasetItem;
 	private ResultItemFields scalarsGroupBy;
 	
 	public ExportJob(String fileName, ScaveExport exporter,
 			IDList scalars, IDList vectors, IDList histograms,
+			Dataset dataset, DatasetItem datasetItem,
 			ResultItemFields scalarsGroupBy, ResultFileManager manager) {
 		super("Data Export");
 		this.fileName = fileName;
@@ -38,10 +44,12 @@ public class ExportJob extends WorkspaceJob
 		this.scalars = scalars;
 		this.vectors = vectors;
 		this.histograms = histograms;
+		this.dataset = dataset;
+		this.datasetItem = datasetItem;
 		this.scalarsGroupBy = scalarsGroupBy;
 		this.manager = manager;
 	}
-	
+
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor)
 			throws CoreException {
@@ -94,7 +102,7 @@ public class ExportJob extends WorkspaceJob
 		if (scalars != null && scalars.size() > 0)
 			++work;
 		if (vectors != null)
-			work += vectors.size();
+			work += 2 * vectors.size();
 		if (histograms != null && histograms.size() > 0)
 			++work;
 		return work;
@@ -111,16 +119,37 @@ public class ExportJob extends WorkspaceJob
 	}
 
 	protected IStatus exportVectors(ScaveExport exporter, IProgressMonitor monitor) {
+		XYArray[] data = null;
+		if (dataset != null) {
+			Pair<IDList, XYArray[]> pair =
+				DatasetManager.readAndComputeVectorData(dataset, datasetItem, manager, null);
+			vectors = pair.first;
+			data = pair.second;
+			monitor.worked((int)vectors.size());
+		}
+		else {
+			data = new XYArray[(int)vectors.size()];
+			for (int i = 0; i < vectors.size(); ++i) {
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+				long id = vectors.get(i);
+				data[i] = DatasetManager.getDataOfVector(manager, id);
+				monitor.worked(1);
+			}
+		}
+		
+		if (monitor.isCanceled())
+			return Status.CANCEL_STATUS;
+
 		for (int i = 0; i < vectors.size(); ++i) {
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
-
 			long id = vectors.get(i);
 			VectorResult vector = manager.getVector(id);
-			XYArray data = DatasetManager.getDataOfVector(manager, id);
-			exporter.saveVector(vector.getName(), "", id, false, data, manager);
+			exporter.saveVector(vector.getName(), "", id, false, data[i], manager);
 			monitor.worked(1);
 		}
+
 		return Status.OK_STATUS;
 	}
 
