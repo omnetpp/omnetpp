@@ -40,7 +40,6 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
-import org.omnetpp.common.util.StringUtils;
 
 /**
  * This property page is shown for OMNeT++ CDT Projects, and lets the user 
@@ -187,7 +186,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
                 }
                 MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
                 if (buildSpec.isMakemakeFolder(folder) && makemakeOptions != null) {
-                    String args = StringUtils.join(makemakeOptions.toArgs(), " ");
+                    String args = makemakeOptions.toString();
                     additionalText += ": " + (buildSpec.isFolderOptionsInherited(folder) ? "("+args+")" : args);
                 }
                 
@@ -287,15 +286,14 @@ public class BuildSpecPropertyPage extends PropertyPage {
         for (IContainer folder : (List<IContainer>)sel.toList())
             if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null && !buildSpec.isFolderOptionsInherited(folder))
                 options = buildSpec.getFolderOptions(folder);
-        String value = options == null ? "" : StringUtils.join(options.toArgs(), " ");
+        String value = options == null ? "" : options.toString();
 
         // open dialog  
         //TODO something more sophisticated...
         InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, new IInputValidator() {
             public String isValid(String newText) {
-                String args[] = newText.split(" ");
                 try {
-                    new MakemakeOptions(args);
+                    new MakemakeOptions(newText);
                 } catch (Exception e) {
                     return e.getMessage();
                 }
@@ -303,7 +301,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             }
         });
         if (dialog.open() == Window.OK) {
-            String[] args = dialog.getValue().split(" ");
+            String args = dialog.getValue();
             for (IContainer folder : (List<IContainer>)sel.toList())
                 if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE)
                     buildSpec.setFolderOptions(folder, new MakemakeOptions(args));

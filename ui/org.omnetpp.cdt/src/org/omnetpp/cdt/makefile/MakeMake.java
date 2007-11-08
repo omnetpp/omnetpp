@@ -12,13 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * An opp_nmakemake implementation. May be invoked as a command-line tool
@@ -51,6 +54,13 @@ public class MakeMake {
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
+    public boolean generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        return generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
+    }
+
+    /**
+     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     */
     public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
     }
@@ -62,6 +72,7 @@ public class MakeMake {
         this.folder = folder;
         this.p = options;
 
+        File directory = folder.getLocation().toFile();
         projectLocation = folder.getProject().getLocation();
         folderLocation = folder.getLocation();
         
@@ -77,11 +88,14 @@ public class MakeMake {
         List<String> tstampDirs = new ArrayList<String>();
 
         target = abs2rel(target);
-//FIXME for each:
-//      includedir = abs2rel(dir, baseDir);
-//      libdir = abs2rel(dir, baseDir);
+
+        List<String> includeDirs = new ArrayList<String>();
+        List<String> libDirs = new ArrayList<String>();
         
-        File directory = folder.getLocation().toFile();
+        for (String i : p.includeDirs)
+            includeDirs.add(abs2rel(i));
+        for (String i : p.libDirs)
+            libDirs.add(abs2rel(i));
         
         if (file(p.makefile).isFile() && !p.force)
             throw new IllegalStateException("use -f to force overwriting existing " + p.makefile);
@@ -141,7 +155,7 @@ public class MakeMake {
                 public boolean accept(File file) {
                     if (file.isDirectory()) {
                         String name = file.getName();
-                        if (!name.startsWith(".") && !name.equals("CVS") && !name.equals("backups") && !p.exceptSubdirs.contains(name))
+                        if (!name.startsWith(".") && !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, name) && !p.exceptSubdirs.contains(name))
                             return true;
                     }
                     return false;
@@ -151,6 +165,7 @@ public class MakeMake {
         }
 
         for (String arg : p.extraArgs) {
+            Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
             if (file(arg).isDirectory()) {
                 arg = abs2rel(arg);
                 linkDirs.add(arg);
@@ -165,14 +180,14 @@ public class MakeMake {
         }
         
         if (p.linkWithObjects)
-            for (String i : p.includeDirs)
+            for (String i : includeDirs)
                 if (!i.equals("."))
                     externaldirobjs.add(i + "/*.obj");
 
         for (String i : linkDirs)
             externaldirobjs.add(i + "/*.obj");
 
-        for (String i : p.includeDirs)
+        for (String i : includeDirs)
             if (p.tstamp && !i.equals("."))
                 tstampDirs.add(i);
         for (String i : linkDirs)
@@ -252,7 +267,7 @@ public class MakeMake {
         out.println(c_tk + "USERIF_LIBS=$(TKENV_LIBS)");
         out.println();
         out.println("# .ned or .h include paths with -I");
-        out.println("INCLUDE_PATH=" + join(p.includeDirs, "-I"));
+        out.println("INCLUDE_PATH=" + join(includeDirs, "-I"));
         out.println();
         out.println("# misc additional object and library files to link");
         out.println("EXTRA_OBJS=" + join(externalObjects));
@@ -264,7 +279,7 @@ public class MakeMake {
         out.println("EXT_DIR_TSTAMPS=" + join(externaldirtstamps));
         out.println();
         out.println("# Additional libraries (-L, -l, -t options)");
-        out.println("LIBS=" + join(p.libDirs, "/libpath:") + join(p.libs) + join(p.importLibs));
+        out.println("LIBS=" + join(libDirs, "/libpath:") + join(p.libs) + join(p.importLibs));
         out.println();
         out.println("#------------------------------------------------------------------------------");
 

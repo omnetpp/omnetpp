@@ -48,7 +48,7 @@ public class BuildSpecUtils {
                     if (matcher.matches()) {
                         String folderPath = matcher.group(1).trim();
                         String folderType = matcher.group(2).trim();
-                        String argString = StringUtils.nullToEmpty(matcher.group(4));
+                        String args = StringUtils.nullToEmpty(matcher.group(4));
                         
                         IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                         FolderType type;
@@ -63,8 +63,7 @@ public class BuildSpecUtils {
                         if (type != null)
                             buildSpec.setFolderType(folder, type);
                         
-                        String[] args = argString.split(" ");  //XXX honor any quotes
-                        if (!StringUtils.isEmpty(argString)) {
+                        if (!StringUtils.isEmpty(args)) {
                             MakemakeOptions makemakeOptions = new MakemakeOptions(args);
                             buildSpec.setFolderOptions(folder, makemakeOptions);
                         }
@@ -101,8 +100,7 @@ public class BuildSpecUtils {
             String options = "";
             if (!buildSpec.isFolderOptionsInherited(folder)) {
                 MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-                String[] args = makemakeOptions == null ? new String[0] : makemakeOptions.toArgs();
-                options = StringUtils.join(args, " "); //XXX add quotes if needed
+                options = makemakeOptions == null ? "" : makemakeOptions.toString();
                 if (options.trim().equals(""))
                     options = "--";
             }

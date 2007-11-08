@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.common.util.StringUtils;
 
 public class MakemakeOptionsTest extends TestCase {
     private void checkArgs(String args) {
@@ -14,8 +13,8 @@ public class MakemakeOptionsTest extends TestCase {
     
     private void checkArgs(String args, String expectedArgs) {
         System.out.println("checking: " + args);
-        MakemakeOptions obj = new MakemakeOptions(args.split(" "));
-        String resultArgs = StringUtils.join(obj.toArgs(), " ");
+        MakemakeOptions obj = new MakemakeOptions(args);
+        String resultArgs = obj.toString();
         Assert.assertEquals(expectedArgs, resultArgs);
     }
     

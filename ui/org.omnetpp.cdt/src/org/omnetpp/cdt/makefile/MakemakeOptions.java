@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.text.StrTokenizer;
+import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 
 public class MakemakeOptions implements Cloneable {
@@ -41,7 +45,11 @@ public class MakemakeOptions implements Cloneable {
     public MakemakeOptions() {
         this.args = new ArrayList<String>();
     }
-    
+
+    public MakemakeOptions(String args) {
+        this(StringUtils.isEmpty(args) ? new String[0] : args.trim().split(" +"));  //XXX doesn't honor quotes! use StrTokenizer?
+    }
+
     /**
      * Create makemake options by parsing the given argument list.
      */
@@ -73,7 +81,7 @@ public class MakemakeOptions implements Cloneable {
                 target = argv[++i];
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
-                throw new IllegalArgumentException("opp_makemake: " + arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
+                throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
             }
             else if (arg.equals("-r") || arg.equals("--recurse")) {
                 recursive = true;
@@ -128,7 +136,7 @@ public class MakemakeOptions implements Cloneable {
                 userInterface = argv[++i];
                 userInterface = userInterface.toUpperCase();
                 if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("TKENV"))
-                    throw new IllegalArgumentException("opp_makemake: -u: specify all, Cmdenv or Tkenv");
+                    throw new IllegalArgumentException("-u option: specify All, Cmdenv or Tkenv");
             }
             else if (arg.equals("-i") || arg.equals("--includefragment")) {
                 checkArg(argv, i);
@@ -165,10 +173,11 @@ public class MakemakeOptions implements Cloneable {
                 exportDefOpt = StringUtils.removeStart(arg, "-P");
             }
             else {
+                Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
                 //FIXME add support for "--" after which everything is extraArg
                 if (!arg.equals("--")) {
                     if (arg.startsWith("-"))
-                        throw new IllegalArgumentException("opp_makemake: unrecognized option: " + arg);
+                        throw new IllegalArgumentException("unrecognized option: " + arg);
                     extraArgs.add(arg);
                 }
             }
@@ -177,7 +186,7 @@ public class MakemakeOptions implements Cloneable {
 
     protected void checkArg(String[] argv, int i) {
         if (i+1 >= argv.length)
-            throw new IllegalArgumentException("opp_makemake: option " + argv[i] +  " requires an argument");
+            throw new IllegalArgumentException("option " + argv[i] +  " requires an argument");
     }
 
     /**
@@ -255,10 +264,12 @@ public class MakemakeOptions implements Cloneable {
         }
     }
 
-    private String abs2rel(String abs, String base) {
-        return abs; //FIXME
+    @Override
+    public String toString() {
+        String[] tmp = toArgs();
+        return StringUtils.join(tmp, " ");  //FIXME quote args that contain whitespace
     }
-
+    
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = new MakemakeOptions();

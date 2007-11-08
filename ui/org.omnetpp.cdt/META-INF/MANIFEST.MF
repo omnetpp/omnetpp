@@ -9,9 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.ide,
  org.omnetpp.common,
- org.eclipse.cdt.core,
- org.eclipse.cdt.make.core,
- org.eclipse.cdt.make.ui
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
