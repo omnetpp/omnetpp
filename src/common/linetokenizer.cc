@@ -92,7 +92,7 @@ static void interpretBackslashes(char *buffer)
     *d = '\0';
 }
 
-int LineTokenizer::tokenize(char *line, int length)
+int LineTokenizer::tokenize(const char *line, int length)
 {
     if (length >= lineBufferSize)
         throw opp_runtime_error("Cannot tokenize lines longer than %d", lineBufferSize - 1);
