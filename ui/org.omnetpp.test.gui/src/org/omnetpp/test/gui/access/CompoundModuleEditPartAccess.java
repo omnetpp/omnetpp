@@ -17,8 +17,8 @@ import com.simulcraft.test.gui.access.FigureAccess;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
 import com.simulcraft.test.gui.access.TextAccess;
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class CompoundModuleEditPartAccess extends EditPartAccess
 {
@@ -97,7 +97,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 
 	@UIStep
 	protected void clickConnectionOption(String label) {
-		new MenuAccess(getDisplay().getActiveShell().getMenu()).activateMenuItemWithMouse(label);
+		MenuAccess.findPopupMenu().activateMenuItemWithMouse(label);
 	}
 
 	protected IFigure getFigure() {
