@@ -141,7 +141,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         IndexedVectorFileWriterNode(const char *fileName, const char* indexFileName, int blockSize, const char *fileHeader=NULL);
         virtual ~IndexedVectorFileWriterNode();
 
-        Port *addVector(const VectorResult &vector);
+        Port *addVector(int vectorId, const char *module, const char *name, const char *columns);
         void setPrecision(int prec) {this->prec = prec;}
         void setHeader(const std::string &header) { fileHeader = header; }
         void setRun(const char *runName, StringMap &attributes, StringMap &parameters) { run.runName = runName; run.attributes = attributes; run.moduleParams = parameters; };

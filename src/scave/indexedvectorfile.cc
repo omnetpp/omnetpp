@@ -258,9 +258,9 @@ IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
         delete *it;
 }
 
-Port *IndexedVectorFileWriterNode::addVector(const VectorResult &vector)
+Port *IndexedVectorFileWriterNode::addVector(int vectorId, const char *module, const char *name, const char *columns)
 {
-    VectorInputPort *inputport = new VectorInputPort(vector.vectorId, *(vector.moduleNameRef), *(vector.nameRef), vector.columns, blockSize, this);
+    VectorInputPort *inputport = new VectorInputPort(vectorId, module, name, columns, blockSize, this);
     ports.push_back(inputport);
     return inputport;
 }
@@ -472,13 +472,28 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
 {
     // vector id is used as port name
     IndexedVectorFileWriterNode *node1 = dynamic_cast<IndexedVectorFileWriterNode *>(node);
-    VectorResult vector;
-    std::string moduleName = "n/a", name = "n/a";
-    vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
-    vector.moduleNameRef = &moduleName;
-    vector.nameRef = &name;
-    vector.columns = "TV";             // old vector file format 
-    return node1->addVector(vector);
+
+    LineTokenizer tokenizer;
+    int vectorId;
+    int numTokens = tokenizer.tokenize(portname, strlen(portname));
+    char **tokens = tokenizer.tokens();
+    if (numTokens < 3 || numTokens > 4)
+    {
+    	throw opp_runtime_error(
+    			"IndexedVectorFileWriterNodeType::getPort(): "
+    			"expected '<vectorId> <module> <name> [<columns>]', received '%s' ",
+    			portname);
+    }
+    if (!parseInt(tokens[0], vectorId))
+    	throw opp_runtime_error(
+    			"IndexedVectorFileWriterNodeType::getPort(): "
+    			"expected an integer as vectorId, received '%s'",
+    			tokens[0]);
+    
+    char* moduleName = tokens[1];
+    char* name = tokens[2];
+    char* columns = (numTokens < 4 ? "TV" : tokens[3]); 
+    return node1->addVector(vectorId, moduleName, name, columns);
 }
 
 
