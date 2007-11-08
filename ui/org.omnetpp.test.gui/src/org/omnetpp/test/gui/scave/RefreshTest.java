@@ -11,13 +11,12 @@ import com.simulcraft.test.gui.util.WorkbenchUtils;
 public class RefreshTest extends ScaveFileTestCase {
 	
 	DatasetViewAccess datasetView;
+	
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
 		createFiles();
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
-		//DatasetsAndChartsPageAccess datasetsPage = editor.ensureDatasetsPageActive();
-		// TODO open charts
 		datasetView = ScaveEditorUtils.ensureDatasetView();
 	}
 	
