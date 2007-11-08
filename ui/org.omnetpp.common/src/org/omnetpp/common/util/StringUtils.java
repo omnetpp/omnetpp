@@ -535,5 +535,29 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String indentLines(String text, String indent) {
         return indent + StringUtils.removeEnd(text.replace("\n", "\n" + indent), indent);
     }
+    
+    /**
+     * Surround the given string with "quotes", also escape with backslash
+     * where needed.
+     */
+    public static String quoteString(String text) {
+    	return Common.quoteString(text);
+    }
+    
+    /**
+     * Returns true if the string contains space, backslash, quote, or anything
+     * else that would make quoting ({@link #quoteString(String)}) necessary before writing
+     * it into a data file.
+     */
+    public static boolean needsQuotes(String text) {
+    	return Common.needsQuotes(text);
+    }
+    
+    /**
+     * Combines {{@link #needsQuotes(String)} and {{@link #quoteString(String)}.
+     */
+    public static String quoteStringIfNeeded(String text) {
+    	return Common.quoteStringIfNeeded(text);
+    }
 
 }
