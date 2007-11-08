@@ -397,18 +397,20 @@ public class MakefileTools {
 
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
+     * Returns the results grouped by folders; that is, each folder maps to the set of files
+     * it contains, and each file maps to its dependencies (everything it #includes, directly
+     * or indirectly). Grouping by folders significantly speeds up makefile generation. 
      */
-    //FIXME shouldn't we use location IPaths everywhere for included files?? make understands the file system only... 
-    public static Map<IFile,Set<IFile>> calculatePerFileDependencies(Map<IFile,List<Include>> fileIncludes) {
-        resolveIncludes(fileIncludes); // in case it was not already done in calculateDependencies()...
+    public static Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(Map<IFile,List<Include>> fileIncludes) {
+        resolveIncludes(fileIncludes); // in case it was not already done in calculateDependencies() [very fast]
 
-        Map<IFile,Set<IFile>> result = new HashMap<IFile, Set<IFile>>();
+        Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
         for (IFile file : fileIncludes.keySet()) {
             Set<IFile> includedFiles = new HashSet<IFile>();
             for (Include include : fileIncludes.get(file))
                 if (include.resolvesTo != null)
                     includedFiles.add(include.resolvesTo);
-            result.put(file, includedFiles);
+            includedFilesMap.put(file, includedFiles);
         }
 
         // calculate transitive closure
@@ -417,11 +419,21 @@ public class MakefileTools {
             again = false;
             // if x includes y, add y's includes to x as well.
             // and if anything changed, repeat the whole thing
-            for (IFile x : result.keySet())
-                for (IFile y : result.get(x).toArray(new IFile[]{}))
-                    if (result.get(x).addAll(result.get(y))) 
+            for (IFile x : includedFilesMap.keySet())
+                for (IFile y : includedFilesMap.get(x).toArray(new IFile[]{}))
+                    if (includedFilesMap.get(x).addAll(includedFilesMap.get(y))) 
                         again = true; 
         }
+        
+        // group by folders
+        Map<IContainer,Map<IFile,Set<IFile>>> result = new HashMap<IContainer, Map<IFile,Set<IFile>>>();
+        for (IFile file : includedFilesMap.keySet()) {
+            IContainer folder = file.getParent();
+            if (!result.containsKey(folder))
+                result.put(folder, new HashMap<IFile, Set<IFile>>());
+            result.get(folder).put(file, includedFilesMap.get(file));
+        }
+
         return result;
     }
 

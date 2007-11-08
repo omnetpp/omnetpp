@@ -10,10 +10,10 @@ import java.util.List;
 import org.omnetpp.common.util.StringUtils;
 
 public class MakemakeOptions implements Cloneable {
-    enum Type {EXE, SO, NOLINK};
+    public enum Type {EXE, SO, NOLINK};
     public List<String> args;
     public String makefile = "Makefile.vc";
-    public String baseDir = "";
+    public String baseDir = null;  // not supported
     public Type type = Type.EXE;
     public String target = null;
     public boolean force = false;
@@ -71,7 +71,6 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("-o") || arg.equals("--outputfile")) {
                 checkArg(argv, i);
                 target = argv[++i];
-                target = abs2rel(target, baseDir);
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
                 throw new IllegalArgumentException("opp_makemake: " + arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
@@ -95,7 +94,6 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("-c") || arg.equals("--configfile")) {
                 checkArg(argv, i);
                 configFile = argv[++i];
-                configFile = abs2rel(configFile, baseDir);
             }
             else if (arg.equals("-n") || arg.equals("--nolink")) {
                 type = Type.NOLINK;
@@ -135,29 +133,24 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("-i") || arg.equals("--includefragment")) {
                 checkArg(argv, i);
                 String frag = argv[++i];
-                frag = abs2rel(frag, baseDir);
                 fragmentFiles.add(frag);
             }
             else if (arg.equals("-I")) {
                 checkArg(argv, i);
                 String dir = argv[++i];
-                dir = abs2rel(dir, baseDir);
                 includeDirs.add(dir);
             }
             else if (arg.startsWith("-I")) {
                 String dir = StringUtils.removeStart(arg, "-I");
-                dir = abs2rel(dir, baseDir);
                 includeDirs.add(dir);
             }
             else if (arg.equals("-L")) {
                 checkArg(argv, i);
                 String dir = argv[++i];
-                dir = abs2rel(dir, baseDir);
                 libDirs.add(dir);
             }
             else if (arg.startsWith("-L")) {
                 String dir = StringUtils.removeStart(arg, "-L");
-                dir = abs2rel(dir, baseDir);
                 libDirs.add(dir);
             }
             else if (arg.startsWith("-l")) {

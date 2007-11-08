@@ -245,3 +245,6 @@ makefrag
 makemake
 subfolder
 subfolders
+funky
+exe
+cmd

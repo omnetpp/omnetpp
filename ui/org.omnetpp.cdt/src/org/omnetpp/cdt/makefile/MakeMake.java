@@ -12,7 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
@@ -36,28 +41,36 @@ import org.omnetpp.common.util.FileUtils;
 //
 public class MakeMake {
     // parameters for the makemake function
-    private File directory;
+    private IContainer folder;
     private MakemakeOptions p;
 
+    // computed
+    private IPath projectLocation;
+    private IPath folderLocation;
+    
     public MakeMake() {
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(File directory, String[] argv, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
-        return generateMakefile(directory, new MakemakeOptions(argv), perFileDeps);
+    public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(File dir, MakemakeOptions options, Map<IFile, Set<IFile>> perFileDeps) throws IOException {
-        this.directory = dir;
+    public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        this.folder = folder;
         this.p = options;
+
+        projectLocation = folder.getProject().getLocation();
+        folderLocation = folder.getLocation();
+        
         String doxyconf = "doxy.cfg";
         String makecommand = "nmake /nologo /f Makefile.vc";
-        String target = p.target == null ? directory.getName() : p.target;
+        String target = p.target == null ? folder.getName() : p.target;
         List<String> externaldirobjs = new ArrayList<String>();
         List<String> externaldirtstamps = new ArrayList<String>();
         List<String> objs = new ArrayList<String>();
@@ -65,24 +78,35 @@ public class MakeMake {
         List<String> linkDirs = new ArrayList<String>();
         List<String> externalObjects = new ArrayList<String>();
         List<String> tstampDirs = new ArrayList<String>();
+
+//      target = abs2rel(target, baseDir);
+//      configFile = abs2rel(configFile, baseDir);
+//      frag = abs2rel(frag, baseDir);
+//      includedir = abs2rel(dir, baseDir);
+//      libdir = abs2rel(dir, baseDir);
+        
+        File directory = folder.getLocation().toFile();
         
         if (file(p.makefile).isFile() && !p.force)
-            throw new IllegalStateException("opp_nmakemake: use -f to force overwriting existing " + p.makefile);
+            throw new IllegalStateException("use -f to force overwriting existing " + p.makefile);
+
+        if (p.baseDir != null)
+            throw new IllegalStateException("specifying the base directory (-b option) is not supported, it is always the project directory");
 
         if (p.configFile == null) {
             // try to find it in obvious places
             for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
                 if (new File(directory.getPath() + File.separator + f).exists()) {
-                    p.configFile = f;
+                    p.configFile = f;  //FIXME don't change the passed MakemakeOptions!
                     break;
                 }
             }
             if (p.configFile == null)
-                throw new RuntimeException("opp_nmakemake: warning: configuser.vc file not found -- specify its location with the -c option");
+                throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
         }
         else {
             if (!new File(p.configFile).exists())
-                throw new RuntimeException("opp_nmakemake: error: file " + p.configFile + " not found");
+                throw new RuntimeException("error: file " + p.configFile + " not found");
         }
 
         // try to determine if .cc or .cpp files are used
@@ -95,15 +119,15 @@ public class MakeMake {
             else if (!ccfiles.isEmpty() && cppfiles.isEmpty())
                 ccext = "cc";
             else if (!ccfiles.isEmpty() && !cppfiles.isEmpty())
-                throw new RuntimeException("opp_nmakemake: you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
+                throw new RuntimeException("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
             else
                 ccext = "cc";  // if no files, use .cc extension
         }
         else {
             if (ccext.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
-                System.out.println("opp_nmakemake: warning: you specified -e cc but you have only .cpp files in this directory!"); //XXX
+                System.out.println("warning: you specified -e cc but you have only .cpp files in this directory!"); //XXX
             if (ccext.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
-                System.out.println("opp_nmakemake: warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
+                System.out.println("warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
         }
 
         // prepare subdirs. First, check that all specified subdirs exist
@@ -112,7 +136,7 @@ public class MakeMake {
 
         for (String subdir : subdirs)
             if (!file(subdir).isDirectory())
-                throw new IllegalArgumentException("opp_nmakemake: subdirectory '" + subdir + "' does not exist");
+                throw new IllegalArgumentException("subdirectory '" + subdir + "' does not exist");
 
         if (p.recursive) {
             File[] list = directory.listFiles(new FileFilter() {
@@ -130,15 +154,15 @@ public class MakeMake {
 
         for (String arg : p.extraArgs) {
             if (file(arg).isDirectory()) {
-                arg = abs2rel(arg, p.baseDir);
+                arg = abs2rel(arg);
                 linkDirs.add(arg);
             }
             else if (file(arg).isFile()) {
-                arg = abs2rel(arg, p.baseDir);
+                arg = abs2rel(arg);
                 externalObjects.add(arg);
             }
             else {
-                throw new IllegalArgumentException("opp_makemake: " + arg + " is neither an existing file/dir nor a valid option");
+                throw new IllegalArgumentException("'" + arg + "' is neither an existing file/dir nor a valid option");
             }
         }
         
@@ -444,17 +468,17 @@ public class MakeMake {
         out.println("# DO NOT DELETE THIS LINE -- make depend depends on it.");
         
         // write dependencies
-        //FIXME must has into directories first, otherwise it's too slow!
-        IPath directoryPath = new Path(directory.getPath());
-        for (IFile f : perFileDeps.keySet()) {
-            if (f.getParent().getLocation().equals(directoryPath)) {  //FIXME THIS LINE IS VERY COSTLY!!! with INET, 1000ms out of total 1500ms is spent here 
-                out.print(f.getName() + ":");
-                for (IFile f2 : perFileDeps.get(f))
-                    out.print(" " + abs2rel(f2.getLocation().toString(), directory.getPath()));  //XXX make it relative to this folder or to the project
+        Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(folder);
+        
+        if (fileDepsMap != null) {
+            for (IFile sourceFile : fileDepsMap.keySet()) {
+                out.print(sourceFile.getName() + ":");
+                for (IFile includeFile : fileDepsMap.get(sourceFile))
+                    out.print(" " + abs2rel(includeFile.getLocation().toString()));
                 out.println();
             }
+            out.println();
         }
-        out.println();
 
         out.close();
         byte[] content = bos.toByteArray();
@@ -469,11 +493,11 @@ public class MakeMake {
         return false;  // it was already OK
     }
 
-    private String join(List<String> args) {
+    protected String join(List<String> args) {
         return join(args, "");
     }
 
-    private String join(List<String> args, String prefix) {
+    protected String join(List<String> args, String prefix) {
         StringBuilder result = new StringBuilder(args.size() * 32);
         for (String i : args)
             result.append(" ").append(prefix).append(quote(i));
@@ -481,94 +505,57 @@ public class MakeMake {
         return result.length()==0 ? "" : result.substring(1); // chop off leading space
     }
 
-    private String quote(String string) {
+    protected String quote(String string) {
         return string.contains(" ") ? ("\"" + string + "\"") : string;
     }
 
-    private File file(String path) {
+    protected File file(String path) {
         File file = new File(path);
         if (!file.isAbsolute())
-            file = new File(directory.getPath() + File.separator + path);
+            file = folder.getLocation().append(path).toFile();
         return file;
     }
 
-    private List<String> glob(String pattern) {
+    protected List<String> glob(String pattern) {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
-        String[] files = directory.list(new FilenameFilter() {
+        String[] files = folder.getLocation().toFile().list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.matches(regex);
             }});
         return Arrays.asList(files==null ? new String[0] : files); 
     }
 
-    private String abs2rel(String abs, String base) {
-        return abs2rel(abs, base, null);
-    }
-
     /** 
-     * Converts absolute path abs to relative path (relative to the current
-     * directory cur), provided that both abs and cur are under a
-     * "project base directory" base. Otherwise it returns the original path.
+     * If path is absolute, converts the path "path" to relative path (relative to the "base" directory), 
      * All "\" are converted to "/".
      */
-    private String abs2rel(String abs, String base, String cur) {
-        //FIXME ignores base
-        return MakefileTools.makeRelativePath(new Path(base), new Path(abs)).toString();
-        
-//         if (base == null)
-//             return abs;
-//         if (cur == null)
-//             cur = directory.getAbsolutePath();
-//
-//         //TODO: if abs is not within base, return abs unchanged
-//         abs = normalize(abs);
-//         cur = normalize(cur);
-//         base = normalize(base);
-//
-//         // # some normalization
-//        // $abs =~ s|\\|/|g;
-//        // $cur =~ s|\\|/|g;
-//        // $base =~ s|\\|/|g;
-//
-//        // $abs =~ s|/\./|/|g;
-//        // $cur =~ s|/\./|/|g;
-//        // $base =~ s|/\./|/|g;
-//
-//        // $abs =~ s|//+|/|g;
-//        // $cur =~ s|//+|/|g;
-//        // $base =~ s|//+|/|g;
-//
-//        // //$cur =~ s|/*$|/|;
-//        // //$base =~ s|/*$|/|;
-//
-//        // if (!($abs =~ /^\Q$base\E/i && $cur =~ /^\Q$base\E/i)) {
-//        // return $abs;
-//        // }
-//
-//        // while (1)
-//        // {
-//        // // keep cutting off common prefixes until we can
-//        // $abs =~ m|^(.*?/)|;
-//        // my $prefix = $1;
-//        // last if ($prefix eq "");
-//        // if ($cur =~ /^\Q$prefix\E/i) {
-//        // $abs =~ s/^\Q$prefix\E//i;
-//        // $cur =~ s/^\Q$prefix\E//i;
-//        // } else {
-//        // last;
-//        // }
-//        // }
-//
-//        // # assemble relative path: change every directory name in $cur to "..",
-//        // # then add $abs to it.
-//        // $cur =~ s|[^/]+|..|g;
-//        // my $rel = $cur.$abs;
-//
-//        //  return $rel;
-    }
-
-    private String normalize(String abs) {
-        // TODO Auto-generated method stub
-        return null;
+    protected String abs2rel(String location) throws CoreException {
+        IPath path = new Path(location);
+        if (!path.isAbsolute()) {
+            // leave relative paths untouched
+            return location;
+        }
+        else if (projectLocation.isPrefixOf(path)) {
+            // location is within the project, make it relative
+            return MakefileTools.makeRelativePath(folderLocation, path).toString();
+        }
+        else {
+            IProject containingProject = null;
+            for (IProject project : folder.getProject().getReferencedProjects()) { //XXX transitive closure of referenced projects
+                if (project.getLocation().isPrefixOf(path)) { 
+                    containingProject = project; break;
+                }
+            }
+            if (containingProject != null) {
+                // generate something like $(OTHER_PROJECT_DIR)/some/file
+                IPath projectRelativePath = path.removeFirstSegments(projectLocation.segmentCount());
+                String symbolicProjectName = containingProject.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_DIR"; //FIXME must not begin with number! must not collide with symbolic name of another project!
+                return "$(" + symbolicProjectName + ")/" + projectRelativePath.toString(); 
+            }
+            else {
+                // points outside the project -- leave it as it is
+                return location;
+            }
+        }
     }
 }

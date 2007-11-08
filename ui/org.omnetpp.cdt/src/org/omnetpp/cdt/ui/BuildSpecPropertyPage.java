@@ -17,12 +17,14 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -32,7 +34,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
@@ -49,6 +50,13 @@ import org.omnetpp.common.util.StringUtils;
  */
 //FIXME builder should build the TOP of each non-excluded folder subtree (??) 
 public class BuildSpecPropertyPage extends PropertyPage {
+    private static Image IMAGE_FOLDER_EXCLUDED = Activator.getCachedImage("icons/full/obj16/folder_excl.gif");
+    private static Image IMAGE_FOLDER_CUSTOM = Activator.getCachedImage("icons/full/obj16/folder_custom.gif");
+    private static Image IMAGE_FOLDER_EXE = Activator.getCachedImage("icons/full/obj16/folder_exe2.gif");
+    private static Image IMAGE_FOLDER_DLL = Activator.getCachedImage("icons/full/obj16/folder_dll.gif");
+    private static Image IMAGE_FOLDER_LIB = Activator.getCachedImage("icons/full/obj16/folder_lib.gif");
+    private static Image IMAGE_FOLDER_NOLINK = Activator.getCachedImage("icons/full/obj16/folder_nolink.gif");
+    
     // widgets
 	private TreeViewer treeViewer;
     private Button generatedMakefileButton;
@@ -145,9 +153,29 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	        }
 	    });
 
-		treeViewer.setLabelProvider(new WorkbenchLabelProvider() {
+		treeViewer.setLabelProvider(new LabelProvider() {
+		    
             @Override
-            protected String decorateText(String input, Object element) {
+            public Image getImage(Object element) {
+                IContainer folder = (IContainer) element;
+                switch (buildSpec.getFolderType(folder)) {
+                    case CUSTOM_MAKEFILE: return IMAGE_FOLDER_CUSTOM;
+                    case EXCLUDED_FROM_BUILD: return IMAGE_FOLDER_EXCLUDED;
+                    case GENERATED_MAKEFILE: 
+                        MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
+                        if (makemakeOptions == null) makemakeOptions = new MakemakeOptions(); //FIXME getFolderOptions should never return null??
+                        switch (makemakeOptions.type) {
+                            case EXE: return IMAGE_FOLDER_EXE;
+                            case SO: return IMAGE_FOLDER_DLL;
+                            //case LIB: return IMAGE_FOLDER_LIB; //XXX no such type! 
+                            case NOLINK: return IMAGE_FOLDER_NOLINK;
+                        }
+                }
+                return null;
+            }
+
+            @Override
+            public String getText(Object element) {
                 IContainer folder = (IContainer) element;
                 String additionalText = "";
 
@@ -158,15 +186,15 @@ public class BuildSpecPropertyPage extends PropertyPage {
                     case GENERATED_MAKEFILE: additionalText = isInherited ? "(makemake)" : "MAKEMAKE"; break;
                 }
                 MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && makemakeOptions != null) {
+                if (buildSpec.isMakemakeFolder(folder) && makemakeOptions != null) {
                     String args = StringUtils.join(makemakeOptions.toArgs(), " ");
                     additionalText += ": " + (buildSpec.isFolderOptionsInherited(folder) ? "("+args+")" : args);
                 }
                 
                 if (additionalText.length() > 0)
-                    return super.decorateText(input, element) + " -- " + additionalText;
+                    return folder.getName() + " -- " + additionalText;
                 else
-                    return super.decorateText(input, element);
+                    return folder.getName();
             }
 		}); 
 	        

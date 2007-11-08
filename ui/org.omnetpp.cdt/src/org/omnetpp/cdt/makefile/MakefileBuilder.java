@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 
@@ -30,12 +29,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
  * 
  * @author Andras
  */
-//TODO ignore linked resources (warn for them?)
-//TODO present runtime exceptions as problem markers (create own problem marker type, use MarkerSynchronizer, etc)
-//TODO properly do subdirs (as in BuildSpec's FolderType)
-//TODO take into account referenced projects as well
-//TODO Question: work with IFiles or location IPaths?
-//TODO .msg icon wrong! should be "m" like "c" and "h"!
+//TODO test that cross-project includes work well
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem";
@@ -84,11 +78,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void fullBuild(final IProgressMonitor monitor) throws CoreException, IOException {
         // parse all C++ source files for #include; also warn for linked-in files
         // (note: warning for linked-in folders will be issued in generateMakefiles())
-        //XXX skip excluded folders!
+        monitor.subTask("Scanning source files in project " + getProject().getName() + "...");
         fileIncludes = new HashMap<IFile, List<Include>>();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (MakefileTools.isCppFile(resource) && buildSpec.getFolderType(resource.getParent())==FolderType.GENERATED_MAKEFILE) {
+                if (MakefileTools.isCppFile(resource) && buildSpec.isMakemakeFolder(resource.getParent())) {
                     warnIfLinkedResource(resource);
                     processFileIncludes((IFile)resource);
                 }
@@ -99,6 +93,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     }
 
     protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
+        monitor.subTask("Scanning changed files in project " + getProject().getName() + "...");
         processDelta(delta);
         generateMakefiles(monitor);  //TODO optimize: maybe only in directories affected by the delta
     }
@@ -151,7 +146,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
         //MakefileTools.dumpDeps(folderDeps);
 
-        Map<IFile, Set<IFile>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
         System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
 
         buildSpec.setConfigFileLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
@@ -214,7 +209,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     /**
      * Generate makefile in the given folder.
      */
-    protected boolean generateMakefileFor(IContainer folder, Map<IContainer, Set<IContainer>> folderDeps, Map<IFile, Set<IFile>> perFileDeps) {
+    protected boolean generateMakefileFor(IContainer folder, Map<IContainer,Set<IContainer>> folderDeps, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) {
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
@@ -240,7 +235,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 if (MakefileTools.isGoodFolder(member) && !buildSpec.isExcludedFromBuild((IContainer)member))
                     tmpOptions.subdirs.add(member.getName());
 
-            boolean changed = new MakeMake().generateMakefile(folder.getLocation().toFile(), tmpOptions, perFileDeps);
+            boolean changed = new MakeMake().generateMakefile(folder, tmpOptions, perFileDeps);
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;
