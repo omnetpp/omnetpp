@@ -15,8 +15,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -30,6 +28,7 @@ import org.omnetpp.common.util.FileUtils;
  * @author Andras
  */
 //FIXME adjust perl/bash versions: 
+//- commandline add support for "--" after which everything is extraArg
 //- commandline: rename old "-d" to "-S"
 //- commandline: add "-d" option
 //- here we store -P option (p.exportDefOpt) without the "-P"
@@ -37,8 +36,6 @@ import org.omnetpp.common.util.FileUtils;
 //- commandline: "--notstamp" should take effect with linkDirs as well!
 //- todo: must add support for "-DSYMBOL=value"
 //FIXME support Linux too
-//TODO optimize per-file dependencies -- bulk of execution time is spent there!
-//
 public class MakeMake {
     // parameters for the makemake function
     private IContainer folder;
@@ -79,9 +76,8 @@ public class MakeMake {
         List<String> externalObjects = new ArrayList<String>();
         List<String> tstampDirs = new ArrayList<String>();
 
-//      target = abs2rel(target, baseDir);
-//      configFile = abs2rel(configFile, baseDir);
-//      frag = abs2rel(frag, baseDir);
+        target = abs2rel(target);
+//FIXME for each:
 //      includedir = abs2rel(dir, baseDir);
 //      libdir = abs2rel(dir, baseDir);
         
@@ -93,21 +89,23 @@ public class MakeMake {
         if (p.baseDir != null)
             throw new IllegalStateException("specifying the base directory (-b option) is not supported, it is always the project directory");
 
-        if (p.configFile == null) {
+        String configFile = p.configFile;
+        if (configFile == null) {
             // try to find it in obvious places
             for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
                 if (new File(directory.getPath() + File.separator + f).exists()) {
-                    p.configFile = f;  //FIXME don't change the passed MakemakeOptions!
+                    configFile = f;
                     break;
                 }
             }
-            if (p.configFile == null)
+            if (configFile == null)
                 throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
         }
         else {
-            if (!new File(p.configFile).exists())
-                throw new RuntimeException("error: file " + p.configFile + " not found");
+            if (!new File(configFile).exists())
+                throw new RuntimeException("error: file " + configFile + " not found");
         }
+        configFile = abs2rel(configFile);
 
         // try to determine if .cc or .cpp files are used
         String ccext = p.ccext;
@@ -271,7 +269,7 @@ public class MakeMake {
         out.println("#------------------------------------------------------------------------------");
 
         // Makefile
-        out.println("!include \"" + p.configFile + "\"");
+        out.println("!include \"" + configFile + "\"");
         out.println();
         out.println("# User interface libs");
         out.println("CMDENV_LIBS=/include:_cmdenv_lib envir.lib cmdenv.lib");

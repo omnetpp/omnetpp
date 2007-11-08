@@ -103,6 +103,8 @@ public class BuildSpecUtils {
                 MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
                 String[] args = makemakeOptions == null ? new String[0] : makemakeOptions.toArgs();
                 options = StringUtils.join(args, " "); //XXX add quotes if needed
+                if (options.trim().equals(""))
+                    options = "--";
             }
 
             content += getProjectRelativePathOf(project, folder) + ": " + folderTypeText; 

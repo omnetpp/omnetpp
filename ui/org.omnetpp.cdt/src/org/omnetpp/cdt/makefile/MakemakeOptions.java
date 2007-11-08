@@ -166,9 +166,11 @@ public class MakemakeOptions implements Cloneable {
             }
             else {
                 //FIXME add support for "--" after which everything is extraArg
-                if (arg.startsWith("-"))
-                    throw new IllegalArgumentException("opp_makemake: unrecognized option: " + arg);
-                extraArgs.add(arg);
+                if (!arg.equals("--")) {
+                    if (arg.startsWith("-"))
+                        throw new IllegalArgumentException("opp_makemake: unrecognized option: " + arg);
+                    extraArgs.add(arg);
+                }
             }
         }
     }
