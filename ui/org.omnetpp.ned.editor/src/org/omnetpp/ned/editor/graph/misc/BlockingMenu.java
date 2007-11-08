@@ -36,20 +36,13 @@ public class BlockingMenu extends Menu {
 	 * Returns the selected MenuItem, or null if the menu was cancelled.
 	 */
 	public MenuItem open() {
-		try {
-			setVisible(true);
-			getParent().setMenu(this);
-	
-			// block until a selection is done or the menu is cancelled
-			while (!isDisposed () && isVisible ()) {
-				if (!getDisplay().readAndDispatch()) getDisplay().sleep();
-			}
+		setVisible(true);
+		// block until a selection is done or the menu is cancelled
+		while (!isDisposed () && isVisible ()) {
+			if (!getDisplay().readAndDispatch()) getDisplay().sleep();
+		}
 
-			return selectedMenuItem;
-		}
-		finally {
-			getParent().setMenu(null);
-		}
+		return selectedMenuItem;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.simulcraft.test.gui.core;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class TestFrameworkTest extends GUITestCase
@@ -38,4 +39,34 @@ public class TestFrameworkTest extends GUITestCase
 		workbenchWindow.chooseFromMainMenu("File|Open File.*"); // bring up "File Open" dialog
 		workbenchWindow.getShell().assertIsActive(); // now this should fail because dialog is open
 	}
+	
+	public void testCloseShellsOnTestFail_1() {
+        Access.getWorkbenchWindow().chooseFromMainMenu("Help|About.*");
+        throwExceptionFromBackgroundThread();
+	}
+
+    public void testCloseShellsOnTestFail_2() {
+        Access.getWorkbenchWindow().chooseFromMainMenu("Help|About.*");
+        throwExceptionFromUIThread();
+    }
+
+    public void testCloseMenusOnTestFail_1() {
+        WorkbenchUtils.ensureViewActivated("General", "Navigator").findTree().activateContextMenuWithMouseClick();
+        throwExceptionFromBackgroundThread();
+    }
+    
+    public void testCloseMenusOnTestFail_2() {
+        WorkbenchUtils.ensureViewActivated("General", "Navigator").findTree().activateContextMenuWithMouseClick();
+        throwExceptionFromUIThread();
+    }
+
+    @InBackgroundThread
+    private void throwExceptionFromBackgroundThread() {
+        throw new RuntimeException();
+    }
+
+    @UIStep
+    private void throwExceptionFromUIThread() {
+        throw new RuntimeException();
+    }
 }

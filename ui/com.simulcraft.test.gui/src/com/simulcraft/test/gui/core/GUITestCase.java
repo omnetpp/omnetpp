@@ -4,9 +4,14 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.Workbench;
+import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ClickableAccess;
@@ -97,6 +102,9 @@ public abstract class GUITestCase
 	                    try {
     	                    Display.getDefault().syncExec(new Runnable() {
     	                        public void run() {
+    	                            // closing the shells and menus are repeated here on purpose
+    	                            closeShells();
+    	                            closeMenus();
     	                            throw new TestException(t);
     	                        }
     	                    });
@@ -117,16 +125,9 @@ public abstract class GUITestCase
 		}
         catch (Throwable t) {
             AnimationEffects.displayError(getInterestingCause(t), 3000);
-
-            // KLUDGE: close all shells except the workbench window's shell
-            // so that there are no hanging windows left open
-            // SWT does not close open windows when exceptions pass through the event loop
-            for (Shell shell : Display.getCurrent().getShells()) {
-                if (shell != Workbench.getInstance().getActiveWorkbenchWindow().getShell())
-                    shell.close();
-            }
-
-            // propagate the exception to JUnit
+            // closing the shells and menus are repeated here on purpose
+            closeShells();
+            closeMenus();
             throw t;
         }
 		finally {
@@ -134,7 +135,7 @@ public abstract class GUITestCase
 		}
 	}
 
-    private static Throwable getInterestingCause(Throwable t) {
+    private Throwable getInterestingCause(Throwable t) {
         if (t instanceof TestException) {
             Throwable cause = ((TestException)t).getCause();
 
@@ -153,6 +154,38 @@ public abstract class GUITestCase
         }
         else
             return t;
+    }
+    
+    private void closeShells() {
+        // KLUDGE: close all shells except the workbench window's shell
+        // so that there are no hanging windows left open
+        // SWT does not close open windows when exceptions pass through the event loop
+        for (Shell shell : Display.getCurrent().getShells()) {
+            if (shell != Workbench.getInstance().getActiveWorkbenchWindow().getShell())
+                shell.close();
+        }
+    }
+    
+    private void closeMenus() {
+        // KLUDGE: close all menus so that there are no hanging menus left open
+        // SWT does not close open menus when exceptions pass through the event loop
+        for (Shell shell : Display.getCurrent().getShells())
+            closeMenus(shell);
+    }
+
+    private void closeMenus(Composite composite) {
+        if (composite instanceof Decorations) {
+            Menu[] menus = (Menu[])ReflectionUtils.getFieldValue(composite, "menus");
+            
+            if (menus != null)
+                for (Menu menu : menus)
+                    if (menu != null && menu.isVisible())
+                        menu.setVisible(false);
+        }
+
+        for (Control control : composite.getChildren())
+            if (control instanceof Composite)
+                closeMenus(((Composite)control));
     }
 
 	public static Object runStep(final Step step) {

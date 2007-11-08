@@ -23,18 +23,12 @@ public class MenuItemAccess extends ClickableWidgetAccess
 
 	@UIStep
 	public void assertEnabled() {
-		if (!getWidget().isEnabled()) {
-	    	MenuAccess.closeMenus();
-	    	Assert.assertTrue("menu item '"+getWidget().getText()+"' should be enabled", false);
-		}
+    	Assert.assertTrue("menu item '"+getWidget().getText()+"' should be enabled", getWidget().isEnabled());
 	}
 	
     @UIStep
     public void assertDisabled() {
-        if (getWidget().isEnabled()) {
-            MenuAccess.closeMenus();
-            Assert.assertTrue("menu item '"+getWidget().getText()+"' should be disabled", false);
-        }
+        Assert.assertTrue("menu item '"+getWidget().getText()+"' should be disabled", !getWidget().isEnabled());
     }
     
 	@UIStep

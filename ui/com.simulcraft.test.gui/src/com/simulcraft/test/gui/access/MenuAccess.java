@@ -5,20 +5,17 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import com.simulcraft.test.gui.core.UIStep;
-import com.simulcraft.test.gui.core.InBackgroundThread;
-
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
+
+import com.simulcraft.test.gui.core.UIStep;
 
 
 public class MenuAccess extends WidgetAccess {
@@ -44,22 +41,17 @@ public class MenuAccess extends WidgetAccess {
 
 	@UIStep
 	public MenuItemAccess findMenuItemByLabel(final String label) {
-		try {
-			return new MenuItemAccess((MenuItem)findMenuItem(getWidget(), new IPredicate() {
-				public boolean matches(Object object) {
-					String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
-					return menuItemLabel.matches(label);
-				}
-				
-				@Override
-				public String toString() {
-				    return "menu item with label: "+label;
-				}
-			}));
-		} catch (RuntimeException e) {
-			closeMenus();
-			throw e;
-		}
+		return new MenuItemAccess((MenuItem)findMenuItem(getWidget(), new IPredicate() {
+			public boolean matches(Object object) {
+				String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
+				return menuItemLabel.matches(label);
+			}
+			
+			@Override
+			public String toString() {
+			    return "menu item with label: "+label;
+			}
+		}));
 	}
 
 	@UIStep
@@ -74,29 +66,6 @@ public class MenuAccess extends WidgetAccess {
 			if (predicate.matches(menuItem))
 				resultMenuItems.add(menuItem);
 		return resultMenuItems;
-	}
-
-	@UIStep
-	public static void closeMenus() {
-		// we need to manually close the menus whenever an error occurs during 
-		// menu processing (e.g. assert failed: menu item not found or 
-		// disabled), otherwise the event loop will sit there forever.
-		// However, there seems to be no clean way of doing it; here we try
-		// to click at the caption bar (i.e. the window manager decoration)
-		// of the workbench window if that's the active shell. We don't do 
-		// anything if some other shell is active, as it might have unwanted
-		// side effects. Issue: menu might actually be exactly there where
-		// we want to click, try avoid hitting it...
-		//
-		Shell workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		if (workbenchWindow != null && workbenchWindow == Display.getCurrent().getActiveShell()) {
-			Rectangle bounds = workbenchWindow.getBounds(); // note: this includes "trimmings" as well
-			if (bounds.width > 200) {
-				int x = bounds.x + bounds.width - 150; // click on the right side, to avoid menus which are usually on the left
-				int y = bounds.y + 1;  // top edge of caption bar ("trimmings")
-				new ShellAccess(workbenchWindow).clickAbsolute(Access.LEFT_MOUSE_BUTTON, x, y);
-			}
-		}
 	}
 	
     @UIStep
@@ -116,75 +85,38 @@ public class MenuAccess extends WidgetAccess {
         Assert.assertTrue("menu not visible", getWidget().isVisible());
     }
 
-    @InBackgroundThread
-    public static MenuAccess withOpeningContextMenu(Control control, Runnable runnable) {
-        int i = MenuAccess.findNextMenuShellIndex(control);
-        runOpeningContextMenuBody(runnable);
-        return new MenuAccess(getMenuShellMenu(control, i));
-    }
-
     @UIStep
-    private static Menu getMenuShellMenu(Control control, int i) {
-        return MenuAccess.getMenuShellMenus(control)[i];
-    }
-    
-    @UIStep
-    private static void runOpeningContextMenuBody(Runnable runnable) {
-        runnable.run();
-    }
+    public static MenuAccess findPopupMenu() {
+        ArrayList<Menu> menus = new ArrayList<Menu>();
 
-    private static Menu[] getMenuShellMenus(Control control) {
-        Decorations decorations = (Decorations)ReflectionUtils.invokeMethod(control, "menuShell");
-        return (Menu[])ReflectionUtils.getFieldValue(decorations, "menus");
-    }
-
-    private static int findNextMenuShellIndex(Control control) {
-        Menu[] menus = getMenuShellMenus(control);
+        for (Shell shell : Display.getCurrent().getShells())
+            collectMenus(shell, new IPredicate() {
+                public boolean matches(Object object) {
+                    Menu menu = (Menu)object;
+                    return menu.isVisible() && menu.getShell().getMenuBar() != menu;
+                }
+            }, menus);
         
-        for (int i = 0; i < menus.length; i++)
-            if (menus[i] == null)
-                return i;
+        Menu menu = (Menu)theOnlyObject(menus, null);
 
-        return menus.length;
+        if (debug)
+            Access.dumpMenu(menu);
+
+        return new MenuAccess(menu);
     }
 
-    
-// the following code searches in the menus recursively -- retained just in case it might be needed somewhere...
-//	@UIStep
-//	public MenuAccess activateMenuItemWithMouse_Recursive(String label) {
-//		printIf(debug, "Activating menu item: " + label);
-//		return findMenuItemByLabelRecursive(label).activateWithMouseClick();
-//	}
-//
-//	@UIStep
-//	public MenuItemAccess findMenuItemByLabelRecursive(final String label) {
-//		return new MenuItemAccess((MenuItem)theOnlyWidget(collectMenuItemsRecursive(widget, new IPredicate() {
-//			public boolean matches(Object object) {
-//				String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
-//				return menuItemLabel.matches(label);
-//			}
-//		})));
-//	}
-//
-//	@UIStep
-//	public List<MenuItem> collectMenuItemsRecursive(Menu menu, IPredicate predicate) {
-//		ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
-//		collectMenuItemsRecursive(menu, predicate, resultMenuItems);
-//		return resultMenuItems;
-//	}
-//
-//	protected void collectMenuItemsRecursive(Menu menu, IPredicate predicate, List<MenuItem> resultMenuItems) {
-//		for (MenuItem menuItem : menu.getItems()) {
-//				log(debug, "Trying to collect menu item: " + menuItem.getText());
-//
-//			if (menuItem.getMenu() != null)
-//				collectMenuItemsRecursive(menuItem.getMenu(), predicate, resultMenuItems);
-//
-//			if (predicate.matches(menuItem)) {
-//				log(debug, "--> matches: " + menuItem.getText());
-//				resultMenuItems.add(menuItem);
-//			}
-//		}
-//	}
+    private static void collectMenus(Composite composite, IPredicate predicate, List<Menu> collectedMenus) {
+        if (composite instanceof Decorations) {
+            Menu[] menus = (Menu[])ReflectionUtils.getFieldValue(composite, "menus");
+            
+            if (menus != null)
+                for (Menu menu : menus)
+                    if (menu != null && predicate.matches(menu))
+                        collectedMenus.add(menu);
+        }
 
+        for (Control control : composite.getChildren())
+            if (control instanceof Composite)
+                collectMenus(((Composite)control), predicate, collectedMenus);
+    }
 }

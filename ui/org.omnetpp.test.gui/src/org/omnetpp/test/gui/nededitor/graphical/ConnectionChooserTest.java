@@ -2,15 +2,15 @@ package org.omnetpp.test.gui.nededitor.graphical;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
 import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
-import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 
 /**
@@ -106,17 +106,19 @@ public class ConnectionChooserTest
         flyoutPaletteComposite.clickButtonFigureWithLabel("Connection");
         compoundModuleEditPart.clickSubmoduleFigureWithName(moduleName1);
         compoundModuleEditPart.clickSubmoduleFigureWithName(moduleName2);
-        assertMenuState(enabledItems, disabledItems, doNotAllowExtraItems);
-        MenuAccess.closeMenus();
+        assertMenuState(enabledItems, disabledItems, doNotAllowExtraItems).pressKey(SWT.ESC);
      }
 
     @UIStep
-    private void assertMenuState(String[] enabledLabels, String[] disabledLabels, boolean doNotAllowExtraItems) {
-        MenuAccess menuAccess = new MenuAccess(Access.getDisplay().getActiveShell().getMenu());
+    private MenuAccess assertMenuState(String[] enabledLabels, String[] disabledLabels, boolean doNotAllowExtraItems) {
+        MenuAccess menuAccess = MenuAccess.findPopupMenu();
+        // TODO: delete old code new MenuAccess(Access.getDisplay().getActiveShell().getMenu());
         menuAccess.assertMenuItemsEnabled(enabledLabels);
         menuAccess.assertMenuItemsDisabled(disabledLabels);
         if (doNotAllowExtraItems)
             assertTrue("Menu contains extra items", menuAccess.getWidget().getItemCount() == enabledLabels.length + disabledLabels.length);
+        
+        return menuAccess;
     }
 
     private String q(String txt) {
