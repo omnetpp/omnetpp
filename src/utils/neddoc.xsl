@@ -39,9 +39,9 @@
 
 <xsl:param name="inputdoc" select="/"/>
 
-<xsl:key name="module" match="//simple-module|//compound-module" use="@name"/>
+<xsl:key name="module" match="//simple-module|//compound-module|//module-interface" use="@name"/>
 <xsl:key name="msg-or-class" match="//message|//class|//struct" use="@name"/>
-<xsl:key name="channel" match="//channel" use="@name"/>
+<xsl:key name="channel" match="//channel|//channel-interface" use="@name"/>
 <xsl:key name="msg-or-class-extends" match="//message|//class|//struct" use="@extends-name"/>
 
 <xsl:key name="image" match="//image" use="concat(@name,':',@nedfilename)"/>
@@ -120,9 +120,23 @@
    </xsl:call-template>
 
    <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'moduleinterfaces.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-module-interface-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
+
+   <xsl:call-template name="write-html-page">
       <xsl:with-param name="href" select="'channels.html'"/>
       <xsl:with-param name="content">
          <xsl:call-template name="create-channel-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
+
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'channelinterfaces.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-channel-interface-index"/>
       </xsl:with-param>
    </xsl:call-template>
 
@@ -172,7 +186,7 @@
       <xsl:with-param name="href" select="'overview.html'"/>
       <xsl:with-param name="content">
          <xsl:choose>
-            <xsl:when test="//ned-file/@banner-comment[contains(.,'@titlepage')]">
+            <xsl:when test="//ned-file/comment/@content[contains(.,'@titlepage')]">
                <xsl:call-template name="extract-titlepage"/>
             </xsl:when>
             <xsl:otherwise>
@@ -270,7 +284,7 @@
       </xsl:if>
    </ul>
    <ul>
-      <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page') or contains(.,'@externalpage')]">
+      <xsl:for-each select="//ned-file/comment/@content[contains(.,'@page') or contains(.,'@externalpage')]">
          <xsl:call-template name="do-extract-pageindex">
             <xsl:with-param name="comment" select="."/>
          </xsl:call-template>
@@ -332,6 +346,24 @@
    </ul>
 </xsl:template>
 
+<xsl:template name="create-module-interface-index">
+   <xsl:call-template name="print-navbar">
+      <xsl:with-param name="where" select="'module interfaces'"/>
+   </xsl:call-template>
+   <h3 class="indextitle">Modules Interfaces</h3>
+   <ul>
+      <xsl:for-each select="//module-interface">
+         <xsl:sort select="@name"/>
+         <li>
+            <a href="{concat(@name,'-',generate-id(.))}.html" target="mainframe"><xsl:value-of select="@name"/></a>
+            <!--
+            <i> (<xsl:value-of select="ancestor::ned-file/@filename"/>)</i>
+            -->
+         </li>
+      </xsl:for-each>
+   </ul>
+</xsl:template>
+
 <xsl:template name="create-channel-index">
    <xsl:call-template name="print-navbar">
       <xsl:with-param name="where" select="'channels'"/>
@@ -350,13 +382,31 @@
    </ul>
 </xsl:template>
 
+<xsl:template name="create-channel-interface-index">
+   <xsl:call-template name="print-navbar">
+      <xsl:with-param name="where" select="'channel interfaces'"/>
+   </xsl:call-template>
+   <h3 class="indextitle">Channel Interfaces</h3>
+   <ul>
+      <xsl:for-each select="//channel-interface">
+         <xsl:sort select="@name"/>
+         <li>
+            <a href="{concat(@name,'-',generate-id(.))}.html" target="mainframe"><xsl:value-of select="@name"/></a>
+            <!--
+            <i> (<xsl:value-of select="ancestor::ned-file/@filename"/>)</i>
+            -->
+         </li>
+      </xsl:for-each>
+   </ul>
+</xsl:template>
+
 <xsl:template name="create-network-index">
    <xsl:call-template name="print-navbar">
       <xsl:with-param name="where" select="'networks'"/>
    </xsl:call-template>
    <h3 class="indextitle">Networks</h3>
    <ul>
-      <xsl:for-each select="//network">
+      <xsl:for-each select="//compound-module[@is-network='true']">
          <xsl:sort select="@name"/>
          <li>
             <a href="{concat(@name,'-',generate-id(.))}.html" target="mainframe"><xsl:value-of select="@name"/></a>
@@ -442,13 +492,13 @@
 
 <xsl:template name="create-tags">
    <neddoc-tags>
-      <xsl:for-each select="//simple-module|//compound-module|//channel|//network|//message|//class|//struct|//enum">
+      <xsl:for-each select="//simple-module|//compound-module|//module-interface|//channel|//channel-interface|//message|//class|//struct|//enum">
          <xsl:sort select="concat(local-name(.),':',@name)"/>
          <tag type="{local-name(.)}"
               name="{@name}"
               htmlfile="{concat(@name,'-',generate-id(.))}.html"
               nedfile="{ancestor::ned-file/@filename}"
-              comment="{@banner-comment}" />
+              comment="{comment/@content}" />
       </xsl:for-each>
    </neddoc-tags>
 </xsl:template>
@@ -469,7 +519,22 @@
          <xsl:call-template name="print-channel-used-in"/>
          <xsl:call-template name="print-attrs"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
+         </xsl:if>
+      </xsl:with-param>
+   </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="channel-interface">
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Channel Interface <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <!-- TODO: -->
+         <xsl:if test="$include-source-code='yes'">
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -489,10 +554,30 @@
             <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
          <xsl:call-template name="print-module-used-in"/>
-         <xsl:call-template name="print-params"/>
+         <xsl:call-template name="print-parameters"/>
          <xsl:call-template name="print-gates"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
+         </xsl:if>
+      </xsl:with-param>
+   </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="module-interface">
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Module Interface <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-module-usage-diagram"/>
+         </xsl:if>
+         <xsl:call-template name="print-module-used-in"/>
+         <xsl:call-template name="print-parameters"/>
+         <xsl:call-template name="print-gates"/>
+         <xsl:if test="$include-source-code='yes'">
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -511,19 +596,19 @@
          </xsl:if>
          <xsl:call-template name="print-uses"/>
          <xsl:call-template name="print-module-used-in"/>
-         <xsl:call-template name="print-params"/>
+         <xsl:call-template name="print-parameters"/>
          <xsl:call-template name="print-gates"/>
          <xsl:if test="$document-unassigned-params='yes'">
             <xsl:call-template name="print-unset-submodparams"/>
          </xsl:if>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
 </xsl:template>
 
-<xsl:template match="network">
+<xsl:template match="compound-module[@is-network='true']">
    <xsl:call-template name="write-component-page">
       <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
       <xsl:with-param name="content">
@@ -537,7 +622,7 @@
          </xsl:if>
          <xsl:call-template name="print-substparams"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -561,7 +646,7 @@
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-fields"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -585,7 +670,7 @@
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-fields"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -609,7 +694,7 @@
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-fields"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -629,7 +714,7 @@
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-enumfields"/>
          <xsl:if test="$include-source-code='yes'">
-            <xsl:call-template name="print-source"/>
+            <xsl:call-template name="print-source-from-parameters"/>
          </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
@@ -643,7 +728,7 @@
          <!-- <xsl:call-template name="process-comment"/> -->
          <h3 class="subtitle">Contains:</h3>
          <ul>
-            <xsl:for-each select="simple-module|compound-module|channel|network|message|class|struct|enum">
+            <xsl:for-each select="simple-module|compound-module|module-interface|channel|channel-interface|message|class|struct|enum">
                <xsl:sort select="@name"/>
                <li>
                   <a href="{concat(@name,'-',generate-id(.))}.html"><xsl:value-of select="@name"/></a>
@@ -651,9 +736,7 @@
                </li>
             </xsl:for-each>
          </ul>
-         <xsl:if test="@source-code">
-            <pre class="src"><xsl:value-of select="@source-code"/></pre>
-         </xsl:if>
+         <xsl:call-template name="print-source"/>
       </xsl:with-param>
    </xsl:call-template>
    <xsl:apply-templates/>
@@ -726,8 +809,20 @@
       </xsl:call-template>
       <xsl:text>) - </xsl:text>
       <xsl:call-template name="print-navbarlink">
+          <xsl:with-param name="label" select="'module interfaces'"/>
+          <xsl:with-param name="link" select="'moduleinterfaces.html'"/>
+          <xsl:with-param name="where" select="$where"/>
+      </xsl:call-template>
+      <xsl:text> - </xsl:text>
+      <xsl:call-template name="print-navbarlink">
           <xsl:with-param name="label" select="'channels'"/>
           <xsl:with-param name="link" select="'channels.html'"/>
+          <xsl:with-param name="where" select="$where"/>
+      </xsl:call-template>
+      <xsl:text> - </xsl:text>
+      <xsl:call-template name="print-navbarlink">
+          <xsl:with-param name="label" select="'channel interfaces'"/>
+          <xsl:with-param name="link" select="'channelinterfaces.html'"/>
           <xsl:with-param name="where" select="$where"/>
       </xsl:call-template>
       <xsl:text> - </xsl:text>
@@ -790,8 +885,8 @@
    </xsl:for-each>
 </xsl:template>
 
-<xsl:template name="print-params">
-   <xsl:if test="params/param">
+<xsl:template name="print-parameters">
+   <xsl:if test="parameters/param">
       <h3 class="subtitle">Parameters:</h3>
       <table class="paramtable">
          <tr>
@@ -799,14 +894,14 @@
             <th>Type</th>
             <th>Description</th>
          </tr>
-         <xsl:for-each select="params/param">
+         <xsl:for-each select="parameters/param">
             <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="100">
                   <i>
                   <xsl:choose>
-                     <xsl:when test="@data-type"><xsl:value-of select="@data-type"/></xsl:when>
+                     <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
                      <xsl:otherwise>numeric</xsl:otherwise>
                   </xsl:choose>
                   </i>
@@ -831,7 +926,7 @@
             <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/><xsl:if test="@is-vector='true'"> [ ]</xsl:if></td>
-               <td width="100"><i><xsl:value-of select="@direction"/></i></td>
+               <td width="100"><i><xsl:value-of select="@type"/></i></td>
                <td><xsl:call-template name="process-tablecomment"/></td>
             </tr>
          </xsl:for-each>
@@ -953,15 +1048,15 @@
 </xsl:template>
 
 <xsl:template name="print-uses">
-   <xsl:if test="key('module',.//submodule/@type-name)">
+   <xsl:if test="key('module',.//submodule/@type)">
       <h3 class="subtitle">Contains the following modules:</h3>
       <p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>
       <table>
-        <xsl:for-each select="key('module',.//submodule/@type-name)">
+        <xsl:for-each select="key('module',.//submodule/@type)">
            <xsl:sort select="@name"/>
            <xsl:call-template name="print-componentref"/>
         </xsl:for-each>
-        <xsl:for-each select=".//submodule/@type-name[not(key('module',.))]">
+        <xsl:for-each select=".//submodule/@type[not(key('module',.))]">
            <xsl:call-template name="print-unresolved-componentref"/>
         </xsl:for-each>
       </table>
@@ -982,19 +1077,19 @@
 
 <xsl:template name="print-module-used-in">
    <xsl:variable name="name" select="@name"/>
-   <xsl:if test="//compound-module[.//submodule[@type-name=$name]]">
+   <xsl:if test="//compound-module[.//submodule[@type=$name]]">
       <h3 class="subtitle">Used in compound modules:</h3>
       <p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>
       <table>
-         <xsl:for-each select="//compound-module[.//submodule[@type-name=$name]]">
+         <xsl:for-each select="//compound-module[.//submodule[@type=$name]]">
             <xsl:call-template name="print-componentref"/>
          </xsl:for-each>
       </table>
    </xsl:if>
-   <xsl:if test="//network[@type-name=$name]">
+   <xsl:if test="//compound-module[@is-network='true' and @type-name=$name]">
       <h3 class="subtitle">Networks:</h3>
       <table>
-         <xsl:for-each select="//network[@type-name=$name]">
+         <xsl:for-each select="//compound-module[@is-network='true' and @type-name=$name]">
             <xsl:call-template name="print-componentref"/>
          </xsl:for-each>
       </table>
@@ -1063,8 +1158,12 @@
       </td>
       <td>
          <xsl:choose>
-            <xsl:when test="@banner-comment">
-               <span class="briefcomment"><xsl:value-of select="@banner-comment"/></span>
+            <xsl:when test="comment[@locid!='trailing']">
+               <span class="briefcomment">
+               <xsl:for-each select="comment[@locid!='trailing']">
+                  <xsl:value-of select="@content"/>
+               </xsl:for-each>
+               </span>
             </xsl:when>
             <xsl:otherwise><i>(no description)</i></xsl:otherwise>
          </xsl:choose>
@@ -1095,7 +1194,7 @@
                <xsl:for-each select="area">
                   <xsl:variable name="coords" select="@coords"/>
                   <xsl:variable name="submodname" select="@name"/>
-                  <xsl:variable name="submodtype" select="$context/submodules/submodule[@name=$submodname]/@type-name"/>
+                  <xsl:variable name="submodtype" select="$context/submodules/submodule[@name=$submodname]/@type"/>
                   <xsl:variable name="submodlikeparam" select="$context/submodules/submodule[@name=$submodname]/@like-param"/>
                   <xsl:variable name="alt">
                      <xsl:choose>
@@ -1141,15 +1240,15 @@
       <xsl:choose>
          <xsl:when test="local-name(.)='compound-module' or local-name(.)='simple-module'">
             <!-- diagram for modules -->
-            <xsl:for-each select="key('module',submodules/submodule/@type-name)">
+            <xsl:for-each select="key('module',submodules/submodule/@type)">
                <xsl:call-template name="do-diagram-node"/>
                "<xsl:value-of select="$name"/>" -> "<xsl:value-of select="@name"/>";
             </xsl:for-each>
-            <xsl:for-each select="//compound-module[.//submodule/@type-name=$name]">
+            <xsl:for-each select="//compound-module[.//submodule/@type=$name]">
                <xsl:call-template name="do-diagram-node"/>
                "<xsl:value-of select="@name"/>" -> "<xsl:value-of select="$name"/>";
             </xsl:for-each>
-            <xsl:for-each select="//network[@type-name=$name]">
+            <xsl:for-each select="//compound-module[@is-network='true' and @type-name=$name]">
                <xsl:call-template name="do-diagram-node"/>
                "<xsl:value-of select="@name"/>" -> "<xsl:value-of select="$name"/>";
             </xsl:for-each>
@@ -1158,7 +1257,7 @@
                "<xsl:value-of select="$name"/>" -> "<xsl:value-of select="@name"/>";
             </xsl:for-each>
          </xsl:when>
-         <xsl:when test="local-name(.)='network'">
+         <xsl:when test="local-name(.)='compound-module' and @is-network='true'">
             <!-- diagram for networks  -->
             <xsl:for-each select="key('module',@type-name)">
                <xsl:call-template name="do-diagram-node"/>
@@ -1217,7 +1316,7 @@
       <xsl:when test="local-name(.)='simple-module'">
          "<xsl:value-of select="@name"/>" [URL="<xsl:value-of select="$url"/>",fillcolor="#fffcaf",tooltip="simple <xsl:value-of select="@name"/>"];
       </xsl:when>
-      <xsl:when test="local-name(.)='network'">
+      <xsl:when test="local-name(.)='compound-module' and @is-network='true'">
          "<xsl:value-of select="@name"/>" [URL="<xsl:value-of select="$url"/>",fillcolor="#d0d0ff",tooltip="network <xsl:value-of select="@name"/>"];
       </xsl:when>
       <xsl:when test="local-name(.)='channel'">
@@ -1250,7 +1349,7 @@
       <xsl:when test="local-name(.)='simple-module'">
          "<xsl:value-of select="@name"/>" [URL="<xsl:value-of select="$url"/>",fillcolor="#fff700",tooltip="simple <xsl:value-of select="@name"/>"];
       </xsl:when>
-      <xsl:when test="local-name(.)='network'">
+      <xsl:when test="local-name(.)='compound-module' and @is-network='true'">
          "<xsl:value-of select="@name"/>" [URL="<xsl:value-of select="$url"/>",fillcolor="#9090ff",tooltip="network <xsl:value-of select="@name"/>"];
       </xsl:when>
       <xsl:when test="local-name(.)='channel'">
@@ -1289,16 +1388,21 @@
    </xsl:choose>
 </xsl:template>
 
+<xsl:template name="print-source-from-parameters">
+   <xsl:for-each select="parameters">
+      <xsl:call-template name="print-source"/>
+   </xsl:for-each>
+</xsl:template>
+
 <xsl:template name="print-source">
-   <xsl:if test="@source-code">
+   <xsl:if test="property[@name='sourcecode']">
       <h3 class="subtitle">Source code:</h3>
-      <pre class="src"><xsl:value-of select="@source-code"/></pre>
+      <pre class="src"><xsl:value-of select="property[@name='sourcecode']/property-key/literal/@value"/></pre>
    </xsl:if>
 </xsl:template>
 
-
 <xsl:template name="process-tablecomment">
-   <xsl:param name="comment" select="@banner-comment|@right-comment"/>
+   <xsl:param name="comment" select="comment[@locid!='trailing']/@content"/>
    <xsl:choose>
       <xsl:when test="$comment">
          <span class="comment"><xsl:value-of select="$comment"/></span>
@@ -1308,7 +1412,7 @@
 </xsl:template>
 
 <xsl:template name="process-comment">
-   <xsl:param name="comment" select="@banner-comment"/>
+   <xsl:param name="comment" select="comment[@locid!='trailing']/@content"/>
    <xsl:choose>
       <xsl:when test="$comment">
          <pre class="comment"><xsl:value-of select="$comment"/></pre>
@@ -1319,7 +1423,7 @@
 
 <xsl:template name="extract-titlepage">
    <pre class="comment">
-      <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@titlepage')]">
+      <xsl:for-each select="//ned-file/comment/@content[contains(.,'@titlepage')]">
          <xsl:variable name="tmp1" select="substring-after(.,'@titlepage')"/>
          <xsl:variable name="text" select="substring-before(concat($tmp1,'@page'),'@page')"/>
          <xsl:value-of select="$text"/>
@@ -1328,7 +1432,7 @@
 </xsl:template>
 
 <xsl:template name="extract-pages">
-   <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page')]">
+   <xsl:for-each select="//ned-file/comment/@content[contains(.,'@page')]">
       <xsl:call-template name="do-extract-pages">
          <xsl:with-param name="comment" select="."/>
       </xsl:call-template>
@@ -1421,7 +1525,7 @@
    <xsl:param name="prefix"/>
    <xsl:for-each select="submodules/submodule">
       <xsl:variable name="submod" select="."/>
-      <xsl:for-each select="key('module',$submod/@type-name)">
+      <xsl:for-each select="key('module',$submod/@type)">
          <xsl:variable name="module" select="."/>
          <xsl:variable name="prefixedsubmodname">
             <xsl:copy-of select="$prefix"/>
@@ -1432,7 +1536,7 @@
          </xsl:variable>
 
          <!-- loop through parameters of module type -->
-         <xsl:for-each select="params/param">
+         <xsl:for-each select="parameters/param">
             <xsl:variable name="paramname" select="@name"/>
             <xsl:choose>
                <xsl:when test="$submod/substparams/substparam[@name=$paramname]">
@@ -1445,7 +1549,7 @@
                      <td width="100">
                         <i>
                         <xsl:choose>
-                           <xsl:when test="@data-type"><xsl:value-of select="@data-type"/></xsl:when>
+                           <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
                            <xsl:otherwise>numeric</xsl:otherwise>
                         </xsl:choose>
                         </i>
@@ -1469,11 +1573,11 @@
       <xsl:for-each select="//simple-module|//compound-module">
          <xsl:call-template name="do-diagram-node"/>
          <xsl:variable name="modname" select="@name"/>
-         <xsl:for-each select="key('module',submodules/submodule/@type-name)">
+         <xsl:for-each select="key('module',submodules/submodule/@type)">
             "<xsl:value-of select="$modname"/>" -> "<xsl:value-of select="@name"/>";
          </xsl:for-each>
       </xsl:for-each>
-      <xsl:for-each select="//network">
+      <xsl:for-each select="//compound-module[@is-network='true']">
          <xsl:call-template name="do-diagram-node"/>
          <xsl:variable name="netname" select="@name"/>
          <xsl:for-each select="key('module',@type-name)">
