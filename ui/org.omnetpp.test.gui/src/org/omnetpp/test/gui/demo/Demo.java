@@ -92,7 +92,6 @@ public class Demo extends GUITestCase {
         createDemoNetwork();
         createIniFile();
         createLaunchConfigAndLaunch();
-        refreshNavigator();
         analyseResults();
         showSequenceChart();
     }
@@ -424,11 +423,19 @@ public class Demo extends GUITestCase {
         showMessage("And watch the progress of the simulation batch in the progress view.", 2);
 
         Access.sleep(20);
+        
+        refreshNavigator();
+        
+        showMessage("Simulations completed! Note the files that have been created in the project directory.", 2);
+        showMessage(
+                "Log files contain a record of each message sending, textual debug messages, and more. " +
+        		"Vec and sca files contain statistics recorded by the simulation. File names are " +
+        		"constructed using the configuration name and the run number.", 4);
+        
     }
 
     private void analyseResults() {
-        showMessage("We can analyze the generated results now. Let's display the length " +
-                "of each queue over the time.", 2);
+        showMessage("We can analyze the generated results now. Let's create a new <b>Analysis</b> using a wizard.", 2);
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.getShell().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|Analysis File \\(anf\\)");
         ShellAccess shell1 = Access.findShellWithTitle("New Analysis File");
@@ -438,18 +445,20 @@ public class Demo extends GUITestCase {
         shell1.findButtonWithLabel("Finish").selectWithMouseClick();
 
         // create an analysis file
-        showMessage("Add all generated result files to the analysis.", 1);
+        showMessage("Add all generated result files to the analysis, then browse the data.", 2);
         ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
         InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
         ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
 
         // browse data
-        showMessage("Now we will select all queue length data in run#4.", 1);
         BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
         bdp.ensureVectorsSelected();
-        bdp.getRunNameFilter().selectItem("General-4.*");
+        showMessage("We are interested in how the queue lengths change over the time, " +
+        		"so choose \"length\" from the filter combo.", 2);
         bdp.getDataNameFilter().selectItem("length");
+        showMessage("The table still includes data from all runs, so let us focus to Run 4.", 2);
+        bdp.getRunNameFilter().selectItem("General-4.*");
 
         showMessage("Let's select all vectors and plot them on a single chart.", 1);
         bdp.click();
@@ -466,8 +475,9 @@ public class Demo extends GUITestCase {
         sleep(3);
 
         // create a dataset from the chart
-        showMessage("We can store this chart as a recipe, so next time when the simulation is re-run " +
-                "the chart can be recreated automatically.", 3);
+        showMessage(
+                "We can store this chart as a recipe, so next time when the " +
+                "simulation is re-run, the chart can be recreated automatically.", 3);
         canvas.chooseFromContextMenu("Convert to Dataset.*");
         ShellAccess shell = Access.findShellWithTitle("Create chart template");
         shell.findTextAfterLabel("Dataset name:").typeOver("queue length mean");
