@@ -14,9 +14,10 @@ import org.eclipse.swt.widgets.Listener;
  * @author Andras
  */
 public class MouseClickAnimator implements Listener {
-
+    public static boolean mouseClickAnimation = true;
+    
     public void handleEvent(Event e) {
-        if (e.type == SWT.MouseDown) {
+        if (e.type == SWT.MouseDown && mouseClickAnimation) {
             Assert.isTrue(e.widget instanceof Control); // by experimental evidence ;)
             Point p = ((Control)e.widget).toDisplay(e.x, e.y);
             AnimationEffects.animateClick(p.x, p.y);

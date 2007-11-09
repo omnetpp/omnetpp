@@ -68,6 +68,10 @@ public abstract class GUITestCase
     public void setMouseMoveDuration(int delay) {
         ClickableAccess.mouseMoveDurationMillis = delay;
     }
+    
+    public void setMouseClickAnimation(boolean animate) {
+        MouseClickAnimator.mouseClickAnimation = animate;
+    }
 
     public static class Step {
 		public Object runAndReturn() throws Exception {

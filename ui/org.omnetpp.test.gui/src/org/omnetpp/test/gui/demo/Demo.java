@@ -33,9 +33,9 @@ import org.omnetpp.test.gui.scave.ScaveEditorUtils;
 
 public class Demo extends GUITestCase {
     protected String name = "demo";
-    protected String logFileName = name + "-${runnumber}.log";
+    protected String logFileName = name + "-0.log";
     protected boolean delay = true;
-    protected int readingSpeed = 30; //70;
+    protected int readingSpeed = 70; //70;
 
     @Override
     protected void setUp() throws Exception {
@@ -43,7 +43,7 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
-        WorkspaceUtils.ensureProjectNotExists(name);
+//        WorkspaceUtils.ensureProjectNotExists(name);
         System.clearProperty("com.simulcraft.test.running");
 //      WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
 //      WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
@@ -52,6 +52,7 @@ public class Demo extends GUITestCase {
 //      setTimeScale(0.0);
 //      setDelayAfterMouseMove(0);
 //      setDelayBeforeMouseMove(0);
+        setMouseClickAnimation(false);
     }
 
     void sleep(double time) {
@@ -63,11 +64,10 @@ public class Demo extends GUITestCase {
     }
 
     void showMessage(String msg, int lines, int verticalDisplacement) {
-        System.out.println("showMessage: "+msg);
         if (readingSpeed == 0) return;
 
         int width = 600;
-        int height = lines * 28 + 30;
+        int height = lines * 24 + 30;
         Rectangle bounds = Access.getWorkbenchWindow().getShell().getAbsoluteBounds();
         int x = bounds.x + bounds.width/2 - width/2;
         int y = bounds.y + bounds.height/3;
@@ -84,16 +84,18 @@ public class Demo extends GUITestCase {
 
     public void testPlay() throws Throwable {
         setWorkbecnchSize();
-        // open perspective
-        welcome();
+//        sleep(15);
+//        welcome();
         openPerspective();
-        createProject();
-        createNedFile();
-        createDemoNetwork();
-        createIniFile();
-        createLaunchConfigAndLaunch();
-        analyseResults();
-        showSequenceChart();
+//        createProject();
+//        createNedFile();
+//        createDemoNetwork();
+//        createIniFile();
+//        createLaunchConfigAndLaunch();
+//        analyseResults();
+//        showSequenceChart();
+        goodBye();
+
     }
 
     private void welcome() {
@@ -310,7 +312,7 @@ public class Demo extends GUITestCase {
 
         // add queue parameter values in table
         showMessage(
-                "We want try the model with different queue service times as well: " +
+                "We want to try the model with different queue service times as well: " +
                 "exponential distribution with mean 1, 2 and 3, so we specify serviceTime " +
                 "to be a running parameter as exponential(${serviceMean=1..3 step 1})", 4);
         TextAccess cellEditor = tree2.findTreeItemByContent("\\*\\*\\.serviceTime").activateCellEditor(1);
@@ -336,7 +338,7 @@ public class Demo extends GUITestCase {
         ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
         sleep(2);
         TextAccess text = form.findTextAfterLabel("Eventlog file:");
-        text.clickAndTypeOver(logFileName);
+        text.clickAndTypeOver(name+"-${runnumber}.log");
         sleep(2);
 
         // set simulation time limit
@@ -407,7 +409,7 @@ public class Demo extends GUITestCase {
 
         showMessage("In the Ini file we have specified that the simulation should be run with " +
                 "30 and 60 jobs and queue service times should be exponential with means 1, 2 and 3. " +
-                "This would result a total of 6 runs. We want to run each of them," +
+                "This would result a total of 6 runs. We want to run each of them, " +
                 "so we specify * (all) as a run number.", 5, -50);
         shell.findTextAfterLabel("Run number.*").clickAndTypeOver("*");
 
@@ -427,12 +429,10 @@ public class Demo extends GUITestCase {
         
         refreshNavigator();
         
-        showMessage("Simulations completed! Note the files that have been created in the project directory.", 2);
-        showMessage(
+        showMessage("<b>Simulations completed!</b> Note the files that have been created in the project directory. "+
                 "Log files contain a record of each message sending, textual debug messages, and more. " +
         		"Vec and sca files contain statistics recorded by the simulation. File names are " +
-        		"constructed using the configuration name and the run number.", 4);
-        
+        		"constructed using the configuration name and the run number.", 6);
     }
 
     private void analyseResults() {
@@ -465,7 +465,7 @@ public class Demo extends GUITestCase {
         bdp.click();
         bdp.pressKey('a', SWT.CTRL);
         workbenchWindow.getShell().findToolItemWithTooltip("Plot.*").click();
-        sleep(3);
+        sleep(5);
 
         // show and play with the chart
         showMessage("We can apply the 'mean' function so we will get a smoothed-out version of the charts.", 2);
@@ -481,8 +481,11 @@ public class Demo extends GUITestCase {
                 "simulation is re-run, the chart can be recreated automatically.", 3);
         canvas.chooseFromContextMenu("Convert to Dataset.*");
         ShellAccess shell = Access.findShellWithTitle("Create chart template");
+        sleep(2);
         shell.findTextAfterLabel("Dataset name:").typeOver("queue length mean");
+        sleep(1);
         shell.findTextAfterLabel("Chart name:").clickAndTypeOver("queue length");
+        sleep(1);
         shell.findButtonWithLabel("OK").selectWithMouseClick();
 
         // manipulate the dataset
@@ -502,16 +505,16 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         ShellAccess workbenchShell = workbenchWindow.getShell();
 
-        showMessage("Take a look at the sequence chart\n", 1);
+        showMessage("Let's take a look at the sequence chart.", 1);
 
         TreeAccess tree = WorkbenchUtils.ensureViewActivated("General", "Navigator").getComposite().findTree();
         TreeItemAccess treeItem = tree.findTreeItemByContent(name);
         treeItem.ensureExpanded();
         tree.findTreeItemByContent(logFileName).doubleClick();
 
-        showMessage("Here you can see the initial 60 messages being pushed into one of the queues.\n", 2);
+        showMessage("Here you can see the initial 60 messages being pushed into one of the queues.", 2);
 
-        showMessage("Go to where the first message is first processed by a queue.", 2);
+        showMessage("Go to where the first message is first processed by a queue.", 1);
 
         EditorPartAccess editorPart = workbenchWindow.findEditorPartByTitle(logFileName);
         SequenceChartAccess sequenceChart = (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), SequenceChart.class));
@@ -561,12 +564,14 @@ public class Demo extends GUITestCase {
 
         sleep(2);
         
+    }
+
+    private void goodBye() {
         showMessage(
                 "This concludes our demo. We suggest you continue exploring the OMNeT++ IDE " +
         		"in your own installed copy, and gain first-hand experience.\n" +
         		"\n" +
-        		"Have fun!", 4);
+        		"Have fun!", 5);
         sleep(3);
-
     }
 }
