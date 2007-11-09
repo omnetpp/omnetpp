@@ -406,8 +406,9 @@ public class Demo extends GUITestCase {
         shell.findButtonWithLabel("Command.*").selectWithMouseClick();
 
         showMessage("In the Ini file we have specified that the simulation should be run with " +
-                "30 and 60 jobs and queue service times should be exponential with means 1,2 and 3. " +
-                "This would result a total of 6 runs. We want to run each of them so we specify * (all) as a run number ", 5, -50);
+                "30 and 60 jobs and queue service times should be exponential with means 1, 2 and 3. " +
+                "This would result a total of 6 runs. We want to run each of them," +
+                "so we specify * (all) as a run number.", 5, -50);
         shell.findTextAfterLabel("Run number.*").clickAndTypeOver("*");
 
         showMessage(
