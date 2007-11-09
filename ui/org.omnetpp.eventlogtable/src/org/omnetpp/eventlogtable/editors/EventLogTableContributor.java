@@ -751,20 +751,20 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			private void filter() {
 				final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
-				eventLogInput.runWithProgressMonitor(new Runnable() {
-					public void run() {
-						EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-						FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
-		
-						if (dialog.open() == Window.OK) {
+				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+				FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
+
+				if (dialog.open() == Window.OK) {
+                    eventLogInput.runWithProgressMonitor(new Runnable() {
+                        public void run() {
 							eventLogInput.filter();
 							
 							eventLogTable.setInput(eventLogInput);
 		
 							update();
-						}
-					}
-				});
+                        }
+                    });
+				}
 			}
 		};
 	}
