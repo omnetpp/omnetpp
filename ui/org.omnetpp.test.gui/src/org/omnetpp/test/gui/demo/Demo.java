@@ -24,6 +24,7 @@ import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
+import org.omnetpp.test.gui.access.InifileEditorAccess;
 import org.omnetpp.test.gui.access.InputsPageAccess;
 import org.omnetpp.test.gui.access.NedEditorAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
@@ -32,7 +33,7 @@ import org.omnetpp.test.gui.scave.ScaveEditorUtils;
 
 public class Demo extends GUITestCase {
     protected String name = "demo";
-    protected String logFileName = name + ".log";
+    protected String logFileName = name + "-${runnumber}.log";
     protected boolean delay = true;
     protected int readingSpeed = 30; //70;
 
@@ -128,7 +129,7 @@ public class Demo extends GUITestCase {
         Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNEST/OMNeT\\+\\+ Project");
         ShellAccess shell = Access.findShellWithTitle("New OMNeT\\+\\+ project");
         sleep(1);
-        showMessage("Let's name the project 'Demo'.", 1);
+        showMessage("Let's name the project \"Demo\".", 1);
         shell.findTextAfterLabel("Project name:").clickAndTypeOver(name);
         sleep(2);
         shell.findButtonWithLabel("Finish").selectWithMouseClick();
@@ -142,14 +143,14 @@ public class Demo extends GUITestCase {
         showMessage(
                 "In this demo, we'll create and simulate a <b>queueing network</b>. " +
                 "We'll build the network from components already defined " +
-                "in the 'queueinglib' project, so we have to include it in our " +
+                "in the \"queueinglib\" project, so we have to include it in our " +
                 "project's dependencies. We can do so in the <b>Project Properties</b> " +
                 "dialog.", 5);
         treeItem.reveal().chooseFromContextMenu("Properties");
         ShellAccess shell2 = Access.findShellWithTitle("Properties for demo");
         TreeAccess tree2 = shell2.findTree();
         sleep(1);
-        showMessage("We need to choose the Project References page, and check the 'queueinglib' project.", 2);
+        showMessage("We need to choose the Project References page, and check the \"queueinglib\" project.", 2);
         tree2.findTreeItemByContent("Project References").click();
         sleep(1);
         shell2.findTable().findTableItemByContent("queueinglib").ensureChecked(true);
@@ -251,13 +252,22 @@ public class Demo extends GUITestCase {
         sleep(2);
 
         // add source parameters
+        showMessage("This is a text file which can be edited in both text mode and using forms.", 2);
+        InifileEditorAccess iniEditor = (InifileEditorAccess)workbenchWindow.findEditorPartByTitle("omnetpp\\.ini");
+        iniEditor.activateTextEditor();
+        sleep(1);
+        iniEditor.activateFormEditor();
+        sleep(1);
+        
         showMessage("Our next task is to assign model parameters that do not have default values.", 2);
-        MultiPageEditorPartAccess iniEditor = (MultiPageEditorPartAccess)workbenchWindow.findEditorPartByTitle("omnetpp\\.ini");
         CompositeAccess form = (CompositeAccess)iniEditor.getActivePageControl();
         ButtonAccess addKeysButton = form.findButtonWithLabel("Add.*");
         addKeysButton.selectWithMouseClick();
-        showMessage("First, we set the interArrivalTime and the number of jobs in the Source submodule.", 2);
         ShellAccess shell2 = Access.findShellWithTitle("Add Inifile Keys");
+        showMessage(
+                "This dialog lists all unassigned parameters, and inserts them into " +
+                "the file. First, we choose the interArrivalTime and the number of jobs " +
+                "in the Source submodule.", 3);
         shell2.findButtonWithLabel("Deselect All").selectWithMouseClick();
         sleep(1);
         TableAccess table = shell2.findTable();
@@ -272,22 +282,26 @@ public class Demo extends GUITestCase {
 
         // we should use table item access here
         TreeAccess tree2 = form.findTreeAfterLabel("HINT: Drag the icons to change the order of entries\\.");
-        showMessage("InterArrivalTime will be 0 meaning all jobs will be immediately injected to the queuing network", 2);
+        showMessage(
+                "InterArrivalTime will be set to 0, meaning that all jobs will " +
+        		"be immediately injected into the queuing network.", 2);
         tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").clickAndTypeOver(1, "0\n");                        
         sleep(1);
-        showMessage("Let's run the simulation with 30 and then with 60 initial jobs. " +
-                "To do this we specify a 'running' parameter value using the ${jobs=30,60} syntax", 3, -40);
+        showMessage(
+                "We want to run the model in two configurations, once with 30 and then " +
+                "with 60 initial jobs. A special syntax, \"${...}\", allows us to specify this " +
+                "directly in the Ini file.", 3, -40);
         tree2.findTreeItemByContent("\\*\\*\\.source\\.numJobs").clickAndTypeOver(1, "${jobs=30,60}\n");
         sleep(2);
 
         // add queue parameters from dialog
-        showMessage("Now specify the service time for all queues in the system", 1);
+        showMessage("Now we set the service time for all queues in the system.", 1);
         addKeysButton.selectWithMouseClick();
         sleep(2);
         ShellAccess shell3 = Access.findShellWithTitle("Add Inifile Keys");
         shell3.findButtonWithLabel("Parameter name only.*").selectWithMouseClick();
         sleep(1);
-        showMessage("We want to specify only parameters without default value defined in the NED files", 2);
+        showMessage("We want to set only parameters without default values defined in the NED files.", 2);
         shell3.findButtonWithLabel("Skip parameters that have a default value").selectWithMouseClick();
         sleep(1);
         shell3.findTable().findTableItemByContent("\\*\\*\\.serviceTime").ensureChecked(true);
@@ -296,8 +310,10 @@ public class Demo extends GUITestCase {
         sleep(2);
 
         // add queue parameter values in table
-        showMessage("We want to simulate the network with exponential serviceTime with means 1,2 and 3. " +
-                "We can specify this running parameter as: exponential(${serviceMean=1..3 step 1})", 4);
+        showMessage(
+                "We want try the model with different queue service times as well: " +
+                "exponential distribution with mean 1, 2 and 3, so we specify serviceTime " +
+                "to be a running parameter as exponential(${serviceMean=1..3 step 1})", 4);
         TextAccess cellEditor = tree2.findTreeItemByContent("\\*\\*\\.serviceTime").activateCellEditor(1);
         sleep(2);
         cellEditor.typeOver("exp");
@@ -311,10 +327,13 @@ public class Demo extends GUITestCase {
         cellEditor.pressKey(SWT.BS);
         cellEditor.typeIn("${serviceMean=1..3 step 1})\n");
         sleep(3);
-
+        showMessage("We could also specify that we run each configuration several times " +
+                "with different seeds, but iterating over numJobs and serviceTimes " +
+                "already generated enough runs for this demo.", 4);
+        
         // set event logging file
-        showMessage("Turning on the log file generation allows us to analyze the interaction " +
-                "between the modules later", 2);
+        showMessage("Turning on the log file generation will allows us to analyze " +
+        		"the interaction between the modules later.", 2);
         ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
         sleep(2);
         TextAccess text = form.findTextAfterLabel("Eventlog file:");
@@ -322,7 +341,7 @@ public class Demo extends GUITestCase {
         sleep(2);
 
         // set simulation time limit
-        showMessage("Specify how long each simulation has to run (in simulation time)", 2);
+        showMessage("Specify how long each simulation has to run, in simulation time.", 2);
         ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("General.*").click();
         sleep(2);
         text = form.findTextAfterLabel("Simulation.*");
@@ -336,17 +355,19 @@ public class Demo extends GUITestCase {
 
         sleep(3);
 
-        showMessage("Let's save our new INI file", 1);
+        showMessage("Let's check the result in text mode, and save our new Ini file.", 2);
         iniEditor.activatePageEditor("Text");
+        sleep(2);
         workbenchWindow.getShell().findToolItemWithTooltip("Save.*").click();
         sleep(2);
     }
 
     private void createLaunchConfigAndLaunch() {
-        showMessage("Now we have a network defined in a NED file and an " +
-                "INI file defining the open parameters for the system. " +
+        showMessage(
+                "Now we have a network defined in a NED file and an " +
+                "Ini file defining the open parameters for the system. " +
                 "As a next step we want to run the simulation from the IDE. " +
-                "We have to create a Launch Configuration to do this", 4);
+                "We have to create a <b>Launch Configuration</b> to do this.", 4);
         Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Run|Open Run Dialog.*");
         sleep(2);
         ShellAccess shell = Access.findShellWithTitle("Run");
@@ -356,7 +377,7 @@ public class Demo extends GUITestCase {
         shell.findToolItemWithTooltip("New launch configuration").click();
         sleep(1);
 
-        showMessage("The simulation program itself is already compiled and can be found in the 'queueinglib' project", 2);
+        showMessage("The simulation program itself is already compiled, and can be found in the \"queueinglib\" project.", 2);
         CompositeAccess cTabFolder = shell.findCTabFolder();
         cTabFolder.findTextAfterLabel("Simulation Program:").click();
         shell.pressKey(SWT.TAB);
@@ -366,7 +387,7 @@ public class Demo extends GUITestCase {
         tree.pressKey(SWT.ARROW_RIGHT);
         tree.findTreeItemByContent("queueinglib\\.exe").doubleClick();
 
-        showMessage("We can specify also which INI file should be used with the simulation", 2);
+        showMessage("Select the Ini file to be used with the simulation.", 1);
 
         cTabFolder.findTextAfterLabel("Initialization file\\(s\\):").click();
         shell.pressKey(SWT.TAB);
@@ -378,35 +399,36 @@ public class Demo extends GUITestCase {
         sleep(1);
         tree2.findTreeItemByContent("omnetpp\\.ini").doubleClick();
 
-        showMessage("We must also chose a configuration from the INI file", 1);
+        showMessage("An Ini file may contain several configurations. Ours contains only one, General, so we select that.", 2);
 
         ComboAccess combo = cTabFolder.findComboAfterLabel("Configuration name:");
         combo.selectItem("General.*");
-        showMessage("We will use the command line environment to run the simulation", 2);
+        showMessage("We will use the command line-environment to run the simulation.", 2);
         shell.findButtonWithLabel("Command.*").selectWithMouseClick();
 
-        showMessage("In the INI file we have specified that the simulation should be run with " +
+        showMessage("In the Ini file we have specified that the simulation should be run with " +
                 "30 and 60 jobs and queue service times should be exponential with means 1,2 and 3. " +
                 "This would result a total of 6 runs. We want to run each of them so we specify * (all) as a run number ", 5, -50);
         shell.findTextAfterLabel("Run number.*").clickAndTypeOver("*");
 
-        showMessage("This is a Dual Core machine so we will gain speed if more than one simulation " +
-                "can run at the same time. We set the maximum number of simulations running at the same time " +
-                "to 2", 4,-50);
+        showMessage(
+                "This is a Dual Core machine, so we will gain speed if more than one " +
+                "simulation runs at the same time. We set the maximum number of " +
+                "simulations running at the same time to 2.", 4,-50);
         shell.pressKey(SWT.TAB);
         shell.pressKey(SWT.DEL);
         shell.pressKey('2');
-        showMessage("Now we are ready to execute our simulation batch. Just press run", 2);
+        showMessage("Now we are ready to execute our simulation batch, so we click <b>Run</b>.", 2);
         shell.findButtonWithLabel("Run").selectWithMouseClick();
         WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
-        showMessage("And watch the progress of the simulation batch in the progress view", 2);
+        showMessage("And watch the progress of the simulation batch in the progress view.", 2);
 
         Access.sleep(20);
     }
 
     private void analyseResults() {
         showMessage("We can analyze the generated results now. Let's display the length " +
-                "of each queue over the time", 2);
+                "of each queue over the time.", 2);
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.getShell().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|Analysis File \\(anf\\)");
         ShellAccess shell1 = Access.findShellWithTitle("New Analysis File");
@@ -416,26 +438,27 @@ public class Demo extends GUITestCase {
         shell1.findButtonWithLabel("Finish").selectWithMouseClick();
 
         // create an analysis file
-        showMessage("Add all generated result files to the analysis", 1);
+        showMessage("Add all generated result files to the analysis.", 1);
         ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
         InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
         ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
 
         // browse data
-        showMessage("Now we will select all queue length data in run#4", 1);
+        showMessage("Now we will select all queue length data in run#4.", 1);
         BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
         bdp.ensureVectorsSelected();
         bdp.getRunNameFilter().selectItem("General-4.*");
         bdp.getDataNameFilter().selectItem("length");
 
-        showMessage("Let's select all vectors and plot them on a single chart", 1);
+        showMessage("Let's select all vectors and plot them on a single chart.", 1);
         bdp.click();
         bdp.pressKey('a', SWT.CTRL);
         workbenchWindow.getShell().findToolItemWithTooltip("Plot.*").click();
+        sleep(3);
 
         // show and play with the chart
-        showMessage("We can apply a 'mean' function so we will get a smoothed out version of the charts", 2);
+        showMessage("We can apply the 'mean' function so we will get a smoothed-out version of the charts.", 2);
         CompositeAccess chart = (CompositeAccess)scaveEditor.ensureActivePage("Chart: temp1");
         sleep(3);
         ControlAccess canvas = ((ControlAccess)Access.createAccess(chart.findDescendantControl(VectorChart.class)));
@@ -444,14 +467,14 @@ public class Demo extends GUITestCase {
 
         // create a dataset from the chart
         showMessage("We can store this chart as a recipe, so next time when the simulation is re-run " +
-                "the chart can be recreated automatically", 3);
+                "the chart can be recreated automatically.", 3);
         canvas.chooseFromContextMenu("Convert to Dataset.*");
         ShellAccess shell = Access.findShellWithTitle("Create chart template");
         shell.findTextAfterLabel("Dataset name:").typeOver("queue length mean");
         shell.findTextAfterLabel("Chart name:").clickAndTypeOver("queue length");
         shell.findButtonWithLabel("OK").selectWithMouseClick();
 
-//      // manipulate the dataset
+        // manipulate the dataset
         DatasetsAndChartsPageAccess dp = scaveEditor.ensureDatasetsPageActive();
 
         sleep(3);
@@ -477,27 +500,27 @@ public class Demo extends GUITestCase {
 
         showMessage("Here you can see the initial 60 messages being pushed into one of the queues.\n", 2);
 
-        showMessage("Go to where the first message is first processed by a queue\n", 2);
+        showMessage("Go to where the first message is first processed by a queue.", 2);
 
         EditorPartAccess editorPart = workbenchWindow.findEditorPartByTitle(logFileName);
         SequenceChartAccess sequenceChart = (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), SequenceChart.class));
         Rectangle r = sequenceChart.getAbsoluteBounds();
         sequenceChart.activateContextMenuWithMouseClick(2).activateMenuItemWithMouse("Sending.*cMessage.*").activateMenuItemWithMouse("Goto Consequence.*");
         
-        showMessage("Zoom out to see more\n", 1);
+        showMessage("Zoom out to see more.", 1);
 
         ToolItemAccess toolItem = workbenchShell.findToolItemWithTooltip("Zoom Out");
         for (int i = 0; i < 5; i++)
             toolItem.click();
 
-        showMessage("Switch to linear timeline mode and see the initial messages being sent in zero simulation time\n", 2);
+        showMessage("Switch to linear timeline mode and see the initial messages being sent in zero simulation time.", 2);
         
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
 
         sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, 1, r.height / 2, r.width / 4, r.height / 2);
 
-        showMessage("Filter for the first message to see how it goes around and around in the closed network...\n", 2);
+        showMessage("Filter for the first message to see how it circulates in the closed network...", 2);
 
         workbenchShell.findToolItemWithTooltip("Filter").click();
         ShellAccess filterShell = Access.findShellWithTitle("Filter event log");
@@ -510,7 +533,7 @@ public class Demo extends GUITestCase {
         filterShell.findButtonWithLabel("OK").selectWithMouseClick();
 
         sleep(5);
-        showMessage("Switch to non linear to see the message going around several times at once\n", 2);
+        showMessage("Switch to nonlinear mode to see the message going around several times at once.", 2);
 
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Nonlinear");
@@ -521,10 +544,18 @@ public class Demo extends GUITestCase {
 
         sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, r.width - 1, r.height / 2, 1, r.height / 2);
         
-        showMessage("Show where message objects are reused by resending them\n", 2);
+        showMessage("Show where message objects are reused by resending them.", 2);
 
         sequenceChart.activateContextMenuWithMouseClick().activateMenuItemWithMouse("Show Reuse.*");
 
+        sleep(2);
+        
+        showMessage(
+                "This concludes our demo. We suggest you continue exploring the OMNeT++ IDE " +
+        		"in your own installed copy, and gain first-hand experience.\n" +
+        		"\n" +
+        		"Have fun!", 4);
         sleep(3);
+
     }
 }
