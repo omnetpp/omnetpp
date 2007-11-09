@@ -34,7 +34,7 @@ public class Demo extends GUITestCase {
     protected String name = "demo";
     protected String logFileName = name + ".log";
     protected boolean delay = true;
-    protected int readingSpeed = 70;
+    protected int readingSpeed = 30; //70;
 
     @Override
     protected void setUp() throws Exception {
@@ -66,7 +66,7 @@ public class Demo extends GUITestCase {
         if (readingSpeed == 0) return;
 
         int width = 600;
-        int height = lines * 28 + 20;
+        int height = lines * 28 + 30;
         Rectangle bounds = Access.getWorkbenchWindow().getShell().getAbsoluteBounds();
         int x = bounds.x + bounds.width/2 - width/2;
         int y = bounds.y + bounds.height/3;
@@ -84,11 +84,7 @@ public class Demo extends GUITestCase {
     public void testPlay() throws Throwable {
         setWorkbecnchSize();
         // open perspective
-        showMessage("Welcome to the OMNeT++/OMNEST video demo.\n" +
-                "This demo will show you, how to create, " +
-                "setup, run and analyze a closed queuing network " +
-                "using the OMNeT++ IDE", 3);
-
+        welcome();
         openPerspective();
         createProject();
         createNedFile();
@@ -100,8 +96,20 @@ public class Demo extends GUITestCase {
         showSequenceChart();
     }
 
+    private void welcome() {
+        showMessage(
+                "<b>Welcome to the OMNeT++/OMNEST 4.0 Demo!</b>\n" +
+                "\n" +
+                "This demo shows you how to create, configure, run " +
+                "and analyze a simulation model in the OMNeT++ IDE.", 4);
+    }
+
     private void openPerspective() {
-        showMessage("First of all, we switch to the OMNeT++ perspective", 1);
+        showMessage(
+                "The OMNeT++ IDE is built on Eclipse. First of all, we select " +
+                "the <b>OMNeT++ Perspective</b>, which switches the Eclipse workbench " +
+                "to a layout optimized for OMNeT++, and adds OMNeT++-specific " +
+                "menu items.", 4);
         Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
     }
 
@@ -112,12 +120,15 @@ public class Demo extends GUITestCase {
     }
 
     private void createProject() {
-        showMessage("Now we are able to create a new OMNeT++ simulation project using " +
-                "the OMNeT++ project wizard", 2);
-        //create project
+        showMessage(
+                "We create a new OMNeT++ simulation project, using the " +
+                "<b>OMNeT++ Project wizard</b>. This project will hold the files " +
+                "we work with.", 3);
+        // create project
         Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNEST/OMNeT\\+\\+ Project");
         ShellAccess shell = Access.findShellWithTitle("New OMNeT\\+\\+ project");
         sleep(1);
+        showMessage("Let's name the project 'Demo'.", 1);
         shell.findTextAfterLabel("Project name:").clickAndTypeOver(name);
         sleep(2);
         shell.findButtonWithLabel("Finish").selectWithMouseClick();
@@ -128,12 +139,17 @@ public class Demo extends GUITestCase {
         treeItem.ensureExpanded();
 
         // set dependent projects
-        showMessage("We will use simple modules already defined in the 'queueinglib' project, " +
-                "so we have to include it in our dependencies", 3);
+        showMessage(
+                "In this demo, we'll create and simulate a <b>queueing network</b>. " +
+                "We'll build the network from components already defined " +
+                "in the 'queueinglib' project, so we have to include it in our " +
+                "project's dependencies. We can do so in the <b>Project Properties</b> " +
+                "dialog.", 5);
         treeItem.reveal().chooseFromContextMenu("Properties");
         ShellAccess shell2 = Access.findShellWithTitle("Properties for demo");
         TreeAccess tree2 = shell2.findTree();
         sleep(1);
+        showMessage("We need to choose the Project References page, and check the 'queueinglib' project.", 2);
         tree2.findTreeItemByContent("Project References").click();
         sleep(1);
         shell2.findTable().findTableItemByContent("queueinglib").ensureChecked(true);
@@ -145,7 +161,9 @@ public class Demo extends GUITestCase {
     }
 
     private void createNedFile() {
-        showMessage("The next step is to create a new NED file with an empty network", 2);
+        showMessage(
+                "The next step is to create a new NED file with an empty network, " +
+        		"using the <b>NED File wizard</b>.", 2);
         TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
         tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Network Description File \\(ned\\)");
         sleep(1);
@@ -154,7 +172,7 @@ public class Demo extends GUITestCase {
         sleep(1);
         TextAccess text = shell.findTextAfterLabel("File name:");
         text.clickAndTypeOver(name);
-        showMessage("We choose an empty network template to begin with", 1);
+        showMessage("We'll start from an empty network.", 1);
         shell.findButtonWithLabel("A new toplevel Network").selectWithMouseClick();
         sleep(1);
         shell.findButtonWithLabel("Finish").selectWithMouseClick();
@@ -162,33 +180,37 @@ public class Demo extends GUITestCase {
     }
 
     private void createDemoNetwork() {
-        showMessage("Let's build a closed queuing network with a single source and three queues connected in a ring", 2);
+        showMessage(
+                "Let's build a <b>closed queuing network</b> with a single " +
+        		"source node, and three queues connected in a ring.", 2);
         NedEditorAccess editor = (NedEditorAccess)Access.getWorkbenchWindow().findEditorPartByTitle("demo\\.ned");
         GraphicalNedEditorAccess graphEd = editor.ensureActiveGraphicalEditor();
 
         CompoundModuleEditPartAccess compoundModule = graphEd.findCompoundModule("demo");
         
+        showMessage("Module types are available from the palette, at the right side of the graphical editor.", 2, 100);
         compoundModule.createSubModuleWithPalette("Queue.*", "queue1", 180, 150);
-        showMessage("Module types are available in the palette at the right side of the graphical editor", 2, 100);
+        sleep(1);
         compoundModule.createSubModuleWithPalette("Queue.*", "queue2", 300, 210);
         sleep(1);
         compoundModule.createSubModuleWithPalette("Queue.*", "queue3", 300, 90);
         sleep(1);
         compoundModule.createSubModuleWithPalette("Source.*", null, 60, 150);
 
-        showMessage("Now we have to connect the submodules with the connection tool", 2, -50);
+        showMessage("Now we connect the submodules with the Connection Tool.", 1, -50);
         compoundModule.createConnectionWithPalette("source", "queue1", ".*");
-        showMessage("When connecting two submodules we have to choose from a popup menu, which gates should be connected", 2, 100);
+        showMessage("When creating a connection, we choose the gates to be connected from a popup menu.", 2, 100);
         compoundModule.createConnectionWithPalette("queue1", "queue2", ".*");
         sleep(1);
         compoundModule.createConnectionWithPalette("queue3", "queue1", ".*");
         sleep(1);
 
-        showMessage("Let's check the created NED file in text form and add a connection", 2, 100);
+        showMessage("The network can be edited in text mode as well. Let's add the last connection in text mode.", 2, 100);
         StyledTextAccess styledText = editor.ensureActiveTextEditor().findStyledText();
         styledText.moveCursorAfter(".*queue1\\.in\\+\\+;");
         sleep(1);
         styledText.pressEnter();
+        showMessage("We'll use <b>Content Assist</b> to write the code.", 1, 100);
         styledText.pressKey('q');
         styledText.pressKey(' ', SWT.CTRL);
         sleep(1);
@@ -213,26 +235,28 @@ public class Demo extends GUITestCase {
     }
 
     private void createIniFile() {
-        showMessage("To run the simulation we should create an INI file and set the model parameters", 2);
+        showMessage(
+                "The network needs to be configured before it can be run. " +
+        		"Now we'll create an Ini file and set the model parameters there. " +
+        		"We'll use the <b>Ini File Wizard</b> to create the file.", 3);
         // create with wizard
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         TreeAccess tree = workbenchWindow.findViewPartByTitle("Navigator").getComposite().findTree();
-        showMessage("We can create an INI file using an OMNeT++ wizard", 1);
         tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Initialization File \\(ini\\)");
         ShellAccess shell = Access.findShellWithTitle("New Ini File");
-        showMessage("Setting the network to be simulated", 1);
+        showMessage("We choose the network to be simulated.", 1);
         shell.findComboAfterLabel("NED Network:").selectItem(name);
         sleep(1);
         shell.findButtonWithLabel("Finish").selectWithMouseClick();
         sleep(2);
 
         // add source parameters
-        showMessage("Our next task is to specify the model parameters that do not have a default value", 2);
+        showMessage("Our next task is to assign model parameters that do not have default values.", 2);
         MultiPageEditorPartAccess iniEditor = (MultiPageEditorPartAccess)workbenchWindow.findEditorPartByTitle("omnetpp\\.ini");
         CompositeAccess form = (CompositeAccess)iniEditor.getActivePageControl();
         ButtonAccess addKeysButton = form.findButtonWithLabel("Add.*");
         addKeysButton.selectWithMouseClick();
-        showMessage("First we set the interArrivalTime and the number of jobs in the Source submodule", 2);
+        showMessage("First, we set the interArrivalTime and the number of jobs in the Source submodule.", 2);
         ShellAccess shell2 = Access.findShellWithTitle("Add Inifile Keys");
         shell2.findButtonWithLabel("Deselect All").selectWithMouseClick();
         sleep(1);

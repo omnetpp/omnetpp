@@ -47,7 +47,8 @@ import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
  *
  * @author Andras
  */
-//FIXME builder should build the TOP of each non-excluded folder subtree (??) 
+//TODO: "Show Dependencies" (of a folder)
+//TODO: out-of-directory build
 public class BuildSpecPropertyPage extends PropertyPage {
     private static Image IMAGE_FOLDER_EXCLUDED = Activator.getCachedImage("icons/full/obj16/folder_excl.gif");
     private static Image IMAGE_FOLDER_CUSTOM = Activator.getCachedImage("icons/full/obj16/folder_custom.gif");
