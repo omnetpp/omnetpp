@@ -268,7 +268,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
 
-		menuManager.insertBefore("edit", refreshComputedFilesAction);
+		//menuManager.insertBefore("edit", refreshComputedFilesAction);
 		menuManager.insertBefore("edit", groupAction);
 		menuManager.insertBefore("edit", ungroupAction);
 		menuManager.insertBefore("edit", new Separator());
