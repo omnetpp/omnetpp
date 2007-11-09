@@ -97,10 +97,7 @@ public class CompoundModuleEditPartAccess extends EditPartAccess
 
 	@UIStep
 	protected void clickConnectionOption(String label) {
-		MenuAccess menu = MenuAccess.findPopupMenu();
-		menu.assertVisible();
-		menu.activateMenuItemWithMouse(label);
-		menu.assertNotVisible();
+		MenuAccess.findPopupMenu().activateMenuItemWithMouse(label);
 	}
 
 	protected IFigure getFigure() {
