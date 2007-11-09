@@ -476,17 +476,25 @@ opt_fieldvalue
         |
         ;
 
-fieldvalue
+
+fieldvalue   /* some arbitrary C++ expression - validation left to C++ compiler */
+        : fieldvalue fieldvalueitem
+        | fieldvalueitem
+        ;
+
+fieldvalueitem
         : STRINGCONSTANT
         | CHARCONSTANT
         | INTCONSTANT
-        | '-' INTCONSTANT
         | REALCONSTANT
-        | '-' REALCONSTANT
         | quantity
         | TRUE_
         | FALSE_
         | NAME
+        | '?' | ':' | AND | OR | XOR | EQ | NE | '>' | GE | '<' | LE
+        | BIN_AND | BIN_OR | BIN_XOR | SHIFT_LEFT | SHIFT_RIGHT
+        | '+' | '-' | '*' | '/' | '%' | '^' | '&' | UMIN | NOT | BIN_COMPL
+        | '.' | ',' | '(' | ')' | '[' | ']'
         ;
 
 enumvalue

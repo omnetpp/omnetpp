@@ -83,6 +83,8 @@ static char textbuf[TEXTBUF_LEN];
 "double"                { count(); return DOUBLETYPE; }
 "unsigned"              { count(); return UNSIGNED_; }
 "string"                { count(); return STRINGTYPE; }
+"true"                  { count(); return TRUE_; }
+"false"                 { count(); return FALSE_; }
 
 {L}({L}|{D})*           { count(); return NAME; }
 {D}+                    { count(); return INTCONSTANT; }
