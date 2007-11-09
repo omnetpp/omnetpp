@@ -134,13 +134,29 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			// show the first selected vector (XXX merge vectors?)
 			IDListSelection idlistSelection = (IDListSelection)selection;
 			selectedVector = idlistSelection.getFirstAsVector();
+			if (selectedVector.getComputed()) {
+//				if (idlistSelection.getDataset() != null) {
+//					// XXX: make the computation node accessible from
+//					// the ResultFileManager that stores the computed vector.
+//					// TODO generate the files in the background thread
+//					ComputedResultFileUpdater.generateComputedFiles(
+//							idlistSelection.getDataset(),
+//							idlistSelection.getItem(),
+//							idlistSelection.getResultFileManager());
+//				}
+//				else
+					selectedVector = null;
+			}
 		}
 		else if (selection instanceof IStructuredSelection) {
 			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
 			if (selectedObject instanceof LineID) {
 				ResultItem selectedItem = ((LineID)selectedObject).getResultItem();
 				if (selectedItem instanceof VectorResult) {
-					selectedVector = (VectorResult)selectedItem;
+					if (selectedItem.getComputed())
+						selectedVector = null;
+					else
+						selectedVector = (VectorResult)selectedItem;
 				}
 			}
 		}

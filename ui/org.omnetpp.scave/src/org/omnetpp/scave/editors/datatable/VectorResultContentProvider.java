@@ -7,6 +7,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexedVectorFileReaderEx;
+import org.omnetpp.scave.model2.ComputedResultFileLocator;
 
 /**
  * Implementation of the IVirtualTableContentProvider interface for 
@@ -120,8 +121,11 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 		
 		if (newInput instanceof VectorResult) {
 			VectorResult vector = (VectorResult)newInput;
-			String filename = vector.getFileRun().getFile().getFileSystemFilePath();
 			int vectorId = vector.getVectorId();
+			String filename = vector.getFileRun().getFile().getFileSystemFilePath();
+			if (vector.getComputed()) // XXX filename should be ok
+				filename = ComputedResultFileLocator.instance().getFileNameFor(vector);
+				
 			try {
 				reader = new IndexedVectorFileReaderEx(filename, vectorId);
 			}

@@ -8,6 +8,7 @@ import static org.omnetpp.scave.TestSupport.WIDGET_ID;
 import static org.omnetpp.scave.TestSupport.enableGuiTest;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
@@ -20,7 +21,11 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,12 +38,15 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.scave.actions.SetFilterAction2;
+import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
@@ -60,7 +68,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 // work in progress ...
 // TODO add icon
-public class DatasetView extends ViewWithMessagePart {
+public class DatasetView extends ViewWithMessagePart implements ISelectionProvider	{
 
 	public static final String ID = "org.omnetpp.scave.DatasetView";
 	
@@ -90,8 +98,20 @@ public class DatasetView extends ViewWithMessagePart {
 	
 	private ILabelProvider labelProvider;
 	
+	private ISelection selection;
+	private ListenerList selectionChangeListeners = new ListenerList();
+	
 	private static final IDList EMPTY = new IDList();
 	
+	
+	
+	@Override
+	public void init(IViewSite site) throws PartInitException {
+		super.init(site);
+		site.setSelectionProvider(this);
+	}
+
+
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -114,9 +134,9 @@ public class DatasetView extends ViewWithMessagePart {
 		panel.setLayout(layout);
 
 		// create pages
-		vectorsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.VECTOR_LITERAL);
-		scalarsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL);
-		histogramsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL);
+		vectorsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.VECTOR_LITERAL));
+		scalarsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL));
+		histogramsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL));
 		
 		setVisibleDataPanel(vectorsPanel);
 		showFilter(false);
@@ -130,6 +150,23 @@ public class DatasetView extends ViewWithMessagePart {
 			histogramsPanel.setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
 		}
 		
+		return panel;
+	}
+	
+	private FilteredDataPanel configurePanel(FilteredDataPanel panel) {
+		panel.getTable().addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				DataTable table = (DataTable)e.widget;
+				if (table.getSelectionCount() == 0)
+					setSelection(StructuredSelection.EMPTY);
+				else {
+					IDListSelection selection = new IDListSelection(table.getSelectedIDs(), table.getResultFileManager());
+					selection.setDataset(selectedDataset); // XXX
+					selection.setItem(selectedItem);
+					setSelection(selection);
+				}
+			}
+		});
 		return panel;
 	}
 	
@@ -302,7 +339,7 @@ public class DatasetView extends ViewWithMessagePart {
 			DatasetItem item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
 			setInput(dataset, item);
 		}
-		else {
+		else if (selection != this.selection) {
 			setInput(null, null);
 			showMessage("No dataset item selected.");
 		}
@@ -482,6 +519,31 @@ public class DatasetView extends ViewWithMessagePart {
 				panel.getTable().setFocus();
 				panel.getTable().selectAll();
 			}
+		}
+	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		selectionChangeListeners.add(listener);
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		selectionChangeListeners.remove(listener);
+	}
+	
+	protected void fireSelectionChangeEvent(ISelection selection) {
+		SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
+		for (Object listener : selectionChangeListeners.getListeners())
+			((ISelectionChangedListener)listener).selectionChanged(event);
+	}
+
+	public ISelection getSelection() {
+		return selection;
+	}
+
+	public void setSelection(ISelection selection) {
+		if (selection != this.selection) {
+			this.selection = selection;
+			fireSelectionChangeEvent(selection);
 		}
 	}
 }

@@ -418,7 +418,6 @@ public class DatasetManager {
 		return sbFormat.toString();
 	}
 	
-
 	/**
 	 * Selects ids from a {@code source} IDList.
 	 * If no filters given or the first filter is a Deselect, then a "Select all" is implicitly 

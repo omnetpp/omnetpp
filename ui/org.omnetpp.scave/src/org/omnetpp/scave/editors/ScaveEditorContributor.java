@@ -61,6 +61,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction ungroupAction;
 	private IScaveAction deleteAction; // action handler of deleteRetargetAction
 	private IAction selectAllAction;
+	private IAction refreshComputedFilesAction;
 
 	// ChartPage actions
 //XXX
@@ -116,6 +117,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         groupAction = registerAction(page, new GroupAction());
         ungroupAction = registerAction(page, new UngroupAction());
         selectAllAction = registerAction(page, new SelectAllAction());
+        //refreshComputedFilesAction = registerAction(page, new RefreshComputedDataFilesAction());
 
         // replacement of the inherited deleteAction
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
@@ -266,6 +268,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
 
+		menuManager.insertBefore("edit", refreshComputedFilesAction);
 		menuManager.insertBefore("edit", groupAction);
 		menuManager.insertBefore("edit", ungroupAction);
 		menuManager.insertBefore("edit", new Separator());
