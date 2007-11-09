@@ -3,6 +3,7 @@ package org.omnetpp.test.gui.demo;
 import com.simulcraft.test.gui.access.*;
 import com.simulcraft.test.gui.core.AnimationEffects;
 import com.simulcraft.test.gui.core.GUITestCase;
+import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
@@ -74,7 +75,14 @@ public class Demo extends GUITestCase {
             AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));        
     }
 
+    @UIStep
+    private void setWorkbecnchSize() {
+        Access.getWorkbenchWindow().getShell().getControl().setLocation(0, 0);
+        Access.getWorkbenchWindow().getShell().getControl().setSize(990, 705);
+    }
+
     public void testPlay() throws Throwable {
+        setWorkbecnchSize();
         // open perspective
         showMessage("Welcome to the OMNeT++/OMNEST video demo.\n" +
                 "This demo will show you, how to create, " +
