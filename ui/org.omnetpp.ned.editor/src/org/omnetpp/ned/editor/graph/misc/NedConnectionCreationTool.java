@@ -60,7 +60,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		ConnectionElementEx templateConn = ConnectionChooser.open(compoundMod, endCommand.getConnection(), true, true);
 
     	eraseSourceFeedback();
-
+    	
     	// if no selection was made, cancel the command
 		if (templateConn == null)
             // revert the connection change (user cancel - do not execute the command)

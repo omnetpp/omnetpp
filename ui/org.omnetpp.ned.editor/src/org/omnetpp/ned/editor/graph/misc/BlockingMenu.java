@@ -42,6 +42,7 @@ public class BlockingMenu extends Menu {
 			if (!getDisplay().readAndDispatch()) getDisplay().sleep();
 		}
 
+//        System.out.println("returning menuitem: "+selectedMenuItem);
 		return selectedMenuItem;
 	}
 
@@ -53,10 +54,12 @@ public class BlockingMenu extends Menu {
 		mi.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				selectedMenuItem = (MenuItem)e.widget;
+//				System.out.println("menuitem selected1: "+selectedMenuItem);
 			}
 
 			public void widgetSelected(SelectionEvent e) {
 				selectedMenuItem = (MenuItem)e.widget;
+//                System.out.println("menuitem selected2: "+selectedMenuItem);
 			}
 
 		});

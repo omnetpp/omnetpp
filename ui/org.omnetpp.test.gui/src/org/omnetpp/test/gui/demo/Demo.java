@@ -33,7 +33,7 @@ public class Demo extends GUITestCase {
     protected String name = "demo";
     protected String logFileName = name + ".log";
     protected boolean delay = true;
-    protected int readingSpeed = 20;
+    protected int readingSpeed = 70;
 
     @Override
     protected void setUp() throws Exception {
@@ -41,16 +41,15 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
-//        WorkspaceUtils.ensureProjectNotExists(name);
+        WorkspaceUtils.ensureProjectNotExists(name);
         System.clearProperty("com.simulcraft.test.running");
 //      WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
-      WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
-      WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
+//      WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
+//      WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
 //      setMouseMoveDuration(1000);
 //      setTimeScale(0.0);
-      setDelayAfterMouseMove(0);
-      setDelayBeforeMouseMove(0);
-
+//      setDelayAfterMouseMove(0);
+//      setDelayBeforeMouseMove(0);
     }
 
     void sleep(double time) {
@@ -62,6 +61,7 @@ public class Demo extends GUITestCase {
     }
 
     void showMessage(String msg, int lines, int verticalDisplacement) {
+        System.out.println("showMessage: "+msg);
         if (readingSpeed == 0) return;
 
         int width = 600;

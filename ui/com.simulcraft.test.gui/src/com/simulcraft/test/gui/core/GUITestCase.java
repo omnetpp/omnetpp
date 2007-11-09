@@ -243,7 +243,7 @@ public abstract class GUITestCase
 				}
 			});
 
-			Access.log(debug, "Waiting to processing events");
+			Access.log(debug, "Waiting for GUI thread to process events");
 
 			waitUntilEventQueueBecomesEmpty();		
 
@@ -262,7 +262,13 @@ public abstract class GUITestCase
 
 	public static void waitUntilEventQueueBecomesEmpty() {
 		Assert.assertTrue("This method must not be called from the UI thread", Display.getCurrent()==null);
-		while (PlatformUtils.hasPendingUIEvents())
+		while (PlatformUtils.hasPendingUIEvents()) {
+		    Display.getDefault().syncExec(new Runnable() {
+                public void run() {
+                }
+		    });
+		    
 			Thread.yield();
+		}
 	}
 }

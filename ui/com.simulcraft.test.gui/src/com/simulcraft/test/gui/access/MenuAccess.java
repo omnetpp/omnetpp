@@ -86,6 +86,11 @@ public class MenuAccess extends WidgetAccess {
     }
 
     @UIStep
+    public void assertNotVisible() {
+        Assert.assertTrue("menu is visible", !getWidget().isVisible());
+    }
+
+    @UIStep
     public static MenuAccess findPopupMenu() {
         ArrayList<Menu> menus = new ArrayList<Menu>();
 

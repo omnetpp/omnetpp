@@ -21,6 +21,11 @@ public class MenuItemAccess extends ClickableWidgetAccess
 		return (MenuItem)widget;
 	}
 
+    @UIStep
+    public void assertVisible() {
+        Assert.assertTrue("menu item '"+getWidget().getText()+"' should be visible", getWidget().getParent().isVisible());
+    }
+    
 	@UIStep
 	public void assertEnabled() {
     	Assert.assertTrue("menu item '"+getWidget().getText()+"' should be enabled", getWidget().isEnabled());
@@ -34,6 +39,7 @@ public class MenuItemAccess extends ClickableWidgetAccess
 	@UIStep
 	public MenuAccess activateWithMouseClick() {
 		assertEnabled();
+		assertVisible();
 		click();
 		return getWidget().getMenu() == null ? null : new MenuAccess(getWidget().getMenu());
 	}

@@ -50,7 +50,7 @@ public class Access
     private static final String TEST_RUNNING = "com.simulcraft.test.running";
     private static double timeScale = 1.0;
 	
-    public static boolean debug = true;
+    public static boolean debug = false;
     
     public static boolean mustHaveActiveShell = true;
     
