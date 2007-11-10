@@ -35,16 +35,16 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-        
+
+        ModeSwitcher modeSwitcher = new ModeSwitcher();
+        Display.getDefault().addFilter(SWT.KeyDown, modeSwitcher);
+        Display.getDefault().addFilter(SWT.KeyUp, modeSwitcher);
+
         KeyPressAnimator keyPressAnimator = new KeyPressAnimator();
         Display.getDefault().addFilter(SWT.KeyDown, keyPressAnimator);
         Display.getDefault().addFilter(SWT.KeyUp, keyPressAnimator);
         
         Display.getDefault().addFilter(SWT.MouseDown, new MouseClickAnimator());
-        
-        ModeSwitcher modeSwitcher = new ModeSwitcher();
-        Display.getDefault().addFilter(SWT.KeyDown, modeSwitcher);
-        Display.getDefault().addFilter(SWT.KeyUp, modeSwitcher);
     }
 
     /*

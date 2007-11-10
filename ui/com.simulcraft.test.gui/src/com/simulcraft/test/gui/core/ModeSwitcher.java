@@ -13,6 +13,9 @@ import org.omnetpp.common.color.ColorFactory;
  * @author Andras
  */
 public class ModeSwitcher implements Listener {
+    private static final double TIMESCALE_FAST = 0.1;
+    private static final double TIMESCALE_NORMAL = 1;
+
     private int modifierState = 0;
 
     private boolean fast = false;
@@ -38,6 +41,12 @@ public class ModeSwitcher implements Listener {
                 fast = !fast;
                 resume();
             }
+
+            // mark event as processed. note: doit=false alone is not enough if Pause
+            // gets pressed while a BrowserInformationControl is active (e.g. during 
+            // AnimationEffects.showMessage())
+            e.doit = false;
+            e.keyCode = 0;
         }
     }
 
@@ -50,7 +59,7 @@ public class ModeSwitcher implements Listener {
     private void resume() {
         GUITestCase.setTimeScale(1);
         AnimationEffects.displayTextBox(fast ? "Lightning Mode..." : "Normal Mode...", ColorFactory.RED, 16, 1000);
-        GUITestCase.setTimeScale(fast ? 0.2 : 1.0);
+        GUITestCase.setTimeScale(fast ? TIMESCALE_FAST : TIMESCALE_NORMAL);
         GUITestCase.paused = false;
     }
 }

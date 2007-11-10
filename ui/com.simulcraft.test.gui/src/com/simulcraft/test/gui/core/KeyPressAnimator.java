@@ -35,7 +35,7 @@ public class KeyPressAnimator implements Listener {
             if (e.type==SWT.KeyDown) modifierState |= e.keyCode;
             if (e.type==SWT.KeyUp) modifierState &= ~e.keyCode;
         }
-        else if (e.type==SWT.KeyDown) {
+        else if (e.type==SWT.KeyDown && e.keyCode!=0) { // ModeSwitcher sets keyCode to 0
             // animation. we want to suppress plain typing in text editors, text fields, etc.
             Control focusControl = Display.getCurrent().getFocusControl();
             boolean inTextControl = 
