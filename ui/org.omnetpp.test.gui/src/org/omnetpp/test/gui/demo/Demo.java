@@ -65,16 +65,6 @@ public class Demo extends GUITestCase {
 //        setMouseClickAnimation(false);
     }
 
-    private void setupPreferences() {
-        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Preferences.*");
-        ShellAccess shell = Access.findShellWithTitle("Preferences");
-        TreeAccess tree = shell.findTree();
-        tree.findTreeItemByContent("Run/Debug").ensureExpanded();
-        tree.findTreeItemByContent("Console").click();
-        shell.findButtonWithLabel("Show when program writes to standard out").ensureSelection(false);
-        shell.findButtonWithLabel("Show when program writes to standard error").ensureSelection(false);
-        shell.findButtonWithLabel("OK").selectWithMouseClick();
-    }
 
     void sleep(double time) {
         Access.sleep(time);
@@ -97,12 +87,6 @@ public class Demo extends GUITestCase {
             AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));        
     }
 
-    @UIStep
-    private void setWorkbenchSize() {
-        Access.getWorkbenchWindow().getShell().getControl().setLocation(0, 0);
-        Access.getWorkbenchWindow().getShell().getControl().setSize(990, 705);
-    }
-
     public void testPlay() throws Throwable {
         setWorkbenchSize();
         setupPreferences();
@@ -118,6 +102,23 @@ public class Demo extends GUITestCase {
         analyzeResults();
         showSequenceChart();
         goodBye();
+    }
+
+    @UIStep
+    private void setWorkbenchSize() {
+        Access.getWorkbenchWindow().getShell().getControl().setLocation(0, 0);
+        Access.getWorkbenchWindow().getShell().getControl().setSize(990, 705);
+    }
+
+    private void setupPreferences() {
+        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Preferences.*");
+        ShellAccess shell = Access.findShellWithTitle("Preferences");
+        TreeAccess tree = shell.findTree();
+        tree.findTreeItemByContent("Run/Debug").ensureExpanded();
+        tree.findTreeItemByContent("Console").click();
+        shell.findButtonWithLabel("Show when program writes to standard out").ensureSelection(false);
+        shell.findButtonWithLabel("Show when program writes to standard error").ensureSelection(false);
+        shell.findButtonWithLabel("OK").selectWithMouseClick();
     }
 
     private void welcome() {
@@ -476,22 +477,51 @@ public class Demo extends GUITestCase {
         shell1.findButtonWithLabel("Finish").selectWithMouseClick();
 
         // create an analysis file
-        showMessage("Add all generated result files to the analysis, then browse the data.", 2);
         ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
         InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
+        showMessage("First, add all generated result files to the analysis. " +
+        		"We could specify exact filenames or drag files from the Navigator, " +
+        		"but it is now much simpler to use wildcards.", 3);
+        showMessage("The files will actually be not loaded into memory, " +
+                "only their contents will be scanned.", 3);
+        showMessage("Also, the analysis file, when saved, will <b>not</b> contain any data, " +
+                "only the \"recipe\" of which files to load, and what charts to draw from them.", 3); 
+
         ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
 
+        showMessage("The editor lists the matcing files below, one vector and one scalar for each run.", 2); 
+        TreeAccess fileRunTree = ip.ensureFileRunViewVisible();
+        fileRunTree.findTreeItemByContent(".*General-0\\.sca").ensureExpanded();
+
+        TreeAccess runFileTree = ip.ensureRunFileViewVisible();
+        showMessage("Each time a simulation is run, it receives a unique Run ID which " +
+        		"contains the configuration, run number, date/time, etc. The second " +
+        		"tab displays which files each run generated.", 4);
+        runFileTree.findTreeItemByContent(".*General-0.*").ensureExpanded();
+
+        TreeAccess logicalTree = ip.ensureLogicalViewVisible();
+        showMessage("The third tab ....", 3);
+        logicalTree.findTreeItemByContent(".*General.*").ensureExpanded();
+        logicalTree.findTreeItemByContent(".*jobs.*30.*serviceMean.*2.*").ensureExpanded();
+        logicalTree.findTreeItemByContent(".*replication.*").ensureExpanded();
+
+        
         // browse data
+        showMessage("We can now switch to the Data Browsing page.", 1);
         BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
         bdp.ensureVectorsSelected();
-        showMessage("We are interested in how the queue lengths change over the time, " +
-        		"so choose \"length\" from the filter combo.", 2);
+        Access.sleep(2);
+        showMessage("The table displays vectors recorded in all simulation runs. " +
+        		"We are interested in how the queue lengths change over the time, " +
+        		"so choose \"length\" from the filter combo.", 3);
         bdp.getDataNameFilter().selectItem("length");
-        showMessage("The table still includes data from all runs, so let us focus to Run 4.", 2);
+        Access.sleep(2);
+        showMessage("The table still includes data from all runs, so let us focus on Run 4.", 2);
         bdp.getRunNameFilter().selectItem("General-4.*");
+        Access.sleep(2);
 
-        showMessage("Let's select all vectors and plot them on a single chart.", 1);
+        showMessage("This is only three vectors, one for each queue. Let's plot them on a single chart.", 2);
         bdp.click();
         bdp.pressKey('a', SWT.CTRL);
         workbenchWindow.getShell().findToolItemWithTooltip("Plot.*").click();

@@ -72,16 +72,19 @@ public class InputsPageAccess extends CompositeAccess {
 			selectTab(label);
 	}
 	
-	public void ensureFileRunViewVisible() {
+	public TreeAccess ensureFileRunViewVisible() {
 		ensureTabSelected(".*file.*run.*");
+		return getFileRunViewTree();
 	}
 	
-	public void ensureRunFileViewVisible() {
+	public TreeAccess ensureRunFileViewVisible() {
 		ensureTabSelected(".*run.*file.*");
+		return getRunFileViewTree();
 	}
 	
-	public void ensureLogicalViewVisible() {
+	public TreeAccess ensureLogicalViewVisible() {
 		ensureTabSelected(".*[lL]ogical.*");
+		return getLogicalViewTree();
 	}
 	
 	public InputsPageAccess addFileWithWildcard(String wildcard) {
