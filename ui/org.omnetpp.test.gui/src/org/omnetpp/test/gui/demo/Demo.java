@@ -1,7 +1,5 @@
 package org.omnetpp.test.gui.demo;
 
-import junit.framework.Assert;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
@@ -9,7 +7,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
-import org.omnetpp.common.util.Predicate;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 import org.omnetpp.scave.charting.VectorChart;
@@ -32,7 +29,6 @@ import com.simulcraft.test.gui.access.ComboAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.ControlAccess;
 import com.simulcraft.test.gui.access.EditorPartAccess;
-import com.simulcraft.test.gui.access.LabelAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.StyledTextAccess;
 import com.simulcraft.test.gui.access.TableAccess;
@@ -41,7 +37,6 @@ import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.ToolItemAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.TreeItemAccess;
-import com.simulcraft.test.gui.access.ViewPartAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.core.AnimationEffects;
 import com.simulcraft.test.gui.core.GUITestCase;
@@ -61,13 +56,7 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
-        WorkspaceUtils.ensureProjectNotExists(name);
         System.clearProperty("com.simulcraft.test.running");
-        WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
-        WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
-        WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
-        
-        setupPreferences();
         
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
@@ -116,6 +105,8 @@ public class Demo extends GUITestCase {
 
     public void testPlay() throws Throwable {
         setWorkbenchSize();
+        setupPreferences();
+        WorkspaceUtils.ensureProjectNotExists(name);
         sleep(15);
         welcome();
         openPerspective();
@@ -124,7 +115,7 @@ public class Demo extends GUITestCase {
         createDemoNetwork();
         createIniFile();
         createLaunchConfigAndLaunch();
-        analyseResults();
+        analyzeResults();
         showSequenceChart();
         goodBye();
     }
@@ -152,7 +143,7 @@ public class Demo extends GUITestCase {
         treeItem.reveal().chooseFromContextMenu("Refresh");
     }
 
-    private void createProject() {
+    private void createProject() throws Throwable {
         showMessage(
                 "We create a new OMNeT++ simulation project, using the " +
                 "<b>OMNeT++ Project wizard</b>. This project will hold the files " +
@@ -193,10 +184,11 @@ public class Demo extends GUITestCase {
         sleep(3);
     }
 
-    private void createNedFile() {
+    private void createNedFile() throws Throwable {
         showMessage(
                 "The next step is to create a new NED file with an empty network, " +
         		"using the <b>NED File wizard</b>.", 2);
+        WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
         TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
         tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Network Description File \\(ned\\)");
         sleep(1);
@@ -267,12 +259,13 @@ public class Demo extends GUITestCase {
         Access.getWorkbenchWindow().getShell().findToolItemWithTooltip("Save.*").click();
     }
 
-    private void createIniFile() {
+    private void createIniFile() throws Throwable {
         showMessage(
                 "The network needs to be configured before it can be run. " +
         		"Now we'll create an Ini file and set the model parameters there. " +
         		"We'll use the <b>Ini File Wizard</b> to create the file.", 3);
         // create with wizard
+        WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         TreeAccess tree = workbenchWindow.findViewPartByTitle("Navigator").getComposite().findTree();
         tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Initialization File \\(ini\\)");
@@ -463,14 +456,17 @@ public class Demo extends GUITestCase {
         
         refreshNavigator();
         
-        showMessage("<b>Simulations completed!</b> Note the files that have been created in the project directory. "+
-                "Log files contain a record of each message sending, textual debug messages, and more. " +
-        		"Vec and sca files contain statistics recorded by the simulation. File names are " +
-        		"constructed using the configuration name and the run number.", 6);
+        showMessage(
+                "<b>Simulations completed!</b> Note the files that have been " +
+        		"created in the project directory. Vec and sca files hold " +
+        		"statistics recorded by the simulation. Log files contain a record " +
+        		"of each message sending, textual debug messages and more," +
+                "and can be visualized on sequence charts.", 6);
     }
 
-    private void analyseResults() {
-        showMessage("We can analyze the generated results now. Let's create a new <b>Analysis</b> using a wizard.", 2);
+    private void analyzeResults() throws Throwable {
+        showMessage("We can analyze the results now. Let's create a new <b>Analysis</b> using a wizard.", 2);
+        WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.getShell().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|Analysis File \\(anf\\)");
         ShellAccess shell1 = Access.findShellWithTitle("New Analysis File");
@@ -539,7 +535,7 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         ShellAccess workbenchShell = workbenchWindow.getShell();
 
-        showMessage("Let's take a look at the sequence chart.", 1);
+        showMessage("Let's open one of the log files, and take a look at the <b>Sequence Chart</b>!", 1);
 
         TreeAccess tree = WorkbenchUtils.ensureViewActivated("General", "Navigator").getComposite().findTree();
         TreeItemAccess treeItem = tree.findTreeItemByContent(name);
