@@ -4,8 +4,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Widget;
 
+//XXX as it turns out, there's PredicateUtils in apache.commons.collections which does something like this...
 public class Predicate {
 	
 	public static final String WIDGET_ID = "com.simulcraft.test.gui.WidgetID";
@@ -50,6 +52,18 @@ public class Predicate {
             
             public String toString() {
                 return "an instance of " + clazz.getSimpleName();
+            }
+        };
+    }
+
+    public static IPredicate instanceOf(final String classNamePattern) {
+        return new IPredicate() {
+            public boolean matches(Object object) {
+                return object.getClass().getName().matches(classNamePattern);
+            }
+            
+            public String toString() {
+                return "an instance of \"" + classNamePattern + "\"";
             }
         };
     }
@@ -99,4 +113,17 @@ public class Predicate {
 	        }
 	    };
 	}
+
+	//FIXME one single getText(Control control) method, and one single controlWithText() predicate based on it! 
+    public static IPredicate labelWithText(final String text) {
+        return new IPredicate() {
+            public boolean matches(Object object) {
+                if (object instanceof Label) {
+                    Label label = (Label)object;
+                    return label.getText().replace("&", "").matches(text);
+                }
+                return false;
+            }
+        };
+    }
 }

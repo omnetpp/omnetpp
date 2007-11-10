@@ -20,14 +20,23 @@ import com.simulcraft.test.gui.access.ClickableAccess;
 public abstract class GUITestCase 
     extends TestCase
 {
-    /*package*/ static boolean paused = false;  // set by ModeSwitcher
+    private static boolean debug = false;
+    private static double retryTimeout = 5;  // seconds
 
-    private final static boolean debug = false;
+    /*package*/ static boolean paused = false;  // set by ModeSwitcher
 
 	public abstract class Test {
 		public abstract void run() throws Exception;
 	}
-	
+
+    public static double getRetryTimeout() {
+        return retryTimeout;
+    }
+
+    public static void setRetryTimeout(double retryTimeout) {
+        GUITestCase.retryTimeout = retryTimeout;
+    }
+
 	/**
 	 * Scales ALL time and delay in the test case. For example, setting it to 2 will result 
 	 * in a test case running twice as slow as normal. 
@@ -195,7 +204,7 @@ public abstract class GUITestCase
     }
 
 	public static Object runStep(final Step step) {
-		return runStepWithTimeout(-1, step);
+		return runStepWithTimeout(retryTimeout, step);
 	}
 
 	/**

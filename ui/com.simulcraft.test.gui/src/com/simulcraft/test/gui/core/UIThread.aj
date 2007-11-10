@@ -13,7 +13,6 @@ import com.simulcraft.test.gui.access.Access;
  * @author Andras
  */
 public aspect UIThread {
-	private static final double RETRY_TIMEOUT = 5;  // seconds
 	public static boolean debug = false;
 	
 	/**
@@ -36,7 +35,7 @@ public aspect UIThread {
 	    }
 	    else {
 	        Access.log(debug, "AJ: doing in UI thread: " + method);
-	    	return GUITestCase.runStepWithTimeout(RETRY_TIMEOUT, new GUITestCase.Step() {
+	    	return GUITestCase.runStep(new GUITestCase.Step() {
 	    		public Object runAndReturn() {
 	    			return proceed();
 	    		}

@@ -29,6 +29,7 @@ public class ButtonAccess extends ControlAccess
 		Assert.assertTrue("Checkbox expected", (getControl().getStyle() & SWT.CHECK) != 0);
 	}
 	
+    @UIStep
 	public void ensureSelection(boolean selected) {
 		assertIsCheckbox();
 		Button button = getControl();

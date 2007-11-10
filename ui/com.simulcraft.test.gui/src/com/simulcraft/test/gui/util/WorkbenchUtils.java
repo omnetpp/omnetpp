@@ -1,13 +1,20 @@
 package com.simulcraft.test.gui.util;
 
+import junit.framework.Assert;
+
 import org.eclipse.swt.SWT;
+import org.omnetpp.common.util.Predicate;
 
 import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 import com.simulcraft.test.gui.access.TreeItemAccess;
 import com.simulcraft.test.gui.access.ViewPartAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.core.GUITestCase;
+import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class WorkbenchUtils
 {
@@ -72,4 +79,34 @@ public class WorkbenchUtils
 		ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems"); 
 		problemsView.findTree().findTreeItemByContent(errorText);
 	}
+
+	@InBackgroundThread
+	public static void waitUntilProgressViewContains(String text, double timeout) {
+	    double oldRetryTimeout = GUITestCase.getRetryTimeout();
+	    try {
+	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
+	        GUITestCase.setRetryTimeout(timeout); 
+	        progressView.getComposite().findLabel(text);
+	    } finally {
+	        GUITestCase.setRetryTimeout(oldRetryTimeout);
+	    }
+	}
+
+    @InBackgroundThread
+	public static void waitUntilProgressViewNotContains(String text, double timeout) {
+	    double oldRetryTimeout = GUITestCase.getRetryTimeout();
+	    try {
+	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
+	        GUITestCase.setRetryTimeout(timeout);
+	        ensureNoSuchLabel(progressView.getComposite(), text);
+	    } finally {
+	        GUITestCase.setRetryTimeout(oldRetryTimeout);
+	    }
+	}
+	
+    @UIStep
+    private static void ensureNoSuchLabel(CompositeAccess composite, String label) {
+        Assert.assertTrue(composite.collectDescendantControls(Predicate.labelWithText(label)).isEmpty());
+    }
+
 }

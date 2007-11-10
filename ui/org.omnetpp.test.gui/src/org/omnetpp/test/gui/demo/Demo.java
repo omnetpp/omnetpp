@@ -1,20 +1,15 @@
 package org.omnetpp.test.gui.demo;
 
-import com.simulcraft.test.gui.access.*;
-import com.simulcraft.test.gui.core.AnimationEffects;
-import com.simulcraft.test.gui.core.GUITestCase;
-import com.simulcraft.test.gui.core.UIStep;
-import com.simulcraft.test.gui.util.WorkbenchUtils;
-import com.simulcraft.test.gui.util.WorkspaceUtils;
+import junit.framework.Assert;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
-
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
+import org.omnetpp.common.util.Predicate;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 import org.omnetpp.scave.charting.VectorChart;
@@ -30,6 +25,29 @@ import org.omnetpp.test.gui.access.NedEditorAccess;
 import org.omnetpp.test.gui.access.ScaveEditorAccess;
 import org.omnetpp.test.gui.access.SequenceChartAccess;
 import org.omnetpp.test.gui.scave.ScaveEditorUtils;
+
+import com.simulcraft.test.gui.access.Access;
+import com.simulcraft.test.gui.access.ButtonAccess;
+import com.simulcraft.test.gui.access.ComboAccess;
+import com.simulcraft.test.gui.access.CompositeAccess;
+import com.simulcraft.test.gui.access.ControlAccess;
+import com.simulcraft.test.gui.access.EditorPartAccess;
+import com.simulcraft.test.gui.access.LabelAccess;
+import com.simulcraft.test.gui.access.ShellAccess;
+import com.simulcraft.test.gui.access.StyledTextAccess;
+import com.simulcraft.test.gui.access.TableAccess;
+import com.simulcraft.test.gui.access.TableItemAccess;
+import com.simulcraft.test.gui.access.TextAccess;
+import com.simulcraft.test.gui.access.ToolItemAccess;
+import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.TreeItemAccess;
+import com.simulcraft.test.gui.access.ViewPartAccess;
+import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
+import com.simulcraft.test.gui.core.AnimationEffects;
+import com.simulcraft.test.gui.core.GUITestCase;
+import com.simulcraft.test.gui.core.UIStep;
+import com.simulcraft.test.gui.util.WorkbenchUtils;
+import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class Demo extends GUITestCase {
     protected String name = "demo";
@@ -48,11 +66,25 @@ public class Demo extends GUITestCase {
         WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
         WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
         WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
+        
+        setupPreferences();
+        
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
 //        setDelayAfterMouseMove(0);
 //        setDelayBeforeMouseMove(0);
 //        setMouseClickAnimation(false);
+    }
+
+    private void setupPreferences() {
+        Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Preferences.*");
+        ShellAccess shell = Access.findShellWithTitle("Preferences");
+        TreeAccess tree = shell.findTree();
+        tree.findTreeItemByContent("Run/Debug").ensureExpanded();
+        tree.findTreeItemByContent("Console").click();
+        shell.findButtonWithLabel("Show when program writes to standard out").ensureSelection(false);
+        shell.findButtonWithLabel("Show when program writes to standard error").ensureSelection(false);
+        shell.findButtonWithLabel("OK").selectWithMouseClick();
     }
 
     void sleep(double time) {
@@ -421,10 +453,13 @@ public class Demo extends GUITestCase {
         shell.pressKey('2');
         showMessage("Now we are ready to execute our simulation batch, so we click <b>Run</b>.", 2);
         shell.findButtonWithLabel("Run").selectWithMouseClick();
+        
+        showMessage("And watch the progress of the simulation batch in the <b>Progress View</b>.", 2);
         WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
-        showMessage("And watch the progress of the simulation batch in the progress view.", 2);
 
-        Access.sleep(20);
+        WorkbenchUtils.waitUntilProgressViewContains("Running simulations.*", 10);
+        //try { Thread.sleep(10000); } catch (InterruptedException e) {}
+        WorkbenchUtils.waitUntilProgressViewNotContains("Running simulations.*", 40);
         
         refreshNavigator();
         
