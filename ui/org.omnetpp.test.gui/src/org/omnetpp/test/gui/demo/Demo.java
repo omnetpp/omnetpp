@@ -464,7 +464,7 @@ public class Demo extends GUITestCase {
                 "<b>Simulations completed!</b> Note the files that have been " +
         		"created in the project directory. Vec and sca files hold " +
         		"statistics recorded by the simulation. Log files contain a record " +
-        		"of each message sending, textual debug messages and more," +
+        		"of each message sending, textual debug messages and more, " +
                 "and can be visualized on sequence charts.", 6);
     }
 
@@ -646,7 +646,7 @@ public class Demo extends GUITestCase {
         filterShell.findButtonWithLabel("OK").selectWithMouseClick();
 
         sleep(5);
-        showMessage("Switch to nonlinear mode to see the message going around several times at once.", 2);
+        showMessage("Switch to nonlinear mode to see the message going around several times.", 2);
 
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Nonlinear");
