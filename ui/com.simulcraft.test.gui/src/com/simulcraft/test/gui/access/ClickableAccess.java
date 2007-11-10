@@ -18,8 +18,8 @@ import com.simulcraft.test.gui.core.UIStep;
 public class ClickableAccess
 	extends Access 
 {
-    public static int delayBeforeMouseMove = 500;
-    public static int delayAfterMouseMove = 500;
+    public static int delayBeforeMouseMove = 300;
+    public static int delayAfterMouseMove = 300;
     public static int mouseMoveDurationMillis = 500;
     public static int mouseMoveMaxSteps = 30;
 

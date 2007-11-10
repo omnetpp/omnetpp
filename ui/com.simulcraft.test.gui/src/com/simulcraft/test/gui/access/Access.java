@@ -349,7 +349,7 @@ public class Access
 	@UIStep
     public static ContentAssistAccess findContentAssistPopup() {
         // Content Assist popup is a Table in a Composite in a nameless Shell
-	    IPredicate predicate = getContentAssisPredicate();
+	    IPredicate predicate = getContentAssistPredicate();
 	    Shell shell = (Shell) theOnlyObject(collectContentAssistPopups(predicate), predicate);
         return new ContentAssistAccess(new ShellAccess(shell).findTable().getControl());
     }
@@ -357,7 +357,7 @@ public class Access
 	@InBackgroundThread
 	public static void assertHasNoContentAssistPopup() {
 	    Access.sleep(0.5);
-	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups(getContentAssisPredicate()).size() == 0);
+	    Assert.assertTrue("Found content assist popup.", collectContentAssistPopups(getContentAssistPredicate()).size() == 0);
 	}
 	
 	@UIStep
@@ -365,7 +365,7 @@ public class Access
         return collectObjects(getDisplay().getShells(), predicate);
     }
 	
-	protected static IPredicate getContentAssisPredicate() {
+	protected static IPredicate getContentAssistPredicate() {
 	    return new IPredicate() {
             public boolean matches(Object object) {
                 log(debug, "Trying to find content assist popup");

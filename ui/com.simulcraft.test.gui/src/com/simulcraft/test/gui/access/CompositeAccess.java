@@ -4,7 +4,19 @@ import java.util.List;
 
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
+import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.Predicate;
 
@@ -165,11 +177,23 @@ public class CompositeAccess extends ControlAccess
 	}
 
 	@UIStep
+	public ImageComboAccess findImageComboAfterLabel(String label) {
+	    final LabelAccess labelAccess = findLabel(label);
+	    return new ImageComboAccess((ImageCombo)labelAccess.findNextControl(ImageCombo.class));
+	}
+
+	@UIStep
 	public TreeAccess findTreeAfterLabel(String label) {
 		final LabelAccess labelAccess = findLabel(label);
 		return new TreeAccess((Tree)labelAccess.findNextControl(Tree.class));
 	}
-	
+
+	@UIStep
+	public TableAccess findTableAfterLabel(String label) {
+	    final LabelAccess labelAccess = findLabel(label);
+	    return new TableAccess((Table)labelAccess.findNextControl(Table.class));
+	}
+
     @UIStep
     public ControlAccess findControlWithID(String id) {
         return (ControlAccess)createAccess(findDescendantControl(Predicate.hasID(id)));

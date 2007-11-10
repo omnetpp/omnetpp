@@ -13,6 +13,7 @@ import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
+import org.omnetpp.test.gui.access.ChartCanvasAccess;
 import org.omnetpp.test.gui.access.CompoundModuleEditPartAccess;
 import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
 import org.omnetpp.test.gui.access.GraphicalNedEditorAccess;
@@ -27,7 +28,6 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ButtonAccess;
 import com.simulcraft.test.gui.access.ComboAccess;
 import com.simulcraft.test.gui.access.CompositeAccess;
-import com.simulcraft.test.gui.access.ControlAccess;
 import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.StyledTextAccess;
@@ -57,7 +57,9 @@ public class Demo extends GUITestCase {
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
         System.clearProperty("com.simulcraft.test.running");
-        
+
+//        setTimeScale(0.3);  //FIXME remove
+
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
 //        setDelayAfterMouseMove(0);
@@ -75,7 +77,8 @@ public class Demo extends GUITestCase {
     }
 
     void showMessage(String msg, int lines, int verticalDisplacement) {
-        if (readingSpeed == 0) return;
+        if (readingSpeed == 0) 
+            return;
 
         int width = 600;
         int height = lines * 24 + 30;
@@ -482,30 +485,41 @@ public class Demo extends GUITestCase {
         showMessage("First, add all generated result files to the analysis. " +
         		"We could specify exact filenames or drag files from the Navigator, " +
         		"but it is now much simpler to use wildcards.", 3);
-        showMessage("The files will actually be not loaded into memory, " +
-                "only their contents will be scanned.", 3);
-        showMessage("Also, the analysis file, when saved, will <b>not</b> contain any data, " +
-                "only the \"recipe\" of which files to load, and what charts to draw from them.", 3); 
-
         ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
 
-        showMessage("The editor lists the matcing files below, one vector and one scalar for each run.", 2); 
-        TreeAccess fileRunTree = ip.ensureFileRunViewVisible();
-        fileRunTree.findTreeItemByContent(".*General-0\\.sca").ensureExpanded();
+        ip.ensureFileRunViewVisible();
+        showMessage("The editor lists the matching files below, one vector " +
+        		"and one scalar for each run. The files have actually not been " +
+        		"loaded into memory, only their contents were scanned.", 3); 
+        Access.sleep(2);
 
         TreeAccess runFileTree = ip.ensureRunFileViewVisible();
+        runFileTree.findTreeItemByContent(".*General-0.*").ensureExpanded();
         showMessage("Each time a simulation is run, it receives a unique Run ID which " +
         		"contains the configuration, run number, date/time, etc. The second " +
-        		"tab displays which files each run generated.", 4);
-        runFileTree.findTreeItemByContent(".*General-0.*").ensureExpanded();
+        		"tab displays which files each run generated.", 4, -50);
+        Access.sleep(2);
 
         TreeAccess logicalTree = ip.ensureLogicalViewVisible();
-        showMessage("The third tab ....", 3);
+        showMessage("The third tab presents a logical grouping of the runs. " +
+        		"All runs we just did belong to one <b>experiment</b>, " +
+        		"named \"General\" -- the name of the Ini file configuration. " +
+        		"This default experiment name can be overridden in the Ini file.", 5, -80);
         logicalTree.findTreeItemByContent(".*General.*").ensureExpanded();
+        Access.sleep(2);
+        showMessage("Every experiment consists of several <b>measurements</b>, " +
+                "which are usually the same simulation model being run with " +
+                "different parameters.", 3);
         logicalTree.findTreeItemByContent(".*jobs.*30.*serviceMean.*2.*").ensureExpanded();
+        Access.sleep(2);
+        showMessage("Every measurement can be repeated with different seeds to gain " +
+        		"statistically trustworthy results, resulting in several " +
+        		"<b>replications</b>.", 3);
         logicalTree.findTreeItemByContent(".*replication.*").ensureExpanded();
-
+        Access.sleep(2);
+        showMessage("One instance of running a replication receives a unique Run ID.", 2);
+        Access.sleep(1);
         
         // browse data
         showMessage("We can now switch to the Data Browsing page.", 1);
@@ -513,33 +527,54 @@ public class Demo extends GUITestCase {
         bdp.ensureVectorsSelected();
         Access.sleep(2);
         showMessage("The table displays vectors recorded in all simulation runs. " +
-        		"We are interested in how the queue lengths change over the time, " +
-        		"so choose \"length\" from the filter combo.", 3);
+        		"We are interested in how the queue lengths change over time, " +
+        		"so choose \"length\" from the filter combo.", 3, 50);
         bdp.getDataNameFilter().selectItem("length");
         Access.sleep(2);
-        showMessage("The table still includes data from all runs, so let us focus on Run 4.", 2);
+        showMessage("The table still includes data from all runs, so let us focus on Run 4.", 2, 50);
         bdp.getRunNameFilter().selectItem("General-4.*");
         Access.sleep(2);
 
-        showMessage("This is only three vectors, one for each queue. Let's plot them on a single chart.", 2);
+        showMessage("This is only three vectors, one for each queue. Let's plot them on a single chart.", 2, 50);
         bdp.click();
         bdp.pressKey('a', SWT.CTRL);
         workbenchWindow.getShell().findToolItemWithTooltip("Plot.*").click();
-        sleep(5);
 
         // show and play with the chart
-        showMessage("We can apply the 'mean' function so we will get a smoothed-out version of the charts.", 2);
-        CompositeAccess chart = (CompositeAccess)scaveEditor.ensureActivePage("Chart: temp1");
+        CompositeAccess chartPage = (CompositeAccess)scaveEditor.ensureActivePage("Chart: temp1");
+        ChartCanvasAccess chart = (ChartCanvasAccess)Access.createAccess(chartPage.findDescendantControl(VectorChart.class));
         sleep(3);
-        ControlAccess canvas = ((ControlAccess)Access.createAccess(chart.findDescendantControl(VectorChart.class)));
-        canvas.chooseFromContextMenu("Apply|Mean");
+
+        // zoom out a rectangle
+        //workbenchWindow.getShell().findToolItemWithTooltip("Zoom In").click();
+        showMessage("Now we zoom in a little, and change plotting style to sample-hold.", 2);
+        Rectangle r = chart.getViewportRectangle();
+        chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.CTRL, r.x, r.y+r.height-1, r.x+30, r.y+50);
+
+        chart.chooseFromContextMenu("Lines.*");
+        ShellAccess dialog = Access.findShellWithTitle("Edit LineChart");
+        TableAccess linesTable = dialog.findTableAfterLabel("Select line.*");
+        linesTable.click();
+        linesTable.pressKey('a', SWT.CTRL);
+        dialog.findImageComboAfterLabel("Line type.*").selectItem("Sample-Hold");
+        dialog.findImageComboAfterLabel("Symbol type.*").selectItem("None");
+        dialog.findButtonWithLabel("Apply").selectWithMouseClick();
+        dialog.findButtonWithLabel("OK").selectWithMouseClick();
+        sleep(3);
+        chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.CTRL, r.x, r.y+r.height-1, r.x+r.width/2, r.y+50);
+        //workbenchWindow.getShell().findToolItemWithTooltip("Zoom In").click();
+        chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.x+300, r.y+100, r.x+50, r.y+100);
+        chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.x+300, r.y+100, r.x+50, r.y+100);
+        sleep(3);
+        
+        showMessage("We can apply the \"mean\" function, to get a smoothed-out version of the chart.", 2);
+        chart.chooseFromContextMenu("Apply|Mean");
         sleep(3);
 
         // create a dataset from the chart
-        showMessage(
-                "We can store this chart as a recipe, so next time when the " +
+        showMessage("We can store this chart as a recipe, so next time when the " +
                 "simulation is re-run, the chart can be recreated automatically.", 3);
-        canvas.chooseFromContextMenu("Convert to Dataset.*");
+        chart.chooseFromContextMenu("Convert to Dataset.*");
         ShellAccess shell = Access.findShellWithTitle("Create chart template");
         sleep(2);
         shell.findTextAfterLabel("Dataset name:").typeOver("queue length mean");
@@ -552,6 +587,10 @@ public class Demo extends GUITestCase {
         DatasetsAndChartsPageAccess dp = scaveEditor.ensureDatasetsPageActive();
 
         sleep(3);
+        showMessage("Let us save the analysis. The analysis file will only store " +
+                "the \"recipe\": which files to load, and what datasets and charts " +
+                "to draw from them.", 4); 
+
         workbenchWindow.getShell().findToolItemWithTooltip("Save.*").click();
         sleep(10);
     }
@@ -565,7 +604,7 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         ShellAccess workbenchShell = workbenchWindow.getShell();
 
-        showMessage("Let's open one of the log files, and take a look at the <b>Sequence Chart</b>!", 1);
+        showMessage("Let's open one of the log files, and take a look at the <b>Sequence Chart</b>!", 2);
 
         TreeAccess tree = WorkbenchUtils.ensureViewActivated("General", "Navigator").getComposite().findTree();
         TreeItemAccess treeItem = tree.findTreeItemByContent(name);
@@ -592,7 +631,7 @@ public class Demo extends GUITestCase {
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
 
-        sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, 1, r.height / 2, r.width / 4, r.height / 2);
+        sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, 1, r.height / 2, r.width / 4, r.height / 2);
 
         showMessage("Filter for the first message to see how it circulates in the closed network...", 2);
 
@@ -616,7 +655,7 @@ public class Demo extends GUITestCase {
         for (int i = 0; i < 3; i++)
             toolItem.click();
 
-        sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, r.width - 1, r.height / 2, 1, r.height / 2);
+        sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.width - 1, r.height / 2, 1, r.height / 2);
         
         showMessage("Show where message objects are reused by resending them.", 2);
 
