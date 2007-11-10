@@ -56,13 +56,16 @@ public class KeyPressAnimator implements Listener {
     }
     
     private boolean needsVisualFeedback(Event e) {
+        // navigation keys etc without any modifier don't need visual feedback
         if (modifierState == SWT.NONE && 
                 (e.keyCode == SWT.BS || e.keyCode == SWT.ARROW_LEFT || e.keyCode == SWT.ARROW_RIGHT 
                  || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP 
                  || e.character >= ' '))
             return false;
-        // if we press a normal key plus SHIFT or ALTGR (SHIFT+CTRL) we do not need feedback
-        if (e.character >= ' ' && e.character <= 127)
+        // normal characters don't need visual feedback. That includes normal key (32..127), that
+        // with Shift, that with AltGr (CTRL+ALT) and AltGr+Shift. That translates to 
+        // normal keys and either both or none of CTRL and ALT.
+        if ((modifierState & SWT.CTRL) == (modifierState & SWT.ALT) && e.character >= ' ' && e.character <= 127)
             return false;
         return true;
     }

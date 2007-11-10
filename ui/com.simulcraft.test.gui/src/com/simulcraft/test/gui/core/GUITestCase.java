@@ -17,59 +17,61 @@ import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.ClickableAccess;
 
 
-public abstract class GUITestCase
+public abstract class GUITestCase 
     extends TestCase
 {
-	private final static boolean debug = false;
+    /*package*/ static boolean paused = false;  // set by ModeSwitcher
+
+    private final static boolean debug = false;
 
 	public abstract class Test {
 		public abstract void run() throws Exception;
 	}
 	
 	/**
-	 * scales ALL time and delay in the test case. ie. setting it 2 will result in a testcase
-	 * running two times slower 
+	 * Scales ALL time and delay in the test case. For example, setting it to 2 will result 
+	 * in a test case running twice as slow as normal. 
 	 */
-	public void setTimeScale(double timeScale) {
+	public static void setTimeScale(double timeScale) {
 	    Access.setTimeScale(timeScale);
 	}
 	
     /**
      * The average time between keypresses during typing
      */
-    public void setKeyboardTypeDelay(int delay) {
+    public static void setKeyboardTypeDelay(int delay) {
         KeyPressAnimator.typingDelay = delay;
     }
 
     /**
      * The time until the shortcut keys are displayed in a tooltip box
      */
-    public void setShortcutDisplayDelay(int delay) {
+    public static void setShortcutDisplayDelay(int delay) {
         KeyPressAnimator.shortcutDisplayDelay = delay;
     }
     
     /**
-     * A little delay before the mouse start moving
+     * A little delay before the mouse starts moving
      */
-    public void setDelayBeforeMouseMove(int delay) {
+    public static void setDelayBeforeMouseMove(int delay) {
         ClickableAccess.delayBeforeMouseMove = delay;
     }
     
     /**
-     * A delay after the mouse stopped the movement
+     * A delay after the mouse stops moving
      */
-    public void setDelayAfterMouseMove(int delay) {
+    public static void setDelayAfterMouseMove(int delay) {
         ClickableAccess.delayAfterMouseMove = delay;
     }
     
     /**
      * How long does it take to move the mouse from the start to the end location
      */
-    public void setMouseMoveDuration(int delay) {
+    public static void setMouseMoveDuration(int delay) {
         ClickableAccess.mouseMoveDurationMillis = delay;
     }
     
-    public void setMouseClickAnimation(boolean animate) {
+    public static void setMouseClickAnimation(boolean animate) {
         MouseClickAnimator.mouseClickAnimation = animate;
     }
 
@@ -266,13 +268,21 @@ public abstract class GUITestCase
 
 	public static void waitUntilEventQueueBecomesEmpty() {
 		Assert.assertTrue("This method must not be called from the UI thread", Display.getCurrent()==null);
+		while (paused) {
+		    try {Thread.sleep(200);} catch (InterruptedException e) {}
+		    Thread.yield();
+		}
+		
+		// note: actually, the next line waits until the last UI event *begins* processing not when it finishes processing
 		while (PlatformUtils.hasPendingUIEvents()) {
-		    Display.getDefault().syncExec(new Runnable() {
-                public void run() {
-                }
-		    });
-		    
+		    doPendingAsyncExecs();
 			Thread.yield();
 		}
 	}
+
+    private static void doPendingAsyncExecs() {
+        // just do an empty syncExec(); it will be placed at the end of Display's queue,
+        // so the call will only return if everything before it has been done too
+        Display.getDefault().syncExec(new Runnable() { public void run() {} });
+    }
 }

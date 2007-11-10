@@ -35,7 +35,7 @@ public class Demo extends GUITestCase {
     protected String name = "demo";
     protected String logFileName = name + "-0.log";
     protected boolean delay = true;
-    protected int readingSpeed = 70; //70;
+    protected int readingSpeed = 70;
 
     @Override
     protected void setUp() throws Exception {
@@ -43,16 +43,16 @@ public class Demo extends GUITestCase {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
-//        WorkspaceUtils.ensureProjectNotExists(name);
+        WorkspaceUtils.ensureProjectNotExists(name);
         System.clearProperty("com.simulcraft.test.running");
-//      WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
-//      WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
-//      WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
-//      setMouseMoveDuration(1000);
-//      setTimeScale(0.0);
-//      setDelayAfterMouseMove(0);
-//      setDelayBeforeMouseMove(0);
-        setMouseClickAnimation(false);
+        WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
+        WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
+        WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
+//        setMouseMoveDuration(1000);
+//        setTimeScale(0.0);
+//        setDelayAfterMouseMove(0);
+//        setDelayBeforeMouseMove(0);
+//        setMouseClickAnimation(false);
     }
 
     void sleep(double time) {
@@ -77,25 +77,24 @@ public class Demo extends GUITestCase {
     }
 
     @UIStep
-    private void setWorkbecnchSize() {
+    private void setWorkbenchSize() {
         Access.getWorkbenchWindow().getShell().getControl().setLocation(0, 0);
         Access.getWorkbenchWindow().getShell().getControl().setSize(990, 705);
     }
 
     public void testPlay() throws Throwable {
-        setWorkbecnchSize();
-//        sleep(15);
-//        welcome();
+        setWorkbenchSize();
+        sleep(15);
+        welcome();
         openPerspective();
-//        createProject();
-//        createNedFile();
-//        createDemoNetwork();
-//        createIniFile();
-//        createLaunchConfigAndLaunch();
-//        analyseResults();
-//        showSequenceChart();
+        createProject();
+        createNedFile();
+        createDemoNetwork();
+        createIniFile();
+        createLaunchConfigAndLaunch();
+        analyseResults();
+        showSequenceChart();
         goodBye();
-
     }
 
     private void welcome() {
