@@ -1002,7 +1002,7 @@ void NED2Generator::doMessage(MessageNode *node, const char *indent, bool islast
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
+    doMsgClassOrStructBody(node, indent);
     OUT << indent << "}";
     OUT << getTrailingComment(node);
 }
@@ -1015,7 +1015,7 @@ void NED2Generator::doClass(ClassNode *node, const char *indent, bool islast, co
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
+    doMsgClassOrStructBody(node, indent);
     OUT << indent << "}";
     OUT << getTrailingComment(node);
 }
@@ -1028,15 +1028,31 @@ void NED2Generator::doStruct(StructNode *node, const char *indent, bool islast, 
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
+    doMsgClassOrStructBody(node, indent);
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void NED2Generator::doFields(FieldsNode *node, const char *indent, bool islast, const char *)
+void NED2Generator::doMsgClassOrStructBody(NEDElement *node, const char *indent)
 {
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "fields:" << getRightComment(node);
+    // "node" must be a MessageNode, ClassNode or StructNode
     generateChildren(node, increaseIndent(indent));
+
+    //if (msgfileVersion!=1)
+    //    generateChildren(node, increaseIndent(indent)); // 4.x syntax
+    //else
+    //{
+    //     // old (3.x) syntax
+    //     if (node->getFirstChildWithTag(NED_PROPERTY))
+    //     {
+    //         OUT << increaseIndent(indent) << "properties:\n";
+    //         generateChildrenWithType(node, NED_PROPERTY, increaseIndent(increaseIndent(indent)));
+    //     }
+    //     if (node->getFirstChildWithTag(NED_FIELD))
+    //     {
+    //         OUT << increaseIndent(indent) << "fields:\n";
+    //         generateChildrenWithType(node, NED_FIELD, increaseIndent(increaseIndent(indent)));
+    //     }
+    //}
 }
 
 void NED2Generator::doField(FieldNode *node, const char *indent, bool islast, const char *)
@@ -1059,20 +1075,6 @@ void NED2Generator::doField(FieldNode *node, const char *indent, bool islast, co
     if (strnotnull(node->getDefaultValue()))
         OUT << " = " << node->getDefaultValue();
     OUT << ";" << getRightComment(node);
-}
-
-void NED2Generator::doProperties(PropertiesNode *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "properties:" << getRightComment(node);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NED2Generator::doMsgproperty(MsgpropertyNode *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << node->getName() << " = " << node->getValue() << ";";
-    OUT << getRightComment(node);
 }
 
 void NED2Generator::doComment(CommentNode *node, const char *indent, bool islast, const char *)
@@ -1179,14 +1181,8 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doClass((ClassNode *)node, indent, islast, arg); break;
         case NED_STRUCT:
             doStruct((StructNode *)node, indent, islast, arg); break;
-        case NED_FIELDS:
-            doFields((FieldsNode *)node, indent, islast, arg); break;
         case NED_FIELD:
             doField((FieldNode *)node, indent, islast, arg); break;
-        case NED_PROPERTIES:
-            doProperties((PropertiesNode *)node, indent, islast, arg); break;
-        case NED_MSGPROPERTY:
-            doMsgproperty((MsgpropertyNode *)node, indent, islast, arg); break;
         case NED_COMMENT:
             doComment((CommentNode *)node, indent, islast, arg); break;
         default:

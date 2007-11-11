@@ -86,6 +86,8 @@ static struct MSG2ParserState
     bool isAbstract;
     bool isReadonly;
 
+    std::vector<NEDElement *> propvals; // temporarily collects property values
+
     /* MSG-II: message subclassing */
     MsgFileNode *msgfile;
     CplusplusNode *cplusplus;
@@ -100,10 +102,9 @@ static struct MSG2ParserState
     NEDElement *msgclassorstruct;
     EnumFieldsNode *enumfields;
     EnumFieldNode *enumfield;
-    PropertiesNode *properties;
-    MsgpropertyNode *msgproperty;
-    FieldsNode *fields;
     FieldNode *field;
+    PropertyNode *property;
+    PropertyKeyNode *propkey;
 } ps;
 
 static void resetParserState()
@@ -111,8 +112,6 @@ static void resetParserState()
     static MSG2ParserState cleanps;
     ps = cleanps;
 }
-
-//FIXME add @-syntax properties to the grammar!
 
 %}
 
@@ -147,6 +146,9 @@ definition
                 { if (np->getStoreSourceFlag()) ps.structp->setSourceCode(toString(@1)); }
         ;
 
+/*
+ * C++ block
+ */
 cplusplus
         : CPLUSPLUS CPLUSPLUSBODY opt_semicolon
                 {
@@ -156,6 +158,9 @@ cplusplus
                 }
         ;
 
+/*
+ * Forward declarations
+ */
 struct_decl
         : STRUCT NAME ';'
                 {
@@ -200,6 +205,9 @@ enum_decl
                 }
         ;
 
+/*
+ * Enum definition
+ */
 enum
         : ENUM NAME '{'
                 {
@@ -209,9 +217,7 @@ enum
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.enump,@$);
-                }
+                { storeTrailingComment(ps.enump,@$); }
         | ENUM NAME EXTENDS NAME '{'
                 {
                   ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.msgfile );
@@ -221,9 +227,7 @@ enum
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.enump,@$);
-                }
+                { storeTrailingComment(ps.enump,@$); }
         ;
 
 opt_enumfields
@@ -252,16 +256,30 @@ enumfield
                 }
         ;
 
+/*
+ * Message, class and struct definitions
+ */
 message
+        : message_header body
+                { storeTrailingComment(ps.messagep,@$); }
+        ;
+
+class
+        : class_header body
+                { storeTrailingComment(ps.classp,@$); }
+        ;
+
+struct
+        : struct_header body
+                { storeTrailingComment(ps.structp,@$); }
+        ;
+
+message_header
         : MESSAGE NAME '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   storeBannerAndRightComments(ps.messagep,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.messagep,@$);
                 }
         | MESSAGE NAME EXTENDS NAME '{'
                 {
@@ -270,22 +288,14 @@ message
                   ps.messagep->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.messagep,@1,@4);
                 }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.messagep,@$);
-                }
         ;
 
-class
+class_header
         : CLASS NAME '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   storeBannerAndRightComments(ps.classp,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.classp,@$);
                 }
         | CLASS NAME EXTENDS NAME '{'
                 {
@@ -294,22 +304,14 @@ class
                   ps.classp->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.classp,@1,@4);
                 }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.classp,@$);
-                }
         ;
 
-struct
+struct_header
         : STRUCT NAME '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   storeBannerAndRightComments(ps.structp,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.structp,@$);
                 }
         | STRUCT NAME EXTENDS NAME '{'
                 {
@@ -318,75 +320,31 @@ struct
                   ps.structp->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.structp,@1,@4);
                 }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  storeTrailingComment(ps.structp,@$);
-                }
         ;
 
-opt_propertiesblock
-        : PROPERTIES ':'
-                {
-                  ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
-                  storeBannerAndRightComments(ps.properties,@1);
-                }
-          opt_properties
+body
+        : opt_fields_and_properties opt_propertiesblock_old opt_fieldsblock_old '}' opt_semicolon
+        ;
+
+opt_fields_and_properties
+        : fields_and_properties
         |
         ;
 
-opt_properties
-        : properties
-        |
-        ;
-
-properties
-        : properties property
+fields_and_properties
+        : fields_and_properties field
+        | fields_and_properties property
+        | field
         | property
         ;
 
-property
-        : NAME '=' propertyvalue ';'
-                {
-                  ps.msgproperty = (MsgpropertyNode *)createNodeWithTag(NED_MSGPROPERTY, ps.properties);
-                  ps.msgproperty->setName(toString(@1));
-                  ps.msgproperty->setValue(toString(@3));
-                  storeBannerAndRightComments(ps.msgproperty,@1,@3);
-                }
-        ;
-
-propertyvalue
-        : STRINGCONSTANT
-        | INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        | TRUE_
-        | FALSE_
-        ;
-
-opt_fieldsblock
-        : FIELDS ':'
-                {
-                  ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
-                  storeBannerAndRightComments(ps.fields,@1);
-                }
-          opt_fields
-        |
-        ;
-
-opt_fields
-        : fields
-        |
-        ;
-
-fields
-        : fields field
-        | field
-        ;
-
+/*
+ * Field
+ */
 field
         : fieldmodifiers fielddatatype NAME
                 {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
+                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(@3));
                   ps.field->setDataType(toString(@2));
                   ps.field->setIsAbstract(ps.isAbstract);
@@ -398,7 +356,7 @@ field
                 }
         | fieldmodifiers NAME
                 {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
+                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(@2));
                   ps.field->setIsAbstract(ps.isAbstract);
                   ps.field->setIsReadonly(ps.isReadonly);
@@ -508,6 +466,150 @@ quantity
         | quantity REALCONSTANT NAME
         | INTCONSTANT NAME
         | REALCONSTANT NAME
+        ;
+
+/*
+ * Property (code nearly same as in ned2.y)
+ */
+property
+        : property_namevalue ';'
+                {
+                  storePos(ps.property, @$);
+                  storeBannerAndRightComments(ps.property,@$);
+                }
+        ;
+
+property_namevalue
+        : property_name
+        | property_name '(' opt_property_keys ')'
+        ;
+
+property_name
+        : '@' NAME
+                {
+                  ps.property = addProperty(ps.msgclassorstruct, toString(@2));
+                  ps.propvals.clear(); // just to be safe
+                }
+        | '@' NAME '[' NAME ']'
+                {
+                  ps.property = addProperty(ps.msgclassorstruct, toString(@2));
+                  ps.property->setIndex(toString(@4));
+                  ps.propvals.clear(); // just to be safe
+                }
+        ;
+
+opt_property_keys
+        : property_keys  /* can't allow epsilon rule here, because @foo() would result in "ambiguous syntax" :( */
+        ;
+
+property_keys
+        : property_keys ';' property_key
+        | property_key
+        ;
+
+property_key
+        : NAME '=' property_values
+                {
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey->setName(toString(@1));
+                  for (int i=0; i<(int)ps.propvals.size(); i++)
+                      ps.propkey->appendChild(ps.propvals[i]);
+                  ps.propvals.clear();
+                  storePos(ps.propkey, @$);
+                }
+        | property_values
+                {
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey->appendChild($1);
+                  for (int i=0; i<(int)ps.propvals.size(); i++)
+                      ps.propkey->appendChild(ps.propvals[i]);
+                  ps.propvals.clear();
+                  storePos(ps.propkey, @$);
+                }
+        ;
+
+property_values
+        : property_values ',' property_value
+                { ps.propvals.push_back($3); }
+        | property_value
+                { ps.propvals.push_back($1); }
+        ;
+
+property_value
+        : NAME
+                { $$ = createLiteral(NED_CONST_STRING, @1, @1); /* not a quoted string */ }
+        | '$' NAME
+                { $$ = createLiteral(NED_CONST_STRING, @$, @$); /* not a quoted string */ }
+        | STRINGCONSTANT
+                { $$ = createStringLiteral(@1); }
+        | TRUE_
+                { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+        | FALSE_
+                { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+        | INTCONSTANT
+                { $$ = createLiteral(NED_CONST_INT, @1, @1); }
+        | REALCONSTANT
+                { $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
+        | quantity
+                { $$ = createQuantityLiteral(@1); }
+        | '-'  /* antivalue ("remove existing value from this position") */
+                { $$ = createLiteral(NED_CONST_SPEC, @1, @1); }
+        |  /* nothing (no value) */
+                {
+                  LiteralNode *node = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  node->setType(NED_CONST_SPEC); // and leave both value and text at ""
+                  $$ = node;
+                }
+        ;
+
+/*
+ * Old-style fields block
+ */
+opt_fieldsblock_old
+        : FIELDS ':'
+          opt_fields_old
+        |
+        ;
+
+opt_fields_old
+        : fields_old
+        |
+        ;
+
+fields_old
+        : fields_old field
+        | field
+        ;
+
+/*
+ * Old-style properties block
+ */
+opt_propertiesblock_old
+        : PROPERTIES ':'
+          opt_properties_old
+        |
+        ;
+
+opt_properties_old
+        : properties_old
+        |
+        ;
+
+properties_old
+        : properties_old property_old
+        | property_old
+        ;
+
+property_old
+        : NAME '=' property_value ';'
+                {
+                  ps.property = addProperty(ps.msgclassorstruct, toString(@1));
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey->appendChild($3);
+                  storePos(ps.propkey, @2);
+                  storePos(ps.property, @$);
+                  storeBannerAndRightComments(ps.property,@$);
+                }
         ;
 
 opt_semicolon : ';' | ;

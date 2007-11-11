@@ -688,10 +688,6 @@ void NEDSyntaxValidator::validateElement(StructNode *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(FieldsNode *node)
-{
-}
-
 void NEDSyntaxValidator::validateElement(FieldNode *node)
 {
     NEDElement *classNode = node->getParent()->getParent();
@@ -732,16 +728,6 @@ void NEDSyntaxValidator::validateElement(FieldNode *node)
     // TBD check syntax of default value, and that its type agrees with field type
 
 }
-
-void NEDSyntaxValidator::validateElement(PropertiesNode *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(MsgpropertyNode *node)
-{
-    // TBD check syntax of value
-}
-
 
 void NEDSyntaxValidator::validateElement(UnknownNode *node)
 {

@@ -2883,7 +2883,7 @@ const char *MsgFileNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "filename";
-        case 1: return "package";
+        case 1: return "version";
         default: return 0;
     }
 }
@@ -2892,7 +2892,7 @@ const char *MsgFileNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return filename.c_str();
-        case 1: return package.c_str();
+        case 1: return version.c_str();
         default: return 0;
     }
 }
@@ -2901,7 +2901,7 @@ void MsgFileNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: filename = val; break;
-        case 1: package = val; break;
+        case 1: version = val; break;
         default: ;
     }
 }
@@ -2910,7 +2910,7 @@ const char *MsgFileNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
+        case 1: return "2";
         default: return 0;
     }
 }
@@ -2919,7 +2919,7 @@ MsgFileNode *MsgFileNode::dup() const
 {
     MsgFileNode *newNode = new MsgFileNode();
     newNode->filename = this->filename;
-    newNode->package = this->package;
+    newNode->version = this->version;
     return newNode;
 }
 
@@ -2990,16 +2990,13 @@ CplusplusNode::CplusplusNode(NEDElement *parent) : NEDElement(parent)
 
 int CplusplusNode::getNumAttributes() const
 {
-    return 4;
+    return 1;
 }
 
 const char *CplusplusNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "body";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3008,9 +3005,6 @@ const char *CplusplusNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return body.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3019,9 +3013,6 @@ void CplusplusNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: body = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
         default: ;
     }
 }
@@ -3030,9 +3021,6 @@ const char *CplusplusNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "";
-        case 2: return "\n";
-        case 3: return "\n";
         default: return 0;
     }
 }
@@ -3041,9 +3029,6 @@ CplusplusNode *CplusplusNode::dup() const
 {
     CplusplusNode *newNode = new CplusplusNode();
     newNode->body = this->body;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3069,16 +3054,13 @@ StructDeclNode::StructDeclNode(NEDElement *parent) : NEDElement(parent)
 
 int StructDeclNode::getNumAttributes() const
 {
-    return 4;
+    return 1;
 }
 
 const char *StructDeclNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3087,9 +3069,6 @@ const char *StructDeclNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3098,9 +3077,6 @@ void StructDeclNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
         default: ;
     }
 }
@@ -3109,9 +3085,6 @@ const char *StructDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "";
-        case 2: return "\n";
-        case 3: return "\n";
         default: return 0;
     }
 }
@@ -3120,9 +3093,6 @@ StructDeclNode *StructDeclNode::dup() const
 {
     StructDeclNode *newNode = new StructDeclNode();
     newNode->name = this->name;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3150,7 +3120,7 @@ ClassDeclNode::ClassDeclNode(NEDElement *parent) : NEDElement(parent)
 
 int ClassDeclNode::getNumAttributes() const
 {
-    return 5;
+    return 2;
 }
 
 const char *ClassDeclNode::getAttributeName(int k) const
@@ -3158,9 +3128,6 @@ const char *ClassDeclNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "is-cobject";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3170,9 +3137,6 @@ const char *ClassDeclNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return boolToString(isCobject);
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3182,9 +3146,6 @@ void ClassDeclNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: isCobject = stringToBool(val); break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
         default: ;
     }
 }
@@ -3194,9 +3155,6 @@ const char *ClassDeclNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return NULL;
         case 1: return "false";
-        case 2: return "";
-        case 3: return "\n";
-        case 4: return "\n";
         default: return 0;
     }
 }
@@ -3206,9 +3164,6 @@ ClassDeclNode *ClassDeclNode::dup() const
     ClassDeclNode *newNode = new ClassDeclNode();
     newNode->name = this->name;
     newNode->isCobject = this->isCobject;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3234,16 +3189,13 @@ MessageDeclNode::MessageDeclNode(NEDElement *parent) : NEDElement(parent)
 
 int MessageDeclNode::getNumAttributes() const
 {
-    return 4;
+    return 1;
 }
 
 const char *MessageDeclNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3252,9 +3204,6 @@ const char *MessageDeclNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3263,9 +3212,6 @@ void MessageDeclNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
         default: ;
     }
 }
@@ -3274,9 +3220,6 @@ const char *MessageDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "";
-        case 2: return "\n";
-        case 3: return "\n";
         default: return 0;
     }
 }
@@ -3285,9 +3228,6 @@ MessageDeclNode *MessageDeclNode::dup() const
 {
     MessageDeclNode *newNode = new MessageDeclNode();
     newNode->name = this->name;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3313,16 +3253,13 @@ EnumDeclNode::EnumDeclNode(NEDElement *parent) : NEDElement(parent)
 
 int EnumDeclNode::getNumAttributes() const
 {
-    return 4;
+    return 1;
 }
 
 const char *EnumDeclNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3331,9 +3268,6 @@ const char *EnumDeclNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3342,9 +3276,6 @@ void EnumDeclNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
         default: ;
     }
 }
@@ -3353,9 +3284,6 @@ const char *EnumDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "";
-        case 2: return "\n";
-        case 3: return "\n";
         default: return 0;
     }
 }
@@ -3364,9 +3292,6 @@ EnumDeclNode *EnumDeclNode::dup() const
 {
     EnumDeclNode *newNode = new EnumDeclNode();
     newNode->name = this->name;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3392,7 +3317,7 @@ EnumNode::EnumNode(NEDElement *parent) : NEDElement(parent)
 
 int EnumNode::getNumAttributes() const
 {
-    return 6;
+    return 3;
 }
 
 const char *EnumNode::getAttributeName(int k) const
@@ -3401,9 +3326,6 @@ const char *EnumNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "extends-name";
         case 2: return "source-code";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
-        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3414,9 +3336,6 @@ const char *EnumNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
         case 2: return sourceCode.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
-        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3427,9 +3346,6 @@ void EnumNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: extendsName = val; break;
         case 2: sourceCode = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
-        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -3440,9 +3356,6 @@ const char *EnumNode::getAttributeDefault(int k) const
         case 0: return NULL;
         case 1: return "";
         case 2: return "";
-        case 3: return "";
-        case 4: return "\n";
-        case 5: return "\n";
         default: return 0;
     }
 }
@@ -3453,9 +3366,6 @@ EnumNode *EnumNode::dup() const
     newNode->name = this->name;
     newNode->extendsName = this->extendsName;
     newNode->sourceCode = this->sourceCode;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3486,14 +3396,12 @@ EnumFieldsNode::EnumFieldsNode(NEDElement *parent) : NEDElement(parent)
 
 int EnumFieldsNode::getNumAttributes() const
 {
-    return 2;
+    return 0;
 }
 
 const char *EnumFieldsNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
         default: return 0;
     }
 }
@@ -3501,8 +3409,6 @@ const char *EnumFieldsNode::getAttributeName(int k) const
 const char *EnumFieldsNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -3510,8 +3416,6 @@ const char *EnumFieldsNode::getAttribute(int k) const
 void EnumFieldsNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
         default: ;
     }
 }
@@ -3519,8 +3423,6 @@ void EnumFieldsNode::setAttribute(int k, const char *val)
 const char *EnumFieldsNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "\n";
         default: return 0;
     }
 }
@@ -3528,8 +3430,6 @@ const char *EnumFieldsNode::getAttributeDefault(int k) const
 EnumFieldsNode *EnumFieldsNode::dup() const
 {
     EnumFieldsNode *newNode = new EnumFieldsNode();
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
     return newNode;
 }
 
@@ -3560,7 +3460,7 @@ EnumFieldNode::EnumFieldNode(NEDElement *parent) : NEDElement(parent)
 
 int EnumFieldNode::getNumAttributes() const
 {
-    return 4;
+    return 2;
 }
 
 const char *EnumFieldNode::getAttributeName(int k) const
@@ -3568,8 +3468,6 @@ const char *EnumFieldNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "value";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
         default: return 0;
     }
 }
@@ -3579,8 +3477,6 @@ const char *EnumFieldNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return value.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -3590,8 +3486,6 @@ void EnumFieldNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: value = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
         default: ;
     }
 }
@@ -3601,8 +3495,6 @@ const char *EnumFieldNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return NULL;
         case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
         default: return 0;
     }
 }
@@ -3612,8 +3504,6 @@ EnumFieldNode *EnumFieldNode::dup() const
     EnumFieldNode *newNode = new EnumFieldNode();
     newNode->name = this->name;
     newNode->value = this->value;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
     return newNode;
 }
 
@@ -3639,7 +3529,7 @@ MessageNode::MessageNode(NEDElement *parent) : NEDElement(parent)
 
 int MessageNode::getNumAttributes() const
 {
-    return 6;
+    return 3;
 }
 
 const char *MessageNode::getAttributeName(int k) const
@@ -3648,9 +3538,6 @@ const char *MessageNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "extends-name";
         case 2: return "source-code";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
-        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3661,9 +3548,6 @@ const char *MessageNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
         case 2: return sourceCode.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
-        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3674,9 +3558,6 @@ void MessageNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: extendsName = val; break;
         case 2: sourceCode = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
-        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -3687,9 +3568,6 @@ const char *MessageNode::getAttributeDefault(int k) const
         case 0: return NULL;
         case 1: return "";
         case 2: return "";
-        case 3: return "";
-        case 4: return "\n";
-        case 5: return "\n";
         default: return 0;
     }
 }
@@ -3700,9 +3578,6 @@ MessageNode *MessageNode::dup() const
     newNode->name = this->name;
     newNode->extendsName = this->extendsName;
     newNode->sourceCode = this->sourceCode;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3716,14 +3591,14 @@ CommentNode *MessageNode::getFirstCommentChild() const
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
-PropertiesNode *MessageNode::getFirstPropertiesChild() const
+PropertyNode *MessageNode::getFirstPropertyChild() const
 {
-    return (PropertiesNode *)getFirstChildWithTag(NED_PROPERTIES);
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
 }
 
-FieldsNode *MessageNode::getFirstFieldsChild() const
+FieldNode *MessageNode::getFirstFieldChild() const
 {
-    return (FieldsNode *)getFirstChildWithTag(NED_FIELDS);
+    return (FieldNode *)getFirstChildWithTag(NED_FIELD);
 }
 
 ClassNode::ClassNode()
@@ -3738,7 +3613,7 @@ ClassNode::ClassNode(NEDElement *parent) : NEDElement(parent)
 
 int ClassNode::getNumAttributes() const
 {
-    return 6;
+    return 3;
 }
 
 const char *ClassNode::getAttributeName(int k) const
@@ -3747,9 +3622,6 @@ const char *ClassNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "extends-name";
         case 2: return "source-code";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
-        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3760,9 +3632,6 @@ const char *ClassNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
         case 2: return sourceCode.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
-        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3773,9 +3642,6 @@ void ClassNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: extendsName = val; break;
         case 2: sourceCode = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
-        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -3786,9 +3652,6 @@ const char *ClassNode::getAttributeDefault(int k) const
         case 0: return NULL;
         case 1: return "";
         case 2: return "";
-        case 3: return "";
-        case 4: return "\n";
-        case 5: return "\n";
         default: return 0;
     }
 }
@@ -3799,9 +3662,6 @@ ClassNode *ClassNode::dup() const
     newNode->name = this->name;
     newNode->extendsName = this->extendsName;
     newNode->sourceCode = this->sourceCode;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3815,14 +3675,14 @@ CommentNode *ClassNode::getFirstCommentChild() const
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
-PropertiesNode *ClassNode::getFirstPropertiesChild() const
+PropertyNode *ClassNode::getFirstPropertyChild() const
 {
-    return (PropertiesNode *)getFirstChildWithTag(NED_PROPERTIES);
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
 }
 
-FieldsNode *ClassNode::getFirstFieldsChild() const
+FieldNode *ClassNode::getFirstFieldChild() const
 {
-    return (FieldsNode *)getFirstChildWithTag(NED_FIELDS);
+    return (FieldNode *)getFirstChildWithTag(NED_FIELD);
 }
 
 StructNode::StructNode()
@@ -3837,7 +3697,7 @@ StructNode::StructNode(NEDElement *parent) : NEDElement(parent)
 
 int StructNode::getNumAttributes() const
 {
-    return 6;
+    return 3;
 }
 
 const char *StructNode::getAttributeName(int k) const
@@ -3846,9 +3706,6 @@ const char *StructNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "extends-name";
         case 2: return "source-code";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
-        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -3859,9 +3716,6 @@ const char *StructNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
         case 2: return sourceCode.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
-        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -3872,9 +3726,6 @@ void StructNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: extendsName = val; break;
         case 2: sourceCode = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
-        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -3885,9 +3736,6 @@ const char *StructNode::getAttributeDefault(int k) const
         case 0: return NULL;
         case 1: return "";
         case 2: return "";
-        case 3: return "";
-        case 4: return "\n";
-        case 5: return "\n";
         default: return 0;
     }
 }
@@ -3898,9 +3746,6 @@ StructNode *StructNode::dup() const
     newNode->name = this->name;
     newNode->extendsName = this->extendsName;
     newNode->sourceCode = this->sourceCode;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    newNode->trailingComment = this->trailingComment;
     return newNode;
 }
 
@@ -3914,86 +3759,12 @@ CommentNode *StructNode::getFirstCommentChild() const
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
-PropertiesNode *StructNode::getFirstPropertiesChild() const
+PropertyNode *StructNode::getFirstPropertyChild() const
 {
-    return (PropertiesNode *)getFirstChildWithTag(NED_PROPERTIES);
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
 }
 
-FieldsNode *StructNode::getFirstFieldsChild() const
-{
-    return (FieldsNode *)getFirstChildWithTag(NED_FIELDS);
-}
-
-FieldsNode::FieldsNode()
-{
-    applyDefaults();
-}
-
-FieldsNode::FieldsNode(NEDElement *parent) : NEDElement(parent)
-{
-    applyDefaults();
-}
-
-int FieldsNode::getNumAttributes() const
-{
-    return 2;
-}
-
-const char *FieldsNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *FieldsNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void FieldsNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *FieldsNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "\n";
-        default: return 0;
-    }
-}
-
-FieldsNode *FieldsNode::dup() const
-{
-    FieldsNode *newNode = new FieldsNode();
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    return newNode;
-}
-
-FieldsNode *FieldsNode::getNextFieldsNodeSibling() const
-{
-    return (FieldsNode *)getNextSiblingWithTag(NED_FIELDS);
-}
-
-CommentNode *FieldsNode::getFirstCommentChild() const
-{
-    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
-}
-
-FieldNode *FieldsNode::getFirstFieldChild() const
+FieldNode *StructNode::getFirstFieldChild() const
 {
     return (FieldNode *)getFirstChildWithTag(NED_FIELD);
 }
@@ -4016,7 +3787,7 @@ FieldNode::FieldNode(NEDElement *parent) : NEDElement(parent)
 
 int FieldNode::getNumAttributes() const
 {
-    return 10;
+    return 8;
 }
 
 const char *FieldNode::getAttributeName(int k) const
@@ -4030,8 +3801,6 @@ const char *FieldNode::getAttributeName(int k) const
         case 5: return "vector-size";
         case 6: return "enum-name";
         case 7: return "default-value";
-        case 8: return "banner-comment";
-        case 9: return "right-comment";
         default: return 0;
     }
 }
@@ -4047,8 +3816,6 @@ const char *FieldNode::getAttribute(int k) const
         case 5: return vectorSize.c_str();
         case 6: return enumName.c_str();
         case 7: return defaultValue.c_str();
-        case 8: return bannerComment.c_str();
-        case 9: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -4064,8 +3831,6 @@ void FieldNode::setAttribute(int k, const char *val)
         case 5: vectorSize = val; break;
         case 6: enumName = val; break;
         case 7: defaultValue = val; break;
-        case 8: bannerComment = val; break;
-        case 9: rightComment = val; break;
         default: ;
     }
 }
@@ -4081,8 +3846,6 @@ const char *FieldNode::getAttributeDefault(int k) const
         case 5: return "";
         case 6: return "";
         case 7: return "";
-        case 8: return "";
-        case 9: return "\n";
         default: return 0;
     }
 }
@@ -4098,8 +3861,6 @@ FieldNode *FieldNode::dup() const
     newNode->vectorSize = this->vectorSize;
     newNode->enumName = this->enumName;
     newNode->defaultValue = this->defaultValue;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
     return newNode;
 }
 
@@ -4109,159 +3870,6 @@ FieldNode *FieldNode::getNextFieldNodeSibling() const
 }
 
 CommentNode *FieldNode::getFirstCommentChild() const
-{
-    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
-}
-
-PropertiesNode::PropertiesNode()
-{
-    applyDefaults();
-}
-
-PropertiesNode::PropertiesNode(NEDElement *parent) : NEDElement(parent)
-{
-    applyDefaults();
-}
-
-int PropertiesNode::getNumAttributes() const
-{
-    return 2;
-}
-
-const char *PropertiesNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *PropertiesNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void PropertiesNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *PropertiesNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "\n";
-        default: return 0;
-    }
-}
-
-PropertiesNode *PropertiesNode::dup() const
-{
-    PropertiesNode *newNode = new PropertiesNode();
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    return newNode;
-}
-
-PropertiesNode *PropertiesNode::getNextPropertiesNodeSibling() const
-{
-    return (PropertiesNode *)getNextSiblingWithTag(NED_PROPERTIES);
-}
-
-CommentNode *PropertiesNode::getFirstCommentChild() const
-{
-    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
-}
-
-MsgpropertyNode *PropertiesNode::getFirstMsgpropertyChild() const
-{
-    return (MsgpropertyNode *)getFirstChildWithTag(NED_MSGPROPERTY);
-}
-
-MsgpropertyNode::MsgpropertyNode()
-{
-    applyDefaults();
-}
-
-MsgpropertyNode::MsgpropertyNode(NEDElement *parent) : NEDElement(parent)
-{
-    applyDefaults();
-}
-
-int MsgpropertyNode::getNumAttributes() const
-{
-    return 4;
-}
-
-const char *MsgpropertyNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "value";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *MsgpropertyNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return value.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void MsgpropertyNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: value = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *MsgpropertyNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return NULL;
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
-        default: return 0;
-    }
-}
-
-MsgpropertyNode *MsgpropertyNode::dup() const
-{
-    MsgpropertyNode *newNode = new MsgpropertyNode();
-    newNode->name = this->name;
-    newNode->value = this->value;
-    newNode->bannerComment = this->bannerComment;
-    newNode->rightComment = this->rightComment;
-    return newNode;
-}
-
-MsgpropertyNode *MsgpropertyNode::getNextMsgpropertyNodeSibling() const
-{
-    return (MsgpropertyNode *)getNextSiblingWithTag(NED_MSGPROPERTY);
-}
-
-CommentNode *MsgpropertyNode::getFirstCommentChild() const
 {
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
@@ -4381,10 +3989,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='m' && !strcmp(tagname,"message"))  return new MessageNode();
     if (tagname[0]=='c' && !strcmp(tagname,"class"))  return new ClassNode();
     if (tagname[0]=='s' && !strcmp(tagname,"struct"))  return new StructNode();
-    if (tagname[0]=='f' && !strcmp(tagname,"fields"))  return new FieldsNode();
     if (tagname[0]=='f' && !strcmp(tagname,"field"))  return new FieldNode();
-    if (tagname[0]=='p' && !strcmp(tagname,"properties"))  return new PropertiesNode();
-    if (tagname[0]=='m' && !strcmp(tagname,"msgproperty"))  return new MsgpropertyNode();
     if (tagname[0]=='u' && !strcmp(tagname,"unknown"))  return new UnknownNode();
     throw NEDException("unknown tag '%s', cannot create object to represent it", tagname);
 }
@@ -4438,10 +4043,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_MESSAGE: return new MessageNode();
         case NED_CLASS: return new ClassNode();
         case NED_STRUCT: return new StructNode();
-        case NED_FIELDS: return new FieldsNode();
         case NED_FIELD: return new FieldNode();
-        case NED_PROPERTIES: return new PropertiesNode();
-        case NED_MSGPROPERTY: return new MsgpropertyNode();
         case NED_UNKNOWN: return new UnknownNode();
     }
     throw NEDException("unknown tag code %d, cannot create object to represent it", tagcode);

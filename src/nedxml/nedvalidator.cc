@@ -78,10 +78,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
             case NED_MESSAGE: validateElement((MessageNode *) node); break;
             case NED_CLASS: validateElement((ClassNode *) node); break;
             case NED_STRUCT: validateElement((StructNode *) node); break;
-            case NED_FIELDS: validateElement((FieldsNode *) node); break;
             case NED_FIELD: validateElement((FieldNode *) node); break;
-            case NED_PROPERTIES: validateElement((PropertiesNode *) node); break;
-            case NED_MSGPROPERTY: validateElement((MsgpropertyNode *) node); break;
             case NED_UNKNOWN: validateElement((UnknownNode *) node); break;
             default: INTERNAL_ERROR1(node,"validateElement(): unknown tag '%s'", node->getTagName());
         }

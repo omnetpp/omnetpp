@@ -433,19 +433,7 @@ void NEDSemanticValidator::validateElement(StructNode *node)
         errors->addError(node, "unknown base class '%s'",baseClassName);
 }
 
-void NEDSemanticValidator::validateElement(FieldsNode *node)
-{
-}
-
 void NEDSemanticValidator::validateElement(FieldNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(PropertiesNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(MsgpropertyNode *node)
 {
 }
 

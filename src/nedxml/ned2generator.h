@@ -94,6 +94,7 @@ class NEDXML_API NED2Generator
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
     bool isEmptyChannelSpec(ChannelSpecNode *node);
+    void doMsgClassOrStructBody(NEDElement *msgclassorstruct, const char *indent);
     //@}
 
     /** @name Getters for comments */
@@ -161,10 +162,7 @@ class NEDXML_API NED2Generator
     void doMessage(MessageNode *node, const char *indent, bool islast, const char *);
     void doClass(ClassNode *node, const char *indent, bool islast, const char *);
     void doStruct(StructNode *node, const char *indent, bool islast, const char *);
-    void doFields(FieldsNode *node, const char *indent, bool islast, const char *);
     void doField(FieldNode *node, const char *indent, bool islast, const char *);
-    void doProperties(PropertiesNode *node, const char *indent, bool islast, const char *);
-    void doMsgproperty(MsgpropertyNode *node, const char *indent, bool islast, const char *);
     void doComment(CommentNode *node, const char *indent, bool islast, const char *);
     //@}
 };

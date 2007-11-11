@@ -68,10 +68,7 @@ class EnumFieldNode;
 class MessageNode;
 class ClassNode;
 class StructNode;
-class FieldsNode;
 class FieldNode;
-class PropertiesNode;
-class MsgpropertyNode;
 class UnknownNode;
 
 
@@ -128,10 +125,7 @@ enum NEDElementCode {
     NED_MESSAGE,
     NED_CLASS,
     NED_STRUCT,
-    NED_FIELDS,
     NED_FIELD,
-    NED_PROPERTIES,
-    NED_MSGPROPERTY,
     NED_UNKNOWN
 };
 
@@ -1903,7 +1897,7 @@ class NEDXML_API LiteralNode : public NEDElement
  *                      enum|message|class|struct)*)>
  * <!ATTLIST msg-file
  *      filename            CDATA     #IMPLIED
- *      package             CDATA     #IMPLIED >
+ *      version             CDATA     "2">
  * </pre>
  * 
  * @ingroup Data
@@ -1912,7 +1906,7 @@ class NEDXML_API MsgFileNode : public NEDElement
 {
   private:
     std::string filename;
-    std::string package;
+    std::string version;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1937,8 +1931,8 @@ class NEDXML_API MsgFileNode : public NEDElement
     //@{
     const char * getFilename() const  {return filename.c_str();}
     void setFilename(const char * val)  {filename = val;}
-    const char * getPackage() const  {return package.c_str();}
-    void setPackage(const char * val)  {package = val;}
+    const char * getVersion() const  {return version.c_str();}
+    void setVersion(const char * val)  {version = val;}
 
     virtual MsgFileNode *getNextMsgFileNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -1960,10 +1954,7 @@ class NEDXML_API MsgFileNode : public NEDElement
  * <pre>
  * <!ELEMENT cplusplus (comment*)>
  * <!ATTLIST cplusplus
- *      body                CDATA     #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      body                CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1972,9 +1963,6 @@ class NEDXML_API CplusplusNode : public NEDElement
 {
   private:
     std::string body;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1999,12 +1987,6 @@ class NEDXML_API CplusplusNode : public NEDElement
     //@{
     const char * getBody() const  {return body.c_str();}
     void setBody(const char * val)  {body = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual CplusplusNode *getNextCplusplusNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2017,10 +1999,7 @@ class NEDXML_API CplusplusNode : public NEDElement
  * <pre>
  * <!ELEMENT struct-decl (comment*)>
  * <!ATTLIST struct-decl
- *      name                NMTOKEN   #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -2029,9 +2008,6 @@ class NEDXML_API StructDeclNode : public NEDElement
 {
   private:
     std::string name;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2056,12 +2032,6 @@ class NEDXML_API StructDeclNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual StructDeclNode *getNextStructDeclNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2075,10 +2045,7 @@ class NEDXML_API StructDeclNode : public NEDElement
  * <!ELEMENT class-decl (comment*)>
  * <!ATTLIST class-decl
  *      name                NMTOKEN   #REQUIRED
- *      is-cobject      (true|false)  "false"
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      is-cobject      (true|false)  "false">
  * </pre>
  * 
  * @ingroup Data
@@ -2088,9 +2055,6 @@ class NEDXML_API ClassDeclNode : public NEDElement
   private:
     std::string name;
     bool isCobject;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2117,12 +2081,6 @@ class NEDXML_API ClassDeclNode : public NEDElement
     void setName(const char * val)  {name = val;}
     bool getIsCobject() const  {return isCobject;}
     void setIsCobject(bool val)  {isCobject = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual ClassDeclNode *getNextClassDeclNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2135,10 +2093,7 @@ class NEDXML_API ClassDeclNode : public NEDElement
  * <pre>
  * <!ELEMENT message-decl (comment*)>
  * <!ATTLIST message-decl
- *      name                NMTOKEN   #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -2147,9 +2102,6 @@ class NEDXML_API MessageDeclNode : public NEDElement
 {
   private:
     std::string name;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2174,12 +2126,6 @@ class NEDXML_API MessageDeclNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual MessageDeclNode *getNextMessageDeclNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2192,10 +2138,7 @@ class NEDXML_API MessageDeclNode : public NEDElement
  * <pre>
  * <!ELEMENT enum-decl (comment*)>
  * <!ATTLIST enum-decl
- *      name                NMTOKEN   #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -2204,9 +2147,6 @@ class NEDXML_API EnumDeclNode : public NEDElement
 {
   private:
     std::string name;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2231,12 +2171,6 @@ class NEDXML_API EnumDeclNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual EnumDeclNode *getNextEnumDeclNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2251,10 +2185,7 @@ class NEDXML_API EnumDeclNode : public NEDElement
  * <!ATTLIST enum
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      source-code         CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2265,9 +2196,6 @@ class NEDXML_API EnumNode : public NEDElement
     std::string name;
     std::string extendsName;
     std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2296,12 +2224,6 @@ class NEDXML_API EnumNode : public NEDElement
     void setExtendsName(const char * val)  {extendsName = val;}
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual EnumNode *getNextEnumNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2314,9 +2236,7 @@ class NEDXML_API EnumNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT enum-fields (comment*, enum-field*)>
- * <!ATTLIST enum-fields
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ * 
  * </pre>
  * 
  * @ingroup Data
@@ -2324,8 +2244,6 @@ class NEDXML_API EnumNode : public NEDElement
 class NEDXML_API EnumFieldsNode : public NEDElement
 {
   private:
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2348,10 +2266,6 @@ class NEDXML_API EnumFieldsNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual EnumFieldsNode *getNextEnumFieldsNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2366,9 +2280,7 @@ class NEDXML_API EnumFieldsNode : public NEDElement
  * <!ELEMENT enum-field (comment*)>
  * <!ATTLIST enum-field
  *      name                NMTOKEN   #REQUIRED
- *      value               CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      value               CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2378,8 +2290,6 @@ class NEDXML_API EnumFieldNode : public NEDElement
   private:
     std::string name;
     std::string value;
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2406,10 +2316,6 @@ class NEDXML_API EnumFieldNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual EnumFieldNode *getNextEnumFieldNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
@@ -2420,14 +2326,11 @@ class NEDXML_API EnumFieldNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;message&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT message (comment*, properties?, fields?)>
+ * <!ELEMENT message (comment*, (property|field)*)>
  * <!ATTLIST message
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      source-code         CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2438,9 +2341,6 @@ class NEDXML_API MessageNode : public NEDElement
     std::string name;
     std::string extendsName;
     std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2469,17 +2369,11 @@ class NEDXML_API MessageNode : public NEDElement
     void setExtendsName(const char * val)  {extendsName = val;}
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual MessageNode *getNextMessageNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertiesNode *getFirstPropertiesChild() const;
-    virtual FieldsNode *getFirstFieldsChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual FieldNode *getFirstFieldChild() const;
     //@}
 };
 
@@ -2487,14 +2381,11 @@ class NEDXML_API MessageNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;class&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT class (comment*, properties?, fields?)>
+ * <!ELEMENT class (comment*, (property|field)*)>
  * <!ATTLIST class
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      source-code         CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2505,9 +2396,6 @@ class NEDXML_API ClassNode : public NEDElement
     std::string name;
     std::string extendsName;
     std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2536,17 +2424,11 @@ class NEDXML_API ClassNode : public NEDElement
     void setExtendsName(const char * val)  {extendsName = val;}
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual ClassNode *getNextClassNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertiesNode *getFirstPropertiesChild() const;
-    virtual FieldsNode *getFirstFieldsChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual FieldNode *getFirstFieldChild() const;
     //@}
 };
 
@@ -2554,14 +2436,11 @@ class NEDXML_API ClassNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;struct&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT struct (comment*, properties?,fields?)>
+ * <!ELEMENT struct (comment*, (property|field)*)>
  * <!ATTLIST struct
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      source-code         CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2572,9 +2451,6 @@ class NEDXML_API StructNode : public NEDElement
     std::string name;
     std::string extendsName;
     std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2603,66 +2479,10 @@ class NEDXML_API StructNode : public NEDElement
     void setExtendsName(const char * val)  {extendsName = val;}
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual StructNode *getNextStructNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertiesNode *getFirstPropertiesChild() const;
-    virtual FieldsNode *getFirstFieldsChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;fields&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT fields (comment*, field*)>
- * <!ATTLIST fields
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class NEDXML_API FieldsNode : public NEDElement
-{
-  private:
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    FieldsNode();
-    FieldsNode(NEDElement *parent);
-    virtual ~FieldsNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "fields";}
-    virtual int getTagCode() const {return NED_FIELDS;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    virtual FieldsNode *dup() const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual FieldsNode *getNextFieldsNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
     virtual FieldNode *getFirstFieldChild() const;
     //@}
 };
@@ -2680,9 +2500,7 @@ class NEDXML_API FieldsNode : public NEDElement
  *      is-vector       (true|false)  "false"
  *      vector-size         CDATA     #IMPLIED
  *      enum-name           NMTOKEN   #IMPLIED
- *      default-value       CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      default-value       CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2698,8 +2516,6 @@ class NEDXML_API FieldNode : public NEDElement
     std::string vectorSize;
     std::string enumName;
     std::string defaultValue;
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2738,119 +2554,8 @@ class NEDXML_API FieldNode : public NEDElement
     void setEnumName(const char * val)  {enumName = val;}
     const char * getDefaultValue() const  {return defaultValue.c_str();}
     void setDefaultValue(const char * val)  {defaultValue = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual FieldNode *getNextFieldNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;properties&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT properties (comment*, msgproperty*)>
- * <!ATTLIST properties
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class NEDXML_API PropertiesNode : public NEDElement
-{
-  private:
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    PropertiesNode();
-    PropertiesNode(NEDElement *parent);
-    virtual ~PropertiesNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "properties";}
-    virtual int getTagCode() const {return NED_PROPERTIES;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    virtual PropertiesNode *dup() const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual PropertiesNode *getNextPropertiesNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual MsgpropertyNode *getFirstMsgpropertyChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;msgproperty&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT msgproperty (comment*)>
- * <!ATTLIST msgproperty
- *      name                NMTOKEN   #REQUIRED
- *      value               CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class NEDXML_API MsgpropertyNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string value;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    MsgpropertyNode();
-    MsgpropertyNode(NEDElement *parent);
-    virtual ~MsgpropertyNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "msgproperty";}
-    virtual int getTagCode() const {return NED_MSGPROPERTY;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    virtual MsgpropertyNode *dup() const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual MsgpropertyNode *getNextMsgpropertyNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
     //@}
 };

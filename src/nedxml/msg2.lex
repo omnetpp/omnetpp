@@ -120,6 +120,7 @@ static char textbuf[TEXTBUF_LEN];
 "}"                     { count(); return '}'; }
 "."                     { count(); return '.'; }
 "?"                     { count(); return '?'; }
+"@"                     { count(); return '@'; }
 
    /* FIXME are the next ones really needed? */
 
