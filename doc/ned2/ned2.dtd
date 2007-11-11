@@ -18,7 +18,7 @@
 
 <!-- comments and whitespace; comments include '//' marks. Note that although
      nearly all elements may contain comment elements, there are places
-     (e.g. within expressions) where they are ignored by actual code.
+     (e.g. within expressions) where they are ignored by the implementation.
      Default value is a space or a newline, depending on the context.
  -->
 <!ELEMENT comment EMPTY>
@@ -211,7 +211,7 @@
 
 <!ATTLIST msg-file
      filename            CDATA     #IMPLIED
-     package             CDATA     #IMPLIED >
+     version             CDATA     "2">
 
 <!ELEMENT cplusplus (comment*)>
 <!ATTLIST cplusplus
@@ -253,25 +253,23 @@
 
 <!-- Message, class, struct -->
 
-<!ELEMENT message (comment*, properties?, fields?)>
+<!ELEMENT message (comment*, (property|field)*)>
 <!ATTLIST message
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
      source-code         CDATA     #IMPLIED>
 
-<!ELEMENT class (comment*, properties?, fields?)>
+<!ELEMENT class (comment*, (property|field)*)>
 <!ATTLIST class
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
      source-code         CDATA     #IMPLIED>
 
-<!ELEMENT struct (comment*, properties?,fields?)>
+<!ELEMENT struct (comment*, (property|field)*)>
 <!ATTLIST struct
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
      source-code         CDATA     #IMPLIED>
-
-<!ELEMENT fields (comment*, field*)>
 
 <!ELEMENT field (comment*)>
 <!ATTLIST field
@@ -283,13 +281,6 @@
      vector-size         CDATA     #IMPLIED
      enum-name           NMTOKEN   #IMPLIED
      default-value       CDATA     #IMPLIED>
-
-<!ELEMENT properties (comment*, msgproperty*)>
-
-<!ELEMENT msgproperty (comment*)>
-<!ATTLIST msgproperty
-     name                NMTOKEN   #REQUIRED
-     value               CDATA     #IMPLIED>
 
 <!--
   **  'unknown' is used internally to represent elements not in this NED DTD
