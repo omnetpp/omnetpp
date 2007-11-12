@@ -479,7 +479,8 @@ public class Access
 	private static Item findDescendantTabItemByLabel(Composite composite, final String label, final boolean custom) {
 		Composite folder = (Composite)findDescendantControl(composite, new IPredicate() {
 			public boolean matches(Object object) {
-				if (object instanceof CTabFolder && custom || object instanceof TabFolder && !custom) {
+				if ((object instanceof CTabFolder && custom || object instanceof TabFolder && !custom) 
+				        && ((Control)object).isVisible()) {  // FIXME put isVisible everywhere
 					List<Object> matchingItems = collectObjects(getTabItems((Composite)object), new IPredicate() {
 						public boolean matches(Object object) {
 							return ((Item)object).getText().matches(label);
