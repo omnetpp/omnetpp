@@ -67,8 +67,6 @@ public class DataPanel extends Composite {
 	
 	/**
 	 * This method initializes formToolkit	
-	 * 	
-	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
 	 */
 	private FormToolkit getFormToolkit() {
 		if (formToolkit == null)

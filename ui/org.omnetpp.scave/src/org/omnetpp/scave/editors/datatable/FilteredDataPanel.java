@@ -23,7 +23,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Displays a data table of vectors/scalars/histograms with filter
- * comboboxes.
+ * combo boxes.
  *
  * This class is reusable, which means it only knows that it has to
  * display an IDList belonging to a particular ResultFileManager,
@@ -132,7 +132,7 @@ public class FilteredDataPanel extends Composite {
 		Assert.isTrue(idlist!=null);
 		
 		if (table.getResultFileManager() == null) {
-			// no resultfilemanager, show empty table
+			// no result file manager, show empty table
 			table.setIDList(EMPTY_IDLIST);
 		}
 		else if (isFilterPatternValid()) {
@@ -186,7 +186,7 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	/**
-	 * Switches the filter from "Avanced" to "Basic" mode. If this cannot be done
+	 * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
 	 * (filter string invalid or too complex), the user is prompted with a dialog,
 	 * and switching may or may not actually take place depending on the answer. 
 	 * @return true if switching was actually done.
@@ -222,7 +222,7 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	/**
-	 * Switches the filter from "Basic" to "Avanced" mode. This is always successful (unlike the opposite way).
+	 * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
 	 */
 	public void switchToAdvancedFilter() {
 		filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());

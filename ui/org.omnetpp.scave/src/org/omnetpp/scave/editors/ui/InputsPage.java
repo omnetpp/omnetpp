@@ -192,14 +192,13 @@ public class InputsPage extends ScaveEditorPage {
 
 	/**
 	 * This method initializes dataSection	
-	 *
 	 */
 	private void createDataSection() {
 		dataSection = getFormToolkit().createSection(sashform, 
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		dataSection.setText("Data");
-		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the result files.");
+		dataSection.setDescription("Here you can browse the result files and their contents.");
 		//dataSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
 		DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
 		dataSection.setClient(dataPanel);
