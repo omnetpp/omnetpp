@@ -63,7 +63,7 @@ public class Demo extends GUITestCase {
         setWorkbenchSize();
         setupPreferences();
         WorkspaceUtils.ensureProjectNotExists(name);
-        sleep(10);
+        sleep(12);
 //        setTimeScale(0.3);  //FIXME remove
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
@@ -618,12 +618,8 @@ public class Demo extends GUITestCase {
 
         workbenchShell.findToolItemWithTooltip("Filter").click();
         ShellAccess filterShell = Access.findShellWithTitle("Filter event log");
-        treeItem = filterShell.findTree().findTreeItemByPath("Message filter/by name");
-        treeItem.click();
-        treeItem.pressKey(' ');
-        TableAccess table = filterShell.findTable();
-        table.findTableItemByContent("source 1").click();
-        table.pressKey(' ');
+        filterShell.findTree().findTreeItemByPath("Message filter/by name").ensureChecked(true);
+        filterShell.findTable().findTableItemByContent("source 1").ensureChecked(true);
         filterShell.findButtonWithLabel("OK").selectWithMouseClick();
 
         sleep(5);
