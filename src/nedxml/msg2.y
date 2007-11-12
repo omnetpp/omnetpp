@@ -568,6 +568,7 @@ property_value
 opt_fieldsblock_old
         : FIELDS ':'
           opt_fields_old
+                { ps.msgfile->setVersion("1"); }
         |
         ;
 
@@ -587,6 +588,7 @@ fields_old
 opt_propertiesblock_old
         : PROPERTIES ':'
           opt_properties_old
+                { ps.msgfile->setVersion("1"); }
         |
         ;
 
