@@ -1,5 +1,7 @@
 package org.omnetpp.test.gui.demo;
 
+import java.io.IOException;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
@@ -45,6 +47,7 @@ import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class Demo extends GUITestCase {
+    private static String RECORDER = "C:\\Program Files\\TechSmith\\Camtasia Studio 4\\CamRecorder.exe" ;
     protected String name = "demo";
     protected String logFileName = name + "-0.log";
     protected boolean delay = true;
@@ -57,9 +60,11 @@ public class Demo extends GUITestCase {
         workbenchWindow.closeAllEditorPartsWithHotKey();
         workbenchWindow.assertNoOpenEditorParts();
         System.clearProperty("com.simulcraft.test.running");
-
+        setWorkbenchSize();
+        setupPreferences();
+        WorkspaceUtils.ensureProjectNotExists(name);
+        sleep(10);
 //        setTimeScale(0.3);  //FIXME remove
-
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
 //        setDelayAfterMouseMove(0);
@@ -67,34 +72,9 @@ public class Demo extends GUITestCase {
 //        setMouseClickAnimation(false);
     }
 
-
-    void sleep(double time) {
-        Access.sleep(time);
-    }
-
-    void showMessage(String msg, int lines) {
-        showMessage(msg, lines, 0);
-    }
-
-    void showMessage(String msg, int lines, int verticalDisplacement) {
-        if (readingSpeed == 0) 
-            return;
-
-        int width = 600;
-        int height = lines * 24 + 30;
-        Rectangle bounds = Access.getWorkbenchWindow().getShell().getAbsoluteBounds();
-        int x = bounds.x + bounds.width/2 - width/2;
-        int y = bounds.y + bounds.height/3;
-        msg = msg.replace("\n", "<br/>");
-        if (delay)
-            AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));        
-    }
-
     public void testPlay() throws Throwable {
-        setWorkbenchSize();
-        setupPreferences();
-        WorkspaceUtils.ensureProjectNotExists(name);
-        sleep(15);
+        startRecording();
+        sleep(2);
         welcome();
         openPerspective();
         createProject();
@@ -105,12 +85,14 @@ public class Demo extends GUITestCase {
         analyzeResults();
         showSequenceChart();
         goodBye();
+        stopRecording();
+        sleep(3);
     }
 
     @UIStep
     private void setWorkbenchSize() {
         Access.getWorkbenchWindow().getShell().getControl().setLocation(0, 0);
-        Access.getWorkbenchWindow().getShell().getControl().setSize(990, 705);
+        Access.getWorkbenchWindow().getShell().getControl().setSize(988, 704);
     }
 
     private void setupPreferences() {
@@ -139,12 +121,6 @@ public class Demo extends GUITestCase {
                 "to a layout optimized for OMNeT++, and adds OMNeT++-specific " +
                 "menu items.", 4);
         Access.getWorkbenchWindow().getShell().chooseFromMainMenu("Window|Open Perspective|OMNeT\\+\\+");
-    }
-
-    private void refreshNavigator() {
-        TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Navigator").getComposite().findTree();
-        TreeItemAccess treeItem = tree.findTreeItemByContent(name);
-        treeItem.reveal().chooseFromContextMenu("Refresh");
     }
 
     private void createProject() throws Throwable {
@@ -361,7 +337,7 @@ public class Demo extends GUITestCase {
                 "already generated enough runs for this demo.", 4);
         
         // set event logging file
-        showMessage("Turning on the log file generation will allows us to analyze " +
+        showMessage("Turning on the log file generation will allow us to analyze " +
         		"the interaction between the modules later.", 2);
         ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
         sleep(2);
@@ -458,18 +434,17 @@ public class Demo extends GUITestCase {
         //try { Thread.sleep(10000); } catch (InterruptedException e) {}
         WorkbenchUtils.waitUntilProgressViewNotContains("Running simulations.*", 40);
         
-        refreshNavigator();
-        
         showMessage(
                 "<b>Simulations completed!</b> Note the files that have been " +
         		"created in the project directory. Vec and sca files hold " +
         		"statistics recorded by the simulation. Log files contain a record " +
         		"of each message sending, textual debug messages and more, " +
-                "and can be visualized on sequence charts.", 6);
+                "and can be visualized on sequence charts.", 5);
     }
 
     private void analyzeResults() throws Throwable {
         showMessage("We can analyze the results now. Let's create a new <b>Analysis</b> using a wizard.", 2);
+        // create with wizard
         WorkspaceUtils.ensureFileNotExists("/demo/demo.anf");
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
         workbenchWindow.getShell().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|Analysis File \\(anf\\)");
@@ -561,7 +536,7 @@ public class Demo extends GUITestCase {
         dialog.findButtonWithLabel("Apply").selectWithMouseClick();
         dialog.findButtonWithLabel("OK").selectWithMouseClick();
         sleep(3);
-        chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.CTRL, r.x, r.y+r.height-1, r.x+r.width/2, r.y+50);
+        chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.CTRL, r.x, r.y+r.height-1, r.x+r.width/16, r.y+50);
         //workbenchWindow.getShell().findToolItemWithTooltip("Zoom In").click();
         chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.x+300, r.y+100, r.x+50, r.y+100);
         chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.x+300, r.y+100, r.x+50, r.y+100);
@@ -584,12 +559,15 @@ public class Demo extends GUITestCase {
         shell.findButtonWithLabel("OK").selectWithMouseClick();
 
         // manipulate the dataset
-        DatasetsAndChartsPageAccess dp = scaveEditor.ensureDatasetsPageActive();
+        scaveEditor.ensureDatasetsPageActive();
 
         sleep(3);
+        showMessage("The dataset page displays \"recipes\" used to create charts and diagrams. " +
+        		"It contains processing steps applied in top to bottom order. ", 3 ,100);
+        sleep(2);
         showMessage("Let us save the analysis. The analysis file will only store " +
                 "the \"recipe\": which files to load, and what datasets and charts " +
-                "to draw from them.", 4); 
+                "to draw from them.", 3, 100); 
 
         workbenchWindow.getShell().findToolItemWithTooltip("Save.*").click();
         sleep(10);
@@ -626,7 +604,10 @@ public class Demo extends GUITestCase {
         for (int i = 0; i < 5; i++)
             toolItem.click();
 
-        showMessage("Switch to linear timeline mode and see the initial messages being sent in zero simulation time.", 2);
+        showMessage("In non-linear timeline mode, messages in the same gray area have " +
+        		"the same simulation time. Now we switch to linear timeline mode and see the " +
+        		"initial messages being sent at zero simulation time (note that gray areas " +
+        		"will collapse to a single vertical line).", 5, 200);
         
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
@@ -673,4 +654,47 @@ public class Demo extends GUITestCase {
         		"Have fun!", 5);
         sleep(3);
     }
+
+    // **************************************************************************************
+    // UTILITY functions
+    void sleep(double time) {
+        Access.sleep(time);
+    }
+
+    void showMessage(String msg, int lines) {
+        showMessage(msg, lines, 0);
+    }
+
+    void showMessage(String msg, int lines, int verticalDisplacement) {
+        if (readingSpeed == 0) 
+            return;
+
+        int width = 600;
+        int height = lines * 24 + 30;
+        Rectangle bounds = Access.getWorkbenchWindow().getShell().getAbsoluteBounds();
+        int x = bounds.x + bounds.width/2 - width/2;
+        int y = bounds.y + bounds.height/3;
+        msg = msg.replace("\n", "<br/>");
+        if (delay)
+            AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));        
+    }
+    
+    private void startRecording() {
+        try {
+            Runtime.getRuntime().exec(new String[] {RECORDER, "/r"}, null);
+        }
+        catch (IOException e) {
+            System.err.println("Recorder cannot be started");
+        }
+    }
+
+    private void stopRecording() {
+        try {
+            Runtime.getRuntime().exec(new String[] {RECORDER, "/s"}, null);
+        }
+        catch (IOException e) {
+            System.err.println("Recorder cannot be stopped");
+        }
+    }
+
 }
