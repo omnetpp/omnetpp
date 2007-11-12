@@ -50,6 +50,7 @@ public class KeyPressAnimator implements Listener {
             }
             else {
                 String string = KeyStroke.getInstance(modifierState, e.keyCode).format();
+                string = string.replace("Numpad_", "Numpad ");
                 AnimationEffects.displayTextBox(string, shortcutDisplayDelay);
             } 
         }
@@ -59,13 +60,14 @@ public class KeyPressAnimator implements Listener {
         // navigation keys etc without any modifier don't need visual feedback
         if (modifierState == SWT.NONE && 
                 (e.keyCode == SWT.BS || e.keyCode == SWT.ARROW_LEFT || e.keyCode == SWT.ARROW_RIGHT 
-                 || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP 
-                 || e.character >= ' '))
+                 || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP))
             return false;
         // normal characters don't need visual feedback. That includes normal key (32..127), that
         // with Shift, that with AltGr (CTRL+ALT) and AltGr+Shift. That translates to 
         // normal keys and either both or none of CTRL and ALT.
-        if ((modifierState & SWT.CTRL) == (modifierState & SWT.ALT) && e.character >= ' ' && e.character <= 127)
+        boolean ctrlPressed = (modifierState & SWT.CTRL)!=0;
+        boolean altPressed = (modifierState & SWT.ALT)!=0;
+        if (ctrlPressed == altPressed && e.character >= ' ')
             return false;
         return true;
     }
