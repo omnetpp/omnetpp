@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.Workbench;
 import org.omnetpp.common.util.ReflectionUtils;
 
@@ -277,7 +278,7 @@ public abstract class GUITestCase
 
 	public static void waitUntilEventQueueBecomesEmpty() {
 		Assert.assertTrue("This method must not be called from the UI thread", Display.getCurrent()==null);
-		while (paused) {
+		while (paused && PlatformUI.getWorkbench().getActiveWorkbenchWindow()!=null) {
 		    try {Thread.sleep(200);} catch (InterruptedException e) {}
 		    Thread.yield();
 		}

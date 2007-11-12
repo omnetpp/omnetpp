@@ -36,6 +36,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
+//TODO: when creating a "filename(...)" filter in the "Add" node, use relative path if
+// possible (if this file and the result file are in the same project) 
 public class CreateChartTemplateAction extends AbstractScaveAction {
 
 	public CreateChartTemplateAction() {

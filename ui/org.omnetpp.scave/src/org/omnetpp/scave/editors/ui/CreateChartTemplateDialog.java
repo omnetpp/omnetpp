@@ -84,37 +84,39 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		Group group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		group.setLayout(new GridLayout(3, false));
-		group.setText("Filter Runs By");
+		group.setText("Identify Runs");
 
 		Label label2 = new Label(group, SWT.NONE);
-		label2.setText(
-				"In the new dataset, data will be selected from the inputs by name " +
-				"and module name; \nhere you may choose to include additional filter fields " +
-				"to identify the run.");
+		label2.setText("Select how to identify the data (in addition to their names and containing modules):");
 		label2.setLayoutData(new GridData());
 		((GridData)label2.getLayoutData()).horizontalSpan = 3;
 
 		int i = 0;
 		runidButtons = new Button[5];
-		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", RUN);
-		runidButtons[i++] = createCheckbox(group, "file name", FILE);
-		label = new Label(group, SWT.NONE); // placeholder
-		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", EXPERIMENT);
-		Button measurementCb = runidButtons[i++] = createCheckbox(group, "measurement", MEASUREMENT);
-		Button replicationCb = runidButtons[i++] = createCheckbox(group, "replication", REPLICATION);
+		Button runnameCb = runidButtons[i++] = createCheckbox(group, "By Run Id", RUN, 3);
+		Button filenameCb = runidButtons[i++] = createCheckbox(group, "By File Name", FILE, 3);
+		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "Experiment", EXPERIMENT, 1);
+		Button measurementCb = runidButtons[i++] = createCheckbox(group, "Measurement", MEASUREMENT, 1);
+		Button replicationCb = runidButtons[i++] = createCheckbox(group, "Replication", REPLICATION, 1);
 
 		addDependency(runnameCb, true, new Button[] {experimentCb, measurementCb, replicationCb} , false);
 		addDependency(measurementCb, true, new Button[] {experimentCb}, true);
 		addDependency(replicationCb, true, new Button[] {experimentCb, measurementCb}, true);
 		
-		runnameCb.setSelection(true);
+		//runnameCb.setSelection(true);
+		filenameCb.setSelection(true);
 		return panel;
 	}
 	
-	private Button createCheckbox(Composite parent, String label, String field) {
+	private Button createCheckbox(Composite parent, String label, String field, int columnSpan) {
 		Button cb = new Button(parent, SWT.CHECK);
 		cb.setText(label);
 		cb.setData(RUNID_FIELD_KEY, field);
+		if (columnSpan != 1) {
+		    GridData gridData = new GridData();
+		    gridData.horizontalSpan = columnSpan;
+		    cb.setLayoutData(gridData);
+		}
 		return cb;
 	}
 	
