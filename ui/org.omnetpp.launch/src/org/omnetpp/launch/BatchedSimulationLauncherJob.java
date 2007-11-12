@@ -3,6 +3,9 @@ package org.omnetpp.launch;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -32,7 +35,11 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
         @Override
         protected IStatus run(IProgressMonitor monitor) {
             monitor.beginTask("Finishing batch", 1);
-            monitor.subTask("xxx");
+            monitor.subTask("Refreshing workspace");
+            try {
+                // refresh the workspace so all generated files will be displayed
+                ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+            } catch (CoreException e) {}
             monitor.worked(1);
             monitor.done();
             return Status.OK_STATUS;
