@@ -430,9 +430,9 @@ public class Demo extends GUITestCase {
         showMessage("And watch the progress of the simulation batch in the <b>Progress View</b>.", 2);
         WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
 
-        WorkbenchUtils.waitUntilProgressViewContains("Running simulations.*", 10);
+        WorkbenchUtils.waitUntilProgressViewContains("Running simulations.*", 30);
         //try { Thread.sleep(10000); } catch (InterruptedException e) {}
-        WorkbenchUtils.waitUntilProgressViewNotContains("Running simulations.*", 40);
+        WorkbenchUtils.waitUntilProgressViewNotContains("Running simulations.*", 120);
         
         showMessage(
                 "<b>Simulations completed!</b> Note the files that have been " +

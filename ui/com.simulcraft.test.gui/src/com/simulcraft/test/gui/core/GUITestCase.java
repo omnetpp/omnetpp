@@ -278,7 +278,7 @@ public abstract class GUITestCase
 
 	public static void waitUntilEventQueueBecomesEmpty() {
 		Assert.assertTrue("This method must not be called from the UI thread", Display.getCurrent()==null);
-		while (paused && PlatformUI.getWorkbench().getActiveWorkbenchWindow()!=null) {
+		while (paused && hasWorkbenchWindow()) {
 		    try {Thread.sleep(200);} catch (InterruptedException e) {}
 		    Thread.yield();
 		}
@@ -289,6 +289,17 @@ public abstract class GUITestCase
 			Thread.yield();
 		}
 	}
+
+    private static boolean hasWorkbenchWindow() {
+        // note: getActiveWorkbenchWindow() may only be called from UI thread...
+        final boolean[] result = new boolean[1];
+        Display.getDefault().syncExec(new Runnable() { 
+            public void run() {
+                result[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null;
+            }
+        });
+        return result[0];
+    }
 
     private static void doPendingAsyncExecs() {
         // just do an empty syncExec(); it will be placed at the end of Display's queue,
