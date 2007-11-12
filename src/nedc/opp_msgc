@@ -132,6 +132,7 @@ if ($here eq "true")
     $ccfile =~ s|^.*/||;
 }
 
+$obsoletesyntax = 0;
 $ret = 0;
 
 $msg = "";
@@ -486,34 +487,79 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         print STDERR "*** Error: type name '$msgname' is a reserved word\n"; $ret=1;
     }
 
+    $oldstyleproperties = "";
+    $fieldsandproperties= "";
+
     #
-    # check if there's some garbage before "fields:" or "properties:"
+    # match out part before "fields:" and "properties:"
     #
     $scrap = $body;
     $scrap =~ s/fields:(.*)$//s;
     $scrap =~ s/properties:(.*)$//s;
     if ($scrap =~ /[^ \t\n]/s)
     {
-        $scrap =~ s/\n\n+/\n\n/sg;
-        $scrap =~ s/^\n+//s;
-        $scrap =~ s/\n+$//s;
-        print STDERR "*** Error: some parts not understood in '$msgname' (nothing may occur before 'fields:' or 'properties:'):\n"; $ret=1;
-        print STDERR "'$scrap'\n";
-        next;
+        $fieldsandproperties = $scrap;
     }
 
     #
-    # process "properties:"
+    # match out "properties:" section (old 3.x syntax)
     #
-    $scrap = '';
     if ($body =~ /properties:(.*)$/s)
     {
-        $properties = $1;
-        $properties =~ s/fields:.*$//s;  # cut off fields section
-        while ($properties =~ s/^(.*?);//s)
+        $oldstyleproperties = $1;
+        $oldstyleproperties =~ s/fields:.*$//s;  # cut off fields section
+        $obsoletesyntax = 1;
+    }
+
+    #
+    # match out "fields:" section (old 3.x syntax)
+    #
+    if ($body =~ /fields:(.*)$/s)
+    {
+        $fieldsandproperties.= "\n" . $1;
+        $obsoletesyntax = 1;
+    }
+
+    #
+    # process $oldstyleproperties (old 3.x syntax)
+    #
+    $scrap = '';
+    while ($oldstyleproperties =~ s/^(.*?);//s)
+    {
+        $prop = $1;
+        if ($prop =~ /^\s*(.*?)\s*=\s*(.*?)\s*$/s)
         {
-            $prop = $1;
-            if ($prop =~ /^\s*(.*?)\s*=\s*(.*?)\s*$/s)
+            $propname = $1;
+            $propvalue = $2;
+            $props{$propname} = $propvalue;
+
+            if ($propname =~ /^($reservedwords)$/) {
+                print STDERR "*** Error: property name '$propname' is a reserved word\n"; $ret=1;
+            }
+        }
+        else {$scrap.=$prop;}
+    }
+    $scrap.=$oldstyleproperties;
+    if ($scrap =~ /[^ \t\n]/s)
+    {
+        $scrap =~ s/\n\n+/\n\n/sg;
+        $scrap =~ s/^\n+//s;
+        $scrap =~ s/\n+$//s;
+        print STDERR "*** Error: some parts not understood in the 'properties' section of '$msgname':\n"; $ret=1;
+        print STDERR "'$scrap'\n";
+    }
+
+    #
+    # process $fieldsandproperties
+    #
+    $scrap = '';
+    while ($fieldsandproperties =~ s/^(.*?);//s)
+    {
+        $fieldorproperty = $1;
+        if ($fieldorproperty =~ /^\s*\@.*/)
+        {
+            $prop = $fieldorproperty;
+            if ($prop =~ /^\s*\@\s*(.*?)\s*\(\s*(.*?)\s*\)\s*$/s)
             {
                 $propname = $1;
                 $propvalue = $2;
@@ -525,27 +571,9 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             }
             else {$scrap.=$prop;}
         }
-        $scrap.=$properties;
-        if ($scrap =~ /[^ \t\n]/s)
+        else
         {
-            $scrap =~ s/\n\n+/\n\n/sg;
-            $scrap =~ s/^\n+//s;
-            $scrap =~ s/\n+$//s;
-            print STDERR "*** Error: some parts not understood in 'properties' section of '$msgname':\n"; $ret=1;
-            print STDERR "'$scrap'\n";
-        }
-    }
-
-    #
-    # process "fields:"
-    #
-    $scrap = '';
-    if ($body =~ /fields:(.*)$/s)
-    {
-        $fields = $1;
-        while ($fields =~ s/^(.*?);//s)
-        {
-            $field = $1;
+            $field = $fieldorproperty;
 
             #XXX property values cannot contain parens "(..)", because regex doesn't count parens, just stops at first ")"...
 
@@ -661,15 +689,15 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             }
             else {$scrap.=$field;}
         }
-        $scrap.=$fields;
-        if ($scrap =~ /[^ \t\n]/s)
-        {
-            $scrap =~ s/\n\n+/\n\n/sg;
-            $scrap =~ s/^\n+//s;
-            $scrap =~ s/\n+$//s;
-            print STDERR "*** Error: some parts not understood in 'fields' section of '$msgname':\n"; $ret=1;
-            print STDERR "'$scrap'\n";
-        }
+    }
+    $scrap.=$propertiesandfields;
+    if ($scrap =~ /[^ \t\n]/s)
+    {
+        $scrap =~ s/\n\n+/\n\n/sg;
+        $scrap =~ s/^\n+//s;
+        $scrap =~ s/\n+$//s;
+        print STDERR "*** Error: some parts not understood in '$msgname':\n"; $ret=1;
+        print STDERR "'$scrap'\n";
     }
 
     # now generate code
@@ -684,6 +712,11 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     if ($generate_descriptions) {
         generateDescriptorClass();
     }
+}
+
+if ($obsoletesyntax)
+{
+    print STDERR "*** Warning: obsolete syntax: 'properties' and 'fields' keywords can be left out if properties get converted to the new @property(value) syntax. Example: customize=true becomes @customize(true)\n";
 }
 
 $scrap = $msg;
