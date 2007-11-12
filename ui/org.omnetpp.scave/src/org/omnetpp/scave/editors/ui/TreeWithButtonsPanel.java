@@ -52,9 +52,8 @@ public class TreeWithButtonsPanel extends Composite {
 	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
 	 */
 	protected FormToolkit getFormToolkit() {
-		if (formToolkit == null) {
-			formToolkit = new FormToolkit(Display.getCurrent());
-		}
+		if (formToolkit == null)
+			formToolkit = new FormToolkit2(Display.getCurrent());
 		return formToolkit;
 	}
 

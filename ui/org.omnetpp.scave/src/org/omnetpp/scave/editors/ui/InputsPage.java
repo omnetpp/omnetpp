@@ -139,9 +139,8 @@ public class InputsPage extends ScaveEditorPage {
 	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
 	 */
 	private FormToolkit getFormToolkit() {
-		if (formToolkit == null) {
-			formToolkit = new FormToolkit(Display.getCurrent());
-		}
+		if (formToolkit == null)
+			formToolkit = new FormToolkit2(Display.getCurrent());
 		return formToolkit;
 	}
 

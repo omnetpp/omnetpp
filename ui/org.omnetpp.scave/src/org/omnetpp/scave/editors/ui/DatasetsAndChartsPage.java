@@ -81,7 +81,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 */
 	private FormToolkit getFormToolkit() {
 		if (formToolkit == null)
-			formToolkit = new FormToolkit(Display.getCurrent());
+			formToolkit = new FormToolkit2(Display.getCurrent());
 		return formToolkit;
 	}
 
