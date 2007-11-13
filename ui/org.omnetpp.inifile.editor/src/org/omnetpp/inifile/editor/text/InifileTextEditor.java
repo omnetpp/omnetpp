@@ -24,7 +24,6 @@ import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
 /**
  * Text editor for ini files.
  */
-//XXX status bar does not show cursor position etc!!!
 public class InifileTextEditor extends TextEditor {
     public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.inifileEditor" };
     /** The projection support */

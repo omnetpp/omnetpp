@@ -12,12 +12,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.List;
 
-public class EditableList extends Composite {
-	private List list;
 
-	private Button add;
-	
-	private Button remove;
+public class EditableList extends Composite {
+    protected String addDialogTitle = "Add element";
+    protected String addDialogMessage = "Please enter the data";
+    protected List list;
+    protected Button add;
+    protected Button remove;
 
 	public EditableList(Composite parent, int style) {
 		super(parent, SWT.NONE);
@@ -35,13 +36,7 @@ public class EditableList extends Composite {
 		add.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String addDialogTitle = "Add element";
-				String addDialogMessage = "Please enter the data";
-				InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", null);
-
-				if (dialog.open() == Window.OK) {
-					list.add(dialog.getValue());
-				}
+				onAddButton();
 			}
 		});
 
@@ -51,19 +46,49 @@ public class EditableList extends Composite {
 		remove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				list.remove(list.getSelectionIndices());
+				onRemoveButton();
 			}
 		});
 	}
-	
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        list.setEnabled(enabled);
+        add.setEnabled(enabled);
+        remove.setEnabled(enabled);
+    }
+
+    public String getAddDialogTitle() {
+        return addDialogTitle;
+    }
+
+    public void setAddDialogTitle(String addDialogTitle) {
+        this.addDialogTitle = addDialogTitle;
+    }
+
+    public String getAddDialogMessage() {
+        return addDialogMessage;
+    }
+
+    public void setAddDialogMessage(String addDialogMessage) {
+        this.addDialogMessage = addDialogMessage;
+    }
+
+	/**
+	 * Override if you need a different Add dialog.
+	 */
+    protected void onAddButton() {
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", null);
+        if (dialog.open() == Window.OK)
+            list.add(dialog.getValue());
+    }
+
+    protected void onRemoveButton() {
+        list.remove(list.getSelectionIndices());
+    }
+
 	public List getList() {
 		return list;
 	}
-	
-	@Override
-	public void setEnabled(boolean enabled) {
-		list.setEnabled(enabled);
-		add.setEnabled(enabled);
-		remove.setEnabled(enabled);
-	}
+
 }

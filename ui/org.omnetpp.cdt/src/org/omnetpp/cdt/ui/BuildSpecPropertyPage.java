@@ -289,6 +289,10 @@ public class BuildSpecPropertyPage extends PropertyPage {
                 options = buildSpec.getFolderOptions(folder);
         String value = options == null ? "" : options.toString();
 
+        //XXX just testing
+        MakemakeOptionsDialog dlg = new MakemakeOptionsDialog(getShell(), options);
+        dlg.open();
+        
         // open dialog  
         //TODO something more sophisticated...
         InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, new IInputValidator() {

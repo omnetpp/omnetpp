@@ -6,11 +6,17 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.common.ui.EditableList;
+import org.omnetpp.common.util.StringUtils;
 
 
 /**
@@ -22,6 +28,8 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 
 	// the result
     private MakemakeOptions result;
+
+    private TabFolder tabfolder;
 
     /**
      * Creates the dialog.
@@ -52,6 +60,55 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1,false));
 
+        tabfolder = new TabFolder(composite, SWT.TOP);
+        tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        // create pages
+        Composite targetPage = createTabPage("Target");
+        Composite includePage = createTabPage("Include");
+        Composite linkPage = createTabPage("Link");
+        Composite customPage = createTabPage("Custom");
+
+        tabfolder.setSelection(0);
+        
+        // "Target" page
+        targetPage.setLayout(new GridLayout(1,false));
+        Group group = new Group(targetPage, SWT.NONE);
+        group.setText("Target type:");
+        group.setLayout(new GridLayout(1,false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        Button b1 = createRadioButton(group, "Executable");
+        Button b2 = createRadioButton(group, "Shared library (.dll or .so)");
+        Button b3 = createRadioButton(group, "Static library (.lib or .a)");
+        Button b4 = createRadioButton(group, "Compile only");
+
+        Label l1 = new Label(targetPage, SWT.NONE);
+        l1.setText("Target name:\n ( ) default\n ( ) specify: [.........]");
+
+        
+        // "Include" page
+        includePage.setLayout(new GridLayout(1,false));
+        Button autoCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines");
+        autoCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+
+        Label l = new Label(includePage, SWT.NONE);
+        l.setText("Additional include directories:");
+        EditableList includeList = new EditableList(includePage, SWT.BORDER);
+        includeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        includeList.setAddDialogTitle("Add Include Directory");
+        includeList.setAddDialogMessage("Enter include directory:");  //XXX workspace path? fs path?
+        
+
+        // "Link" page
+        linkPage.setLayout(new GridLayout(1,false));
+        Label l3 = new Label(linkPage, SWT.NONE);
+        l3.setText("Link with:");
+        Button bb1 = createRadioButton(linkPage, "object files from all folders");
+        Button bb2 = createRadioButton(linkPage, "specify directories, shared libs, static libs:");
+        EditableList linkWith = new EditableList(linkPage, SWT.BORDER);
+        linkWith.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        
 //      enum Type {EXE, SO, NOLINK};
 //      public List<String> args;
 //      public String makefile = "Makefile.vc";
@@ -187,7 +244,29 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 //		});
 //		return rb;
 //	}
-    
+
+	protected Button createCheckbox(Composite parent, String text) {
+	    Button button = new Button(parent, SWT.CHECK);
+	    button.setText(text);
+	    return button;
+	}
+
+	protected Button createRadioButton(Composite parent, String text) {
+	    Button button = new Button(parent, SWT.RADIO);
+	    button.setText(text);
+	    return button;
+	}
+
+	
+	protected Composite createTabPage(String text) {
+	    TabItem item = new TabItem(tabfolder, SWT.NONE);
+	    item.setText(text);
+	    Composite composite = new Composite(tabfolder, SWT.NONE);
+	    item.setControl(composite);
+	    return composite;
+	}
+
+	
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);

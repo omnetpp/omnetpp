@@ -493,7 +493,7 @@ public class Demo extends GUITestCase {
         		"<b>replications</b>.", 3);
         logicalTree.findTreeItemByContent(".*replication.*").ensureExpanded();
         Access.sleep(2);
-        showMessage("One instance of running a replication receives a unique Run ID.", 2);
+        showMessage("Each instance of running a replication receives a unique Run ID.", 2);
         Access.sleep(1);
         
         // browse data
