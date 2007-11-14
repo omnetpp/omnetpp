@@ -1,5 +1,8 @@
 package org.omnetpp.common.ui;
 
+import java.util.Arrays;
+
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -16,6 +19,8 @@ import org.eclipse.swt.widgets.List;
 public class EditableList extends Composite {
     protected String addDialogTitle = "Add element";
     protected String addDialogMessage = "Please enter the data";
+    protected boolean emptyStringAllowed = false;
+    protected boolean forceUnique = true;
     protected List list;
     protected Button add;
     protected Button remove;
@@ -74,13 +79,45 @@ public class EditableList extends Composite {
         this.addDialogMessage = addDialogMessage;
     }
 
+    public boolean isEmptyStringAllowed() {
+        return emptyStringAllowed;
+    }
+
+    public void setEmptyStringAllowed(boolean emptyStringAllowed) {
+        this.emptyStringAllowed = emptyStringAllowed;
+    }
+
+    public boolean isForceUnique() {
+        return forceUnique;
+    }
+
+    public void setForceUnique(boolean forceUnique) {
+        this.forceUnique = forceUnique;
+    }
+
 	/**
 	 * Override if you need a different Add dialog.
 	 */
     protected void onAddButton() {
-        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", null);
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", new IInputValidator() {
+            public String isValid(String newText) {
+                return isValidNewItem(newText);
+            }
+        });
         if (dialog.open() == Window.OK)
             list.add(dialog.getValue());
+    }
+
+    /**
+     * Override if you need different validation of input strings.
+     */
+    protected String isValidNewItem(String newText) {
+        newText = newText.trim();
+        if (!emptyStringAllowed && newText.equals(""))
+            return "Text cannot be empty";
+        if (forceUnique && Arrays.asList(list.getItems()).contains(newText))
+            return "Item is already in the list";
+        return null;
     }
 
     protected void onRemoveButton() {

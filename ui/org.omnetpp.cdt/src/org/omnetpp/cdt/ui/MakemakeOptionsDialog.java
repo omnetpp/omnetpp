@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.ui.EditableList;
 import org.omnetpp.common.util.StringUtils;
@@ -76,29 +77,37 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         Group group = new Group(targetPage, SWT.NONE);
         group.setText("Target type:");
         group.setLayout(new GridLayout(1,false));
-        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        Button b1 = createRadioButton(group, "Executable");
-        Button b2 = createRadioButton(group, "Shared library (.dll or .so)");
-        Button b3 = createRadioButton(group, "Static library (.lib or .a)");
-        Button b4 = createRadioButton(group, "Compile only");
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        Button targetExecutableRadioButton = createRadioButton(group, "Executable");
+        Button targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll or .so)");
+        Button targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)");
+        Button targetCompileOnlyRadioButton = createRadioButton(group, "Compile only");
 
-        Label l1 = new Label(targetPage, SWT.NONE);
-        l1.setText("Target name:\n ( ) default\n ( ) specify: [.........]");
-
+        Group targetNameGroup = new Group(targetPage, SWT.NONE);
+        targetNameGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        targetNameGroup.setLayout(new GridLayout(2,false));
+        targetNameGroup.setText("Target name:");
+        Button defaultTargetName = createRadioButton(targetNameGroup, "Default");
+        defaultTargetName.setLayoutData(new GridData());
+        defaultTargetName.setToolTipText("Default target name will be derived from the directory name");
+        ((GridData)defaultTargetName.getLayoutData()).horizontalSpan = 2;
+        Button specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name or relative path: ");
+        Text targetNameText = new Text(targetNameGroup, SWT.BORDER);
+        targetNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
         // "Include" page
         includePage.setLayout(new GridLayout(1,false));
         Button autoCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines");
         autoCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
 
-        Label l = new Label(includePage, SWT.NONE);
-        l.setText("Additional include directories:");
+        createLabel(includePage, "Additional include directories:");
+//        Label l = new Label(includePage, SWT.NONE);
+//        l.setText("Additional include directories:");
         EditableList includeList = new EditableList(includePage, SWT.BORDER);
         includeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         includeList.setAddDialogTitle("Add Include Directory");
         includeList.setAddDialogMessage("Enter include directory:");  //XXX workspace path? fs path?
         
-
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
         Label l3 = new Label(linkPage, SWT.NONE);
@@ -107,6 +116,8 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         Button bb2 = createRadioButton(linkPage, "specify directories, shared libs, static libs:");
         EditableList linkWith = new EditableList(linkPage, SWT.BORDER);
         linkWith.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        // "Custom" page
         
         
 //      enum Type {EXE, SO, NOLINK};
@@ -226,7 +237,6 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 
 	protected Label createLabel(Composite composite, String text) {
 		Label label = new Label(composite, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
 		label.setText(text);
 		return label;
 	}
@@ -262,6 +272,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 	    TabItem item = new TabItem(tabfolder, SWT.NONE);
 	    item.setText(text);
 	    Composite composite = new Composite(tabfolder, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	    item.setControl(composite);
 	    return composite;
 	}
