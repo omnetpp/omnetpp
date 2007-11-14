@@ -472,6 +472,7 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "cksplit.h"
 #include "cpsquare.h"
 #include "cstrtokenizer.h"
+#include "cxmlelement.h"
 //void _dummy_for_env();
 void std_sim_descriptor_dummy();
 void _sim_dummy_func()
@@ -495,6 +496,7 @@ void _sim_dummy_func()
       cStringTokenizer tok("");
       tok.nextToken();
       std_sim_descriptor_dummy();
+      cXMLElement a(0,0,0);
       //_dummy_for_env();
 }
 
