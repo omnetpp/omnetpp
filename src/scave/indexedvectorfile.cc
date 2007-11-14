@@ -209,7 +209,7 @@ long IndexedVectorFileReader::collectEntriesInEventnumInterval(long startEventNu
     {
         const Block &block = vector->blocks[i];
         loadBlock(block);
-        
+
         for (long j = 0; j < block.count(); ++j)
         {
             OutputVectorEntry &entry = currentEntries[j];
@@ -400,7 +400,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
                     else
                         bufferPrintf(port,"%s", BigDecimal::ttoa(buf, a.xp, endp)); break;
                 case 'V': bufferPrintf(port,"%.*g", prec, a.y); break;
-                case 'E': bufferPrintf(port,"%ld", a.eventNumber); break; 
+                case 'E': bufferPrintf(port,"%ld", a.eventNumber); break;
                 default: throw opp_runtime_error("unknown column type: '%c'", columns[j]);
                 }
             }
@@ -489,10 +489,10 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
     			"IndexedVectorFileWriterNodeType::getPort(): "
     			"expected an integer as vectorId, received '%s'",
     			tokens[0]);
-    
-    char* moduleName = tokens[1];
-    char* name = tokens[2];
-    char* columns = (numTokens < 4 ? "TV" : tokens[3]); 
+
+    const char* moduleName = tokens[1];
+    const char* name = tokens[2];
+    const char* columns = (numTokens < 4 ? "TV" : tokens[3]);
     return node1->addVector(vectorId, moduleName, name, columns);
 }
 
