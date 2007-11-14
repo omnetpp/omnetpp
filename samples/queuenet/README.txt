@@ -4,7 +4,7 @@ Queuinglib
 QueueNET is a queuing network tutorial and queuing library for OMNeT++.
 It is the successor of the Queue, Queueing, Fifo samples from earlier
 versions of OMNeT++. It contains several basic building blocks that can be
-used to build more complex queueing theory related networks. Jobs are passed
+used to build more complex queuing theory related networks. Jobs are passed
 between these blocks.
 
 Basic building blocks:

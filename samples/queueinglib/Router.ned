@@ -30,7 +30,7 @@ simple Router
         @group(Queueing);
         @display("i=block/routing");
         string routingAlgorithm = default("random") @enum("random","roundRobin","shortestQueue","minDelay");
-        volatile int randomGateIndex = intuniform(0, sizeof(out)-1);    // the destination gate in case of random routing
+        volatile int randomGateIndex = default(intuniform(0, sizeof(out)-1));    // the destination gate in case of random routing
     gates:
         input in[];
         output out[];
