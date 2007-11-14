@@ -67,10 +67,10 @@ public class MsgEditor extends TextEditor {
         if (MsgTreeUtil.needsConversion(doc.get())) {
             String fileName = getEditorInput().getName();
             if (MessageDialog.openQuestion(getSite().getShell(), "Old Msg File Syntax", 
-                    "File \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
+                    "The file \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
                     "This includes converting properties to the \"@\" syntax, and removing " +
-                    "the fields and properties keywords. " +
-            "Do you want to convert the editor contents now?")) {
+                    "the \"fields:\" and \"properties:\" keywords. " +
+                    "Do you want to convert the editor contents now?")) {
                 String newText = MsgTreeUtil.convertToNewSyntax(doc.get());
                 doc.set(newText);
             }
