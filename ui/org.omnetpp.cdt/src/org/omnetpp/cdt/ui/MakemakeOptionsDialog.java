@@ -101,8 +101,6 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         autoCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
 
         createLabel(includePage, "Additional include directories:");
-//        Label l = new Label(includePage, SWT.NONE);
-//        l.setText("Additional include directories:");
         EditableList includeList = new EditableList(includePage, SWT.BORDER);
         includeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         includeList.setAddDialogTitle("Add Include Directory");
@@ -110,14 +108,22 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
-        Label l3 = new Label(linkPage, SWT.NONE);
-        l3.setText("Link with:");
-        Button bb1 = createRadioButton(linkPage, "object files from all folders");
-        Button bb2 = createRadioButton(linkPage, "specify directories, shared libs, static libs:");
+        createLabel(linkPage, "Link with:");
+        Button cb1 = createCheckbox(linkPage, "All object files in this project");
+        Button cb2 = createCheckbox(linkPage, "All object files in this project, except in folders with custom Makefiles");
+        Button cb3 = createCheckbox(linkPage, "Code from referenced projects");
+        createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
         EditableList linkWith = new EditableList(linkPage, SWT.BORDER);
         linkWith.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         // "Custom" page
+        customPage.setLayout(new GridLayout(1,false));
+        createLabel(customPage, "Extra makemake options:");
+        Text extraMakemakeOptionsText = new Text(customPage, SWT.BORDER);
+        extraMakemakeOptionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        createLabel(customPage, "Code fragment to be inserted into the Makefile:");
+        Text makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
+        makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         
 //      enum Type {EXE, SO, NOLINK};
