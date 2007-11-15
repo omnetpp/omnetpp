@@ -1,0 +1,77 @@
+#
+# LINK.EXE wrapper: ensures that all symbols from LIB files will make it
+# into the executable. This is needed for LIB files that contain simple
+# modules or other self-registering extension components.
+#
+# Finds LIB files in the linker command line, uses dumpbin to extract the
+# list of public symbols from them, and turns them to linker command
+# files that contain an "/include:<symbol>" option for each symbol.
+#
+# See http://www.omnetpp.org/pmwiki/index.php?n=Main.VCOptNorefNotWorking
+# and http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
+#
+
+$verbose = 0;
+
+$DUMPBIN = "dumpbin";
+$LINKER = "link";
+$DUMPFILE = "dumpbin.out";
+
+@tempfiles = ();
+
+foreach $arg (@ARGV) {
+    if ($arg =~ /.*\.lib$/i) {
+        print("processing lib $arg...\n") if $verbose;
+
+        # check library exists
+        #FIXME needs to search in linker path!!!!
+        if (! -r $arg) {
+            error("cannot open file '$arg'");
+        }
+
+        # invoke dumpbin and redirect output into file
+        unlink($DUMPFILE) || error("cannot remove existing $DUMPFILE") if -r $DUMPFILE;
+        @prog = ($DUMPBIN, "/linkermember:1", $arg, ">$DUMPFILE");
+        system($ENV{COMSPEC}, "/c", @prog)==0 || error("error invoking dumpbin (check $DUMPFILE)");
+
+        # read dumpbin output
+        open(IN, $DUMPFILE) || error("cannot open $DUMPFILE");
+        read(IN, $txt, 100000000) || error("cannot read $DUMPFILE");
+        close(IN);
+        unlink($DUMPFILE) || error("cannot remove temp file $DUMPFILE");
+
+        # parse out useful part
+        if (!($txt =~ /^Microsoft.*\n *File Type: *LIBRARY\n.*\n *[0-9]+ public symbols\n(.*)\n +Summary\n.*/s)) {
+            error("unexpected dumpbin output, see $DUMPFILE");
+        }
+        $symbols = $1;
+
+        # prefix each symbol with "/include:", and write option file
+        $symbols =~ s|^ +[0-9A-F]+ |/include:|mgi;
+        $filename = $arg;
+        $filename =~ s/[^A-Z0-9_]/-/gi;
+        $filename .= ".opt";
+        open(OUT, ">".$filename) || error("cannot open $filename for write");
+        print OUT $symbols; #FIXME || error("cannot write $filename");
+        close(OUT) || error("cannot close $filename");
+        push(@tempfiles, $filename);
+    }
+}
+
+# put together linker command line and invoke linker
+@cmdline = ($LINKER);
+foreach $tempfile (@tempfiles) {push(@cmdline, "\@$tempfile");}
+foreach $arg (@ARGV) {push(@cmdline, $arg);}
+system($ENV{COMSPEC}, "/c", @cmdline)==0 || error("error invoking linker");
+
+# remove temporary linker command files
+foreach $tempfile (@tempfiles) {
+    unlink $tempfile || error("cannot remove temp file $tempfile");
+}
+
+sub error {
+    my $msg = shift;
+    print STDERR "linkall: $msg\n";
+    exit(1);
+}
+
