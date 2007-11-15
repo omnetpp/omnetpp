@@ -17,6 +17,14 @@ $DUMPBIN = "dumpbin";
 $LINKER = "link";
 $DUMPFILE = "dumpbin.out";
 
+@knownlibs = (
+    "sim_std.lib", "envir.lib", "cmdenv.lib", "tkenv.lib",
+    "common.lib", "nedxml.lib", "layout.lib", "tcl84.lib",
+    "tk84.lib", "blt24.lib", "zdll.lib", "libxml2.lib",
+    "iconv.lib", "wsock32.lib"
+);
+foreach $i (@knownlibs) {$knownlibs{$i} = 1;}
+
 # collect linker path
 @libpath = split(';', $ENV{LIB});
 foreach $arg (@ARGV) {
@@ -33,6 +41,13 @@ $i = 0;
 foreach $arg (@ARGV) {
     if ($arg =~ /.*\.lib$/i) {
         $lib = $arg;
+
+        # ignore known libs
+        if ($knownlibs{$lib}) {
+            print("skipping known lib $lib\n") if $verbose;
+            next;
+        }
+
         print("processing lib $lib...\n") if $verbose;
 
         # find library in linker path
