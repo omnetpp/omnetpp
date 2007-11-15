@@ -297,7 +297,7 @@ class COMMON_API Expression
 /**
  * Function object to implement all math.h functions.
  */
-class MathFunction : public Expression::Functor
+class COMMON_API MathFunction : public Expression::Functor
 {
   private:
     std::string funcname;

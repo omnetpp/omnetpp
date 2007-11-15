@@ -18,18 +18,19 @@
 #include <string>
 #include "scavedefs.h"
 
-extern double dblNaN;
-extern double dblPositiveInfinity;
-extern double dblNegativeInfinity;
+SCAVE_API extern double dblNaN;
+SCAVE_API extern double dblPositiveInfinity;
+SCAVE_API extern double dblNegativeInfinity;
 
 inline bool isNaN(double d) { return d != d;}
 inline bool isPositiveInfinity(double d) { return d==dblPositiveInfinity; }
 inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
 
-bool parseInt(const char *str, int &dest);
-bool parseLong(const char *str, long &dest);
-bool parseDouble(const char *str, double &dest);
-bool parseSimtime(const char *str, simultime_t &dest);
-std::string unquoteString(const char *str);
+SCAVE_API bool parseInt(const char *str, int &dest);
+SCAVE_API bool parseLong(const char *str, long &dest);
+SCAVE_API bool parseDouble(const char *str, double &dest);
+SCAVE_API bool parseSimtime(const char *str, simultime_t &dest);
+SCAVE_API std::string unquoteString(const char *str);
+
 #endif
 
