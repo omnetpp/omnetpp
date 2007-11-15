@@ -11,27 +11,41 @@
 # and http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
 
-$verbose = 0;
+$verbose = 1;
 
 $DUMPBIN = "dumpbin";
 $LINKER = "link";
 $DUMPFILE = "dumpbin.out";
 
 @tempfiles = ();
-
+@libpath = split(';', $ENV{LIB});
+$i = 0;
 foreach $arg (@ARGV) {
+    if ($arg =~ /[-\/]libpath:(.*)/i) {
+        $dir = $1;
+        print("adding dir to lib path: $dir\n") if $verbose;
+        push(@libpath, $dir);
+    }
     if ($arg =~ /.*\.lib$/i) {
-        print("processing lib $arg...\n") if $verbose;
+        $lib = $arg;
+        print("processing lib $lib...\n") if $verbose;
 
-        # check library exists
-        #FIXME needs to search in linker path!!!!
-        if (! -r $arg) {
-            error("cannot open file '$arg'");
+        # find library in linker path
+        if (! -r $lib) {
+            foreach $libdir (@libpath) {
+                if (-r "$libdir/$lib") {
+                    $lib = "$libdir/$lib";
+                    break;
+                }
+            }
+            if (! -r $lib) {
+                error("cannot find file '$lib' (searched lib path: ". join(';', @libpath) . ")");
+            }
         }
 
         # invoke dumpbin and redirect output into file
         unlink($DUMPFILE) || error("cannot remove existing $DUMPFILE") if -r $DUMPFILE;
-        @prog = ($DUMPBIN, "/linkermember:1", $arg, ">$DUMPFILE");
+        @prog = ($DUMPBIN, "/linkermember:1", $lib, ">$DUMPFILE");
         system($ENV{COMSPEC}, "/c", @prog)==0 || error("error invoking dumpbin (check $DUMPFILE)");
 
         # read dumpbin output
@@ -48,7 +62,7 @@ foreach $arg (@ARGV) {
 
         # prefix each symbol with "/include:", and write option file
         $symbols =~ s|^ +[0-9A-F]+ |/include:|mgi;
-        $filename = $arg;
+        $filename = $arg . "-" . $i++;
         $filename =~ s/[^A-Z0-9_]/-/gi;
         $filename .= ".opt";
         open(OUT, ">".$filename) || error("cannot open $filename for write");
@@ -62,6 +76,7 @@ foreach $arg (@ARGV) {
 @cmdline = ($LINKER);
 foreach $tempfile (@tempfiles) {push(@cmdline, "\@$tempfile");}
 foreach $arg (@ARGV) {push(@cmdline, $arg);}
+print("invoking linker: ".join(' ', @cmdline)) if $verbose;
 system($ENV{COMSPEC}, "/c", @cmdline)==0 || error("error invoking linker");
 
 # remove temporary linker command files
