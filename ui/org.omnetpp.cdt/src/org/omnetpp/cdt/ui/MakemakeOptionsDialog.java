@@ -108,10 +108,12 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
-        createLabel(linkPage, "Link with:");
-        Button cb1 = createCheckbox(linkPage, "All object files in this project");
-        Button cb2 = createCheckbox(linkPage, "All object files in this project, except in folders with custom Makefiles");
-        Button cb3 = createCheckbox(linkPage, "Code from referenced projects");
+        Group linkGroup = createGroup(linkPage, "Link with:");
+        linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        linkGroup.setLayout(new GridLayout(1,false));
+        Button cb1 = createCheckbox(linkGroup, "All object files in this project");
+        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles");
+        Button cb3 = createCheckbox(linkGroup, "Code from referenced projects");
         createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
         EditableList linkWith = new EditableList(linkPage, SWT.BORDER);
         linkWith.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -247,19 +249,11 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 		return label;
 	}
 
-//    protected Button createRadioButton(Group group, String label, final KeyType value) {
-//		Button rb = new Button(group, SWT.RADIO);
-//		rb.setText(label);
-//		rb.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent e) {
-//				if (keyType != value) { 
-//					keyType = value;
-//					buildTableContents();
-//				}
-//			}
-//		});
-//		return rb;
-//	}
+	protected Group createGroup(Composite composite, String text) {
+	    Group group = new Group(composite, SWT.NONE);
+	    group.setText(text);
+        return group;
+    }
 
 	protected Button createCheckbox(Composite parent, String text) {
 	    Button button = new Button(parent, SWT.CHECK);
