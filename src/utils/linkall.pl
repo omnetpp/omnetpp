@@ -17,15 +17,20 @@ $DUMPBIN = "dumpbin";
 $LINKER = "link";
 $DUMPFILE = "dumpbin.out";
 
-@tempfiles = ();
+# collect linker path
 @libpath = split(';', $ENV{LIB});
-$i = 0;
 foreach $arg (@ARGV) {
     if ($arg =~ /[-\/]libpath:(.*)/i) {
         $dir = $1;
         print("adding dir to lib path: $dir\n") if $verbose;
         push(@libpath, $dir);
     }
+}
+
+# process libs
+@tempfiles = ();
+$i = 0;
+foreach $arg (@ARGV) {
     if ($arg =~ /.*\.lib$/i) {
         $lib = $arg;
         print("processing lib $lib...\n") if $verbose;
