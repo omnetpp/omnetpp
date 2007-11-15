@@ -25,7 +25,7 @@
 /**
  * NEDXML-based cModuleType: takes all info from cNEDLoader
  */
-class cDynamicModuleType : public cModuleType
+class SIM_API cDynamicModuleType : public cModuleType
 {
   protected:
     /** Redefined from cModuleType */

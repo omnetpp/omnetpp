@@ -34,7 +34,7 @@ class cCommBuffer;
  *
  * @ingroup Parsim
  */
-class cNoSynchronization : public cParsimProtocolBase
+class SIM_API cNoSynchronization : public cParsimProtocolBase
 {
   public:
     /**

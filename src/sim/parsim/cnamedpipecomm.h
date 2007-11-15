@@ -57,7 +57,7 @@ typedef int PIPE;
  *
  * @ingroup Parsim
  */
-class cNamedPipeCommunications : public cParsimCommunications
+class SIM_API cNamedPipeCommunications : public cParsimCommunications
 {
   protected:
     int numPartitions;

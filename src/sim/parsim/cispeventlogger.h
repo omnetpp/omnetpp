@@ -33,7 +33,7 @@
  *
  * @ingroup Parsim
  */
-class cISPEventLogger : public cNullMessageProtocol
+class SIM_API cISPEventLogger : public cNullMessageProtocol
 {
   protected:
     FILE *fout;  // the event log file (stores ExternalEvent's)

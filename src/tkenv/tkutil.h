@@ -60,10 +60,10 @@
   }
 
 
-//
-// Quoting strings for Tcl_Eval
-//
-class TclQuotedString
+/**
+ * Quoting strings for Tcl_Eval
+ */
+class TKENV_API TclQuotedString
 {
   private:
     char buf[80];  // used only if string is short, to spare alloc/dealloc

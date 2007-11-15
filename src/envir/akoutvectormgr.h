@@ -34,7 +34,7 @@
  *
  * @ingroup Envir
  */
-class cAkOutputVectorManager : public cFileOutputVectorManager
+class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
 {
     struct sAkVectorData : sVectorData {
        bool ak_controlled;  // under Akaroa control or not

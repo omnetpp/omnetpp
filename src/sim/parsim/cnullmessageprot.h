@@ -35,7 +35,7 @@ class cNMPLookahead;
  *
  * @ingroup Parsim
  */
-class cNullMessageProtocol : public cParsimProtocolBase
+class SIM_API cNullMessageProtocol : public cParsimProtocolBase
 {
   protected:
     struct PartitionInfo

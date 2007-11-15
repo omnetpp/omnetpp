@@ -35,7 +35,7 @@
  *
  * @ingroup Envir
  */
-class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
+class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManager
 {
   protected:
     struct sBlock {

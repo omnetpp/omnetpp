@@ -46,7 +46,7 @@ class cParsimPartition;
  *
  * @ingroup Parsim
  */
-class cProxyGate : public cGate // noncopyable
+class SIM_API cProxyGate : public cGate // noncopyable
 {
   private:
     cParsimPartition *partition;

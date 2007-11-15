@@ -41,7 +41,7 @@ typedef std::vector<std::string> StringVector;
 /**
  * Values arranged in a two dimensional array.
  */
-class XYDataset
+class SCAVE_API XYDataset
 {
     private:
         typedef ScalarResult Key;

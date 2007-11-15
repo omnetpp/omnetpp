@@ -54,7 +54,7 @@ class cCommBuffer;
  *
  * @ingroup Parsim
  */
-class cParsimPartition : public cObject
+class SIM_API cParsimPartition : public cObject
 {
   protected:
     cSimulation *sim;

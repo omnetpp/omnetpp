@@ -31,7 +31,7 @@ class cParValue;
  *
  * @ingroup NetworkBuilder
  */
-class cExpressionBuilder
+class SIM_API cExpressionBuilder
 {
   protected:
     // configuration

@@ -28,7 +28,7 @@
  *
  * @ingroup Parsim
  */
-class cPtrPassingMPICommBuffer : public cMPICommBuffer
+class SIM_API cPtrPassingMPICommBuffer : public cMPICommBuffer
 {
   public:
     /**

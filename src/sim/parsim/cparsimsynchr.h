@@ -48,7 +48,7 @@ class cParsimCommunications;
  *
  * @ingroup Parsim
  */
-class cParsimSynchronizer : public cScheduler
+class SIM_API cParsimSynchronizer : public cScheduler
 {
   protected:
     cParsimPartition *partition;

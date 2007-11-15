@@ -28,7 +28,7 @@
 /**
  * Serves as a base class for inspector factories of specific classes.
  */
-class cInspectorFactory : public cNoncopyableOwnedObject
+class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
 {
   public:
     /** @name Constructors, destructor, assignment. */

@@ -19,6 +19,8 @@
 #ifndef __ENUMSTR_H
 #define __ENUMSTR_H
 
+#include "cmddefs.h"
+
 /**
  * Loops through numbers in a string like "1,2,5..10", expanding ranges.
  * Both ".." and "-" are accepted for ranges.
@@ -26,7 +28,7 @@
  * This is used for implementing the -r command-line option and
  * the cmdenv-runs-to-execute= configuration option.
  */
-class EnumStringIterator
+class CMDENV_API EnumStringIterator
 {
      const char *str;  // pointer to the original string (not a copy)
      int current, until;

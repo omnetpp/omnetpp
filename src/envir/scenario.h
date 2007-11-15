@@ -28,7 +28,7 @@
  * Helper class for SectionBasedConfiguration: Resolves iterations in a scenario.
  * May be used as an iterator as well.
  */
-class Scenario
+class ENVIR_API Scenario
 {
   public:
     typedef SectionBasedConfiguration::IterationVariable IterationVariable;

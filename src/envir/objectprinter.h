@@ -30,7 +30,7 @@
  * A utility class to serialize an object in text form. It is currently used
  * to record message data into the event log file.
  */
-class ObjectPrinter
+class ENVIR_API ObjectPrinter
 {
     protected:
         int indentSize;

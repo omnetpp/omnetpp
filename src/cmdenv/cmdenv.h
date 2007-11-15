@@ -27,7 +27,7 @@
 /**
  * Command line user interface.
  */
-class TCmdenvApp : public TOmnetApp
+class CMDENV_API TCmdenvApp : public TOmnetApp
 {
    protected:
      // new simulation options:

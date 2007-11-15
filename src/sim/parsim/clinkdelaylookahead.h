@@ -27,7 +27,7 @@
  *
  * @ingroup Parsim
  */
-class cLinkDelayLookahead : public cNMPLookahead
+class SIM_API cLinkDelayLookahead : public cNMPLookahead
 {
   protected:
     struct PartitionInfo

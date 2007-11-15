@@ -27,7 +27,7 @@
  *
  * @ingroup Parsim
  */
-class cAdvancedLinkDelayLookahead : public cNMPLookahead
+class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
 {
   protected:
     struct LinkOut

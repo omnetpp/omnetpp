@@ -21,15 +21,17 @@
 #include <vector>
 #include <list>
 
+#include "tkdefs.h"
 #include "omnetapp.h"
 
 class Speedometer;
 class TInspector;
 
-//=========================================================================
-// TOmnetTkApp: Tcl/Tk-based user interface.
 
-class TOmnetTkApp : public TOmnetApp
+/**
+ * A Tcl/Tk-based user interface.
+ */
+class TKENV_API TOmnetTkApp : public TOmnetApp
 {
    public:
       //

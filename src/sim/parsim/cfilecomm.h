@@ -34,7 +34,7 @@
  *
  * @ingroup Parsim
  */
-class cFileCommunications : public cParsimCommunications
+class SIM_API cFileCommunications : public cParsimCommunications
 {
   protected:
     int numPartitions;

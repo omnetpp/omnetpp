@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include "envdefs.h"
 #include "cconfigreader.h"
 
 /**
@@ -24,7 +25,7 @@
  * Inifile contents is presented as key-value pairs grouped into sections.
  * This class does not try to make sense of section/key names.
  */
-class InifileReader : public cConfigurationReader
+class ENVIR_API InifileReader : public cConfigurationReader
 {
   protected:
     class KeyValue1 : public KeyValue {

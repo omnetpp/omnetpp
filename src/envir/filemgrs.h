@@ -33,7 +33,7 @@
  *
  * @ingroup Envir
  */
-class cFileOutputVectorManager : public cOutputVectorManager
+class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
 {
   protected:
     struct sRunData {
@@ -146,7 +146,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
  *
  * @ingroup Envir
  */
-class cFileOutputScalarManager : public cOutputScalarManager
+class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
 {
   protected:
     opp_string fname;  // output file name
@@ -218,7 +218,7 @@ class cFileOutputScalarManager : public cOutputScalarManager
  *
  * @ingroup Envir
  */
-class cFileSnapshotManager : public cSnapshotManager
+class ENVIR_API cFileSnapshotManager : public cSnapshotManager
 {
   protected:
     opp_string fname;  // output file name

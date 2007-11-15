@@ -36,7 +36,7 @@ class cCommBuffer;
  *
  * @ingroup Parsim
  */
-class cIdealSimulationProtocol : public cParsimProtocolBase
+class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
 {
   public:
     // stores one external event, as needed for the ISP algorithm

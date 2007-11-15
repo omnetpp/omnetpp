@@ -68,7 +68,7 @@ class SCAVE_API DataTable
  * A table containing an output vector or the result of processing output vectors.
  * The vector has two column, X and Y.
  */
-class XYDataTable : public DataTable
+class SCAVE_API XYDataTable : public DataTable
 {
     private:
         const XYArray *vec;
@@ -84,7 +84,7 @@ class XYDataTable : public DataTable
 /**
  * A table containing scalars grouped by some of its fields.
  */
-class ScalarDataTable : public DataTable
+class SCAVE_API ScalarDataTable : public DataTable
 {
     private:
         IDVectorVector scalars;
@@ -119,8 +119,8 @@ class SCAVE_API ScaveExport
         virtual std::string makeFileName(const std::string name) = 0;
         void open(const std::string filename);
         void close();
-        
-        virtual void saveVector(const std::string name, const std::string description, 
+
+        virtual void saveVector(const std::string name, const std::string description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
         virtual void saveScalars(const std::string name, const std::string description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
@@ -143,15 +143,15 @@ class MatlabStructExport : public ScaveExport
 };
 
 /**
- * Exports data as a Matlab script. 
+ * Exports data as a Matlab script.
  *
  * The script defines a structure containing a description field,
  * and a column fields for each column. The column fields are
  * equal length vectors.
  *
- * Note: Although BigDecimal values (e.g. simulation time) are 
+ * Note: Although BigDecimal values (e.g. simulation time) are
  * written out with the specified precision, Matlab reads them as IEEE
- * double (max 15 digit), so their precision lost.
+ * double (max 15 digit), so their precision gets lost.
  *
  * FIXME: BigDecimals always written out with maximal precision (19 digit), prec is ignored.
  */
@@ -226,7 +226,7 @@ class SCAVE_API CsvExport : public ScaveExport
     public:
         CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE), columnNames(true) {}
         virtual std::string makeFileName(const std::string name);
-        virtual void saveVector(const std::string name, const std::string description, 
+        virtual void saveVector(const std::string name, const std::string description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
     protected:

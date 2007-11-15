@@ -22,10 +22,10 @@
 #include "cneddeclaration.h"
 
 
-/**Declaration();
+/**
  * NEDXML-based cChannelType: takes all info from cNEDLoader
  */
-class cDynamicChannelType : public cChannelType
+class SIM_API cDynamicChannelType : public cChannelType
 {
   protected:
     /** Redefined from cChannelType */

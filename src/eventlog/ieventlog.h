@@ -22,7 +22,7 @@
 
 class IEventLog;
 
-class ProgressMonitor
+class EVENTLOG_API ProgressMonitor
 {
     public:
         typedef void (*MonitorFunction)(IEventLog *, void *);

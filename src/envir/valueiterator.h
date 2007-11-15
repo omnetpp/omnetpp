@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include "envdefs.h"
 
 /**
  * Support class for parsing simulation scenarios. Given a sequence of
@@ -37,7 +38,7 @@
  * v.dump();
  * </pre>
  */
-class ValueIterator
+class ENVIR_API ValueIterator
 {
   private:
     // the parsed iteration spec

@@ -29,7 +29,7 @@ class cMPICommBuffer;
  *
  * @ingroup Parsim
  */
-class cMPICommunications : public cParsimCommunications
+class SIM_API cMPICommunications : public cParsimCommunications
 {
   protected:
     cMPICommBuffer *recycledBuffer;

@@ -31,7 +31,7 @@ class cCommBuffer;
  *
  * @ingroup Parsim
  */
-class cParsimProtocolBase : public cParsimSynchronizer
+class SIM_API cParsimProtocolBase : public cParsimSynchronizer
 {
   protected:
     // process whatever comes from other partitions -- nonblocking

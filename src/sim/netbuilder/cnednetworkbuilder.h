@@ -35,7 +35,7 @@ class cNEDDeclaration;
  *
  * @ingroup NetworkBuilder
  */
-class cNEDNetworkBuilder
+class SIM_API cNEDNetworkBuilder
 {
   protected:
     // the current NED declaration we're working with. Stored here to

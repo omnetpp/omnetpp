@@ -20,26 +20,29 @@
 #include "tkutil.h"
 #include "omnetapp.h"
 
-//=========================================================================
-// Inspector types
-enum { INSP_DEFAULT,
-       INSP_OBJECT,
-       INSP_GRAPHICAL,
-       INSP_MODULEOUTPUT,
-       NUM_INSPECTORTYPES   // this must be the last one
+/**
+ * Inspector types
+ */
+enum {
+    INSP_DEFAULT,
+    INSP_OBJECT,
+    INSP_GRAPHICAL,
+    INSP_MODULEOUTPUT,
+    NUM_INSPECTORTYPES   // this must be the last one
 };
 
+
+// utility functions
 const char *insptypeNameFromCode( int code );
 int insptypeCodeFromName(const char *namestr);
-
 void splitInspectorName(const char *namestr, cObject *&object, int& type);
 
-//=========================================================================
+
 
 /**
  * Virtual base class for all inspectors.
  */
-class TInspector
+class TKENV_API TInspector
 {
    protected:
       cObject *object;        // the inspected object
@@ -95,7 +98,9 @@ class TInspector
       //@}
 };
 
-// this defines a panel that can be inserted into any inspector
+/**
+ * Defines a panel that can be inserted into any inspector
+ */
 class TInspectorPanel
 {
    protected:
