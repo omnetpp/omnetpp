@@ -1,7 +1,11 @@
 #
-# LINK.EXE wrapper: ensures that all symbols from LIB files will make it
-# into the executable. This is needed for LIB files that contain simple
-# modules or other self-registering extension components.
+# linkall -- wrapper for the Microsoft Visual C++ Linker LINK.EXE.
+#
+# Ensures that all symbols from LIB files will make it into the executable.
+# This is needed for LIB files that contain simple modules or other
+# self-registering extension components.
+#
+# USAGE: just use this one everywhere the Microsoft linker would get invoked.
 #
 # Finds LIB files in the linker command line, uses dumpbin to extract the
 # list of public symbols from them, and turns them to linker command
