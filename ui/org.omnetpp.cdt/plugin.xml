@@ -40,5 +40,30 @@
             type="org.eclipse.core.resources.problemmarker">
       </super>
    </extension>
+   <extension
+         id="org.omnetpp.cdt.managedbuilderid"
+         name="OMNeT++ managed builder"
+         point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
+      <tool
+            command="perl C:\Work\Projects\omnest\omnetpp4\omnetpp\bin\opp_msgc"
+            commandLinePattern="${COMMAND} ${INPUTS}"
+            id="org.omnetpp.tool.msgc"
+            name="Message compiler">
+         <inputType
+               id="org.omnetpp.cdt.MSGinputType"
+               name="MSG file"
+               sources="msg">
+         </inputType>
+         <outputType
+               id="org.omnetpp.cdt.CCoutputType"
+               name="CC file"
+               namePattern="%_m.cc"
+               outputContentType="org.eclipse.cdt.core.cxxSource"
+               outputs="cc"
+               primaryInputType="org.omnetpp.cdt.MSGinputType"
+               primaryOutput="true">
+         </outputType>
+      </tool>
+   </extension>
 
 </plugin>

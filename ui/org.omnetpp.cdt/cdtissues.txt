@@ -1,0 +1,3 @@
+- olyan toolt nem lehet felvenni ami source file-t general. (ld msg compiler)
+- ha include ban pl: ${workspace_loc:/inetfw/Src/Nodes} van megadva es a konyvtar nem letezik akkor egy ures -I opciot general
+  ami hibat okoz mert a compiler lenyeli a kovetkezo opciot. (ne genraljon ilyenkor -I-t)
