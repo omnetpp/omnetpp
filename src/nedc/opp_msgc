@@ -1732,7 +1732,7 @@ sub generateDescriptorClass
     print CC "            return basedesc->getArraySize(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    $msgclass *pp _MAYBEUNUSED = ($msgclass *)object;\n";
+    print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++) {
         if ($fisarray{$fieldlist[$i]}) {
@@ -1759,7 +1759,7 @@ sub generateDescriptorClass
     print CC "            return basedesc->getFieldAsString(object,field,i,resultbuf,bufsize);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    $msgclass *pp _MAYBEUNUSED = ($msgclass *)object;\n";
+    print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1814,7 +1814,7 @@ sub generateDescriptorClass
     print CC "            return basedesc->setFieldAsString(object,field,i,value);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    $msgclass *pp _MAYBEUNUSED = ($msgclass *)object;\n";
+    print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1876,7 +1876,7 @@ sub generateDescriptorClass
     print CC "            return basedesc->getFieldStructPointer(object, field, i);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    $msgclass *pp _MAYBEUNUSED = ($msgclass *)object;\n";
+    print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
