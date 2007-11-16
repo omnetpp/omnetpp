@@ -119,7 +119,9 @@ if ($here eq "true")
 {
     $hfile =~ s|^.*/||;
 }
-$hdef = $hfile;
+$hfilenamewithoutdir = $hfile;
+$hfilenamewithoutdir =~ s|^.*/||;
+$hdef = $hfilenamewithoutdir;
 $hdef =~ s|^.*/||;
 $hdef =~ s|\.[^.]*$|_H_|;
 $hdef = '_'.$hdef;
@@ -169,7 +171,7 @@ print CC "#endif\n\n";
 
 print CC "#include <iostream>\n";
 print CC "#include <sstream>\n";
-print CC "#include \"$hfile\"\n\n";
+print CC "#include \"$hfilenamewithoutdir\"\n\n";
 
 print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
 print CC "template<typename T>\n";
