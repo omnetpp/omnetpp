@@ -78,10 +78,18 @@ foreach $arg (@ARGV) {
         if (!($txt =~ /^Microsoft.*\n *File Type: *LIBRARY\n.*\n *[0-9]+ public symbols\n(.*)\n +Summary\n.*/s)) {
             error("unexpected dumpbin output, see $DUMPFILE");
         }
-        $symbols = $1;
+        $txt = $1;
 
-        # prefix each symbol with "/include:", and write option file
-        $symbols =~ s|^ +[0-9A-F]+ |/include:|mgi;
+        # prefix each symbol with "/include:", and write option file.
+        # (actually, we only select symbols that come from EXECUTE_ON_STARTUP
+        # macros -- adding all symbols would send the Microsoft linker to the
+        # floor)
+        $symbols = "";
+        foreach $line (split("\n", $txt)) {
+            if ($line =~ /^ +[0-9A-Fa-f]+ +(.*__onstartup_func_.*)$/) {
+                 $symbols .= "/include:$1\n"
+            }
+        }
         $filename = $arg . "-" . $i++;
         $filename =~ s/[^A-Z0-9_]/-/gi;
         $filename .= ".opt";

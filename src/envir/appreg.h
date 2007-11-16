@@ -38,8 +38,8 @@
 
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
-  TOmnetApp *CLASSNAME##__create(ArgList *args, cConfiguration *config) {return new CLASSNAME(args, config);} \
-  EXECUTE_ON_STARTUP(omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create)))
+    static TOmnetApp *__FILEUNIQUENAME__(ArgList *args, cConfiguration *config) {return new CLASSNAME(args, config);} \
+    EXECUTE_ON_STARTUP(omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
 class TOmnetApp;
 class ArgList;

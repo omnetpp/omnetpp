@@ -24,13 +24,19 @@
 #include "cownedobject.h"
 
 
-// Jump through a loophole to generate unique identifiers.
-// See MSVC Help for __COUNTER__.
-#define __UNIQUEHELPER1(x,y) x##y
-#define __UNIQUEHELPER2(prefix,line) __UNIQUEHELPER1(prefix,line)
-#define __UNIQUEHELPER_A __UNIQUEHELPER2(__uniqueidentA, __LINE__)
-#define __UNIQUEHELPER_B __UNIQUEHELPER2(__uniqueidentB, __LINE__)
+// Generating identifiers unique for this file. See MSVC Help for __COUNTER__
+// for more info.
+#define __CONCAT1(x,y) x##y
+#define __CONCAT2(prefix,line) __CONCAT1(prefix,line)
+#define MAKE_UNIQUE_WITHIN_FILE(prefix) __CONCAT2(prefix,__LINE__)
 
+// helpers for EXECUTE_ON_STARTUP
+// IMPORTANT: if you change "__onstartup_func_" below, linkall.pl must also be updated!
+#define __ONSTARTUP_FUNC  MAKE_UNIQUE_WITHIN_FILE(__onstartup_func_)
+#define __ONSTARTUP_OBJ   MAKE_UNIQUE_WITHIN_FILE(__onstartup_obj_)
+
+// helper
+#define __FILEUNIQUENAME__  MAKE_UNIQUE_WITHIN_FILE(__uniquename_)
 
 /**
  * Allows code fragments to be collected in global scope which will
@@ -42,8 +48,10 @@
  * @hideinitializer
  */
 #define EXECUTE_ON_STARTUP(CODE)  \
-  static void __UNIQUEHELPER_A() {CODE;} \
-  static ExecuteOnStartup __UNIQUEHELPER_B(__UNIQUEHELPER_A);
+  namespace { \
+    void __ONSTARTUP_FUNC() {CODE;} \
+    static ExecuteOnStartup __ONSTARTUP_OBJ(__ONSTARTUP_FUNC); \
+  };
 
 
 /**

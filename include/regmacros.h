@@ -92,8 +92,8 @@
  * @hideinitializer
  */
 #define Register_Class(CLASSNAME) \
-  cObject *CLASSNAME##__create() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create));)
+  static cObject *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,__FILEUNIQUENAME__));)
 //@}
 
 
@@ -111,25 +111,18 @@
  */
 // Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
 #define Define_Module(CLASSNAME) \
-  cObject *CLASSNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "module"));)
+  static cObject *__FILEUNIQUENAME__() {cModule *ret = new CLASSNAME; return ret; } \
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,__FILEUNIQUENAME__,"module"));)
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
  * NED simple module declaration of the given name.
  *
- * While this macro continues to be supported, it is NOT RECOMMENDED because
- * modules defined with it don't show up in documentation generated with
- * opp_neddoc. One can use NED's <tt>like</tt> feature with the normal
- * Define_Module() macro too, it doesn't require Define_Module_Like().
+ * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
  *
  * @hideinitializer
  */
-// Implementation note: this is basically a Register_Class(), only we lie about the class name.
-#define Define_Module_Like(CLASSNAME,NEDNAME) \
-  cObject *NEDNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
-                     (std::string("module, implemented by ")+#CLASSNAME).c_str()));)
+#define Define_Module_Like(CLASSNAME,NEDNAME)  NOTE_the_deprecated_Define_Module_Like_macro_has_been_removed_in_version_4_0;
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
@@ -139,26 +132,19 @@
  */
 // Implementation note: this is basically a Register_Class().
 #define Define_Channel(CLASSNAME) \
-  cObject *CLASSNAME##__create() {cChannel *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "channel"));)
+  static cObject *__FILEUNIQUENAME__() {cChannel *ret = new CLASSNAME; return ret; } \
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,__FILEUNIQUENAME__, "channel"));)
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
  * NED channel declaration of the given name.
  *
- * Use of this macro is NOT RECOMMENDED because channels defined with it
- * don't show up in documentation generated with opp_neddoc.
- * One can use NED's <tt>like</tt> feature with the normal
- * Define_Channel() macro too, it doesn't require Define_Channel_Like().
+ * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
  *
  * @hideinitializer
  */
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
-#define Define_Channel_Like(CLASSNAME,NEDNAME) \
-  cObject *NEDNAME##__create() {cChannel *ret = new CLASSNAME; return ret;} \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
-                     (std::string("channel, implemented by ")+#CLASSNAME).c_str()));)
-
+#define Define_Channel_Like(CLASSNAME,NEDNAME) NOTE_the_deprecated_Define_Channel_Like_macro_has_been_removed_in_version_4_0;
 
 /**
  * Internal. Registers a class descriptor which provides reflection information.
@@ -169,18 +155,23 @@
   EXECUTE_ON_STARTUP(classDescriptors.instance()->add(new DESCRIPTORCLASS());)
 
 /**
- * DEPRECATED. This macro basically just expands to an empty constructor
- * declaration, and should not be used. Existing occurrences should be
- * replaced with a plain constructor declaration taking no parameters:
+ * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
+ * Existing occurrences should be replaced with a public default constructor. That is,
  *
- * <tt>ClassName() { ... }</tt>
+ * <pre>
+ * Module_Class_Members(Foo, cSimpleModule, 0)
+ * </pre>
+ *
+ * should become
+ *
+ * <pre>
+ * public:
+ *   Foo() : cSimpleModule() {}
+ * </pre>
  *
  * @hideinitializer
  */
-// Note: dummy args can be removed in a later version, when all models have been ported
-#define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
-    public: \
-      CLASSNAME(const char *dummy1=0, cModule *dummy2=0, unsigned stk=STACK) : BASECLASS(0,0,stk) {}
+#define Module_Class_Members(CLASSNAME,BASECLASS,STACK)  NOTE_the_deprecated_Module_Class_Members_macro_has_been_removed_in_version_4_0
 //@}
 
 
@@ -191,7 +182,7 @@
 //@{
 
 // internal
-#define __Register_ConfigEntry(ID, ARGLIST) \
+#define __REGISTER_CONFIGENTRY(ID, ARGLIST) \
   cConfigKey *ID; \
   EXECUTE_ON_STARTUP(configKeys.instance()->add(ID = new cConfigKey ARGLIST);)
 
@@ -200,42 +191,42 @@
  * @hideinitializer
  */
 #define Register_GlobalConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, false, true, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGENTRY(ID, (NAME, false, true, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Generic, with unit==NULL.
  * @hideinitializer
  */
 #define Register_PerRunConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, false, false, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGENTRY(ID, (NAME, false, false, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
 #define Register_GlobalConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, false, true, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGENTRY(ID, (NAME, false, true, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
 #define Register_PerRunConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, false, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGENTRY(ID, (NAME, false, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Per-object entry (can be configured per run), with unit==NULL.
  * @hideinitializer
  */
 #define Register_PerObjectConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, true, false, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGENTRY(ID, (NAME, true, false, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Per-object entry (can be configured per run), for type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
 #define Register_PerObjectConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, true, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGENTRY(ID, (NAME, true, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 //@}
 
