@@ -2,6 +2,7 @@ opp_msgc:
 - fix: when msg file was given with full path, the #include in the _m.cc also contained the full path!
 - fix: "unused variable pp" warnings
 - accepts wildcards as well as directories as arguments; directories will be interpreted as "<dir>/*.msg" (non-recursive)
+- added timestamp-checking behavior (default), and -A option to disable it
          
 
 2006-12-14  Andras Varga

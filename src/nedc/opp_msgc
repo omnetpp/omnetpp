@@ -27,6 +27,9 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
   -t <suffix> output C++ header file suffix (defaults to: _m.h)
   -P <symbol> add dllexport/dllimport symbol to class declarations
   -h          output in current directory
+  -A          always overwrite output files (by default, opp_msgc has a
+              make-like behavior: it only overwrites output files if they
+              appear to be out-of-date after a timestamp check)
   -Xnc        do not generate the classes, only object descriptions
   -Xnd        do not generate object descriptions
   -Xns        do not generate setters in object descriptions
@@ -43,6 +46,7 @@ if ($#ARGV == -1)
 #
 @filenames = ();
 $here = 0;
+$checktimestamps = 1;
 $ccsuffix = '_m.cc';
 $hsuffix = '_m.h';
 $exportdef = '';
@@ -87,6 +91,10 @@ while (@ARGV)
     elsif ($arg eq "-h")
     {
         $here = 1;
+    }
+    elsif ($arg eq "-A")
+    {
+        $checktimestamps = 0;
     }
     elsif ($arg eq "-v")
     {
@@ -170,6 +178,17 @@ sub processFile()
     if ($here)
     {
         $ccfile =~ s|^.*/||;
+    }
+
+    if ($checktimestamps)
+    {
+        $msgfiledate = (stat($filename))[9];
+        $ccfiledate = (stat($ccfile))[9];
+        $hfiledate = (stat($hfile))[9];
+        if ($msgfiledate<$ccfiledate && $msgfiledate<$hfiledate) {
+            print "output files up to date, skipping $filename\n" if $verbose;
+            return;
+        }
     }
 
     $obsoletesyntax = 0;
@@ -755,7 +774,7 @@ sub processFile()
 
     if ($obsoletesyntax)
     {
-        print "$filename: Warning: obsolete syntax: convert properties to the '\@' syntax (example: \@customize(true)), and remove 'properties:' and 'fields:' keywords\n";
+        print "$filename: Warning: obsolete syntax: convert properties to the '\@' syntax (for example, change customize=true to \@customize(true)), and remove 'properties:' and 'fields:' keywords\n";
     }
 
     $scrap = $msg;
