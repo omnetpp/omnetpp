@@ -41,8 +41,8 @@ class SCAVE_API DataflowManager
         Node *selectNode();
 
         // returns true of a node has finished; if so, also closes
-        // its input an output channels (side effect!)
-        bool nodeFinished(Node *node);
+        // its input an output channels.
+        bool updateNodeFinished(Node *node);
 
     public:
         /**

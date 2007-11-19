@@ -86,12 +86,7 @@ void DataflowManager::execute()
     {
         Node *node = selectNode();
         if (!node)
-        {
-            // try once more -- see selectNode()'s code for explanation
-            node = selectNode();
-            if (!node)
-                break;
-        }
+            break;
         DBG(("execute: invoking %s\n", node->nodeType()->name()));
         node->process();
     }
@@ -103,7 +98,7 @@ void DataflowManager::execute()
     {
         if (nodes[i]->alreadyFinished())
             i++;
-        else if (!nodeFinished(nodes[i]))
+        else if (!updateNodeFinished(nodes[i]))
             i++;  // if not finished, skip it
         else
             i=0;  // if one node finished, start over (to let it cascade)
@@ -121,7 +116,7 @@ void DataflowManager::execute()
             throw opp_runtime_error("execute: all nodes finished but channel %d not at eof", i);
 }
 
-bool DataflowManager::nodeFinished(Node *node)
+bool DataflowManager::updateNodeFinished(Node *node)
 {
     //
     // if node says it's finished():
@@ -163,7 +158,7 @@ Node *DataflowManager::selectNode()
         {
             Node *node = ch->consumerNode();
             Assert(!node->alreadyFinished());
-            if (!nodeFinished(node))
+            if (!updateNodeFinished(node))
                 return node;
         }
     }
@@ -174,22 +169,29 @@ Node *DataflowManager::selectNode()
     assert(n!=0);
     do
     {
-        i = (i+1)%n;
-        Node *node = nodes[i];
-        if (!node->alreadyFinished() && !nodeFinished(node) && node->isReady())
-        {
-            if (i==lastnode)
-                DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->nodeType()->name()));
-            lastnode = i;
-            return node;
-        }
+        CONTINUE:
+            i = (i+1)%n;
+            Node *node = nodes[i];
+            if (!node->alreadyFinished())
+            {
+                if (updateNodeFinished(node))
+                {
+                    // When a node finished, some node might get ready that was
+                    // not ready before (e.g. has some buffered data), so start over the loop.
+                    i = lastnode;
+                    goto CONTINUE;
+                }
+                else if (node->isReady())
+                {
+                    if (i==lastnode)
+                        DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->nodeType()->name()));
+                    lastnode = i;
+                    return node;
+                }
+            }
     }
     while (i!=lastnode);
 
-    // IMPORTANT: caller must try it again once, when it receives NULL!
-    // In the while loop above, nodeFinished() may have a side effect
-    // of enabling a node (via setting eof() on its input) which we've
-    // already tried.
     return NULL;
 }
 
