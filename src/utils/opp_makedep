@@ -28,8 +28,8 @@ where possible options are:
   --stdout
   -f<makefile-name>
   --makefile <makefile-name>
+  -P<object-file-prefix>, --objprefix <object-file-prefix>
   --objsuffix <object-file-suffix>
-  --objdir <object-file-directory>
   --srcdir <source-directory>
   --objdirtree
 
@@ -45,7 +45,8 @@ where possible options are:
  --stdout causes dependencies to be written to the standard output,
    (instead of updating a makefile)
  --objsuffix sets the suffix of the object filename. It defaults to ".o".
- --objdir sets the directory of the object filename.  Defaults to current dir.
+ -P, --objprefix prefixes each object file with the given string. When used,
+   prefix is usually a directory prefix (for example "$(OBJDIR)/").
  --srcdir specifies the directory for the source files.
  --objdirtree the object files are assumed to be in the same directory
    structure as the sources (by default, they are assumed to be all in the
@@ -75,8 +76,9 @@ $ObjSuffix = ".o";
 # Source directory
 $SourceDirectory = "";
 
-# Target (object files) directory
-$ObjDir = "";
+# Prefix for object files in the generated dependencies (usually "$(OBJDIR)/"
+# or something like that)
+$ObjPrefix = "";
 
 # If set, the object files are assumed to be in the same directory structure
 # as the sources. Otherwise, they're assumed to be all in the same directory.
@@ -161,9 +163,14 @@ while (@ARGV)
     {
         $ObjSuffix = shift @ARGV;
     }
-    elsif ($arg eq "--objdir")
+    elsif ($arg =~ /^-P/)
     {
-        $ObjDir = shift @ARGV;
+        $arg =~ s/^-P//;
+        $ObjPrefix = $arg;
+    }
+    elsif ($arg eq "--objprefix")
+    {
+        $ObjPrefix = shift @ARGV;
     }
     elsif ($arg eq "--objdirtree")
     {
@@ -338,11 +345,8 @@ sub print_dep {
        $filename =~ /([^\/]*)$/;
        $target = $1;
    }
-   $target =~ s/\.[^.]*$/$ObjSuffix/ ;
-
-   if ($ObjDir ne "") {
-        $target = $ObjDir . "/" . $target;
-   }
+   $target =~ s/\.[^.]*$/$ObjSuffix/;
+   $target = $ObjPrefix . $target;
 
    $dep = "$target: ";
    $dep .= join( " \\\n  ", ("$SourceDirectory$filename", @includes) );
