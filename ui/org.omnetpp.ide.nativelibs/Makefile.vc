@@ -32,7 +32,7 @@ EVENTLOG_JAVADIR = src\$(EVENTLOG_JAVAPKG:.=\)
 
 SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
-OBJS = $(CXXFILES:.cxx=.obj)
+OBJS = $(CXXFILES:.cxx=.obj) jprogressmonitor.obj
 
 LIBS=$(OMNETPP_LIB_DIR)/common.lib $(OMNETPP_LIB_DIR)/nedxml.lib $(OMNETPP_LIB_DIR)/scave.lib $(OMNETPP_LIB_DIR)/layout.lib $(OMNETPP_LIB_DIR)/eventlog.lib
 

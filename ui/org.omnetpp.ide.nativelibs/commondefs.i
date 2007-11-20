@@ -1,5 +1,6 @@
 %{
 #include "bigdecimal.h"
+#include "jprogressmonitor.h"
 %}
 
 /*--------------------------------------------------------------------------
@@ -13,6 +14,25 @@
 %typemap(javain) int64 "$javainput"
 %typemap(javaout) int64 {
    return $jnicall;
+}
+
+/*--------------------------------------------------------------------------
+ * IProgressMonitor
+ *--------------------------------------------------------------------------*/
+%typemap(jni)    IProgressMonitor * "jobject"
+%typemap(jtype)  IProgressMonitor * "org.eclipse.core.runtime.IProgressMonitor"
+%typemap(jstype) IProgressMonitor * "org.eclipse.core.runtime.IProgressMonitor"
+%typemap(javain) IProgressMonitor * "$javainput"
+%typemap(in) IProgressMonitor * (JniProgressMonitor jProgressMonitor) {
+   if ($input)
+   {
+      jProgressMonitor = JniProgressMonitor($input, jenv);
+      $1 = &jProgressMonitor;
+   }
+   else
+   {
+      $1 = NULL;
+   }
 }
 
 /*--------------------------------------------------------------------------
