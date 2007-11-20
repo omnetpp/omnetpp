@@ -67,7 +67,7 @@ void DataflowManager::connect(Port *src, Port *dest)
 
 // FIXME: validate node attributes
 
-void DataflowManager::execute()
+void DataflowManager::execute(IProgressMonitor *monitor)
 {
     if (nodes.size()==0)
         return;
@@ -84,7 +84,14 @@ void DataflowManager::execute()
     //
     while (true)
     {
-        Node *node = selectNode();
+    	if (monitor)
+    	{
+    		if(monitor->isCanceled())
+    			return;
+        	monitor->worked(1);
+    	}
+
+    	Node *node = selectNode();
         if (!node)
             break;
         DBG(("execute: invoking %s\n", node->nodeType()->name()));
