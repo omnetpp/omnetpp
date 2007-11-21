@@ -11,16 +11,16 @@ import org.omnetpp.common.util.StringUtils;
 
 public class StringUtils_substituteIntoTemplate extends TestCase {
     private final String TEMPLATE1 = 
-        "{false:}line 1\n" +
-        "{true:}line 2\n" +
-        "{~true:}line 3\n" +
-        "{~false:}line 4\n" +
+        "{false:}line 1 - {foo}\n" +
+        "{true:}line 2 - {foo}\n" +
+        "{~true:}line 3 - {bar}\n" +
+        "{~false:}line 4 - {bar}\n" +
         "line 5 {foo}{bar}.\n" +
         "line 6 {true:some-text}{~true:other-text}.\n" +
         "line 7 {false:some-text}{~false:other-text}.\n";
     private final String EXPECTED1 = 
-        "line 2\n" +
-        "line 4\n" +
+        "line 2 - The-foo-value\n" +
+        "line 4 - The-bar-value\n" +
         "line 5 The-foo-valueThe-bar-value.\n" +
         "line 6 some-text.\n" +
         "line 7 other-text.\n";

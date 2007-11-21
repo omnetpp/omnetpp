@@ -597,6 +597,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                 int end = template.indexOf(endTag, start);
                 if (end != -1) {
                     String tag = template.substring(start, end + endTagLen);
+                    System.out.println("processing " + tag);
                     String key = template.substring(start+startTagLen, end);
                     if (key.indexOf('\n') != -1)
                         throw new RuntimeException("template error: newline inside " + quoteString(tag) + " (misplaced start/end tag?)");
@@ -614,11 +615,17 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     if (colonPos != -1) {
                         if (isLineStart && substringAfterColon.equals("")) {
                             // replacing a whole line
-                            int origend = end;
-                            end = template.indexOf('\n', end);
-                            if (end == -1) 
-                                end = template.length();
-                            replacement = getFromMapAsBool(map, key)!=isNegated ? template.substring(origend+endTagLen, end+endTagLen) : "";
+                            if (getFromMapAsBool(map, key) != isNegated) {
+                                // put line in: all variables OK
+                            }
+                            else {
+                                // omit line
+                                int endLine = template.indexOf('\n', end);
+                                if (endLine == -1) 
+                                    endLine = template.length();
+                                replacement = "";
+                                end = endLine;
+                            }
                         }
                         else {
                             // conditional
@@ -649,9 +656,9 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     private static String getFromMapAsString(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: key '" + key + "' is not in the map");
+            throw new RuntimeException("template error: undefined template parameter '" + key + "'");
         if (!(object instanceof String))
-            throw new RuntimeException("template error: string value expected for key '" + key + "', but got " + object.getClass().toString());
+            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string, but it is " + object.getClass().toString());
         return (String)object;
     }
 
@@ -659,9 +666,9 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: key '" + key + "' is not in the map");
+            throw new RuntimeException("template error: undefined template parameter '" + key + "'");
         if (!(object instanceof Boolean))
-            throw new RuntimeException("template error: boolean value expected for key '" + key + "', but got " + object.getClass().toString());
+            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a boolean, but it is " + object.getClass().toString());
         return (Boolean)object;
     }
 }

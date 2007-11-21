@@ -299,7 +299,7 @@ public class MakeMake {
         m.put("msgccandhfiles", msgccandhfiles);
         m.put("msgfiles", msgfiles);
         m.put("objs", join(objs));
-        m.put("hassubdirs", !subdirs.isEmpty());
+        m.put("hassubdir", !subdirs.isEmpty());
         m.put("subdirs", join(subdirs));
         m.put("subdirtargets", join(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
