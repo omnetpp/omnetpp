@@ -63,8 +63,13 @@ public class EditDialog extends TitleAreaDialog {
 	}
 	
 	public static EStructuralFeature[] getEditableFeatures(EObject object, ScaveEditor editor) {
-		IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager(), null);
-		return form.getFeatures();
+		try {
+			IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager(), null);
+			return form.getFeatures();
+		}
+		catch (IllegalArgumentException e) {
+			return new EStructuralFeature[0];
+		}
 	}
 	
 	public Object getValue(int index) {
