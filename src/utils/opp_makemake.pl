@@ -724,6 +724,95 @@ print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 
 #----
 
+sub substituteIntoTemplate($;$;$;$)
+{
+    my $template = shift;
+    my @map = shift;
+    my $startTag = shift;
+    my $endTag = shift;
+
+    my $buf = "";
+    my $startTagLen = length($startTag);
+    my $endTagLen = length($endTag);
+
+    my $current = 0;
+    while (true) {
+        my $start = index($template, $startTag, $current);
+        if ($start == -1) {
+            last;
+        }
+        else {
+            my $end = index($template, $endTag, $start);
+            if ($end != -1) {
+                my $tag = substr2($template, $start, $end + $endTagLen);
+                print("processing $tag\n");
+                my $key = substr2($template, $start+$startTagLen, $end);
+                if (index($key, "\n") != -1) {
+                    die("template error: newline inside \"$tag\" (misplaced start/end tag?)");
+                }
+                my $isLineStart = $start==0 || substr($template, $start-1, 1) eq "\n";
+                my $isNegated = substr($key, 0, 1) eq "~";
+                if ($isNegated) {
+                    $key = substr($key, 1);  # drop "~"
+                }
+                my $colonPos = index($key, ":");
+                my $substringAfterColon = $colonPos == -1 ? "" : substr($key, $colonPos+1);
+                if ($colonPos != -1) {
+                    $key = substr2($key, 0, $colonPos); # drop ":..."
+                }
+
+                # determine replacement string, and possibly adjust start/end
+                my $replacement = "";
+                if ($colonPos != -1) {
+                    if ($isLineStart && $substringAfterColon eq "") {
+                        # replacing a whole line
+                        if (getFromMapAsBool($map, $key) != $isNegated) {
+                            # put line in: all variables OK
+                        }
+                        else {
+                            # omit line
+                            my $endLine = index($template, "\n", $end);
+                            if ($endLine == -1) {
+                                $endLine = length($template);
+                            }
+                            $replacement = "";
+                            $end = $endLine;
+                        }
+                    }
+                    else {
+                        # conditional
+                        if ($substringAfterColon eq "") {
+                            die("template error: found \"$tag\" mid-line, but whole-line conditions should begin at the start of the line");
+                        }
+                        $replacement = getFromMapAsBool($map, $key)!=$isNegated ? $substringAfterColon : "";
+                    }
+                }
+                else {
+                    # plain replacement
+                    if ($isNegated) {
+                        die("template error: wrong syntax \"$tag\" (missing \":\"?)");
+                    }
+                    $replacement = getFromMapAsString($map, $key);
+                }
+
+                # do it: replace substring(start, end) with replacement, unless replacement==null
+                $buf .= substr($template, $current, $start);  # template code up to the {...}
+                $buf .= $replacement;
+                $current = $end + $endTagLen;
+            }
+        }
+    }
+    $buf .= substr($template, $current);  # rest of the template
+    return $buf;
+}
+
+sub substr2($;$;$)
+{
+    my($string, $startoffset, $endoffset) = @_;
+    return substr($string, $startoffset, $endoffset - $startoffset);
+}
+
+
 #
 # Converts absolute path $abs to relative path (relative to the current
 # directory $cur), provided that both $abs and $cur are under a
