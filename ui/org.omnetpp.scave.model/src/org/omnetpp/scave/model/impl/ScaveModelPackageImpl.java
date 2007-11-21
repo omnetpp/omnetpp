@@ -805,6 +805,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getProcessingOp_ComputedFile() {
+		return (EAttribute)processingOpEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getCompute() {
 		return computeEClass;
 	}
@@ -974,6 +983,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		createEAttribute(processingOpEClass, PROCESSING_OP__OPERATION);
 		createEReference(processingOpEClass, PROCESSING_OP__FILTERS);
 		createEReference(processingOpEClass, PROCESSING_OP__PARAMS);
+		createEAttribute(processingOpEClass, PROCESSING_OP__COMPUTED_FILE);
 
 		exceptEClass = createEClass(EXCEPT);
 		createEAttribute(exceptEClass, EXCEPT__FILTER_PATTERN);
@@ -1118,6 +1128,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEAttribute(getProcessingOp_Operation(), ecorePackage.getEString(), "operation", null, 0, 1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getProcessingOp_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getProcessingOp_Params(), this.getParam(), null, "params", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getProcessingOp_ComputedFile(), ecorePackage.getEString(), "computedFile", null, 0, 1, ProcessingOp.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(exceptEClass, Except.class, "Except", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getExcept_FilterPattern(), ecorePackage.getEString(), "filterPattern", null, 0, 1, Except.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -35,8 +35,11 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/operation"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computedFile"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//Except"/>
+    <genClasses ecoreClass="scave.ecore#//Except">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Except/filterPattern"/>
+    </genClasses>
     <genClasses ecoreClass="scave.ecore#//SetOperation">
       <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//SetOperation/sourceDataset"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/filterPattern"/>
@@ -88,13 +91,18 @@
     <genClasses ecoreClass="scave.ecore#//Compute"/>
     <genClasses ecoreClass="scave.ecore#//BarChart">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/groupBy"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/groupNameFormat"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/barNameFormat"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/barFields"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//LineChart"/>
+    <genClasses ecoreClass="scave.ecore#//LineChart">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//LineChart/lineNameFormat"/>
+    </genClasses>
     <genClasses ecoreClass="scave.ecore#//HistogramChart"/>
     <genClasses ecoreClass="scave.ecore#//ScatterChart">
-      <genFeatures createChild="false" propertyCategory="" propertyDescription=""
-          ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/moduleName"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/dataName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/xDataPattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/isoDataPattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/averageReplications"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

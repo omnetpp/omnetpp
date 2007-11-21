@@ -19,6 +19,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getOperation <em>Operation</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getParams <em>Params</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getComputedFile <em>Computed File</em>}</li>
  * </ul>
  * </p>
  *
@@ -84,5 +85,31 @@ public interface ProcessingOp extends DatasetItem {
 	 * @generated
 	 */
 	EList<Param> getParams();
+
+	/**
+	 * Returns the value of the '<em><b>Computed File</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Computed File</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Computed File</em>' attribute.
+	 * @see #setComputedFile(String)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getProcessingOp_ComputedFile()
+	 * @model transient="true"
+	 * @generated
+	 */
+	String getComputedFile();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.ProcessingOp#getComputedFile <em>Computed File</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Computed File</em>' attribute.
+	 * @see #getComputedFile()
+	 * @generated
+	 */
+	void setComputedFile(String value);
 
 } // ProcessingOp

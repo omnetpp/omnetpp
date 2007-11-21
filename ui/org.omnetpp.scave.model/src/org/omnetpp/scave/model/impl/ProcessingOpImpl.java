@@ -36,6 +36,7 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getOperation <em>Operation</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getParams <em>Params</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getComputedFile <em>Computed File</em>}</li>
  * </ul>
  * </p>
  *
@@ -81,6 +82,26 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * @ordered
 	 */
 	protected EList<Param> params;
+
+	/**
+	 * The default value of the '{@link #getComputedFile() <em>Computed File</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getComputedFile()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String COMPUTED_FILE_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getComputedFile() <em>Computed File</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getComputedFile()
+	 * @generated
+	 * @ordered
+	 */
+	protected String computedFile = COMPUTED_FILE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -151,6 +172,27 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getComputedFile() {
+		return computedFile;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setComputedFile(String newComputedFile) {
+		String oldComputedFile = computedFile;
+		computedFile = newComputedFile;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE, oldComputedFile, computedFile));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -176,6 +218,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return getFilters();
 			case ScaveModelPackage.PROCESSING_OP__PARAMS:
 				return getParams();
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
+				return getComputedFile();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -200,6 +244,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				getParams().clear();
 				getParams().addAll((Collection<? extends Param>)newValue);
 				return;
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
+				setComputedFile((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -221,6 +268,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 			case ScaveModelPackage.PROCESSING_OP__PARAMS:
 				getParams().clear();
 				return;
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
+				setComputedFile(COMPUTED_FILE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -239,6 +289,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return filters != null && !filters.isEmpty();
 			case ScaveModelPackage.PROCESSING_OP__PARAMS:
 				return params != null && !params.isEmpty();
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
+				return COMPUTED_FILE_EDEFAULT == null ? computedFile != null : !COMPUTED_FILE_EDEFAULT.equals(computedFile);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -255,6 +307,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (operation: ");
 		result.append(operation);
+		result.append(", computedFile: ");
+		result.append(computedFile);
 		result.append(')');
 		return result.toString();
 	}

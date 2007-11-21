@@ -31,6 +31,8 @@
         eType="#//SelectDeselectOp" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="params" upperBound="-1"
         eType="#//Param" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="computedFile" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        transient="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Except">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="filterPattern" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

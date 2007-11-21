@@ -451,13 +451,22 @@ public interface ScaveModelPackage extends EPackage {
 	int PROCESSING_OP__PARAMS = DATASET_ITEM_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Computed File</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__COMPUTED_FILE = DATASET_ITEM_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Processing Op</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
+	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
@@ -947,6 +956,15 @@ public interface ScaveModelPackage extends EPackage {
 	int APPLY__PARAMS = PROCESSING_OP__PARAMS;
 
 	/**
+	 * The feature id for the '<em><b>Computed File</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPLY__COMPUTED_FILE = PROCESSING_OP__COMPUTED_FILE;
+
+	/**
 	 * The number of structural features of the '<em>Apply</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -992,6 +1010,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int COMPUTE__PARAMS = PROCESSING_OP__PARAMS;
+
+	/**
+	 * The feature id for the '<em><b>Computed File</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPUTE__COMPUTED_FILE = PROCESSING_OP__COMPUTED_FILE;
 
 	/**
 	 * The number of structural features of the '<em>Compute</em>' class.
@@ -1842,6 +1869,17 @@ public interface ScaveModelPackage extends EPackage {
 	EReference getProcessingOp_Params();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ProcessingOp#getComputedFile <em>Computed File</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Computed File</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp#getComputedFile()
+	 * @see #getProcessingOp()
+	 * @generated
+	 */
+	EAttribute getProcessingOp_ComputedFile();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2486,6 +2524,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference PROCESSING_OP__PARAMS = eINSTANCE.getProcessingOp_Params();
+
+		/**
+		 * The meta object literal for the '<em><b>Computed File</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROCESSING_OP__COMPUTED_FILE = eINSTANCE.getProcessingOp_ComputedFile();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ComputeImpl <em>Compute</em>}' class.
