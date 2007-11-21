@@ -1,0 +1,121 @@
+#
+# OMNeT++/OMNEST Makefile for {target}
+#
+# This file was generated with the command:
+#  {progname} {args}
+#
+
+
+# Name of target to be created (-o option)
+TARGET = {target}
+
+# User interface (uncomment one) (-u option)
+{~allenv:#}USERIF_LIBS = $(TKENV_LIBS) $(CMDENV_LIBS)
+{~cmdenv:#}USERIF_LIBS = $(CMDENV_LIBS)
+{~tkenv:#}USERIF_LIBS = $(TKENV_LIBS)
+
+# C++ include paths (with -I)
+INCLUDE_PATH = {includepath}
+
+# misc additional object and library files to link with
+EXTRA_OBJS = {extraobjs}
+
+# object files from other directories to link with
+EXT_DIR_OBJS = {extdirobjs}
+
+# time stamps of other directories (used as dependency)
+EXT_DIR_TSTAMPS = {extdirtstamps}
+
+# Additional libraries (-L, -l, -t options)
+LIBS = {libs}
+
+#------------------------------------------------------------------------------
+
+!include {configfile}
+
+# User interface libs
+CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
+TKENV_LIBS = {-u}_tkenv_lib {-l}envir{.lib} {-l}tkenv{.lib} {-l}layout{.lib} $(TK_LIBS) $(ZLIB_LIBS)
+
+# Simulation kernel
+KERNEL_LIBS = {-l}common{.lib} {-l}sim_std{.lib}
+
+{nmake:}!if "$(WITH_NETBUILDER)"=="yes"
+{~nmake:}ifeq($(WITH_NETBUILDER),yes)
+KERNEL_LIBS = $(KERNEL_LIBS) {-l}nedxml{.lib} $(XML_LIBS)
+{nmake:!}endif
+
+{nmake:}!if "$(WITH_PARSIM)"=="yes"
+{~nmake:}ifeq($(WITH_PARSIM),yes)
+KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
+{nmake:!}endif
+
+# Simulation kernel and user interface libraries
+OMNETPP_LIBS = {-L}$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+
+COPTS = $(CFLAGS) {fordllopt} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+NEDCOPTS = $(COPTS) $(NEDCFLAGS)
+MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
+
+#------------------------------------------------------------------------------
+# object files in this directory
+OBJS = {objs}
+
+# subdirectories to recurse into
+SUBDIRS = {subdirs}
+{nmake:}SUBDIR_TARGETS = {subdirtargets}
+
+{makefrags}
+
+{exe:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir:subdirs} {makefile}
+{exe:}	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
+{exe:}	echo{nmake:.} >.tstamp
+{so:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir:subdirs} {makefile}
+{so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
+{so:}	echo{nmake:.} >.tstamp
+{nolink:}$(TARGET): $(OBJS) {hassubdir:subdirs} {makefile} .tstamp
+{nolink:}	@{nmake:rem}{~nmake:#} Do nothing
+{nolink:}
+{nolink:}.tstamp: $(OBJS)
+{nolink:}	echo{nmake:.} >.tstamp
+
+subdirs: $(SUBDIR_TARGETS)
+
+{subdirtargets}:
+{~nmake:}	cd $@ && {makecommand}
+{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
+
+{nmake:}{msgccandhfiles} :: {msgfiles}
+{~nmake:}%_m.{cc} %_m.h: %.msg
+	$(MSGC{nmake::/=\}) -s _m.{cc} $(MSGCOPTS) $**
+
+.SUFFIXES: .{cc}
+
+.{cc}.obj:
+	$(CXX) -c $(COPTS) {nmake:/Tp} $<
+
+generateheaders: $(GENERATEDHEADERS)
+{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
+{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+
+clean:
+{nmake:}	-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
+{nmake:}	-del *_n.{cc} *_n.h *_m.{cc} *_m.h 2>NUL
+{nmake:}	-del *.vec *.sca 2>NUL
+{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
+{~nmake:}	rm -f *.o *_n.{cc} *_n.h *_m.{cc} *_m.h .tstamp
+{~nmake:}	rm -f *.vec *.sca
+{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
+
+depend:
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
+{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
+
+makefiles:
+	{progname} {args}
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
+{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefiles) || exit 1; done
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+{deps}

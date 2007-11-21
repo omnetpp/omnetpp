@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
@@ -560,4 +561,94 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	return Common.quoteStringIfNeeded(text);
     }
 
+    /**
+     * Performs template substitution. Constructs understood are:
+     *  - {foo} gets replaced by (String)m.get("foo");
+     *  - {bar:some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==true.
+     *  - {~bar:some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==false.
+     *  - {bar:} at the start of a line: remove that line unless ((Boolean)m.get("bar"))==true
+     *  - {~bar:} at the start of a line: remove that line unless ((Boolean)m.get("bar"))!=true
+     *  
+     *  Newlines inside {...} are not permitted; this allows detecting errors caused 
+     *  by misplaced braces. Also, nesting is not supported.
+     */
+    //FIXME possibility to specify different separators; possibility to quote { and }
+    public static String substituteIntoTemplate(String template, Map<String, Object> map) {
+        StringBuilder buf = new StringBuilder();
+
+        int current = 0;
+        while (true) {
+            int start = template.indexOf('{', current);
+            if (start == -1)
+                break;
+            else {
+                int end = template.indexOf('}', start);
+                if (end != -1) {
+                    String key = template.substring(start+1, end);
+                    if (key.indexOf('\n') != -1)
+                        throw new RuntimeException("newline inside {...}: likely a template error");
+                    boolean isLineStart = start==0 || template.charAt(start-1)=='\n';
+                    boolean isNegated = key.charAt(0)=='~';
+                    if (isNegated) 
+                        key = key.substring(1);  // drop "~"
+                    int colonPos = key.indexOf(':');
+                    String substringAfterColon = colonPos == -1 ? null : key.substring(colonPos+1);
+                    if (colonPos != -1)
+                        key = key.substring(0, colonPos); // drop ":..."
+
+                    // determine replacement string, and possibly adjust start/end
+                    String replacement = "";
+                    if (colonPos != -1) {
+                        if (isLineStart && substringAfterColon.equals("")) {
+                            // replacing a whole line
+                            int origend = end;
+                            end = template.indexOf('\n', end);
+                            if (end == -1) 
+                                end = template.length();
+                            replacement = getFromMapAsBool(map, key)!=isNegated ? template.substring(origend+1, end) : "";
+                        }
+                        else {
+                            // conditional
+                            if (substringAfterColon.equals(""))
+                                throw new RuntimeException("found {var:} mid-line: likely a template error");
+                            replacement = getFromMapAsBool(map, key)!=isNegated ? substringAfterColon : "";
+                        }
+                    }
+                    else {
+                        // plain replacement
+                        if (isNegated)
+                            throw new RuntimeException("found {~var}: likely a template error");
+                        replacement = getFromMapAsString(map, key);
+                    }
+
+                    // do it: replace substring(start, end) with replacement, unless replacement==null
+                    buf.append(template.substring(current, start));  // template code up to the {...}
+                    buf.append(replacement);
+                    current = end + 1;
+                }
+            }
+        }
+        buf.append(template.substring(current));  // rest of the template
+        return buf.toString();
+    }
+
+    // for substituteIntoTemplate()
+    private static String getFromMapAsString(Map<String, Object> map, String key) {
+        Object object = map.get(key);
+        if (object == null)
+            throw new RuntimeException("template error: key '" + key + "' is not in the map");
+        if (!(object instanceof String))
+            throw new RuntimeException("template error: string value expected for key '" + key + "', but got " + object.getClass().toString());
+        return (String)object;
+    }
+
+    // for substituteIntoTemplate()
+    private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
+        Object object = map.get(key);
+        if (object == null)
+            throw new RuntimeException("template error: key '" + key + "' is not in the map");
+        if (!(object instanceof Boolean))
+            throw new RuntimeException("template error: boolean value expected for key '" + key + "', but got " + object.getClass().toString());
+        return (Boolean)object;
+    }
 }
