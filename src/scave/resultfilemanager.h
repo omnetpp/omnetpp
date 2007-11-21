@@ -36,6 +36,9 @@ class ResultFileManager;
 
 typedef std::map<std::string, std::string> StringMap;
 
+typedef int64 ComputationID;
+typedef void* ComputationNode;
+
 /**
  * Item in an output scalar or output vector file. Represents common properties
  * of an output vector or output scalar.
@@ -48,9 +51,9 @@ struct SCAVE_API ResultItem
     std::string *moduleNameRef; // points into ResultFileManager's StringSet
     std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
-    bool computed;
+    ComputationNode computation;
 
-    ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computed(false) {}
+    ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computation(NULL) {}
 
     /**
      * Returns the type of this result item (INT,DOUBLE,ENUM).
@@ -62,6 +65,8 @@ struct SCAVE_API ResultItem
      * or NULL if no "enum" attribute.
      */
     EnumType* getEnum() const;
+    
+    bool isComputed() const { return computation != NULL; }
 };
 
 /**
@@ -179,9 +184,7 @@ struct SCAVE_API FileRun
 typedef std::set<std::string> StringSet;
 typedef std::vector<std::string> StringVector;
 
-typedef int64 FilterNodeID;
-typedef std::map<std::pair<FilterNodeID, ID> , ID> ComputedIDCache;
-
+typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
 
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
@@ -235,7 +238,7 @@ class SCAVE_API ResultFileManager
     }
 
     // utility functions called while loading a result file
-    ResultFile *addFile();
+    ResultFile *addFile(const char *fileName, const char *fileSystemFileName);
     Run *addRun();
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
@@ -303,8 +306,8 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     // computed data
-    ID addComputedVector(const char *name, FilterNodeID nodeID, ID inputID);
-    ID getComputedVector(FilterNodeID nodeID, ID inputID);
+    ID addComputedVector(const char *name, const char *file, ComputationID computationID, ID inputID, ComputationNode node);
+    ID getComputedVector(ComputationID computationID, ID inputID);
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;

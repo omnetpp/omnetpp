@@ -161,8 +161,6 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 					setSelection(StructuredSelection.EMPTY);
 				else {
 					IDListSelection selection = new IDListSelection(table.getSelectedIDs(), table.getResultFileManager());
-					selection.setDataset(selectedDataset); // XXX
-					selection.setItem(selectedItem);
 					setSelection(selection);
 				}
 			}

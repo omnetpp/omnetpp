@@ -11,8 +11,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
 
 /**
@@ -27,10 +25,6 @@ public class IDListSelection implements IStructuredSelection {
 	Long[] elements;
 	ResultFileManager manager;
 	ResultType type;
-	
-	// XXX
-	Dataset dataset;
-	DatasetItem item;
 	
 	public IDListSelection(IDList idlist, ResultFileManager manager) {
 		this.elements = idlist.toArray();
@@ -54,22 +48,6 @@ public class IDListSelection implements IStructuredSelection {
 			type = ResultType.HISTOGRAM_LITERAL;
 	}
 	
-	public Dataset getDataset() {
-		return dataset;
-	}
-
-	public void setDataset(Dataset dataset) {
-		this.dataset = dataset;
-	}
-
-	public DatasetItem getItem() {
-		return item;
-	}
-
-	public void setItem(DatasetItem item) {
-		this.item = item;
-	}
-
 	public ResultFileManager getResultFileManager() {
 		return manager;
 	}

@@ -92,11 +92,19 @@ public class ScavePlugin extends AbstractUIPlugin {
 	
 	public static void logError(String message, Throwable exception) {
 		if (plugin != null) {
-			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+			plugin.getLog().log(getErrorStatus(0, message, exception));
 		}
 		else {
 			System.err.println(message);
 			exception.printStackTrace();
 		}
+	}
+	
+	public static IStatus getErrorStatus(Throwable exception) {
+		return getErrorStatus(0, exception.getLocalizedMessage(), exception);
+	}
+	
+	public static IStatus getErrorStatus(int errorCode, String message, Throwable exception) {
+		return new Status(IStatus.ERROR, PLUGIN_ID, errorCode, message, exception);		
 	}
 }

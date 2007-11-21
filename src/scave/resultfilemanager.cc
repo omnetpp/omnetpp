@@ -281,7 +281,7 @@ IDList ResultFileManager::getAllScalars() const
         {
             ScalarResults& v = fileList[k]->scalarResults;
             for (int i=0; i<(int)v.size(); i++)
-                if (!v[i].computed)
+                if (!v[i].isComputed())
                     out.uncheckedAdd(_mkID(false,SCALAR,k,i));
         }
     }
@@ -297,7 +297,7 @@ IDList ResultFileManager::getAllVectors() const
         {
             VectorResults& v = fileList[k]->vectorResults;
             for (int i=0; i<(int)v.size(); i++)
-                if (!v[i].computed)
+                if (!v[i].isComputed())
                     out.uncheckedAdd(_mkID(false,VECTOR,k,i));
         }
     }
@@ -313,7 +313,7 @@ IDList ResultFileManager::getAllHistograms() const
         {
             HistogramResults& v = fileList[k]->histogramResults;
             for (int i=0; i<(int)v.size(); i++)
-                if (!v[i].computed)
+                if (!v[i].isComputed())
                     out.uncheckedAdd(_mkID(false,HISTOGRAM,k,i));
         }
     }
@@ -326,7 +326,7 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     ScalarResults& v = fileRun->fileRef->scalarResults;
     for (int i=0; i<(int)v.size(); i++)
-        if (v[i].fileRunRef==fileRun && !v[i].computed)
+        if (v[i].fileRunRef==fileRun && !v[i].isComputed())
             out.uncheckedAdd(_mkID(false,SCALAR,fileId,i));
     return out;
 }
@@ -337,7 +337,7 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     VectorResults& v = fileRun->fileRef->vectorResults;
     for (int i=0; i<(int)v.size(); i++)
-        if (v[i].fileRunRef==fileRun && !v[i].computed)
+        if (v[i].fileRunRef==fileRun && !v[i].isComputed())
             out.uncheckedAdd(_mkID(false,VECTOR,fileId,i));
     return out;
 }
@@ -348,7 +348,7 @@ IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
     int fileId = fileRun->fileRef->id;
     HistogramResults& v = fileRun->fileRef->histogramResults;
     for (int i=0; i<(int)v.size(); i++)
-        if (v[i].fileRunRef==fileRun && !v[i].computed)
+        if (v[i].fileRunRef==fileRun && !v[i].isComputed())
             out.uncheckedAdd(_mkID(false,HISTOGRAM,fileId,i));
     return out;
 }
@@ -407,7 +407,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = scalarResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(d.computed, SCALAR, fileRunRef->fileRef->id, i);
+            return _mkID(d.isComputed(), SCALAR, fileRunRef->fileRef->id, i);
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
@@ -415,7 +415,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = vectorResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(d.computed, VECTOR, fileRunRef->fileRef->id, i);
+            return _mkID(d.isComputed(), VECTOR, fileRunRef->fileRef->id, i);
     }
 
     HistogramResults& histogramResults = fileRunRef->fileRef->histogramResults;
@@ -423,7 +423,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     {
         const ResultItem& d = histogramResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
-            return _mkID(d.computed, HISTOGRAM, fileRunRef->fileRef->id, i);
+            return _mkID(d.isComputed(), HISTOGRAM, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
@@ -659,12 +659,53 @@ void ResultFileManager::checkPattern(const char *pattern)
     MatchExpression matchExpr(pattern, false /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
 }
 
-ResultFile *ResultFileManager::addFile()
+static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
+{
+    if (!pathname || !*pathname)
+    {
+         dir = "";
+         fnameonly = "";
+         return;
+    }
+
+    dir = pathname;
+
+    // find last "/" or "\"
+    const char *s = pathname + strlen(pathname) - 1;
+    while (s>=pathname && *s!='\\' && *s!='/') s--;
+
+    // split along that
+    if (s<pathname)
+    {
+        fnameonly = pathname;
+        dir = ".";
+    }
+    else
+    {
+        fnameonly = s+1;
+        dir = "";
+        dir.append(pathname, s-pathname+1);
+    }
+}
+
+static std::string fileNameToSlash(const char *fileName)
+{
+    std::string res;
+    res.reserve(strlen(fileName));
+    for (; *fileName; fileName++)
+        res.append(1, *fileName=='\\' ? '/' : *fileName);
+    return res;
+}
+
+ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
     fileList.push_back(file);
     file->resultFileManager = this;
+    file->fileSystemFilePath = fileSystemFileName;
+    file->filePath = fileNameToSlash(fileName);
+    splitFileName(file->filePath.c_str(), file->directory, file->fileName);
     file->numLines = 0;
     file->numUnrecognizedLines = 0;
     return file;
@@ -718,26 +759,35 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
 
 
 // create a file for each dataset?
-ID ResultFileManager::addComputedVector(const char *name, FilterNodeID nodeID, ID input)
+ID ResultFileManager::addComputedVector(const char *name, const char *file, ComputationID computationID, ID input, ComputationNode computation)
 {
     assert(getTypeOf(input) == VECTOR);
 
     const VectorResult& vector = getVector(input);
-    ResultFile *fileRef = vector.fileRunRef->fileRef;
+
+    ResultFile *fileRef = getFile(file);
+    if (!fileRef)
+    	fileRef = addFile(file, file); // XXX
+    Run *runRef = vector.fileRunRef->runRef;
+    FileRun *fileRunRef = getFileRun(fileRef, runRef);
+    if (!fileRunRef)
+    	fileRunRef = addFileRun(fileRef, runRef);
+    
     VectorResult newVector = VectorResult(vector);
-    newVector.computed = true;
+    newVector.computation = computation;
     newVector.nameRef = stringSetFindOrInsert(names, name);
+    newVector.fileRunRef = fileRunRef;
     newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(true, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
-    std::pair<FilterNodeID, ID> key = std::make_pair(nodeID, input);
+    std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
     computedIDCache[key] = id;
     return id;
 }
 
-ID ResultFileManager::getComputedVector(FilterNodeID nodeID, ID input)
+ID ResultFileManager::getComputedVector(ComputationID computationID, ID input)
 {
-    std::pair<FilterNodeID, ID> key = std::make_pair(nodeID, input);
+    std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
     ComputedIDCache::iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())
       return it->second;
@@ -791,44 +841,6 @@ static void parseString(char *&s, std::string& dest, int lineNum)
     }
 }
 */
-
-static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
-{
-    if (!pathname || !*pathname)
-    {
-         dir = "";
-         fnameonly = "";
-         return;
-    }
-
-    dir = pathname;
-
-    // find last "/" or "\"
-    const char *s = pathname + strlen(pathname) - 1;
-    while (s>=pathname && *s!='\\' && *s!='/') s--;
-
-    // split along that
-    if (s<pathname)
-    {
-        fnameonly = pathname;
-        dir = ".";
-    }
-    else
-    {
-        fnameonly = s+1;
-        dir = "";
-        dir.append(pathname, s-pathname+1);
-    }
-}
-
-static std::string fileNameToSlash(const char *fileName)
-{
-    std::string res;
-    res.reserve(strlen(fileName));
-    for (; *fileName; fileName++)
-        res.append(1, *fileName=='\\' ? '/' : *fileName);
-    return res;
-}
 
 void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef,
                                     ResultFile *fileRef, int lineNum)
@@ -1009,10 +1021,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         throw opp_runtime_error("cannot open `%s' for read", fileSystemFileName);
 
     // add to fileList
-    ResultFile *fileRef = addFile();
-    fileRef->filePath = fileNameToSlash(fileName);
-    splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
-    fileRef->fileSystemFilePath = fileSystemFileName;
+    ResultFile *fileRef = addFile(fileName, fileSystemFileName);
 
     try
     {

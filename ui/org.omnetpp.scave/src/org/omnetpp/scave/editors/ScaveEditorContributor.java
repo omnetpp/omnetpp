@@ -117,7 +117,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         groupAction = registerAction(page, new GroupAction());
         ungroupAction = registerAction(page, new UngroupAction());
         selectAllAction = registerAction(page, new SelectAllAction());
-        //refreshComputedFilesAction = registerAction(page, new RefreshComputedDataFilesAction());
+        refreshComputedFilesAction = registerAction(page, new RefreshComputedDataFileAction());
 
         // replacement of the inherited deleteAction
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
@@ -268,7 +268,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
 
-		//menuManager.insertBefore("edit", refreshComputedFilesAction);
+		menuManager.insertBefore("edit", refreshComputedFilesAction);
 		menuManager.insertBefore("edit", groupAction);
 		menuManager.insertBefore("edit", ungroupAction);
 		menuManager.insertBefore("edit", new Separator());

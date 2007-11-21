@@ -478,13 +478,14 @@ public class DatasetManager {
 	
 	
 	static long ensureComputedResultItem(ProcessingOp operation, long inputID, ResultFileManager manager) {
-		long nodeID = getFilterNodeID(operation);
-		long id = manager.getComputedVector(nodeID, inputID);
+		long computationID = getFilterNodeID(operation);
+		long id = manager.getComputedVector(computationID, inputID);
 		if (id == -1) {
-			//System.out.format("Add computed vector: (%x,%x)%n", nodeID, inputID);
+			System.out.format("Add computed vector: (%x,%x)%n", computationID, inputID);
 			VectorResult vector = manager.getVector(inputID);
 			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
-			id = manager.addComputedVector(name, nodeID, inputID);
+			String fileName = ComputedResultFileLocator.instance().getFileNameFor(operation);
+			id = manager.addComputedVector(name, fileName, computationID, inputID, operation);
 		}
 		return id;
 	}

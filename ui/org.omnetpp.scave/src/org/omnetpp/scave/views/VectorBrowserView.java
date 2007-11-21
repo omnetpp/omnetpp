@@ -1,5 +1,6 @@
 package org.omnetpp.scave.views;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -11,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -24,7 +26,10 @@ import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model2.ComputedResultFileUpdater;
 import org.omnetpp.scave.model2.LineID;
+import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
 
 /**
  * View for vector data.
@@ -134,17 +139,36 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			// show the first selected vector (XXX merge vectors?)
 			IDListSelection idlistSelection = (IDListSelection)selection;
 			selectedVector = idlistSelection.getFirstAsVector();
-			if (selectedVector.getComputed()) {
-//				if (idlistSelection.getDataset() != null) {
-//					// XXX: make the computation node accessible from
-//					// the ResultFileManager that stores the computed vector.
-//					// TODO generate the files in the background thread
-//					ComputedResultFileUpdater.generateComputedFiles(
-//							idlistSelection.getDataset(),
-//							idlistSelection.getItem(),
-//							idlistSelection.getResultFileManager());
-//				}
-//				else
+			if (selectedVector.isComputed()) {
+				Object computation = selectedVector.getComputation(); 
+				if (computation instanceof ProcessingOp) {
+					ProcessingOp operation =  (ProcessingOp)computation;
+					setViewerInput((VectorResult)null);
+					showMessage("Computing vectors...");
+					final VectorResult finalVector = selectedVector;
+					boolean uptoDate = ComputedResultFileUpdater.instance().ensureComputedFile(
+							operation,
+							idlistSelection.getResultFileManager(),
+							new ComputedResultFileUpdater.CompletionCallback() {
+								public void completed(CompletionEvent event) {
+									final int severity = event.getStatus().getSeverity();
+									Display.getDefault().asyncExec(new Runnable() {
+										public void run() {
+											if (severity == IStatus.OK)
+												setViewerInput(finalVector);
+											else if (severity == IStatus.CANCEL)
+												showMessage("Canceled");
+											else if (severity == IStatus.ERROR)
+												showMessage("Failed");
+										}
+									});
+								}
+							});
+					if (uptoDate)
+						setViewerInput(selectedVector);
+					return;
+				}
+				else
 					selectedVector = null;
 			}
 		}
@@ -153,7 +177,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			if (selectedObject instanceof LineID) {
 				ResultItem selectedItem = ((LineID)selectedObject).getResultItem();
 				if (selectedItem instanceof VectorResult) {
-					if (selectedItem.getComputed())
+					if (selectedItem.isComputed())
 						selectedVector = null;
 					else
 						selectedVector = (VectorResult)selectedItem;
@@ -161,18 +185,23 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		}
 		
-		if (selectedVector != viewer.getInput()) {
-			viewer.setInput(selectedVector);
+		setViewerInput(selectedVector);
+		
+	}
+	
+	protected void setViewerInput(VectorResult input) {
+		if (input != viewer.getInput()) {
+			viewer.setInput(input);
 			// show message instead of empty table, when no index file
-			checkInput(selectedVector);
-			if (selectedVector != null) {
-				boolean hasEventNumbers = selectedVector.getColumns().indexOf('E') >= 0;
+			checkInput(input);
+			if (input != null) {
+				boolean hasEventNumbers = input.getColumns().indexOf('E') >= 0;
 				gotoEventAction.setEnabled(hasEventNumbers);
 				setEventNumberColumnVisible(hasEventNumbers);
 				setContentDescription(String.format("'%s.%s' in run %s from file %s",
-						selectedVector.getModuleName(), selectedVector.getName(),
-						selectedVector.getFileRun().getRun().getRunName(),
-						selectedVector.getFileRun().getFile().getFilePath()));
+						input.getModuleName(), input.getName(),
+						input.getFileRun().getRun().getRunName(),
+						input.getFileRun().getFile().getFilePath()));
 			}
 			else
 				setContentDescription("");

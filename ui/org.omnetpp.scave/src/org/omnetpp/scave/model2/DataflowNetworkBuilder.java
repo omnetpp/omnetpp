@@ -53,7 +53,7 @@ public class DataflowNetworkBuilder {
 	
 	private static final StringMap EMPTY_ATTRS = new StringMap();
 	
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	/*
 	 * Inner representation of the dataflow graph.
@@ -498,6 +498,10 @@ public class DataflowNetworkBuilder {
 		return createDataflowManager ? buildNetwork() : null;
 	}
 	
+	/**
+	 * Builds a dataflow network for writing the computed vectors into an indexed
+	 * vector file.
+	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, String fileName) {
 		buildInternal(dataset, target);
 		addVectorFileWriterNode(fileName);
@@ -777,7 +781,7 @@ public class DataflowNetworkBuilder {
 
 	private ReaderNode addReaderNode(long id) {
 		ResultItem vector = resultfileManager.getVector(id);
-		Assert.isTrue(!vector.getComputed(), "Tried to read a computed vector from file.");
+		Assert.isTrue(!vector.isComputed(), "Tried to read a computed vector from file.");
 		
 		if (getOutputPort(id) != null) {
 			removeOutputPort(id);
@@ -826,7 +830,7 @@ public class DataflowNetworkBuilder {
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
 			VectorResult vector = resultfileManager.getVector(id);
-			if (vector.getComputed()) {
+			if (vector.isComputed()) {
 				if (writer == null)
 					writer =  new VectorFileWriterNode(fileName);
 				vector.setVectorId(i); // XXX should not be checked in

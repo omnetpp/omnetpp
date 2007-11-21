@@ -176,6 +176,10 @@ namespace std {
     }
 %}
 
+/*---------------------------------------------------------------------------
+ *                    ResultFileManager
+ *---------------------------------------------------------------------------*/
+
 //
 // Add polymorphic return type to ResultFileManager::getItem(),
 // because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
@@ -273,6 +277,32 @@ FIX_STRING_MEMBER(Run, runName, RunName);
 
 FIX_STRING_MEMBER(VectorResult, columns, Columns);
 %ignore VectorResult::stat;
+
+//
+// addComputedVector
+//
+
+%typemap(jni)    ComputationNode "jobject"
+%typemap(jtype)  ComputationNode "Object"
+%typemap(jstype) ComputationNode "Object"
+%typemap(javain) ComputationNode "$javainput"
+%typemap(javaout) ComputationNode {
+   return $jnicall;
+}
+
+%typemap(in) ComputationNode {
+  $1 = (ComputationNode)jenv->NewGlobalRef($input);
+}
+
+// XXX call DeleteGlobalRef
+
+%typemap(out) ComputationNode {
+  if ($1)
+    $result = (jobject)$1;
+  else
+    $result = $null;
+}
+
 
 /*--------------------------------------------------------------------------
  *                     check ResultFileFormatException
