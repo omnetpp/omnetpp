@@ -10,6 +10,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
@@ -875,7 +876,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 				ScaveEditorMemento memento = new ScaveEditorMemento(file);
 				restoreState(memento);
 			}
-		} catch (Exception e) {
+		}
+		catch (CoreException e) {
+			ScavePlugin.log(e.getStatus());
+		}
+		catch (Exception e) {
 //			MessageDialog.openError(getSite().getShell(),
 //					"Restoring editor state",
 //					"Error occured while restoring editor state: "+e.getMessage());

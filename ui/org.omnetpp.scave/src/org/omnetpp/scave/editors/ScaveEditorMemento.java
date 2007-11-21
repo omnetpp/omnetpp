@@ -150,7 +150,7 @@ public class ScaveEditorMemento implements IMemento
 					}
 					state = StringUtils.join(chunks);
 				}
-				else
+				else if (count != -1)
 					throw new Exception("Scave editor state is corrupted.");
 			}
 			if (state != null) {
@@ -164,9 +164,9 @@ public class ScaveEditorMemento implements IMemento
 		}
 		
 		if (memento == null) {
-			IStatus error = new Status(IStatus.WARNING, ScavePlugin.PLUGIN_ID, 0,
-					String.format("No Scave editor state was saved for file: %s.", file.toString()), null);
-			throw new CoreException(error);
+			IStatus warning = new Status(IStatus.WARNING, ScavePlugin.PLUGIN_ID, 0,
+					String.format("No Scave editor state was saved for file: %s.", file.getLocation().toOSString()), null);
+			throw new CoreException(warning);
 		}
 	}
 
