@@ -569,24 +569,37 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      *  - {bar:} at the start of a line: remove that line unless ((Boolean)m.get("bar"))==true
      *  - {~bar:} at the start of a line: remove that line unless ((Boolean)m.get("bar"))!=true
      *  
-     *  Newlines inside {...} are not permitted; this allows detecting errors caused 
-     *  by misplaced braces. Also, nesting is not supported.
+     * Newlines inside {...} are not permitted; this allows detecting errors caused 
+     * by misplaced braces. Also, nesting is not supported.
+     *  
+     * Newlines in the template should be represented by "\n" and not "\r\n", so you 
+     * may need to preprocess the template by calling: template = template.replace("\r\n", "\n").
      */
-    //FIXME possibility to specify different separators; possibility to quote { and }
     public static String substituteIntoTemplate(String template, Map<String, Object> map) {
+        return substituteIntoTemplate(template, map, "{", "}");
+    }
+    
+    /**
+     * Like the other substituteIntoTemplate() method, but arbitrary start/end tag can be specified. 
+     */
+    public static String substituteIntoTemplate(String template, Map<String, Object> map, String startTag, String endTag) {
         StringBuilder buf = new StringBuilder();
+        
+        int startTagLen = startTag.length();
+        int endTagLen = endTag.length();
 
         int current = 0;
         while (true) {
-            int start = template.indexOf('{', current);
+            int start = template.indexOf(startTag, current);
             if (start == -1)
                 break;
             else {
-                int end = template.indexOf('}', start);
+                int end = template.indexOf(endTag, start);
                 if (end != -1) {
-                    String key = template.substring(start+1, end);
+                    String tag = template.substring(start, end + endTagLen);
+                    String key = template.substring(start+startTagLen, end);
                     if (key.indexOf('\n') != -1)
-                        throw new RuntimeException("newline inside {...}: likely a template error");
+                        throw new RuntimeException("template error: newline inside " + quoteString(tag) + " (misplaced start/end tag?)");
                     boolean isLineStart = start==0 || template.charAt(start-1)=='\n';
                     boolean isNegated = key.charAt(0)=='~';
                     if (isNegated) 
@@ -605,26 +618,26 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                             end = template.indexOf('\n', end);
                             if (end == -1) 
                                 end = template.length();
-                            replacement = getFromMapAsBool(map, key)!=isNegated ? template.substring(origend+1, end) : "";
+                            replacement = getFromMapAsBool(map, key)!=isNegated ? template.substring(origend+endTagLen, end+endTagLen) : "";
                         }
                         else {
                             // conditional
                             if (substringAfterColon.equals(""))
-                                throw new RuntimeException("found {var:} mid-line: likely a template error");
+                                throw new RuntimeException("template error: found " + quoteString(tag) + " mid-line, but whole-line conditions should begin at the start of the line");
                             replacement = getFromMapAsBool(map, key)!=isNegated ? substringAfterColon : "";
                         }
                     }
                     else {
                         // plain replacement
                         if (isNegated)
-                            throw new RuntimeException("found {~var}: likely a template error");
+                            throw new RuntimeException("template error: wrong syntax " + quoteString(tag) + " (missing \":\"?)");
                         replacement = getFromMapAsString(map, key);
                     }
 
                     // do it: replace substring(start, end) with replacement, unless replacement==null
                     buf.append(template.substring(current, start));  // template code up to the {...}
                     buf.append(replacement);
-                    current = end + 1;
+                    current = end + endTagLen;
                 }
             }
         }
