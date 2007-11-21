@@ -79,13 +79,13 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /**
      * Returns the list of interfaces this type locally implements.
      */
-	public Set<String> getLocalInterfaces();
+	public Set<INEDTypeInfo> getLocalInterfaces();
 
 	/**
      * Returns the list of interfaces this type and its ancestor types and
      * ancestor interfaces implement.
      */
-    public Set<String> getInterfaces();
+    public Set<INEDTypeInfo> getInterfaces();
 
     /** XXX ? */
     public Map<String, INEDElement> getLocalMembers();

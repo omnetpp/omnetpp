@@ -49,7 +49,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	// local members
     protected boolean needsRefreshLocal;
-	protected Set<String> localInterfaces = new HashSet<String>();
+	protected Set<INEDTypeInfo> localInterfaces = new HashSet<INEDTypeInfo>();
 	protected Map<String, PropertyElement> localProperties = new LinkedHashMap<String, PropertyElement>();
     protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamValues = new LinkedHashMap<String, ParamElementEx>();
@@ -65,7 +65,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	// local plus inherited
 	protected boolean needsRefreshInherited;
 	protected List<INEDTypeInfo> extendsChain = null;
-	protected Set<String> allInterfaces = new HashSet<String>();
+	protected Set<INEDTypeInfo> allInterfaces = new HashSet<INEDTypeInfo>();
 	protected Map<String, PropertyElement> allProperties = new LinkedHashMap<String, PropertyElement>();
     protected Map<String, ParamElementEx> allParams = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> allParamValues = new LinkedHashMap<String, ParamElementEx>();
@@ -191,18 +191,30 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         localMembers.clear();
         localUsedTypes.clear();
 
+        INedTypeLookupContext parentContext = getNEDElement().getParentLookupContext();
+
         // collect local interfaces:
         if (getNEDElement() instanceof IInterfaceTypeElement) {
         	// interfaces *extend* other interfaces
-        	for (INEDElement child : getNEDElement())
-        		if (child instanceof ExtendsElement)
-        			localInterfaces.add(((ExtendsElement)child).getName());
+            for (INEDElement child : getNEDElement()) {
+                if (child instanceof ExtendsElement) {
+                    String extendsName = ((ExtendsElement)child).getName();
+                    INEDTypeInfo extendsTypeInfo = getResolver().lookupNedType(extendsName, parentContext);
+                    if (extendsTypeInfo != null)
+                        localInterfaces.add(extendsTypeInfo);
+                }
+            }
         }
         else {
         	// modules & channels *implement* interfaces ("like")
-        	for (INEDElement child : getNEDElement())
-        		if (child instanceof InterfaceNameElement)
-        			localInterfaces.add(((InterfaceNameElement)child).getName());
+        	for (INEDElement child : getNEDElement()) {
+                if (child instanceof InterfaceNameElement) {
+                    String interfaceName = ((InterfaceNameElement)child).getName();
+                    INEDTypeInfo interfaceTypeInfo = getResolver().lookupNedType(interfaceName, parentContext);
+                    if (interfaceTypeInfo != null)
+                        localInterfaces.add(interfaceTypeInfo);
+                }
+        	}
         }
 
         // collect members from component declaration
@@ -283,19 +295,14 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		allMembers.clear();
 		allUsedTypes.clear();
 
-		INedTypeLookupContext parentContext = getNEDElement().getParentLookupContext();
-		
 		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
 		if (!(getNEDElement() instanceof IInterfaceTypeElement) && firstExtendsRef != null)
 		    allInterfaces.addAll(firstExtendsRef.getNEDTypeInfo().getInterfaces());
 
 		allInterfaces.addAll(localInterfaces);
-		for (String interfaceName : localInterfaces) {
-			INEDTypeInfo typeInfo = getResolver().lookupNedType(interfaceName, parentContext);
-			if (typeInfo != null)
-				allInterfaces.addAll(typeInfo.getInterfaces());
-		}
+		for (INEDTypeInfo interfaceTypeInfo : localInterfaces)
+		    allInterfaces.addAll(interfaceTypeInfo.getInterfaces());
 
         // collect all inherited members
 		INEDTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INEDTypeInfo[]{});
@@ -370,7 +377,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		return extendsChain;
 	}
 
-	public Set<String> getLocalInterfaces() {
+	public Set<INEDTypeInfo> getLocalInterfaces() {
 		refreshLocalMembersIfNeeded();
         return localInterfaces;
 	}
@@ -420,7 +427,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localUsedTypes;
     }
 
-    public Set<String> getInterfaces() {
+    public Set<INEDTypeInfo> getInterfaces() {
     	refreshInheritedMembersIfNeeded();
         return allInterfaces;
     }
