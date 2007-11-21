@@ -495,7 +495,7 @@ sub substituteIntoTemplate($;$)
             my $end = index($template, $endTag, $start);
             if ($end != -1) {
                 my $tag = substr2($template, $start, $end + $endTagLen);
-                print("processing $tag\n");
+                #print("processing $tag\n");
                 my $key = substr2($template, $start+$startTagLen, $end);
                 if (index($key, "\n") != -1) {
                     die("template error: newline inside \"$tag\" (misplaced start/end tag?)");
@@ -546,8 +546,7 @@ sub substituteIntoTemplate($;$)
                 }
 
                 # do it: replace substring(start, end) with replacement, unless replacement==null
-                print "  replacing it with: \"$replacement\"\n";
-                $buf .= substr($template, $current, $start);  # template code up to the {...}
+                $buf .= substr2($template, $current, $start);  # template code up to the {...}
                 $buf .= $replacement;
                 $current = $end + $endTagLen;
             }
