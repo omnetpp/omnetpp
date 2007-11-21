@@ -45,7 +45,7 @@ $includes = "";
 $libpath = "";
 $libs = "";
 $linkdirs = "";
-$xobjs = "";
+@extraobjs = ();
 @fragments = ();
 $doxyconf = "doxy.cfg";
 $ccext = "";  # we'll try to autodetect it
@@ -274,7 +274,7 @@ could not figure out.
         elsif (-f $arg)
         {
             $arg = abs2rel($arg, $basedir);
-            push(@xobjs, $arg);
+            push(@extraobjs, $arg);
         }
         else
         {
@@ -292,7 +292,7 @@ if (-f $makefile && $force ne 1)
     exit(1);
 }
 
-#FIXME cfgfile is nmake only!
+#FIXME $configfile is nmake only!
 if ($configfile eq "")
 {
     # try to find it
@@ -419,6 +419,12 @@ foreach $i (glob("*.msg"))
 $makefrags = "FIXME";
 $deps = "FIXME";
 
+$breakline = " \\\n            ";
+
+join($breakline, @sobj_list);
+
+
+
 #
 # now the Makefile creation
 #
@@ -427,7 +433,7 @@ print "Creating $makefile in $dir...\n";
 
 %m = (
     "nmake" => $isnmake,
-    "target" => $outfile,  #XXX in Java this is called "target" (???)
+    "target" => $outfile,  #XXX $outfile$suffix? in Java this is called "target" (???)
     "progname" => $isnmake ? "opp_nmakemake" : "opp_makemake",
     "args" => join(' ', @ARGV),
     "configfile" => $configfile,
@@ -444,11 +450,13 @@ print "Creating $makefile in $dir...\n";
     "allenv" => ($userif eq 'ALL'),
     "cmdenv" => ($userif eq 'CMDENV'),
     "tkenv" => ($userif eq 'TKENV'),
-    "extdirobjs" => join($externaldirobjs),
-    "extdirtstamps" => join($externaldirtstamps),
-    "extraobjs" => join($externalObjects),
+    "extdirobjs" => join($breakline, @extdirobjs),
+    "extdirtstamps" => join($breakline, @extdirtstamps),
+    "extraobjs" => join($extraobjs),
     "includepath" => join($includeDirs),
-    "libs" => join($libDirs, $isnmake ? "/libpath:" : "-L") . join($libs) . join($importLibs),
+    "libpath" => join($libDirs, $isnmake ? "/libpath:" : "-L"),
+    "libs" => join($libs),
+    "importlibs" => join($importLibs),
     "link-o" => $isnmake ? "/out:" : "-o",
     "makecommand" => $makecommand,
     "makefile" => $isnmake ? "Makefile.vc" : "Makefile",
@@ -459,7 +467,7 @@ print "Creating $makefile in $dir...\n";
     "hassubdir" => (@subdirs != ()),
     "subdirs" => join($subdirs),
     "subdirtargets" => join($subdirTargets),
-    "fordllopt" => $compileForDll ? "/DWIN32_DLL" : "",
+    "fordllopt" => $fordll ? "/DWIN32_DLL" : "",
     "dllexportmacro" => $exportDefOpt==null ? "" : ("-P" + exportDefOpt),
 );
 
@@ -684,7 +692,7 @@ EXT_DIR_OBJS = {extdirobjs}
 EXT_DIR_TSTAMPS = {extdirtstamps}
 
 # Additional libraries (-L, -l, -t options)
-LIBS = {libs}
+LIBS = {libpath}{libs}{importlibs}
 
 #------------------------------------------------------------------------------
 
