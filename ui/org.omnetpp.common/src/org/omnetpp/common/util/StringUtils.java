@@ -564,10 +564,10 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     /**
      * Performs template substitution. Constructs understood are:
      *  - {foo} gets replaced by (String)m.get("foo");
-     *  - {bar:some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==true.
-     *  - {~bar:some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==false.
-     *  - {bar:} at the start of a line: remove that line unless ((Boolean)m.get("bar"))==true
-     *  - {~bar:} at the start of a line: remove that line unless ((Boolean)m.get("bar"))!=true
+     *  - {bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==true.
+     *  - {~bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==false.
+     *  - {bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==true
+     *  - {~bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==false
      *  
      * Newlines inside {...} are not permitted; this allows detecting errors caused 
      * by misplaced braces. Also, nesting is not supported.
@@ -601,43 +601,41 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     String key = template.substring(start+startTagLen, end);
                     if (key.indexOf('\n') != -1)
                         throw new RuntimeException("template error: newline inside " + quoteString(tag) + " (misplaced start/end tag?)");
-                    boolean isLineStart = start==0 || template.charAt(start-1)=='\n';
                     boolean isNegated = key.charAt(0)=='~';
                     if (isNegated) 
                         key = key.substring(1);  // drop "~"
-                    int colonPos = key.indexOf(':');
-                    String substringAfterColon = colonPos == -1 ? null : key.substring(colonPos+1);
-                    if (colonPos != -1)
-                        key = key.substring(0, colonPos); // drop ":..."
+                    boolean isOptLine = key.endsWith(":");
+                    if (isOptLine)
+                        key = key.substring(0, key.length()-1);  // drop trailing ":"
+                    int questionmarkPos = key.indexOf('?');
+                    String substringAfterQuestionmark = questionmarkPos == -1 ? null : key.substring(questionmarkPos+1);
+                    if (questionmarkPos != -1)
+                        key = key.substring(0, questionmarkPos); // drop "?..." from key
 
                     // determine replacement string, and possibly adjust start/end
                     String replacement = "";
-                    if (colonPos != -1) {
-                        if (isLineStart && substringAfterColon.equals("")) {
-                            // replacing a whole line
-                            if (getFromMapAsBool(map, key) != isNegated) {
-                                // put line in: all variables OK
-                            }
-                            else {
-                                // omit line
-                                int endLine = template.indexOf('\n', end);
-                                if (endLine == -1) 
-                                    endLine = template.length();
-                                replacement = "";
-                                end = endLine;
-                            }
+                    if (isOptLine) {
+                        // replacing a whole line
+                        if (getFromMapAsBool(map, key) != isNegated) {
+                            // put line in: all variables OK
                         }
                         else {
-                            // conditional
-                            if (substringAfterColon.equals(""))
-                                throw new RuntimeException("template error: found " + quoteString(tag) + " mid-line, but whole-line conditions should begin at the start of the line");
-                            replacement = getFromMapAsBool(map, key)!=isNegated ? substringAfterColon : "";
+                            // omit line
+                            int endLine = template.indexOf('\n', end);
+                            if (endLine == -1) 
+                                endLine = template.length();
+                            replacement = "";
+                            end = endLine;
                         }
+                    }
+                    else if (questionmarkPos != -1) {
+                        // conditional
+                        replacement = getFromMapAsBool(map, key)!=isNegated ? substringAfterQuestionmark : "";
                     }
                     else {
                         // plain replacement
                         if (isNegated)
-                            throw new RuntimeException("template error: wrong syntax " + quoteString(tag) + " (missing \":\"?)");
+                            throw new RuntimeException("template error: wrong syntax " + quoteString(tag) + " (possible missing \"?\")");
                         replacement = getFromMapAsString(map, key);
                     }
 

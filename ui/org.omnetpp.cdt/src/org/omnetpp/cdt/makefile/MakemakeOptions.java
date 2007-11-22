@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 
 public class MakemakeOptions implements Cloneable {
@@ -72,7 +69,7 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("-f") || arg.equals("--force")) {
                 force = true;
             }
-            else if (arg("--nmake")) {
+            else if (arg.equals("--nmake")) {
                 isNMake = true;
             }
             else if (arg.equals("-e") || arg.equals("--ext")) {

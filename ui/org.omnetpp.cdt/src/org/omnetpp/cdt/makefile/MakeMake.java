@@ -78,12 +78,16 @@ public class MakeMake {
     public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         this.folder = folder;
         this.p = options;
-
+        
         File directory = folder.getLocation().toFile();
         projectLocation = folder.getProject().getLocation();
         folderLocation = folder.getLocation();
 
         boolean isNMake = p.isNMake;
+
+        String makefile = isNMake ? "Makefile.vc" : "Makefile";
+        if (file(makefile).isFile() && !p.force)
+            throw new IllegalStateException("use -f to force overwriting existing " + makefile);
 
         String target = p.target == null ? folder.getName() : p.target;
         List<String> externaldirobjs = new ArrayList<String>();
@@ -105,11 +109,6 @@ public class MakeMake {
             includeDirs.add(abs2rel(i));
         for (String i : p.libDirs)
             libDirs.add(abs2rel(i));
-
-        String makefile = isNMake ? "Makefile.vc" : "Makefile";
-
-        if (file(makefile).isFile() && !p.force)
-            throw new IllegalStateException("use -f to force overwriting existing " + makefile);
 
         String makecommand = isNMake ? "make" : "nmake /nologo /f Makefile.vc";
 
@@ -158,8 +157,7 @@ public class MakeMake {
                 System.out.println("warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
         }
 
-        String ccSuffix = "." + ccExt;
-        String objSuffix = isNMake ? ".obj" : ".o";
+        String objExt = isNMake ? "obj" : "o";
 
         // prepare subdirs. First, check that all specified subdirs exist
         List<String> subdirs = new ArrayList<String>();
@@ -206,10 +204,10 @@ public class MakeMake {
         if (p.linkWithObjects)
             for (String i : includeDirs)
                 if (!i.equals("."))
-                    externaldirobjs.add(i + "/*." + objSuffix);
+                    externaldirobjs.add(i + "/*." + objExt);
 
         for (String i : linkDirs)
-            externaldirobjs.add(i + "/*." + objSuffix);
+            externaldirobjs.add(i + "/*." + objExt);
 
         for (String i : includeDirs)
             if (p.tstamp && !i.equals("."))
@@ -221,15 +219,15 @@ public class MakeMake {
         for (String i : tstampDirs)
             externaldirtstamps.add(quote(i + "/.tstamp"));
 
-        String[] objpatts = p.ignoreNedFiles ? new String[] {"*.msg", "*" + ccSuffix} : new String[] {"*.ned", "*.msg", "*" + ccSuffix};
+        String[] objpatts = p.ignoreNedFiles ? new String[] {"*.msg", "*." + ccExt} : new String[] {"*.ned", "*.msg", "*." + ccExt};
         for (String objpatt : objpatts) {
             for (String i : glob(objpatt)) {
                 i = i.replaceAll("\\*[^ ]*", "");
-                i = i.replaceAll("[^ ]*_n\\" + ccSuffix + "$", "");
-                i = i.replaceAll("[^ ]*_m\\" + ccSuffix + "$", "");
-                i = i.replaceAll("\\.ned$", "_n." + objSuffix);
-                i = i.replaceAll("\\.msg$", "_m." + objSuffix);
-                i = i.replaceAll("\\" + ccSuffix + "$", "." + objSuffix);
+                i = i.replaceAll("[^ ]*_n\\." + ccExt + "$", "");
+                i = i.replaceAll("[^ ]*_m\\." + ccExt + "$", "");
+                i = i.replaceAll("\\.ned$", "_n." + objExt);
+                i = i.replaceAll("\\.msg$", "_m." + objExt);
+                i = i.replaceAll("\\." + ccExt + "$", "." + objExt);
                 if (!i.equals(""))
                     objs.add(i);
             }
@@ -238,10 +236,10 @@ public class MakeMake {
         msgfiles = glob("*.msg");
         for (String i : msgfiles) {
             String h = i.replaceAll("\\.msg$", "_m.h");
-            String cc = i.replaceAll("\\.msg$", "_m"+ccSuffix);
+            String cc = i.replaceAll("\\.msg$", "_m." + ccExt);
             generatedHeaders.add(h);
-            msgccandhfiles.add(h);
             msgccandhfiles.add(cc);
+            msgccandhfiles.add(h);
         }
 
         String makefrags = "";
@@ -278,9 +276,9 @@ public class MakeMake {
         m.put("nmake", isNMake);
         m.put("target", target);
         m.put("progname", isNMake ? "opp_nmakemake" : "opp_makemake");
-        m.put("args", prefixQuoteJoin(p.args));
+        m.put("args", quoteJoin(p.args));
         m.put("configfile", configFile);
-        m.put("-L", isNMake ? "/libdir:" : "-L");
+        m.put("-L", isNMake ? "/libpath:" : "-L");
         m.put("-l", isNMake ? "" : "-l");
         m.put(".lib", isNMake ? ".lib" : "");
         m.put("-u", isNMake ? "/include:" : "-u");
@@ -293,23 +291,23 @@ public class MakeMake {
         m.put("allenv", p.userInterface.startsWith("A"));
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));
-        m.put("extdirobjs", prefixQuoteJoin(externaldirobjs));
-        m.put("extdirtstamps", prefixQuoteJoin(externaldirtstamps));
-        m.put("extraobjs", prefixQuoteJoin(externalObjects));
+        m.put("extdirobjs", quoteJoin(externaldirobjs));
+        m.put("extdirtstamps", quoteJoin(externaldirtstamps));
+        m.put("extraobjs", quoteJoin(externalObjects));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
-        m.put("libs", prefixQuoteJoin(p.libs));
-        m.put("importlibs", prefixQuoteJoin(p.importLibs));
+        m.put("libs", quoteJoin(p.libs));
+        m.put("importlibs", quoteJoin(p.importLibs));
         m.put("link-o", isNMake ? "/out:" : "-o");
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);
-        m.put("msgccandhfiles", prefixQuoteJoin(msgccandhfiles));
-        m.put("msgfiles", prefixQuoteJoin(msgfiles));
-        m.put("objs", prefixQuoteJoin(objs));
+        m.put("msgccandhfiles", quoteJoin(msgccandhfiles));
+        m.put("msgfiles", quoteJoin(msgfiles));
+        m.put("objs", quoteJoin(objs));
         m.put("hassubdir", !subdirs.isEmpty());
-        m.put("subdirs", prefixQuoteJoin(subdirs));
-        m.put("subdirtargets", prefixQuoteJoin(subdirTargets));
+        m.put("subdirs", quoteJoin(subdirs));
+        m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
         m.put("dllexportmacro", p.exportDefOpt==null ? "" : ("-P" + p.exportDefOpt));
 
@@ -347,7 +345,7 @@ public class MakeMake {
         return false;  // it was already OK
     }
 
-    protected String prefixQuoteJoin(List<String> args) {
+    protected String quoteJoin(List<String> args) {
         return prefixQuoteJoin(args, "");
     }
 
