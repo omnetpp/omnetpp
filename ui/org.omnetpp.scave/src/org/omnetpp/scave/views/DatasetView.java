@@ -52,13 +52,18 @@ import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
+import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.LineID;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -303,6 +308,17 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				null);
 	}
 	
+	private FilteredDataPanel getFilteredDataPanel(ResultItem item) {
+		if (item instanceof ScalarResult)
+			return scalarsPanel;
+		else if (item instanceof VectorResult)
+			return vectorsPanel;
+		else if (item instanceof HistogramResult)
+			return histogramsPanel;
+		else
+			return null;
+	}
+	
 	private void setVisibleDataPanel(FilteredDataPanel table) {
 		if (layout.topControl != table) {
 			if (setFilterAction != null)
@@ -330,16 +346,51 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	}
 	
 	private void workbechSelectionChanged(ISelection selection) {
+		Dataset dataset = null;
+		DatasetItem item = null;
+		long id = -1L;
+		ResultFileManager manager = null;
+		
+		if (selection == this.selection)
+			return;
+		
 		if (selection instanceof IStructuredSelection &&
 				((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
 			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
-			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
-			DatasetItem item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
+			dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
+			item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
 			setInput(dataset, item);
 		}
-		else if (selection != this.selection) {
+		else if (selection instanceof IStructuredSelection) {
+			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
+			if (selectedObject instanceof LineID) {
+				LineID selectedLine = (LineID)selectedObject;
+				item = selectedLine.getChart();
+				dataset = ScaveModelUtil.findEnclosingDataset(item);
+				id = selectedLine.getResultItemID();
+				manager = selectedLine.getResultFileManager();
+			}
+		}
+		
+		if (dataset != null) {
+			setInput(dataset, item);
+			if (id != -1L && manager != null)
+				selectResultItem(id, manager);
+		}
+		else {
 			setInput(null, null);
 			showMessage("No dataset item selected.");
+		}
+	}
+	
+	private void selectResultItem(long id, ResultFileManager manager) {
+		ResultItem item = manager.getItem(id);
+		FilteredDataPanel panel = getFilteredDataPanel(item);
+		if (panel != null && !panel.isDisposed()) {
+			DataTable table = panel.getTable();
+			if (!table.isDisposed()) {
+				table.setSelectionByID(id);
+			}
 		}
 	}
 	
@@ -458,6 +509,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		return vectorsPanel.isFilterPanelVisible();
 	}
 	
+	/*
+	 * Actions
+	 */
+	
 	class ShowTableAction extends Action
 	{
 		FilteredDataPanel table;
@@ -519,6 +574,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		}
 	}
+	
+	/*
+	 * ISelectionProvider
+	 */
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangeListeners.add(listener);

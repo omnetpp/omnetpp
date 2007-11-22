@@ -24,7 +24,7 @@ import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
-import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater;
@@ -134,55 +134,56 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
 	public void setViewerInput(ISelection selection) {
 		VectorResult selectedVector = null;
+		ResultFileManager manager = null;
 		
 		if (selection instanceof IDListSelection) {
 			// show the first selected vector (XXX merge vectors?)
 			IDListSelection idlistSelection = (IDListSelection)selection;
 			selectedVector = idlistSelection.getFirstAsVector();
-			if (selectedVector.isComputed()) {
-				Object computation = selectedVector.getComputation(); 
-				if (computation instanceof ProcessingOp) {
-					ProcessingOp operation =  (ProcessingOp)computation;
-					setViewerInput((VectorResult)null);
-					showMessage("Computing vectors...");
-					final VectorResult finalVector = selectedVector;
-					boolean uptoDate = ComputedResultFileUpdater.instance().ensureComputedFile(
-							operation,
-							idlistSelection.getResultFileManager(),
-							new ComputedResultFileUpdater.CompletionCallback() {
-								public void completed(CompletionEvent event) {
-									final int severity = event.getStatus().getSeverity();
-									Display.getDefault().asyncExec(new Runnable() {
-										public void run() {
-											if (severity == IStatus.OK)
-												setViewerInput(finalVector);
-											else if (severity == IStatus.CANCEL)
-												showMessage("Canceled");
-											else if (severity == IStatus.ERROR)
-												showMessage("Failed");
-										}
-									});
-								}
-							});
-					if (uptoDate)
-						setViewerInput(selectedVector);
-					return;
-				}
-				else
-					selectedVector = null;
-			}
+			manager = idlistSelection.getResultFileManager();
 		}
 		else if (selection instanceof IStructuredSelection) {
 			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
 			if (selectedObject instanceof LineID) {
-				ResultItem selectedItem = ((LineID)selectedObject).getResultItem();
-				if (selectedItem instanceof VectorResult) {
-					if (selectedItem.isComputed())
-						selectedVector = null;
-					else
-						selectedVector = (VectorResult)selectedItem;
+				LineID selectedLine = (LineID)selectedObject;
+				if (selectedLine.getResultItem() instanceof VectorResult) {
+					selectedVector = (VectorResult)selectedLine.getResultItem();
+					manager = selectedLine.getResultFileManager();
 				}
 			}
+		}
+		
+		// recompute computed files if needed
+		if (selectedVector != null && manager != null && selectedVector.isComputed()) {
+			Object computation = selectedVector.getComputation(); 
+			if (computation instanceof ProcessingOp) {
+				ProcessingOp operation =  (ProcessingOp)computation;
+				setViewerInput((VectorResult)null);
+				showMessage("Computing vectors...");
+				final VectorResult finalVector = selectedVector;
+				boolean uptoDate = ComputedResultFileUpdater.instance().ensureComputedFile(
+						operation,
+						manager,
+						new ComputedResultFileUpdater.CompletionCallback() {
+							public void completed(CompletionEvent event) {
+								final int severity = event.getStatus().getSeverity();
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
+										if (severity == IStatus.OK)
+											setViewerInput(finalVector);
+										else if (severity == IStatus.CANCEL)
+											showMessage("Canceled");
+										else if (severity == IStatus.ERROR)
+											showMessage("Failed");
+									}
+								});
+							}
+						});
+				if (!uptoDate) // input will be set by the callback
+					return;
+			}
+			else
+				selectedVector = null;
 		}
 		
 		setViewerInput(selectedVector);
