@@ -417,8 +417,9 @@ sub makemake()
         "makefrags" =>  $makefrags,
         "msgccandhfiles" =>  quoteJoin(\@msgccandhfiles),
         "msgfiles" =>  quoteJoin(\@msgfiles),
+        "hasmsgfiles" =>  $#msgfiles != -1,
         "objs" =>  quoteJoin(\@objs),
-        "hassubdir" =>  @subdirs ne "",
+        "hassubdir" =>  $#subdirs != -1,
         "subdirs" =>  quoteJoin(\@subdirs),
         "subdirtargets" =>  quoteJoin(\@subdirTargets),
         "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
@@ -461,47 +462,44 @@ sub substituteIntoTemplate($;$)
                 if (index($key, "\n") != -1) {
                     die("template error: newline inside \"$tag\" (misplaced start/end tag?)");
                 }
-                my $isLineStart = $start==0 || substr($template, $start-1, 1) eq "\n";
                 my $isNegated = substr($key, 0, 1) eq "~";
                 if ($isNegated) {
                     $key = substr($key, 1);  # drop "~"
                 }
-                my $colonPos = index($key, ":");
-                my $substringAfterColon = $colonPos == -1 ? "" : substr($key, $colonPos+1);
-                if ($colonPos != -1) {
-                    $key = substr2($key, 0, $colonPos); # drop ":..."
+                my $isOptLine = substr($key,-1,1) eq ":";
+                if ($isOptLine) {
+                    $key = substr($key, 0, length($key)-1);
+                }
+                my $questionmarkPos = index($key, "?");
+                my $substringAfterQuestionmark = $questionmarkPos == -1 ? "" : substr($key, $questionmarkPos+1);
+                if ($questionmarkPos != -1) {
+                    $key = substr2($key, 0, $questionmarkPos); # drop ":..."
                 }
 
                 # determine replacement string, and possibly adjust start/end
                 my $replacement = "";
-                if ($colonPos != -1) {
-                    if ($isLineStart && $substringAfterColon eq "") {
-                        # replacing a whole line
-                        if (getFromMapAsBool(\%map, $key) != $isNegated) {
-                            # put line in: all variables OK
-                        }
-                        else {
-                            # omit line
-                            my $endLine = index($template, "\n", $end);
-                            if ($endLine == -1) {
-                                $endLine = length($template);
-                            }
-                            $replacement = "";
-                            $end = $endLine;
-                        }
+                if ($isOptLine) {
+                    # replacing a whole line
+                    if (getFromMapAsBool(\%map, $key) != $isNegated) {
+                        # put line in: all variables OK
                     }
                     else {
-                        # conditional
-                        if ($substringAfterColon eq "") {
-                            die("template error: found \"$tag\" mid-line, but whole-line conditions should begin at the start of the line");
+                        # omit line
+                        my $endLine = index($template, "\n", $end);
+                        if ($endLine == -1) {
+                            $endLine = length($template);
                         }
-                        $replacement = getFromMapAsBool(\%map, $key)!=$isNegated ? $substringAfterColon : "";
+                        $replacement = "";
+                        $end = $endLine;
                     }
+                }
+                elsif ($questionmarkPos != -1) {
+                    $replacement = getFromMapAsBool(\%map, $key)!=$isNegated ? $substringAfterQuestionmark : "";
                 }
                 else {
                     # plain replacement
                     if ($isNegated) {
-                        die("template error: wrong syntax \"$tag\" (missing \":\"?)");
+                        die("template error: wrong syntax \"$tag\" (possible missing \"?\")");
                     }
                     $replacement = getFromMapAsString(\%map, $key);
                 }
@@ -744,9 +742,9 @@ sub template()
 TARGET = {target}
 
 # User interface (uncomment one) (-u option)
-{~allenv:#}USERIF_LIBS = $(TKENV_LIBS) $(CMDENV_LIBS)
-{~cmdenv:#}USERIF_LIBS = $(CMDENV_LIBS)
-{~tkenv:#}USERIF_LIBS = $(TKENV_LIBS)
+{~allenv?#}USERIF_LIBS = $(TKENV_LIBS) $(CMDENV_LIBS)
+{~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
+{~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
 INCLUDE_PATH = {includepath}
@@ -777,12 +775,12 @@ KERNEL_LIBS = {-l}common{.lib} {-l}sim_std{.lib}
 {nmake:}!if "$(WITH_NETBUILDER)"=="yes"
 {~nmake:}ifeq($(WITH_NETBUILDER),yes)
 KERNEL_LIBS = $(KERNEL_LIBS) {-l}nedxml{.lib} $(XML_LIBS)
-{nmake:!}endif
+{nmake?!}endif
 
 {nmake:}!if "$(WITH_PARSIM)"=="yes"
 {~nmake:}ifeq($(WITH_PARSIM),yes)
 KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
-{nmake:!}endif
+{nmake?!}endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = {-L}$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -795,51 +793,51 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 # object files in this directory
 OBJS = {objs}
 
-# subdirectories to recurse into
-SUBDIRS = {subdirs}
-{nmake:}SUBDIR_TARGETS = {subdirtargets}
-
+{hassubdir:}# subdirectories to recurse into
+{hassubdir:}SUBDIRS = {subdirs}
+{hassubdir:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
+{hassubdir:}
 {makefrags}
 
-{exe:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir:subdirs} {makefile}
+{exe:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
 {exe:}	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
-{exe:}	echo{nmake:.} >.tstamp
-{so:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir:subdirs} {makefile}
+{exe:}	@echo{nmake?.} >.tstamp
+{so:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
 {so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
-{so:}	echo{nmake:.} >.tstamp
-{nolink:}$(TARGET): $(OBJS) {hassubdir:subdirs} {makefile} .tstamp
-{nolink:}	@{nmake:rem}{~nmake:#} Do nothing
+{so:}	@echo{nmake?.} >.tstamp
+{nolink:}$(TARGET): $(OBJS) {hassubdir?subdirs} {makefile} .tstamp
+{nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 {nolink:}
 {nolink:}.tstamp: $(OBJS)
-{nolink:}	echo{nmake:.} >.tstamp
+{nolink:}	@echo{nmake?.} >.tstamp
 
-subdirs: $(SUBDIR_TARGETS)
-
-{subdirtargets}:
-{~nmake:}	cd $@ && {makecommand}
-{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
-
-{nmake:}{msgccandhfiles} :: {msgfiles}
-{~nmake:}%_m.{cc} %_m.h: %.msg
-	$(MSGC{nmake::/=\}) -s _m.{cc} $(MSGCOPTS) $**
-
+{hassubdir:}subdirs: $(SUBDIR_TARGETS)
+{hassubdir:}
+{hassubdir:}{subdirtargets}:
+{hassubdir:}{~nmake:}	cd $@ && {makecommand}
+{hassubdir:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
+{hassubdir:}
+{hasmsgfiles:}{nmake:}{msgccandhfiles} :: {msgfiles}
+{hasmsgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
+{hasmsgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
+{hasmsgfiles:}
 .SUFFIXES: .{cc}
 
 .{cc}.obj:
-	$(CXX) -c $(COPTS) {nmake:/Tp} $<
+	$(CXX) -c $(COPTS) {nmake?/Tp} $<
 
 generateheaders: $(GENERATEDHEADERS)
-{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
-{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+{hassubdir:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
+{hassubdir:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
 clean:
 {nmake:}	-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
 {nmake:}	-del *_n.{cc} *_n.h *_m.{cc} *_m.h 2>NUL
 {nmake:}	-del *.vec *.sca 2>NUL
-{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 {~nmake:}	rm -f *.o *_n.{cc} *_n.h *_m.{cc} *_m.h .tstamp
 {~nmake:}	rm -f *.vec *.sca
-{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
+{hassubdir:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
+{hassubdir:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
