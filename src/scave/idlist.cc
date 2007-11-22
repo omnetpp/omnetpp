@@ -45,6 +45,7 @@ void IDList::add(ID x)
         v->push_back(x);
 }
 
+/* XXX it is not used, and bogus anyway 
 void IDList::set(int i, ID x)
 {
     checkV();
@@ -54,12 +55,23 @@ void IDList::set(int i, ID x)
     else
         v->erase(it); // x is already in there -- just delete the element it replaces
 }
+*/
 
 void IDList::erase(int i)
 {
     checkV();
     v->at(i);  // bounds check
     v->erase(v->begin()+i);
+}
+
+int IDList::indexOf(ID x) const
+{
+	checkV();
+	V::iterator it = std::find(v->begin(), v->end(), x);
+	if (it != v->end())
+		return (int)(it - v->begin());
+	else
+		return -1;
 }
 
 void IDList::substract(ID x)

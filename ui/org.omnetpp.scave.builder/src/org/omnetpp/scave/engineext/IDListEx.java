@@ -66,11 +66,11 @@ public class IDListEx extends IDList {
 		notifyListeners();
 	}
 
-	@Override
-	public void set(int i, long x) {
-		super.set(i, x);
-		notifyListeners();
-	}
+//	@Override
+//	public void set(int i, long x) {
+//		super.set(i, x);
+//		notifyListeners();
+//	}
 
 	@Override
 	public void sortByDirectory(ResultFileManager mgr, boolean ascending) {

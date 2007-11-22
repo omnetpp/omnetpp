@@ -250,10 +250,10 @@ public class DataTable extends Table {
 
 	public IDList getSelectedIDs() {
 		int[] selectionIndices = getSelectionIndices();
-		IDList items = new IDList(selectionIndices.length);
+		IDList items = new IDList();
 
 		for (int i = 0; i < selectionIndices.length; ++i)
-			items.set(i, idlist.get(selectionIndices[i]));
+			items.add(idlist.get(selectionIndices[i]));
 		
 		return items;
 	}
@@ -667,5 +667,11 @@ public class DataTable extends Table {
 			return (ResultItem)selectedItem.getData(ITEM_KEY);
 		}
 		return null;
+	}
+	
+	public void setSelectionByID(long id) {
+		int index = idlist.indexOf(id);
+		if (index >= 0)
+			setSelection(index);
 	}
 }

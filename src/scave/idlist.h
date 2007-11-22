@@ -55,15 +55,16 @@ class SCAVE_API IDList
         IDList(unsigned int sz)  {v = new V(sz);}
         IDList(const IDList& ids); // transfer of ownership semantics!
         ~IDList()  {delete v;}
-        size_t size() const  {checkV(); return v->size();}
+        int size() const  {checkV(); return (int)v->size();}
         bool isEmpty() const  {checkV(); return v->empty();}
         void clear()  {checkV(); v->clear();}
         void set(const IDList& ids);
         void add(ID x);
         ID get(int i) const {checkV(); return v->at(i);} // at() includes bounds check
-        void set(int i, ID x);
+        // void set(int i, ID x);
         void erase(int i);
         void substract(ID x); // this -= {x}
+        int indexOf(ID x) const;
         void merge(IDList& ids);  // this += ids
         void substract(IDList& ids);  // this -= ids
         void intersect(IDList& ids);  // this = intersection(this,ids)
