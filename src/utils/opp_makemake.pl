@@ -41,7 +41,7 @@ $linkWithObjects = 0;
 $tstamp = 1;
 $recursive = 0;
 $userInterface = "ALL";
-$ccext = "";
+$ccExt = "";
 $configFile = "";
 $exportDefOpt = "";
 $compileForDll = 0;
@@ -68,13 +68,13 @@ while (@ARGV)
         $force = 1;
     }
     elsif ($arg eq "-e" || $arg eq "--ext") {
-        $ccext = shift;
+        $ccExt = shift;
     }
     elsif ($arg eq "-o" || $arg eq "--outputfile") {
         $target = shift;
     }
     elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
-        print STDERR "$progname: $arg: obsolete option, please remove (dynamic NED loading is now the default)";
+        error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
     }
     elsif ($arg eq "-r" || $arg eq "--recurse") {
         $recursive = 1;
@@ -124,8 +124,7 @@ while (@ARGV)
         my $userInterface = shift;
         $userInterface = uc($userInterface);
         if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
-            print STDERR "$progname: -u: specify All, Cmdenv or Tkenv";
-            exit(1);
+            error("$progname: -u: specify All, Cmdenv or Tkenv");
         }
     }
     elsif ($arg eq "-i" || $arg eq "--includefragment") {
@@ -162,8 +161,7 @@ while (@ARGV)
         # FIXME add support for "--" after which everything is extraArg
         if ($arg ne "--") {
             if ($arg =~ /^-/) {
-                print STDERR("$progname: unrecognized option: $arg");
-                exit(1);
+                error("unrecognized option: $arg");
             }
             push(@extraArgs, $arg);
         }
@@ -174,16 +172,14 @@ $makefile = $nmake ? "Makefile.vc" : "Makefile";
 
 if (-f $makefile && $force ne 1)
 {
-    print STDERR "$progname: use -f to force overwriting existing $makefile\n";
-    exit(1);
+    error("use -f to force overwriting existing $makefile");
 }
 
 $makecommand = $nmake ? 'nmake /nologo /f Makefile.vc' : 'make';
 
 
 #FIXME $configFile is nmake only!
-if ($configFile eq "")
-{
+if ($configFile eq "") {
     # try to find it
     $progdir = $0;
     $progdir =~ s|\\|/|g;
@@ -206,159 +202,259 @@ if ($configFile eq "")
     }
 
 }
+else {
+    if (! -f $configFile) {
+        error("$progname: error: file $configFile not found");
+    }
+}
+
+
+#
+# Prepare the variables for the template
+#
+$folder = cwd;
+print "Creating $makefile in $folder...\n";
+
+$makecommand = $isNMake ? "make" : "nmake /nologo /f Makefile.vc";
+$target = $target eq "" ? folder.getName() : $target;
+
+@externaldirobjs = ();
+@externaldirtstamps = ();
+@objs = ();
+@generatedHeaders = ();
+@linkDirs = ();
+@externalObjects = ();
+@tstampDirs = ();
+@msgfiles = ();
+@msgccandhfiles = ();
+
+$target = abs2rel($target);
+
+@includeDirs = ();
+@libDirs = ();
+
+foreach $i (@includeDirs) {
+    push(@includeDirs, abs2rel($i));
+}
+foreach $i (@libDirs) {
+    push(@libDirs, abs2rel($i));
+}
+
+if (-f $makefile && !$force) {
+    error("use -f to force overwriting existing $makefile");
+}
+
+#if ($baseDir ne "") {
+#    error("specifying the base directory (-b option) is not supported, it is always the project directory");
+#}
+
+if ($configFile eq "")
+{
+    # try to find it
+    my $progdir = $0;
+    $progdir =~ s|\\|/|g;
+    $progdir =~ s|/?[^/:]*$||g;
+    $progdir = "." if ($progdir eq "");
+    $progparentdir = $progdir;
+    $progparentdir =~ s|/?[^/:]*/?$||;
+    foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
+                "../../../configuser.vc", "../../../../configuser.vc",
+                "../../../../../configuser.vc", "$progparentdir/configuser.vc",
+                "$progdir/configuser.vc")
+    {
+        if (-f $f) {
+             $configFile = $f;
+             last;
+        }
+    }
+    if ($configFile eq "") {
+        warning("configuser.vc file not found -- try -c option or edit generated makefile");
+    }
+}
 else
 {
     if (! -f $configFile) {
-        print STDERR "$progname: error: file $configFile not found\n";
-        exit(1);
+        error("file $configfile not found");
     }
 }
+
+$configFile = abs2rel($configFile);
+
 
 # try to determine if .cc or .cpp files are used
 @ccfiles = glob("*.cc");
 @cppfiles = glob("*.cpp");
-if ($ccext eq '')
-{
-    @ccfiles = glob("*.cc");
-    @cppfiles = glob("*.cpp");
-    if (@ccfiles==() && @cppfiles!=()) {
-        $ccext = "cpp";
+if ($ccExt eq "") {
+    if (@ccfiles == () && !@cppfiles == ()) {
+        $ccExt = "cpp";
     }
-    elsif (@ccfiles!=() && @cppfiles==()) {
-        $ccext = "cc";
+    elsif (!@ccfiles == () && @cppfiles == ()) {
+        $ccExt = "cc";
     }
-    elsif (@ccfiles!=() && @cppfiles!=()) {
-        print STDERR "$progname: you have both .cc and .cpp files -- ".
-                     "use -e cc or -e cpp option to select which set of files to use\n";
-        exit(1);
+    elsif (!@ccfiles == () && !@cppfiles == ()) {
+        error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
     }
     else {
-        # if no files, use .cc extension
-        $ccext = "cc";
+        $ccExt = "cc";  # if no files, use .cc extension
     }
 }
-else
-{
-    if ($ccext eq "cc" && @ccfiles==() && @cppfiles!=()) {
-        print STDERR "$progname: warning: you specified -e cc but you have only .cpp files in this directory!\n";
+else {
+    if ($ccExt eq "cc" && @ccfiles == () && @cppfiles != ()) {
+        warning("you specified -e cc but you have only .cpp files in this directory!");
     }
-    if ($ccext eq "cpp" && @cppfiles==() && @ccfiles!=()) {
-        print STDERR "$progname: warning: you specified -e cpp but you have only .cc files in this directory!\n";
+    if ($ccExt eq "cpp" && @ccfiles != () && @cppfiles == ()) {
+        warning("you specified -e cpp but you have only .cc files in this directory!");
     }
 }
 
-@subdirs = ();
-if ($recursive)
-{
-    foreach $i (glob("*"))
-    {
-        #FIXME revise list!
-        if (-d $i && $i ne "CVS" && $i ne "backups" && $i ne "." && $i ne ".." && !grep(/$i/,@exceptdirs))
-        {
-            push(@subdirs, $i);
+$ccSuffix = ".$ccExt";
+$objSuffix = $isNMake ? ".obj" : ".o";
+
+# prepare subdirs. First, check that all specified subdirs exist
+foreach $subdir (@subdirs) {
+    if (! -d $subdir) {
+        error("subdirectory '$subdir' does not exist");
+    }
+}
+
+if ($recursive) {
+    File[] list = directory.listFiles(new FileFilter() {
+        public boolean accept(File file) {
+            if (file.isDirectory()) {
+                String name = file.getName();
+                if (!name.startsWith(".") && !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, name) && !$exceptSubdirs.contains(name))
+                    return true;
+            }
+            return false;
+        }});
+    for (File $i : list) {
+        push(@subdirs, $i.getName());
+    }
+}
+
+@subdirTargets = ();
+foreach $subdir (@subdirs) {
+    push(@subdirTargets, $subdir . ($isNMake ? "_dir" : ""));  #XXX make sure none contains "_dir" as substring
+}
+
+foreach $arg (@extraArgs) {
+    if (file(arg).isDirectory()) {
+        arg = abs2rel(arg);
+        push(@linkDirs, arg);
+    }
+    elsif (file(arg).isFile()) {
+        arg = abs2rel(arg);
+        push(@externalObjects, arg);
+    }
+    else {
+        error("'$arg' is neither an existing file/dir nor a valid option");
+    }
+}
+
+if ($linkWithObjects)
+    foreach $i (@includeDirs)
+        if (!$i.equals("."))
+            push(@externaldirobjs, $i + "/*." + objSuffix);
+
+foreach $i (@linkDirs) {
+    push(@externaldirobjs, $i + "/*." + objSuffix);
+}
+
+foreach $i (@includeDirs) {
+    if ($tstamp && !$i.equals(".")) {
+        push(@tstampDirs, $i);
+    }
+}
+
+foreach $i (@linkDirs) {
+    if ($tstamp) {
+        push(@tstampDirs, $i);
+    }
+}
+foreach $i (@tstampDirs) {
+    push(@externaldirtstamps, quote($i + "/.tstamp"));
+}
+
+String[] objpatts = $ignoreNedFiles ? new String[] {"*.msg", "*" + ccSuffix} : new String[] {"*.ned", "*.msg", "*" + ccSuffix};
+foreach $objpatt (@objpatts) {
+    foreach $i (glob(objpatt)) {
+        $i = $i.replaceAll("\\*[^ ]*", "");
+        $i = $i.replaceAll("[^ ]*_n\\" + ccSuffix + "$", "");
+        $i = $i.replaceAll("[^ ]*_m\\" + ccSuffix + "$", "");
+        $i = $i.replaceAll("\\.ned$", "_n." + objSuffix);
+        $i = $i.replaceAll("\\.msg$", "_m." + objSuffix);
+        $i = $i.replaceAll("\\" + ccSuffix + "$", "." + objSuffix);
+        if (!$i.equals("")) {
+            push(@objs, $i);
         }
     }
 }
 
-@extdirobjs = ();
-if ($linkwithobjects)
-{
-    foreach $i (split(' ',$includes))
-    {
-        $i =~ s/^-I//;
-        if ($i ne ".") {
-            push(@extdirobjs, "$i/*.obj");
-        }
+@msgfiles = glob("*.msg");
+foreach $i (@msgfiles) {
+    $h = $i.replaceAll("\\.msg$", "_m.h");
+    $cc = $i.replaceAll("\\.msg$", "_m"+$ccSuffix);
+    push(@generatedHeaders, $h);
+    push(@msgccandhfiles, $h);
+    push(@msgccandhfiles, $cc);
+}
+
+String makefrags = "";
+if (!$@fragmentFiles == ()) {
+    foreach $frag (@fragmentFiles) {
+        makefrags += "# inserted from file '$frag':\n";
+        makefrags += FileUtils.readTextFile(file(frag)) + "\n";
+    }
+}
+else {
+    $makefragFilename = $isNMake ? "makefrag.vc" : "makefrag";
+    if (-f $makefragFilename) {
+        makefrags += "# inserted from file '$makefragFilename':\n";
+        makefrags += FileUtils.readTextFile(file(makefragFilename)) + "\n";
     }
 }
 
-foreach $i (@linkdirs)
-{
-    push(@extdirobjs, "$i/*.obj");
-}
-
-@extdirtstamps = ();
-foreach $i (@tstampdirs)
-{
-    push(@extdirtstamps, quote($i."/.tstamp"));
-}
-
-if ($ignorened) {
-    $objpatt = "*.msg *.$ccext";
-} else {
-    $objpatt = "*.ned *.msg *.$ccext";
-}
-foreach $i (glob($objpatt))
-{
-    $i =~ s/\*[^ ]*//g;
-    $i =~ s/[^ ]*_n\.$ccext//g;
-    $i =~ s/[^ ]*_m\.$ccext//g;
-    $i =~ s/\.ned/_n.obj/g;
-    $i =~ s/\.msg/_m.obj/g;
-    $i =~ s/\.$ccext/.obj/g;
-    push(@objs, $i) if ($i ne '');
-}
-
-foreach $i (glob("*.msg"))
-{
-    $i =~ s/\.msg/_m.h/g;
-    push(@generatedheaders, $i);
-}
-
-$makefrags = "FIXME";
-$deps = "FIXME";
-
-$breakline = " \\\n            ";
-
-join($breakline, @sobj_list);
-
-
-
-#
-# now the Makefile creation
-#
-$dir = cwd;
-print "Creating $makefile in $dir...\n";
+#FIXME TODO: into deps:  join(generatedHeaders);
+$deps = "";
 
 %m = (
-    "nmake" => $isnmake,
-    "target" => $outfile,  #XXX $outfile$suffix? in Java this is called "target" (???)
-    "progname" => $isnmake ? "opp_nmakemake" : "opp_makemake",
-    "args" => join(' ', @ARGV),
-    "configfile" => $configFile,
-    "-L" => $isnmake ? "/libdir:" : "-L",
-    "-l" => $isnmake ? "" : "-l",
-    ".lib" => $isnmake ? ".lib" : "",
-    "-u" => $isnmake ? "/include:" : "-u",
-    "_dir" => "_dir",
-    "cc" => $ccext,
-    "deps" => $deps,
-    "exe" => ($type eq 'exe'),
-    "so" => ($type eq 'so'),
-    "nolink" => ($type eq 'o'),
-    "allenv" => ($userif eq 'ALL'),
-    "cmdenv" => ($userif eq 'CMDENV'),
-    "tkenv" => ($userif eq 'TKENV'),
-    "extdirobjs" => join($breakline, @extdirobjs),
-    "extdirtstamps" => join($breakline, @extdirtstamps),
-    "extraobjs" => join($extraobjs),
-    "includepath" => join($includeDirs),
-    "libpath" => join($libDirs, $isnmake ? "/libpath:" : "-L"),
-    "libs" => join($libs),
-    "importlibs" => join($importLibs),
-    "link-o" => $isnmake ? "/out:" : "-o",
-    "makecommand" => $makecommand,
-    "makefile" => $isnmake ? "Makefile.vc" : "Makefile",
-    "makefrags" => $makefrags,
-    "msgccandhfiles" => $msgccandhfiles,
-    "msgfiles" => $msgfiles,
-    "objs" => join($objs),
-    "hassubdir" => (@subdirs != ()),
-    "subdirs" => join($subdirs),
-    "subdirtargets" => join($subdirTargets),
-    "fordllopt" => $fordll ? "/DWIN32_DLL" : "",
-    "dllexportmacro" => $exportDefOpt==null ? "" : ("-P" + exportDefOpt),
+    "nmake" =>  $isNMake,
+    "target" =>  $target,
+    "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
+    "args" =>  $join($args),
+    "configfile" =>  $configFile,
+    "-L" =>  $isNMake ? "/libdir:" : "-L",
+    "-l" =>  $isNMake ? "" : "-l",
+    ".lib" =>  $isNMake ? ".lib" : "",
+    "-u" =>  $isNMake ? "/include:" : "-u",
+    "_dir" =>  "_dir",
+    "cc" =>  $ccExt,
+    "deps" =>  $deps.toString(),
+    "exe" =>  $type == "EXE",
+    "so" =>  $type == "SO",
+    "nolink" =>  $type == "NOLINK",
+    "allenv" =>  $userInterface.startsWith("A"),
+    "cmdenv" =>  $userInterface.startsWith("C"),
+    "tkenv" =>  $userInterface.startsWith("T"),
+    "extdirobjs" =>  $join(externaldirobjs),
+    "extdirtstamps" =>  $join(externaldirtstamps),
+    "extraobjs" =>  $join(externalObjects),
+    "includepath" =>  $join(includeDirs, "-I"),
+    "libs" =>  $join(libDirs, (isNMake ? "/libpath:" : "-L") + join($libs) + join($importLibs)),
+    "link-o" =>  $isNMake ? "/out:" : "-o",
+    "makecommand" =>  $makecommand,
+    "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
+    "makefrags" =>  $makefrags,
+    "msgccandhfiles" =>  $msgccandhfiles,
+    "msgfiles" =>  $msgfiles,
+    "objs" =>  $join(objs),
+    "hassubdir" =>  @subdirs != (),
+    "subdirs" =>  $join(subdirs),
+    "subdirtargets" =>  $join(subdirTargets),
+    "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
+    "dllexportmacro" =>  $exportDefOpt==null ? "" : ("-P" + $exportDefOpt),
 );
+
 
 $content = substituteIntoTemplate(template(), \%m, "{", "}");
 
@@ -369,7 +465,9 @@ close OUT;
 print "$makefile created.\n";
 print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 
-#----
+
+#=====================================================================
+
 
 sub substituteIntoTemplate($;$)
 {
@@ -545,6 +643,19 @@ sub quote($)
     my($dir) = @_;
     if ($dir =~ / /) {$dir = "\"$dir\"";}
     return $dir;
+}
+
+sub error($)
+{
+    my($text) = @_;
+    print STDERR "$progname: error: $text\n";
+    exit(1);
+}
+
+sub warning($)
+{
+    my($text) = @_;
+    print STDERR "$progname: warning: $text\n";
 }
 
 sub usage()
