@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Neddoc Plug-in
+Bundle-SymbolicName: org.omnetpp.neddoc; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.omnetpp.neddoc.Activator
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.omnetpp.common,
+ org.omnetpp.ned.core,
+ org.omnetpp.ned.model,
+ org.omnetpp.ned.editor,
+ org.omnetpp.ide.nativelibs,
+ de.unikassel.imageexport
+Eclipse-LazyStart: true
