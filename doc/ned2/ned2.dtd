@@ -206,7 +206,7 @@
 **
 -->
 
-<!ELEMENT msg-file (comment*, (cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+<!ELEMENT msg-file (comment*, (property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
                      enum|message|class|struct)*)>
 
 <!ATTLIST msg-file
