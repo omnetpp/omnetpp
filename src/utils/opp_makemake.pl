@@ -31,255 +31,141 @@ if ($isWindows && $ENV{OS} ne "Windows_NT") {
 #
 # process command line args
 #
-
-# input parameters
-$isnmake = $isWindows && !isCygwin;
-$outfile = cwd;
-$outfile =~ s/[\/\\]$//;
-$outfile =~ s/.*[\/\\]//;
-
-$recursive=0;
-$userif = "ALL";
-$type = "exe";
-$includes = "";
-$libpath = "";
-$libs = "";
-$linkdirs = "";
-@extraobjs = ();
-@fragments = ();
-$doxyconf = "doxy.cfg";
-$ccext = "";  # we'll try to autodetect it
-$configfile="";
-$basedir="";
-$linkwithobjects=0;
-$ignorened=1;
-$force=0;
-$tstamp=1;
-@tstampdirs = ();
-@exceptdirs = ();
-$exportdefopt = "";
-$importlibs = "";
-$fordll = 0;
-
-$makecommand = $nmake ? 'nmake /nologo /f Makefile.vc' : 'make';
+@args = @ARGV;
+$makefile = "Makefile.vc";
+$baseDir = "";
+$type = "EXE";
+$target = "";
+$force = 0;
+$linkWithObjects = 0;
+$tstamp = 1;
+$recursive = 0;
+$userInterface = "ALL";
+$ccext = "";
+$configFile = "";
+$exportDefOpt = "";
+$compileForDll = 0;
+$ignoreNedFiles = 1;
+@fragmentFiles = ();
+@subdirs = ();
+@exceptSubdirs = ();
+@includeDirs = ();
+@libDirs = ();
+@libs = ();
+@importLibs = ();
+@extraArgs = ();
 
 
 # process arg vector
 while (@ARGV)
 {
     $arg = shift @ARGV;
-    if ($arg eq '-h' || $arg eq '--help')
-    {
-        print '
-FIXME merge help text and options!
-$progname: create MSVC makefile for an OMNeT++/OMNEST model, based on
-source files in current directory
-
-$progname [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
-              [-w] [-x] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
-              [-i makefile-fragment-file]
-              [directories, library and object files]...
-    -h, --help            This help text
-    -f, --force           Force overwriting existing Makefile
-    -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
-                          By default, this is determined by looking at
-                          existing files in the directory.
-    -o filename, --outputfile filename
-                          Name of simulation executable/library
-    -r, --recurse         Call make recursively in all subdirectories. If you
-                          need to maintain a specific order, declare dependen-
-                          cies in the makefrag.vc file.
-    -X directory, -Xdirectory, --except directory
-                          With -r (recurse) option: ignore the given directory
-    -b directory, --basedir directory
-                          Project base (root) directory; all absolute paths
-                          (-I, -L, object file names, etc.) which point into
-                          this directory will be converted to relative, to
-                          ease compiling the project in a different directory.
-    -n, --nolink          Produce object files but do not create executable or
-                          library. Useful for models with parts in several
-                          directories. With this option, -u and -l have
-                          no effect.
-    -s, --make-so         Build a DLL. Useful if you want to load the
-                          model dynamically (via the load-libs= omnetpp.ini or
-                          the -l Cmdenv/Tkenv command-line option).
-    -t library, --importlib library
-                          With -t (build DLL) option: specifies an import
-                          library for the DLL.
-    -d, --fordll          Compile C++ files for use in DLLs (i.e. with the
-                          WIN32_DLL symbol defined). The -s (build DLL) option
-                          implies this one.
-    -w, --withobjects     Link with all object files found in -I directories,
-                          or include them if library is created. Ignored when
-                          -n option is present. Dependencies between directo-
-                          ries have be handled in high Makefiles (see -r
-                          option).
-    -x, --notstamp        Do not require a .tstamp file to be present in the
-                          link directories and (if -w option is present)
-                          -I directories after this option.
-    -u name, --userinterface name
-                          Use all, Cmdenv or Tkenv. Defaults to all.
-    -Idir                 Additional NED and C++ include directory
-    -Ldir                 Add a directory to the library path
-    -llibrary             Additional library to link against
-                          (e.g. -lmylibrary.lib)
-    -P symbol, -Psymbol   -P option to be passed to opp_msgc
-    -c filename, --configfile filename
-                          Included config file (default:"../../configuser.vc")
-    -i filename, --includefragment filename
-                          Append file to near end of Makefile. The file
-                          makefrag.vc (if exists) is appended automatically
-                          if no -i options are given. This option is useful
-                          if a source file (.ned, .msg or .cc) is to be
-                          generated from other files.
-    directory             Link with all object files in that directory.
-                          Dependencies between directories have to be added
-                          manually. See also -w option.
-    library or object     Link with that file
-
-Default output is Makefile.vc, which you can invoke by typing
-  nmake -f Makefile.vc
-With the -n and -s options, -u and -l have no effect. makefrag.vc (and the
--i option) is useful when a source file (.ned, .msg or .cc) is to be generated
-from other files, or when you want to add extra dependencies that opp_makemake
-could not figure out.
-';
+    if ($arg eq "-h" || $arg eq "--help") {
+        usage();
         exit(1);
     }
-    elsif ($arg eq '-f' || $arg eq '--force')
-    {
+    elsif ($arg eq "-f" || $arg eq "--force") {
         $force = 1;
     }
-    elsif ($arg eq '-e' || $arg eq '--ext')
-    {
-        $ccext = shift @ARGV;
+    elsif ($arg eq "-e" || $arg eq "--ext") {
+        $ccext = shift;
     }
-    elsif ($arg eq '-o' || $arg eq '--outputfile')
-    {
-        $outfile = shift @ARGV;
-        $outfile = abs2rel($outfile,$basedir);
+    elsif ($arg eq "-o" || $arg eq "--outputfile") {
+        $target = shift;
     }
-    elsif ($arg eq '-N' || $arg eq '--ignore-ned')
-    {
+    elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
         print STDERR "$progname: $arg: obsolete option, please remove (dynamic NED loading is now the default)";
     }
-    elsif ($arg eq '-r' || $arg eq '--recurse')
-    {
+    elsif ($arg eq "-r" || $arg eq "--recurse") {
         $recursive = 1;
     }
-    elsif ($arg eq '-X' || $arg eq '--except')
-    {
-        $dir = shift @ARGV;
-        push(@exceptdirs, $dir);
+    elsif ($arg eq "-X" || $arg eq "--except") {
+        my $dir = shift;
+        push(@exceptSubdirs, $dir);
     }
-    elsif ($arg =~ /^-X/)
-    {
-        $dir = $arg;
-        $dir =~ s/^-X//;
-        push(@exceptdirs, $dir);
+    elsif ($arg =~ /^-X/) {
+        my $dir = substr($arg, 2);
+        push(@exceptSubdirs, $dir);
     }
-    elsif ($arg eq '-b' || $arg eq '--basedir')
-    {
-        $basedir = shift @ARGV;
+    elsif ($arg eq "-b" || $arg eq "--basedir") {
+        $baseDir = shift;
     }
-    elsif ($arg eq '-c' || $arg eq '--configfile')
-    {
-        $configfile = shift @ARGV;
-        $configfile = abs2rel($configfile,$basedir);
+    elsif ($arg eq "-c" || $arg eq "--configfile") {
+        $configFile = shift;
     }
-    elsif ($arg eq '-n' || $arg eq '--nolink')
-    {
-        $type = "o";
+    elsif ($arg eq "-n" || $arg eq "--nolink") {
+        $type = "NOLINK";
     }
-    elsif ($arg eq '-s' || $arg eq '--make-so')
-    {
-        $fordll = 1;
-        $type = "so";
+    elsif ($arg eq "-d" || $arg eq "--subdir") {
+        push(@subdirs, $shift);
     }
-    elsif ($arg eq '-t' || $arg eq '--importlib')
-    {
-        $importlibs .= ' ' . shift @ARGV;
+    elsif ($arg =~ /^-d/) {
+        $dir = substr($arg, 2);
+        push(@subdirs, $dir);
     }
-    elsif ($arg eq '-d' || $arg eq '--fordll')
-    {
-        $fordll = 1;
+    elsif ($arg eq "-s" || $arg eq "--make-so") {
+        $compileForDll = 1;
+        $type = "SO";
     }
-    elsif ($arg eq '-w' || $arg eq '--withobjects')
-    {
-        $linkwithobjects = 1;
+    elsif ($arg eq "-t" || $arg eq "--importlib") {
+        my $importlib = shift;
+        push(@importLibs, $importlib);
     }
-    elsif ($arg eq '-x' || $arg eq '--notstamp')
-    {
-        $tstamp = 0;
+    elsif ($arg eq "-S" || $arg eq "--fordll") {
+        $compileForDll = 1;
     }
-    elsif ($arg eq '-u' || $arg eq '--userinterface')
-    {
-        $userif = shift @ARGV;
-        $userif = uc($userif);
-        if ($userif ne "ALL" && $userif ne "CMDENV" && $userif ne "TKENV")
-        {
-            print STDERR "$progname: -u: specify all, Cmdenv or Tkenv";
+    elsif ($arg eq "-w" || $arg eq "--withobjects") {
+        $linkWithObjects = 1;
+    }
+    elsif ($arg eq "-x" || $arg eq "--notstamp") {
+        $tstamp = 1;
+    }
+    elsif ($arg eq "-u" || $arg eq "--userinterface") {
+        my $userInterface = shift;
+        $userInterface = uc($userInterface);
+        if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
+            print STDERR "$progname: -u: specify All, Cmdenv or Tkenv";
             exit(1);
         }
     }
-    elsif ($arg eq '-i' || $arg eq '--includefragment')
-    {
-        $frag = shift @ARGV;
-        $frag = abs2rel($frag,$basedir);
-        push(@fragments, $frag);
+    elsif ($arg eq "-i" || $arg eq "--includefragment") {
+        my $frag = shift;
+        push(@fragmentFiles, $frag);
     }
-    elsif ($arg =~ /^-I/)
-    {
-        $dir = $arg;
-        $dir =~ s/^-I//;
-        $dir = abs2rel($dir, $basedir);
-        $includes .= " -I".quote($dir);
-        if ($tstamp eq 1 && $dir ne ".")
-        {
-            push(@tstampdirs, $dir);
-        }
+    elsif ($arg eq "-I") {
+        my $dir = shift;
+        push(@includeDirs, $dir);
     }
-    elsif ($arg =~ /^-L/)
-    {
-        $dir = $arg;
-        $dir =~ s/^-L//;
-        $dir = abs2rel($dir, $basedir);
-        $libpath .= " /libpath:".quote($dir);
+    elsif ($arg =~ /^-I/) {
+        my $dir = substr($arg, 2);
+        push(@includeDirs, $dir);
     }
-    elsif ($arg =~ /^-l/)
-    {
-        $arg =~ s/^-l//;
-        $libs .= " $arg";
+    elsif ($arg eq "-L") {
+        my $dir = shift;
+        push(@libDirs, $dir);
     }
-    elsif ($arg eq '-P')
-    {
-        $exportdefopt = '-P' . shift @ARGV;
+    elsif ($arg =~ /^-L/) {
+        my $dir = substr($arg, 2);
+        push(@libDirs, $dir);
     }
-    elsif ($arg =~ /^-P/)
-    {
-        $exportdefopt = $arg;
+    elsif ($arg =~ /^-l/) {
+        my $lib = substr($arg, 2);
+        push(@libs, $lib);
     }
-    else
-    {
-        $arg =~ s|/|\\|g;
-        if (-d $arg)
-        {
-            $arg = abs2rel($arg, $basedir);
-            push(@linkdirs, $arg);
-            if ($tstamp)
-            {
-                push(@tstampdirs, $arg);
+    elsif ($arg eq "-P") {
+        $exportDefOpt = shift;
+    }
+    elsif ($arg =~ /^-P/) {
+        $exportDefOpt = substr($arg, 2);
+    }
+    else {
+        # FIXME add support for "--" after which everything is extraArg
+        if ($arg ne "--") {
+            if ($arg =~ /^-/) {
+                print STDERR("$progname: unrecognized option: $arg");
+                exit(1);
             }
-        }
-        elsif (-f $arg)
-        {
-            $arg = abs2rel($arg, $basedir);
-            push(@extraobjs, $arg);
-        }
-        else
-        {
-            print STDERR "$progname: $arg is neither an existing file/dir nor a valid option";
-            exit(1);
+            push(@extraArgs, $arg);
         }
     }
 }
@@ -292,8 +178,11 @@ if (-f $makefile && $force ne 1)
     exit(1);
 }
 
-#FIXME $configfile is nmake only!
-if ($configfile eq "")
+$makecommand = $nmake ? 'nmake /nologo /f Makefile.vc' : 'make';
+
+
+#FIXME $configFile is nmake only!
+if ($configFile eq "")
 {
     # try to find it
     $progdir = $0;
@@ -308,19 +197,19 @@ if ($configfile eq "")
                 "$progdir/configuser.vc")
     {
         if (-f $f) {
-             $configfile = $f;
+             $configFile = $f;
              last;
         }
     }
-    if ($configfile eq "") {
+    if ($configFile eq "") {
         print STDERR "$progname: warning: configuser.vc file not found -- try -c option or edit generated makefile\n";
     }
 
 }
 else
 {
-    if (! -f $configfile) {
-        print STDERR "$progname: error: file $configfile not found\n";
+    if (! -f $configFile) {
+        print STDERR "$progname: error: file $configFile not found\n";
         exit(1);
     }
 }
@@ -436,7 +325,7 @@ print "Creating $makefile in $dir...\n";
     "target" => $outfile,  #XXX $outfile$suffix? in Java this is called "target" (???)
     "progname" => $isnmake ? "opp_nmakemake" : "opp_makemake",
     "args" => join(' ', @ARGV),
-    "configfile" => $configfile,
+    "configfile" => $configFile,
     "-L" => $isnmake ? "/libdir:" : "-L",
     "-l" => $isnmake ? "" : "-l",
     ".lib" => $isnmake ? ".lib" : "",
@@ -656,6 +545,84 @@ sub quote($)
     my($dir) = @_;
     if ($dir =~ / /) {$dir = "\"$dir\"";}
     return $dir;
+}
+
+sub usage()
+{
+    print <<END
+FIXME merge help text and options!
+$progname: create MSVC makefile for an OMNeT++/OMNEST model, based on
+source files in current directory
+
+$progname [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
+              [-w] [-x] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
+              [-i makefile-fragment-file]
+              [directories, library and object files]...
+    -h, --help            This help text
+    -f, --force           Force overwriting existing Makefile
+    -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
+                          By default, this is determined by looking at
+                          existing files in the directory.
+    -o filename, --outputfile filename
+                          Name of simulation executable/library
+    -r, --recurse         Call make recursively in all subdirectories. If you
+                          need to maintain a specific order, declare dependen-
+                          cies in the makefrag.vc file.
+    -X directory, -Xdirectory, --except directory
+                          With -r (recurse) option: ignore the given directory
+    -b directory, --basedir directory
+                          Project base (root) directory; all absolute paths
+                          (-I, -L, object file names, etc.) which point into
+                          this directory will be converted to relative, to
+                          ease compiling the project in a different directory.
+    -n, --nolink          Produce object files but do not create executable or
+                          library. Useful for models with parts in several
+                          directories. With this option, -u and -l have
+                          no effect.
+    -s, --make-so         Build a DLL. Useful if you want to load the
+                          model dynamically (via the load-libs= omnetpp.ini or
+                          the -l Cmdenv/Tkenv command-line option).
+    -t library, --importlib library
+                          With -t (build DLL) option: specifies an import
+                          library for the DLL.
+    -d, --fordll          Compile C++ files for use in DLLs (i.e. with the
+                          WIN32_DLL symbol defined). The -s (build DLL) option
+                          implies this one.
+    -w, --withobjects     Link with all object files found in -I directories,
+                          or include them if library is created. Ignored when
+                          -n option is present. Dependencies between directo-
+                          ries have be handled in high Makefiles (see -r
+                          option).
+    -x, --notstamp        Do not require a .tstamp file to be present in the
+                          link directories and (if -w option is present)
+                          -I directories after this option.
+    -u name, --userinterface name
+                          Use all, Cmdenv or Tkenv. Defaults to all.
+    -Idir                 Additional NED and C++ include directory
+    -Ldir                 Add a directory to the library path
+    -llibrary             Additional library to link against
+                          (e.g. -lmylibrary.lib)
+    -P symbol, -Psymbol   -P option to be passed to opp_msgc
+    -c filename, --configfile filename
+                          Included config file (default:"../../configuser.vc")
+    -i filename, --includefragment filename
+                          Append file to near end of Makefile. The file
+                          makefrag.vc (if exists) is appended automatically
+                          if no -i options are given. This option is useful
+                          if a source file (.ned, .msg or .cc) is to be
+                          generated from other files.
+    directory             Link with all object files in that directory.
+                          Dependencies between directories have to be added
+                          manually. See also -w option.
+    library or object     Link with that file
+
+Default output is Makefile.vc, which you can invoke by typing
+  nmake -f Makefile.vc
+With the -n and -s options, -u and -l have no effect. makefrag.vc (and the
+-i option) is useful when a source file (.ned, .msg or .cc) is to be generated
+from other files, or when you want to add extra dependencies that opp_makemake
+could not figure out.
+END
 }
 
 sub template()
