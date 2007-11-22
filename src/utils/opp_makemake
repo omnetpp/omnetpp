@@ -280,8 +280,7 @@ sub makemake()
         }
     }
 
-    $ccSuffix = ".$ccExt";
-    $objSuffix = $isNMake ? ".obj" : ".o";
+    $objExt = $isNMake ? "obj" : "o";
 
     # prepare subdirs. First, check that all specified subdirs exist
     foreach $subdir (@subdirs) {
@@ -320,13 +319,13 @@ sub makemake()
     if ($linkWithObjects) {
         foreach $i (@includeDirs) {
             if ($i ne ".") {
-                push(@externaldirobjs, "$i/*.$objSuffix");
+                push(@externaldirobjs, "$i/*.$objExt");
             }
         }
     }
 
     foreach $i (@linkDirs) {
-        push(@externaldirobjs, "$i/*.$objSuffix");
+        push(@externaldirobjs, "$i/*.$objExt");
     }
 
     foreach $i (@includeDirs) {
@@ -350,9 +349,9 @@ sub makemake()
         $i =~ s/\*[^ ]*//g;
         $i =~ s/[^ ]*_n\.$ccExt$//g;
         $i =~ s/[^ ]*_m\.$ccExt$//g;
-        $i =~ s/\.ned$/_n.$objSuffix/g;
-        $i =~ s/\.msg$/_m.$objSuffix/g;
-        $i =~ s/\.$ccExt$/.$objSuffix/g;
+        $i =~ s/\.ned$/_n.$objExt/g;
+        $i =~ s/\.msg$/_m.$objExt/g;
+        $i =~ s/\.$ccExt$/.$objExt/g;
         if ($i ne '') {
             push(@objs, $i);
         }
@@ -361,7 +360,7 @@ sub makemake()
     @msgfiles = glob("*.msg");
     foreach $i (@msgfiles) {
         $h = $i; $h =~ s/\.msg$/_m.h/;
-        $cc = $i; $cc =~ s/\.msg$/_m$ccSuffix/;
+        $cc = $i; $cc =~ s/\.msg$/_m.$ccExt/;
         push(@generatedHeaders, $h);
         push(@msgccandhfiles, $cc);
         push(@msgccandhfiles, $h);
