@@ -21,7 +21,10 @@ $progname = $ARG0;
 #$isCygwin = ($arch =~ /cygwin/i);
 $isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
 
+sub makemake();
+
 makemake();
+exit 0;
 
 sub makemake()
 {
@@ -201,15 +204,15 @@ sub makemake()
     @msgfiles = ();
     @msgccandhfiles = ();
 
-    $target = abs2rel($target);
+    $target = abs2rel($target,$baseDir);
 
     @tmp = @includeDirs;
     foreach $i (@tmp) {
-        push(@includeDirs, abs2rel($i));
+        push(@includeDirs, abs2rel($i,$baseDir));
     }
     @tmp = @libDirs;
     foreach $i (@tmp) {
-        push(@libDirs, abs2rel($i));
+        push(@libDirs, abs2rel($i,$baseDir));
     }
 
     $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
@@ -248,7 +251,7 @@ sub makemake()
             }
         }
 
-        $configFile = abs2rel($configFile);
+        $configFile = abs2rel($configFile,$baseDir);
     }
 
     # try to determine if .cc or .cpp files are used
@@ -302,11 +305,11 @@ sub makemake()
 
     foreach $arg (@extraArgs) {
         if (-d $arg) {
-            $arg = abs2rel($arg);
+            $arg = abs2rel($arg,$baseDir);
             push(@linkDirs, $arg);
         }
         elsif (-f $arg) {
-            $arg = abs2rel($arg);
+            $arg = abs2rel($arg,$baseDir);
             push(@externalObjects, $arg);
         }
         else {
