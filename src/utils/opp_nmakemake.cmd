@@ -1,3 +1,3 @@
 @echo off
 PATH %~dp0;%PATH%
-perl %~dp0\opp_makemake --nmake %*
+perl -w %~dp0\opp_makemake --nmake %*

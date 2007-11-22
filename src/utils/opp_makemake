@@ -17,420 +17,420 @@ use Config;
 $ARG0 = $0;
 $progname = $ARG0;
 
-$arch = $Config{'archname'};
-$isCygwin = ($arch =~ /cygwin/i);
-
+#$arch = $Config{'archname'};
+#$isCygwin = ($arch =~ /cygwin/i);
 $isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
 
-if ($isWindows && $ENV{OS} ne "Windows_NT") {
-    error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
-}
+makemake();
 
-
-#
-# process command line args
-#
-@args = @ARGV;
-$isNMake = 0;
-$baseDir = "";
-$type = "EXE";
-$target = "";
-$force = 0;
-$linkWithObjects = 0;
-$tstamp = 1;
-$recursive = 0;
-$userInterface = "ALL";
-$ccExt = "";
-$configFile = "";
-$exportDefOpt = "";
-$compileForDll = 0;
-$ignoreNedFiles = 1;
-@fragmentFiles = ();
-@subdirs = ();
-@exceptSubdirs = ();
-@includeDirs = ();
-@libDirs = ();
-@libs = ();
-@importLibs = ();
-@extraArgs = ();
-
-
-# process arg vector
-while (@ARGV)
+sub makemake()
 {
-    $arg = shift @ARGV;
-    if ($arg eq "-h" || $arg eq "--help") {
-        usage();
-        exit(1);
+    if ($isWindows && $ENV{OS} ne "Windows_NT") {
+        error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
     }
-    elsif ($arg eq "-f" || $arg eq "--force") {
-        $force = 1;
-    }
-    elsif ($arg eq "--nmake") {
-        $isNMake = 1;
-    }
-    elsif ($arg eq "-e" || $arg eq "--ext") {
-        $ccExt = shift;
-    }
-    elsif ($arg eq "-o" || $arg eq "--outputfile") {
-        $target = shift;
-    }
-    elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
-        error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
-    }
-    elsif ($arg eq "-r" || $arg eq "--recurse") {
-        $recursive = 1;
-    }
-    elsif ($arg eq "-X" || $arg eq "--except") {
-        my $dir = shift;
-        push(@exceptSubdirs, $dir);
-    }
-    elsif ($arg =~ /^-X/) {
-        my $dir = substr($arg, 2);
-        push(@exceptSubdirs, $dir);
-    }
-    elsif ($arg eq "-b" || $arg eq "--basedir") {
-        $baseDir = shift;
-    }
-    elsif ($arg eq "-c" || $arg eq "--configfile") {
-        $configFile = shift;
-    }
-    elsif ($arg eq "-n" || $arg eq "--nolink") {
-        $type = "NOLINK";
-    }
-    elsif ($arg eq "-d" || $arg eq "--subdir") {
-        push(@subdirs, $shift);
-    }
-    elsif ($arg =~ /^-d/) {
-        $dir = substr($arg, 2);
-        push(@subdirs, $dir);
-    }
-    elsif ($arg eq "-s" || $arg eq "--make-so") {
-        $compileForDll = 1;
-        $type = "SO";
-    }
-    elsif ($arg eq "-t" || $arg eq "--importlib") {
-        my $importlib = shift;
-        push(@importLibs, $importlib);
-    }
-    elsif ($arg eq "-S" || $arg eq "--fordll") {
-        $compileForDll = 1;
-    }
-    elsif ($arg eq "-w" || $arg eq "--withobjects") {
-        $linkWithObjects = 1;
-    }
-    elsif ($arg eq "-x" || $arg eq "--notstamp") {
-        $tstamp = 1;
-    }
-    elsif ($arg eq "-u" || $arg eq "--userinterface") {
-        my $userInterface = shift;
-        $userInterface = uc($userInterface);
-        if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
-            error("$progname: -u: specify All, Cmdenv or Tkenv");
-        }
-    }
-    elsif ($arg eq "-i" || $arg eq "--includefragment") {
-        my $frag = shift;
-        push(@fragmentFiles, $frag);
-    }
-    elsif ($arg eq "-I") {
-        my $dir = shift;
-        push(@includeDirs, $dir);
-    }
-    elsif ($arg =~ /^-I/) {
-        my $dir = substr($arg, 2);
-        push(@includeDirs, $dir);
-    }
-    elsif ($arg eq "-L") {
-        my $dir = shift;
-        push(@libDirs, $dir);
-    }
-    elsif ($arg =~ /^-L/) {
-        my $dir = substr($arg, 2);
-        push(@libDirs, $dir);
-    }
-    elsif ($arg =~ /^-l/) {
-        my $lib = substr($arg, 2);
-        push(@libs, $lib);
-    }
-    elsif ($arg eq "-P") {
-        $exportDefOpt = shift;
-    }
-    elsif ($arg =~ /^-P/) {
-        $exportDefOpt = substr($arg, 2);
-    }
-    else {
-        # FIXME add support for "--" after which everything is extraArg
-        if ($arg ne "--") {
-            if ($arg =~ /^-/) {
-                error("unrecognized option: $arg");
-            }
-            push(@extraArgs, $arg);
-        }
-    }
-}
 
-#
-# Prepare the variables for the template
-#
-$folder = cwd;
-$folderName = $folder;
-$folderName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
-$folderName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
+    #
+    # process command line args
+    #
+    @args = @ARGV;
+    $isNMake = 0;
+    $baseDir = "";
+    $type = "EXE";
+    $target = "";
+    $force = 0;
+    $linkWithObjects = 0;
+    $tstamp = 1;
+    $recursive = 0;
+    $userInterface = "ALL";
+    $ccExt = "";
+    $configFile = "";
+    $exportDefOpt = "";
+    $compileForDll = 0;
+    $ignoreNedFiles = 1;
+    @fragmentFiles = ();
+    @subdirs = ();
+    @exceptSubdirs = ();
+    @includeDirs = ();
+    @libDirs = ();
+    @libs = ();
+    @importLibs = ();
+    @extraArgs = ();
 
-print "Creating $makefile in $folder...\n";
 
-$target = $target eq "" ? $folderName : $target;
-
-@externaldirobjs = ();
-@externaldirtstamps = ();
-@objs = ();
-@generatedHeaders = ();
-@linkDirs = ();
-@externalObjects = ();
-@tstampDirs = ();
-@msgfiles = ();
-@msgccandhfiles = ();
-
-$target = abs2rel($target);
-
-@includeDirs = ();
-@libDirs = ();
-
-foreach $i (@includeDirs) {
-    push(@includeDirs, abs2rel($i));
-}
-foreach $i (@libDirs) {
-    push(@libDirs, abs2rel($i));
-}
-
-$makefile = $isNMake ? "Makefile.vc" : "Makefile";
-if (-f $makefile && $force ne 1) {
-    error("use -f to force overwriting existing $makefile");
-}
-
-$makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
-
-#if ($baseDir ne "") {
-#    error("specifying the base directory (-b option) is not supported, it is always the project directory");
-#}
-
-if ($isNMake) {
-    if ($configFile eq "") {
-        # try to find it
-        my $progdir = $0;
-        $progdir =~ s|\\|/|g;
-        $progdir =~ s|/?[^/:]*$||g;
-        $progdir = "." if ($progdir eq "");
-        $progparentdir = $progdir;
-        $progparentdir =~ s|/?[^/:]*/?$||;
-        foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
-                    "../../../configuser.vc", "../../../../configuser.vc",
-                    "../../../../../configuser.vc", "$progparentdir/configuser.vc",
-                    "$progdir/configuser.vc")
-        {
-            if (-f $f) {
-                 $configFile = $f;
-                 last;
-            }
-        }
-        if ($configFile eq "") {
-            warning("configuser.vc file not found -- try -c option or edit generated makefile");
-        }
-    }
-    else
+    # process arg vector
+    while (@ARGV)
     {
-        if (! -f $configFile) {
-            error("file $configfile not found");
+        $arg = shift @ARGV;
+        if ($arg eq "-h" || $arg eq "--help") {
+            usage();
+            exit(1);
+        }
+        elsif ($arg eq "-f" || $arg eq "--force") {
+            $force = 1;
+        }
+        elsif ($arg eq "--nmake") {
+            $isNMake = 1;
+        }
+        elsif ($arg eq "-e" || $arg eq "--ext") {
+            $ccExt = shift;
+        }
+        elsif ($arg eq "-o" || $arg eq "--outputfile") {
+            $target = shift;
+        }
+        elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
+            error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
+        }
+        elsif ($arg eq "-r" || $arg eq "--recurse") {
+            $recursive = 1;
+        }
+        elsif ($arg eq "-X" || $arg eq "--except") {
+            my $dir = shift;
+            push(@exceptSubdirs, $dir);
+        }
+        elsif ($arg =~ /^-X/) {
+            my $dir = substr($arg, 2);
+            push(@exceptSubdirs, $dir);
+        }
+        elsif ($arg eq "-b" || $arg eq "--basedir") {
+            $baseDir = shift;
+        }
+        elsif ($arg eq "-c" || $arg eq "--configfile") {
+            $configFile = shift;
+        }
+        elsif ($arg eq "-n" || $arg eq "--nolink") {
+            $type = "NOLINK";
+        }
+        elsif ($arg eq "-d" || $arg eq "--subdir") {
+            my $subdir = shift;
+            push(@subdirs, $subdir);
+        }
+        elsif ($arg =~ /^-d/) {
+            my $subdir = substr($arg, 2);
+            push(@subdirs, $subdir);
+        }
+        elsif ($arg eq "-s" || $arg eq "--make-so") {
+            $compileForDll = 1;
+            $type = "SO";
+        }
+        elsif ($arg eq "-t" || $arg eq "--importlib") {
+            my $importlib = shift;
+            push(@importLibs, $importlib);
+        }
+        elsif ($arg eq "-S" || $arg eq "--fordll") {
+            $compileForDll = 1;
+        }
+        elsif ($arg eq "-w" || $arg eq "--withobjects") {
+            $linkWithObjects = 1;
+        }
+        elsif ($arg eq "-x" || $arg eq "--notstamp") {
+            $tstamp = 1;
+        }
+        elsif ($arg eq "-u" || $arg eq "--userinterface") {
+            my $userInterface = shift;
+            $userInterface = uc($userInterface);
+            if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
+                error("$progname: -u: specify All, Cmdenv or Tkenv");
+            }
+        }
+        elsif ($arg eq "-i" || $arg eq "--includefragment") {
+            my $frag = shift;
+            push(@fragmentFiles, $frag);
+        }
+        elsif ($arg eq "-I") {
+            my $dir = shift;
+            push(@includeDirs, $dir);
+        }
+        elsif ($arg =~ /^-I/) {
+            my $dir = substr($arg, 2);
+            push(@includeDirs, $dir);
+        }
+        elsif ($arg eq "-L") {
+            my $dir = shift;
+            push(@libDirs, $dir);
+        }
+        elsif ($arg =~ /^-L/) {
+            my $dir = substr($arg, 2);
+            push(@libDirs, $dir);
+        }
+        elsif ($arg =~ /^-l/) {
+            my $lib = substr($arg, 2);
+            push(@libs, $lib);
+        }
+        elsif ($arg eq "-P") {
+            $exportDefOpt = shift;
+        }
+        elsif ($arg =~ /^-P/) {
+            $exportDefOpt = substr($arg, 2);
+        }
+        else {
+            # FIXME add support for "--" after which everything is extraArg
+            if ($arg ne "--") {
+                if ($arg =~ /^-/) {
+                    error("unrecognized option: $arg");
+                }
+                push(@extraArgs, $arg);
+            }
         }
     }
 
-    $configFile = abs2rel($configFile);
-}
+    #
+    # Prepare the variables for the template
+    #
 
-# try to determine if .cc or .cpp files are used
-@ccfiles = glob("*.cc");
-@cppfiles = glob("*.cpp");
-if ($ccExt eq "") {
-    if (@ccfiles == () && !@cppfiles == ()) {
-        $ccExt = "cpp";
+    $makefile = $isNMake ? "Makefile.vc" : "Makefile";
+    if (-f $makefile && $force ne 1) {
+        error("use -f to force overwriting existing $makefile");
     }
-    elsif (!@ccfiles == () && @cppfiles == ()) {
-        $ccExt = "cc";
-    }
-    elsif (!@ccfiles == () && !@cppfiles == ()) {
-        error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
-    }
-    else {
-        $ccExt = "cc";  # if no files, use .cc extension
-    }
-}
-else {
-    if ($ccExt eq "cc" && @ccfiles == () && @cppfiles != ()) {
-        warning("you specified -e cc but you have only .cpp files in this directory!");
-    }
-    if ($ccExt eq "cpp" && @ccfiles != () && @cppfiles == ()) {
-        warning("you specified -e cpp but you have only .cc files in this directory!");
-    }
-}
 
-$ccSuffix = ".$ccExt";
-$objSuffix = $isNMake ? ".obj" : ".o";
+    $folder = cwd;
+    $folderName = $folder;
+    $folderName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
+    $folderName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
 
-# prepare subdirs. First, check that all specified subdirs exist
-foreach $subdir (@subdirs) {
-    if (! -d $subdir) {
-        error("subdirectory '$subdir' does not exist");
+    print "Creating $makefile in $folder...\n";
+
+    $target = $target eq "" ? $folderName : $target;
+
+    @externaldirobjs = ();
+    @externaldirtstamps = ();
+    @objs = ();
+    @generatedHeaders = ();
+    @linkDirs = ();
+    @externalObjects = ();
+    @tstampDirs = ();
+    @msgfiles = ();
+    @msgccandhfiles = ();
+
+    $target = abs2rel($target);
+
+    @tmp = @includeDirs;
+    foreach $i (@tmp) {
+        push(@includeDirs, abs2rel($i));
     }
-}
+    @tmp = @libDirs;
+    foreach $i (@tmp) {
+        push(@libDirs, abs2rel($i));
+    }
 
-if ($recursive) {
-    foreach $f (glob("*")) {
-        if (-d $f && !grep(/\Q$f\E/, @exceptSubdirs)) {  #XXX check IGNORABLE_DIRS
-            push(@subdirs, $f);
+    $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
+
+    #if ($baseDir ne "") {
+    #    error("specifying the base directory (-b option) is not supported, it is always the project directory");
+    #}
+
+    if ($isNMake) {
+        if ($configFile eq "") {
+            # try to find it
+            my $progdir = $0;
+            $progdir =~ s|\\|/|g;
+            $progdir =~ s|/?[^/:]*$||g;
+            $progdir = "." if ($progdir eq "");
+            $progparentdir = $progdir;
+            $progparentdir =~ s|/?[^/:]*/?$||;
+            foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
+                        "../../../configuser.vc", "../../../../configuser.vc",
+                        "../../../../../configuser.vc", "$progparentdir/configuser.vc",
+                        "$progdir/configuser.vc")
+            {
+                if (-f $f) {
+                     $configFile = $f;
+                     last;
+                }
+            }
+            if ($configFile eq "") {
+                warning("configuser.vc file not found -- try -c option or edit generated makefile");
+            }
+        }
+        else
+        {
+            if (! -f $configFile) {
+                error("file $configFile not found");
+            }
+        }
+
+        $configFile = abs2rel($configFile);
+    }
+
+    # try to determine if .cc or .cpp files are used
+    @ccfiles = glob("*.cc");
+    @cppfiles = glob("*.cpp");
+    if ($ccExt eq "") {
+        if (!@ccfiles && @cppfiles) {
+            $ccExt = "cpp";
+        }
+        elsif (@ccfiles && !@cppfiles) {
+            $ccExt = "cc";
+        }
+        elsif (@ccfiles && @cppfiles) {
+            error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
+        }
+        else {
+            $ccExt = "cc";  # if no files, use .cc extension
         }
     }
-}
-
-@subdirTargets = ();
-foreach $subdir (@subdirs) {
-    push(@subdirTargets, $subdir . ($isNMake ? "_dir" : ""));  #XXX make sure none contains "_dir" as substring
-}
-
-foreach $arg (@extraArgs) {
-    if (-d $arg) {
-        $arg = abs2rel($arg);
-        push(@linkDirs, $arg);
-    }
-    elsif (-f $arg) {
-        $arg = abs2rel($arg);
-        push(@externalObjects, $arg);
-    }
     else {
-        error("'$arg' is neither an existing file/dir nor a valid option");
+        if ($ccExt eq "cc" && !@ccfiles && @cppfiles) {
+            warning("you specified -e cc but you have only .cpp files in this directory!");
+        }
+        if ($ccExt eq "cpp" && @ccfiles && !@cppfiles) {
+            warning("you specified -e cpp but you have only .cc files in this directory!");
+        }
     }
-}
 
-if ($linkWithObjects) {
+    $ccSuffix = ".$ccExt";
+    $objSuffix = $isNMake ? ".obj" : ".o";
+
+    # prepare subdirs. First, check that all specified subdirs exist
+    foreach $subdir (@subdirs) {
+        if (! -d $subdir) {
+            error("subdirectory '$subdir' does not exist");
+        }
+    }
+
+    if ($recursive) {
+        foreach $f (glob("*")) {
+            if (-d $f && !grep(/\Q$f\E/, @exceptSubdirs)) {  #XXX check IGNORABLE_DIRS
+                push(@subdirs, $f);
+            }
+        }
+    }
+
+    @subdirTargets = ();
+    foreach $subdir (@subdirs) {
+        push(@subdirTargets, $subdir . ($isNMake ? "_dir" : ""));  #XXX make sure none contains "_dir" as substring
+    }
+
+    foreach $arg (@extraArgs) {
+        if (-d $arg) {
+            $arg = abs2rel($arg);
+            push(@linkDirs, $arg);
+        }
+        elsif (-f $arg) {
+            $arg = abs2rel($arg);
+            push(@externalObjects, $arg);
+        }
+        else {
+            error("'$arg' is neither an existing file/dir nor a valid option");
+        }
+    }
+
+    if ($linkWithObjects) {
+        foreach $i (@includeDirs) {
+            if ($i ne ".") {
+                push(@externaldirobjs, "$i/*.$objSuffix");
+            }
+        }
+    }
+
+    foreach $i (@linkDirs) {
+        push(@externaldirobjs, "$i/*.$objSuffix");
+    }
+
     foreach $i (@includeDirs) {
-        if ($i ne ".") {
-            push(@externaldirobjs, "$i/*.$objSuffix");
+        if ($tstamp && $i ne ".") {
+            push(@tstampDirs, $i);
         }
     }
-}
 
-foreach $i (@linkDirs) {
-    push(@externaldirobjs, "$i/*.$objSuffix");
-}
-
-foreach $i (@includeDirs) {
-    if ($tstamp && $i ne ".") {
-        push(@tstampDirs, $i);
+    foreach $i (@linkDirs) {
+        if ($tstamp) {
+            push(@tstampDirs, $i);
+        }
     }
-}
-
-foreach $i (@linkDirs) {
-    if ($tstamp) {
-        push(@tstampDirs, $i);
+    foreach $i (@tstampDirs) {
+        push(@externaldirtstamps, quote("$i/.tstamp"));
     }
-}
-foreach $i (@tstampDirs) {
-    push(@externaldirtstamps, quote("$i/.tstamp"));
-}
 
-$objpatt = $ignoreNedFiles ? "*.msg *.$ccExt" : "*.ned *.msg *.$ccExt";
-foreach $i (glob($objpatt))
-{
-    $i =~ s/\*[^ ]*//g;
-    $i =~ s/[^ ]*_n\.$ccExt$//g;
-    $i =~ s/[^ ]*_m\.$ccExt$//g;
-    $i =~ s/\.ned$/_n.$objSuffix/g;
-    $i =~ s/\.msg$/_m.$objSuffix/g;
-    $i =~ s/\.$ccExt$/.$objSuffix/g;
-    if ($i ne '') {
-        push(@objs, $i);
+    $objpatt = $ignoreNedFiles ? "*.msg *.$ccExt" : "*.ned *.msg *.$ccExt";
+    foreach $i (glob($objpatt))
+    {
+        $i =~ s/\*[^ ]*//g;
+        $i =~ s/[^ ]*_n\.$ccExt$//g;
+        $i =~ s/[^ ]*_m\.$ccExt$//g;
+        $i =~ s/\.ned$/_n.$objSuffix/g;
+        $i =~ s/\.msg$/_m.$objSuffix/g;
+        $i =~ s/\.$ccExt$/.$objSuffix/g;
+        if ($i ne '') {
+            push(@objs, $i);
+        }
     }
-}
 
-@msgfiles = glob("*.msg");
-foreach $i (@msgfiles) {
-    $h = $i; $h =~ s/\.msg$/_m.h/;
-    $cc = $i; $cc =~ s/\.msg$/_m$ccSuffix/;
-    push(@generatedHeaders, $h);
-    push(@msgccandhfiles, $h);
-    push(@msgccandhfiles, $cc);
-}
-
-$makefrags = "";
-if (@fragmentFiles != ()) {
-    foreach $frag (@fragmentFiles) {
-        $makefrags .= "# inserted from file '$frag':\n";
-        $makefrags .= readTextFile($frag) . "\n";
+    @msgfiles = glob("*.msg");
+    foreach $i (@msgfiles) {
+        $h = $i; $h =~ s/\.msg$/_m.h/;
+        $cc = $i; $cc =~ s/\.msg$/_m$ccSuffix/;
+        push(@generatedHeaders, $h);
+        push(@msgccandhfiles, $cc);
+        push(@msgccandhfiles, $h);
     }
-}
-else {
-    $makefragFilename = $isNMake ? "makefrag.vc" : "makefrag";
-    if (-f $makefragFilename) {
-        $makefrags .= "# inserted from file '$makefragFilename':\n";
-        $makefrags .= readTextFile($makefragFilename) . "\n";
+
+    $makefrags = "";
+    if (@fragmentFiles) {
+        foreach $frag (@fragmentFiles) {
+            $makefrags .= "# inserted from file '$frag':\n";
+            $makefrags .= readTextFile($frag) . "\n";
+        }
     }
+    else {
+        $makefragFilename = $isNMake ? "makefrag.vc" : "makefrag";
+        if (-f $makefragFilename) {
+            $makefrags .= "# inserted from file '$makefragFilename':\n";
+            $makefrags .= readTextFile($makefragFilename) . "\n";
+        }
+    }
+
+    #FIXME TODO: into deps:  join(generatedHeaders);
+    $deps = "";
+
+    %m = (
+        "nmake" =>  $isNMake,
+        "target" =>  $target,
+        "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
+        "args" =>  quoteJoin(\@args),
+        "configfile" =>  $configFile,
+        "-L" =>  $isNMake ? "/libpath:" : "-L",
+        "-l" =>  $isNMake ? "" : "-l",
+        ".lib" =>  $isNMake ? ".lib" : "",
+        "-u" =>  $isNMake ? "/include:" : "-u",
+        "_dir" =>  "_dir",
+        "cc" =>  $ccExt,
+        "deps" =>  $deps,
+        "exe" =>  $type eq "EXE",
+        "so" =>  $type eq "SO",
+        "nolink" =>  $type eq "NOLINK",
+        "allenv" => ($userInterface =~ /^A/) ne "",
+        "cmdenv" =>  ($userInterface =~ /^C/) ne "",
+        "tkenv" =>  ($userInterface =~ /^T/) ne "",
+        "extdirobjs" =>  quoteJoin(\@externaldirobjs),
+        "extdirtstamps" =>  quoteJoin(\@externaldirtstamps),
+        "extraobjs" =>  quoteJoin(\@externalObjects),
+        "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
+        "libpath" =>  prefixQuoteJoin(\@libDirs, (isNMake ? "/libpath:" : "-L")),
+        "libs" =>  quoteJoin(\@libs),
+        "importlibs" =>  quoteJoin(\@importLibs),
+        "link-o" =>  $isNMake ? "/out:" : "-o",
+        "makecommand" =>  $makecommand,
+        "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
+        "makefrags" =>  $makefrags,
+        "msgccandhfiles" =>  quoteJoin(\@msgccandhfiles),
+        "msgfiles" =>  quoteJoin(\@msgfiles),
+        "objs" =>  quoteJoin(\@objs),
+        "hassubdir" =>  @subdirs ne "",
+        "subdirs" =>  quoteJoin(\@subdirs),
+        "subdirtargets" =>  quoteJoin(\@subdirTargets),
+        "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
+        "dllexportmacro" =>  $exportDefOpt ? "-P$exportDefOpt" : ""
+    );
+
+    $content = substituteIntoTemplate(template(), \%m, "{", "}");
+
+    open(OUT, ">$makefile");
+    print OUT $content;
+    close OUT;
+
+    print "$makefile created.\n";
+    print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 }
-
-#FIXME TODO: into deps:  join(generatedHeaders);
-$deps = "";
-
-%m = (
-    "nmake" =>  $isNMake,
-    "target" =>  $target,
-    "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
-    "args" =>  prefixQuoteJoin(@args),
-    "configfile" =>  $configFile,
-    "-L" =>  $isNMake ? "/libdir:" : "-L",
-    "-l" =>  $isNMake ? "" : "-l",
-    ".lib" =>  $isNMake ? ".lib" : "",
-    "-u" =>  $isNMake ? "/include:" : "-u",
-    "_dir" =>  "_dir",
-    "cc" =>  $ccExt,
-    "deps" =>  $deps,
-    "exe" =>  $type == "EXE",
-    "so" =>  $type == "SO",
-    "nolink" =>  $type == "NOLINK",
-    "allenv" => ($userInterface =~ /^A/) ne "",
-    "cmdenv" =>  ($userInterface =~ /^C/) ne "",
-    "tkenv" =>  ($userInterface =~ /^T/) ne "",
-    "extdirobjs" =>  prefixQuoteJoin(@externaldirobjs),
-    "extdirtstamps" =>  prefixQuoteJoin(@externaldirtstamps),
-    "extraobjs" =>  prefixQuoteJoin(@externalObjects),
-    "includepath" =>  prefixQuoteJoin(@includeDirs, "-I"),
-    "libpath" =>  prefixQuoteJoin(@libDirs, (isNMake ? "/libpath:" : "-L")),
-    "libs" =>  prefixQuoteJoin(@libs),
-    "importlibs" =>  prefixQuoteJoin(@importLibs),
-    "link-o" =>  $isNMake ? "/out:" : "-o",
-    "makecommand" =>  $makecommand,
-    "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
-    "makefrags" =>  $makefrags,
-    "msgccandhfiles" =>  prefixQuoteJoin(@msgccandhfiles),
-    "msgfiles" =>  prefixQuoteJoin(@msgfiles),
-    "objs" =>  prefixQuoteJoin(@objs),
-    "hassubdir" =>  @subdirs != (),
-    "subdirs" =>  prefixQuoteJoin(@subdirs),
-    "subdirtargets" =>  prefixQuoteJoin(@subdirTargets),
-    "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
-    "dllexportmacro" =>  $exportDefOpt==null ? "" : ("-P" + $exportDefOpt),
-);
-
-$content = substituteIntoTemplate(template(), \%m, "{", "}");
-
-open(OUT, ">$makefile");
-print OUT $content;
-close OUT;
-
-print "$makefile created.\n";
-print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
-
-
-#=====================================================================
-
 
 sub substituteIntoTemplate($;$)
 {
@@ -444,7 +444,7 @@ sub substituteIntoTemplate($;$)
     my $endTagLen = length($endTag);
 
     my $current = 0;
-    while (true) {
+    while (1) {
         my $start = index($template, $startTag, $current);
         if ($start == -1) {
             last;
@@ -518,6 +518,12 @@ sub substr2($;$;$)
 {
     my($string, $startoffset, $endoffset) = @_;
     return substr($string, $startoffset, $endoffset - $startoffset);
+}
+
+sub quoteJoin($)
+{
+    my($listref) = @_;
+    return prefixQuoteJoin($listref, "");
 }
 
 sub prefixQuoteJoin($,$)
