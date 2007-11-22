@@ -27,7 +27,7 @@ EXT_DIR_OBJS = {extdirobjs}
 EXT_DIR_TSTAMPS = {extdirtstamps}
 
 # Additional libraries (-L, -l, -t options)
-LIBS = {libs}
+LIBS = {libpath}{libs}{importlibs}
 
 #------------------------------------------------------------------------------
 

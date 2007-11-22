@@ -24,12 +24,12 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * An opp_nmakemake implementation. May be invoked as a command-line tool
- * as well as via a Java API. Note: we work with filesystem dirs and files 
- * not workspace resources, because "make" will know about the filesystem only.  
- * 
+ * as well as via a Java API. Note: we work with filesystem dirs and files
+ * not workspace resources, because "make" will know about the filesystem only.
+ *
  * @author Andras
  */
-//FIXME adjust perl/bash versions: 
+//FIXME adjust perl/bash versions:
 //- commandline add support for "--" after which everything is extraArg
 //- commandline: rename old "-d" to "-S"
 //- commandline: add "-d" option
@@ -40,26 +40,24 @@ import org.omnetpp.common.util.StringUtils;
 //FIXME support Linux too
 public class MakeMake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
-    
+
     private String template;
-    
+
     // parameters for the makemake function
     private IContainer folder;
     private MakemakeOptions p;
-    
-    private boolean isNMake = false;  //FIXME as option!
 
     // computed
     private IPath projectLocation;
     private IPath folderLocation;
-    
+
     public MakeMake() {
     }
 
     public static void main(String[] args) throws Throwable {
         new MakeMake().generateMakefile(null /*FIXME use current working dir*/, args, null);
     }
-    
+
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
@@ -84,8 +82,9 @@ public class MakeMake {
         File directory = folder.getLocation().toFile();
         projectLocation = folder.getProject().getLocation();
         folderLocation = folder.getLocation();
-        
-        String makecommand = isNMake ? "make" : "nmake /nologo /f Makefile.vc";
+
+        boolean isNMake = p.isNMake;
+
         String target = p.target == null ? folder.getName() : p.target;
         List<String> externaldirobjs = new ArrayList<String>();
         List<String> externaldirtstamps = new ArrayList<String>();
@@ -101,35 +100,42 @@ public class MakeMake {
 
         List<String> includeDirs = new ArrayList<String>();
         List<String> libDirs = new ArrayList<String>();
-        
+
         for (String i : p.includeDirs)
             includeDirs.add(abs2rel(i));
         for (String i : p.libDirs)
             libDirs.add(abs2rel(i));
-        
-        if (file(p.makefile).isFile() && !p.force)
-            throw new IllegalStateException("use -f to force overwriting existing " + p.makefile);
+
+        String makefile = isNMake ? "Makefile.vc" : "Makefile";
+
+        if (file(makefile).isFile() && !p.force)
+            throw new IllegalStateException("use -f to force overwriting existing " + makefile);
+
+        String makecommand = isNMake ? "make" : "nmake /nologo /f Makefile.vc";
 
         if (p.baseDir != null)
             throw new IllegalStateException("specifying the base directory (-b option) is not supported, it is always the project directory");
 
-        String configFile = p.configFile;
-        if (configFile == null) {
-            // try to find it in obvious places
-            for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
-                if (new File(directory.getPath() + File.separator + f).exists()) {
-                    configFile = f;
-                    break;
+        String configFile = null;
+        if (isNMake) {
+            configFile = p.configFile;
+            if (configFile == null) {
+                // try to find it in obvious places
+                for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
+                    if (new File(directory.getPath() + File.separator + f).exists()) {
+                        configFile = f;
+                        break;
+                    }
                 }
+                if (configFile == null)
+                    throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
             }
-            if (configFile == null)
-                throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
+            else {
+                if (!new File(configFile).exists())
+                    throw new RuntimeException("error: file " + configFile + " not found");
+            }
+            configFile = abs2rel(configFile);
         }
-        else {
-            if (!new File(configFile).exists())
-                throw new RuntimeException("error: file " + configFile + " not found");
-        }
-        configFile = abs2rel(configFile);
 
         // try to determine if .cc or .cpp files are used
         String ccExt = p.ccext;
@@ -151,9 +157,9 @@ public class MakeMake {
             if (ccExt.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
                 System.out.println("warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
         }
-        
+
         String ccSuffix = "." + ccExt;
-        String objSuffix = isNMake ? ".obj" : ".o"; 
+        String objSuffix = isNMake ? ".obj" : ".o";
 
         // prepare subdirs. First, check that all specified subdirs exist
         List<String> subdirs = new ArrayList<String>();
@@ -177,7 +183,7 @@ public class MakeMake {
                 subdirs.add(i.getName());
             }
         }
-        
+
         List<String> subdirTargets = new ArrayList<String>();
         for (String subdir : subdirs)
             subdirTargets.add(subdir + (isNMake ? "_dir" : ""));  //XXX make sure none contains "_dir" as substring
@@ -196,7 +202,7 @@ public class MakeMake {
                 throw new IllegalArgumentException("'" + arg + "' is neither an existing file/dir nor a valid option");
             }
         }
-        
+
         if (p.linkWithObjects)
             for (String i : includeDirs)
                 if (!i.equals("."))
@@ -211,7 +217,7 @@ public class MakeMake {
         for (String i : linkDirs)
             if (p.tstamp)
                 tstampDirs.add(i);
-        
+
         for (String i : tstampDirs)
             externaldirtstamps.add(quote(i + "/.tstamp"));
 
@@ -255,7 +261,7 @@ public class MakeMake {
 
         // write dependencies
         Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
-        
+
         StringBuilder deps = new StringBuilder();
         if (fileDepsMap != null) {
             for (IFile sourceFile : fileDepsMap.keySet()) {
@@ -266,13 +272,13 @@ public class MakeMake {
             }
             deps.append("\n");
         }
-        //TODO: into deps:  join(generatedHeaders);
+        //TODO: into deps:  prefixQuoteJoin(generatedHeaders);
 
-        Map<String, Object> m = new HashMap<String, Object>(); 
+        Map<String, Object> m = new HashMap<String, Object>();
         m.put("nmake", isNMake);
         m.put("target", target);
         m.put("progname", isNMake ? "opp_nmakemake" : "opp_makemake");
-        m.put("args", join(p.args));
+        m.put("args", prefixQuoteJoin(p.args));
         m.put("configfile", configFile);
         m.put("-L", isNMake ? "/libdir:" : "-L");
         m.put("-l", isNMake ? "" : "-l");
@@ -287,21 +293,23 @@ public class MakeMake {
         m.put("allenv", p.userInterface.startsWith("A"));
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));
-        m.put("extdirobjs", join(externaldirobjs));
-        m.put("extdirtstamps", join(externaldirtstamps));
-        m.put("extraobjs", join(externalObjects));
-        m.put("includepath", join(includeDirs, "-I"));
-        m.put("libs", join(libDirs, (isNMake ? "/libpath:" : "-L") + join(p.libs) + join(p.importLibs)));
+        m.put("extdirobjs", prefixQuoteJoin(externaldirobjs));
+        m.put("extdirtstamps", prefixQuoteJoin(externaldirtstamps));
+        m.put("extraobjs", prefixQuoteJoin(externalObjects));
+        m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
+        m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
+        m.put("libs", prefixQuoteJoin(p.libs));
+        m.put("importlibs", prefixQuoteJoin(p.importLibs));
         m.put("link-o", isNMake ? "/out:" : "-o");
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);
-        m.put("msgccandhfiles", msgccandhfiles);
-        m.put("msgfiles", msgfiles);
-        m.put("objs", join(objs));
+        m.put("msgccandhfiles", prefixQuoteJoin(msgccandhfiles));
+        m.put("msgfiles", prefixQuoteJoin(msgfiles));
+        m.put("objs", prefixQuoteJoin(objs));
         m.put("hassubdir", !subdirs.isEmpty());
-        m.put("subdirs", join(subdirs));
-        m.put("subdirtargets", join(subdirTargets));
+        m.put("subdirs", prefixQuoteJoin(subdirs));
+        m.put("subdirtargets", prefixQuoteJoin(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
         m.put("dllexportmacro", p.exportDefOpt==null ? "" : ("-P" + p.exportDefOpt));
 
@@ -331,7 +339,7 @@ public class MakeMake {
 
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
-        File file = new File(directory.getPath() + File.separator + p.makefile);
+        File file = new File(directory.getPath() + File.separator + makefile);
         if (!file.exists() || !Arrays.equals(FileUtils.readBinaryFile(file), bytes)) { // NOTE: byte[].equals does NOT compare the bytes, only the two object references!!!
             FileUtils.writeBinaryFile(bytes, file);
             return true;  // no change
@@ -339,11 +347,11 @@ public class MakeMake {
         return false;  // it was already OK
     }
 
-    protected String join(List<String> args) {
-        return join(args, "");
+    protected String prefixQuoteJoin(List<String> args) {
+        return prefixQuoteJoin(args, "");
     }
 
-    protected String join(List<String> args, String prefix) {
+    protected String prefixQuoteJoin(List<String> args, String prefix) {
         StringBuilder result = new StringBuilder(args.size() * 32);
         for (String i : args)
             result.append(" ").append(prefix).append(quote(i));
@@ -368,11 +376,11 @@ public class MakeMake {
             public boolean accept(File dir, String name) {
                 return name.matches(regex);
             }});
-        return Arrays.asList(files==null ? new String[0] : files); 
+        return Arrays.asList(files==null ? new String[0] : files);
     }
 
-    /** 
-     * If path is absolute, converts the path "path" to relative path (relative to the "base" directory), 
+    /**
+     * If path is absolute, converts the path "path" to relative path (relative to the "base" directory),
      * All "\" are converted to "/".
      */
     protected String abs2rel(String location) throws CoreException {
@@ -388,7 +396,7 @@ public class MakeMake {
         else {
             IProject containingProject = null;
             for (IProject project : folder.getProject().getReferencedProjects()) { //XXX transitive closure of referenced projects
-                if (project.getLocation().isPrefixOf(path)) { 
+                if (project.getLocation().isPrefixOf(path)) {
                     containingProject = project; break;
                 }
             }
@@ -396,7 +404,7 @@ public class MakeMake {
                 // generate something like $(OTHER_PROJECT_DIR)/some/file
                 IPath projectRelativePath = path.removeFirstSegments(projectLocation.segmentCount());
                 String symbolicProjectName = containingProject.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_DIR"; //FIXME must not begin with number! must not collide with symbolic name of another project!
-                return "$(" + symbolicProjectName + ")/" + projectRelativePath.toString(); 
+                return "$(" + symbolicProjectName + ")/" + projectRelativePath.toString();
             }
             else {
                 // points outside the project -- leave it as it is

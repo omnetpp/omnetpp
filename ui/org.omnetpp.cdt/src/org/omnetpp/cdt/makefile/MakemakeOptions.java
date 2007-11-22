@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.omnetpp.cdt.makefile;
 
@@ -16,7 +16,7 @@ import org.omnetpp.common.util.StringUtils;
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SO, NOLINK};
     public List<String> args;
-    public String makefile = "Makefile.vc";
+    public boolean isNMake = false;
     public String baseDir = null;  // not supported
     public Type type = Type.EXE;
     public String target = null;
@@ -71,6 +71,9 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("-f") || arg.equals("--force")) {
                 force = true;
+            }
+            else if (arg("--nmake")) {
+                isNMake = true;
             }
             else if (arg.equals("-e") || arg.equals("--ext")) {
                 checkArg(argv, i);
@@ -204,6 +207,9 @@ public class MakemakeOptions implements Cloneable {
         if (force)
             add(result, "-f");
 
+        if (isNMake)
+            add(result, "--nmake");
+
         if (linkWithObjects)
             add(result, "-w");
 
@@ -256,7 +262,7 @@ public class MakemakeOptions implements Cloneable {
         for (String arg : args)
             argList.add(option + arg);
     }
-    
+
     private void addOpts2(List<String> argList, List<String> args, String option) {
         for (String arg : args) {
             argList.add(option);
@@ -269,12 +275,12 @@ public class MakemakeOptions implements Cloneable {
         String[] tmp = toArgs();
         return StringUtils.join(tmp, " ");  //FIXME quote args that contain whitespace
     }
-    
+
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = new MakemakeOptions();
         result.args = args;
-        result.makefile = makefile;
+        result.isNMake = isNMake;
         result.baseDir = baseDir;
         result.type = type;
         result.target = target;
