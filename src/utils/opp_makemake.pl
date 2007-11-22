@@ -421,7 +421,7 @@ $deps = "";
     "nmake" =>  $isNMake,
     "target" =>  $target,
     "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
-    "args" =>  join(' ', @args),
+    "args" =>  prefixQuoteJoin(@args),
     "configfile" =>  $configFile,
     "-L" =>  $isNMake ? "/libdir:" : "-L",
     "-l" =>  $isNMake ? "" : "-l",
@@ -436,23 +436,23 @@ $deps = "";
     "allenv" => ($userInterface =~ /^A/) ne "",
     "cmdenv" =>  ($userInterface =~ /^C/) ne "",
     "tkenv" =>  ($userInterface =~ /^T/) ne "",
-    "extdirobjs" =>  join(@externaldirobjs),
-    "extdirtstamps" =>  join(@externaldirtstamps),
-    "extraobjs" =>  join(@externalObjects),
-    "includepath" =>  join(@includeDirs, "-I"),
-    "libpath" =>  join(@libDirs, (isNMake ? "/libpath:" : "-L")),
-    "libs" =>  join($libs),
-    "importlibs" =>  join($importLibs),
+    "extdirobjs" =>  prefixQuoteJoin(@externaldirobjs),
+    "extdirtstamps" =>  prefixQuoteJoin(@externaldirtstamps),
+    "extraobjs" =>  prefixQuoteJoin(@externalObjects),
+    "includepath" =>  prefixQuoteJoin(@includeDirs, "-I"),
+    "libpath" =>  prefixQuoteJoin(@libDirs, (isNMake ? "/libpath:" : "-L")),
+    "libs" =>  prefixQuoteJoin($libs),
+    "importlibs" =>  prefixQuoteJoin($importLibs),
     "link-o" =>  $isNMake ? "/out:" : "-o",
     "makecommand" =>  $makecommand,
     "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
     "makefrags" =>  $makefrags,
     "msgccandhfiles" =>  $msgccandhfiles,
     "msgfiles" =>  $msgfiles,
-    "objs" =>  join(objs),
+    "objs" =>  prefixQuoteJoin(objs),
     "hassubdir" =>  @subdirs != (),
-    "subdirs" =>  join(subdirs),
-    "subdirtargets" =>  join(subdirTargets),
+    "subdirs" =>  prefixQuoteJoin(subdirs),
+    "subdirtargets" =>  prefixQuoteJoin(subdirTargets),
     "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
     "dllexportmacro" =>  $exportDefOpt==null ? "" : ("-P" + $exportDefOpt),
 );
@@ -557,6 +557,17 @@ sub substr2($;$;$)
 {
     my($string, $startoffset, $endoffset) = @_;
     return substr($string, $startoffset, $endoffset - $startoffset);
+}
+
+sub prefixQuoteJoin($,$)
+{
+    my($listref,$prefix) = @_;
+    @list = @$listref;
+    $result = "";
+    foreach $i : (@list) {
+        $result .= " " . $prefix . quote($i);
+    }
+    return $result eq "" ? "" : substr($result, 1); # chop off leading space
 }
 
 # for substituteIntoTemplate()
