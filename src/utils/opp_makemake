@@ -215,39 +215,38 @@ $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 #    error("specifying the base directory (-b option) is not supported, it is always the project directory");
 #}
 
-#FIXME $configFile is nmake only!
-if ($configFile eq "")
-{
-    # try to find it
-    my $progdir = $0;
-    $progdir =~ s|\\|/|g;
-    $progdir =~ s|/?[^/:]*$||g;
-    $progdir = "." if ($progdir eq "");
-    $progparentdir = $progdir;
-    $progparentdir =~ s|/?[^/:]*/?$||;
-    foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
-                "../../../configuser.vc", "../../../../configuser.vc",
-                "../../../../../configuser.vc", "$progparentdir/configuser.vc",
-                "$progdir/configuser.vc")
-    {
-        if (-f $f) {
-             $configFile = $f;
-             last;
+if ($isNMake) {
+    if ($configFile eq "") {
+        # try to find it
+        my $progdir = $0;
+        $progdir =~ s|\\|/|g;
+        $progdir =~ s|/?[^/:]*$||g;
+        $progdir = "." if ($progdir eq "");
+        $progparentdir = $progdir;
+        $progparentdir =~ s|/?[^/:]*/?$||;
+        foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
+                    "../../../configuser.vc", "../../../../configuser.vc",
+                    "../../../../../configuser.vc", "$progparentdir/configuser.vc",
+                    "$progdir/configuser.vc")
+        {
+            if (-f $f) {
+                 $configFile = $f;
+                 last;
+            }
+        }
+        if ($configFile eq "") {
+            warning("configuser.vc file not found -- try -c option or edit generated makefile");
         }
     }
-    if ($configFile eq "") {
-        warning("configuser.vc file not found -- try -c option or edit generated makefile");
+    else
+    {
+        if (! -f $configFile) {
+            error("file $configfile not found");
+        }
     }
-}
-else
-{
-    if (! -f $configFile) {
-        error("file $configfile not found");
-    }
-}
 
-$configFile = abs2rel($configFile);
-
+    $configFile = abs2rel($configFile);
+}
 
 # try to determine if .cc or .cpp files are used
 @ccfiles = glob("*.cc");
