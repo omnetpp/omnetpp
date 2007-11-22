@@ -29,7 +29,7 @@ public class ComputedResultFileLocator {
 	public String getFileNameFor(ProcessingOp operation) {
 		URI uri = getResourceURI(operation);
 		if (uri != null) {
-			String fileName = getFileName(operation);
+			String fileName = String.format("%08x.vec", operation.hashCode());
 			if (uri.isFile()) {
 				return getFileNameFor(uri, fileName).toOSString();
 			}
@@ -49,10 +49,6 @@ public class ComputedResultFileLocator {
 				uri = resourceSet.getURIConverter().normalize(uri);
 		}
 		return uri;
-	}
-	
-	private String getFileName(ProcessingOp operation) {
-		return String.format("%08x.vec", operation.hashCode());
 	}
 	
 	private IPath getFileNameFor(URI uri, String fileName) {
