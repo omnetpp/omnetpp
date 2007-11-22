@@ -37,6 +37,7 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getParams <em>Params</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getComputedFile <em>Computed File</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#isComputedFileUpToDate <em>Computed File Up To Date</em>}</li>
  * </ul>
  * </p>
  *
@@ -102,6 +103,26 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * @ordered
 	 */
 	protected String computedFile = COMPUTED_FILE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isComputedFileUpToDate() <em>Computed File Up To Date</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isComputedFileUpToDate()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean COMPUTED_FILE_UP_TO_DATE_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isComputedFileUpToDate() <em>Computed File Up To Date</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isComputedFileUpToDate()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean computedFileUpToDate = COMPUTED_FILE_UP_TO_DATE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -193,6 +214,27 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isComputedFileUpToDate() {
+		return computedFileUpToDate;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setComputedFileUpToDate(boolean newComputedFileUpToDate) {
+		boolean oldComputedFileUpToDate = computedFileUpToDate;
+		computedFileUpToDate = newComputedFileUpToDate;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE, oldComputedFileUpToDate, computedFileUpToDate));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -220,6 +262,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return getParams();
 			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
 				return getComputedFile();
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE:
+				return isComputedFileUpToDate() ? Boolean.TRUE : Boolean.FALSE;
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -247,6 +291,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
 				setComputedFile((String)newValue);
 				return;
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE:
+				setComputedFileUpToDate(((Boolean)newValue).booleanValue());
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -271,6 +318,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
 				setComputedFile(COMPUTED_FILE_EDEFAULT);
 				return;
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE:
+				setComputedFileUpToDate(COMPUTED_FILE_UP_TO_DATE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -291,6 +341,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return params != null && !params.isEmpty();
 			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
 				return COMPUTED_FILE_EDEFAULT == null ? computedFile != null : !COMPUTED_FILE_EDEFAULT.equals(computedFile);
+			case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE:
+				return computedFileUpToDate != COMPUTED_FILE_UP_TO_DATE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -309,6 +361,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 		result.append(operation);
 		result.append(", computedFile: ");
 		result.append(computedFile);
+		result.append(", computedFileUpToDate: ");
+		result.append(computedFileUpToDate);
 		result.append(')');
 		return result.toString();
 	}
