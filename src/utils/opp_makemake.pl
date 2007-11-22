@@ -4,13 +4,11 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #!perl
 #line 6
 #
-# opp_makemake.pl
+# Creates a makefile for a given OMNeT++/OMNEST model.
+# Assumes that .ned, .msg, .cc and .h files are in one directory.
+# The name of the program defaults to the name of the directory ('myproject').
 #
-#  Creates an MSVC makefile for a given OMNeT++/OMNEST model.  FIXME
-#  Assumes that .ned, .msg, .cc and .h files are in one directory.
-#  The name of the program defaults to the name of the directory ('myproject').
-#
-#  --VA
+# Author: Andras Varga
 #
 
 use Cwd;
@@ -28,7 +26,7 @@ if ($isWindows && $ENV{OS} ne "Windows_NT") {
     error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
 }
 
-$isNMake = 1;
+$isNMake = 0;
 
 #
 # process command line args
