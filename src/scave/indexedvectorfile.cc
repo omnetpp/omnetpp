@@ -420,6 +420,7 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     currentBlock.startOffset = ftell(f);
 
     CHECK(fputs(port->buffer, f));
+    currentBlock.size = (long)(ftell(f) - currentBlock.startOffset);
     port->vector.collect(currentBlock);
     port->clearBuffer();
     port->vector.blocks.push_back(Block());
