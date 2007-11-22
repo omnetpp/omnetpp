@@ -26,13 +26,12 @@ if ($isWindows && $ENV{OS} ne "Windows_NT") {
     error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
 }
 
-$isNMake = 0;
 
 #
 # process command line args
 #
 @args = @ARGV;
-$makefile = "Makefile.vc";
+$isNMake = 0;
 $baseDir = "";
 $type = "EXE";
 $target = "";
@@ -66,6 +65,9 @@ while (@ARGV)
     }
     elsif ($arg eq "-f" || $arg eq "--force") {
         $force = 1;
+    }
+    elsif ($arg eq "--nmake") {
+        $isNMake = 1;
     }
     elsif ($arg eq "-e" || $arg eq "--ext") {
         $ccExt = shift;
@@ -168,46 +170,6 @@ while (@ARGV)
     }
 }
 
-$makefile = $isNMake ? "Makefile.vc" : "Makefile";
-
-if (-f $makefile && $force ne 1)
-{
-    error("use -f to force overwriting existing $makefile");
-}
-
-$makecommand = $isNMake ? 'nmake /nologo /f Makefile.vc' : 'make';
-
-#FIXME $configFile is nmake only!
-if ($configFile eq "") {
-    # try to find it
-    $progdir = $0;
-    $progdir =~ s|\\|/|g;
-    $progdir =~ s|/?[^/:]*$||g;
-    $progdir = "." if ($progdir eq "");
-    $progparentdir = $progdir;
-    $progparentdir =~ s|/?[^/:]*/?$||;
-    foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
-                "../../../configuser.vc", "../../../../configuser.vc",
-                "../../../../../configuser.vc", "$progparentdir/configuser.vc",
-                "$progdir/configuser.vc")
-    {
-        if (-f $f) {
-             $configFile = $f;
-             last;
-        }
-    }
-    if ($configFile eq "") {
-        print STDERR "$progname: warning: configuser.vc file not found -- try -c option or edit generated makefile\n";
-    }
-
-}
-else {
-    if (! -f $configFile) {
-        error("$progname: error: file $configFile not found");
-    }
-}
-
-
 #
 # Prepare the variables for the template
 #
@@ -217,8 +179,6 @@ $folderName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
 $folderName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
 
 print "Creating $makefile in $folder...\n";
-
-$makecommand = $isNMake ? "make" : "nmake /nologo /f Makefile.vc";
 
 $target = $target eq "" ? $folderName : $target;
 
@@ -244,14 +204,18 @@ foreach $i (@libDirs) {
     push(@libDirs, abs2rel($i));
 }
 
-if (-f $makefile && !$force) {
+$makefile = $isNMake ? "Makefile.vc" : "Makefile";
+if (-f $makefile && $force ne 1) {
     error("use -f to force overwriting existing $makefile");
 }
+
+$makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
 #if ($baseDir ne "") {
 #    error("specifying the base directory (-b option) is not supported, it is always the project directory");
 #}
 
+#FIXME $configFile is nmake only!
 if ($configFile eq "")
 {
     # try to find it
