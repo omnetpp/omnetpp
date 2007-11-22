@@ -14,7 +14,7 @@ COPTS=$(CFLAGS)
 #
 all: seedtool.exe tcl2c.exe opp_replace.exe opp_neddoc
 	copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\)
-	copy opp_nmakemake $(OMNETPP_BIN_DIR:/=\)
+	copy opp_makemake $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep $(OMNETPP_BIN_DIR:/=\)
 	copy splitvec.cmd $(OMNETPP_BIN_DIR:/=\)

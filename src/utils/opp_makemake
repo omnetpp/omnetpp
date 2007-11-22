@@ -468,12 +468,12 @@ sub substituteIntoTemplate($;$)
                 }
                 my $isOptLine = substr($key,-1,1) eq ":";
                 if ($isOptLine) {
-                    $key = substr($key, 0, length($key)-1);
+                    $key = substr($key, 0, length($key)-1);  # drop trailing ":"
                 }
                 my $questionmarkPos = index($key, "?");
                 my $substringAfterQuestionmark = $questionmarkPos == -1 ? "" : substr($key, $questionmarkPos+1);
                 if ($questionmarkPos != -1) {
-                    $key = substr2($key, 0, $questionmarkPos); # drop ":..."
+                    $key = substr2($key, 0, $questionmarkPos); # drop "?..." from key
                 }
 
                 # determine replacement string, and possibly adjust start/end
@@ -494,6 +494,7 @@ sub substituteIntoTemplate($;$)
                     }
                 }
                 elsif ($questionmarkPos != -1) {
+                    # conditional
                     $replacement = getFromMapAsBool(\%map, $key)!=$isNegated ? $substringAfterQuestionmark : "";
                 }
                 else {
