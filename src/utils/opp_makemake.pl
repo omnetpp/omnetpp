@@ -213,10 +213,15 @@ else {
 # Prepare the variables for the template
 #
 $folder = cwd;
+$folderName = $folder;
+$folderName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
+$folderName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
+
 print "Creating $makefile in $folder...\n";
 
 $makecommand = $isNMake ? "make" : "nmake /nologo /f Makefile.vc";
-$target = $target eq "" ? folder.getName() : $target;
+
+$target = $target eq "" ? $folderName : $target;
 
 @externaldirobjs = ();
 @externaldirtstamps = ();
@@ -424,18 +429,20 @@ $deps = "";
     "-u" =>  $isNMake ? "/include:" : "-u",
     "_dir" =>  "_dir",
     "cc" =>  $ccExt,
-    "deps" =>  $deps.toString(),
+    "deps" =>  $deps,
     "exe" =>  $type == "EXE",
     "so" =>  $type == "SO",
     "nolink" =>  $type == "NOLINK",
-    "allenv" =>  $userInterface.startsWith("A"),
-    "cmdenv" =>  $userInterface.startsWith("C"),
-    "tkenv" =>  $userInterface.startsWith("T"),
-    "extdirobjs" =>  join(externaldirobjs),
-    "extdirtstamps" =>  join(externaldirtstamps),
-    "extraobjs" =>  join(externalObjects),
-    "includepath" =>  join(includeDirs, "-I"),
-    "libs" =>  join(libDirs, (isNMake ? "/libpath:" : "-L") + join($libs) + join($importLibs)),
+    "allenv" => ($userInterface =~ /^A/) ne "",
+    "cmdenv" =>  ($userInterface =~ /^C/) ne "",
+    "tkenv" =>  ($userInterface =~ /^T/) ne "",
+    "extdirobjs" =>  join(@externaldirobjs),
+    "extdirtstamps" =>  join(@externaldirtstamps),
+    "extraobjs" =>  join(@externalObjects),
+    "includepath" =>  join(@includeDirs, "-I"),
+    "libpath" =>  join(@libDirs, (isNMake ? "/libpath:" : "-L")),
+    "libs" =>  join($libs),
+    "importlibs" =>  join($importLibs),
     "link-o" =>  $isNMake ? "/out:" : "-o",
     "makecommand" =>  $makecommand,
     "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
