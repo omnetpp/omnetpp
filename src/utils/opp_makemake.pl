@@ -318,17 +318,10 @@ foreach $subdir (@subdirs) {
 }
 
 if ($recursive) {
-    File[] list = directory.listFiles(new FileFilter() {
-        public boolean accept(File file) {
-            if (file.isDirectory()) {
-                String name = file.getName();
-                if (!name.startsWith(".") && !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, name) && !$exceptSubdirs.contains(name))
-                    return true;
-            }
-            return false;
-        }});
-    for (File $i : list) {
-        push(@subdirs, $i.getName());
+    foreach $f (glob("*")) {
+        if (-d $f && !grep(/\Q$f\E/, @exceptSubdirs)) {  #XXX check IGNORABLE_DIRS
+            push(@subdirs, $f);
+        }
     }
 }
 
@@ -338,30 +331,33 @@ foreach $subdir (@subdirs) {
 }
 
 foreach $arg (@extraArgs) {
-    if (file(arg).isDirectory()) {
-        arg = abs2rel(arg);
-        push(@linkDirs, arg);
+    if (-d $arg) {
+        $arg = abs2rel($arg);
+        push(@linkDirs, $arg);
     }
-    elsif (file(arg).isFile()) {
-        arg = abs2rel(arg);
-        push(@externalObjects, arg);
+    elsif (-f $arg) {
+        $arg = abs2rel($arg);
+        push(@externalObjects, $arg);
     }
     else {
         error("'$arg' is neither an existing file/dir nor a valid option");
     }
 }
 
-if ($linkWithObjects)
-    foreach $i (@includeDirs)
-        if (!$i.equals("."))
-            push(@externaldirobjs, $i + "/*." + objSuffix);
+if ($linkWithObjects) {
+    foreach $i (@includeDirs) {
+        if ($i ne ".") {
+            push(@externaldirobjs, "$i/*.$objSuffix");
+        }
+    }
+}
 
 foreach $i (@linkDirs) {
-    push(@externaldirobjs, $i + "/*." + objSuffix);
+    push(@externaldirobjs, "$i/*.$objSuffix");
 }
 
 foreach $i (@includeDirs) {
-    if ($tstamp && !$i.equals(".")) {
+    if ($tstamp && $i ne ".") {
         push(@tstampDirs, $i);
     }
 }
@@ -372,45 +368,44 @@ foreach $i (@linkDirs) {
     }
 }
 foreach $i (@tstampDirs) {
-    push(@externaldirtstamps, quote($i + "/.tstamp"));
+    push(@externaldirtstamps, quote("$i/.tstamp"));
 }
 
-String[] objpatts = $ignoreNedFiles ? new String[] {"*.msg", "*" + ccSuffix} : new String[] {"*.ned", "*.msg", "*" + ccSuffix};
-foreach $objpatt (@objpatts) {
-    foreach $i (glob(objpatt)) {
-        $i = $i.replaceAll("\\*[^ ]*", "");
-        $i = $i.replaceAll("[^ ]*_n\\" + ccSuffix + "$", "");
-        $i = $i.replaceAll("[^ ]*_m\\" + ccSuffix + "$", "");
-        $i = $i.replaceAll("\\.ned$", "_n." + objSuffix);
-        $i = $i.replaceAll("\\.msg$", "_m." + objSuffix);
-        $i = $i.replaceAll("\\" + ccSuffix + "$", "." + objSuffix);
-        if (!$i.equals("")) {
-            push(@objs, $i);
-        }
+$objpatt = $ignoreNedFiles ? "*.msg *.$ccExt" : "*.ned *.msg *.$ccExt";
+foreach $i (glob($objpatt))
+{
+    $i =~ s/\*[^ ]*//g;
+    $i =~ s/[^ ]*_n\.$ccExt$//g;
+    $i =~ s/[^ ]*_m\.$ccExt$//g;
+    $i =~ s/\.ned$/_n.$objSuffix/g;
+    $i =~ s/\.msg$/_m.$objSuffix/g;
+    $i =~ s/\.$ccExt$/.$objSuffix/g;
+    if ($i ne '') {
+        push(@objs, $i);
     }
 }
 
 @msgfiles = glob("*.msg");
 foreach $i (@msgfiles) {
-    $h = $i.replaceAll("\\.msg$", "_m.h");
-    $cc = $i.replaceAll("\\.msg$", "_m"+$ccSuffix);
+    $h = $i; $h =~ s/\.msg$/_m.h/;
+    $cc = $i; $cc =~ s/\.msg$/_m$ccSuffix/;
     push(@generatedHeaders, $h);
     push(@msgccandhfiles, $h);
     push(@msgccandhfiles, $cc);
 }
 
-String makefrags = "";
-if (!$@fragmentFiles == ()) {
+$makefrags = "";
+if (@fragmentFiles != ()) {
     foreach $frag (@fragmentFiles) {
-        makefrags += "# inserted from file '$frag':\n";
-        makefrags += FileUtils.readTextFile(file(frag)) + "\n";
+        $makefrags .= "# inserted from file '$frag':\n";
+        $makefrags .= readTextFile($frag) . "\n";
     }
 }
 else {
     $makefragFilename = $isNMake ? "makefrag.vc" : "makefrag";
     if (-f $makefragFilename) {
-        makefrags += "# inserted from file '$makefragFilename':\n";
-        makefrags += FileUtils.readTextFile(file(makefragFilename)) + "\n";
+        $makefrags .= "# inserted from file '$makefragFilename':\n";
+        $makefrags .= readTextFile($makefragFilename) . "\n";
     }
 }
 
@@ -421,7 +416,7 @@ $deps = "";
     "nmake" =>  $isNMake,
     "target" =>  $target,
     "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
-    "args" =>  $join($args),
+    "args" =>  join(' ', @args),
     "configfile" =>  $configFile,
     "-L" =>  $isNMake ? "/libdir:" : "-L",
     "-l" =>  $isNMake ? "" : "-l",
@@ -436,21 +431,21 @@ $deps = "";
     "allenv" =>  $userInterface.startsWith("A"),
     "cmdenv" =>  $userInterface.startsWith("C"),
     "tkenv" =>  $userInterface.startsWith("T"),
-    "extdirobjs" =>  $join(externaldirobjs),
-    "extdirtstamps" =>  $join(externaldirtstamps),
-    "extraobjs" =>  $join(externalObjects),
-    "includepath" =>  $join(includeDirs, "-I"),
-    "libs" =>  $join(libDirs, (isNMake ? "/libpath:" : "-L") + join($libs) + join($importLibs)),
+    "extdirobjs" =>  join(externaldirobjs),
+    "extdirtstamps" =>  join(externaldirtstamps),
+    "extraobjs" =>  join(externalObjects),
+    "includepath" =>  join(includeDirs, "-I"),
+    "libs" =>  join(libDirs, (isNMake ? "/libpath:" : "-L") + join($libs) + join($importLibs)),
     "link-o" =>  $isNMake ? "/out:" : "-o",
     "makecommand" =>  $makecommand,
     "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
     "makefrags" =>  $makefrags,
     "msgccandhfiles" =>  $msgccandhfiles,
     "msgfiles" =>  $msgfiles,
-    "objs" =>  $join(objs),
+    "objs" =>  join(objs),
     "hassubdir" =>  @subdirs != (),
-    "subdirs" =>  $join(subdirs),
-    "subdirtargets" =>  $join(subdirTargets),
+    "subdirs" =>  join(subdirs),
+    "subdirtargets" =>  join(subdirTargets),
     "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
     "dllexportmacro" =>  $exportDefOpt==null ? "" : ("-P" + $exportDefOpt),
 );
@@ -643,6 +638,14 @@ sub quote($)
     my($dir) = @_;
     if ($dir =~ / /) {$dir = "\"$dir\"";}
     return $dir;
+}
+
+sub readTextFile($)
+{
+    my($file) = @_;
+    open(INFILE, $file) || die "cannot open $file";
+    read(INFILE, $content, 1000000000) || die "cannot read $file";
+    return $content;
 }
 
 sub error($)
