@@ -28,6 +28,8 @@ if ($isWindows && $ENV{OS} ne "Windows_NT") {
     error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
 }
 
+$isNMake = 1;
+
 #
 # process command line args
 #
@@ -168,15 +170,14 @@ while (@ARGV)
     }
 }
 
-$makefile = $nmake ? "Makefile.vc" : "Makefile";
+$makefile = $isNMake ? "Makefile.vc" : "Makefile";
 
 if (-f $makefile && $force ne 1)
 {
     error("use -f to force overwriting existing $makefile");
 }
 
-$makecommand = $nmake ? 'nmake /nologo /f Makefile.vc' : 'make';
-
+$makecommand = $isNMake ? 'nmake /nologo /f Makefile.vc' : 'make';
 
 #FIXME $configFile is nmake only!
 if ($configFile eq "") {
@@ -441,22 +442,21 @@ $deps = "";
     "extraobjs" =>  prefixQuoteJoin(@externalObjects),
     "includepath" =>  prefixQuoteJoin(@includeDirs, "-I"),
     "libpath" =>  prefixQuoteJoin(@libDirs, (isNMake ? "/libpath:" : "-L")),
-    "libs" =>  prefixQuoteJoin($libs),
-    "importlibs" =>  prefixQuoteJoin($importLibs),
+    "libs" =>  prefixQuoteJoin(@libs),
+    "importlibs" =>  prefixQuoteJoin(@importLibs),
     "link-o" =>  $isNMake ? "/out:" : "-o",
     "makecommand" =>  $makecommand,
     "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
     "makefrags" =>  $makefrags,
-    "msgccandhfiles" =>  $msgccandhfiles,
-    "msgfiles" =>  $msgfiles,
-    "objs" =>  prefixQuoteJoin(objs),
+    "msgccandhfiles" =>  prefixQuoteJoin(@msgccandhfiles),
+    "msgfiles" =>  prefixQuoteJoin(@msgfiles),
+    "objs" =>  prefixQuoteJoin(@objs),
     "hassubdir" =>  @subdirs != (),
-    "subdirs" =>  prefixQuoteJoin(subdirs),
-    "subdirtargets" =>  prefixQuoteJoin(subdirTargets),
+    "subdirs" =>  prefixQuoteJoin(@subdirs),
+    "subdirtargets" =>  prefixQuoteJoin(@subdirTargets),
     "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
     "dllexportmacro" =>  $exportDefOpt==null ? "" : ("-P" + $exportDefOpt),
 );
-
 
 $content = substituteIntoTemplate(template(), \%m, "{", "}");
 
@@ -564,7 +564,7 @@ sub prefixQuoteJoin($,$)
     my($listref,$prefix) = @_;
     @list = @$listref;
     $result = "";
-    foreach $i : (@list) {
+    foreach $i (@list) {
         $result .= " " . $prefix . quote($i);
     }
     return $result eq "" ? "" : substr($result, 1); # chop off leading space
