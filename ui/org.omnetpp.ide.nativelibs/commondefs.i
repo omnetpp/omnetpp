@@ -115,3 +115,21 @@
 %}
 %enddef // COMMON_ENGINE_BIGDECIMAL
 
+/*
+ *
+ */
+%define ADD_CPTR_EQUALS_AND_HASHCODE(CLASS)
+%typemap(javacode) CLASS %{
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null || this.getClass() != obj.getClass())
+      return false;
+    return getCPtr(this) == getCPtr((CLASS)obj);
+  }
+
+  public int hashCode() {
+    return (int)getCPtr(this);
+  }
+%}
+%enddef 

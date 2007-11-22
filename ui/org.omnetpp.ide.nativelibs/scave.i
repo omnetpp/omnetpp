@@ -155,26 +155,6 @@ namespace std {
 %include "enumtype.h"
 
 
-%typemap(javacode) IDList %{
-    public static final IDList EMPTY = new IDList();
-
-    public void swigDisown() {
-        swigCMemOwn = false;
-    }
-    public Long[] toArray() {
-        int sz = (int) size();
-        Long[] array = new Long[sz];
-        for (int i=0; i<sz; i++)
-            array[i] = Long.valueOf(get(i));
-        return array;
-    }
-    public static IDList fromArray(Long[] array) {
-        IDList list = new IDList();
-        for (int i=0; i<array.length; i++)
-            list.add(array[i].longValue());
-        return list;
-    }
-%}
 
 /*---------------------------------------------------------------------------
  *                    ResultFileManager
@@ -240,8 +220,6 @@ namespace std {
 
 // FIXME add %newobject where needed!
 
-%ignore ResultFileManager::dump;
-
 //
 // By default, string members get wrapped with get/set using *pointers* to strings.
 // This is not too nice, so override it by defining proper getter/setter methods,
@@ -262,21 +240,6 @@ namespace std {
 }
 %enddef
 
-FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
-FIX_STRING_MEMBER(ResultFile, directory, Directory);
-FIX_STRING_MEMBER(ResultFile, fileName, FileName);
-FIX_STRING_MEMBER(ResultFile, fileSystemFilePath, FileSystemFilePath);
-
-//FIX_STRING_MEMBER(Run, networkName, NetworkName);
-//FIX_STRING_MEMBER(Run, date, Date);
-FIX_STRING_MEMBER(Run, runName, RunName);
-//FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
-//FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
-//FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
-//FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
-
-FIX_STRING_MEMBER(VectorResult, columns, Columns);
-%ignore VectorResult::stat;
 
 //
 // addComputedVector
@@ -325,6 +288,45 @@ FIX_STRING_MEMBER(VectorResult, columns, Columns);
 %enddef
 
 
+
+// Java doesn't appear to have dictionary sort, export it
+int strdictcmp(const char *s1, const char *s2);
+
+/* ------------- statistics.h  ----------------- */
+%include "statistics.h"
+
+/* ------------- idlist.h  ----------------- */
+
+%typemap(javacode) IDList %{
+    public static final IDList EMPTY = new IDList();
+
+    public void swigDisown() {
+        swigCMemOwn = false;
+    }
+    public Long[] toArray() {
+        int sz = (int) size();
+        Long[] array = new Long[sz];
+        for (int i=0; i<sz; i++)
+            array[i] = Long.valueOf(get(i));
+        return array;
+    }
+    public static IDList fromArray(Long[] array) {
+        IDList list = new IDList();
+        for (int i=0; i<array.length; i++)
+            list.add(array[i].longValue());
+        return list;
+    }
+%}
+
+%include "idlist.h"
+
+/* ------------- resultfilemanager.h  ----------------- */
+%ignore ResultFileManager::dump;
+%ignore VectorResult::stat;
+%ignore ResultFile::id;
+%ignore ResultFile::scalarResults;
+%ignore ResultFile::vectorResults;
+
 %rename FileRun::fileRef file;
 %rename FileRun::runRef run;
 %rename ResultItem::fileRunRef fileRun;
@@ -336,57 +338,23 @@ FIX_STRING_MEMBER(VectorResult, columns, Columns);
    std::string getName() {return *self->nameRef;}
 }
 
-%ignore ResultFile::id;
-%ignore ResultFile::scalarResults;
-%ignore ResultFile::vectorResults;
+FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
+FIX_STRING_MEMBER(ResultFile, directory, Directory);
+FIX_STRING_MEMBER(ResultFile, fileName, FileName);
+FIX_STRING_MEMBER(ResultFile, fileSystemFilePath, FileSystemFilePath);
+//FIX_STRING_MEMBER(Run, networkName, NetworkName);
+//FIX_STRING_MEMBER(Run, date, Date);
+FIX_STRING_MEMBER(Run, runName, RunName);
+//FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
+//FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
+//FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
+//FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
+FIX_STRING_MEMBER(VectorResult, columns, Columns);
 
-%typemap(javacode) ResultFile %{
-    public boolean equals(Object obj) {
-        return (obj instanceof ResultFile) && getCPtr(this)==getCPtr((ResultFile)obj);
-    }
-    public int hashCode() {
-        return (int)getCPtr(this);
-    }
-%}
-
-%typemap(javacode) Run %{
-    public boolean equals(Object obj) {
-        return (obj instanceof Run) && getCPtr(this)==getCPtr((Run)obj);
-    }
-    public int hashCode() {
-        return (int)getCPtr(this);
-    }
-%}
-
-%typemap(javacode) FileRun %{
-    public boolean equals(Object obj) {
-        return (obj instanceof FileRun) && getCPtr(this)==getCPtr((FileRun)obj);
-    }
-    public int hashCode() {
-        return (int)getCPtr(this);
-    }
-%}
-
-%typemap(javacode) OutputVectorEntry %{
-   public boolean equals(Object obj) {
-      return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
-   }
-
-   public int hashCode() {
-      return (int)getCPtr(this);
-   }
-%}
-
-// Java doesn't appear to have dictionary sort, export it
-int strdictcmp(const char *s1, const char *s2);
-
-/* ------------- statistics.h  ----------------- */
-%include "statistics.h"
-
-/* ------------- idlist.h  ----------------- */
-%include "idlist.h"
-
-/* ------------- resultfilemanager.h  ----------------- */
+ADD_CPTR_EQUALS_AND_HASHCODE(ResultFile);
+ADD_CPTR_EQUALS_AND_HASHCODE(Run);
+ADD_CPTR_EQUALS_AND_HASHCODE(FileRun);
+ADD_CPTR_EQUALS_AND_HASHCODE(ResultItem);
 CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 %include "resultfilemanager.h"
 
@@ -399,7 +367,7 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
 %include scave-plove.i
 
-/* ------------- indexedvectorfile.h  ----------------- */
+/* ------------- indexfile.h  ----------------- */
 // %include "indexfile.h"
 class IndexFile
 {
@@ -416,6 +384,16 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 %include "vectorfileindexer.h"
 
 /* ------------- indexedvectorfile.h  ----------------- */
+
+%typemap(javacode) OutputVectorEntry %{
+   public boolean equals(Object obj) {
+      return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
+   }
+
+   public int hashCode() {
+      return getSerial();
+   }
+%}
 
 namespace std {
   %template(EntryVector) vector<OutputVectorEntry>;
