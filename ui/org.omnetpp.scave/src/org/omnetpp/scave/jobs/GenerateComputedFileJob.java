@@ -1,6 +1,7 @@
 package org.omnetpp.scave.jobs;
 
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -10,7 +11,6 @@ import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ProcessingOp;
-import org.omnetpp.scave.model2.ComputedResultFileLocator;
 import org.omnetpp.scave.model2.DataflowNetworkBuilder;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionCallback;
@@ -24,7 +24,6 @@ public class GenerateComputedFileJob extends WorkspaceJob
 {
 	private static final boolean debug = false;
 	
-	String fileName;
 	ProcessingOp operation;
 	ResultFileManager manager;
 	CompletionCallback callback;
@@ -32,14 +31,10 @@ public class GenerateComputedFileJob extends WorkspaceJob
 	
 	public GenerateComputedFileJob(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
 		super("Generate computed file");
+		Assert.isNotNull(operation.getComputedFile());
 		this.operation = operation;
 		this.manager = manager;
 		this.callback = callback;
-		this.fileName = ComputedResultFileLocator.instance().getFileNameFor(operation);
-	}
-	
-	public String getFileName() {
-		return fileName;
 	}
 	
 	public ProcessingOp getOperation() {
@@ -56,9 +51,6 @@ public class GenerateComputedFileJob extends WorkspaceJob
 			if (monitor != null)
 				monitor.beginTask("Generate computed file", IProgressMonitor.UNKNOWN);
 			
-			if (fileName == null)
-				return ScavePlugin.getErrorStatus(0, "Cannot locate file for the operation.", null);
-			
 			Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
 			if (dataset == null)
 				return ScavePlugin.getErrorStatus(0, "Operation removed from the dataset.", null);
@@ -67,7 +59,7 @@ public class GenerateComputedFileJob extends WorkspaceJob
 				monitor.subTask("Build dataflow network");
 
 			DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-			DataflowManager network = builder.build(dataset, operation, fileName);
+			DataflowManager network = builder.build(dataset, operation, operation.getComputedFile());
 			if (debug)
 				network.dump();
 			
@@ -75,14 +67,12 @@ public class GenerateComputedFileJob extends WorkspaceJob
 				monitor.subTask("Execute dataflow network");
 			network.execute(monitor);
 			
-			operation.setComputedFile(fileName);
-			
 			if (monitor != null && monitor.isCanceled())
 				return Status.CANCEL_STATUS;
-			else
-				return Status.OK_STATUS;
+			
+			operation.setComputedFileUpToDate(true);
+			return Status.OK_STATUS;
 		} catch (Exception e) {
-			ScavePlugin.logError(e);
 			return ScavePlugin.getErrorStatus(e);
 		}
 		finally {

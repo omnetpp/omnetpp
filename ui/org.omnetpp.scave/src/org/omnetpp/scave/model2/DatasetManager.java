@@ -481,10 +481,10 @@ public class DatasetManager {
 		long computationID = getFilterNodeID(operation);
 		long id = manager.getComputedVector(computationID, inputID);
 		if (id == -1) {
-			System.out.format("Add computed vector: (%x,%x)%n", computationID, inputID);
+			//System.out.format("Add computed vector: (%x,%x)%n", computationID, inputID);
 			VectorResult vector = manager.getVector(inputID);
 			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
-			String fileName = ComputedResultFileLocator.instance().getFileNameFor(operation);
+			String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);
 			id = manager.addComputedVector(name, fileName, computationID, inputID, operation);
 		}
 		return id;

@@ -16,7 +16,8 @@ public class RefreshComputedDataFileAction extends AbstractScaveAction {
 		if (selection != null && selection.getFirstElement() instanceof ProcessingOp)
 		{
 			ProcessingOp selected = (ProcessingOp)selection.getFirstElement();
-			ComputedResultFileUpdater.instance().updateComputedFile(selected, scaveEditor.getResultFileManager(), null);
+			selected.setComputedFileUpToDate(false);
+			ComputedResultFileUpdater.instance().ensureComputedFile(selected, scaveEditor.getResultFileManager(), null);
 		}
 	}
 

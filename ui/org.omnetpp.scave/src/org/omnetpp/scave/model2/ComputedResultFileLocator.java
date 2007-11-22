@@ -1,10 +1,11 @@
 package org.omnetpp.scave.model2;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourceAttributes;
@@ -16,6 +17,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.omnetpp.scave.model.ProcessingOp;
 
+/**
+ * Implementation of the computed file naming policy.
+ *
+ * @author tomi
+ */
 public class ComputedResultFileLocator {
 	
 	private static final ComputedResultFileLocator instance = new ComputedResultFileLocator();
@@ -26,16 +32,21 @@ public class ComputedResultFileLocator {
 		return instance;
 	}
 	
-	public String getFileNameFor(ProcessingOp operation) {
+	public String getComputedFile(ProcessingOp operation) {
+		if (operation.getComputedFile() != null)
+			return operation.getComputedFile();
+		
 		URI uri = getResourceURI(operation);
 		if (uri != null) {
-			String fileName = String.format("%08x.vec", operation.hashCode());
-			if (uri.isFile()) {
-				return getFileNameFor(uri, fileName).toOSString();
-			}
-			else if (uri.isPlatform()) {
-				IPath path = new Path(uri.toPlatformString(true));
-				return getFileNameFor(path, fileName).toOSString();
+			IPath dirPath = getComputedFileDirectory(uri);
+			if (dirPath != null) {
+				try {
+					File file = File.createTempFile("computed", ".vec", dirPath.toFile());
+					operation.setComputedFile(file.getAbsolutePath());
+					operation.setComputedFileUpToDate(false);
+					file.deleteOnExit();
+					return file.getAbsolutePath();
+				} catch (IOException e) {}
 			}
 		}
 		return null;
@@ -51,40 +62,34 @@ public class ComputedResultFileLocator {
 		return uri;
 	}
 	
-	private IPath getFileNameFor(URI uri, String fileName) {
-		try {
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			IFile[] files = root.findFilesForLocationURI(new java.net.URI(uri.toString()));
-	
-			if (files.length > 0) {
-				IFile file = files[0];
-				IFolder folder = ensureComputedFolder(file.getProject());
-				if (folder != null) {
-					return folder.getLocation().append(fileName);
-				}
+	private IPath getComputedFileDirectory(URI uri) {
+		if (uri.isFile()) {
+			try {
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				IFile[] files = root.findFilesForLocationURI(new java.net.URI(uri.toString()));
+				if (files.length > 0)
+					return getComputedFileDirectory(files[0]);
 			}
+			catch (URISyntaxException e) {
+			}
+			
+			// Hmm, file not found in the workspace
+			// save the computed file in the same directory as the analysis file.
+			IPath filePath = new Path(uri.toFileString());
+			return filePath.removeLastSegments(1);
 		}
-		catch (URISyntaxException e) {
+		else if (uri.isPlatform()) {
+			IPath workspacePath = new Path(uri.toPlatformString(true));
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IFile file = root.getFile(workspacePath);
+			return getComputedFileDirectory(file);
 		}
-		
-		IPath filePath = new Path(uri.toFileString());
-		return filePath.removeLastSegments(1).append(fileName);
+		else
+			return null;
 	}
 	
-	private IPath getFileNameFor(IPath workspacePath, String fileName) {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IFile file = root.getFile(workspacePath);
-
-		IFolder folder = ensureComputedFolder(file.getProject());
-		if (folder != null) {
-			return folder.getLocation().append(fileName);
-		}
-		
-		return file.getLocation().removeLastSegments(1).append(fileName);
-	}
-	
-	private IFolder ensureComputedFolder(IProject project) {
-		IFolder folder = project.getFolder(".computed");
+	private IPath getComputedFileDirectory(IFile file) {
+		IFolder folder = file.getProject().getFolder(".computed");
 		if (!folder.exists()) {
 			try {
 				folder.create(IResource.DERIVED, true, null);
@@ -93,9 +98,26 @@ public class ComputedResultFileLocator {
 				folder.setResourceAttributes(attributes);
 			}
 			catch (CoreException e) {
-				return null;
 			}
 		}
-		return folder;
+		
+		IPath dirPath = null;
+		if (checkFolder(folder))
+			dirPath = folder.getLocation();
+		else {
+			IPath path = file.getLocation().removeLastSegments(1);
+			if (checkFolder(path))
+				dirPath = path;
+		}
+		return dirPath;
+	}
+	
+	private boolean checkFolder(IFolder folder) {
+		return folder.exists() && checkFolder(folder.getLocation());
+	}
+	
+	private boolean checkFolder(IPath folder) {
+		File file = folder.toFile();
+		return file.exists() && file.canWrite();
 	}
 }

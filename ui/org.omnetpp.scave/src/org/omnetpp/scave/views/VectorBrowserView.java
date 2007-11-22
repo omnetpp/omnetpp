@@ -162,45 +162,44 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			Object computation = selectedVector.getComputation(); 
 			if (computation instanceof ProcessingOp) {
 				ProcessingOp operation =  (ProcessingOp)computation;
-				
 				VectorResult origInput = (VectorResult)viewer.getInput();
-				ProcessingOp origOperation = (ProcessingOp)origInput.getComputation();
-				
-				boolean uptoDate;
-				if (operation == origOperation && operation.getComputedFile() != null)
-					uptoDate = true;
-				else {
+				if (origInput == null || operation != origInput.getComputation() ||
+						operation.getComputedFile() == null || !operation.isComputedFileUpToDate()) {
 					setViewerInput((VectorResult)null);
 					showMessage("Computing vectors...");
 					final VectorResult finalVector = selectedVector;
-					uptoDate = ComputedResultFileUpdater.instance().ensureComputedFile(
-							operation,
-							manager,
-							new ComputedResultFileUpdater.CompletionCallback() {
-								public void completed(CompletionEvent event) {
-									final int severity = event.getStatus().getSeverity();
+					ComputedResultFileUpdater.instance().ensureComputedFile(operation, manager,
+						new ComputedResultFileUpdater.CompletionCallback() {
+							public void completed(final CompletionEvent event) {
+								if (Display.getCurrent() == null) {
 									Display.getDefault().asyncExec(new Runnable() {
 										public void run() {
-											if (severity == IStatus.OK)
-												setViewerInput(finalVector);
-											else if (severity == IStatus.CANCEL)
-												showMessage("Canceled");
-											else if (severity == IStatus.ERROR)
-												showMessage("Failed");
+											setViewerInputOrMessage(finalVector, event.getStatus());
 										}
 									});
 								}
-							});
-				}
-				if (!uptoDate) // input will be set by the callback
+								else
+									setViewerInputOrMessage(finalVector, event.getStatus());
+							}
+						});
 					return;
+				}
 			}
 			else
 				selectedVector = null;
 		}
 		
 		setViewerInput(selectedVector);
-		
+	}
+	
+	public void setViewerInputOrMessage(VectorResult input, IStatus status) {
+		final int severity = status.getSeverity();
+		if (severity == IStatus.OK)
+			setViewerInput(input);
+		else if (severity == IStatus.CANCEL)
+			showMessage("Canceled");
+		else if (severity == IStatus.ERROR)
+			showMessage("Failed: " + status.getMessage());
 	}
 	
 	protected void setViewerInput(VectorResult input) {

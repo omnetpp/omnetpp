@@ -422,8 +422,8 @@ public class DataflowNetworkBuilder {
 			super("indexedvectorfilewriter", new StringMap());
 			attrs.set("filename", fileName);
 			attrs.set("indexfilename", IndexFile.getIndexFileName(fileName));
-			attrs.set("blocksize", "1024");
-			attrs.set("fileheader", "# ...");
+			attrs.set("blocksize", "32768");
+			attrs.set("fileheader", "# computed vector file");
 		}
 		
 		public PortWrapper addInputPort(long id, int vectorId, String module, String vector, String columns) {
