@@ -1,3 +1,6 @@
+opp_(n)makemake: unified unix and windows versions in a new template substitution
+based implementation
+
 opp_(n)makemake: dropped -N option, and made dynamic NED loading the default
 opp_(n)makemake: default is linking with BOTH cmdenv and tkenv -- use -u runtime option to choose
 opp_makedep: --objdir option changed to --objprefix (also available as -P)
