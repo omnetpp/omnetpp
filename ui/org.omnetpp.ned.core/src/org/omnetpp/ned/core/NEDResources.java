@@ -199,6 +199,16 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedFiles.keySet();
     }
 
+    public synchronized Set<IFile> getNedFiles(IProject project) {
+        Set<IFile> files = new HashSet<IFile>();
+        
+        for (IFile file : nedFiles.keySet())
+            if (project.equals(file.getProject()))
+                files.add(file);
+        
+        return files;
+    }
+
     public synchronized boolean containsNedFileElement(IFile file) {
         return nedFiles.containsKey(file);
     }

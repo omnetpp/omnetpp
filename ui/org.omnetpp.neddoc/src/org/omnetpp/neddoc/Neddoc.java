@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.resources.IFile;
@@ -25,14 +27,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.image.export.PNGImageExporter;
 import org.omnetpp.common.util.CollectionUtils;
-import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
@@ -54,7 +57,7 @@ public class Neddoc {
     
     private IProgressMonitor monitor;
 
-    private File outputFileName;
+    private File outputFile;
 
     private Map<File, FileOutputStream> outputStreams = new HashMap<File, FileOutputStream>();
     
@@ -79,32 +82,18 @@ public class Neddoc {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     Neddoc.this.monitor = monitor;
-                    monitor.beginTask("Generating neddoc...", IProgressMonitor.UNKNOWN);
                     ensureEmptyNeddoc();
-                    collectNedTypes();
-                    collectSubtypesMap();
-                    collectImplementorsMap();
-                    collectUsersMap();
+                    collectMaps();
                     generateCSS();
                     generateHTMLFrame();
                     generateFileList();
                     generateSelectedTopics();
-                    generateChannelIndex();
-                    generateChannelInterfaceIndex();
-                    generateModuleInterfaceIndex();
-                    generateSimpleModuleIndex();
-                    generateCompoundModuleIndex();
-                    generateAllModuleIndex();
-                    generateNetworkIndex();
-                    generateMessageIndex();
-                    generateClassIndex();
-                    generateStructIndex();
-                    generateEnumIndex();
-                    genereteTypeDiagrams();
+                    generateIndexPages();
+//                    genereteTypeDiagrams();
                     generateNedFilePages();
                     generateNedTypePages();
                     monitor.done();
-                    
+
                     return Status.OK_STATUS;
                 }
                 catch (Exception e) {
@@ -128,13 +117,28 @@ public class Neddoc {
     }
 
     private void ensureEmptyNeddoc() throws CoreException {
+        monitor.beginTask("Emptying neddoc...", IProgressMonitor.UNKNOWN);
+        
         for (File file : new File(neddocPath.getLocation().toString()).listFiles())
             file.delete();
 
         if (!neddocPath.exists())
             neddocPath.create(true , true, null);
+
+        monitor.done();
     }
     
+    private void collectMaps() {
+        monitor.beginTask("Collecting ned files...", IProgressMonitor.UNKNOWN);
+
+        collectNedTypes();
+        collectSubtypesMap();
+        collectImplementorsMap();
+        collectUsersMap();
+        
+        monitor.done();
+    }
+
     private void collectNedTypes() {
         typeElements = new ArrayList<INedTypeElement>();
 
@@ -193,6 +197,125 @@ public class Neddoc {
                 usersMap.put(usedType, users);
             }
         }
+    }
+
+    Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
+
+    private String processHTMLContent(String html) {
+        Matcher matcher = preSpanPattern.matcher(html);
+        StringBuffer buffer = new StringBuffer();
+
+        while (matcher.find())
+        {
+            String clazz = matcher.group(2);
+            String comment = matcher.group(3);
+
+            // add sentries to facilitate processing
+            comment = "\n\n" + comment + "\n\n";
+
+            // remove '//#' lines (those are comments to be ignored by documentation generation)
+            comment = comment.replaceAll("(?s)\n *//#.*?\n", "\n");
+
+            // remove '// ', '/// ' and '//////...' from beginning of lines
+            comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");     
+
+            // extract existing <pre> sections to prevent tampering inside them
+            // TODO: $comment =~ s|&lt;pre&gt;(.*?)&lt;/pre&gt;|$pre{++$ctr}=$1;"<pre$ctr>"|gse;
+
+            // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
+            comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
+
+            // lines outside <pre> containing whitespace only count as blank
+            comment = comment.replaceAll("(?s)\n[ \t]+\n", "\n\n");
+
+            // insert blank line (for later processing) in front of lines beginning with '- ' or '-# '
+            comment = comment.replaceAll("(?s)\n( *-#? )", "\n\n$1");
+
+            // if briefcomment, keep only the 1st paragraph
+            if (clazz.equals("briefcomment")) {
+               comment = comment.replaceAll("(?s)(.*?[^ \t\n].*?)\n\n.*", "$1\n\n");
+            }
+
+            // format @author, @date, @todo, @bug, @see, @since, @warning, @version
+            comment = comment.replaceAll("@author\\b", "\n\n<b>Author:</b>");
+            comment = comment.replaceAll("@date\\b", "\n\n<b>Date:</b>");
+            comment = comment.replaceAll("@todo\\b", "\n\n<b>TODO:</b>");
+            comment = comment.replaceAll("@bug\\b", "\n\n<b>BUG:</b>");
+            comment = comment.replaceAll("@see\\b", "\n\n<b>See also:</b>");
+            comment = comment.replaceAll("@since\\b", "\n\n<b>Since:</b>");
+            comment = comment.replaceAll("@warning\\b", "\n\n<b>WARNING:</b>");
+            comment = comment.replaceAll("@version\\b", "\n\n<b>Version:</b>");
+            comment = comment.replaceAll("\n\n\n+", "\n\n");
+
+            // wrap paragraphs NOT beginning with '-' into <p></p>.
+            // well, we should write "paragraphs not beginning with '- ' or '-# '", but
+            // how do you say that in a Perl regex?
+            // (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
+            // see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
+            comment = comment.replaceAll("(?s)\n\n[ \t]*([^- \t\n].*?)\n\n", "\n<p>$1</p>\n");
+
+            // wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
+            // every 3 spaces increase indent level by one.
+            comment = comment.replaceAll("(?s)\n\n          *-[ \t]+(.*?)\n\n", "\n\n  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>\n\n");
+            comment = comment.replaceAll("(?s)\n\n       *-[ \t]+(.*?)\n\n", "\n\n  <ul><ul><ul><li>$1</li></ul></ul></ul>\n\n");
+            comment = comment.replaceAll("(?s)\n\n    *-[ \t]+(.*?)\n\n", "\n\n  <ul><ul><li>$1</li></ul></ul>\n\n");
+            comment = comment.replaceAll("(?s)\n\n *-[ \t]+(.*?)\n\n", "\n\n  <ul><li>$1</li></ul>\n\n");
+            for (int i = 0; i < 4; i++) {
+                comment = comment.replaceAll("(?s)</ul>[ \t\n]*<ul>", "\n\n  ");
+            }
+
+            // wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
+            // every 3 spaces increase indent level by one.
+            comment = comment.replaceAll("(?s)\n\n          *-#[ \t]+(.*?)\n\n", "\n\n  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>\n\n");
+            comment = comment.replaceAll("(?s)\n\n       *-#[ \t]+(.*?)\n\n", "\n\n  <ol><ol><ol><li>$1</li></ol></ol></ol>\n\n");
+            comment = comment.replaceAll("(?s)\n\n    *-#[ \t]+(.*?)\n\n", "\n\n  <ol><ol><li>$1</li></ol></ol>\n\n");
+            comment = comment.replaceAll("(?s)\n\n *-#[ \t]+(.*?)\n\n", "\n\n  <ol><li>$1</li></ol>\n\n");
+            for (int i = 0; i < 4; i++) {
+                comment = comment.replaceAll("(?s)</ol>[ \t\n]*<ol>", "\n\n  ");
+            }
+
+            // now we can put back <pre> regions
+            // TODO: $comment =~ s|\<pre(\d+)\>|'<pre>'.$pre{$1}.'</pre>'|gse;
+
+            // now we can trim excess blank lines
+            comment = comment.replaceAll("\n\n+", "\n");
+
+            // restore accented characters e.g. "&ouml;" from their "&amp;ouml;" forms
+            // TODO: $comment =~ s|&amp;([a-z]+);|&\1;|gsi;
+
+            // restore " from &quot; (important for attrs of html tags, see below)
+            // TODO: $comment =~ s|&quot;|"|gsi;
+
+            // extract <nohtml> sections to prevent substituting inside them;
+            // also backslashed words to prevent putting hyperlinks on them
+            // TODO: $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
+            // TODO: $comment =~ s|(\\[a-z_]+)|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
+            
+            // decode certain HTML tags: <i>,<b>,<br>,...
+            // TODO: $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
+            // TODO: $comment =~ s!&lt;(($tags)( [^\n]*?)?)&gt;!<\1>!gsi;
+            // TODO: $comment =~ s!&lt;(/($tags))&gt;!<\1>!gsi;
+            
+            // put hyperlinks on module names, etc.
+            // TODO: $names = join('|',@components);
+            // TODO: $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse unless($names eq '');
+            
+            // put back <nohtml> sections and backslashed words
+            // TODO: $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
+
+            // remove backslashes; double backslashes become single ones
+            comment = comment.replaceAll("\\\\(.)", "$1");
+
+            // escape $ signs to avoid referring groups in appendReplacement
+            comment = comment.replace("$", "\\$");
+            
+            // finished with this comment, put it back into original html file
+            matcher.appendReplacement(buffer, comment);
+        }
+
+        matcher.appendTail(buffer);
+
+        return buffer.toString();
     }
     
     private void generateCSS() throws IOException {
@@ -256,6 +379,24 @@ public class Neddoc {
         });
     }
     
+    private void generateIndexPages() throws Exception {
+        monitor.beginTask("Generating index pages...", IProgressMonitor.UNKNOWN);
+
+        generateChannelIndex();
+        generateChannelInterfaceIndex();
+        generateModuleInterfaceIndex();
+        generateSimpleModuleIndex();
+        generateCompoundModuleIndex();
+        generateAllModuleIndex();
+        generateNetworkIndex();
+        generateMessageIndex();
+        generateClassIndex();
+        generateStructIndex();
+        generateEnumIndex();
+
+        monitor.done();
+    }
+
     private void generateNavigationBar(String where) throws IOException {
         out("<p class=\"navbar\">\r\n");
         generateNavigationBarLink("selected topics", where);
@@ -316,6 +457,10 @@ public class Neddoc {
 
     private void generateSelectedTopics() throws Exception {
         withGeneratingNavigationHTMLFile("selected topics", new Runnable() {
+            private Pattern externalPagesPattern = Pattern.compile("(?m)@externalpage (.*?), *(.*)");
+
+            private Pattern pagePattern = Pattern.compile("(?s) +(.*?), *(.*?)\n(.*)");
+
             public void run() throws Exception {
                 out("<li><a href=\"overview.html\" target=\"mainframe\">HOME</a></li>\r\n");
         
@@ -324,13 +469,44 @@ public class Neddoc {
                         "<li><a href=\"class-inheritance-diagram.html\" target=\"mainframe\">Class Inheritance Diagram</a></li>\r\n"); 
                 
                 out("</ul>\r\n<ul>\r\n");
-//                    "   <xsl:for-each select=\"//ned-file/comment/@content[contains(.,\'@page\') or contains(.,\'@externalpage\')]\">\r\n" + 
-//                    "      <xsl:call-template name=\"do-extract-pageindex\">\r\n" + 
-//                    "         <xsl:with-param name=\"comment\" select=\".\"/>\r\n" + 
-//                    "      </xsl:call-template>\r\n" + 
-//                    "   </xsl:for-each>\r\n" + 
+
+                for (IFile file : resources.getNedFiles(project)) {
+                    String comment = resources.getNedFileElement(file).getComment();
+
+                    if (comment != null) {
+                        Matcher matcher = externalPagesPattern.matcher(comment);
+                        while (matcher.find())
+                            generatePageReference(matcher.group(1), matcher.group(2));
+                        comment = comment.replaceAll("(?m)@externalpage .*?\n", "");
+
+                        if (comment.contains("@page") || comment.contains("@titlepage")) {
+                            String[] pages = comment.split("@page|@titlepage");
+                            for (String page : pages) {
+                                matcher = pagePattern.matcher(page);
+        
+                                if (matcher.matches()) {
+                                    generatePageReference(matcher.group(1), matcher.group(2));
+                                    withGeneratingHTMLFile(matcher.group(1), 
+                                        processHTMLContent("<h2>" + matcher.group(2) + "</h2>" +
+                                                           "<pre class=\"comment\">" + matcher.group(3) + "</pre>"));
+                                }
+                                else if (page.charAt(0) == '\n')
+                                    withGeneratingHTMLFile("overview.html", 
+                                        processHTMLContent("<pre class=\"comment\">" + page + "</pre>" +
+                                                           "<hr/>\r\n" + 
+                                                           "<p>Generated by neddoc.</p>\r\n"));
+                            }
+                        }
+                    }
+                }
             }
         });
+    }
+    
+    private void generatePageReference(String fileName, String title) throws IOException {
+        out("<li>\r\n" + 
+            "   <a href=\"" + fileName + "\" target=\"mainframe\">" + title + "</a>\r\n" + 
+            "</li>\r\n");
     }
     
     private void generateTypeIndexEntry(INedTypeElement typeElement) throws Exception {
@@ -412,6 +588,8 @@ public class Neddoc {
     }
     
     private void generateNedFilePages() throws Exception {
+        monitor.beginTask("Generating ned file pages...", IProgressMonitor.UNKNOWN);
+
         for (final IFile file : resources.getNedFiles(project)) {
             withGeneratingHTMLFile(getFileName(file), new Runnable() {
                 public void run() throws IOException {
@@ -432,25 +610,121 @@ public class Neddoc {
                 }
             });
         }
+
+        monitor.done();
     }
     
     private void generateNedTypePages() throws Exception {
-        for (IFile file : resources.getNedFiles(project)) {
+        monitor.beginTask("Generating ned type pages...", IProgressMonitor.UNKNOWN);
+
+        for (final IFile file : resources.getNedFiles(project)) {
             for (final INedTypeElement typeElement : resources.getNedFileElement(file).getTopLevelTypeNodes()) {
                 withGeneratingHTMLFile(getFileName(typeElement), new Runnable() {
                     public void run() throws Exception {
-                        out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n"); 
-                        generateTypeDiagram(typeElement);
-                        generateUsageDiagram(typeElement);
-                        generateInheritanceDiagram(typeElement);
+                        out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
+                        generateFileReference(file);
+                        
+                        if (typeElement instanceof SimpleModuleElementEx)
+                            generateCppDefinitionReference(typeElement);
+
+                        String comment = typeElement.getComment();
+                        if (comment != null)
+                            out(processHTMLContent("<pre class=\"comment\">" + comment + "</pre>"));
+
+//                        generateTypeDiagram(typeElement);
+//                        generateUsageDiagram(typeElement);
+//                        generateInheritanceDiagram(typeElement);
+                        
+                        generateParametersTable(typeElement);
+
+                        if (typeElement instanceof IModuleTypeElement)
+                            generateGatesTable(typeElement);
+
                         generateNedSourceContent(typeElement);
                     }
                 });
             }
         }
+        
+        monitor.done();
+    }
+
+    private void generateParametersTable(INedTypeElement typeElement) throws IOException {
+        Map<String, ParamElementEx> paramsMap = typeElement.getParamDeclarations();
+        if (!paramsMap.isEmpty()) {
+            out("<h3 class=\"subtitle\">Parameters:</h3>\r\n" + 
+        		"<table class=\"paramtable\">\r\n" + 
+        		"   <tr>\r\n" + 
+        		"      <th>Name</th>\r\n" + 
+        		"      <th>Type</th>\r\n" + 
+        		"      <th>Description</th>\r\n" + 
+        		"   </tr>\r\n");
+            
+            for (String name : paramsMap.keySet()) {
+                ParamElementEx param = paramsMap.get(name);
+                String type = param.getAttribute(GateElementEx.ATT_TYPE);
+                if (type == null)
+                    type = "numeric";
+
+                out("<tr>\r\n" + 
+            		"   <td width=\"150\">" + name + "</td>\r\n" + 
+            		"   <td width=\"100\">\r\n" + 
+            		"      <i>" + type + "</i>\r\n" + 
+            		"   </td>\r\n" + 
+            		"   <td>");
+                generateTableComment(param.getComment());  
+        		out("</td>\r\n" + 
+            		"</tr>\r\n");
+            }
+
+            out("</table>\r\n");
+        }
+    }
+
+    private void generateGatesTable(INedTypeElement typeElement) throws IOException {
+        IModuleTypeElement module = (IModuleTypeElement)typeElement;
+
+        Map<String, GateElementEx> gatesMap = module.getGateDeclarations();
+        if (!gatesMap.isEmpty()) {
+            out("<h3 class=\"subtitle\">Gates:</h3>\r\n" + 
+                "<table class=\"paramtable\">\r\n" + 
+                "   <tr>\r\n" + 
+                "      <th>Name</th>\r\n" + 
+                "      <th>Direction</th>\r\n" + 
+                "      <th>Description</th>\r\n" + 
+                "   </tr>\r\n");
+    
+            for (String name : gatesMap.keySet()) {
+                GateElementEx gate = gatesMap.get(name);
+                out("<tr>\r\n" + 
+                    "   <td width=\"150\">" + name + (gate.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" + 
+                    "   <td width=\"100\"><i>" + gate.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" + 
+                    "   <td>");
+                generateTableComment(gate.getComment());  
+                out("</td>\r\n" +
+                    "</tr>\r\n");
+            }
+            
+            out("</table>\r\n");
+        }
+    }
+
+    private void generateTableComment(String comment) throws IOException {
+        out(processHTMLContent("<span class=\"comment\">" + comment + "</span>"));
+    }
+
+    private void generateCppDefinitionReference(INedTypeElement typeElement) throws IOException {
+        // TODO: reference
+        out("<p><b>C++ definition: <a href=\"{$doxyhtmldir}/{filename/text()}\" target=\"_top\">click here</a></b></p>\r\n");
+    }
+
+    private void generateFileReference(IFile file) throws IOException {
+        out("<p><b>File: <a href=\"" + getFileName(file) + "\">" + file.getProjectRelativePath().toString() + "</a></b></p>\r\n");
     }
 
     private void genereteTypeDiagrams() throws InterruptedException, CoreException {
+        monitor.beginTask("Generating type diagrams...", IProgressMonitor.UNKNOWN);
+
         final ExportImagesOfDiagramFilesOperation exportOperation = 
             new ExportImagesOfDiagramFilesOperation(new ArrayList<IFile>(resources.getNedFiles()),
                     new ImageExporterDescriptor() {
@@ -472,16 +746,8 @@ public class Neddoc {
                 
             }, neddocPath.getLocation(), true, null);
         exportOperation.setOverwriteMode(ExportImagesOfDiagramFilesOperation.OverwriteMode.ALL);
-        DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
-            public void run() {
-                try {
-                    exportOperation.run(monitor);
-                }
-                catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        exportOperation.run(monitor);
+
         // KLUDGE: move generated images under neddocPath
         for (IFile file : resources.getNedFiles()) {
             List<INedTypeElement> typeElements = resources.getNedFileElement(file).getTopLevelTypeNodes();
@@ -497,6 +763,8 @@ public class Neddoc {
                 }
             }
         }
+        
+        monitor.done();
     }
 
     private void appendDotNode(StringBuffer dot, INedTypeElement typeElement) {
@@ -600,7 +868,7 @@ public class Neddoc {
         
         INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
         
-        // TODO: more extends for interfaces
+        // TODO: what if there are more extends for interfaces
         if (typeInfo.getFirstExtendsRef() != null) {
             INedTypeElement extendz = typeInfo.getFirstExtendsRef();
             appendDotNode(dot, extendz);
@@ -659,8 +927,18 @@ public class Neddoc {
         out("<h3 class=\"subtitle\">Source code:</h3>\r\n" + 
             "<pre class=\"src\">" + source + "</pre>\r\n");
     }
+
+    private void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
+        withGeneratingHTMLFile(fileName, new Runnable() {
+            public void run() throws Exception {
+                out(content);
+            }
+        });
+    }
     
     private void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
+        File oldOutputFile = outputFile;
+
         setOutputFile(fileName);
         out("<html>\r\n" + 
             "   <head>\r\n" + 
@@ -670,6 +948,9 @@ public class Neddoc {
         content.run();
         out("   </body>\r\n" + 
             "</html>\r\n");
+        
+        if (oldOutputFile != null)
+            outputFile = oldOutputFile;
     }
 
     private boolean isDotAvailable() {
@@ -689,7 +970,7 @@ public class Neddoc {
                 Thread.sleep(10);
             }
             catch (InterruptedException e) {
-                // void
+                // void, ignore
             }
 
             try {
@@ -712,11 +993,11 @@ public class Neddoc {
         if (!outputStreams.containsKey(fileName))
             outputStreams.put(file, new FileOutputStream(file));
 
-        outputFileName = file;
+        outputFile = file;
     }
 
     private void out(String string) throws IOException {
-        outputStreams.get(outputFileName).write(string.getBytes());
+        outputStreams.get(outputFile).write(string.getBytes());
     }
     
     private String getFileName(IFile file) {

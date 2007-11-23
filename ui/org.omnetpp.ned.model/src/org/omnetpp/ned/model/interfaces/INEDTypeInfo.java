@@ -79,13 +79,13 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /**
      * Returns the list of interfaces this type locally implements.
      */
-	public Set<INEDTypeInfo> getLocalInterfaces();
+	public Set<INedTypeElement> getLocalInterfaces();
 
 	/**
      * Returns the list of interfaces this type and its ancestor types and
      * ancestor interfaces implement.
      */
-    public Set<INEDTypeInfo> getInterfaces();
+    public Set<INedTypeElement> getInterfaces();
 
     /** XXX ? */
     public Map<String, INEDElement> getLocalMembers();
@@ -112,7 +112,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, SubmoduleElementEx> getLocalSubmodules();
 
     /** Module and channel types used locally in this (compound module) type */
-    public Set<String> getLocalUsedTypes();
+    public Set<INedTypeElement> getLocalUsedTypes();
 
 	// same as above, for inherited members as well
 

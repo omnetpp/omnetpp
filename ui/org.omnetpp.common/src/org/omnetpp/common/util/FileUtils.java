@@ -133,12 +133,19 @@ public class FileUtils {
     		return new String(readBinaryFile(stream), charset);
     }
 
-    public static void writeBinaryFile(byte[] content, File target) throws IOException {
+    public static void writeBinaryFile(String fileName, byte[] content) throws IOException {
+        writeBinaryFile(new File(fileName), content);
+    }
+    
+    public static void writeBinaryFile(File target, byte[] content) throws IOException {
         copy(new ByteArrayInputStream(content), target);
     }
     
-    public static void writeTextFile(String content, File target) throws IOException {
-        writeBinaryFile(content.getBytes(), target);
+    public static void writeTextFile(String fileName, String content) throws IOException {
+        writeTextFile(new File(fileName), content);
     }
 
+    public static void writeTextFile(File target, String content) throws IOException {
+        writeBinaryFile(target, content.getBytes());
+    }
 }

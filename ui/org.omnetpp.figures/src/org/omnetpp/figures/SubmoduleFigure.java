@@ -76,6 +76,9 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         // use center alignment under the icon for the name
         nameFigure.setTextAlignment(PositionConstants.CENTER);
         nameFigure.setTextPlacement(PositionConstants.SOUTH);
+        
+        textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH, textFlowPage, PositionConstants.SOUTH, 0, -1);
+        rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
     }
 
     @Override
@@ -126,10 +129,8 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         add(imageFigure);
 
         // setup decorations belonging to the background decoration layer
-        if (backgroundLayer != null) {
-            backgroundLayer.add(rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER,
-                                                     rangeFigure, PositionConstants.CENTER));
-        }
+        if (backgroundLayer != null)
+            backgroundLayer.add(rangeAttachLayer);
 
         if (foregroundLayer != null) {
             // image decoration
@@ -145,9 +146,7 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
             foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH,
                                         nameFigure, PositionConstants.NORTH));
             // text comment decoration
-            foregroundLayer.add(
-                    textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH,
-                                            textFlowPage, PositionConstants.SOUTH, 0, -1));
+            foregroundLayer.add(textAttachLayer);
             // queue description
             foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH_EAST,
                     queueFigure, PositionConstants.SOUTH_WEST, 2, 0));

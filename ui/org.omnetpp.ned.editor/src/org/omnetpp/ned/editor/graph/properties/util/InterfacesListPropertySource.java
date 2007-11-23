@@ -5,7 +5,6 @@ import java.util.Set;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -24,11 +23,11 @@ public class InterfacesListPropertySource extends NedBasePropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Set<INEDTypeInfo> interfacesList = getNedTypeModel().getNEDTypeInfo().getInterfaces();
+        Set<INedTypeElement> interfacesList = getNedTypeModel().getNEDTypeInfo().getInterfaces();
 
         pdesc = new PropertyDescriptor[interfacesList.size()];
         int totalCount = 0;
-        for (INEDTypeInfo interfaceType : interfacesList) {
+        for (INedTypeElement interfaceType : interfacesList) {
             pdesc[totalCount] = new PropertyDescriptor(interfaceType, interfaceType.getName());
             pdesc[totalCount].setCategory(CATEGORY);
             pdesc[totalCount].setDescription("Interface '" + interfaceType.getName() + "' - (read only)");

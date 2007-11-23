@@ -49,7 +49,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	// local members
     protected boolean needsRefreshLocal;
-	protected Set<INEDTypeInfo> localInterfaces = new HashSet<INEDTypeInfo>();
+	protected Set<INedTypeElement> localInterfaces = new HashSet<INedTypeElement>();
 	protected Map<String, PropertyElement> localProperties = new LinkedHashMap<String, PropertyElement>();
     protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamValues = new LinkedHashMap<String, ParamElementEx>();
@@ -57,7 +57,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     protected Map<String, GateElementEx> localGateSizes = new LinkedHashMap<String, GateElementEx>();
 	protected Map<String, INedTypeElement> localInnerTypes = new LinkedHashMap<String, INedTypeElement>();
 	protected Map<String, SubmoduleElementEx> localSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
-    protected HashSet<String> localUsedTypes = new HashSet<String>();
+    protected HashSet<INedTypeElement> localUsedTypes;
 
 	// sum of all "local" stuff
 	protected Map<String, INEDElement> localMembers = new LinkedHashMap<String, INEDElement>();
@@ -65,7 +65,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	// local plus inherited
 	protected boolean needsRefreshInherited;
 	protected List<INEDTypeInfo> extendsChain = null;
-	protected Set<INEDTypeInfo> allInterfaces = new HashSet<INEDTypeInfo>();
+	protected Set<INedTypeElement> allInterfaces = new HashSet<INedTypeElement>();
 	protected Map<String, PropertyElement> allProperties = new LinkedHashMap<String, PropertyElement>();
     protected Map<String, ParamElementEx> allParams = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> allParamValues = new LinkedHashMap<String, ParamElementEx>();
@@ -73,7 +73,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     protected Map<String, GateElementEx> allGateSizes = new LinkedHashMap<String, GateElementEx>();
 	protected Map<String, INedTypeElement> allInnerTypes = new LinkedHashMap<String, INedTypeElement>();
 	protected Map<String, SubmoduleElementEx> allSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
-    protected HashSet<String> allUsedTypes = new HashSet<String>();
+    protected HashSet<INedTypeElement> allUsedTypes;
 
 	// sum of all local+inherited stuff
 	protected Map<String, INEDElement> allMembers = new LinkedHashMap<String, INEDElement>();
@@ -123,22 +123,32 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
      * Collects all type names that are used in this module (submodule and connection types)
      * @param result storage for the used types
      */
-    protected void collectTypesInCompoundModule(Set<String> result) {
+    protected void collectTypesInCompoundModule(Set<INedTypeElement> result) {
         // this is only meaningful for CompoundModules, so skip others
         if (componentNode instanceof CompoundModuleElementEx) {
         	// look for submodule types
         	INEDElement submodules = componentNode.getFirstChildWithTag(NED_SUBMODULES);
-        	if (submodules != null)
-        		for (INEDElement node : submodules)
-        			if (node instanceof SubmoduleElementEx)
-        				result.add(((SubmoduleElementEx)node).getEffectiveType());
+        	if (submodules != null) {
+        		for (INEDElement node : submodules) {
+        			if (node instanceof SubmoduleElementEx) {
+                        INedTypeElement usedType = ((SubmoduleElementEx)node).getEffectiveTypeRef();
+                        if (usedType != null)
+                            result.add(usedType);
+        			}
+        		}
+        	}
 
         	// look for connection types
         	INEDElement connections = componentNode.getFirstChildWithTag(NED_CONNECTIONS);
-        	if (connections != null)
-        		for (INEDElement node : connections)
-        			if (node instanceof ConnectionElementEx)
-        				result.add(((ConnectionElementEx)node).getEffectiveType());
+        	if (connections != null) {
+        		for (INEDElement node : connections) {
+        			if (node instanceof ConnectionElementEx) {
+        			    INedTypeElement usedType = ((ConnectionElementEx)node).getEffectiveTypeRef();
+        			    if (usedType != null)
+        			        result.add(usedType);
+        			}
+        		}
+        	}
         }
     }
 
@@ -189,7 +199,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         localSubmodules.clear();
         localInnerTypes.clear();
         localMembers.clear();
-        localUsedTypes.clear();
 
         INedTypeLookupContext parentContext = getNEDElement().getParentLookupContext();
 
@@ -201,7 +210,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
                     String extendsName = ((ExtendsElement)child).getName();
                     INEDTypeInfo extendsTypeInfo = getResolver().lookupNedType(extendsName, parentContext);
                     if (extendsTypeInfo != null)
-                        localInterfaces.add(extendsTypeInfo);
+                        localInterfaces.add(extendsTypeInfo.getNEDElement());
                 }
             }
         }
@@ -212,7 +221,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
                     String interfaceName = ((InterfaceNameElement)child).getName();
                     INEDTypeInfo interfaceTypeInfo = getResolver().lookupNedType(interfaceName, parentContext);
                     if (interfaceTypeInfo != null)
-                        localInterfaces.add(interfaceTypeInfo);
+                        localInterfaces.add(interfaceTypeInfo.getNEDElement());
                 }
         	}
         }
@@ -255,9 +264,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         localMembers.putAll(localSubmodules);
         localMembers.putAll(localInnerTypes);
 
-        // collect the types that were used in this module (meaningful only for compound modules)
-        collectTypesInCompoundModule(localUsedTypes);
-
         needsRefreshLocal = false;
 
 		//long dt = System.currentTimeMillis() - startMillis;
@@ -293,7 +299,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		allInnerTypes.clear();
 		allSubmodules.clear();
 		allMembers.clear();
-		allUsedTypes.clear();
 
 		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
@@ -301,8 +306,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		    allInterfaces.addAll(firstExtendsRef.getNEDTypeInfo().getInterfaces());
 
 		allInterfaces.addAll(localInterfaces);
-		for (INEDTypeInfo interfaceTypeInfo : localInterfaces)
-		    allInterfaces.addAll(interfaceTypeInfo.getInterfaces());
+		for (INedTypeElement interfaceTypeInfo : localInterfaces)
+		    allInterfaces.addAll(interfaceTypeInfo.getNEDTypeInfo().getInterfaces());
 
         // collect all inherited members
 		INEDTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INEDTypeInfo[]{});
@@ -318,7 +323,6 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			allInnerTypes.putAll(component.getLocalInnerTypes());
 			allSubmodules.putAll(component.getLocalSubmodules());
 			allMembers.putAll(component.getLocalMembers());
-			allUsedTypes.addAll(component.getLocalUsedTypes());
 		}
 
 		//long dt = System.currentTimeMillis() - startMillis;
@@ -332,12 +336,15 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		fullyQualifiedName = null;
         needsRefreshLocal = true;
 		needsRefreshInherited = true;
+		localUsedTypes = null;
+		allUsedTypes = null;
 	}
 
 	public void invalidateInherited() {
 		//System.out.println(getName() +  ": invalidated inherited members");
 		fullyQualifiedName = null;
 		needsRefreshInherited = true;
+		allUsedTypes = null;
 	}
 
 	public String getName() {
@@ -377,7 +384,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		return extendsChain;
 	}
 
-	public Set<INEDTypeInfo> getLocalInterfaces() {
+	public Set<INedTypeElement> getLocalInterfaces() {
 		refreshLocalMembersIfNeeded();
         return localInterfaces;
 	}
@@ -422,12 +429,17 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localMembers;
     }
 
-    public Set<String> getLocalUsedTypes() {
-    	refreshLocalMembersIfNeeded();
+    public Set<INedTypeElement> getLocalUsedTypes() {
+        if (localUsedTypes == null) { 
+            localUsedTypes = new HashSet<INedTypeElement>();
+            refreshLocalMembersIfNeeded();
+            collectTypesInCompoundModule(localUsedTypes);
+        }
+
         return localUsedTypes;
     }
 
-    public Set<INEDTypeInfo> getInterfaces() {
+    public Set<INedTypeElement> getInterfaces() {
     	refreshInheritedMembersIfNeeded();
         return allInterfaces;
     }
@@ -472,8 +484,19 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return allMembers;
     }
 
-    public Set<String> getAllUsedTypes() {
-    	refreshInheritedMembersIfNeeded();
+    public Set<INedTypeElement> getAllUsedTypes() {
+        if (allUsedTypes == null) {
+            allUsedTypes = new HashSet<INedTypeElement>();
+            refreshInheritedMembersIfNeeded();
+            INEDTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INEDTypeInfo[]{});
+            ArrayUtils.reverse(forwardExtendsChain);
+            for (INEDTypeInfo typeInfo : forwardExtendsChain) {
+                Assert.isTrue(typeInfo instanceof NEDTypeInfo);
+                NEDTypeInfo component = (NEDTypeInfo)typeInfo;
+                allUsedTypes.addAll(component.getLocalUsedTypes());
+            }
+        }
+        
         return allUsedTypes;
     }
 

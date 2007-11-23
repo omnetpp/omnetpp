@@ -26,4 +26,5 @@ Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin
 Export-Package: org.omnetpp.ned.editor,
  org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.edit,
+ org.omnetpp.ned.editor.graph.misc,
  org.omnetpp.ned.editor.text
