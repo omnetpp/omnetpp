@@ -4,24 +4,38 @@
 
 include ../../Makefile.inc
 
+ifeq ($(strip $(CONFIGNAME)),)
+O=.
+L=$(OMNETPP_LIB_DIR)
+else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/tkenv
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+endif
+
 #
 # Local definitions
 #
+LIBNAME=libtkenv
+
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV
 
-OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
-       inspfactory.o objinsp.o modinsp.o statinsp.o layouterenv.o \
-       arrow.o visitor.o tkutil.o tkImgPNG.o tkImgPNGInit.o
+IMPLIBS= -L$L -lsim_std -lenvir.lib -llayout -lcommon $(TK_LIBS) $(ZLIB_LIBS)
+
+OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o \
+       $O/inspfactory.o $O/objinsp.o $O/modinsp.o $O/statinsp.o $O/layouterenv.o \
+       $O/arrow.o $O/visitor.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc .c
 
-.c.o:
+$O/%.o: %.c
+	@mkdir -p $O
 	$(CC) -c $(COPTS) -o $@ $<
 
-.cc.o:
+$O/%.o: %.cc
+	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
 #
@@ -29,40 +43,54 @@ OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
 #
 all: $(TKENV_IF_POSSIBLE)
 
-tkenv : libtkenv$(LIB_SUFFIX)
+tkenv : $L/$(LIBNAME)$(LIB_SUFFIX)
 
-libtkenv$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libtkenv$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) libtkenv$(A_LIB_SUFFIX)
-	../utils/install-lib libtkenv$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(A_LIB_SUFFIX)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $L
+	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 
-libtkenv$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o libtkenv$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib libtkenv$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(SO_LIB_SUFFIX)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
 
-tkapp.o : tkapp.cc
-	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-tkapp-e.o : tkapp.cc  tclcode.cc
-	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o tkapp-e.o
+tkapp.cc : tclcode.cc
+
+$O/tkapp.o : tkapp.cc
+	@mkdir -p $O
+	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp.o
+
+$O/tkapp-e.o : tkapp.cc
+	@mkdir -p $O
+	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp-e.o
 
 tclcode.cc: *.tcl
-	../utils/tcl2c tclcode.cc *.tcl
+	@mkdir -p $O
+	$O/../utils/tcl2c tclcode.cc *.tcl
 
 missing-dependency:
 	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
 	@echo '  *** Install it, then run ./configure again.'
 
 depend:
-	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc
+	$(MAKEDEPEND) -I. -I../envir -I../../include -P\$$O/ -- *.cc *.c
 
 clean:
-	rm -f *.o tclcode.cc libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)
+	rm -f tclcode.cc
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-arrow.o: arrow.cc \
+$O/arrow.o: arrow.cc \
   arrow.h
-inspector.o: inspector.cc \
+$O/inspector.o: inspector.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
@@ -151,12 +179,12 @@ inspector.o: inspector.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  tkutil.h \
-  tkdefs.h
-inspfactory.o: inspfactory.cc \
+  tkutil.h
+$O/inspfactory.o: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
@@ -246,12 +274,12 @@ inspfactory.o: inspfactory.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  tkutil.h \
-  tkdefs.h
-layouterenv.o: layouterenv.cc \
+  tkutil.h
+$O/layouterenv.o: layouterenv.cc \
   layouterenv.h \
   tklib.h \
   modinsp.h \
@@ -306,7 +334,7 @@ layouterenv.o: layouterenv.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
-modinsp.o: modinsp.cc \
+$O/modinsp.o: modinsp.cc \
   modinsp.h \
   tkapp.h \
   tklib.h \
@@ -364,7 +392,7 @@ modinsp.o: modinsp.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
-objinsp.o: objinsp.cc \
+$O/objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
@@ -454,13 +482,13 @@ objinsp.o: objinsp.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   inspector.h \
-  tkutil.h \
-  tkdefs.h
-statinsp.o: statinsp.cc \
+  tkutil.h
+$O/statinsp.o: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
@@ -499,15 +527,15 @@ statinsp.o: statinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   inspector.h \
-  tkutil.h \
-  tkdefs.h
-tkapp.o: tkapp.cc \
+  tkutil.h
+$O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -569,7 +597,7 @@ tkapp.o: tkapp.cc \
   ../../include/cqueue.h \
   ../../include/ccompoundmodule.h \
   ../../include/cbasicchannel.h
-tkcmd.o: tkcmd.cc \
+$O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
   ../../include/csimulation.h \
@@ -620,18 +648,23 @@ tkcmd.o: tkcmd.cc \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   tkutil.h \
-  tkdefs.h \
   ../envir/matchableobject.h
-tklib.o: tklib.cc \
+$O/tklib.o: tklib.cc \
   tklib.h \
   tkapp.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -641,12 +674,8 @@ tklib.o: tklib.cc \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
-  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -655,7 +684,7 @@ tklib.o: tklib.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
-tkutil.o: tkutil.cc \
+$O/tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
@@ -687,14 +716,14 @@ tkutil.o: tkutil.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../envir/matchableobject.h \
-  tkdefs.h
-visitor.o: visitor.cc \
+  ../envir/matchableobject.h
+$O/visitor.o: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
   ../../include/cmodule.h \
@@ -738,8 +767,11 @@ visitor.o: visitor.cc \
   ../../include/cparvalue.h \
   tkapp.h \
   ../envir/matchableobject.h \
+  tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
+$O/tkImgPNG.o: tkImgPNG.c
+$O/tkImgPNGInit.o: tkImgPNGInit.c

@@ -4,39 +4,60 @@
 
 include ../../Makefile.inc
 
+ifeq ($(strip $(CONFIGNAME)),)
+O=.
+L=$(OMNETPP_LIB_DIR)
+else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/common
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+endif
+
 #
 # Local definitions
 #
+LIBNAME=libcommon
+
 COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 
-OBJS= lcgrandom.o filereader.o linetokenizer.o \
-      stringpool.o stringtokenizer.o fnamelisttokenizer.o \
-      expression.o lex.expressionyy.o expression.tab.o \
-      matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
-      patternmatcher.o unitconversion.o displaystring.o fileglobber.o \
-      fileutil.o stringutil.o commonutil.o exception.o bigdecimal.o
+IMPLIBS=
+
+OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
+      $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
+      $O/expression.o $O/lex.expressionyy.o $O/expression.tab.o \
+      $O/matchexpression.o $O/lex.matchexpressionyy.o $O/matchexpression.tab.o \
+      $O/patternmatcher.o $O/unitconversion.o $O/displaystring.o $O/fileglobber.o \
+      $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.o:
+$O/%.o: %.cc
+	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
-all : libcommon$(LIB_SUFFIX)
+all : $L/$(LIBNAME)$(LIB_SUFFIX)
 
-libcommon$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libcommon$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) libcommon$(A_LIB_SUFFIX)
-	../utils/install-lib libcommon$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcommon$(A_LIB_SUFFIX)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 
-libcommon$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o libcommon$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib libcommon$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcommon$(SO_LIB_SUFFIX)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
+
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 expression.tab.h expression.tab.cc : expression.y
 	$(YACC) -p expressionyy -b expression -d expression.y
@@ -55,116 +76,95 @@ lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 	mv lex.matchexpressionyy.c lex.matchexpressionyy.cc
 
 depend:
-	$(MAKEDEPEND) -I.  -- *.cc
+	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc
 
 clean:
-	rm -f *.o libcommon$(A_LIB_SUFFIX) libcommon$(SO_LIB_SUFFIX)
+	rm -f expression.tab.cc expression.tab.h lex.expressionyy.cc lex.matchexpressionyy.cc
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-bigdecimal.o: bigdecimal.cc \
+$O/bigdecimal.o: bigdecimal.cc \
   opp_ctype.h \
   bigdecimal.h \
   commondefs.h \
   exception.h
-commonutil.o: commonutil.cc \
+$O/commonutil.o: commonutil.cc \
   commonutil.h \
   commondefs.h \
   exception.h
-displaystring.o: displaystring.cc \
+$O/displaystring.o: displaystring.cc \
   opp_ctype.h \
   displaystring.h \
   commondefs.h
-exception.o: exception.cc \
+$O/exception.o: exception.cc \
   exception.h \
   commondefs.h
-expression.o: expression.cc \
+$O/expression.o: expression.cc \
   expression.h \
   expressionyydefs.h \
   commondefs.h \
   commonutil.h \
   stringutil.h \
   exception.h
-expression.tab.o: expression.tab.cc \
-  expressionyydefs.h \
-  expression.h \
-  exception.h \
-  stringutil.h \
-  unitconversion.h \
-  commondefs.h \
-  commonutil.h
-fileglobber.o: fileglobber.cc \
+$O/fileglobber.o: fileglobber.cc \
   fileglobber.h \
   commondefs.h
-filereader.o: filereader.cc \
+$O/filereader.o: filereader.cc \
   commonutil.h \
   filereader.h \
   exception.h \
   commondefs.h
-fileutil.o: fileutil.cc \
+$O/fileutil.o: fileutil.cc \
   opp_ctype.h \
   fileutil.h \
   stringtokenizer.h \
   exception.h \
   commondefs.h
-fnamelisttokenizer.o: fnamelisttokenizer.cc \
+$O/fnamelisttokenizer.o: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
   commondefs.h \
   commonutil.h \
   exception.h
-lcgrandom.o: lcgrandom.cc \
+$O/lcgrandom.o: lcgrandom.cc \
   lcgrandom.h \
   commondefs.h \
   exception.h
-lex.expressionyy.o: lex.expressionyy.cc \
-  expressionyydefs.h \
-  exception.h \
-  expression.tab.h \
-  stringutil.h \
-  expression.h \
-  commondefs.h \
-  commonutil.h
-lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
-  stringutil.h \
-  matchexpression.tab.h \
-  commondefs.h \
-  commonutil.h \
-  exception.h
-linetokenizer.o: linetokenizer.cc \
+$O/linetokenizer.o: linetokenizer.cc \
   exception.h \
   linetokenizer.h \
   commondefs.h
-matchexpression.o: matchexpression.cc \
+$O/matchexpression.o: matchexpression.cc \
   matchexpression.h \
   patternmatcher.h \
   commonutil.h \
   commondefs.h \
   exception.h
-matchexpression.tab.o: matchexpression.tab.cc \
+$O/matchexpression.tab.o: matchexpression.tab.cc \
   matchexpression.h \
   patternmatcher.h \
   exception.h \
   commondefs.h
-patternmatcher.o: patternmatcher.cc \
+$O/patternmatcher.o: patternmatcher.cc \
   opp_ctype.h \
   patternmatcher.h \
   stringutil.h \
   exception.h \
   commondefs.h \
   commonutil.h
-stringpool.o: stringpool.cc \
+$O/stringpool.o: stringpool.cc \
   stringpool.h \
   commondefs.h
-stringtokenizer.o: stringtokenizer.cc \
+$O/stringtokenizer.o: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h
-stringutil.o: stringutil.cc \
+$O/stringutil.o: stringutil.cc \
   commonutil.h \
   opp_ctype.h \
   stringutil.h \
   stringtokenizer.h \
   commondefs.h \
   exception.h
-unitconversion.o: unitconversion.cc \
+$O/unitconversion.o: unitconversion.cc \
   opp_ctype.h \
   unitconversion.h \
   commondefs.h \

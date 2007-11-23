@@ -7,36 +7,44 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/nedxml
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"nedxml.pdb"
-IMPLIBS=../common/common.lib $(XML_LIBS)
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"nedxml.pdb"
+IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 
-#OBJS= nedelements.obj nedelement.obj nederror.obj \
-#      nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
-#      nedsyntaxvalidator.obj nedsemanticvalidator.obj \
-#      nedfilebuffer.obj nedparser.obj nedyylib.obj \
-#      ned2.tab.obj lex.ned2yy.obj \
-#      msg2.tab.obj lex.msg2yy.obj \
-#      ned1.tab.obj lex.ned1yy.obj \
-#      nedutil.obj nedgenerator.obj xmlgenerator.obj nedtools.obj \
-#      nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
-#      nedcompiler.obj cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj
+#OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
+#      $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \
+#      $O/nedsyntaxvalidator.obj $O/nedsemanticvalidator.obj \
+#      $O/nedfilebuffer.obj $O/nedparser.obj $O/nedyylib.obj \
+#      $O/ned2.tab.obj $O/lex.ned2yy.obj \
+#      $O/msg2.tab.obj $O/lex.msg2yy.obj \
+#      $O/ned1.tab.obj $O/lex.ned1yy.obj \
+#      $O/nedutil.obj $O/nedgenerator.obj $O/xmlgenerator.obj $O/nedtools.obj \
+#      $O/nedxmlparser.obj $O/nedsaxhandler.obj $O/saxparser_$(XMLPARSER).obj \
+#      $O/nedcompiler.obj $O/cppgenerator.obj $O/cppmsggenerator.obj $O/cppexprgenerator.obj
 
 # FIXME begin temporary def
-OBJS= nedelements.obj nedelement.obj nederror.obj \
-      nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
-      nedsyntaxvalidator.obj nedsemanticvalidator.obj \
-      nedfilebuffer.obj nedparser.obj nedyylib.obj \
-      ned2.tab.obj lex.ned2yy.obj nedtools.obj \
-      nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
-      nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
-      ned1.tab.obj lex.ned1yy.obj \
-      msg2.tab.obj lex.msg2yy.obj \
-      nedresourcecache.obj nedcomponent.obj \
-      nedcompiler.obj
+OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
+      $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \
+      $O/nedsyntaxvalidator.obj $O/nedsemanticvalidator.obj \
+      $O/nedfilebuffer.obj $O/nedparser.obj $O/nedyylib.obj \
+      $O/ned2.tab.obj $O/lex.ned2yy.obj $O/nedtools.obj \
+      $O/nedutil.obj $O/ned2generator.obj $O/ned1generator.obj $O/xmlgenerator.obj \
+      $O/nedxmlparser.obj $O/nedsaxhandler.obj $O/saxparser_$(XMLPARSER).obj \
+      $O/ned1.tab.obj $O/lex.ned1yy.obj \
+      $O/msg2.tab.obj $O/lex.msg2yy.obj \
+      $O/nedresourcecache.obj $O/nedcomponent.obj \
+      $O/nedcompiler.obj
 # FIXME end temporary def
 
 #
@@ -44,32 +52,33 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
 # Targets
 #
-all : nedtool.exe nedxml$(LIB_SUFFIX)
+all : $O/nedtool.exe $O/nedxml$(LIB_SUFFIX)
 	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)
 
-nedtool.exe : nedxml$(LIB_SUFFIX) nedtool.obj
-	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe nedtool.obj nedxml.lib $(IMPLIBS)
-	copy nedtool.exe $(OMNETPP_BIN_DIR:/=\)
+$O/nedtool.exe : $O/nedxml$(LIB_SUFFIX) $O/nedtool.obj
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/nedtool.obj $(O:/=\)\nedxml.lib $(IMPLIBS)
+	copy $(O:/=\)\nedtool.exe $(OMNETPP_BIN_DIR:/=\)
 
-nedxml.lib : $(OBJS)
-	$(AR) /out:nedxml.lib $(OBJS)
-	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b nedxml.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/nedxml.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\nedxml.lib $(L:/=\)
+	- copy /b $(O:/=\)\nedxml.pdb $(L:/=\) 2>nul
 
-nedxml.dll : $(OBJS)
-	$(SHLIB_LD) /out:nedxml.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy nedxml.dll $(OMNETPP_BIN_DIR:/=\)
-	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
+$O/nedxml.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy $(O:/=\)\nedxml.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\nedxml.lib $(L:/=\)
+	- copy /b $(O:/=\)\nedxml.pdb $(L:/=\) 2>nul
 
-nedtool.obj : nedtool.cc
-	@: note: nedtool.cc must be compiled *without* -DBUILDING_NEDXML
-	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp nedtool.cc
+$O/nedtool.obj : nedtool.cc $O
+	@: Note: not in OBJS because nedtool.cc must be compiled *without* -DBUILDING_NEDXML
+	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp nedtool.cc
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 	$(PERL) dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
@@ -107,20 +116,25 @@ lex.msg2yy.cc: msg2.lex
 	copy lex.msg2yy.c lex.msg2yy.cc
 	del lex.msg2yy.c
 
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
+
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
 depend:
-	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.exe *.obj *.lib *.dll 2> nul
 	-del *.tab.* lex.*yy.* 2> nul
-	-del $(VC_AUX_FILES) 2> nul
-
+	-del $(O:/=\)\*.obj
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(L:/=\) && del nedtool.exe nedxml.lib nedxml.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-cppexprgenerator.obj: cppexprgenerator.cc \
+$O/cppexprgenerator.obj: cppexprgenerator.cc \
   nedcompiler.h \
   cppexprgenerator.h \
   nederror.h \
@@ -129,17 +143,7 @@ cppexprgenerator.obj: cppexprgenerator.cc \
   nedelement.h \
   nedxmldefs.h \
   nedcomponent.h
-cppgenerator.obj: cppgenerator.cc \
-  nedelements.h \
-  cppgenerator.h \
-  nederror.h \
-  nedelement.h \
-  nedxmldefs.h \
-  cppexprgenerator.h \
-  nedcompiler.h \
-  nedresourcecache.h \
-  nedcomponent.h
-cppmsggenerator.obj: cppmsggenerator.cc \
+$O/cppgenerator.obj: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
@@ -149,25 +153,35 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedcompiler.h \
   nedresourcecache.h \
   nedcomponent.h
-lex.msg2yy.obj: lex.msg2yy.cc \
+$O/cppmsggenerator.obj: cppmsggenerator.cc \
+  nedelements.h \
+  cppgenerator.h \
+  nederror.h \
+  nedelement.h \
+  nedxmldefs.h \
+  cppexprgenerator.h \
+  nedcompiler.h \
+  nedresourcecache.h \
+  nedcomponent.h
+$O/lex.msg2yy.obj: lex.msg2yy.cc \
   nedyydefs.h \
   nederror.h \
   msg2.tab.h \
   nedxmldefs.h \
   nedelement.h
-lex.ned1yy.obj: lex.ned1yy.cc \
+$O/lex.ned1yy.obj: lex.ned1yy.cc \
   nedyydefs.h \
   nederror.h \
   ned1.tab.h \
   nedxmldefs.h \
   nedelement.h
-lex.ned2yy.obj: lex.ned2yy.cc \
+$O/lex.ned2yy.obj: lex.ned2yy.cc \
   nedyydefs.h \
   nederror.h \
   ned2.tab.h \
   nedxmldefs.h \
   nedelement.h
-msg2.tab.obj: msg2.tab.cc \
+$O/msg2.tab.obj: msg2.tab.cc \
   nedyydefs.h \
   nederror.h \
   nedparser.h \
@@ -177,7 +191,7 @@ msg2.tab.obj: msg2.tab.cc \
   nedyylib.h \
   nedxmldefs.h \
   nedelement.h
-ned1.tab.obj: ned1.tab.cc \
+$O/ned1.tab.obj: ned1.tab.cc \
   nedyydefs.h \
   nedutil.h \
   nederror.h \
@@ -187,14 +201,14 @@ ned1.tab.obj: ned1.tab.cc \
   nedyylib.h \
   nedxmldefs.h \
   nedelement.h
-ned1generator.obj: ned1generator.cc \
+$O/ned1generator.obj: ned1generator.cc \
   ned1generator.h \
   nedutil.h \
   nedelements.h \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
-ned2.tab.obj: ned2.tab.cc \
+$O/ned2.tab.obj: ned2.tab.cc \
   nedyydefs.h \
   nederror.h \
   nedparser.h \
@@ -204,13 +218,13 @@ ned2.tab.obj: ned2.tab.cc \
   nedyylib.h \
   nedxmldefs.h \
   nedelement.h
-ned2generator.obj: ned2generator.cc \
+$O/ned2generator.obj: ned2generator.cc \
   ned2generator.h \
   nederror.h \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-nedcompiler.obj: nedcompiler.cc \
+$O/nedcompiler.obj: nedcompiler.cc \
   nederror.h \
   nedcompiler.h \
   nedparser.h \
@@ -225,13 +239,13 @@ nedcompiler.obj: nedcompiler.cc \
   nedyydefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
-nedcomponent.obj: nedcomponent.cc \
+$O/nedcomponent.obj: nedcomponent.cc \
   nederror.h \
   nedcomponent.h \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h
-neddtdvalidator.obj: neddtdvalidator.cc \
+$O/neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
@@ -239,27 +253,27 @@ neddtdvalidator.obj: neddtdvalidator.cc \
   nedelements.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
-neddtdvalidatorbase.obj: neddtdvalidatorbase.cc \
+$O/neddtdvalidatorbase.obj: neddtdvalidatorbase.cc \
   nederror.h \
   neddtdvalidatorbase.h \
   nedelement.h \
   nedxmldefs.h \
   nedvalidator.h \
   nedelements.h
-nedelement.obj: nedelement.cc \
+$O/nedelement.obj: nedelement.cc \
   nedelement.h \
   nederror.h \
   nedxmldefs.h
-nedelements.obj: nedelements.cc \
+$O/nedelements.obj: nedelements.cc \
   nederror.h \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-nederror.obj: nederror.cc \
+$O/nederror.obj: nederror.cc \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
-nedfilebuffer.obj: nedfilebuffer.cc \
+$O/nedfilebuffer.obj: nedfilebuffer.cc \
   nedfilebuffer.h \
   nedyylib.h \
   nedparser.h \
@@ -268,7 +282,7 @@ nedfilebuffer.obj: nedfilebuffer.cc \
   nederror.h \
   nedxmldefs.h \
   nedelements.h
-nedparser.obj: nedparser.cc \
+$O/nedparser.obj: nedparser.cc \
   nedparser.h \
   nedfilebuffer.h \
   nedelements.h \
@@ -276,21 +290,21 @@ nedparser.obj: nedparser.cc \
   nedyydefs.h \
   nedelement.h \
   nedxmldefs.h
-nedresourcecache.obj: nedresourcecache.cc \
+$O/nedresourcecache.obj: nedresourcecache.cc \
   nederror.h \
   nedresourcecache.h \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h \
   nedcomponent.h
-nedsaxhandler.obj: nedsaxhandler.cc \
+$O/nedsaxhandler.obj: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
   nederror.h \
   nedelement.h \
   saxparser.h \
   nedxmldefs.h
-nedsemanticvalidator.obj: nedsemanticvalidator.cc \
+$O/nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nederror.h \
   nedsemanticvalidator.h \
   nedresourcecache.h \
@@ -299,14 +313,14 @@ nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nedvalidator.h \
   nedelements.h \
   nedcomponent.h
-nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
+$O/nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
   nederror.h \
   nedsyntaxvalidator.h \
   nedelement.h \
   nedxmldefs.h \
   nedvalidator.h \
   nedelements.h
-nedtool.obj: nedtool.cc \
+$O/nedtool.obj: nedtool.cc \
   nedparser.h \
   nederror.h \
   nedxmlparser.h \
@@ -324,7 +338,7 @@ nedtool.obj: nedtool.cc \
   nedelements.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
-nedtools.obj: nedtools.cc \
+$O/nedtools.obj: nedtools.cc \
   nedtools.h \
   nederror.h \
   neddtdvalidator.h \
@@ -333,25 +347,25 @@ nedtools.obj: nedtools.cc \
   nedxmldefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
-nedutil.obj: nedutil.cc \
+$O/nedutil.obj: nedutil.cc \
   nederror.h \
   nedutil.h \
   nedelement.h \
   nedxmldefs.h
-nedvalidator.obj: nedvalidator.cc \
+$O/nedvalidator.obj: nedvalidator.cc \
   nederror.h \
   nedvalidator.h \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h
-nedxmlparser.obj: nedxmlparser.cc \
+$O/nedxmlparser.obj: nedxmlparser.cc \
   saxparser.h \
   nedsaxhandler.h \
   nederror.h \
   nedxmlparser.h \
   nedxmldefs.h \
   nedelement.h
-nedyylib.obj: nedyylib.cc \
+$O/nedyylib.obj: nedyylib.cc \
   nedyylib.h \
   nedfilebuffer.h \
   nedyydefs.h \
@@ -360,18 +374,18 @@ nedyylib.obj: nedyylib.cc \
   nedelement.h \
   nedxmldefs.h \
   nederror.h
-saxparser_expat.obj: saxparser_expat.cc \
+$O/saxparser_expat.obj: saxparser_expat.cc \
   saxparser.h \
   nedxmldefs.h
-saxparser_libxml.obj: saxparser_libxml.cc \
+$O/saxparser_libxml.obj: saxparser_libxml.cc \
   saxparser.h \
   nedxmldefs.h
-saxparser_none.obj: saxparser_none.cc \
+$O/saxparser_none.obj: saxparser_none.cc \
   nederror.h \
   saxparser.h \
   nedelement.h \
   nedxmldefs.h
-xmlgenerator.obj: xmlgenerator.cc \
+$O/xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \
   nedelement.h \

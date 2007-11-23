@@ -4,12 +4,26 @@
 
 include ../../Makefile.inc
 
+ifeq ($(strip $(CONFIGNAME)),)
+O=.
+L=$(OMNETPP_LIB_DIR)
+else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+endif
+
 #
 # Local definitions
 #
+LIBNAME=libeventlog
+
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)/platdep -I. -I../common
 
-OBJS= ievent.o ieventlog.o eventlogfacade.o eventlogtablefacade.o sequencechartfacade.o eventlog.o eventlogindex.o messagedependency.o event.o eventlogentry.o eventlogentries.o filteredevent.o filteredeventlog.o eventlogentryfactory.o
+IMPLIBS= -L$L -lcommon
+
+OBJS= $O/ievent.o $O/ieventlog.o $O/eventlogfacade.o $O/eventlogtablefacade.o $O/sequencechartfacade.o \
+      $O/eventlog.o $O/eventlogindex.o $O/messagedependency.o $O/event.o $O/eventlogentry.o \
+      $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o
 LIBS= -leventlog -lcommon
 
 #
@@ -17,55 +31,65 @@ LIBS= -leventlog -lcommon
 #
 .SUFFIXES : .cc
 
-.cc.o:
+$O/%.o: %.cc
+	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
-all: eventlogentries.cc libeventlog$(LIB_SUFFIX) eventlogtool
+all: eventlogentries.cc $L/$(LIBNAME)$(LIB_SUFFIX) $O/eventlogtool
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
 
-libeventlog$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libeventlog$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) libeventlog$(A_LIB_SUFFIX)
-	../utils/install-lib libeventlog$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libeventlog$(A_LIB_SUFFIX)
-libeventlog$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o libeventlog$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib libeventlog$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libeventlog$(SO_LIB_SUFFIX)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $L
+	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 
-eventlogtool : eventlogtool.o  libeventlog$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o eventlogtool eventlogtool.o -L$(OMNETPP_LIB_DIR) $(LIBS)
-	../utils/install-prog eventlogtool $(OMNETPP_BIN_DIR)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
+
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
+
+$O/eventlogtool : $O/eventlogtool.o  $L/$(LIBNAME)$(LIB_SUFFIX)
+	$(CXX) $(LDFLAGS) -o $O/eventlogtool $O/eventlogtool.o -L$L $(LIBS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog eventlogtool $(OMNETPP_BIN_DIR)
 
 depend:
-	$(MAKEDEPEND) -I. -I../common -- *.cc
+	$(MAKEDEPEND) -I. -I../common -P\$$O/ -- *.cc
 
 clean:
-	rm -f *.o libeventlog$(A_LIB_SUFFIX) libeventlog$(SO_LIB_SUFFIX) eventlogtool
+	rm -f eventlogentries.cc eventlogentries.h eventlogfactory.cc
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $O/eventlogtool$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-event.o: event.cc \
+$O/event.o: event.cc \
   ../common/filereader.h \
   event.h \
   eventlog.h \
   eventlogentry.h \
   ../common/commondefs.h \
   ievent.h \
-  eventlogentries.h \
   messagedependency.h \
+  ../common/stringpool.h \
+  ieventlog.h \
+  eventlogindex.h \
   eventlogdefs.h \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
-  ../common/stringpool.h \
-  ieventlog.h \
-  eventlogindex.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h
-eventlog.o: eventlog.cc \
+$O/eventlog.o: eventlog.cc \
   ../common/filereader.h \
   ../common/stringpool.h \
   eventlog.h \
@@ -75,7 +99,6 @@ eventlog.o: eventlog.cc \
   eventlogindex.h \
   ievent.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   eventlogdefs.h \
@@ -83,22 +106,7 @@ eventlog.o: eventlog.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h
-eventlogentries.o: eventlogentries.cc \
-  event.h \
-  eventlogentries.h \
-  ../common/stringutil.h \
-  ievent.h \
-  ../common/filereader.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/commondefs.h \
-  ../common/matchexpression.h \
-  eventlogdefs.h \
-  ../common/linetokenizer.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  ../common/bigdecimal.h
-eventlogentry.o: eventlogentry.cc \
+$O/eventlogentry.o: eventlogentry.cc \
   eventlog.h \
   eventlogentry.h \
   eventlogentryfactory.h \
@@ -109,7 +117,6 @@ eventlogentry.o: eventlogentry.cc \
   eventlogindex.h \
   ../common/commondefs.h \
   ievent.h \
-  eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h \
   ../common/exception.h \
@@ -117,13 +124,12 @@ eventlogentry.o: eventlogentry.cc \
   ../common/bigdecimal.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h
-eventlogentryfactory.o: eventlogentryfactory.cc \
+$O/eventlogentryfactory.o: eventlogentryfactory.cc \
   event.h \
   eventlogentryfactory.h \
   ievent.h \
   ../common/filereader.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/commondefs.h \
   ../common/matchexpression.h \
@@ -132,7 +138,7 @@ eventlogentryfactory.o: eventlogentryfactory.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h
-eventlogfacade.o: eventlogfacade.cc \
+$O/eventlogfacade.o: eventlogfacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \
@@ -150,11 +156,10 @@ eventlogfacade.o: eventlogfacade.cc \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \
-  eventlogentries.h \
   ../common/stringpool.h \
   eventlogindex.h \
   ../common/patternmatcher.h
-eventlogindex.o: eventlogindex.cc \
+$O/eventlogindex.o: eventlogindex.cc \
   eventlogindex.h \
   ../common/exception.h \
   eventlogdefs.h \
@@ -163,7 +168,7 @@ eventlogindex.o: eventlogindex.cc \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h
-eventlogtablefacade.o: eventlogtablefacade.cc \
+$O/eventlogtablefacade.o: eventlogtablefacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \
@@ -178,9 +183,8 @@ eventlogtablefacade.o: eventlogtablefacade.cc \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \
-  eventlogentries.h \
   eventlogfacade.h
-eventlogtool.o: eventlogtool.cc \
+$O/eventlogtool.o: eventlogtool.cc \
   ../utils/ver.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
@@ -197,19 +201,17 @@ eventlogtool.o: eventlogtool.cc \
   ieventlog.h \
   ievent.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   filteredevent.h
-filteredevent.o: filteredevent.cc \
+$O/filteredevent.o: filteredevent.cc \
   event.h \
   filteredevent.h \
   filteredeventlog.h \
   ievent.h \
   ../common/filereader.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/commondefs.h \
   ../common/matchexpression.h \
@@ -223,7 +225,7 @@ filteredevent.o: filteredevent.cc \
   eventlog.h \
   ../common/stringpool.h \
   eventlogindex.h
-filteredeventlog.o: filteredeventlog.cc \
+$O/filteredeventlog.o: filteredeventlog.cc \
   filteredeventlog.h \
   ../common/patternmatcher.h \
   ../common/matchexpression.h \
@@ -240,11 +242,10 @@ filteredeventlog.o: filteredeventlog.cc \
   messagedependency.h \
   ../common/linetokenizer.h \
   ../common/filereader.h \
-  eventlogentries.h \
   ../common/stringpool.h \
   event.h \
   eventlogindex.h
-ievent.o: ievent.cc \
+$O/ievent.o: ievent.cc \
   ievent.h \
   eventlogentry.h \
   messagedependency.h \
@@ -255,9 +256,8 @@ ievent.o: ievent.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
-  ../common/filereader.h \
-  eventlogentries.h
-ieventlog.o: ieventlog.cc \
+  ../common/filereader.h
+$O/ieventlog.o: ieventlog.cc \
   ieventlog.h \
   eventlogdefs.h \
   ievent.h \
@@ -269,9 +269,8 @@ ieventlog.o: ieventlog.cc \
   messagedependency.h \
   ../common/matchexpression.h \
   ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h
-messagedependency.o: messagedependency.cc \
+  ../common/filereader.h
+$O/messagedependency.o: messagedependency.cc \
   eventlogdefs.h \
   ievent.h \
   ieventlog.h \
@@ -283,9 +282,8 @@ messagedependency.o: messagedependency.cc \
   ../common/commondefs.h \
   ../common/matchexpression.h \
   ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h
-sequencechartfacade.o: sequencechartfacade.cc \
+  ../common/filereader.h
+$O/sequencechartfacade.o: sequencechartfacade.cc \
   ../common/lcgrandom.h \
   ievent.h \
   ieventlog.h \
@@ -301,5 +299,4 @@ sequencechartfacade.o: sequencechartfacade.cc \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \
-  eventlogentries.h \
   eventlogfacade.h

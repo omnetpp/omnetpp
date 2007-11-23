@@ -4,52 +4,79 @@
 
 include ../../Makefile.inc
 
+ifeq ($(strip $(CONFIGNAME)),)
+O=.
+L=$(OMNETPP_LIB_DIR)
+else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/envir
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+endif
+
 #
 # Local definitions
 #
+LIBNAME=libenvir
+
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../sim -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
-OBJS=args.o cenvir.o main.o omnetapp.o fsutils.o \
-     sectionbasedconfig.o inifilereader.o scenario.o valueiterator.o \
-     speedometer.o filemgrs.o akoutvectormgr.o matchableobject.o \
-     akaroarng.o cxmldoccache.o ivfilemgr.o eventlogwriter.o objectprinter.o
+IMPLIBS= -L$L -lsim_std -lnedxml -lcommon
+
+OBJS=$O/args.o $O/cenvir.o $O/main.o $O/omnetapp.o $O/fsutils.o \
+     $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
+     $O/speedometer.o $O/filemgrs.o $O/akoutvectormgr.o $O/matchableobject.o \
+     $O/akaroarng.o $O/cxmldoccache.o $O/ivfilemgr.o $O/eventlogwriter.o $O/objectprinter.o
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.o:
+$O/%.o: %.cc
+	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
-all : libenvir$(LIB_SUFFIX)
+all : $L/$(LIBNAME)$(LIB_SUFFIX)
 
-libenvir$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libenvir$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) libenvir$(A_LIB_SUFFIX)
-	../utils/install-lib libenvir$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(A_LIB_SUFFIX)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $L
+	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 
-libenvir$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib libenvir$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(SO_LIB_SUFFIX)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
+
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS) envir-implib
+	@mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
+
+envir-implib : $(OBJS)
+	@mkdir -p $L
+	-$(SHLIB_LD) $(OBJS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX) 2>/dev/null
+# this line would generate an implib without trying to create the DLL, but apparently it does not create a correct lib
+#	$(DLLTOOL) --output-lib $O/$(LIBNAME)$(A_LIB_SUFFIX) --dllname $(LIBNAME)$(DLL_LIB_SUFFIX) -k $(OBJS)
 
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
 
-omnetapp.o: eventlogwriter.h
+$O/omnetapp.o: eventlogwriter.h
 
 depend:
-	$(MAKEDEPEND) -I. -I../../include -- *.cc
+	$(MAKEDEPEND) -I. -I../../include -P\$$O/ -- *.cc
 
 clean:
-	rm -f eventlogwriter.cc eventlogwriter.h 2> nul
-	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
+	rm -f eventlogwriter.cc eventlogwriter.h
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-akaroarng.o: akaroarng.cc \
+$O/akaroarng.o: akaroarng.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cexception.h \
@@ -65,7 +92,7 @@ akaroarng.o: akaroarng.cc \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-akoutvectormgr.o: akoutvectormgr.cc \
+$O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/cmodule.h \
@@ -102,14 +129,14 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   filemgrs.h
-args.o: args.cc \
+$O/args.o: args.cc \
   args.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h
-cenvir.o: cenvir.cc \
+$O/cenvir.o: cenvir.cc \
   args.h \
   ../../include/distrib.h \
   ../../include/cconfigkey.h \
@@ -157,7 +184,7 @@ cenvir.o: cenvir.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h
-cxmldoccache.o: cxmldoccache.cc \
+$O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
   ../../include/cxmlelement.h \
@@ -175,7 +202,7 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
-filemgrs.o: filemgrs.cc \
+$O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   ../../include/cenvir.h \
@@ -217,7 +244,7 @@ filemgrs.o: filemgrs.cc \
   ../../include/cexpression.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h
-fsutils.o: fsutils.cc \
+$O/fsutils.o: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
   ../../include/cexception.h \
@@ -235,19 +262,20 @@ fsutils.o: fsutils.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-inifilereader.o: inifilereader.cc \
+$O/inifilereader.o: inifilereader.cc \
   inifilereader.h \
   fsutils.h \
   ../../include/cexception.h \
+  envdefs.h \
   ../../include/cconfigreader.h \
-  ../../include/util.h \
   ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h
-ivfilemgr.o: ivfilemgr.cc \
+$O/ivfilemgr.o: ivfilemgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   ../../include/cenvir.h \
@@ -285,7 +313,7 @@ ivfilemgr.o: ivfilemgr.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   filemgrs.h
-main.o: main.cc \
+$O/main.o: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../utils/ver.h \
@@ -302,7 +330,7 @@ main.o: main.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h
-matchableobject.o: matchableobject.cc \
+$O/matchableobject.o: matchableobject.cc \
   matchableobject.h \
   ../../include/cclassdescriptor.h \
   ../../include/cobject.h \
@@ -320,7 +348,7 @@ matchableobject.o: matchableobject.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/cstringpool.h
-objectprinter.o: objectprinter.cc \
+$O/objectprinter.o: objectprinter.cc \
   ../../include/cconfiguration.h \
   ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
@@ -353,7 +381,7 @@ objectprinter.o: objectprinter.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   matchableobject.h
-omnetapp.o: omnetapp.cc \
+$O/omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
   appreg.h \
@@ -409,7 +437,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   matchableobject.h
-scenario.o: scenario.cc \
+$O/scenario.o: scenario.cc \
   scenario.h \
   valueiterator.h \
   ../../include/cexception.h \
@@ -425,8 +453,9 @@ scenario.o: scenario.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
+  envdefs.h \
   ../../include/opp_string.h
-sectionbasedconfig.o: sectionbasedconfig.cc \
+$O/sectionbasedconfig.o: sectionbasedconfig.cc \
   sectionbasedconfig.h \
   ../../include/cconfigreader.h \
   valueiterator.h \
@@ -444,6 +473,7 @@ sectionbasedconfig.o: sectionbasedconfig.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
+  envdefs.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -452,20 +482,21 @@ sectionbasedconfig.o: sectionbasedconfig.cc \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
   ../../include/cstringpool.h
-speedometer.o: speedometer.cc \
+$O/speedometer.o: speedometer.cc \
   speedometer.h \
   ../../include/simkerneldefs.h \
   envdefs.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h
-valueiterator.o: valueiterator.cc \
+$O/valueiterator.o: valueiterator.cc \
   valueiterator.h \
   ../../include/cexception.h \
+  envdefs.h \
   ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
   ../../include/util.h

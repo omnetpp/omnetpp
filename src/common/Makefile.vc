@@ -7,17 +7,25 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/common
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DBUILDING_COMMON /Fd"common.pdb"
 
-OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
-      stringpool.obj stringtokenizer.obj fnamelisttokenizer.obj \
-      expression.obj lex.expressionyy.obj expression.tab.obj \
-      matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
-      patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
-      fileutil.obj stringutil.obj commonutil.obj exception.obj bigdecimal.obj
+OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
+      $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
+      $O/expression.obj $O/lex.expressionyy.obj $O/expression.tab.obj \
+      $O/matchexpression.obj $O/lex.matchexpressionyy.obj $O/matchexpression.tab.obj \
+      $O/patternmatcher.obj $O/unitconversion.obj $O/displaystring.obj $O/fileglobber.obj \
+      $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj
 
 
 #
@@ -25,24 +33,25 @@ OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
 # Targets
 #
-all : common$(LIB_SUFFIX)
+all : $O/common$(LIB_SUFFIX)
 
-common.lib : $(OBJS)
-	$(AR) /out:common.lib $(OBJS)
-	copy common.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b common.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/common.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\common.lib $(L:/=\)
+	- copy /b $(O:/=\)\common.pdb $(L:/=\) 2>nul
 
-common.dll : $(OBJS)
-	$(SHLIB_LD) /out:common.dll /subsystem:console $(OBJS)
-	copy common.dll $(OMNETPP_BIN_DIR:/=\)
-	copy common.lib $(OMNETPP_LIB_DIR:/=\)
+$O/common.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS)
+	copy $(O:/=\)\common.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\common.lib $(L:/=\)
+	- copy /b $(O:/=\)\common.pdb $(L:/=\) 2>nul
 
 expression.tab.h expression.tab.cc : expression.y
 	$(YACC:/=\) -p expressionyy -b expression -d expression.y
@@ -66,39 +75,48 @@ lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
 	del lex.matchexpressionyy.c
 
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
+
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
 depend:
-	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.obj 2> nul
-	-del $(VC_AUX_FILES) 2> nul
+	-del expression.tab.h expression.tab.cc lex.expressionyy.cc 
+	-del matchexpression.tab.h matchexpression.tab.cc lex.matchexpressionyy.cc
+	-del $(O:/=\)\*.obj 2> nul
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(O:/=\) && del common.lib common.dll 2> nul
+	-cd /d $(L:/=\) && del common.lib common.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-bigdecimal.obj: bigdecimal.cc \
+$O/bigdecimal.obj: bigdecimal.cc \
   bigdecimal.h \
   commondefs.h \
   exception.h
-commonutil.obj: commonutil.cc \
+$O/commonutil.obj: commonutil.cc \
   commonutil.h \
   commondefs.h \
   exception.h
-displaystring.obj: displaystring.cc \
+$O/displaystring.obj: displaystring.cc \
   displaystring.h \
   commondefs.h
-exception.obj: exception.cc \
+$O/exception.obj: exception.cc \
   exception.h \
   commondefs.h
-expression.obj: expression.cc \
+$O/expression.obj: expression.cc \
   expression.h \
   expressionyydefs.h \
   commondefs.h \
   commonutil.h \
   stringutil.h \
   exception.h
-expression.tab.obj: expression.tab.cc \
+$O/expression.tab.obj: expression.tab.cc \
   expressionyydefs.h \
   expression.h \
   exception.h \
@@ -106,27 +124,27 @@ expression.tab.obj: expression.tab.cc \
   unitconversion.h \
   commondefs.h \
   commonutil.h
-fileglobber.obj: fileglobber.cc \
+$O/fileglobber.obj: fileglobber.cc \
   fileglobber.h \
   commondefs.h
-filereader.obj: filereader.cc \
+$O/filereader.obj: filereader.cc \
   commonutil.h \
   filereader.h \
   exception.h \
   commondefs.h
-fileutil.obj: fileutil.cc \
+$O/fileutil.obj: fileutil.cc \
   fileutil.h \
   commondefs.h
-fnamelisttokenizer.obj: fnamelisttokenizer.cc \
+$O/fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
   commondefs.h \
   commonutil.h \
   exception.h
-lcgrandom.obj: lcgrandom.cc \
+$O/lcgrandom.obj: lcgrandom.cc \
   lcgrandom.h \
   commondefs.h \
   exception.h
-lex.expressionyy.obj: lex.expressionyy.cc \
+$O/lex.expressionyy.obj: lex.expressionyy.cc \
   expressionyydefs.h \
   exception.h \
   expression.tab.h \
@@ -134,46 +152,46 @@ lex.expressionyy.obj: lex.expressionyy.cc \
   expression.h \
   commondefs.h \
   commonutil.h
-lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
+$O/lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
   stringutil.h \
   matchexpression.tab.h \
   commondefs.h \
   commonutil.h \
   exception.h
-linetokenizer.obj: linetokenizer.cc \
+$O/linetokenizer.obj: linetokenizer.cc \
   exception.h \
   linetokenizer.h \
   commondefs.h
-matchexpression.obj: matchexpression.cc \
+$O/matchexpression.obj: matchexpression.cc \
   matchexpression.h \
   patternmatcher.h \
   commonutil.h \
   commondefs.h \
   exception.h
-matchexpression.tab.obj: matchexpression.tab.cc \
+$O/matchexpression.tab.obj: matchexpression.tab.cc \
   matchexpression.h \
   patternmatcher.h \
   exception.h \
   commondefs.h
-patternmatcher.obj: patternmatcher.cc \
+$O/patternmatcher.obj: patternmatcher.cc \
   patternmatcher.h \
   stringutil.h \
   exception.h \
   commondefs.h \
   commonutil.h
-stringpool.obj: stringpool.cc \
+$O/stringpool.obj: stringpool.cc \
   stringpool.h \
   commondefs.h
-stringtokenizer.obj: stringtokenizer.cc \
+$O/stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h
-stringutil.obj: stringutil.cc \
+$O/stringutil.obj: stringutil.cc \
   commonutil.h \
   stringutil.h \
   stringtokenizer.h \
   commondefs.h \
   exception.h
-unitconversion.obj: unitconversion.cc \
+$O/unitconversion.obj: unitconversion.cc \
   unitconversion.h \
   commondefs.h \
   exception.h

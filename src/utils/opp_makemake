@@ -26,6 +26,8 @@ sub makemake();
 makemake();
 exit 0;
 
+#FIXME: $(TARGET).exe; GENERATEDHEADERS=;
+
 sub makemake()
 {
     if ($isWindows && $ENV{OS} ne "Windows_NT") {
@@ -382,6 +384,7 @@ sub makemake()
     }
 
     #FIXME TODO: into deps:  join(generatedHeaders);
+    #FIXME: GENERATEDHEADERS= line missing from template? btw, what is GENERATEDHEADERS for??
     $deps = "";
 
     %m = (

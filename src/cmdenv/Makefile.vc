@@ -7,47 +7,62 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/cmdenv
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"cmdenv.pdb"
-IMPLIBS=../sim/sim_std.lib ../envir/envir.lib
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"cmdenv.pdb"
+IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib
 
-OBJS=cmdenv.obj enumstr.obj
+OBJS= $O/cmdenv.obj $O/enumstr.obj
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
 # Targets
 #
-all: cmdenv$(LIB_SUFFIX)
+all: $O/cmdenv$(LIB_SUFFIX)
 
-cmdenv.lib : $(OBJS)
-	$(AR) /out:cmdenv.lib $(OBJS)
-	copy cmdenv.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b cmdenv.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/cmdenv.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\cmdenv.lib $(L:/=\)
+	- copy /b $(O:/=\)\cmdenv.pdb $(L:/=\) 2>nul
 
-cmdenv.dll : $(OBJS)
-	$(SHLIB_LD) /out:cmdenv.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy cmdenv.dll $(OMNETPP_BIN_DIR:/=\)
-	copy cmdenv.lib $(OMNETPP_LIB_DIR:/=\)
+$O/cmdenv.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy $(O:/=\)\cmdenv.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\cmdenv.lib $(L:/=\)
+	- copy /b $(O:/=\)\cmdenv.pdb $(L:/=\) 2>nul
+
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
 
 depend:
-	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.obj cmdenv.lib cmdenv.dll cmdenv.lib cmdenv.exp 2> nul
-	-del $(VC_AUX_FILES) 2> nul
+	-del $(O:/=\)\*.obj
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(L:/=\) && del cmdenv.lib cmdenv.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-cmdenv.obj: cmdenv.cc \
+$O/cmdenv.obj: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
   enumstr.h \
@@ -87,5 +102,5 @@ cmdenv.obj: cmdenv.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-enumstr.obj: enumstr.cc \
+$O/enumstr.obj: enumstr.cc \
   enumstr.h

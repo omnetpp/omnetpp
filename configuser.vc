@@ -125,7 +125,6 @@ WITH_PARSIM=no    # FIXME for now
 CFLAGS=$(CFLAGS_DEBUG)
 LDFLAGS=$(LDFLAGS_DEBUG)
 
-
 #==============================================================================
 #====== !!!         Try not to change anything below this line       !!! ======
 #==============================================================================
@@ -143,6 +142,7 @@ OMNETPP_DOC_DIR=$(OMNETPP_ROOT)/doc
 OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_ROOT)/include
 OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
+OMNETPP_OBJ_DIR=$(OMNETPP_ROOT)/obj
 
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_IMAGE_PATH=./images;./bitmaps;$(OMNETPP_ROOT)/images

@@ -7,15 +7,23 @@
 CFLAGS=$(CFLAGS) /DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/layout
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"layout.pdb"
-IMPLIBS= ../common/common.lib
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"layout.pdb"
+IMPLIBS= $O/../common/common.lib
 
-OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj \
-      forcedirectedparametersbase.obj forcedirectedparameters.obj forcedirectedembedding.obj \
-      graphlayouter.obj basicspringembedderlayout.obj forcedirectedgraphlayouter.obj
+OBJS= $O/geometry.obj $O/graphcomponent.obj $O/heapembedding.obj $O/startreeembedding.obj \
+      $O/forcedirectedparametersbase.obj $O/forcedirectedparameters.obj $O/forcedirectedembedding.obj \
+      $O/graphlayouter.obj $O/basicspringembedderlayout.obj $O/forcedirectedgraphlayouter.obj
 
 
 #
@@ -23,44 +31,50 @@ OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj \
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
 # Targets
 #
-all : layout$(LIB_SUFFIX)
+all : $O/layout$(LIB_SUFFIX)
 
-layout.lib : $(OBJS)
-	$(AR) /out:layout.lib $(OBJS)
-	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b layout.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/layout.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\layout.lib $(L:/=\)
+	- copy /b $(O:/=\)\layout.pdb $(L:/=\) 2>nul
 
-layout.dll : $(OBJS)
-	$(SHLIB_LD) /out:layout.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy layout.dll $(OMNETPP_BIN_DIR:/=\)
-	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
+$O/layout.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy $(O:/=\)\layout.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\layout.lib $(L:/=\)
+	- copy /b $(O:/=\)\layout.pdb $(L:/=\) 2>nul
+
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
 
 depend:
-	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.obj 2> nul
-	-del $(VC_AUX_FILES) 2> nul
-
+	-del $(O:/=\)\*.obj 2> nul
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(L:/=\) && del layout.lib layout.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-basicspringembedderlayout.obj: basicspringembedderlayout.cc \
+$O/basicspringembedderlayout.obj: basicspringembedderlayout.cc \
   basicspringembedderlayout.h \
   graphlayouter.h \
   layoutdefs.h
-forcedirectedembedding.obj: forcedirectedembedding.cc \
+$O/forcedirectedembedding.obj: forcedirectedembedding.cc \
   forcedirectedembedding.h \
   forcedirectedparameters.h \
   geometry.h \
   forcedirectedparametersbase.h \
   layoutdefs.h
-forcedirectedgraphlayouter.obj: forcedirectedgraphlayouter.cc \
+$O/forcedirectedgraphlayouter.obj: forcedirectedgraphlayouter.cc \
   forcedirectedgraphlayouter.h \
   startreeembedding.h \
   heapembedding.h \
@@ -71,32 +85,32 @@ forcedirectedgraphlayouter.obj: forcedirectedgraphlayouter.cc \
   layoutdefs.h \
   geometry.h \
   forcedirectedparametersbase.h
-forcedirectedparameters.obj: forcedirectedparameters.cc \
+$O/forcedirectedparameters.obj: forcedirectedparameters.cc \
   forcedirectedparameters.h \
   geometry.h \
   forcedirectedparametersbase.h \
   forcedirectedembedding.h \
   layoutdefs.h
-forcedirectedparametersbase.obj: forcedirectedparametersbase.cc \
+$O/forcedirectedparametersbase.obj: forcedirectedparametersbase.cc \
   forcedirectedparametersbase.h \
   geometry.h \
   layoutdefs.h
-geometry.obj: geometry.cc \
+$O/geometry.obj: geometry.cc \
   geometry.h \
   layoutdefs.h
-graphcomponent.obj: graphcomponent.cc \
+$O/graphcomponent.obj: graphcomponent.cc \
   graphcomponent.h \
   geometry.h \
   layoutdefs.h
-graphlayouter.obj: graphlayouter.cc \
+$O/graphlayouter.obj: graphlayouter.cc \
   graphlayouter.h \
   layoutdefs.h
-heapembedding.obj: heapembedding.cc \
+$O/heapembedding.obj: heapembedding.cc \
   heapembedding.h \
   geometry.h \
   graphcomponent.h \
   layoutdefs.h
-startreeembedding.obj: startreeembedding.cc \
+$O/startreeembedding.obj: startreeembedding.cc \
   startreeembedding.h \
   geometry.h \
   graphcomponent.h \

@@ -43,12 +43,24 @@ sim : nedc
 makefiles: utils
 $(SAMPLES) clean depend: makefiles
 
+# create some additional dependecies required to build windows DLLs
+ifeq ($(LIB_SUFFIX),$(DLL_LIB_SUFFIX))
+sim : nedxml envir-implib
+envir : sim
+tkenv cmdenv : envir
+tkenv : layout
+endif
+
 #
 # Core libraries and programs
 #
 $(BASE):
 	@echo ===== Compiling $@ ====
 	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
+
+envir-implib:
+	@echo ===== Compiling $@ ====
+	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir-implib
 
 #
 # Native libs for the UI
@@ -108,10 +120,11 @@ clean:
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	- rm $(OMNETPP_BIN_DIR)/*
-	- rm $(OMNETPP_LIB_DIR)/*
-	for i in $(SAMPLES); do \
-	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
+	- rm -f $(OMNETPP_BIN_DIR)/*
+	- rm -f -r $(OMNETPP_OBJ_DIR)/*
+	- rm -f -r $(OMNETPP_LIB_DIR)/*
+	for i in $(SAMPLES) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
@@ -119,13 +132,13 @@ depend:
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
-	for i in $(SAMPLES); do \
-	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
+	for i in $(SAMPLES) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); fi;\
 	done
 
 makefiles:
-	for i in $(SAMPLES); do \
-	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f)); \
+	for i in $(SAMPLES) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f)); fi;\
 	done
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 

@@ -3,6 +3,18 @@
 #
 !include ..\..\configuser.vc
 
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) -DWIN32_DLL
+!endif
+
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/tkenv
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local setup
 #
@@ -12,29 +24,25 @@ TKENV_EMBED_SUFFIX=-e
 TKENV_EMBED_SUFFIX=
 !endif
 
-!if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
-!endif
-
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV /Fd"tkenv.pdb"
-IMPLIBS=../sim/sim_std.lib ../envir/envir.lib ../layout/layout.lib ../common/common.lib $(TK_LIBS) $(ZLIB_LIBS)
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV /Fd"tkenv.pdb"
+IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib $O/../layout/layout.lib $O/../common/common.lib $(TK_LIBS) $(ZLIB_LIBS)
 
-OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
-       inspfactory.obj objinsp.obj modinsp.obj statinsp.obj layouterenv.obj \
-       arrow.obj visitor.obj tkutil.obj tkImgPNG.obj tkImgPNGInit.obj
+OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj \
+       $O/inspfactory.obj $O/objinsp.obj $O/modinsp.obj $O/statinsp.obj $O/layouterenv.obj \
+       $O/arrow.obj $O/visitor.obj $O/tkutil.obj $O/tkImgPNG.obj $O/tkImgPNGInit.obj
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc .c
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
-.c.obj:
+{.}.c{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c $<
 
 #
@@ -42,42 +50,52 @@ OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
 #
 all: $(TKENV_IF_POSSIBLE)
 
-tkenv : tkenv$(LIB_SUFFIX)
+tkenv : $O/tkenv$(LIB_SUFFIX)
 
-tkenv.lib : $(OBJS)
-	$(AR) /out:tkenv.lib $(OBJS)
-	copy tkenv.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b tkenv.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/tkenv.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\tkenv.lib $(L:/=\)
+	- copy /b $(O:/=\)\tkenv.pdb $(L:/=\) 2>nul
 
-tkenv.dll : $(OBJS)
-	$(SHLIB_LD) /out:tkenv.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy tkenv.dll $(OMNETPP_BIN_DIR:/=\)
-	copy tkenv.lib $(OMNETPP_LIB_DIR:/=\)
+$O/tkenv.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy $(O:/=\)\tkenv.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\tkenv.lib $(L:/=\)
+	- copy /b $(O:/=\)\tkenv.pdb $(L:/=\) 2>nul
 
-tkapp.obj : tkapp.cc
+tkapp.cc : tclcode.cc
+
+$O/tkapp.obj : tkapp.cc
 	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
-tkapp-e.obj : tkapp.cc  tclcode.cc
-	$(CXX) /Fo"tkapp-e.obj" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
+$O/tkapp-e.obj : tkapp.cc  tclcode.cc
+	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
 
 tclcode.cc : *.tcl
-	..\utils\tcl2c tclcode.cc *.tcl
+	$(O:/=\)\..\utils\tcl2c tclcode.cc *.tcl
+
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
 
 missing-dependency:
 	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
 	@echo '  *** Install it, and edit configuser.vc accordingly.'
 
 depend:
-	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc *.c
 
 clean:
-	-del tclcode.cc *.obj tkenv.lib tkenv.dll tkenv.lib tkenv.exp 2> nul
-	-del $(VC_AUX_FILES) 2> nul
+	-del tclcode.cc
+	-del $(O:/=\)\*.obj
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(L:/=\) && del tkenv.lib tkenv.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-arrow.obj: arrow.cc \
+$O/arrow.obj: arrow.cc \
   arrow.h
-inspector.obj: inspector.cc \
+$O/inspector.obj: inspector.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
@@ -168,7 +186,7 @@ inspector.obj: inspector.cc \
   ../../include/platdep/platdefs.h \
   tkutil.h \
   tkdefs.h
-inspfactory.obj: inspfactory.cc \
+$O/inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
@@ -260,7 +278,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/platdep/platdefs.h \
   tkutil.h \
   tkdefs.h
-layouterenv.obj: layouterenv.cc \
+$O/layouterenv.obj: layouterenv.cc \
   layouterenv.h \
   tklib.h \
   modinsp.h \
@@ -310,7 +328,7 @@ layouterenv.obj: layouterenv.cc \
   ../../include/ccoroutine.h \
   tkutil.h \
   tkdefs.h
-modinsp.obj: modinsp.cc \
+$O/modinsp.obj: modinsp.cc \
   modinsp.h \
   tkapp.h \
   tklib.h \
@@ -363,7 +381,7 @@ modinsp.obj: modinsp.cc \
   ../../include/cfunction.h \
   tkutil.h \
   tkdefs.h
-objinsp.obj: objinsp.cc \
+$O/objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
@@ -456,7 +474,7 @@ objinsp.obj: objinsp.cc \
   inspector.h \
   tkutil.h \
   tkdefs.h
-statinsp.obj: statinsp.cc \
+$O/statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
@@ -498,7 +516,7 @@ statinsp.obj: statinsp.cc \
   inspector.h \
   tkutil.h \
   tkdefs.h
-tkapp.obj: tkapp.cc \
+$O/tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
@@ -553,7 +571,7 @@ tkapp.obj: tkapp.cc \
   ../../include/cqueue.h \
   ../../include/ccompoundmodule.h \
   ../../include/cbasicchannel.h
-tkcmd.obj: tkcmd.cc \
+$O/tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
   ../../include/csimulation.h \
@@ -605,10 +623,10 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cfunction.h \
   tkutil.h \
   tkdefs.h
-tklib.obj: tklib.cc \
+$O/tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h
-tkutil.obj: tkutil.cc \
+$O/tkutil.obj: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
@@ -641,7 +659,7 @@ tkutil.obj: tkutil.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   tkdefs.h
-visitor.obj: visitor.cc \
+$O/visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
   ../../include/cmodule.h \

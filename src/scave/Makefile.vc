@@ -7,68 +7,82 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/scave
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SCAVE /Fd"scave.pdb"
-IMPLIBS=../common/common.lib $(XML_LIBS)
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SCAVE /Fd"scave.pdb"
+IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
-OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
-      dataflowmanager.obj datasorter.obj diffquot.obj \
-      filewriter.obj filternodes.obj customfilter.obj stddev.obj \
-      idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
-      resultfilemanager.obj slidingwinavg.obj \
-      vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
-      xyplotnode.obj indexedvectorfile.obj \
-      vectorfileindexer.obj indexfile.obj scaveutils.obj \
-      scaveexception.obj enumtype.obj export.obj teenode.obj \
-      indexedvectorfilereader.obj xyarray.obj fields.obj
+OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \
+      $O/dataflowmanager.obj $O/datasorter.obj $O/diffquot.obj \
+      $O/filewriter.obj $O/filternodes.obj $O/customfilter.obj $O/stddev.obj \
+      $O/idlist.obj $O/mergernodes.obj $O/nodetype.obj $O/nodetyperegistry.obj \
+      $O/resultfilemanager.obj $O/slidingwinavg.obj \
+      $O/vectorfilereader.obj $O/vectorfilewriter.obj $O/windowavg.obj \
+      $O/xyplotnode.obj $O/indexedvectorfile.obj \
+      $O/vectorfileindexer.obj $O/indexfile.obj $O/scaveutils.obj \
+      $O/scaveexception.obj $O/enumtype.obj $O/export.obj $O/teenode.obj \
+      $O/indexedvectorfilereader.obj $O/xyarray.obj $O/fields.obj
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
 # Targets (TBD: build dll)
 #
-all : scave$(LIB_SUFFIX) scavetool.exe
+all : $O/scave$(LIB_SUFFIX) $O/scavetool.exe
 
-scave.lib : $(OBJS)
-	$(AR) /out:scave.lib $(OBJS)
-	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b scave.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/scave.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\scave.lib $(L:/=\)
+	- copy /b $(O:/=\)\scave.pdb $(L:/=\) 2>nul
 
-scave.dll : $(OBJS)
-	$(SHLIB_LD) /out:scave.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy scave.dll $(OMNETPP_BIN_DIR:/=\)
-	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
+$O/scave.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy $(O:/=\)\scave.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\scave.lib $(L:/=\)
+	- copy /b $(O:/=\)\scave.pdb $(L:/=\) 2>nul
 
-scavetool.exe : scavetool.obj scave$(LIB_SUFFIX)
-	$(LINK) $(LDFLAGS) /nologo /out:scavetool.exe scavetool.obj scave.lib $(IMPLIBS)
-	copy scavetool.exe $(OMNETPP_BIN_DIR:/=\)
+$O/scavetool.exe : $O/scavetool.obj $O/scave$(LIB_SUFFIX)
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/scavetool.obj $(O:/=\)\scave.lib $(IMPLIBS)
+	copy $(O:/=\)\scavetool.exe $(OMNETPP_BIN_DIR:/=\)
 
-scavetool.obj : scavetool.cc
-	@: note: scavetool.cc must be compiled *without* -DBUILDING_SCAVE
-	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp scavetool.cc
+$O/scavetool.obj : scavetool.cc $O
+	@: Note: not in OBJS because scavetool.cc must be compiled *without* -DBUILDING_SCAVE
+	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp scavetool.cc
+
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
 
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
 depend:
-	$(MAKEDEPEND) -I. -I../common -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I. -I../common -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.obj 2> nul
-	-del $(VC_AUX_FILES) 2> nul
-
+	-del $(O:/=\)\*.obj 2> nul
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(L:/=\) && del scavetool.exe scave.lib scave.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-arraybuilder.obj: arraybuilder.cc \
+$O/arraybuilder.obj: arraybuilder.cc \
   channel.h \
   arraybuilder.h \
   ../common/commonutil.h \
@@ -81,7 +95,7 @@ arraybuilder.obj: arraybuilder.cc \
   xyarray.h \
   nodetype.h \
   dataflowmanager.h
-channel.obj: channel.cc \
+$O/channel.obj: channel.cc \
   channel.h \
   ../common/commonutil.h \
   node.h \
@@ -89,7 +103,7 @@ channel.obj: channel.cc \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h
-commonnodes.obj: commonnodes.cc \
+$O/commonnodes.obj: commonnodes.cc \
   commonnodes.h \
   channel.h \
   node.h \
@@ -100,7 +114,7 @@ commonnodes.obj: commonnodes.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   dataflowmanager.h
-compoundfilter.obj: compoundfilter.cc \
+$O/compoundfilter.obj: compoundfilter.cc \
   ../common/commonutil.h \
   compoundfilter.h \
   filternodes.h \
@@ -114,7 +128,7 @@ compoundfilter.obj: compoundfilter.cc \
   channel.h \
   scavedefs.h \
   ../common/bigdecimal.h
-customfilter.obj: customfilter.cc \
+$O/customfilter.obj: customfilter.cc \
   channel.h \
   customfilter.h \
   ../common/commonutil.h \
@@ -128,7 +142,7 @@ customfilter.obj: customfilter.cc \
   nodetype.h \
   dataflowmanager.h \
   ../common/stringutil.h
-dataflowmanager.obj: dataflowmanager.cc \
+$O/dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \
   dataflowmanager.h \
@@ -138,7 +152,7 @@ dataflowmanager.obj: dataflowmanager.cc \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h
-datasorter.obj: datasorter.cc \
+$O/datasorter.obj: datasorter.cc \
   resultfilemanager.h \
   ../common/commonutil.h \
   datasorter.h \
@@ -153,7 +167,7 @@ datasorter.obj: datasorter.cc \
   scaveutils.h \
   ../common/patternmatcher.h \
   fields.h
-diffquot.obj: diffquot.cc \
+$O/diffquot.obj: diffquot.cc \
   channel.h \
   diffquot.h \
   ../common/commonutil.h \
@@ -165,7 +179,7 @@ diffquot.obj: diffquot.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-enumtype.obj: enumtype.cc \
+$O/enumtype.obj: enumtype.cc \
   ../common/stringtokenizer.h \
   scaveutils.h \
   enumtype.h \
@@ -173,7 +187,7 @@ enumtype.obj: enumtype.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/exception.h
-export.obj: export.cc \
+$O/export.obj: export.cc \
   export.h \
   scavedefs.h \
   ../common/bigdecimal.h \
@@ -190,7 +204,7 @@ export.obj: export.cc \
   ../common/patternmatcher.h \
   fields.h \
   ../common/stringutil.h
-fields.obj: fields.cc \
+$O/fields.obj: fields.cc \
   ../common/commonutil.h \
   ../common/stringutil.h \
   fields.h \
@@ -204,7 +218,7 @@ fields.obj: fields.cc \
   statistics.h \
   scavedefs.h \
   ../common/bigdecimal.h
-filewriter.obj: filewriter.cc \
+$O/filewriter.obj: filewriter.cc \
   channel.h \
   filewriter.h \
   ../common/commonutil.h \
@@ -216,7 +230,7 @@ filewriter.obj: filewriter.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-filternodes.obj: filternodes.cc \
+$O/filternodes.obj: filternodes.cc \
   channel.h \
   filternodes.h \
   ../common/commonutil.h \
@@ -228,7 +242,7 @@ filternodes.obj: filternodes.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-idlist.obj: idlist.cc \
+$O/idlist.obj: idlist.cc \
   idlist.h \
   resultfilemanager.h \
   ../common/stringutil.h \
@@ -240,7 +254,7 @@ idlist.obj: idlist.cc \
   ../common/commonutil.h \
   statistics.h \
   scaveutils.h
-indexedvectorfile.obj: indexedvectorfile.cc \
+$O/indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/exception.h \
   ../common/linetokenizer.h \
   channel.h \
@@ -260,7 +274,7 @@ indexedvectorfile.obj: indexedvectorfile.cc \
   dataflowmanager.h \
   idlist.h \
   enumtype.h
-indexedvectorfilereader.obj: indexedvectorfilereader.cc \
+$O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   channel.h \
   scaveutils.h \
   vectorfilereader.h \
@@ -280,7 +294,7 @@ indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   enumtype.h \
   statistics.h \
   indexfile.h
-indexfile.obj: indexfile.cc \
+$O/indexfile.obj: indexfile.cc \
   ../common/exception.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
@@ -293,7 +307,7 @@ indexfile.obj: indexfile.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   statistics.h
-mergernodes.obj: mergernodes.cc \
+$O/mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
   ../common/commonutil.h \
@@ -305,7 +319,7 @@ mergernodes.obj: mergernodes.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-nodetype.obj: nodetype.cc \
+$O/nodetype.obj: nodetype.cc \
   ../common/commonutil.h \
   nodetype.h \
   ../common/commondefs.h \
@@ -315,7 +329,7 @@ nodetype.obj: nodetype.cc \
   channel.h \
   scavedefs.h \
   ../common/bigdecimal.h
-nodetyperegistry.obj: nodetyperegistry.cc \
+$O/nodetyperegistry.obj: nodetyperegistry.cc \
   ../common/commonutil.h \
   nodetyperegistry.h \
   ../common/stringtokenizer.h \
@@ -354,14 +368,14 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   indexfile.h \
   ../common/expression.h \
   ../common/stringutil.h
-octaveexport.obj: octaveexport.cc \
+$O/octaveexport.obj: octaveexport.cc \
   octaveexport.h \
   scavedefs.h \
   xyarray.h \
   ../common/exception.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h
-resultfilemanager.obj: resultfilemanager.cc \
+$O/resultfilemanager.obj: resultfilemanager.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   ../common/filereader.h \
@@ -378,13 +392,13 @@ resultfilemanager.obj: resultfilemanager.cc \
   ../common/bigdecimal.h \
   idlist.h \
   enumtype.h
-scaveexception.obj: scaveexception.cc \
+$O/scaveexception.obj: scaveexception.cc \
   scaveexception.h \
   ../common/commondefs.h \
   scavedefs.h \
   ../common/exception.h \
   ../common/bigdecimal.h
-scavetool.obj: scavetool.cc \
+$O/scavetool.obj: scavetool.cc \
   ../utils/ver.h \
   resultfilemanager.h \
   nodetype.h \
@@ -416,13 +430,13 @@ scavetool.obj: scavetool.cc \
   datasorter.h \
   ../common/patternmatcher.h \
   fields.h
-scaveutils.obj: scaveutils.cc \
+$O/scaveutils.obj: scaveutils.cc \
   scaveutils.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h
-slidingwinavg.obj: slidingwinavg.cc \
+$O/slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \
   ../common/commonutil.h \
@@ -434,7 +448,7 @@ slidingwinavg.obj: slidingwinavg.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-stddev.obj: stddev.cc \
+$O/stddev.obj: stddev.cc \
   channel.h \
   stddev.h \
   ../common/commonutil.h \
@@ -447,7 +461,7 @@ stddev.obj: stddev.cc \
   xyarray.h \
   nodetype.h \
   dataflowmanager.h
-teenode.obj: teenode.cc \
+$O/teenode.obj: teenode.cc \
   channel.h \
   teenode.h \
   ../common/commonutil.h \
@@ -459,7 +473,7 @@ teenode.obj: teenode.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-vectorfileindexer.obj: vectorfileindexer.cc \
+$O/vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/stringutil.h \
   scaveutils.h \
   scaveexception.h \
@@ -476,7 +490,7 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   resultfilemanager.h \
   idlist.h \
   enumtype.h
-vectorfilereader.obj: vectorfilereader.cc \
+$O/vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   scaveutils.h \
   scaveexception.h \
@@ -495,7 +509,7 @@ vectorfilereader.obj: vectorfilereader.cc \
   idlist.h \
   enumtype.h \
   statistics.h
-vectorfilewriter.obj: vectorfilewriter.cc \
+$O/vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
   ../common/stringutil.h \
@@ -512,7 +526,7 @@ vectorfilewriter.obj: vectorfilewriter.cc \
   enumtype.h \
   statistics.h \
   scaveutils.h
-windowavg.obj: windowavg.cc \
+$O/windowavg.obj: windowavg.cc \
   channel.h \
   windowavg.h \
   ../common/commonutil.h \
@@ -524,13 +538,13 @@ windowavg.obj: windowavg.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
-xyarray.obj: xyarray.cc \
+$O/xyarray.obj: xyarray.cc \
   xyarray.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h
-xyplotnode.obj: xyplotnode.cc \
+$O/xyplotnode.obj: xyplotnode.cc \
   channel.h \
   xyplotnode.h \
   ../common/commonutil.h \

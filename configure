@@ -656,6 +656,7 @@ OMNETPP_EDITION
 OMNETPP_ROOT
 OMNETPP_BIN_DIR
 OMNETPP_INCL_DIR
+OMNETPP_OBJ_DIR
 OMNETPP_LIB_DIR
 OMNETPP_IMAGE_PATH
 OMNETPP_SRC_DIR
@@ -673,9 +674,11 @@ NEDCFLAGS
 AS
 AR
 SHLIB_LD
+DLLTOOL
 MAKEDEPEND
 A_LIB_SUFFIX
 SO_LIB_SUFFIX
+DLL_LIB_SUFFIX
 LIB_SUFFIX
 EXE_SUFFIX
 NO_TCL
@@ -1930,6 +1933,7 @@ OMNETPP_IMAGE_PATH="./bitmaps;./images;$OMNETPP_ROOT/images"
 
 OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
 OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
+OMNETPP_OBJ_DIR="$OMNETPP_ROOT/obj"
 OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
@@ -1948,6 +1952,7 @@ fi
 #
 A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
+DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
 
 if test "$cygwin" = yes; then
     EXE_SUFFIX=".exe"
@@ -3124,6 +3129,7 @@ fi
 AS=${AS:-as}
 AR=${AR:-ar cr}
 SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+DLLTOOL=${DLLTOOL:-dlltool}
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -7052,6 +7058,9 @@ ac_config_files="$ac_config_files Makefile.inc src/utils/opp_makemake src/utils/
 
 
 
+
+
+
 #
 # Generate files
 #
@@ -7765,6 +7774,7 @@ OMNETPP_EDITION!$OMNETPP_EDITION$ac_delim
 OMNETPP_ROOT!$OMNETPP_ROOT$ac_delim
 OMNETPP_BIN_DIR!$OMNETPP_BIN_DIR$ac_delim
 OMNETPP_INCL_DIR!$OMNETPP_INCL_DIR$ac_delim
+OMNETPP_OBJ_DIR!$OMNETPP_OBJ_DIR$ac_delim
 OMNETPP_LIB_DIR!$OMNETPP_LIB_DIR$ac_delim
 OMNETPP_IMAGE_PATH!$OMNETPP_IMAGE_PATH$ac_delim
 OMNETPP_SRC_DIR!$OMNETPP_SRC_DIR$ac_delim
@@ -7782,7 +7792,6 @@ NEDCFLAGS!$NEDCFLAGS$ac_delim
 AS!$AS$ac_delim
 AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
-MAKEDEPEND!$MAKEDEPEND$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -7824,8 +7833,11 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+DLLTOOL!$DLLTOOL$ac_delim
+MAKEDEPEND!$MAKEDEPEND$ac_delim
 A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
+DLL_LIB_SUFFIX!$DLL_LIB_SUFFIX$ac_delim
 LIB_SUFFIX!$LIB_SUFFIX$ac_delim
 EXE_SUFFIX!$EXE_SUFFIX$ac_delim
 NO_TCL!$NO_TCL$ac_delim
@@ -7857,7 +7869,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 31; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 34; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

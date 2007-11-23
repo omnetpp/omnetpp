@@ -7,58 +7,75 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_EVENTLOG /Fd"eventlog.pdb"
-IMPLIBS=../common/common.lib
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_EVENTLOG /Fd"eventlog.pdb"
+IMPLIBS= $O/../common/common.lib
 
-OBJS=ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj
+OBJS= $O/ievent.obj $O/ieventlog.obj $O/eventlogfacade.obj $O/eventlogtablefacade.obj \
+      $O/sequencechartfacade.obj $O/eventlog.obj $O/eventlogindex.obj \
+      $O/messagedependency.obj $O/event.obj $O/eventlogentry.obj $O/eventlogentries.obj \
+      $O/filteredevent.obj $O/filteredeventlog.obj $O/eventlogentryfactory.obj
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
 # Targets
 #
-all : eventlogentries.cc eventlog$(LIB_SUFFIX) eventlogtool.exe
+all : eventlogentries.cc $O/eventlog$(LIB_SUFFIX) $O/eventlogtool.exe
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
 
-eventlog.lib : $(OBJS)
-	$(AR) /out:eventlog.lib $(OBJS)
-	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b eventlog.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+$O/eventlog.lib : $(OBJS) $L
+	$(AR) /out:"$@" $(OBJS)
+	copy $(O:/=\)\eventlog.lib $(L:/=\)
+	- copy /b $(O:/=\)\eventlog.pdb $(L:/=\) 2>nul
 
-eventlog.dll : $(OBJS)
-	$(SHLIB_LD) /out:eventlog.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy eventlog.dll $(OMNETPP_BIN_DIR:/=\)
-	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
+$O/eventlog.dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy $(O:/=\)\eventlog.dll $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\eventlog.lib $(L:/=\)
+	- copy /b $(O:/=\)\eventlog.pdb $(L:/=\) 2>nul
 
-eventlogtool.exe : eventlogtool.obj eventlog$(LIB_SUFFIX)
-	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj eventlog.lib $(IMPLIBS)
-	copy eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
+$O/eventlogtool.exe : $O/eventlogtool.obj $O/eventlog$(LIB_SUFFIX)
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/eventlogtool.obj $(O:/=\)\eventlog.lib $(IMPLIBS)
+	copy $(O:/=\)\eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
 
-eventlogtool.obj : eventlogtool.cc
-	@: note: eventlogtool.cc must be compiled *without* -DBUILDING_EVENTLOG
-	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp eventlogtool.cc
+$O/eventlogtool.obj : eventlogtool.cc $O
+	@: Note: not in OBJS because eventlogtool.cc must be compiled *without* -DBUILDING_EVENTLOG
+	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp eventlogtool.cc
+
+$(OBJS) : $O
+
+$O $L:
+	md $(@:/=\)
 
 depend:
-	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.obj 2> nul
-	-del $(VC_AUX_FILES) 2> nul
-
+	-del $(O:/=\)\*.obj 2> nul
+	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
+	-cd /d $(L:/=\) && del eventlogtool.exe eventlog.lib eventlog.dll 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-event.obj: event.cc \
+$O/event.obj: event.cc \
   event.h \
   eventlog.h \
   eventlogentry.h \
@@ -68,7 +85,7 @@ event.obj: event.cc \
   eventlogdefs.h \
   ieventlog.h \
   eventlogindex.h
-eventlog.obj: eventlog.cc \
+$O/eventlog.obj: eventlog.cc \
   eventlog.h \
   event.h \
   ieventlog.h \
@@ -78,14 +95,14 @@ eventlog.obj: eventlog.cc \
   eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h
-eventlogentries.obj: eventlogentries.cc \
+$O/eventlogentries.obj: eventlogentries.cc \
   event.h \
   eventlogentries.h \
   ievent.h \
   eventlogentry.h \
   messagedependency.h \
   eventlogdefs.h
-eventlogentry.obj: eventlogentry.cc \
+$O/eventlogentry.obj: eventlogentry.cc \
   eventlog.h \
   eventlogentry.h \
   eventlogentryfactory.h \
@@ -96,7 +113,7 @@ eventlogentry.obj: eventlogentry.cc \
   eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h
-eventlogentryfactory.obj: eventlogentryfactory.cc \
+$O/eventlogentryfactory.obj: eventlogentryfactory.cc \
   event.h \
   eventlogentryfactory.h \
   ievent.h \
@@ -104,7 +121,7 @@ eventlogentryfactory.obj: eventlogentryfactory.cc \
   eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h
-eventlogfacade.obj: eventlogfacade.cc \
+$O/eventlogfacade.obj: eventlogfacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \
@@ -117,10 +134,10 @@ eventlogfacade.obj: eventlogfacade.cc \
   eventlogdefs.h \
   eventlogentries.h \
   eventlogindex.h
-eventlogindex.obj: eventlogindex.cc \
+$O/eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
   eventlogdefs.h
-eventlogtablefacade.obj: eventlogtablefacade.cc \
+$O/eventlogtablefacade.obj: eventlogtablefacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \
@@ -130,7 +147,7 @@ eventlogtablefacade.obj: eventlogtablefacade.cc \
   eventlogdefs.h \
   eventlogentries.h \
   eventlogfacade.h
-eventlogtool.obj: eventlogtool.cc \
+$O/eventlogtool.obj: eventlogtool.cc \
   ../utils/ver.h \
   eventlogindex.h \
   eventlog.h \
@@ -143,7 +160,7 @@ eventlogtool.obj: eventlogtool.cc \
   eventlogentries.h \
   messagedependency.h \
   filteredevent.h
-filteredevent.obj: filteredevent.cc \
+$O/filteredevent.obj: filteredevent.cc \
   event.h \
   filteredevent.h \
   filteredeventlog.h \
@@ -155,7 +172,7 @@ filteredevent.obj: filteredevent.cc \
   ieventlog.h \
   eventlog.h \
   eventlogindex.h
-filteredeventlog.obj: filteredeventlog.cc \
+$O/filteredeventlog.obj: filteredeventlog.cc \
   filteredeventlog.h \
   eventlogdefs.h \
   ieventlog.h \
@@ -167,27 +184,27 @@ filteredeventlog.obj: filteredeventlog.cc \
   eventlogentries.h \
   event.h \
   eventlogindex.h
-ievent.obj: ievent.cc \
+$O/ievent.obj: ievent.cc \
   ievent.h \
   eventlogentry.h \
   messagedependency.h \
   eventlogdefs.h \
   eventlogentries.h
-ieventlog.obj: ieventlog.cc \
+$O/ieventlog.obj: ieventlog.cc \
   ieventlog.h \
   eventlogdefs.h \
   ievent.h \
   eventlogentry.h \
   messagedependency.h \
   eventlogentries.h
-messagedependency.obj: messagedependency.cc \
+$O/messagedependency.obj: messagedependency.cc \
   eventlogdefs.h \
   ievent.h \
   ieventlog.h \
   eventlogentry.h \
   messagedependency.h \
   eventlogentries.h
-sequencechartfacade.obj: sequencechartfacade.cc \
+$O/sequencechartfacade.obj: sequencechartfacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \

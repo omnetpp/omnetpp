@@ -4,43 +4,64 @@
 
 include ../../Makefile.inc
 
+ifeq ($(strip $(CONFIGNAME)),)
+O=.
+L=$(OMNETPP_LIB_DIR)
+else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/cmdenv
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+endif
+
 #
 # Local definitions
 #
+LIBNAME=libcmdenv
+
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_CMDENV
 
-OBJS = cmdenv.o enumstr.o
+IMPLIBS= -L$L -lsim_std -lenvir
+
+OBJS = $O/cmdenv.o $O/enumstr.o
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.o:
+$O/%.o: %.cc
+	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
-all: libcmdenv$(LIB_SUFFIX)
+all: $L/$(LIBNAME)$(LIB_SUFFIX)
 
-libcmdenv$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libcmdenv$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) libcmdenv$(A_LIB_SUFFIX)
-	../utils/install-lib libcmdenv$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(A_LIB_SUFFIX)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 
-libcmdenv$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o libcmdenv$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib libcmdenv$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(SO_LIB_SUFFIX)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
+
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 depend:
-	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc
+	$(MAKEDEPEND) -I. -I../envir -I../../include -P\$$O/ -- *.cc
 
 clean:
-	rm -f *.o libcmdenv$(A_LIB_SUFFIX) libcmdenv$(SO_LIB_SUFFIX)
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-cmdenv.o: cmdenv.cc \
+$O/cmdenv.o: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
   enumstr.h \
@@ -87,5 +108,10 @@ cmdenv.o: cmdenv.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-enumstr.o: enumstr.cc \
-  enumstr.h
+$O/enumstr.o: enumstr.cc \
+  enumstr.h \
+  cmddefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h

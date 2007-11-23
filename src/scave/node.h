@@ -119,7 +119,7 @@ class SCAVE_API Node
         virtual void process() = 0;
 
         /**
-         * Are more invocations if process() necessary()?
+         * Are more invocations of process() necessary()?
          */
         virtual bool finished() const = 0;
 

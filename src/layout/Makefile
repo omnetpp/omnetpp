@@ -4,47 +4,66 @@
 
 include ../../Makefile.inc
 
+ifeq ($(strip $(CONFIGNAME)),)
+O=.
+L=$(OMNETPP_LIB_DIR)
+else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/layout
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+endif
+
 #
 # Local definitions
 #
+LIBNAME=liblayout
+
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
-LIBS= -lcommon
 
-OBJS= geometry.o graphcomponent.o heapembedding.o startreeembedding.o \
-      forcedirectedparametersbase.o forcedirectedparameters.o forcedirectedembedding.o \
-      graphlayouter.o basicspringembedderlayout.o forcedirectedgraphlayouter.o
+IMPLIBS= -L$L -lcommon
 
+OBJS= $O/geometry.o $O/graphcomponent.o $O/heapembedding.o $O/startreeembedding.o \
+      $O/forcedirectedparametersbase.o $O/forcedirectedparameters.o $O/forcedirectedembedding.o \
+      $O/graphlayouter.o $O/basicspringembedderlayout.o $O/forcedirectedgraphlayouter.o
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.o:
+$O/%.o: %.cc
+	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
-all: liblayout$(LIB_SUFFIX)
+all: $L/$(LIBNAME)$(LIB_SUFFIX)
 
-liblayout$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) liblayout$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) liblayout$(A_LIB_SUFFIX)
-	../utils/install-lib liblayout$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) liblayout$(A_LIB_SUFFIX)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 
-liblayout$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o liblayout$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib liblayout$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) liblayout$(SO_LIB_SUFFIX)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
+
+$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+	mkdir -p $L
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 depend:
-	$(MAKEDEPEND) -I. -I../common -- *.cc
+	$(MAKEDEPEND) -I. -I../common -P\$$O/ -- *.cc
 
 clean:
-	rm -f *.o liblayout$(A_LIB_SUFFIX) liblayout$(SO_LIB_SUFFIX)
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-basicspringembedderlayout.o: basicspringembedderlayout.cc \
+$O/basicspringembedderlayout.o: basicspringembedderlayout.cc \
   ../common/commonutil.h \
   basicspringembedderlayout.h \
   ../common/commondefs.h \
@@ -52,7 +71,7 @@ basicspringembedderlayout.o: basicspringembedderlayout.cc \
   graphlayouter.h \
   layoutdefs.h \
   ../common/lcgrandom.h
-forcedirectedembedding.o: forcedirectedembedding.cc \
+$O/forcedirectedembedding.o: forcedirectedembedding.cc \
   forcedirectedembedding.h \
   forcedirectedparameters.h \
   ../common/lcgrandom.h \
@@ -62,7 +81,7 @@ forcedirectedembedding.o: forcedirectedembedding.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/commondefs.h
-forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
+$O/forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
   ../common/commonutil.h \
   forcedirectedgraphlayouter.h \
   startreeembedding.h \
@@ -77,14 +96,7 @@ forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
   ../common/lcgrandom.h \
   geometry.h \
   forcedirectedparametersbase.h
-forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
-  forcedirectedparametersbase.h \
-  geometry.h \
-  layoutdefs.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/commondefs.h
-forcedirectedparameters.o: forcedirectedparameters.cc \
+$O/forcedirectedparameters.o: forcedirectedparameters.cc \
   forcedirectedparameters.h \
   geometry.h \
   forcedirectedparametersbase.h \
@@ -93,26 +105,33 @@ forcedirectedparameters.o: forcedirectedparameters.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/commondefs.h
-geometry.o: geometry.cc \
+$O/forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
+  forcedirectedparametersbase.h \
   geometry.h \
   layoutdefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/commondefs.h
-graphcomponent.o: graphcomponent.cc \
+$O/geometry.o: geometry.cc \
+  geometry.h \
+  layoutdefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/commondefs.h
+$O/graphcomponent.o: graphcomponent.cc \
   graphcomponent.h \
   geometry.h \
   layoutdefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/commondefs.h
-graphlayouter.o: graphlayouter.cc \
+$O/graphlayouter.o: graphlayouter.cc \
   graphlayouter.h \
   layoutdefs.h \
   ../common/lcgrandom.h \
   ../common/commondefs.h \
   ../common/exception.h
-heapembedding.o: heapembedding.cc \
+$O/heapembedding.o: heapembedding.cc \
   heapembedding.h \
   geometry.h \
   graphcomponent.h \
@@ -120,7 +139,7 @@ heapembedding.o: heapembedding.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   ../common/commondefs.h
-startreeembedding.o: startreeembedding.cc \
+$O/startreeembedding.o: startreeembedding.cc \
   startreeembedding.h \
   geometry.h \
   graphcomponent.h \
