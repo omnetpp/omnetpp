@@ -60,6 +60,8 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
 #
 all : $O/nedtool.exe $O/nedxml$(LIB_SUFFIX)
 	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)
+	copy opp_msgc $(OMNETPP_BIN_DIR:/=\)
+	copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\)
 
 $O/nedtool.exe : $O/nedxml$(LIB_SUFFIX) $O/nedtool.obj
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/nedtool.obj $(O:/=\)\nedxml.lib $(IMPLIBS)

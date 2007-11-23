@@ -46,8 +46,8 @@ $O/%.o: %.cc
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool
-	chmod +x nedc
-	cp nedc $(OMNETPP_BIN_DIR)
+	chmod +x nedc opp_msgc
+	cp nedc opp_msgc $(OMNETPP_BIN_DIR)
 
 $O/nedtool: $O/nedtool.o $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(CXX) $(LDFLAGS) -o $O/nedtool $O/nedtool.o -L$L -lnedxml -lcommon $(XML_LIBS)

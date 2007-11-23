@@ -24,7 +24,7 @@ components: base jnilibs samples
 #
 #=====================================================================
 
-BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
+BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils 
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo queueinglib queuenet routing tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 
@@ -36,10 +36,9 @@ jnilibs : $(JNILIBS)
 samples: $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
-common layout eventlog scave nedxml sim envir cmdenv tkenv nedc makefiles: utils
+common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv : common
-nedc : nedxml
-sim : nedc
+sim : nedxml
 makefiles: utils
 $(SAMPLES) clean depend: makefiles
 
