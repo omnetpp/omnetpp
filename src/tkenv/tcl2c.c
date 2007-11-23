@@ -4,9 +4,9 @@
 //                  OMNeT++/OMNEST
 //        Discrete System Simulation in C++
 //
-//   Utility for embedding TCL code into C/C++ as large string constant.
-//   Output is somewhat scrambled so that the TCL code is not readable
-//   if someone looks into the resulting executables.
+//   Utility for embedding Tcl code into C/C++ as a large string literal.
+//   Output is somewhat scrambled so that the Tcl code is not readable
+//   inside the resulting binary.
 //
 //=========================================================================
 
@@ -48,7 +48,6 @@ const char *findNextFile()
 }
 
 /*
-
  *
  * code for Borland C -- currently not used
  *

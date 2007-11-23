@@ -27,7 +27,7 @@ TKENV_EMBED_SUFFIX=
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV /Fd"tkenv.pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV /Fd"$O/tkenv.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib $O/../layout/layout.lib $O/../common/common.lib $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj \
@@ -68,11 +68,14 @@ tkapp.cc : tclcode.cc
 $O/tkapp.obj : tkapp.cc
 	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
-$O/tkapp-e.obj : tkapp.cc  tclcode.cc
+$O/tkapp-e.obj : tkapp.cc tclcode.cc
 	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
 
-tclcode.cc : *.tcl
-	$(O:/=\)\..\utils\tcl2c tclcode.cc *.tcl
+tclcode.cc : $O/tcl2c.exe *.tcl
+	$(O:/=\)\tcl2c tclcode.cc *.tcl
+
+$O/tcl2c.exe: tcl2c.c $O
+	$(CXX) $(CFLAGS) tcl2c.c -o"$@"
 
 $(OBJS): $O
 
@@ -88,7 +91,7 @@ depend:
 
 clean:
 	-del tclcode.cc
-	-del $(O:/=\)\*.obj
+	-del $(O:/=\)\*.obj  $(O:/=\)\tcl2c.exe
 	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
 	-cd /d $(L:/=\) && del tkenv.lib tkenv.dll 2> nul
 

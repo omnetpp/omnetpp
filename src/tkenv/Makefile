@@ -72,9 +72,13 @@ $O/tkapp-e.o : tkapp.cc
 	@mkdir -p $O
 	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp-e.o
 
-tclcode.cc: *.tcl
+tclcode.cc: $O/tcl2c$(EXE_SUFFIX) *.tcl 
 	@mkdir -p $O
-	$O/../utils/tcl2c tclcode.cc *.tcl
+	$O/tcl2c tclcode.cc *.tcl
+
+$O/tcl2c$(EXE_SUFFIX): tcl2c.c
+	@mkdir -p $O
+	$(CC) tcl2c.c -o $@
 
 missing-dependency:
 	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
@@ -85,7 +89,7 @@ depend:
 
 clean:
 	rm -f tclcode.cc
-	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) 
+	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $O/tcl2c$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arrow.o: arrow.cc \

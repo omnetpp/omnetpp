@@ -18,7 +18,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SCAVE /Fd"scave.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SCAVE /Fd"$O/scave.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \

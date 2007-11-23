@@ -18,7 +18,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"cmdenv.pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"$O/cmdenv.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib
 
 OBJS= $O/cmdenv.obj $O/enumstr.obj

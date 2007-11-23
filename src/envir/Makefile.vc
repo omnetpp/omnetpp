@@ -25,7 +25,7 @@ CFLAGS=$(CFLAGS) -DWITH_NETBUILDER
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/envir.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../nedxml/nedxml.lib $O/../common/common.lib
 
 OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \

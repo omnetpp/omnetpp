@@ -18,7 +18,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DBUILDING_COMMON /Fd"common.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DBUILDING_COMMON /Fd"$O/common.pdb"
 
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
@@ -87,7 +87,7 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del expression.tab.h expression.tab.cc lex.expressionyy.cc 
+	-del expression.tab.h expression.tab.cc lex.expressionyy.cc
 	-del matchexpression.tab.h matchexpression.tab.cc lex.matchexpressionyy.cc
 	-del $(O:/=\)\*.obj 2> nul
 	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul

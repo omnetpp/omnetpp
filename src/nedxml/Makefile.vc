@@ -18,7 +18,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"nedxml.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"$O/nedxml.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 

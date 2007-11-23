@@ -12,7 +12,7 @@ O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/utils
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 endif
 
-all: $O/seedtool $O/tcl2c
+all: $O/seedtool
 	chmod +x opp_makemake opp_test opp_makedep opp_neddoc splitvec
 	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp opp_test $(OMNETPP_BIN_DIR)
@@ -29,15 +29,11 @@ $O/seedtool : seedtool.cc
 	@mkdir -p $O
 	$(CXX) seedtool.cc -o $O/seedtool$(EXE_SUFFIX)
 
-$O/tcl2c: tcl2c.c
-	@mkdir -p $O
-	$(CC) tcl2c.c -o $O/tcl2c$(EXE_SUFFIX)
-
 depend:
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc *.c
 
 clean:
-	rm -f $O/*.o $O/seedtool$(EXE_SUFFIX) $O/tcl2c$(EXE_SUFFIX)
+	rm -f $O/*.o $O/seedtool$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/seedtool.o: seedtool.cc

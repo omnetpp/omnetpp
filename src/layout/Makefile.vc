@@ -18,7 +18,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"layout.pdb"
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"$O/layout.pdb"
 IMPLIBS= $O/../common/common.lib
 
 OBJS= $O/geometry.obj $O/graphcomponent.obj $O/heapembedding.obj $O/startreeembedding.obj \

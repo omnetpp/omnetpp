@@ -129,6 +129,7 @@ LDFLAGS=$(LDFLAGS_DEBUG)
 #====== !!!         Try not to change anything below this line       !!! ======
 #==============================================================================
 
+#CONFIGNAME=vc71-debug-dll  #FIXME remove this line
 
 #
 # Other directories & files based on the base dirs

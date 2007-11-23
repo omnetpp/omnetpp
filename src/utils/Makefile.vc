@@ -3,6 +3,14 @@
 #
 !include ..\..\configuser.vc
 
+!if "$(CONFIGNAME)"==""
+O=.
+L=$(OMNETPP_LIB_DIR)
+!else
+O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/tkenv
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 #
 # Local definitions
 #
@@ -12,7 +20,7 @@ COPTS=$(CFLAGS)
 #
 # Targets
 #
-all: seedtool.exe tcl2c.exe opp_replace.exe opp_neddoc
+all: seedtool.exe opp_replace.exe opp_neddoc
 	copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makemake $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -30,9 +38,6 @@ all: seedtool.exe tcl2c.exe opp_replace.exe opp_neddoc
 seedtool.exe : seedtool.cc
 	$(CXX) $(CFLAGS) /Tp seedtool.cc
 	copy seedtool.exe $(OMNETPP_BIN_DIR:/=\)
-
-tcl2c.exe: tcl2c.c
-	$(CXX) $(CFLAGS) tcl2c.c
 
 opp_replace.exe: opp_replace.c
 	$(CXX) $(CFLAGS) opp_replace.c
@@ -53,10 +58,10 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc *.c
 
 clean:
-	-del *.obj seedtool.exe tcl2c.exe opp_replace.exe ver.h 2> nul
+	-del *.obj seedtool.exe opp_replace.exe ver.h 2> nul
 	-del $(VC_AUX_FILES) 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 seedtool.obj: seedtool.cc
 opp_replace.obj: opp_replace.c
-tcl2c.obj: tcl2c.c
+

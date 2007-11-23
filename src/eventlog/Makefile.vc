@@ -18,7 +18,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 # Local definitions
 #
-COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_EVENTLOG /Fd"eventlog.pdb"
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_EVENTLOG /Fd"$O/eventlog.pdb"
 IMPLIBS= $O/../common/common.lib
 
 OBJS= $O/ievent.obj $O/ieventlog.obj $O/eventlogfacade.obj $O/eventlogtablefacade.obj \
