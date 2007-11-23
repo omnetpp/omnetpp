@@ -26,7 +26,7 @@ sub makemake();
 makemake();
 exit 0;
 
-#FIXME: $(TARGET).exe; GENERATEDHEADERS=;
+#FIXME: GENERATEDHEADERS=... stuff;
 
 sub makemake()
 {
@@ -60,7 +60,6 @@ sub makemake()
     @libs = ();
     @importLibs = ();
     @extraArgs = ();
-
 
     # process arg vector
     while (@ARGV)
@@ -178,6 +177,7 @@ sub makemake()
         }
     }
 
+
     #
     # Prepare the variables for the template
     #
@@ -284,6 +284,13 @@ sub makemake()
 
     $objExt = $isNMake ? "obj" : "o";
 
+    $targetSuffix = "";
+    if ($type eq "EXE") {
+        $targetSuffix = $isNMake ? ".exe" : "";
+    } elsif ($type eq "SO") {
+        $targetSuffix = $isNMake ? ".dll" : ".so";
+    }
+
     # prepare subdirs. First, check that all specified subdirs exist
     foreach $subdir (@subdirs) {
         if (! -d $subdir) {
@@ -389,7 +396,7 @@ sub makemake()
 
     %m = (
         "nmake" =>  $isNMake,
-        "target" =>  $target,
+        "target" =>  $target . $targetSuffix,
         "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
         "configfile" =>  $configFile,
@@ -788,6 +795,11 @@ KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = {-L}$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
+{nmake:}# When using simkernel in DLL form, declare symbols in simkernel headers as "dllimport"
+{nmake:}!if "$(LIB_SUFFIX)"==".dll"
+{nmake:}CFLAGS=$(CFLAGS) -DWIN32_DLL
+{nmake:}!endif
+
 COPTS = $(CFLAGS) {fordllopt} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 NEDCOPTS = $(COPTS) $(NEDCFLAGS)
 MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
@@ -816,7 +828,7 @@ OBJS = {objs}
 
 {hassubdir:}subdirs: $(SUBDIR_TARGETS)
 {hassubdir:}
-{hassubdir:}{subdirtargets}:
+{hassubdir:}$(SUBDIR_TARGETS):
 {hassubdir:}{~nmake:}	cd $@ && {makecommand}
 {hassubdir:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {hassubdir:}
