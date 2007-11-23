@@ -89,7 +89,7 @@ public class Neddoc {
                     generateFileList();
                     generateSelectedTopics();
                     generateIndexPages();
-//                    genereteTypeDiagrams();
+                    genereteTypeDiagrams();
                     generateNedFilePages();
                     generateNedTypePages();
                     monitor.done();
@@ -631,10 +631,9 @@ public class Neddoc {
                         if (comment != null)
                             out(processHTMLContent("<pre class=\"comment\">" + comment + "</pre>"));
 
-//                        generateTypeDiagram(typeElement);
-//                        generateUsageDiagram(typeElement);
-//                        generateInheritanceDiagram(typeElement);
-                        
+                        generateTypeDiagram(typeElement);
+                        generateUsageDiagram(typeElement);
+                        generateInheritanceDiagram(typeElement);                       
                         generateParametersTable(typeElement);
 
                         if (typeElement instanceof IModuleTypeElement)
