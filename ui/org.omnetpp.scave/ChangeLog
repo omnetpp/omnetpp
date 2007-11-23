@@ -1,3 +1,30 @@
+2007-11-23
+----------
+
+Additions:
+
+   + Compute/Apply operations writes temporary files in the background containing the 
+     computed vectors. The computation starts only when the file is needed by the
+     Output Vector view.
+
+   + When a data point selected on a vector chart, the Dataset and Output Vector views
+     are synchronized with the selection.
+
+Fixes:
+
+   + Use default value if no interpolation-mode attribute is given for Integrate/TimeAverage
+     nodes.
+
+   + Select/Deselect did not work in Dataset view.
+
+   + ExpressionFilterNode: when xprev or yprev used in the expression, omit the first
+     value (instead of adding it as NaN).
+
+   + Export of computed data.
+
+   + DataflowManager sometimes detected a false deadlock.
+
+
 2007-10-27
 ----------
 
