@@ -11,7 +11,7 @@ import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.SetOperation;
-import org.omnetpp.scave.model2.LineID;
+import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.SetOperationPropertySource;
 
 /**
@@ -41,8 +41,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 		}
 		else if (object instanceof PropertySource)
 			return (PropertySource)object;
-		else if (object instanceof LineID) {
-			LineID lineID = (LineID)object;
+		else if (object instanceof ChartLine) {
+			ChartLine lineID = (ChartLine)object;
 			ChartProperties properties = ChartProperties.createPropertySource(lineID.getChart(), manager); 
 			if (properties instanceof VectorChartProperties)
 				return ((VectorChartProperties)properties).getLineProperties(lineID.getKey());

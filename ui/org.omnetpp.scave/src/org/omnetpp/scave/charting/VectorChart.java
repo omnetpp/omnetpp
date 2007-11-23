@@ -50,7 +50,6 @@ import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
@@ -72,33 +71,6 @@ public class VectorChart extends ChartCanvas {
 	
 	private boolean smartMode = true; // whether smartModeLimit is enabled
 	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
-	
-	public class LineSelection implements IChartSelection {
-		private long vectorID;
-		private int series;
-		private String seriesKey;
-		private int index;
-		
-		public LineSelection(int series, int index) {
-			this.series = series;
-			this.index=  index;
-			this.vectorID = -1;
-			this.seriesKey = null;
-			if (series >= 0) {
-				if (dataset instanceof VectorDataset)
-					vectorID = ((VectorDataset)dataset).getID(series);
-				seriesKey = dataset.getSeriesKey(series);
-			}
-		}
-		
-		public long getSelectedID() {
-			return vectorID;
-		}
-		
-		public String getSelectedKey() {
-			return seriesKey;
-		}
-	}
 	
 	/**
 	 * Class representing the properties of one line of the chart.
@@ -246,12 +218,16 @@ public class VectorChart extends ChartCanvas {
 				int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1);
 				if (count > 0) {
 					CrossHair.DataPoint point = points.get(0);
-					setSelection(new LineSelection(point.series, point.index));
+					setSelection(new VectorChartSelection(VectorChart.this, point));
 				}
 				else
 					setSelection(null);
 			}
 		});
+	}
+	
+	public VectorChartSelection getSelection() {
+		return (VectorChartSelection)selection;
 	}
 	
 	public LineProperties getLineProperties(int series) {
@@ -655,25 +631,9 @@ public class VectorChart extends ChartCanvas {
 		yAxis.drawAxis(gc);
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
-		drawSelection(gc);
+		if (getSelection() != null)
+			getSelection().draw(gc);
 		drawRubberband(gc);
 		crosshair.draw(gc);
-	}
-	
-	protected void drawSelection(GC gc) {
-		if (selection instanceof LineSelection) {
-			LineSelection selection = (LineSelection)this.selection;
-			if (selection.series >= 0 && selection.index >= 0 && dataset != null && selection.series < dataset.getSeriesCount()) {
-				LineProperties props = getLineProperties(selection.series);
-				if (props != null && props.getDisplayLine()) {
-					ICoordsMapping mapper = getOptimizedCoordinateMapper();
-					int x = mapper.toCanvasX(transformX(dataset.getX(selection.series, selection.index)));
-					int y = mapper.toCanvasY(transformY(dataset.getY(selection.series, selection.index)));
-					gc.setForeground(ColorFactory.RED);
-					gc.setLineWidth(1);
-					gc.drawOval(x-5, y-5, 10, 10);
-				}
-			}
-		}
 	}
 }

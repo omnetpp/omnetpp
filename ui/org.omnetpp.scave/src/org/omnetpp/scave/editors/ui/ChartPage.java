@@ -35,14 +35,13 @@ import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.charting.IChartSelection;
 import org.omnetpp.scave.charting.IChartSelectionListener;
-import org.omnetpp.scave.charting.VectorChart;
+import org.omnetpp.scave.charting.VectorChartSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.forms.BarChartEditForm;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.editors.forms.LineChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.LineChart;
@@ -51,7 +50,8 @@ import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.LineID;
+import org.omnetpp.scave.model2.ChartDataPoint;
+import org.omnetpp.scave.model2.ChartLine;
 
 public class ChartPage extends ScaveEditorPage {
 
@@ -144,13 +144,31 @@ public class ChartPage extends ScaveEditorPage {
 		if (chartSelectionListener == null) {
 			chartSelectionListener = new IChartSelectionListener() {
 				public void selectionChanged(IChartSelection selection) {
-					if (selection instanceof VectorChart.LineSelection) {
-						VectorChart.LineSelection lineSelection = (VectorChart.LineSelection)selection;
-						ResultFileManager manager = updater.getResultFileManager();
-						long id = lineSelection.getSelectedID();
-						String key = lineSelection.getSelectedKey();
-						LineID lineID = new LineID(chart, key, id, manager);
-						scaveEditor.setSelection(new TreeSelection(new TreePath(new Object[] {chart, lineID})));
+					if (selection instanceof VectorChartSelection) {
+						VectorChartSelection chartSelection = (VectorChartSelection)selection;
+						if (chartSelection.getIndex() >= 0) {
+							ChartDataPoint point = new ChartDataPoint(
+											chart,
+											chartSelection.getSeries(),
+											chartSelection.getSeriesKey(),
+											chartSelection.getID(),
+											chartSelection.getIndex(), 
+											chartSelection.getEventNum(),
+											chartSelection.getPreciseX(),
+											chartSelection.getX(), 
+											chartSelection.getY(),
+											updater.getResultFileManager());
+							scaveEditor.setSelection(new TreeSelection(new TreePath(new Object[] {chart, point})));
+						}
+						else {
+							ChartLine line = new ChartLine(
+									chart,
+									chartSelection.getSeries(),
+									chartSelection.getSeriesKey(),
+									chartSelection.getID(),
+									updater.getResultFileManager());
+							scaveEditor.setSelection(new TreeSelection(new TreePath(new Object[] {chart, line})));
+						}
 					}
 					else {
 						scaveEditor.setSelection(new StructuredSelection(chart));

@@ -11,19 +11,21 @@ import org.omnetpp.scave.model.Chart;
  *
  * @author tomi
  */
-public class LineID {
+public class ChartLine {
 	// the chart containing the line
 	private Chart chart;
+	// the series of the line within the chart's dataset
+	private int series;
 	// the key of the line within the chart
 	private String key;
 	// the id of the result item that the line represents
-	// -1 for computed data
 	private long id;
 	// the ResultFileManager that loaded the result item, and can resolve the id
 	private ResultFileManager manager;
 	
-	public LineID(Chart chart, String key, long id, ResultFileManager manager) {
+	public ChartLine(Chart chart, int series, String key, long id, ResultFileManager manager) {
 		this.chart = chart;
+		this.series = series;
 		this.key = key;
 		this.id = id;
 		this.manager = manager;
@@ -31,6 +33,10 @@ public class LineID {
 	
 	public Chart getChart() {
 		return chart;
+	}
+	
+	public int getSeries() {
+		return series;
 	}
 	
 	public String getKey() {

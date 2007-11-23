@@ -28,8 +28,9 @@ import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model2.ChartDataPoint;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater;
-import org.omnetpp.scave.model2.LineID;
+import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
 
 /**
@@ -107,6 +108,13 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			viewer.scrollToElement(entry);
 	}
 	
+	public void selectLine(int lineNumber) {
+		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
+		if (entry != null) {
+			viewer.scrollToElement(entry);
+			viewer.setSelectionElement(entry);
+		}
+	}
 	
 	@Override
 	public void dispose() {
@@ -136,6 +144,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	public void setViewerInput(ISelection selection) {
 		VectorResult selectedVector = null;
 		ResultFileManager manager = null;
+		int dataPointIndex = -1;
 		
 		if (selection instanceof IDListSelection) {
 			// show the first selected vector (XXX merge vectors?)
@@ -145,17 +154,22 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		}
 		else if (selection instanceof IStructuredSelection) {
 			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-			if (selectedObject instanceof LineID) {
-				LineID selectedLine = (LineID)selectedObject;
+			if (selectedObject instanceof ChartLine) {
+				ChartLine selectedLine = (ChartLine)selectedObject;
 				if (selectedLine.getResultItem() instanceof VectorResult) {
 					selectedVector = (VectorResult)selectedLine.getResultItem();
 					manager = selectedLine.getResultFileManager();
+					if (selectedObject instanceof ChartDataPoint)
+						dataPointIndex = ((ChartDataPoint)selectedObject).getIndex();
 				}
 			}
 		}
 		
-		if (ObjectUtils.equals(selectedVector, viewer.getInput()))
+		if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
+			if (dataPointIndex >= 0)
+				selectLine(dataPointIndex);
 			return;
+		}
 		
 		// recompute computed files if needed
 		if (selectedVector != null && manager != null && selectedVector.isComputed()) {
@@ -168,18 +182,19 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					setViewerInput((VectorResult)null);
 					showMessage("Computing vectors...");
 					final VectorResult finalVector = selectedVector;
+					final int serialToShow = dataPointIndex;
 					ComputedResultFileUpdater.instance().ensureComputedFile(operation, manager,
 						new ComputedResultFileUpdater.CompletionCallback() {
 							public void completed(final CompletionEvent event) {
 								if (Display.getCurrent() == null) {
 									Display.getDefault().asyncExec(new Runnable() {
 										public void run() {
-											setViewerInputOrMessage(finalVector, event.getStatus());
+											setViewerInputOrMessage(finalVector, serialToShow, event.getStatus());
 										}
 									});
 								}
 								else
-									setViewerInputOrMessage(finalVector, event.getStatus());
+									setViewerInputOrMessage(finalVector, serialToShow, event.getStatus());
 							}
 						});
 					return;
@@ -190,12 +205,17 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		}
 		
 		setViewerInput(selectedVector);
+		if (dataPointIndex >= 0)
+			selectLine(dataPointIndex);
 	}
 	
-	public void setViewerInputOrMessage(VectorResult input, IStatus status) {
+	public void setViewerInputOrMessage(VectorResult input, int serial, IStatus status) {
 		final int severity = status.getSeverity();
-		if (severity == IStatus.OK)
+		if (severity == IStatus.OK) {
 			setViewerInput(input);
+			if (serial >= 0)
+				selectLine(serial);
+		}
 		else if (severity == IStatus.CANCEL)
 			showMessage("Canceled");
 		else if (severity == IStatus.ERROR)

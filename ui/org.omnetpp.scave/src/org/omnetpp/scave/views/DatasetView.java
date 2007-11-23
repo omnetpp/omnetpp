@@ -63,7 +63,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.DatasetManager;
-import org.omnetpp.scave.model2.LineID;
+import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -363,8 +363,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		}
 		else if (selection instanceof IStructuredSelection) {
 			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-			if (selectedObject instanceof LineID) {
-				LineID selectedLine = (LineID)selectedObject;
+			if (selectedObject instanceof ChartLine) {
+				ChartLine selectedLine = (ChartLine)selectedObject;
 				item = selectedLine.getChart();
 				dataset = ScaveModelUtil.findEnclosingDataset(item);
 				id = selectedLine.getResultItemID();

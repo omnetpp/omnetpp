@@ -54,6 +54,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
@@ -425,6 +426,13 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected double inverseTransformY(double y) {
 		return (transform == null ? y : transform.inverseTransformY(y));
 	}
+	
+	
+	@Override
+	protected ICoordsMapping getOptimizedCoordinateMapper() {
+		return super.getOptimizedCoordinateMapper();
+	}
+
 	/**
 	 * Resets all GC settings except clipping and transform.
 	 */

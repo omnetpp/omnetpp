@@ -58,7 +58,7 @@ import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model2.LineID;
+import org.omnetpp.scave.model2.ChartLine;
 
 public abstract class BaseLineChartEditForm extends ChartEditForm {
 
@@ -179,8 +179,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	protected String getSelectedLineKey() {
 		if (formParameters != null) {
 			Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
-			if (selection instanceof LineID)
-				return ((LineID)selection).getKey();
+			if (selection instanceof ChartLine)
+				return ((ChartLine)selection).getKey();
 		}
 		return null;
 	}
