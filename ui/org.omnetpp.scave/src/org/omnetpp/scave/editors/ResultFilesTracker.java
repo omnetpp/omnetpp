@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -121,7 +122,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 					if (debug) System.out.format("File added: %s%n", file);
-					if (isResultFile(file)) {
+					if (isResultFile(file) && !isDerived(file)) {
 						if (inputsMatches(file))
 							loadFile(file);
 					}
@@ -133,13 +134,13 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					break;
 			case IResourceDelta.REMOVED:
 					if (debug) System.out.format("File removed: %s%n", file);
-					if (isResultFile(file))
+					if (isResultFile(file) && !isDerived(file))
 						unloadFile(file);
 					break;
 			case IResourceDelta.CHANGED:
 					if (debug) System.out.format("File changed: %s%n", file);
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
-						if (isResultFile(file))
+						if (isResultFile(file) && !isDerived(file))
 							reloadFile(file);
 						else if (IndexFile.isIndexFile(file)) {
 							IFile vectorFile = IndexFile.getVectorFileFor(file);
@@ -208,9 +209,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		try {
 			root.accept(new IResourceVisitor() {
 				public boolean visit(IResource resource) {
-					if (resource instanceof IFile && isResultFile((IFile)resource)) {
-						files.add((IFile)resource);
-						return false;
+					if (resource instanceof IFile) {
+						IFile file = (IFile)resource;
+						if (isResultFile(file) && !isDerived(file)) {
+							files.add((IFile)resource);
+							return false;
+						}
 					}
 					return true;
 				}
@@ -229,7 +233,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		IResource resource = workspaceRoot.findMember(resourcePath);
 		if (resource instanceof IFile) {
 			IFile file = (IFile)resource;
-			loadFile(file);
+			if (!isDerived(file))
+				loadFile(file);
 		}
 	}
 
@@ -375,6 +380,18 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			return "sca".equals(extension) ||  "vec".equals(extension) || "vci".equals(extension);
 		}
 		return false;
+	}
+	
+	/**
+	 * Returns true if the file or one of its parents is derived.
+	 * 
+	 * @return
+	 */
+	private boolean isDerived(IFile file) {
+		IResource resource = file;
+		while (!(resource instanceof IProject) && !resource.isDerived())
+			resource = resource.getParent();
+		return resource.isDerived();
 	}
 	
 	/**

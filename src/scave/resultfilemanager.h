@@ -128,6 +128,7 @@ struct SCAVE_API ResultFile
     std::string directory; // directory's location in the Eclipse workspace
     std::string fileName; // file name
     std::string filePath; // workspace directory + fileName
+    bool computed;
     ScalarResults scalarResults;
     VectorResults vectorResults;
     HistogramResults histogramResults;
@@ -238,7 +239,7 @@ class SCAVE_API ResultFileManager
     }
 
     // utility functions called while loading a result file
-    ResultFile *addFile(const char *fileName, const char *fileSystemFileName);
+    ResultFile *addFile(const char *fileName, const char *fileSystemFileName, bool computed);
     Run *addRun();
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 

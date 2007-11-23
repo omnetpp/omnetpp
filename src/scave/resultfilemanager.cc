@@ -150,7 +150,7 @@ ResultFileList ResultFileManager::getFiles() const
 {
     ResultFileList out;
     for (int i=0; i<(int)fileList.size(); i++)
-        if (fileList[i])
+        if (fileList[i] && !fileList[i]->computed)
             out.push_back(fileList[i]);
     return out;
 }
@@ -168,7 +168,7 @@ ResultFileList ResultFileManager::getFilesForRun(Run *run) const
 {
     ResultFileList out;
     for (int i=0; i<(int)fileRunList.size(); i++)
-        if (fileRunList[i]->runRef == run)
+        if (fileRunList[i]->runRef == run && !fileRunList[i]->fileRef->computed)
             out.push_back(fileRunList[i]->fileRef);
     return out;
 }
@@ -697,7 +697,7 @@ static std::string fileNameToSlash(const char *fileName)
     return res;
 }
 
-ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName)
+ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, bool computed)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
@@ -706,6 +706,7 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     file->fileSystemFilePath = fileSystemFileName;
     file->filePath = fileNameToSlash(fileName);
     splitFileName(file->filePath.c_str(), file->directory, file->fileName);
+    file->computed = computed;
     file->numLines = 0;
     file->numUnrecognizedLines = 0;
     return file;
@@ -767,7 +768,7 @@ ID ResultFileManager::addComputedVector(const char *name, const char *file, Comp
 
     ResultFile *fileRef = getFile(file);
     if (!fileRef)
-    	fileRef = addFile(file, file); // XXX
+    	fileRef = addFile(file, file, true); // XXX
     Run *runRef = vector.fileRunRef->runRef;
     FileRun *fileRunRef = getFileRun(fileRef, runRef);
     if (!fileRunRef)
@@ -1021,7 +1022,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         throw opp_runtime_error("cannot open `%s' for read", fileSystemFileName);
 
     // add to fileList
-    ResultFile *fileRef = addFile(fileName, fileSystemFileName);
+    ResultFile *fileRef = addFile(fileName, fileSystemFileName, false);
 
     try
     {

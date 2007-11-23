@@ -120,7 +120,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 	}
 	
 	protected boolean toBeIndexed(IFile file) {
-		if (isVectorFile(file)) {
+		if (isVectorFile(file) && !file.getParent().isDerived()) {
 			return !isIndexFileUpToDate(file);
 		}
 		else
