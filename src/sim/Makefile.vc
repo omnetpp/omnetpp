@@ -106,9 +106,9 @@ $O/sim_std.lib : $(OBJS) $L
 
 $O/sim_std.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$O/sim_std.dll" /subsystem:console $(OBJS) $(IMPLIBS)
-	copy /b $(O:/=\)\sim_std.dll $(L:/=\) 2>nul
-	copy /b $(O:/=\)\sim_std.lib $(L:/=\) 2>nul
-	copy /b $(O:/=\)\sim_std.pdb $(L:/=\) 2>nul
+	copy /b $(O:/=\)\sim_std.dll $(OMNETPP_BIN_DIR:/=\)
+	copy /b $(O:/=\)\sim_std.lib $(L:/=\)
+	- copy /b $(O:/=\)\sim_std.pdb $(L:/=\) 2>nul
 
 expr.tab.h expr.tab.cc : expr.y
 	$(YACC:/=\) -p expryy -b expr -d expr.y
