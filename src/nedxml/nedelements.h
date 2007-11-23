@@ -1893,7 +1893,7 @@ class NEDXML_API LiteralNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;msg-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT msg-file (comment*, (cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+ * <!ELEMENT msg-file (comment*, (property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
  *                      enum|message|class|struct)*)>
  * <!ATTLIST msg-file
  *      filename            CDATA     #IMPLIED
@@ -1936,6 +1936,8 @@ class NEDXML_API MsgFileNode : public NEDElement
 
     virtual MsgFileNode *getNextMsgFileNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
+    virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
     virtual CplusplusNode *getFirstCplusplusChild() const;
     virtual StructDeclNode *getFirstStructDeclChild() const;
     virtual ClassDeclNode *getFirstClassDeclChild() const;

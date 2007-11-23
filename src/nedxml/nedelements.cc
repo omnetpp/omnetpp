@@ -2933,6 +2933,16 @@ CommentNode *MsgFileNode::getFirstCommentChild() const
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
+PropertyDeclNode *MsgFileNode::getFirstPropertyDeclChild() const
+{
+    return (PropertyDeclNode *)getFirstChildWithTag(NED_PROPERTY_DECL);
+}
+
+PropertyNode *MsgFileNode::getFirstPropertyChild() const
+{
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
 CplusplusNode *MsgFileNode::getFirstCplusplusChild() const
 {
     return (CplusplusNode *)getFirstChildWithTag(NED_CPLUSPLUS);

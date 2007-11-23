@@ -397,7 +397,7 @@ void NEDDTDValidator::validateElement(MsgFileNode *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
-        {{NED_CPLUSPLUS, NED_STRUCT_DECL, NED_CLASS_DECL, NED_MESSAGE_DECL, NED_ENUM_DECL, NED_ENUM, NED_MESSAGE, NED_CLASS, NED_STRUCT, NED_NULL}, '*'},
+        {{NED_PROPERTY_DECL, NED_PROPERTY, NED_CPLUSPLUS, NED_STRUCT_DECL, NED_CLASS_DECL, NED_MESSAGE_DECL, NED_ENUM_DECL, NED_ENUM, NED_MESSAGE, NED_CLASS, NED_STRUCT, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
