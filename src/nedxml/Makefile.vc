@@ -21,19 +21,6 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"$O/nedxml.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
-
-#OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
-#      $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \
-#      $O/nedsyntaxvalidator.obj $O/nedsemanticvalidator.obj \
-#      $O/nedfilebuffer.obj $O/nedparser.obj $O/nedyylib.obj \
-#      $O/ned2.tab.obj $O/lex.ned2yy.obj \
-#      $O/msg2.tab.obj $O/lex.msg2yy.obj \
-#      $O/ned1.tab.obj $O/lex.ned1yy.obj \
-#      $O/nedutil.obj $O/nedgenerator.obj $O/xmlgenerator.obj $O/nedtools.obj \
-#      $O/nedxmlparser.obj $O/nedsaxhandler.obj $O/saxparser_$(XMLPARSER).obj \
-#      $O/nedcompiler.obj $O/cppgenerator.obj $O/cppmsggenerator.obj $O/cppexprgenerator.obj
-
-# FIXME begin temporary def
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
       $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \
       $O/nedsyntaxvalidator.obj $O/nedsemanticvalidator.obj \
@@ -45,7 +32,6 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
       $O/nedresourcecache.obj $O/nedcomponent.obj \
       $O/nedcompiler.obj
-# FIXME end temporary def
 
 #
 # Automatic rules
