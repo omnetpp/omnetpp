@@ -395,6 +395,8 @@ sub makemake()
     $deps = "";
 
     %m = (
+        "lbrace" =>  "{",
+        "rbrace" =>  "}",
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
         "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
@@ -406,6 +408,7 @@ sub makemake()
         "-u" =>  $isNMake ? "/include:" : "-u",
         "_dir" =>  "_dir",
         "cc" =>  $ccExt,
+        "obj" =>  $objExt,
         "deps" =>  $deps,
         "exe" =>  $type eq "EXE",
         "so" =>  $type eq "SO",
@@ -445,11 +448,21 @@ sub makemake()
     print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 }
 
-sub substituteIntoTemplate($;$)
+
+#
+# Performs template substitution. Constructs understood are:
+#  - {foo} gets replaced by the value of "foo";
+#  - {bar?some text} gets replaced by "some text" if value of "bar" is true.
+#  - {~bar?some text} gets replaced by "some text" if value of "bar" is false
+#  - {bar:} only keep the rest of the line if value of "bar" is true
+#  - {~bar:} only keep the rest of the line if value of "bar" is false
+#
+# Newlines inside {...} are not permitted; this allows detecting errors caused
+# by misplaced braces. Also, nesting is not supported.
+#
+sub substituteIntoTemplate($;$;$;$)
 {
-    my ($template,$mapref) = @_;
-    my $startTag = "{";
-    my $endTag = "}";
+    my ($template,$mapref,$startTag,$endTag) = @_;
     my %map = %$mapref;
 
     my $buf = "";
@@ -785,12 +798,14 @@ KERNEL_LIBS = {-l}common{.lib} {-l}sim_std{.lib}
 {nmake:}!if "$(WITH_NETBUILDER)"=="yes"
 {~nmake:}ifeq($(WITH_NETBUILDER),yes)
 KERNEL_LIBS = $(KERNEL_LIBS) {-l}nedxml{.lib} $(XML_LIBS)
-{nmake?!}endif
+{~nmake:}endif
+{nmake:}!endif
 
 {nmake:}!if "$(WITH_PARSIM)"=="yes"
 {~nmake:}ifeq($(WITH_PARSIM),yes)
 KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
-{nmake?!}endif
+{~nmake:}endif
+{nmake:}!endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = {-L}$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -838,8 +853,15 @@ OBJS = {objs}
 {hasmsgfiles:}
 .SUFFIXES: .{cc}
 
-.{cc}.obj:
-	$(CXX) -c $(COPTS) {nmake?/Tp} $<
+{nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
+{~nmake:}$O/%.{obj}: %.{cc}
+{~nmake:}	@mkdir -p $O
+	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+{nmake:}
+{nmake:}$(OBJS) : $O
+{nmake:}
+{nmake:}$O:
+{nmake:}	md $(O:/=\)
 
 generateheaders: $(GENERATEDHEADERS)
 {hassubdir:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
