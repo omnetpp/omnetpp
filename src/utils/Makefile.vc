@@ -21,6 +21,7 @@ COPTS=$(CFLAGS)
 # Targets
 #
 all: seedtool.exe opp_replace.exe opp_neddoc
+	echo @echo $(OMNETPP_ROOT:/=\)\configuser.vc >opp_configfilepath.cmd
 	copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makemake $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -33,6 +34,9 @@ all: seedtool.exe opp_replace.exe opp_neddoc
 	copy opp_neddoc $(OMNETPP_BIN_DIR:/=\)
 	copy neddoc.xsl $(OMNETPP_BIN_DIR:/=\)
 	copy neddocproc.pl $(OMNETPP_BIN_DIR:/=\)
+	copy opp_configfilepath.cmd $(OMNETPP_BIN_DIR:/=\)
+	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
+	copy linkall.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 
 seedtool.exe : seedtool.cc

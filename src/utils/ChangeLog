@@ -5,6 +5,10 @@ opp_(n)makemake: dropped -N option, and made dynamic NED loading the default
 opp_(n)makemake: default is linking with BOTH cmdenv and tkenv -- use -u runtime option to choose
 opp_makedep: --objdir option changed to --objprefix (also available as -P)
 
+opp_makemake option changes:
+-b,--basedir ==> -P,--projectdir
+old -P option (opp_msgc windows export/import symbol) became -p
+added --nmake
 
 2006-10-21  ------ omnetpp-3.3 released ------
 

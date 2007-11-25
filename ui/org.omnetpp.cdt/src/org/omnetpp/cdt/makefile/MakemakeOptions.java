@@ -14,7 +14,7 @@ public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SO, NOLINK};
     public List<String> args;
     public boolean isNMake = false;
-    public String baseDir = null;  // not supported
+    public String projectDir = null;  // not supported
     public Type type = Type.EXE;
     public String target = null;
     public boolean force = false;
@@ -92,12 +92,12 @@ public class MakemakeOptions implements Cloneable {
                 exceptSubdirs.add(dir);
             }
             else if (arg.startsWith("-X")) {
-                String dir = StringUtils.removeStart(arg, "-X");
+                String dir = arg.substring(2);
                 exceptSubdirs.add(dir);
             }
-            else if (arg.equals("-b") || arg.equals("--basedir")) {
+            else if (arg.equals("-P") || arg.equals("--projectdir")) {
                 checkArg(argv, i);
-                baseDir = argv[++i];
+                projectDir = argv[++i];
             }
             else if (arg.equals("-c") || arg.equals("--configfile")) {
                 checkArg(argv, i);
@@ -111,7 +111,7 @@ public class MakemakeOptions implements Cloneable {
                 subdirs.add(argv[++i]);
             }
             else if (arg.startsWith("-d")) {
-                String dir = StringUtils.removeStart(arg, "-d");
+                String dir = arg.substring(2);
                 subdirs.add(dir);
             }
             else if (arg.equals("-s") || arg.equals("--make-so")) {
@@ -149,7 +149,7 @@ public class MakemakeOptions implements Cloneable {
                 includeDirs.add(dir);
             }
             else if (arg.startsWith("-I")) {
-                String dir = StringUtils.removeStart(arg, "-I");
+                String dir = arg.substring(2);
                 includeDirs.add(dir);
             }
             else if (arg.equals("-L")) {
@@ -158,19 +158,19 @@ public class MakemakeOptions implements Cloneable {
                 libDirs.add(dir);
             }
             else if (arg.startsWith("-L")) {
-                String dir = StringUtils.removeStart(arg, "-L");
+                String dir = arg.substring(2);
                 libDirs.add(dir);
             }
             else if (arg.startsWith("-l")) {
-                String lib = StringUtils.removeStart(arg, "-l");
+                String lib = arg.substring(2);
                 libs.add(lib);
             }
-            else if (arg.equals("-P")) {
+            else if (arg.equals("-p")) {
                 checkArg(argv, i);
                 exportDefOpt = argv[++i];
             }
-            else if (arg.startsWith("-P")) {
-                exportDefOpt = StringUtils.removeStart(arg, "-P");
+            else if (arg.startsWith("-p")) {
+                exportDefOpt = arg.substring(2);
             }
             else {
                 Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
@@ -195,8 +195,8 @@ public class MakemakeOptions implements Cloneable {
     public String[] toArgs() {
         List<String> result = new ArrayList<String>();
 
-        if (!StringUtils.isEmpty(baseDir))
-            add(result, "-b", baseDir);
+        if (!StringUtils.isEmpty(projectDir))
+            add(result, "-P", projectDir);
 
         if (target != null)
             add(result, "-o", target);
@@ -231,7 +231,7 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-c", configFile); //XXX omit if can be detected?
 
         if (!StringUtils.isEmpty(exportDefOpt))
-            add(result, "-P"+exportDefOpt);
+            add(result, "-p"+exportDefOpt);
 
         if (compileForDll && type != Type.SO)
             add(result, "-S");
@@ -278,7 +278,7 @@ public class MakemakeOptions implements Cloneable {
         MakemakeOptions result = new MakemakeOptions();
         result.args = args;
         result.isNMake = isNMake;
-        result.baseDir = baseDir;
+        result.projectDir = projectDir;
         result.type = type;
         result.target = target;
         result.force = force;

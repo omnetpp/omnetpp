@@ -16,8 +16,15 @@
 # OMNETPP_ROOT=C:/Work/Projects/omnest/omnetpp4/omnetpp
 OMNETPP_ROOT = $(OMNETPP_ROOT:\=/)
 
-# Version. Should ideally come from the 'Version' file...
+# Version. Should ideally come from the 'Version' file but nmake doesn't support that
 OMNETPP_VERSION=omnetpp-4.0a3
+
+#
+# The Visual C++ compiler used: "vc71", "vc80", etc. This selects which set of
+# libraries simulation models will be linked with: linker path will be set as
+# $(OMNETPP_ROOT)/lib/$(TOOLCHAIN_NAME)-debug or -release.
+#
+TOOLCHAIN_NAME = vc71
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -120,16 +127,17 @@ WITH_PARSIM=no    # FIXME for now
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
+!if "$(MODE)"=="debug"
 CFLAGS=$(CFLAGS_DEBUG)
 LDFLAGS=$(LDFLAGS_DEBUG)
+!else
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
+!endif
 
 #==============================================================================
 #====== !!!         Try not to change anything below this line       !!! ======
 #==============================================================================
-
-#CONFIGNAME=vc71-debug-dll  #FIXME remove this line
 
 #
 # Other directories & files based on the base dirs
@@ -254,8 +262,8 @@ CFLAGS_RELEASE=/MT /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
 # LIB_SUFFIX is either .lib or .dll
-LIB_SUFFIX=.lib
-#LIB_SUFFIX=.dll
+#LIB_SUFFIX=.lib
+LIB_SUFFIX=.dll
 
 HAVE_DLOPEN=0
 

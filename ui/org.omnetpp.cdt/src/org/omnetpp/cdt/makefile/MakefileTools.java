@@ -136,7 +136,7 @@ public class MakefileTools {
         for (IContainer folder : deps.keySet()) {
             System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {
-                System.out.print(" " + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
+                System.out.print(" " + makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
             }
             System.out.println();
         }
@@ -151,7 +151,7 @@ public class MakefileTools {
             List<String> includeOptions = new ArrayList<String>();
             if (deps.containsKey(folder))
                 for (IContainer dep : deps.get(folder))
-                    includeOptions.add("-I" + makeRelativePath(folder.getFullPath(), dep.getFullPath()).toString());
+                    includeOptions.add("-I" + makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
             String folderPath = folder.getProjectRelativePath().toString();  //XXX refine: only relative if it fits best
 
             result += targetNames.get(folder) + ":\n";
@@ -361,12 +361,12 @@ public class MakefileTools {
     }
 
     
-    public static IPath makeRelativePath(IPath base, IPath target) {
-        if (base.equals(target))
+    public static IPath makeRelativePath(IPath inputPath, IPath referenceDir) {
+        if (referenceDir.equals(inputPath))
             return new Path(".");
-        int commonPrefixLen = target.matchingFirstSegments(base);
-        int upLevels = base.segmentCount() - commonPrefixLen;
-        return new Path(StringUtils.removeEnd(StringUtils.repeat("../", upLevels), "/")).append(target.removeFirstSegments(commonPrefixLen));
+        int commonPrefixLen = inputPath.matchingFirstSegments(referenceDir);
+        int upLevels = referenceDir.segmentCount() - commonPrefixLen;
+        return new Path(StringUtils.removeEnd(StringUtils.repeat("../", upLevels), "/")).append(inputPath.removeFirstSegments(commonPrefixLen));
     }
 
     /**

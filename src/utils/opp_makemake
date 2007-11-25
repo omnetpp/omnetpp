@@ -26,7 +26,18 @@ sub makemake();
 makemake();
 exit 0;
 
-#FIXME: GENERATEDHEADERS=... stuff;
+#TODO:
+# GENERATEDHEADERS=... stuff;
+# support -Dsymbol=value
+# support building static library
+# support output dir
+# into deps:  join(generatedHeaders);
+# project directory should be autodetected if not given!
+# use linkall.cmd on Windows!
+#
+#TODO: to implement in the Java version:
+# outputDir
+
 
 sub makemake()
 {
@@ -39,9 +50,10 @@ sub makemake()
     #
     @args = @ARGV;
     $isNMake = 0;
-    $baseDir = "";
+    $projectDir = "";
     $type = "EXE";
     $target = "";
+    $outputDir = ".";
     $force = 0;
     $linkWithObjects = 0;
     $tstamp = 1;
@@ -81,6 +93,9 @@ sub makemake()
         elsif ($arg eq "-o" || $arg eq "--outputfile") {
             $target = shift;
         }
+        elsif ($arg eq "--outputdir") {
+            $outputDir = shift;
+        }
         elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
         }
@@ -95,8 +110,8 @@ sub makemake()
             my $dir = substr($arg, 2);
             push(@exceptSubdirs, $dir);
         }
-        elsif ($arg eq "-b" || $arg eq "--basedir") {
-            $baseDir = shift;
+        elsif ($arg eq "-P" || $arg eq "--projectdir") {
+            $projectDir = shift;
         }
         elsif ($arg eq "-c" || $arg eq "--configfile") {
             $configFile = shift;
@@ -160,10 +175,10 @@ sub makemake()
             my $lib = substr($arg, 2);
             push(@libs, $lib);
         }
-        elsif ($arg eq "-P") {
+        elsif ($arg eq "-p") {
             $exportDefOpt = shift;
         }
-        elsif ($arg =~ /^-P/) {
+        elsif ($arg =~ /^-p/) {
             $exportDefOpt = substr($arg, 2);
         }
         else {
@@ -206,55 +221,62 @@ sub makemake()
     @msgfiles = ();
     @msgccandhfiles = ();
 
-    $target = abs2rel($target,$baseDir);
+    $target = abs2rel($target,$projectDir);
 
     @tmp = @includeDirs;
     foreach $i (@tmp) {
-        push(@includeDirs, abs2rel($i,$baseDir));
+        push(@includeDirs, abs2rel($i,$projectDir));
     }
     @tmp = @libDirs;
     foreach $i (@tmp) {
-        push(@libDirs, abs2rel($i,$baseDir));
+        push(@libDirs, abs2rel($i,$projectDir));
     }
 
     $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
-    #if ($baseDir ne "") {
+    #if ($projectDir ne "") {
     #    error("specifying the base directory (-b option) is not supported, it is always the project directory");
     #}
 
-    if ($isNMake) {
-        if ($configFile eq "") {
-            # try to find it
-            my $progdir = $0;
-            $progdir =~ s|\\|/|g;
-            $progdir =~ s|/?[^/:]*$||g;
-            $progdir = "." if ($progdir eq "");
-            $progparentdir = $progdir;
-            $progparentdir =~ s|/?[^/:]*/?$||;
-            foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
-                        "../../../configuser.vc", "../../../../configuser.vc",
-                        "../../../../../configuser.vc", "$progparentdir/configuser.vc",
-                        "$progdir/configuser.vc")
-            {
-                if (-f $f) {
-                     $configFile = $f;
-                     last;
-                }
-            }
-            if ($configFile eq "") {
-                warning("configuser.vc file not found -- try -c option or edit generated makefile");
-            }
-        }
-        else
-        {
-            if (! -f $configFile) {
-                error("file $configFile not found");
-            }
-        }
-
-        $configFile = abs2rel($configFile,$baseDir);
+    $configFile = `opp_configfilepath`; #FIXME check exit code or something
+    $configFile =~ s/\n//gs;
+    $configFile =~ s/\s*(.*)\s*/$1/gs;
+    if ($configFile eq "" || ! -f $configFile) {
+        error("opp_configfilepath returned \"$configFile\"");  #FIXME better error message
     }
+
+#    if ($isNMake) {
+#        if ($configFile eq "") {
+#            # try to find it
+#            my $progdir = $0;
+#            $progdir =~ s|\\|/|g;
+#            $progdir =~ s|/?[^/:]*$||g;
+#            $progdir = "." if ($progdir eq "");
+#            $progparentdir = $progdir;
+#            $progparentdir =~ s|/?[^/:]*/?$||;
+#            foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
+#                        "../../../configuser.vc", "../../../../configuser.vc",
+#                        "../../../../../configuser.vc", "$progparentdir/configuser.vc",
+#                        "$progdir/configuser.vc")
+#            {
+#                if (-f $f) {
+#                     $configFile = $f;
+#                     last;
+#                }
+#            }
+#            if ($configFile eq "") {
+#                warning("configuser.vc file not found -- try -c option or edit generated makefile");
+#            }
+#        }
+#        else
+#        {
+#            if (! -f $configFile) {
+#                error("file $configFile not found");
+#            }
+#        }
+#
+#        $configFile = abs2rel($configFile,$projectDir);
+#    }
 
     # try to determine if .cc or .cpp files are used
     @ccfiles = glob("*.cc");
@@ -313,11 +335,11 @@ sub makemake()
 
     foreach $arg (@extraArgs) {
         if (-d $arg) {
-            $arg = abs2rel($arg,$baseDir);
+            $arg = abs2rel($arg,$projectDir);
             push(@linkDirs, $arg);
         }
         elsif (-f $arg) {
-            $arg = abs2rel($arg,$baseDir);
+            $arg = abs2rel($arg,$projectDir);
             push(@externalObjects, $arg);
         }
         else {
@@ -362,7 +384,7 @@ sub makemake()
         $i =~ s/\.msg$/_m.$objExt/g;
         $i =~ s/\.$ccExt$/.$objExt/g;
         if ($i ne '') {
-            push(@objs, $i);
+            push(@objs, "\$O/$i");
         }
     }
 
@@ -390,8 +412,6 @@ sub makemake()
         }
     }
 
-    #FIXME TODO: into deps:  join(generatedHeaders);
-    #FIXME: GENERATEDHEADERS= line missing from template? btw, what is GENERATEDHEADERS for??
     $deps = "";
 
     %m = (
@@ -399,7 +419,8 @@ sub makemake()
         "rbrace" =>  "}",
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
-        "progname" =>  $isNMake ? "opp_nmakemake" : "opp_makemake",
+        "outputdir" => $outputDir,
+        "progname" => "opp_makemake";  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
         "configfile" =>  $configFile,
         "-L" =>  $isNMake ? "/libpath:" : "-L",
@@ -582,61 +603,61 @@ sub getFromMapAsBool($;$)
 }
 
 #
-# Converts absolute path $abs to relative path (relative to the current
-# directory $cur), provided that both $abs and $cur are under a
-# "project base directory" $base. Otherwise it returns the original path.
+# Converts absolute path $inputpath to relative path (relative to the current
+# directory $referencedir), provided that both $inputpath and $referencedir are under a
+# "project base directory" $projectdir. Otherwise it returns the original path.
 # All "\" are converted to "/".
 #
 sub abs2rel($;$;$;)
 {
-    my($abs, $base, $cur) = @_;
+    my($inputpath, $projectdir, $referencedir) = @_;
 
-    if ($base eq '') {
-        return $abs;
+    if ($projectdir eq '') {
+        return $inputpath;
     }
-    if ($cur eq '') {
-        $cur = cwd;
+    if ($referencedir eq '') {
+        $referencedir = cwd;
     }
 
     # some normalization
-    $abs  =~ s|\\|/|g;
-    $cur  =~ s|\\|/|g;
-    $base =~ s|\\|/|g;
+    $inputpath =~ s|\\|/|g;
+    $referencedir =~ s|\\|/|g;
+    $projectdir =~ s|\\|/|g;
 
-    $abs  =~ s|/\./|/|g;
-    $cur  =~ s|/\./|/|g;
-    $base =~ s|/\./|/|g;
+    $inputpath =~ s|/\./|/|g;
+    $referencedir =~ s|/\./|/|g;
+    $projectdir =~ s|/\./|/|g;
 
-    $abs  =~ s|//+|/|g;
-    $cur  =~ s|//+|/|g;
-    $base =~ s|//+|/|g;
+    $inputpath =~ s|//+|/|g;
+    $referencedir =~ s|//+|/|g;
+    $projectdir =~ s|//+|/|g;
 
-    $cur  =~ s|/*$|/|;
-    $base =~ s|/*$|/|;
+    $referencedir =~ s|/*$|/|;
+    $projectdir =~ s|/*$|/|;
 
-    if (!($abs =~ /^\Q$base\E/i && $cur =~ /^\Q$base\E/i)) {
-        return $abs;
+    if (!($inputpath =~ /^\Q$projectdir\E/i && $referencedir =~ /^\Q$projectdir\E/i)) {
+        return $inputpath;
     }
 
     while (1)
     {
-       # keep cutting off common prefixes until we can
-       $abs =~ m|^(.*?/)|;
+       # keep cutting off common prefixes until no more
+       $inputpath =~ m|^(.*?/)|;
        my $prefix = $1;
        last if ($prefix eq '');
-       if ($cur =~ /^\Q$prefix\E/i) {
-           $abs =~ s/^\Q$prefix\E//i;
-           $cur =~ s/^\Q$prefix\E//i;
+       if ($referencedir =~ /^\Q$prefix\E/i) {
+           $inputpath =~ s/^\Q$prefix\E//i;
+           $referencedir =~ s/^\Q$prefix\E//i;
        } else {
            last;
        }
     }
 
 
-    # assemble relative path: change every directory name in $cur to "..",
-    # then add $abs to it.
-    $cur =~ s|[^/]+|..|g;
-    my $rel = $cur.$abs;
+    # assemble relative path: change every directory name in $referencedir to "..",
+    # then add $inputpath to it.
+    $referencedir =~ s|[^/]+|..|g;
+    my $rel = $referencedir.$inputpath;
 
     return $rel;
 }
@@ -673,16 +694,13 @@ sub warning($)
 sub usage()
 {
     print <<END
-FIXME merge help text and options!
-$progname: create MSVC makefile for an OMNeT++/OMNEST model, based on
+$progname: create a Makefile for an OMNeT++/OMNEST model, based on
 source files in current directory
 
-$progname [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
-              [-w] [-x] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
-              [-i makefile-fragment-file]
-              [directories, library and object files]...
+$progname [options] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
+    --nmake               Generate Makefile.vc for Visual C++ and nmake.exe
     -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
                           By default, this is determined by looking at
                           existing files in the directory.
@@ -693,11 +711,13 @@ $progname [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           cies in the makefrag.vc file.
     -X directory, -Xdirectory, --except directory
                           With -r (recurse) option: ignore the given directory
-    -b directory, --basedir directory
+    -P directory, --projectdir directory
                           Project base (root) directory; all absolute paths
                           (-I, -L, object file names, etc.) which point into
                           this directory will be converted to relative, to
                           ease compiling the project in a different directory.
+                          Defaults to first ancestor directory that contains
+                          a ".project" file.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
                           directories. With this option, -u and -l have
@@ -720,12 +740,14 @@ $progname [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           link directories and (if -w option is present)
                           -I directories after this option.
     -u name, --userinterface name
-                          Use all, Cmdenv or Tkenv. Defaults to all.
+                          Selects the user interface libraries to link with.
+                          Possible values are "all", "Cmdenv", and "Tkenv".
+                          Defaults to "all".
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
                           (e.g. -lmylibrary.lib)
-    -P symbol, -Psymbol   -P option to be passed to opp_msgc
+    -p symbol, -psymbol   -P option to be passed to opp_msgc
     -c filename, --configfile filename
                           Included config file (default:"../../configuser.vc")
     -i filename, --includefragment filename
@@ -772,21 +794,54 @@ TARGET = {target}
 # C++ include paths (with -I)
 INCLUDE_PATH = {includepath}
 
-# misc additional object and library files to link with
+# Misc additional object and library files to link with
 EXTRA_OBJS = {extraobjs}
 
-# object files from other directories to link with
+# Object files from other directories to link with
 EXT_DIR_OBJS = {extdirobjs}
 
-# time stamps of other directories (used as dependency)
+# Timestamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS = {extdirtstamps}
 
 # Additional libraries (-L, -l, -t options)
 LIBS = {libpath}{libs}{importlibs}
 
+# Output directory
+O = {outputdir}
+
+# Object files for local .{cc} and .msg files
+OBJS = {objs}
+
+{hassubdir:}# Subdirectories to recurse into
+{hassubdir:}SUBDIRS = {subdirs}
+{hassubdir:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
+{hassubdir:}
 #------------------------------------------------------------------------------
 
-!include {configfile}
+# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
+{nmake:}!if "$(OMNETPP_CONFIGFILE)"!=""
+{nmake:}CONFIGFILE = $(OMNETPP_CONFIGFILE)
+{nmake:}!elseif "$(OMNETPP_ROOT)"!=""
+{nmake:}CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
+{nmake:}!else
+{nmake:}CONFIGFILE = {configfile}
+{nmake:}!endif
+{nmake:}
+{nmake:}!if !exist($(CONFIGFILE))
+{nmake:}!error '$(CONFIGFILE)' does not exist -- specify "configuser.vc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line nmake argument), or edit or re-generate this makefile.
+{nmake:}!endif
+{nmake:}
+{nmake:}!include $(CONFIGFILE)
+{~nmake:}CONFIGFILE = $(shell opp_configfilepath)
+{~nmake:}include $(CONFIGFILE)
+
+# Check $(MODE)
+{nmake?!if "$(MODE)"==""}{~nmake?ifeq($(MODE),)}
+MODE = release
+{nmake?!}endif
+{nmake?!if "$(MODE)"!="debug" && "$(MODE)"!="release"}{~nmake?FIXME how to say $(MODE) is not debug or release?...}
+{nmake?!}error MODE must be "debug" or "release"
+{nmake?!}endif
 
 # User interface libs
 CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
@@ -808,7 +863,8 @@ KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
 {nmake:}!endif
 
 # Simulation kernel and user interface libraries
-OMNETPP_LIBS = {-L}$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)-$(MODE)
+OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
 {nmake:}# When using simkernel in DLL form, declare symbols in simkernel headers as "dllimport"
 {nmake:}!if "$(LIB_SUFFIX)"==".dll"
@@ -820,26 +876,29 @@ NEDCOPTS = $(COPTS) $(NEDCFLAGS)
 MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 #------------------------------------------------------------------------------
-# object files in this directory
-OBJS = {objs}
-
-{hassubdir:}# subdirectories to recurse into
-{hassubdir:}SUBDIRS = {subdirs}
-{hassubdir:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
-{hassubdir:}
+# User-supplied makefile fragment(s):
 {makefrags}
 
-{exe:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
+#------------------------------------------------------------------------------
+
+# Main target
+{exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
 {exe:}	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
-{so:}$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
+{so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
 {so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
 {so:}	@echo{nmake?.} >.tstamp
-{nolink:}$(TARGET): $(OBJS) {hassubdir?subdirs} {makefile} .tstamp
+{nolink:}$(TARGET): print-info $(OBJS) {hassubdir?subdirs} {makefile} .tstamp
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 {nolink:}
 {nolink:}.tstamp: $(OBJS)
 {nolink:}	@echo{nmake?.} >.tstamp
+
+print-info:
+{~nmake:}	@if [-d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
+{~nmake:}	@if [!-d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** WARNING: Selected libs not available: directory \"$(OMNETPP_LIB_SUBDIR)\" doesn't exist"; fi
+{nmake:}	@if exist "$(OMNETPP_LIB_SUBDIR)" echo *** Info: MODE=$(MODE), using libs from "$(OMNETPP_LIB_SUBDIR)"
+{nmake:}	@if not exist "$(OMNETPP_LIB_SUBDIR)" echo *** WARNING: Selected libs not available: directory "$(OMNETPP_LIB_SUBDIR)" doesn't exist
 
 {hassubdir:}subdirs: $(SUBDIR_TARGETS)
 {hassubdir:}

@@ -132,7 +132,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 //      public List<String> args;
 //      public String makefile = "Makefile.vc";
         
-//      public String baseDir = ""; ==> inputfield with browse button (BASEDIR IS THE PROJECT!!!)
+//      public String projectDir = ""; ==> inputfield with browse button (BASEDIR IS THE PROJECT!!!)
         
 //      public Type type = Type.EXE;
 

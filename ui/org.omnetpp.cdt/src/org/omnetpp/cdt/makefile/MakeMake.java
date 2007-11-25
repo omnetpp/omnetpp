@@ -112,29 +112,31 @@ public class MakeMake {
 
         String makecommand = isNMake ? "make" : "nmake /nologo /f Makefile.vc";
 
-        if (p.baseDir != null)
-            throw new IllegalStateException("specifying the base directory (-b option) is not supported, it is always the project directory");
+        if (p.projectDir != null)
+            throw new IllegalStateException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
 
-        String configFile = null;
-        if (isNMake) {
-            configFile = p.configFile;
-            if (configFile == null) {
-                // try to find it in obvious places
-                for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
-                    if (new File(directory.getPath() + File.separator + f).exists()) {
-                        configFile = f;
-                        break;
-                    }
-                }
-                if (configFile == null)
-                    throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
-            }
-            else {
-                if (!new File(configFile).exists())
-                    throw new RuntimeException("error: file " + configFile + " not found");
-            }
-            configFile = abs2rel(configFile);
-        }
+        String configFile = "C:/home/omnetpp40/omnetpp/configuser.vc"; //FIXME should come from an Eclipse preference or something 
+        
+//XXX obsolete code
+//        if (isNMake) {
+//            configFile = p.configFile;
+//            if (configFile == null) {
+//                // try to find it in obvious places
+//                for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
+//                    if (new File(directory.getPath() + File.separator + f).exists()) {
+//                        configFile = f;
+//                        break;
+//                    }
+//                }
+//                if (configFile == null)
+//                    throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
+//            }
+//            else {
+//                if (!new File(configFile).exists())
+//                    throw new RuntimeException("error: file " + configFile + " not found");
+//            }
+//            configFile = abs2rel(configFile);
+//        }
 
         // try to determine if .cc or .cpp files are used
         String ccExt = p.ccext;
@@ -158,6 +160,12 @@ public class MakeMake {
         }
 
         String objExt = isNMake ? "obj" : "o";
+
+        String targetSuffix = "";
+        if (p.type == MakemakeOptions.Type.EXE)
+            targetSuffix = isNMake ? ".exe" : "";
+        else if (p.type == MakemakeOptions.Type.SO)
+            targetSuffix = isNMake ? ".dll" : ".so";
 
         // prepare subdirs. First, check that all specified subdirs exist
         List<String> subdirs = new ArrayList<String>();
@@ -229,7 +237,7 @@ public class MakeMake {
                 i = i.replaceAll("\\.msg$", "_m." + objExt);
                 i = i.replaceAll("\\." + ccExt + "$", "." + objExt);
                 if (!i.equals(""))
-                    objs.add(i);
+                    objs.add("$O/" + i);
             }
         }
 
@@ -273,9 +281,11 @@ public class MakeMake {
         //TODO: into deps:  prefixQuoteJoin(generatedHeaders);
 
         Map<String, Object> m = new HashMap<String, Object>();
+        m.put("lbrace", "{");
+        m.put("rbrace", "}");
         m.put("nmake", isNMake);
-        m.put("target", target);
-        m.put("progname", isNMake ? "opp_nmakemake" : "opp_makemake");
+        m.put("target", target + targetSuffix);
+        m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", quoteJoin(p.args));
         m.put("configfile", configFile);
         m.put("-L", isNMake ? "/libpath:" : "-L");
@@ -284,6 +294,7 @@ public class MakeMake {
         m.put("-u", isNMake ? "/include:" : "-u");
         m.put("_dir", "_dir");
         m.put("cc", ccExt);
+        m.put("obj", objExt);
         m.put("deps", deps.toString());
         m.put("exe", p.type == MakemakeOptions.Type.EXE);
         m.put("so", p.type == MakemakeOptions.Type.SO);
@@ -339,7 +350,7 @@ public class MakeMake {
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
         File file = new File(directory.getPath() + File.separator + makefile);
         if (!file.exists() || !Arrays.equals(FileUtils.readBinaryFile(file), bytes)) { // NOTE: byte[].equals does NOT compare the bytes, only the two object references!!!
-            FileUtils.writeBinaryFile(bytes, file);
+            FileUtils.writeBinaryFile(file, bytes);
             return true;  // no change
         }
         return false;  // it was already OK
@@ -378,8 +389,8 @@ public class MakeMake {
     }
 
     /**
-     * If path is absolute, converts the path "path" to relative path (relative to the "base" directory),
-     * All "\" are converted to "/".
+     * If path is absolute, converts the path "path" to relative path (relative to
+     * "folderLocation"). All "\" are converted to "/".
      */
     protected String abs2rel(String location) throws CoreException {
         IPath path = new Path(location);
@@ -389,7 +400,7 @@ public class MakeMake {
         }
         else if (projectLocation.isPrefixOf(path)) {
             // location is within the project, make it relative
-            return MakefileTools.makeRelativePath(folderLocation, path).toString();
+            return MakefileTools.makeRelativePath(path, folderLocation).toString();
         }
         else {
             IProject containingProject = null;
