@@ -870,7 +870,7 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 # Main target
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
-{exe:}	$(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
 {so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
 {so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
