@@ -484,6 +484,9 @@ if test "$PERL" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
    AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_neddoc and other features.)
 fi
+if test ! -x /usr/bin/perl; then
+   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help.)
+fi
 
 # xsltproc
 AC_ARG_VAR(XSLTPROC, A command line xslt processor)

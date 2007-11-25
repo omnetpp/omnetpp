@@ -3942,6 +3942,11 @@ if test "$PERL" = "not found"; then
    { echo "$as_me:$LINENO: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&5
 echo "$as_me: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&2;}
 fi
+if test ! -x /usr/bin/perl; then
+   { { echo "$as_me:$LINENO: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help." >&5
+echo "$as_me: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 # xsltproc
 
