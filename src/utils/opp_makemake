@@ -32,7 +32,7 @@ exit 0;
 # use linkall.cmd on Windows!
 #
 #TODO: to implement in the Java version:
-# outputDir
+# outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
 
 
 sub makemake()
@@ -230,49 +230,34 @@ sub makemake()
 
     $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
-    #if ($projectDir ne "") {
-    #    error("specifying the base directory (-b option) is not supported, it is always the project directory");
-    #}
-
-    $configFile = `opp_configfilepath`; #FIXME check exit code or something
+    # find configuser.vc / Makefile.inc
+    $configFile = `opp_configfilepath`;
+    if ($? != 0) {
+        error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH");
+    }
     $configFile =~ s/\n//gs;
     $configFile =~ s/\s*(.*)\s*/$1/gs;
     if ($configFile eq "" || ! -f $configFile) {
         error("opp_configfilepath returned \"$configFile\"");  #FIXME better error message
     }
 
-#    if ($isNMake) {
-#        if ($configFile eq "") {
-#            # try to find it
-#            my $progdir = $0;
-#            $progdir =~ s|\\|/|g;
-#            $progdir =~ s|/?[^/:]*$||g;
-#            $progdir = "." if ($progdir eq "");
-#            $progparentdir = $progdir;
-#            $progparentdir =~ s|/?[^/:]*/?$||;
-#            foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
-#                        "../../../configuser.vc", "../../../../configuser.vc",
-#                        "../../../../../configuser.vc", "$progparentdir/configuser.vc",
-#                        "$progdir/configuser.vc")
-#            {
-#                if (-f $f) {
-#                     $configFile = $f;
-#                     last;
-#                }
-#            }
-#            if ($configFile eq "") {
-#                warning("configuser.vc file not found -- try -c option or edit generated makefile");
-#            }
-#        }
-#        else
-#        {
-#            if (! -f $configFile) {
-#                error("file $configFile not found");
-#            }
-#        }
-#
-#        $configFile = abs2rel($configFile,$projectDir);
-#    }
+    # try to find project root directory (go up until we find a ".project" file)
+    if ($projectDir eq "") {
+        my $dir = cwd;
+        $dir =~ s|\\|/|g;
+        for (;;) {
+            if (-f "$dir/.project") {
+                $projectDir = $dir;
+                last;
+            }
+            if ($dir =~ m|/|) {
+                $dir =~ s|/.*$||;
+            }
+            else {
+                last;
+            }
+        }
+    }
 
     # try to determine if .cc or .cpp files are used
     @ccfiles = glob("*.cc");
@@ -832,12 +817,18 @@ OBJS = {objs}
 {~nmake:}include $(CONFIGFILE)
 
 # Check $(MODE)
-{nmake?!if "$(MODE)"==""}{~nmake?ifeq($(MODE),)}
+{nmake?!if "$(MODE)"==""}{~nmake?ifeq ($(MODE),)}
 MODE = release
 {nmake?!}endif
-{nmake?!if "$(MODE)"!="debug" && "$(MODE)"!="release"}{~nmake?FIXME how to say $(MODE) is not debug or release?...}
-{nmake?!}error MODE must be "debug" or "release"
-{nmake?!}endif
+
+{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
+{~nmake:}ifneq ($(MODE),"debug")
+{~nmake:}ifneq ($(MODE),"release")
+{nmake?!}# Actually, we should print an error message here, but GNU Make doesn't have that facility:
+{~nmake?#}error MODE must be "debug" or "release"
+{nmake:}!endif
+{~nmake:}endif
+{~nmake:}endif
 
 # User interface libs
 CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
@@ -847,14 +838,14 @@ TKENV_LIBS = {-u}_tkenv_lib {-l}envir{.lib} {-l}tkenv{.lib} {-l}layout{.lib} $(T
 KERNEL_LIBS = {-l}common{.lib} {-l}sim_std{.lib}
 
 {nmake:}!if "$(WITH_NETBUILDER)"=="yes"
-{~nmake:}ifeq($(WITH_NETBUILDER),yes)
-KERNEL_LIBS = $(KERNEL_LIBS) {-l}nedxml{.lib} $(XML_LIBS)
+{~nmake:}ifeq ($(WITH_NETBUILDER),yes)
+KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} {-l}nedxml{.lib} $(XML_LIBS)
 {~nmake:}endif
 {nmake:}!endif
 
 {nmake:}!if "$(WITH_PARSIM)"=="yes"
-{~nmake:}ifeq($(WITH_PARSIM),yes)
-KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
+{~nmake:}ifeq ($(WITH_PARSIM),yes)
+KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} $(MPI_LIBS)
 {~nmake:}endif
 {nmake:}!endif
 
@@ -879,7 +870,7 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 # Main target
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
-{exe:}	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
+{exe:}	$(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
 {so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
 {so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
@@ -891,8 +882,8 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 {nolink:}	@echo{nmake?.} >.tstamp
 
 print-info:
-{~nmake:}	@if [-d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
-{~nmake:}	@if [!-d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** WARNING: Selected libs not available: directory \"$(OMNETPP_LIB_SUBDIR)\" doesn't exist"; fi
+{~nmake:}	@if [ -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
+{~nmake:}	@if [ ! -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** WARNING: Selected libs not available: directory \"$(OMNETPP_LIB_SUBDIR)\" doesn't exist"; fi
 {nmake:}	@if exist "$(OMNETPP_LIB_SUBDIR)" echo *** Info: MODE=$(MODE), using libs from "$(OMNETPP_LIB_SUBDIR)"
 {nmake:}	@if not exist "$(OMNETPP_LIB_SUBDIR)" echo *** WARNING: Selected libs not available: directory "$(OMNETPP_LIB_SUBDIR)" doesn't exist
 
