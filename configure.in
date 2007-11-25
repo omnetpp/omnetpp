@@ -1,5 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
+#FIXME USER_CFLAGS wtf?????
+
 dnl
 dnl OPP_CHECK_LIB(      -- macro to check availability of a library
 dnl   $1: LIBRARY-NAME, -- descriptive name (only for printout)

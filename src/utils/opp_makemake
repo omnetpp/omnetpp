@@ -824,7 +824,7 @@ MODE = release
 {nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
 {~nmake:}ifneq ($(MODE),"debug")
 {~nmake:}ifneq ($(MODE),"release")
-{nmake?!}# Actually, we should print an error message here, but GNU Make doesn't have that facility:
+{~nmake:}# Actually, we should print an error message here, but GNU Make doesn't have that facility:
 {~nmake?#}error MODE must be "debug" or "release"
 {nmake:}!endif
 {~nmake:}endif
