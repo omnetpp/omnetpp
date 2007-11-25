@@ -20,6 +20,7 @@ YACC =                @YACC@
 LEX =                 @LEX@
 CC =                  @CC@
 CXX =                 @CXX@
+TOOLCHAIN_NAME =      @TOOLCHAIN_NAME@
 CPPFLAGS =            @CPPFLAGS@
 CFLAGS =              @CFLAGS@
 USER_CFLAGS =         @USER_CFLAGS@

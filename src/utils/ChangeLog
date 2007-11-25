@@ -10,6 +10,13 @@ opp_makemake option changes:
 old -P option (opp_msgc windows export/import symbol) became -p
 added --nmake
 
+from now on, we expect perl to be available as /usr/bin/perl on ALL SYSTEMS, including Cygwin and MSYS.
+why? because Ubuntu 7.10 uses a broken ("compliant"?) sh version where the magic described
+on the "perlrun" man page ("eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' ...." 
+can no longer be gotten to run.
+
+
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga

@@ -666,6 +666,7 @@ OMNETPP_DOC_DIR
 OMNETPP_SAMPLES_DIR
 OMNETPP_TEST_DIR
 USER_CFLAGS
+TOOLCHAIN_NAME
 MYPWD
 NEDC
 MSGC
@@ -1954,7 +1955,7 @@ A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
 
-if test "$cygwin" = yes; then
+if test "$cygwin" = yes -o "$mingw" = yes; then
     EXE_SUFFIX=".exe"
 else
     EXE_SUFFIX=
@@ -2012,7 +2013,6 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 # Check compiler
 #----------------------
 # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-# TODO eliminate CC from the build process altogether, leave CXX only
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3227,7 +3227,16 @@ else
 fi
 
 
-
+# determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
+if test "$TOOLCHAIN_NAME" = ""; then
+    if test "$mingw" = yes; then
+        TOOLCHAIN_NAME="mingw"
+    elif test "$cygwin" = yes; then
+        TOOLCHAIN_NAME="cygwin"
+    else
+        TOOLCHAIN_NAME=`echo $CC | sed 's|/ |_|g'`
+    fi
+fi
 
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
@@ -5785,8 +5794,8 @@ echo "$as_me: error: Cannot find wish, part of Tcl/Tk -- maybe it is not in the 
    { (exit 1); exit 1; }; }
 fi
 if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
-    { { echo "$as_me:$LINENO: error: Cannot run wish (wish command \"puts OK; exit\" failed): maybe you're not running X or DISPLAY environment variable not set?" >&5
-echo "$as_me: error: Cannot run wish (wish command \"puts OK; exit\" failed): maybe you're not running X or DISPLAY environment variable not set?" >&2;}
+    { { echo "$as_me:$LINENO: error: Cannot run wish (wish command \"puts OK; exit\" failed): maybe you are not running X or DISPLAY environment variable not set?" >&5
+echo "$as_me: error: Cannot run wish (wish command \"puts OK; exit\" failed): maybe you are not running X or DISPLAY environment variable not set?" >&2;}
    { (exit 1); exit 1; }; }
 fi
 if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
@@ -6970,12 +6979,13 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile.inc src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest"
+ac_config_files="$ac_config_files Makefile.inc src/utils/opp_neddoc test/core/runtest"
 
 
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
@@ -7632,7 +7642,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
-    "src/utils/opp_makemake") CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
     "src/utils/opp_neddoc") CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
     "test/core/runtest") CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
 
@@ -7784,6 +7793,7 @@ OMNETPP_DOC_DIR!$OMNETPP_DOC_DIR$ac_delim
 OMNETPP_SAMPLES_DIR!$OMNETPP_SAMPLES_DIR$ac_delim
 OMNETPP_TEST_DIR!$OMNETPP_TEST_DIR$ac_delim
 USER_CFLAGS!$USER_CFLAGS$ac_delim
+TOOLCHAIN_NAME!$TOOLCHAIN_NAME$ac_delim
 MYPWD!$MYPWD$ac_delim
 NEDC!$NEDC$ac_delim
 MSGC!$MSGC$ac_delim
@@ -7791,7 +7801,6 @@ NEDTOOL!$NEDTOOL$ac_delim
 NEDCFLAGS!$NEDCFLAGS$ac_delim
 AS!$AS$ac_delim
 AR!$AR$ac_delim
-SHLIB_LD!$SHLIB_LD$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -7833,6 +7842,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
 MAKEDEPEND!$MAKEDEPEND$ac_delim
 A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
@@ -7869,7 +7879,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 34; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 35; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -8197,10 +8207,10 @@ if test "$no_create" != yes; then
 fi
 
 
+#FIXME check this list
 chmod +x src/utils/opp_makemake
 chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
-chmod +x src/utils/opp_neddoc
 chmod +x test/core/runtest
 
 (

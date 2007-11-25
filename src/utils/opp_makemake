@@ -1,8 +1,4 @@
-eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $argv:q'
-  if 0;
-
-#!perl
-#line 6
+#!/usr/bin/perl
 #
 # Creates a makefile for a given OMNeT++/OMNEST model.
 # Assumes that .ned, .msg, .cc and .h files are in one directory.
@@ -420,7 +416,7 @@ sub makemake()
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
         "outputdir" => $outputDir,
-        "progname" => "opp_makemake";  # $isNMake ? "opp_nmakemake" : "opp_makemake",
+        "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
         "configfile" =>  $configFile,
         "-L" =>  $isNMake ? "/libpath:" : "-L",

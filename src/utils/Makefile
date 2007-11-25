@@ -13,7 +13,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 endif
 
 all: $O/seedtool
-	echo "echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath
+	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
 	chmod +x opp_makemake opp_test opp_makedep opp_neddoc splitvec opp_configfilepath
 	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp opp_test $(OMNETPP_BIN_DIR)

@@ -60,7 +60,6 @@ struct cDensityEstBase_Cell;
 
 class cObject
 {
-    fields:
         @omitGetVerb(true);
         string className @group(base) @hint(C++ class name);
         string fullName @group(base) @hint(if object is part of a module/gate vector: name with index);
@@ -71,14 +70,12 @@ class cObject
 
 class cNamedObject extends cObject
 {
-    fields:
         @omitGetVerb(true);
         string name @group(base) @editable @hint(an editable string attribute of the object, also used for fullName and fullPath);
 }
 
 class cOwnedObject extends cNamedObject
 {
-    fields:
         @omitGetVerb(true);
         cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
@@ -89,9 +86,7 @@ class cNoncopyableOwnedObject extends cOwnedObject
 
 class cDefaultList extends cNoncopyableOwnedObject
 {
-    properties:
-        omitGetVerb = true;
-    fields:
+        @omitGetVerb(true);
         cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListItems) @group(contents) @hint(list of objects directly held by this component);
 }
 
@@ -101,7 +96,6 @@ class noncobject cDisplayString;
 
 class cProperty extends cObject
 {
-    fields:
         @omitGetVerb(true);
         bool isImplicit @group(general);
         string index @group(general);
@@ -110,14 +104,12 @@ class cProperty extends cObject
 
 class cProperties
 {
-    fields:
         @omitGetVerb(true);
         cProperty *contents[] @getter(get) @sizeGetter(numProperties) @hint(the property list);
 }
 
 class cComponent extends cDefaultList
 {
-    fields:
         @omitGetVerb(true);
         bool isModule @group(general) @hint(whether this component is a module or a channel);
         cComponentType *componentType @group(general) @hint(the object that represents the type declaration for this component);
@@ -131,7 +123,6 @@ class cChannel extends cComponent
 
 class cBasicChannel extends cChannel
 {
-    fields:
         @omitGetVerb(true);
         // Note: no need to spell out delay etc, they come from cComponent parameters
         bool isBusy @group(state) @hint(if channel is currently transmitting);
@@ -142,7 +133,6 @@ class cGate;
 
 class cModule extends cComponent
 {
-    fields:
         @omitGetVerb(true);
         int id @group(general) @hint(unique module ID -- IDs of deleted modules are not issued again);
         bool isSimple @group(general) @hint(whether this is a simple module);
@@ -155,7 +145,6 @@ class cModule extends cComponent
 
 class cSimpleModule extends cModule
 {
-    fields:
         @omitGetVerb(true);
         bool isTerminated @group(state) @hint(whether this module has terminated);
         bool usesActivity @group(activity) @hint(whether this simple module was programmed using the "activity" or the "handleMessage" C++ method);
@@ -171,7 +160,6 @@ class cCompoundModule extends cModule
 
 class cNEDDeclarationBase extends cNamedObject
 {
-    fields:
         @omitGetVerb(true);
         //XXX string extendsName @getter(extendsName) @hint(the component it extends);
         //XXX string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
@@ -182,7 +170,6 @@ class cNEDDeclarationBase extends cNamedObject
 
 class cComponentType extends cNoncopyableOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         string description @group(general); //XXX what's this
         cNEDDeclarationBase *declaration @hint(the NED declaration of the component);
@@ -190,7 +177,6 @@ class cComponentType extends cNoncopyableOwnedObject
 
 class cModuleType extends cComponentType
 {
-    fields:
         @omitGetVerb(true);
         bool isNetwork @group(general) @hint(whether this module type can be used as toplevel module);
 }
@@ -201,7 +187,6 @@ class cChannelType extends cComponentType
 
 class cSymTable extends cNamedObject
 {
-    fields:
         @omitGetVerb(true);
         cObject *contents[] @getter(get) @sizeGetter(size) @hint(contained objects);
 }
@@ -210,7 +195,6 @@ class cSymTable extends cNamedObject
 
 class cGate extends cNoncopyableOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         char type @group(general) @enum(cGate_Type) @hint(gate type);
         int id @group(general) @hint(gate id, unique within this module);
@@ -236,14 +220,12 @@ class cGate extends cNoncopyableOwnedObject
 
 class cDisplayString
 {
-    fields:
         @omitGetVerb(true);
         string value @getter(toString) @setter(parse) @editable @hint(the editable display string itself);
 }
 
 class cArray extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the array should own the objects inserted into it);
         cOwnedObject *contents[] @getter(get) @sizeGetter(items) @hint(objects contained in the array);
@@ -251,7 +233,6 @@ class cArray extends cOwnedObject
 
 class cMessage extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         int kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
         int priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
@@ -288,7 +269,6 @@ class cMessage extends cOwnedObject
 
 class cStatistic extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         long samples @hint(number of observations collected so far);
         double weights @hint(sum of weights, which equals the number of observations in the unweighted case);
@@ -311,7 +291,6 @@ class cWeightedStdDev extends cStdDev
 
 class cDensityEstBase extends cStdDev
 {
-    fields:
         @omitGetVerb(true);
         bool transformed @group(histogram) @hint(if false, the object is still collecting initial observations to be used for laying out histogram cells);
         unsigned long underflowCell @group(histogram) @hint(number of observations below the first histogram cell);
@@ -368,14 +347,12 @@ class cADByStddev extends cAccuracyDetection
 
 class cExpression extends cObject
 {
-    fields:
         @omitGetVerb(true);
         string toString;
 }
 
 class cFSM extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         int state @hint(numeric code of the state the FSM is currently in);
         string stateName @hint(name of the current FSM state);
@@ -383,14 +360,12 @@ class cFSM extends cOwnedObject
 
 class cMathFunction extends cNoncopyableOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         int numArgs @hint(number of "double" parameters this function takes);
 }
 
 class cNEDFunction extends cNoncopyableOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         char returnType @hint(return type of this function);
         int numArgs @hint(number of arguments this function takes);
@@ -399,7 +374,6 @@ class cNEDFunction extends cNoncopyableOwnedObject
 
 class cOutVector extends cNoncopyableOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         bool isEnabled @setter(setEnabled) @editable @hint(if disabled, values passed to this object to record are simply discarded);
         long valuesReceived @hint(number of values passed to this object to record);
@@ -408,7 +382,6 @@ class cOutVector extends cNoncopyableOwnedObject
 
 class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 {
-    fields:
         @omitGetVerb(true);
         string value @getter(toString) @setter(parse) @editable;
         char type @enum(cPar_Type) @hint(parameter type);
@@ -420,7 +393,6 @@ class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 
 class cMsgPar extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
@@ -430,14 +402,12 @@ class cMsgPar extends cOwnedObject
 
 class cLinkedList extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         int length @hint(number of items contained);
 }
 
 class cMessageHeap extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         int length @hint(number of items contained);
         cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages currently scheduled and messages currently in transit);
@@ -445,7 +415,6 @@ class cMessageHeap extends cOwnedObject
 
 class cQueue extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
         int length @hint(number of items in the queue);
@@ -456,13 +425,11 @@ class noncobject cHasher; //FIXME should be nonpoymorphic or what???
 
 class cHasher
 {
-    fields:
        string hash @getter(toString) @hint(the current hash value);
 }
 
 class cSimulation extends cNoncopyableOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         simtime_t simTime @hint(the current simulation time in seconds);
         long eventNumber @hint(the current event number -- counts from 0 up);
@@ -499,7 +466,6 @@ class noncobject cTopology_LinkOut;
 
 class cTopology_Node
 {
-    fields:
         @omitGetVerb(true);
         int moduleId @hint(ID of the module this node corresponds to);
         cModule *module @hint(the module this node corresponds to);
@@ -515,7 +481,6 @@ class cTopology_Node
 
 class cTopology_Link
 {
-    fields:
         @omitGetVerb(true);
         double weight @hint(link weight -- affects graph algorithms such as shortest path);
         bool enabled @hint(link state -- affects graph algorithms such as shortest path);
@@ -523,7 +488,6 @@ class cTopology_Link
 
 class cTopology_LinkIn extends cTopology_Link
 {
-    fields:
         @omitGetVerb(true);
         cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
         cGate *remoteGate @hint(the gate at the remote end of this connection);
@@ -532,7 +496,6 @@ class cTopology_LinkIn extends cTopology_Link
 
 class cTopology_LinkOut extends cTopology_Link
 {
-    fields:
         @omitGetVerb(true);
         cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
         cGate *remoteGate @hint(the gate at the remote end of this connection);
@@ -541,7 +504,6 @@ class cTopology_LinkOut extends cTopology_Link
 
 class cTopology extends cOwnedObject
 {
-    fields:
         @omitGetVerb(true);
         int nodes @group(general) @hint(number of nodes in this topology object);
         cTopology_Node *node[] @sizeGetter(nodes) @hint(list of nodes in this topology object);
@@ -549,7 +511,6 @@ class cTopology extends cOwnedObject
 
 class cXMLElement
 {
-    fields:
         @omitGetVerb(true);
         string getTagName @label(tagName) @hint(XML element tag);
         string getNodeValue @label(nodeValue) @hint(contents of text node inside this XML element);

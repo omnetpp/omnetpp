@@ -138,7 +138,7 @@ A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
 SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
 
-if test "$cygwin" = yes; then
+if test "$cygwin" = yes -o "$mingw" = yes; then
     EXE_SUFFIX=".exe"
 else
     EXE_SUFFIX=
@@ -193,7 +193,6 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 # Check compiler
 #----------------------
 # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-# TODO eliminate CC from the build process altogether, leave CXX only
 AC_PROG_CC(icc gcc cc xlc)
 AC_PROG_CXX(icpc g++ c++ cxx xlC)
 
@@ -228,7 +227,16 @@ SHLIB_LD=${SHLIB_LD:-$CXX -shared}
 DLLTOOL=${DLLTOOL:-dlltool}
 AC_PROG_RANLIB
 
-
+# determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
+if test "$TOOLCHAIN_NAME" = ""; then
+    if test "$mingw" = yes; then
+        TOOLCHAIN_NAME="mingw"
+    elif test "$cygwin" = yes; then
+        TOOLCHAIN_NAME="cygwin"
+    else
+        TOOLCHAIN_NAME=`echo $CC | sed 's|[/ ]|_|g'`
+    fi
+fi
 
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
@@ -658,7 +666,7 @@ if test "$WISH" = nope; then
    AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84)])
 fi
 if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
-    AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you're not running X or DISPLAY environment variable not set?])
+    AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
 fi
 if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
     AC_MSG_ERROR([wish command "package require Tk 8.4" failed: probably old Tcl/Tk version, version 8.4.0+ required])
@@ -874,7 +882,6 @@ fi
 #----------------------
 AC_CONFIG_FILES(
   Makefile.inc
-  src/utils/opp_makemake
   src/utils/opp_neddoc
   test/core/runtest
 )
@@ -908,6 +915,7 @@ AC_SUBST(CXX)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CFLAGS)
 AC_SUBST(USER_CFLAGS)
+AC_SUBST(TOOLCHAIN_NAME)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(MSGC)
@@ -972,10 +980,10 @@ AC_SUBST(SWIG)
 #
 AC_OUTPUT
 
+#FIXME check this list
 chmod +x src/utils/opp_makemake
 chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
-chmod +x src/utils/opp_neddoc
 chmod +x test/core/runtest
 
 (
