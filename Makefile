@@ -119,13 +119,13 @@ clean:
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	- rm -f $(OMNETPP_BIN_DIR)/*
 	- rm -f -r $(OMNETPP_OBJ_DIR)/*
 	- rm -f -r $(OMNETPP_LIB_DIR)/*
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
+	- rm -f $(OMNETPP_BIN_DIR)/*
 
 depend:
 	for i in $(BASE); do \
