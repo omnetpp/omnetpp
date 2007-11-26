@@ -835,13 +835,15 @@ CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
 TKENV_LIBS = {-u}_tkenv_lib {-l}envir{.lib} {-l}tkenv{.lib} {-l}layout{.lib} $(TK_LIBS) $(ZLIB_LIBS)
 
 # Simulation kernel
-KERNEL_LIBS = {-l}common{.lib} {-l}sim_std{.lib}
+KERNEL_LIBS = {-l}sim_std{.lib}
 
 {nmake:}!if "$(WITH_NETBUILDER)"=="yes"
 {~nmake:}ifeq ($(WITH_NETBUILDER),yes)
 KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} {-l}nedxml{.lib} $(XML_LIBS)
 {~nmake:}endif
 {nmake:}!endif
+
+KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} {-l}common{.lib}
 
 {nmake:}!if "$(WITH_PARSIM)"=="yes"
 {~nmake:}ifeq ($(WITH_PARSIM),yes)
@@ -902,12 +904,10 @@ print-info:
 {nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {~nmake:}$O/%.{obj}: %.{cc}
 {~nmake:}	@mkdir -p $O
+{nmake:}	- md $(O:/=\) 2>nul
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
-{nmake:}
-{nmake:}$(OBJS) : $O
-{nmake:}
-{nmake:}$O:
-{nmake:}	md $(O:/=\)
+
+$(OBJS):
 
 generateheaders: $(GENERATEDHEADERS)
 {hassubdir:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
