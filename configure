@@ -665,13 +665,13 @@ OMNETPP_UTILS_DIR
 OMNETPP_DOC_DIR
 OMNETPP_SAMPLES_DIR
 OMNETPP_TEST_DIR
-USER_CFLAGS
+CFLAGS_DEBUG
+CFLAGS_RELEASE
 TOOLCHAIN_NAME
 MYPWD
 NEDC
 MSGC
 NEDTOOL
-NEDCFLAGS
 AS
 AR
 SHLIB_LD
@@ -2000,9 +2000,8 @@ echo "$as_me: -----------------------------------------------" >&6;}
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-CFLAGS=${CFLAGS:- -O2 -DNDEBUG=1}
-USER_CFLAGS=${USER_CFLAGS:-$CFLAGS}
-NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 
 NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
@@ -3122,8 +3121,8 @@ if test "$CXX" = "icpc"; then
     #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
 
     # -w1 disables all remarks
-    CFLAGS="$CFLAGS -w1 -wd654 -wd177"
-    USER_CFLAGS="$USER_CFLAGS -w1 -wd654 -wd177"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
+    CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
 fi
 
 AS=${AS:-as}
@@ -3246,22 +3245,17 @@ fi
 #      int getX() {return x;}
 #
 
-#if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
-#    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
-#        AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
-#        AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
-#    fi
-#fi
-
 { echo "$as_me:$LINENO: checking if shared libs need -fPIC" >&5
 echo $ECHO_N "checking if shared libs need -fPIC... $ECHO_C" >&6; }
 echo 'int x;' >conftest.cc
 echo 'int getX() {return x;}' >>conftest.cc
 fpic="x"
-if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
-   { echo "$as_me:$LINENO: result: skip (already in CFLAGS)" >&5
+if echo $CFLAGS_DEBUG | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+   if echo $CFLAGS_RELEASE | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+        { echo "$as_me:$LINENO: result: skip (already in CFLAGS)" >&5
 echo "${ECHO_T}skip (already in CFLAGS)" >&6; }
-   fpic=""
+        fpic=""
+   fi
 fi
 if test "$fpic" = "x" && \
    $CXX -c conftest.cc >/dev/null 2>/dev/null && \
@@ -3294,8 +3288,8 @@ echo "${ECHO_T}failure" >&6; }
 echo "$as_me: WARNING: COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs" >&2;}
    build_shared_libs="no"
 else
-   CFLAGS="$CFLAGS $fpic"
-   USER_CFLAGS="$USER_CFLAGS $fpic"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
 fi
 rm -f conftest.*
@@ -3536,8 +3530,8 @@ fi
 #----------------------
 # set arch specific flags
 #----------------------
-CFLAGS="$CFLAGS $CFLAGS_ARCH"
-USER_CFLAGS="$USER_CFLAGS $CFLAGS_ARCH"
+CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
+CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 
 #----------------------
 # Checks for programs.
@@ -3943,8 +3937,9 @@ if test "$PERL" = "not found"; then
 echo "$as_me: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&2;}
 fi
 if test ! -x /usr/bin/perl; then
-   { { echo "$as_me:$LINENO: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help." >&5
-echo "$as_me: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help." >&2;}
+   this_perl=`which perl`
+   { { echo "$as_me:$LINENO: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl" >&5
+echo "$as_me: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -6918,7 +6913,8 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
 
 fi
 if test $akaroa_ok = yes; then
-   CFLAGS="$CFLAGS -DWITH_AKAROA"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_AKAROA"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
@@ -6949,9 +6945,9 @@ if test "$build_shared_libs" = if-not-windows; then
 fi
 if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
-    if test "$cygwin" = yes; then
-        CFLAGS="$CFLAGS -DWIN32_DLL"
-        USER_CFLAGS="$USER_CFLAGS -DWIN32_DLL"
+    if test "$windows" = yes; then
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -DWIN32_DLL"
+        CFLAGS_RELEASE="$CFLAGS_RELEASE -DWIN32_DLL"
     fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
@@ -6971,12 +6967,12 @@ fi
 # #defines in CFLAGS
 #----------------------
 if test "$WITH_PARSIM" = yes; then
-   CFLAGS="$CFLAGS -DWITH_PARSIM"
-   USER_CFLAGS="$USER_CFLAGS -DWITH_PARSIM"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_PARSIM"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_PARSIM"
 fi
 if test "$WITH_NETBUILDER" = yes; then
-   CFLAGS="$CFLAGS -DWITH_NETBUILDER"
-   USER_CFLAGS="$USER_CFLAGS -DWITH_NETBUILDER"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
 fi
 
 
@@ -6990,7 +6986,6 @@ ac_config_files="$ac_config_files Makefile.inc src/utils/opp_neddoc test/core/ru
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 
@@ -7797,13 +7792,13 @@ OMNETPP_UTILS_DIR!$OMNETPP_UTILS_DIR$ac_delim
 OMNETPP_DOC_DIR!$OMNETPP_DOC_DIR$ac_delim
 OMNETPP_SAMPLES_DIR!$OMNETPP_SAMPLES_DIR$ac_delim
 OMNETPP_TEST_DIR!$OMNETPP_TEST_DIR$ac_delim
-USER_CFLAGS!$USER_CFLAGS$ac_delim
+CFLAGS_DEBUG!$CFLAGS_DEBUG$ac_delim
+CFLAGS_RELEASE!$CFLAGS_RELEASE$ac_delim
 TOOLCHAIN_NAME!$TOOLCHAIN_NAME$ac_delim
 MYPWD!$MYPWD$ac_delim
 NEDC!$NEDC$ac_delim
 MSGC!$MSGC$ac_delim
 NEDTOOL!$NEDTOOL$ac_delim
-NEDCFLAGS!$NEDCFLAGS$ac_delim
 AS!$AS$ac_delim
 AR!$AR$ac_delim
 _ACEOF
@@ -8277,9 +8272,8 @@ EOT
       cat 1>&2 << EOT
 
 WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
-Add the following line to your startup file:
-  export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
-  setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
+Add the following line to your .profile or .bash_profile (provided you use bash):
+  export PATH=\$PATH:$OMNETPP_BIN_DIR
 
 EOT
     fi
@@ -8306,11 +8300,8 @@ have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared
 libraries (you can do it as root), or better, set the LD_LIBRARY_PATH
 environment variable.
 
-Add the corresponding line to your startup file:
+Add the following line to your .profile or .bash_profile (provided you use bash):
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-         # into .(bash_)profile if you use bash or other sh-like shell
-  setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-         # into .cshrc if you use tcsh or other csh-like shell
 
 If you prefer static libraries, edit configure.user and change the
 build_shared_libs=yes line to build_shared_libs=no, then delete the shared
@@ -8338,14 +8329,10 @@ elif test -z "$TCL_LIBRARY"; then
 
 WARNING: The TCL_LIBRARY environment variable is not set, and without it
 OMNEST/OMNeT++ GUI programs may be unable to find the BLT library.
-Please set it to point to the following directory:
-    $tcl_library
 
-Add the corresponding line to your startup file:
+Add the following line to your .profile or .bash_profile (provided you use bash):
   export TCL_LIBRARY=$tcl_library
-         # into .(bash_)profile if you use bash or other sh-like shell
-  setenv TCL_LIBRARY $tcl_library
-         # into .cshrc if you use tcsh or other csh-like shell
+
 For additional information, please visit the "Common installation problems"
 page on www.omnetpp.org.
 EOT
@@ -8354,8 +8341,8 @@ elif test ! -f "$TCL_LIBRARY/init.tcl"; then
 
     cat 1>&2 << EOT
 
-WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there's no
-init.tcl file in that directory! (Usual location is /usr/lib/tcl8.4.)
+WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
+init.tcl file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
 EOT
 
 else

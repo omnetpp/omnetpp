@@ -479,7 +479,8 @@ if test "$PERL" = "not found"; then
    AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_neddoc and other features.)
 fi
 if test ! -x /usr/bin/perl; then
-   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help.)
+   this_perl=`which perl`
+   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
 fi
 
 # xsltproc
@@ -1042,9 +1043,8 @@ EOT
       cat 1>&2 << EOT
 
 WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
-Add the following line to your startup file:
-  export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
-  setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
+Add the following line to your .profile or .bash_profile (provided you use bash):
+  export PATH=\$PATH:$OMNETPP_BIN_DIR
 
 EOT
     fi
@@ -1071,11 +1071,8 @@ have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared
 libraries (you can do it as root), or better, set the LD_LIBRARY_PATH
 environment variable.
 
-Add the corresponding line to your startup file:
+Add the following line to your .profile or .bash_profile (provided you use bash):
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-         # into .(bash_)profile if you use bash or other sh-like shell
-  setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-         # into .cshrc if you use tcsh or other csh-like shell
 
 If you prefer static libraries, edit configure.user and change the
 build_shared_libs=yes line to build_shared_libs=no, then delete the shared
@@ -1103,14 +1100,10 @@ elif test -z "$TCL_LIBRARY"; then
 
 WARNING: The TCL_LIBRARY environment variable is not set, and without it
 OMNEST/OMNeT++ GUI programs may be unable to find the BLT library.
-Please set it to point to the following directory:
-    $tcl_library
 
-Add the corresponding line to your startup file:
+Add the following line to your .profile or .bash_profile (provided you use bash):
   export TCL_LIBRARY=$tcl_library
-         # into .(bash_)profile if you use bash or other sh-like shell
-  setenv TCL_LIBRARY $tcl_library
-         # into .cshrc if you use tcsh or other csh-like shell
+
 For additional information, please visit the "Common installation problems"
 page on www.omnetpp.org.
 EOT
@@ -1119,8 +1112,8 @@ elif test ! -f "$TCL_LIBRARY/init.tcl"; then
 
     cat 1>&2 << EOT
 
-WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there's no
-init.tcl file in that directory! (Usual location is /usr/lib/tcl8.4.)
+WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
+init.tcl file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
 EOT
 
 else
