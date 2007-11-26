@@ -277,4 +277,13 @@ CFLAGS=$(CFLAGS) /DWITH_PARSIM
 CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 !endif
 
+#
+# Configname selects where (in which subdirectory of obj/ and lib/)
+# to put the resulting object files and libs.
+#
+!ifndef CONFIGNAME
+CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
+!endif
+
 #XXX add SWIG and JAVA_CFLAGS here as well
+

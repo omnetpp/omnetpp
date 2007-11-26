@@ -911,13 +911,13 @@ OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIB
 {nmake:}!endif
 
 COPTS = $(CFLAGS) {fordllopt} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-NEDCOPTS = $(COPTS) $(NEDCFLAGS)
 MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 #------------------------------------------------------------------------------
-# User-supplied makefile fragment(s):
+# User-supplied makefile fragment(s)
+# >>>
 {makefrags}
-
+# <<<
 #------------------------------------------------------------------------------
 
 # Main target
