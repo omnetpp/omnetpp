@@ -1,7 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
 
-#FIXME USER_CFLAGS wtf?????
-
 dnl
 dnl OPP_CHECK_LIB(      -- macro to check availability of a library
 dnl   $1: LIBRARY-NAME, -- descriptive name (only for printout)
@@ -182,9 +180,8 @@ AC_MSG_NOTICE(-----------------------------------------------)
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-CFLAGS=${CFLAGS:- -O2 -DNDEBUG=1}
-USER_CFLAGS=${USER_CFLAGS:-$CFLAGS}
-NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 
 NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
@@ -219,8 +216,8 @@ if test "$CXX" = "icpc"; then
     #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
 
     # -w1 disables all remarks
-    CFLAGS="$CFLAGS -w1 -wd654 -wd177"
-    USER_CFLAGS="$USER_CFLAGS -w1 -wd654 -wd177"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
+    CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
 fi
 
 AS=${AS:-as}
@@ -248,20 +245,15 @@ fi
 #      int getX() {return x;}
 #
 
-#if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
-#    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
-#        AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
-#        AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
-#    fi
-#fi
-
 AC_MSG_CHECKING(if shared libs need -fPIC)
 echo 'int x;' >conftest.cc
 echo 'int getX() {return x;}' >>conftest.cc
 fpic="x"
-if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
-   AC_MSG_RESULT([skip (already in CFLAGS)])
-   fpic=""
+if echo $CFLAGS_DEBUG | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+   if echo $CFLAGS_RELEASE | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+        AC_MSG_RESULT([skip (already in CFLAGS)])
+        fpic=""
+   fi
 fi
 if test "$fpic" = "x" && \
    $CXX -c conftest.cc >/dev/null 2>/dev/null && \
@@ -289,8 +281,8 @@ if test "$fpic" = "x"; then
    AC_MSG_WARN([COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs])
    build_shared_libs="no"
 else
-   CFLAGS="$CFLAGS $fpic"
-   USER_CFLAGS="$USER_CFLAGS $fpic"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
 fi
 rm -f conftest.*
@@ -445,8 +437,8 @@ fi
 #----------------------
 # set arch specific flags
 #----------------------
-CFLAGS="$CFLAGS $CFLAGS_ARCH"
-USER_CFLAGS="$USER_CFLAGS $CFLAGS_ARCH"
+CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
+CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 
 #----------------------
 # Checks for programs.
@@ -820,7 +812,8 @@ if test $akaroa_ok = no; then
     OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $AKAROA_CFLAGS, $akaroalibs, akaroa_ok, AKAROA_LIBS="$akaroalibs")
 fi
 if test $akaroa_ok = yes; then
-   CFLAGS="$CFLAGS -DWITH_AKAROA"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_AKAROA"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
@@ -850,9 +843,9 @@ if test "$build_shared_libs" = if-not-windows; then
 fi
 if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
-    if test "$cygwin" = yes; then
-        CFLAGS="$CFLAGS -DWIN32_DLL"
-        USER_CFLAGS="$USER_CFLAGS -DWIN32_DLL"
+    if test "$windows" = yes; then
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -DWIN32_DLL"
+        CFLAGS_RELEASE="$CFLAGS_RELEASE -DWIN32_DLL"
     fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
@@ -872,12 +865,12 @@ fi
 # #defines in CFLAGS
 #----------------------
 if test "$WITH_PARSIM" = yes; then
-   CFLAGS="$CFLAGS -DWITH_PARSIM"
-   USER_CFLAGS="$USER_CFLAGS -DWITH_PARSIM"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_PARSIM"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_PARSIM"
 fi
 if test "$WITH_NETBUILDER" = yes; then
-   CFLAGS="$CFLAGS -DWITH_NETBUILDER"
-   USER_CFLAGS="$USER_CFLAGS -DWITH_NETBUILDER"
+   CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_NETBUILDER"
+   CFLAGS_RELEASE="$CFLAGS_RELEASE -DWITH_NETBUILDER"
 fi
 
 
@@ -918,14 +911,13 @@ AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
 AC_SUBST(CPPFLAGS)
-AC_SUBST(CFLAGS)
-AC_SUBST(USER_CFLAGS)
+AC_SUBST(CFLAGS_DEBUG)
+AC_SUBST(CFLAGS_RELEASE)
 AC_SUBST(TOOLCHAIN_NAME)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(MSGC)
 AC_SUBST(NEDTOOL)
-AC_SUBST(NEDCFLAGS)
 AC_SUBST(AS)
 AC_SUBST(AR)
 AC_SUBST(RANLIB)

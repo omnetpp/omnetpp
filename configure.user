@@ -16,32 +16,22 @@
 #CXX=/usr/local/gcc/4.0.1/bin/g++
 
 #
-# Compiler optimization switches. Choose -O3 for speed, -g for debugging the libs.
+# Compiler optimization switches. There are two sets of switches,
+# and the MODE variable ("debug" or "release") decides which one gets used.
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
 # With gcc, do NOT use --omit-frame-pointer (it crashes when coroutines and
 # C++ exceptions (throw/catch) are used together)!
 #
-#CFLAGS='-g -Wno-unused'
-CFLAGS='-g -Wall'
-#CFLAGS='-gstabs+3 -Wall'
-#CFLAGS='-O2 -DNDEBUG=1'
-
-#
-# CFLAGS for simulation models: opp_makemake will generate Makefiles with this
-# value as CFLAGS. If left empty, it defaults to the above CFLAGS setting.
-#
-USER_CFLAGS=
-
-# To suppress the 'unused variable' warnings in ned-generated _n.cc files
-# -Wno-unused is added to NEDCFLAGS
-NEDCFLAGS='-Wno-unused'
+#CFLAGS_DEBUG='-gstabs+3 -Wall'
+CFLAGS_DEBUG='-g -Wall'
+CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 
 #
 # Select here whether you want to build static or shared libraries.
 # If you change this setting, remember to delete the other set of libraries
 # (or at least the soft links from lib/).
-# On Windows (Cygwin or MinGW), only static libraries can be used. The default
-# setting is `if-not-windows'.
+# On Windows (Cygwin or MinGW), only static libraries can be used. FIXME still true..?
+# The default setting is `if-not-windows'.  FIXME revise!
 #
 #build_shared_libs=yes
 #build_shared_libs=no
