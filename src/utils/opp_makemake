@@ -33,7 +33,11 @@ exit 0;
 #
 #TODO: to implement in the Java version:
 # outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
-
+#
+#TODO: port to Java:
+# prefixQuoteJoin improvement (sep="\n" if #>5)
+# --deep opcio
+#
 
 sub makemake()
 {
@@ -259,9 +263,32 @@ sub makemake()
         }
     }
 
+    # collect source files
+    $deep = 0;  # "--deep" is not implemented yet
+    if (!$deep) {
+        @ccfiles = glob("*.cc");
+        @cppfiles = glob("*.cpp");
+        @msgfiles = glob("*.msg");
+        @nedfiles = glob("*.ned");
+    }
+    else {
+        @sourceDirs = collectDirs(".", \@exceptSubdirs);
+        $numSourceDirs = @sourceDirs;
+        die "too long!" if ($numSourceDirs > 500);
+        print join('  ', @sourceDirs);
+        @ccfiles = ();
+        @cppfiles = ();
+        @msgfiles = ();
+        @nedfiles = ();
+        foreach $f (@sourceDirs) {
+            push(@ccfiles, glob("$f/*.cc"));
+            push(@cppfiles, glob("$f/*.cpp"));
+            push(@msgfiles, glob("$f/*.msg"));
+            push(@nedfiles, glob("$f/*.ned"));
+        }
+    }
+
     # try to determine if .cc or .cpp files are used
-    @ccfiles = glob("*.cc");
-    @cppfiles = glob("*.cpp");
     if ($ccExt eq "") {
         if (!@ccfiles && @cppfiles) {
             $ccExt = "cpp";
@@ -355,8 +382,12 @@ sub makemake()
         push(@externaldirtstamps, quote("$i/.tstamp"));
     }
 
-    $objpatt = $ignoreNedFiles ? "*.msg *.$ccExt" : "*.ned *.msg *.$ccExt";
-    foreach $i (glob($objpatt))
+    @sources = ();
+    push(@sources, @ccfiles) if ($ccExt eq "cc");
+    push(@sources, @cppfiles) if ($ccExt eq "cpp");
+    push(@sources, @msgfiles);
+    push(@sources, @nedfiles) if (!$ignoreNedFiles);
+    foreach $i (@sources)
     {
         $i =~ s/\*[^ ]*//g;
         $i =~ s/[^ ]*_n\.$ccExt$//g;
@@ -369,7 +400,6 @@ sub makemake()
         }
     }
 
-    @msgfiles = glob("*.msg");
     foreach $i (@msgfiles) {
         $h = $i; $h =~ s/\.msg$/_m.h/;
         $cc = $i; $cc =~ s/\.msg$/_m.$ccExt/;
@@ -450,6 +480,19 @@ sub makemake()
     print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 }
 
+sub collectDirs($;$)
+{
+    my ($dir,$exceptDirsRef) = @_;
+    my @exceptDirs = @$exceptDirsRef;
+
+    my @result = ($dir);
+    foreach $f (glob("$dir/*")) {
+        if (-d $f && !grep(/\Q$f\E/, @exceptSubdirs)) {  #XXX better check for exceptDirs; check IGNORABLE_DIRS too
+            push(@result, collectDirs($f, \@exceptDirs));
+        }
+    }
+    return @result;
+}
 
 #
 # Performs template substitution. Constructs understood are:
@@ -556,9 +599,10 @@ sub prefixQuoteJoin($,$)
 {
     my($listref,$prefix) = @_;
     @list = @$listref;
+    $sep = (@list > 5) ? " \\\n    " : " ";
     $result = "";
     foreach $i (@list) {
-        $result .= " " . $prefix . quote($i);
+        $result .= $sep . $prefix . quote($i);
     }
     return $result eq "" ? "" : substr($result, 1); # chop off leading space
 }
@@ -655,7 +699,7 @@ sub readTextFile($)
 {
     my($file) = @_;
     open(INFILE, $file) || die "cannot open $file";
-    read(INFILE, $content, 1000000000) || die "cannot read $file";
+    read(INFILE, $content, 1000000) || die "cannot read $file";
     return $content;
 }
 
@@ -793,6 +837,12 @@ O = {outputdir}
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
 
+# Message files
+MSGFILES = {msgfiles}
+
+# C++ files generated from msg files
+MSG_CC_AND_H_FILES = {msgccandhfiles}
+
 {hassubdir:}# Subdirectories to recurse into
 {hassubdir:}SUBDIRS = {subdirs}
 {hassubdir:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
@@ -895,7 +945,7 @@ print-info:
 {hassubdir:}{~nmake:}	cd $@ && {makecommand}
 {hassubdir:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {hassubdir:}
-{hasmsgfiles:}{nmake:}{msgccandhfiles} :: {msgfiles}
+{hasmsgfiles:}{nmake:}$(MSG_CC_AND_H_FILES) :: $(MSGFILES)
 {hasmsgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {hasmsgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
 {hasmsgfiles:}
