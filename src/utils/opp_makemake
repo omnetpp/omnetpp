@@ -30,6 +30,10 @@ exit 0;
 # into deps:  join(generatedHeaders);
 # project directory should be autodetected if not given!
 # use linkall.cmd on Windows!
+# ability to wire a default MODE into the generated makefile
+#   {defaultmode:}!ifndef MODE
+#   {defaultmode:}MODE = {defaultmode}
+#   {defaultmode:}!endif
 #
 #TODO: to implement in the Java version:
 # outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
