@@ -28,7 +28,7 @@ all: $O/seedtool
 	cp neddoc.xsl $(OMNETPP_BIN_DIR)
 	cp neddocproc.pl $(OMNETPP_BIN_DIR)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
-	# next line is for samples/rundemo
+	@# next line is for samples/rundemo
 	echo $(WISH) >$(HOME)/.wishname
 
 $O/seedtool : seedtool.cc
