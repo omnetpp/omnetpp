@@ -867,10 +867,6 @@ MSG_CC_AND_H_FILES = {msgccandhfiles}
 {~nmake:}include $(CONFIGFILE)
 
 # Check $(MODE)
-{nmake?!if "$(MODE)"==""}{~nmake?ifeq ($(MODE),)}
-MODE = release
-{nmake?!}endif
-
 {nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
 {~nmake:}ifneq ($(MODE),"debug")
 {~nmake:}ifneq ($(MODE),"release")

@@ -92,6 +92,12 @@ WITH_PARSIM = @WITH_PARSIM@
 JAVA_CFLAGS = @JAVA_CFLAGS@
 SWIG = @SWIG@
 
+#
+# Make "debug" the default mode
+#
+ifndef MODE
+MODE = debug
+endif
 
 #
 # Configname selects where (in which subdirectory of obj/ and lib/)

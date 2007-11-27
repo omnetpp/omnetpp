@@ -14,7 +14,7 @@
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
 # OMNETPP_ROOT=C:/Work/Projects/omnest/omnetpp4/omnetpp
-OMNETPP_ROOT = $(OMNETPP_ROOT:\=/)
+OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 
 # Version. Should ideally come from the 'Version' file but nmake doesn't support that
 OMNETPP_VERSION=omnetpp-4.0a3
@@ -24,7 +24,7 @@ OMNETPP_VERSION=omnetpp-4.0a3
 # libraries simulation models will be linked with: linker path will be set as
 # $(OMNETPP_ROOT)/lib/$(TOOLCHAIN_NAME)-debug or -release.
 #
-TOOLCHAIN_NAME = vc71
+TOOLCHAIN_NAME=vc71
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -124,6 +124,17 @@ WITH_NETBUILDER=yes
 # WITH_PARSIM=yes
 WITH_PARSIM=no    # FIXME for now
 
+#==============================================================================
+#======!!!         Try not to change anything below this line       !!!======
+#==============================================================================
+
+#
+# Make "debug" the default mode
+#
+!ifndef MODE
+MODE=debug
+!endif
+
 #
 # Choose between debug and release libraries here
 #
@@ -134,10 +145,6 @@ LDFLAGS=$(LDFLAGS_DEBUG)
 CFLAGS=$(CFLAGS_RELEASE)
 LDFLAGS=$(LDFLAGS_RELEASE)
 !endif
-
-#==============================================================================
-#====== !!!         Try not to change anything below this line       !!! ======
-#==============================================================================
 
 #
 # Other directories & files based on the base dirs
@@ -282,7 +289,7 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 # to put the resulting object files and libs.
 #
 !ifndef CONFIGNAME
-CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
+CONFIGNAME=$(TOOLCHAIN_NAME)-$(MODE)
 !endif
 
 #XXX add SWIG and JAVA_CFLAGS here as well
