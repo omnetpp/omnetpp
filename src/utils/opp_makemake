@@ -42,6 +42,8 @@ exit 0;
 # prefixQuoteJoin improvement (sep="\n" if #>5)
 # split msgccandhfiles to msgccfiles,msghfiles; remove GENERATEDHEADERS
 # --deep opcio
+# allow "" to mean false;
+# not needed: hasmsgfiles, hassubdir
 #
 
 sub makemake()
@@ -468,9 +470,7 @@ sub makemake()
         "msgccfiles" =>  quoteJoin(\@msgccfiles),
         "msghfiles" =>  quoteJoin(\@msghfiles),
         "msgfiles" =>  quoteJoin(\@msgfiles),
-        "hasmsgfiles" =>  $#msgfiles != -1,
         "objs" =>  quoteJoin(\@objs),
-        "hassubdir" =>  $#subdirs != -1,
         "subdirs" =>  quoteJoin(\@subdirs),
         "subdirtargets" =>  quoteJoin(\@subdirTargets),
         "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
@@ -487,6 +487,7 @@ sub makemake()
     print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 }
 
+sub collectDirs($;$);
 sub collectDirs($;$)
 {
     my ($dir,$exceptDirsRef) = @_;
@@ -504,10 +505,11 @@ sub collectDirs($;$)
 #
 # Performs template substitution. Constructs understood are:
 #  - {foo} gets replaced by the value of "foo";
-#  - {bar?some text} gets replaced by "some text" if value of "bar" is true.
-#  - {~bar?some text} gets replaced by "some text" if value of "bar" is false
-#  - {bar:} only keep the rest of the line if value of "bar" is true
-#  - {~bar:} only keep the rest of the line if value of "bar" is false
+#  - {bar?some text} gets replaced by "some text" if value of "bar" is true*.
+#  - {~bar?some text} gets replaced by "some text" if value of "bar" is false*
+#  - {bar:} only keep the rest of the line if value of "bar" is true*
+#  - {~bar:} only keep the rest of the line if value of "bar" is false*
+# * true/false are interpreted as in Perl: "" and "0" are false, everything else is true.
 #
 # Newlines inside {...} are not permitted; this allows detecting errors caused
 # by misplaced braces. Also, nesting is not supported.
@@ -554,7 +556,8 @@ sub substituteIntoTemplate($;$;$;$)
                 my $replacement = "";
                 if ($isOptLine) {
                     # replacing a whole line
-                    if (getFromMapAsBool(\%map, $key) != $isNegated) {
+                    my $condition = getFromMapAsBool(\%map, $key);
+                    if ($isNegated ? !$condition : $condition) {
                         # put line in: all variables OK
                     }
                     else {
@@ -630,8 +633,7 @@ sub getFromMapAsBool($;$)
     my %map = %$mapref;
     die("template error: undefined template parameter '$key'") if (!defined($map{$key}));
     $value = $map{$key};
-    die("template error: template parameter '$key' was expected to be a boolean, but it is \"$value\"") if ($value ne '' && $value ne '0' && $value ne '1');
-    return $value;
+    return $value ? 1 : 0;
 }
 
 #
@@ -851,10 +853,10 @@ MSGFILES = {msgfiles}
 MSG_CC_FILES = {msgccfiles}
 MSG_H_FILES = {msghfiles}
 
-{hassubdir:}# Subdirectories to recurse into
-{hassubdir:}SUBDIRS = {subdirs}
-{hassubdir:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
-{hassubdir:}
+{subdirs:}# Subdirectories to recurse into
+{subdirs:}SUBDIRS = {subdirs}
+{subdirs:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
+{subdirs:}
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
@@ -920,18 +922,18 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
 # >>>
-{makefrags}
+{makefrags:}{makefrags}
 # <<<
 #------------------------------------------------------------------------------
 
 # Main target
-{exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
+{exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
-{so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {hassubdir?subdirs} {makefile}
+{so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
 {so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
 {so:}	@echo{nmake?.} >.tstamp
-{nolink:}$(TARGET): print-info $(OBJS) {hassubdir?subdirs} {makefile} .tstamp
+{nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile} .tstamp
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 {nolink:}
 {nolink:}.tstamp: $(OBJS)
@@ -943,16 +945,16 @@ print-info:
 {nmake:}	@if exist "$(OMNETPP_LIB_SUBDIR)" echo *** Info: MODE=$(MODE), using libs from "$(OMNETPP_LIB_SUBDIR)"
 {nmake:}	@if not exist "$(OMNETPP_LIB_SUBDIR)" echo *** WARNING: Selected libs not available: directory "$(OMNETPP_LIB_SUBDIR)" doesn't exist
 
-{hassubdir:}subdirs: $(SUBDIR_TARGETS)
-{hassubdir:}
-{hassubdir:}$(SUBDIR_TARGETS):
-{hassubdir:}{~nmake:}	cd $@ && {makecommand}
-{hassubdir:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
-{hassubdir:}
-{hasmsgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
-{hasmsgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{hasmsgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
-{hasmsgfiles:}
+{subdirs:}subdirs: $(SUBDIR_TARGETS)
+{subdirs:}
+{subdirs:}$(SUBDIR_TARGETS):
+{subdirs:}{~nmake:}	cd $@ && {makecommand}
+{subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
+{subdirs:}
+{msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
+{msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
+{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
+{msgfiles:}
 .SUFFIXES: .{cc}
 
 {nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
@@ -961,11 +963,11 @@ print-info:
 {nmake:}	- md $(O:/=\) 2>nul
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 
-$(OBJS): $(MSG_H_FILES)
-
+{objs}$(OBJS): $(MSG_H_FILES)
+{objs:}
 generateheaders: $(MSG_H_FILES)
-{hassubdir:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
-{hassubdir:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
 clean:
 {nmake:}	-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
@@ -973,8 +975,8 @@ clean:
 {nmake:}	-del *.vec *.sca 2>NUL
 {~nmake:}	rm -f *.o *_n.{cc} *_n.h *_m.{cc} *_m.h .tstamp
 {~nmake:}	rm -f *.vec *.sca
-{hassubdir:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
-{hassubdir:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
+{subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
@@ -990,3 +992,5 @@ makefiles:
 {deps}
 ENDTEMPLATE
 }
+
+
