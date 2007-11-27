@@ -45,6 +45,14 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
     }
 
+    @Override
+    public String getReadableTagName() {
+        if (getIsNetwork())
+            return "Network";
+        else
+            return super.getReadableTagName();
+    }
+
     public INEDTypeInfo getNEDTypeInfo() {
     	return typeInfo;
     }

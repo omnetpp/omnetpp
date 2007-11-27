@@ -15,11 +15,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -37,19 +42,29 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import de.unikassel.imageexport.exporters.ImageExporter;
 import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
 import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
 public class Neddoc {
-    private String dotExecutable = "C:\\Workspace\\Tools\\Graphviz\\bin\\dot.exe";
+    private String dotExecutablePath = "C:\\Workspace\\Tools\\Graphviz\\bin\\dot.exe";
     
     private IFolder neddocPath;
+    
+    private IFolder doxyPath;
+
+    private IFile doxytagsFile;
+    
+    private IPath doxyRelativePath;
 
     private IProject project;
     
@@ -68,12 +83,23 @@ public class Neddoc {
     private Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
 
     private Map<INedTypeElement, ArrayList<INedTypeElement>> usersMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
+    
+    private Map<String, INedTypeElement> typeNamesMap = new HashMap<String, INedTypeElement>();
+    
+    private Map<String, String> doxyMap = new HashMap<String, String>();
+
+    private Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
+    
+    private Pattern typeNamesPattern;
 
     public Neddoc(IProject project) {
         this.project = project;
 
-        neddocPath = project.getFolder("Documentation/neddoc");
         resources = NEDResourcesPlugin.getNEDResources();
+        neddocPath = project.getFolder("Documentation/neddoc");
+        doxyPath = project.getFolder("Documentation/doxy");
+        doxytagsFile = doxyPath.getFile("doxytags.xml");
+        doxyRelativePath = new Path("../doxy");
     }
     
     public void generate() throws Exception {
@@ -83,13 +109,13 @@ public class Neddoc {
                 try {
                     Neddoc.this.monitor = monitor;
                     ensureEmptyNeddoc();
-                    collectMaps();
+                    collectCaches();
                     generateCSS();
                     generateHTMLFrame();
                     generateFileList();
                     generateSelectedTopics();
                     generateIndexPages();
-                    genereteTypeDiagrams();
+                    //genereteTypeDiagrams();
                     generateNedFilePages();
                     generateNedTypePages();
                     monitor.done();
@@ -128,14 +154,16 @@ public class Neddoc {
         monitor.done();
     }
     
-    private void collectMaps() {
+    private void collectCaches() throws Exception {
         monitor.beginTask("Collecting ned files...", IProgressMonitor.UNKNOWN);
 
         collectNedTypes();
+        collectTypeNames();
         collectSubtypesMap();
         collectImplementorsMap();
         collectUsersMap();
-        
+        collectDoxyMap();
+
         monitor.done();
     }
 
@@ -153,6 +181,28 @@ public class Neddoc {
         });
     }
     
+    private void collectTypeNames() {
+        StringBuffer buffer = new StringBuffer();
+        for (INedTypeElement typeElement : typeElements) {
+            String qname = typeElement.getNEDTypeInfo().getFullyQualifiedName();
+            buffer.append(qname + "|");
+            typeNamesMap.put(qname, typeElement);
+
+            String name = typeElement.getNEDTypeInfo().getName();
+            if (typeNamesMap.containsKey(name))
+                // TODO: warning, multiple names, ignoring short references in comments to those types
+                typeNamesMap.put(name, null);
+            else {
+                buffer.append(name + "|");
+                typeNamesMap.put(name, typeElement);
+            }
+        }
+        if (buffer.length() > 0)
+            buffer.deleteCharAt(buffer.length() - 1);
+
+        typeNamesPattern = Pattern.compile("\\b(" + buffer.toString() + ")\\b");
+    }
+
     private void collectSubtypesMap() {
         for (INedTypeElement subtype : typeElements) {
             INedTypeElement supertype = subtype.getNEDTypeInfo().getFirstExtendsRef();
@@ -199,7 +249,19 @@ public class Neddoc {
         }
     }
 
-    Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
+    private void collectDoxyMap() throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document document = factory.newDocumentBuilder().parse(doxytagsFile.getContents());;
+        NodeList nodes = (NodeList)XPathFactory.newInstance().newXPath().compile("//compound[@kind='class']/filename")
+            .evaluate(document, XPathConstants.NODESET);
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            String fileName = node.getTextContent();
+            String className = node.getParentNode().getFirstChild().getNextSibling().getTextContent();
+            doxyMap.put(className, fileName);
+        }
+    }
 
     private String processHTMLContent(String html) {
         Matcher matcher = preSpanPattern.matcher(html);
@@ -232,9 +294,8 @@ public class Neddoc {
             comment = comment.replaceAll("(?s)\n( *-#? )", "\n\n$1");
 
             // if briefcomment, keep only the 1st paragraph
-            if (clazz.equals("briefcomment")) {
+            if (clazz.equals("briefcomment"))
                comment = comment.replaceAll("(?s)(.*?[^ \t\n].*?)\n\n.*", "$1\n\n");
-            }
 
             // format @author, @date, @todo, @bug, @see, @since, @warning, @version
             comment = comment.replaceAll("@author\\b", "\n\n<b>Author:</b>");
@@ -252,24 +313,24 @@ public class Neddoc {
             // how do you say that in a Perl regex?
             // (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
             // see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
-            comment = comment.replaceAll("(?s)\n\n[ \t]*([^- \t\n].*?)\n\n", "\n<p>$1</p>\n");
+            comment = comment.replaceAll("(?s)(?<=\n\n)[ \t]*([^- \t\n].*?)(?=\n\n)", "<p>$1</p>");
 
             // wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
             // every 3 spaces increase indent level by one.
-            comment = comment.replaceAll("(?s)\n\n          *-[ \t]+(.*?)\n\n", "\n\n  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>\n\n");
-            comment = comment.replaceAll("(?s)\n\n       *-[ \t]+(.*?)\n\n", "\n\n  <ul><ul><ul><li>$1</li></ul></ul></ul>\n\n");
-            comment = comment.replaceAll("(?s)\n\n    *-[ \t]+(.*?)\n\n", "\n\n  <ul><ul><li>$1</li></ul></ul>\n\n");
-            comment = comment.replaceAll("(?s)\n\n *-[ \t]+(.*?)\n\n", "\n\n  <ul><li>$1</li></ul>\n\n");
+            comment = comment.replaceAll("(?s)(?<=\n\n)          *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>");
+            comment = comment.replaceAll("(?s)(?<=\n\n)       *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><li>$1</li></ul></ul></ul>");
+            comment = comment.replaceAll("(?s)(?<=\n\n)    *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><li>$1</li></ul></ul>");
+            comment = comment.replaceAll("(?s)(?<=\n\n) *-[ \t]+(.*?)(?=\n\n)", "  <ul><li>$1</li></ul>");
             for (int i = 0; i < 4; i++) {
                 comment = comment.replaceAll("(?s)</ul>[ \t\n]*<ul>", "\n\n  ");
             }
 
             // wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
             // every 3 spaces increase indent level by one.
-            comment = comment.replaceAll("(?s)\n\n          *-#[ \t]+(.*?)\n\n", "\n\n  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>\n\n");
-            comment = comment.replaceAll("(?s)\n\n       *-#[ \t]+(.*?)\n\n", "\n\n  <ol><ol><ol><li>$1</li></ol></ol></ol>\n\n");
-            comment = comment.replaceAll("(?s)\n\n    *-#[ \t]+(.*?)\n\n", "\n\n  <ol><ol><li>$1</li></ol></ol>\n\n");
-            comment = comment.replaceAll("(?s)\n\n *-#[ \t]+(.*?)\n\n", "\n\n  <ol><li>$1</li></ol>\n\n");
+            comment = comment.replaceAll("(?s)(?<=\n\n)          *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>");
+            comment = comment.replaceAll("(?s)(?<=\n\n)       *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><li>$1</li></ol></ol></ol>");
+            comment = comment.replaceAll("(?s)(?<=\n\n)    *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><li>$1</li></ol></ol>");
+            comment = comment.replaceAll("(?s)(?<=\n\n) *-#[ \t]+(.*?)(?=\n\n)", "  <ol><li>$1</li></ol>");
             for (int i = 0; i < 4; i++) {
                 comment = comment.replaceAll("(?s)</ol>[ \t\n]*<ol>", "\n\n  ");
             }
@@ -280,25 +341,13 @@ public class Neddoc {
             // now we can trim excess blank lines
             comment = comment.replaceAll("\n\n+", "\n");
 
-            // restore accented characters e.g. "&ouml;" from their "&amp;ouml;" forms
-            // TODO: $comment =~ s|&amp;([a-z]+);|&\1;|gsi;
-
-            // restore " from &quot; (important for attrs of html tags, see below)
-            // TODO: $comment =~ s|&quot;|"|gsi;
-
             // extract <nohtml> sections to prevent substituting inside them;
             // also backslashed words to prevent putting hyperlinks on them
             // TODO: $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
             // TODO: $comment =~ s|(\\[a-z_]+)|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
             
-            // decode certain HTML tags: <i>,<b>,<br>,...
-            // TODO: $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
-            // TODO: $comment =~ s!&lt;(($tags)( [^\n]*?)?)&gt;!<\1>!gsi;
-            // TODO: $comment =~ s!&lt;(/($tags))&gt;!<\1>!gsi;
-            
-            // put hyperlinks on module names, etc.
-            // TODO: $names = join('|',@components);
-            // TODO: $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse unless($names eq '');
+            // put hyperlinks on type names
+            comment = replaceTypeReferences(comment);
             
             // put back <nohtml> sections and backslashed words
             // TODO: $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
@@ -315,6 +364,22 @@ public class Neddoc {
 
         matcher.appendTail(buffer);
 
+        return buffer.toString();
+    }
+
+    private String replaceTypeReferences(String comment) {
+        Matcher matcher = typeNamesPattern.matcher(comment);
+        StringBuffer buffer = new StringBuffer();
+        
+        while (matcher.find()) {
+            INedTypeElement typeElement = typeNamesMap.get(matcher.group(1));
+
+            if (typeElement != null)
+                matcher.appendReplacement(buffer, "<a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+        }
+
+        matcher.appendTail(buffer);
+        
         return buffer.toString();
     }
     
@@ -633,12 +698,11 @@ public class Neddoc {
 
                         generateTypeDiagram(typeElement);
                         generateUsageDiagram(typeElement);
-                        generateInheritanceDiagram(typeElement);                       
+                        generateInheritanceDiagram(typeElement);
+                        generateUsedInTables(typeElement);
                         generateParametersTable(typeElement);
-
-                        if (typeElement instanceof IModuleTypeElement)
-                            generateGatesTable(typeElement);
-
+                        generateGatesTable(typeElement);
+                        generateUnassignedParametersTable(typeElement);
                         generateNedSourceContent(typeElement);
                     }
                 });
@@ -648,30 +712,65 @@ public class Neddoc {
         monitor.done();
     }
 
+    private void generateUsedInTables(INedTypeElement typeElement) throws IOException {
+        if (usersMap.containsKey(typeElement)) {
+            ArrayList<INedTypeElement> compoundModules = new ArrayList<INedTypeElement>();
+            ArrayList<INedTypeElement> networks = new ArrayList<INedTypeElement>();
+    
+            for (INedTypeElement userElement : usersMap.get(typeElement)) {
+                if (userElement instanceof CompoundModuleElementEx) {
+                    if (((CompoundModuleElementEx)userElement).getIsNetwork())
+                        networks.add(userElement);
+                    else
+                        compoundModules.add(userElement);
+                }
+            }
+    
+            if (compoundModules.size() != 0) {
+                out("<h3 class=\"subtitle\">Used in compound modules:</h3>\r\n" + 
+            		"<p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>\r\n" + 
+            		"<table>\r\n"); 
+                for (INedTypeElement userElement : compoundModules)
+                    generateTypeReference(userElement);
+        		out("</table>\r\n");
+            }
+
+            if (networks.size() != 0) {
+                out("<h3 class=\"subtitle\">Networks:</h3>\r\n" + 
+            		"<table>\r\n");
+                for (INedTypeElement userElement : networks)
+                    generateTypeReference(userElement);
+        		out("</table>\r\n");
+            }
+        }
+    }
+    
     private void generateParametersTable(INedTypeElement typeElement) throws IOException {
-        Map<String, ParamElementEx> paramsMap = typeElement.getParamDeclarations();
-        if (!paramsMap.isEmpty()) {
+        Map<String, ParamElementEx> paramsDeclarations = typeElement.getParamDeclarations();
+        Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
+
+        if (!paramsDeclarations.isEmpty()) {
             out("<h3 class=\"subtitle\">Parameters:</h3>\r\n" + 
         		"<table class=\"paramtable\">\r\n" + 
         		"   <tr>\r\n" + 
         		"      <th>Name</th>\r\n" + 
         		"      <th>Type</th>\r\n" + 
+                "      <th>Default value</th>\r\n" + 
         		"      <th>Description</th>\r\n" + 
         		"   </tr>\r\n");
             
-            for (String name : paramsMap.keySet()) {
-                ParamElementEx param = paramsMap.get(name);
-                String type = param.getAttribute(GateElementEx.ATT_TYPE);
-                if (type == null)
-                    type = "numeric";
+            for (String name : paramsDeclarations.keySet()) {
+                ParamElementEx paramDeclaration = paramsDeclarations.get(name);
+                ParamElementEx paramAssignment = paramsAssignments.get(name);
 
                 out("<tr>\r\n" + 
             		"   <td width=\"150\">" + name + "</td>\r\n" + 
             		"   <td width=\"100\">\r\n" + 
-            		"      <i>" + type + "</i>\r\n" + 
+            		"      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" + 
             		"   </td>\r\n" + 
-            		"   <td>");
-                generateTableComment(param.getComment());  
+            		"   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>" +
+                    "   <td>");
+                generateTableComment(paramDeclaration.getComment());  
         		out("</td>\r\n" + 
             		"</tr>\r\n");
             }
@@ -680,41 +779,134 @@ public class Neddoc {
         }
     }
 
-    private void generateGatesTable(INedTypeElement typeElement) throws IOException {
-        IModuleTypeElement module = (IModuleTypeElement)typeElement;
+    private void generateUnassignedParametersTable(INedTypeElement typeElement) throws IOException {
+        if (typeElement instanceof CompoundModuleElementEx) {
+            ArrayList<ArrayList<Object>> params = new ArrayList<ArrayList<Object>>();
+            collectUnassignedParameters(null, typeElement.getNEDTypeInfo().getSubmodules(), params);
 
-        Map<String, GateElementEx> gatesMap = module.getGateDeclarations();
-        if (!gatesMap.isEmpty()) {
-            out("<h3 class=\"subtitle\">Gates:</h3>\r\n" + 
-                "<table class=\"paramtable\">\r\n" + 
-                "   <tr>\r\n" + 
-                "      <th>Name</th>\r\n" + 
-                "      <th>Direction</th>\r\n" + 
-                "      <th>Description</th>\r\n" + 
-                "   </tr>\r\n");
-    
-            for (String name : gatesMap.keySet()) {
-                GateElementEx gate = gatesMap.get(name);
-                out("<tr>\r\n" + 
-                    "   <td width=\"150\">" + name + (gate.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" + 
-                    "   <td width=\"100\"><i>" + gate.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" + 
-                    "   <td>");
-                generateTableComment(gate.getComment());  
-                out("</td>\r\n" +
-                    "</tr>\r\n");
+            if (params.size() != 0) {
+                out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\r\n" + 
+                    "<table class=\"paramtable\">\r\n" + 
+                    "   <tr>\r\n" + 
+                    "      <th>Name</th>\r\n" + 
+                    "      <th>Type</th>\r\n" + 
+                    "      <th>Default value</th>\r\n" + 
+                    "      <th>Description</th>\r\n" + 
+                    "   </tr>\r\n");
+                for (ArrayList<Object> tuple : params) {
+                    ParamElementEx paramDeclaration = (ParamElementEx)tuple.get(1);
+                    ParamElementEx paramAssignment = (ParamElementEx)tuple.get(2);
+
+                    out("<tr>\r\n" + 
+                            "   <td>" + (String)tuple.get(0) + "</td>\r\n" + 
+                            "   <td width=\"100\">\r\n" + 
+                            "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" + 
+                            "   </td>\r\n" + 
+                            "   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" + 
+                            "   <td>");
+                        generateTableComment(paramDeclaration.getComment());
+                        out("   </td>\r\n" +
+                            "</tr>\r\n");
+                }
+                out("</table>\r\n");
             }
-            
-            out("</table>\r\n");
+        }
+    }
+
+    private void collectUnassignedParameters(String prefix, Map<String, SubmoduleElementEx> typeElementMap, ArrayList<ArrayList<Object>> params) throws IOException {
+        for (SubmoduleElementEx submodule : typeElementMap.values()) {
+            INedTypeElement typeElement = submodule.getEffectiveTypeRef();
+
+            if (typeElement != null) {
+                String newPrefix = (prefix == null ? "" : prefix + ".") + "<a href=\"" + getFileName(typeElement) + "\">" + submodule.getName() + "</a>";
+    
+                if (typeElement instanceof CompoundModuleElementEx)
+                    collectUnassignedParameters(newPrefix, typeElement.getNEDTypeInfo().getSubmodules(), params);
+                else {
+                    INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
+                    Map<String, ParamElementEx> declarations = typeInfo.getParamDeclarations();
+                    Map<String, ParamElementEx> assigments = submodule.getParamAssignments();
+                    
+                    for (String name : declarations.keySet()) {
+                        ParamElementEx paramDeclaration = declarations.get(name);
+                        ParamElementEx paramAssignment = assigments.get(name);
+
+                        if (paramAssignment == null || paramAssignment.getIsDefault()) {
+                            ArrayList<Object> tuple = new ArrayList<Object>();
+                            tuple.add(newPrefix + "." + name);
+                            tuple.add(paramDeclaration);
+                            tuple.add(paramAssignment);
+                            params.add(tuple);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void generateGatesTable(INedTypeElement typeElement) throws IOException {
+        if (typeElement instanceof IModuleTypeElement) {
+            IModuleTypeElement module = (IModuleTypeElement)typeElement;
+    
+            Map<String, GateElementEx> gateDeclarations = module.getGateDeclarations();
+            Map<String, GateElementEx> gatesSizes = module.getGateSizes();
+    
+            if (!gateDeclarations.isEmpty()) {
+                out("<h3 class=\"subtitle\">Gates:</h3>\r\n" + 
+                    "<table class=\"paramtable\">\r\n" + 
+                    "   <tr>\r\n" + 
+                    "      <th>Name</th>\r\n" + 
+                    "      <th>Direction</th>\r\n" + 
+                    "      <th>Size</th>\r\n" + 
+                    "      <th>Description</th>\r\n" + 
+                    "   </tr>\r\n");
+        
+                for (String name : gateDeclarations.keySet()) {
+                    GateElementEx gateDeclaration = gateDeclarations.get(name);
+                    GateElementEx gateSize = gatesSizes.get(name);
+    
+                    out("<tr>\r\n" + 
+                        "   <td width=\"150\">" + name + (gateDeclaration.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" + 
+                        "   <td width=\"100\"><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" + 
+                        "   <td width=\"50\">" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
+                        "   <td>");
+                    generateTableComment(gateDeclaration.getComment());  
+                    out("</td>\r\n" +
+                        "</tr>\r\n");
+                }
+                
+                out("</table>\r\n");
+            }
         }
     }
 
     private void generateTableComment(String comment) throws IOException {
-        out(processHTMLContent("<span class=\"comment\">" + comment + "</span>"));
+        if (comment != null)
+            out(processHTMLContent("<span class=\"comment\">" + comment + "</span>"));
+    }
+
+    private void generateTypeReference(INedTypeElement typeElement) throws IOException {
+        out("<tr>\r\n" + 
+            "   <td>\r\n" + 
+            "      <a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
+            "   </td>\r\n" + 
+            "   <td>\r\n"); 
+
+        String comment = typeElement.getComment();
+        if (comment != null)
+            out(processHTMLContent("<span class=\"briefcomment\">" + comment + "</span>")); 
+        else
+            out("<i>(no description)</i>\r\n");
+        
+        out("   </td>\r\n" + 
+            "</tr>\r\n");
     }
 
     private void generateCppDefinitionReference(INedTypeElement typeElement) throws IOException {
-        // TODO: reference
-        out("<p><b>C++ definition: <a href=\"{$doxyhtmldir}/{filename/text()}\" target=\"_top\">click here</a></b></p>\r\n");
+        ParamElementEx param = typeElement.getParamDeclarations().get("className");
+        String className = param != null ? param.getValue() : typeElement.getName();
+
+        out("<p><b>C++ definition: <a href=\"" + doxyRelativePath.toString() + "/" + doxyMap.get(className) + "\" target=\"_top\">click here</a></b></p>\r\n");
     }
 
     private void generateFileReference(IFile file) throws IOException {
@@ -809,14 +1001,14 @@ public class Neddoc {
     
     private void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
         out("<img src=\"" + getFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
-        out("<map name=\"type-diagram\">" + "TODO:" + "</map>\r\n"); 
+        // TODO: out("<map name=\"type-diagram\">" +  + "</map>\r\n"); 
     }
     
     private void generateUsageDiagram(INedTypeElement typeElement) throws IOException {
         out("<h3 class=\"subtitle\">Usage diagram:</h3>\r\n" + 
-                "<p>The following diagram shows usage relationships between modules,\r\n" + 
-                "networks and channels. Unresolved types are missing from the diagram.\r\n" + 
-                "Click <a href=\"full-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
+            "<p>The following diagram shows usage relationships between modules,\r\n" + 
+            "networks and channels. Unresolved types are missing from the diagram.\r\n" + 
+            "Click <a href=\"full-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
 
         StringBuffer dot = new StringBuffer();
 
@@ -953,11 +1145,11 @@ public class Neddoc {
     }
 
     private boolean isDotAvailable() {
-        return new File(dotExecutable).exists();
+        return new File(dotExecutablePath).exists();
     }
 
     private void generateDotOuput(String dot, File outputFile, String format) throws IOException {
-        Process process = Runtime.getRuntime().exec(new String[] {dotExecutable, "-T" + format, "-o", outputFile.toString()}, null, getFile("."));
+        Process process = Runtime.getRuntime().exec(new String[] {dotExecutablePath, "-T" + format, "-o", outputFile.toString()}, null, getFile("."));
         OutputStream outputStream = process.getOutputStream();
         outputStream.write(dot.getBytes());
         outputStream.close();
@@ -986,6 +1178,15 @@ public class Neddoc {
         throw new RuntimeException("timeout occured when generating " + outputFile.toString());
     }
     
+    private String getParamTypeAsString(ParamElementEx param) {
+        String type = param.getAttribute(GateElementEx.ATT_TYPE);
+
+        if (type == null)
+            return "numeric";
+        else
+            return type;
+    }
+
     private void setOutputFile(String fileName) throws FileNotFoundException {
         File file = getFile(fileName);
 
