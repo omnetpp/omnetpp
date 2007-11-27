@@ -24,12 +24,11 @@ exit 0;
 
 #TODO:
 # support building static library
-# support output dir
-# project directory should be autodetected if not given!
 # use linkall.cmd on Windows!
+# potential problem: $(CONFIGNAME) determines both linker path AND output directory! so they are now linked!
+# warnings that come when -Odir is used
 #
 #TODO: to implement:
-# outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
 # invoke opp_makedepend in the end?
 #
 #TODO: port to Java:
@@ -37,6 +36,10 @@ exit 0;
 # --mode (-M) opcio
 # -D opcio
 # "rem" => ""
+# outdirroot
+# support -Pxxx  (without space)
+# --outputfile no longer supported
+# -c, --configfile no longer supported
 #
 
 sub makemake()
@@ -53,7 +56,7 @@ sub makemake()
     $projectDir = "";
     $type = "EXE";
     $target = "";
-    $outputDir = ".";
+    $outRoot = "";
     $force = 0;
     $linkWithObjects = 0;
     $tstamp = 1;
@@ -92,11 +95,14 @@ sub makemake()
         elsif ($arg eq "-e" || $arg eq "--ext") {
             $ccExt = shift @ARGV;
         }
-        elsif ($arg eq "-o" || $arg eq "--outputfile") {
+        elsif ($arg eq "-o") {
             $target = shift @ARGV;
         }
-        elsif ($arg eq "--outputdir") {
-            $outputDir = shift @ARGV;
+        elsif ($arg eq "-O" || $arg eq "--out") {
+            $outRoot = shift @ARGV;
+        }
+        elsif ($arg =~ /^-O/) {
+            $outRoot = substr($arg, 2);
         }
         elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
@@ -121,11 +127,17 @@ sub makemake()
         elsif ($arg eq "-P" || $arg eq "--projectdir") {
             $projectDir = shift @ARGV;
         }
+        elsif ($arg =~ /^-P/) {
+            $projectDir = substr($arg, 2);
+        }
         elsif ($arg eq "-M" || $arg eq "--mode") {
             $mode = shift @ARGV;
         }
+        elsif ($arg =~ /^-M/) {
+            $mode = substr($arg, 2);
+        }
         elsif ($arg eq "-c" || $arg eq "--configfile") {
-            $configFile = shift @ARGV;
+            error("option $arg is no longer supported, config file is found automatically by invoking opp_configfilepath");
         }
         elsif ($arg eq "-n" || $arg eq "--nolink") {
             $type = "NOLINK";
@@ -228,6 +240,36 @@ sub makemake()
     @msgccfiles = ();
     @msghfiles = ();
 
+    # determine, and clean up format of project root dir
+    if ($projectDir eq "") {
+        # try to find project root directory (go up until we find a ".project" file)
+        my $dir = cwd;
+        $dir =~ s|\\|/|g;
+        for (;;) {
+            if (-f "$dir/.project") {
+                $projectDir = $dir;
+                last;
+            }
+            if ($dir =~ m|/|) {
+                $dir =~ s|/[^/]*$||;
+            }
+            else {
+                last;
+            }
+        }
+    }
+    elsif (! -d $projectDir) {
+        error("specified project directory \"$projectDir\" does not exist");
+    }
+
+    if ($projectDir ne "") {
+        $projectDir = existingDirtoCanonicalAbsolute($projectDir);
+        #print "Project directory: $projectDir\n";
+        if (!($folder =~ /^\Q$projectDir\E/)) {
+            error("current directory is not under the given project directory \"$projectDir\"");
+        }
+    }
+
     $target = abs2rel($target,$projectDir);
 
     @tmp = @includeDirs;
@@ -249,25 +291,7 @@ sub makemake()
     $configFile =~ s/\n//gs;
     $configFile =~ s/\s*(.*)\s*/$1/gs;
     if ($configFile eq "" || ! -f $configFile) {
-        error("opp_configfilepath returned \"$configFile\"");  #FIXME better error message
-    }
-
-    # try to find project root directory (go up until we find a ".project" file)
-    if ($projectDir eq "") {
-        my $dir = cwd;
-        $dir =~ s|\\|/|g;
-        for (;;) {
-            if (-f "$dir/.project") {
-                $projectDir = $dir;
-                last;
-            }
-            if ($dir =~ m|/|) {
-                $dir =~ s|/.*$||;
-            }
-            else {
-                last;
-            }
-        }
+        error("opp_configfilepath didn't return the name of an existing directory, result was \"$configFile\"");
     }
 
     # collect source files
@@ -280,8 +304,7 @@ sub makemake()
     }
     else {
         @sourceDirs = collectDirs(".", \@exceptSubdirs);
-        $numSourceDirs = @sourceDirs;
-        die "too long!" if ($numSourceDirs > 500);
+        error("too many subdirs for --deep") if (@sourceDirs > 1000);
         print join('  ', @sourceDirs);
         @ccfiles = ();
         @cppfiles = ();
@@ -430,6 +453,19 @@ sub makemake()
         }
     }
 
+
+    # determine outdir
+    if ($outRoot eq "") {
+        $outdir = ".";
+    }
+    else {
+        my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
+        my $outRoot2 = abs2rel($outRootAbs, $projectDir);
+        my $subpath = cwd();
+        $subpath =~ s|^\Q$projectDir\E||;
+        $outdir = canonicalize("$outRoot2/\$(CONFIGNAME)/$subpath");
+    }
+
     $deps = "";  #FIXME
 
     %m = (
@@ -438,7 +474,7 @@ sub makemake()
         "rbrace" =>  "}",
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
-        "outputdir" => $outputDir,
+        "outdir" => $outdir,
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
         "configfile" =>  $configFile,
@@ -648,10 +684,10 @@ sub abs2rel($;$;$;)
 {
     my($inputpath, $projectdir, $referencedir) = @_;
 
-    if ($projectdir eq '') {
+    if (!defined($projectdir) || $projectdir eq '') {
         return $inputpath;
     }
-    if ($referencedir eq '') {
+    if (!defined($referencedir) || $referencedir eq '') {
         $referencedir = cwd;
     }
 
@@ -689,7 +725,6 @@ sub abs2rel($;$;$;)
        }
     }
 
-
     # assemble relative path: change every directory name in $referencedir to "..",
     # then add $inputpath to it.
     $referencedir =~ s|[^/]+|..|g;
@@ -698,6 +733,50 @@ sub abs2rel($;$;$;)
     return $rel;
 }
 
+sub isRelative($)
+{
+    # a path is absolute if it begins with "/" or "\", or contains ":/" or ":\"
+    my($path) = @_;
+    return !($path =~ /^[\/\\]/ || $path =~ /:[\/\\]/);
+}
+
+#
+# Convert a path to an absolute path in canonical form.
+# Path must point to a directory which currently exists.
+#
+sub existingDirtoCanonicalAbsolute($)
+{
+    my($dir) = @_;
+    die "argument must be an existing directory: $dir" unless (-d $dir);
+    $old = cwd();
+    chdir($dir);
+    $ret = cwd();
+    chdir($old);
+    return $ret;
+}
+
+sub canonicalize($)
+{
+    my($path) = @_;
+    $path =~ s|\\|/|g;  # backslash -> fwd slash
+    $path =~ s|//+|/|g;  # xx//xx -> xx/xx
+    $path =~ s|(/\.)+/|/|g; # xx/././xx -> xx/xx
+    $path =~ s|^(\./)+||s unless $path eq "./"; # ./xx -> xx
+
+    # # now we'll need to replace "/<subdir>/../" with "/" as many times as we can;
+    # # unless <subdir> is "." or ".."
+    # $path .= "/" if ($path =~ /\/\.\.$/);  # add "/" if it ends in "/.."
+    # $path =~ s|/../../|/..//../|g;  # prevent /../../ from matching
+    # $path =~ s|/../../|/..//../|g;  # once again, to handle /../../../
+    # while ($path =~ s|/[^/]+/\.\./|/|g) {
+    #     $path =~ s|//+|/|g;
+    #     $path =~ s|/../../|/..//../|g;
+    #     $path =~ s|/../../|/..//../|g;
+    # };
+    # $path =~ s|//+|/|g;  # xx//xx -> xx/xx
+
+    return $path;
+}
 
 sub quote($)
 {
@@ -740,20 +819,28 @@ $progname [options] [directories, library and object files]...
     -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
                           By default, this is determined by looking at
                           existing files in the directory.
-    -o filename, --outputfile filename
-                          Name of simulation executable/library
+    -o filename           Name of simulation executable/library
+    -O directory, --out directory
+                          Turns on out-of-directory build, and specifies the
+                          name of the output directory tree. Usual value
+                          is "out". The actual output directory will be
+                          <projectroot>/<dir>/$(CONFIGNAME)/<subpath>,
+                          where <subpath> is the project-relative path of
+                          the current directory (for <projectroot> see -P).
+                          An absolute directory path can also be specified,
+                          resulting in <absolute-dir>/$(CONFIGNAME)/<subpath>.
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag.vc file.
     -X directory, -Xdirectory, --except directory
                           With -r (recurse) option: ignore the given directory
     -P directory, --projectdir directory
-                          Project base (root) directory; all absolute paths
-                          (-I, -L, object file names, etc.) which point into
-                          this directory will be converted to relative, to
-                          ease compiling the project in a different directory.
-                          Defaults to first ancestor directory that contains
-                          a ".project" file.
+                          Specifies the project root directory. Any absolute
+                          path (-I, -L, object file names, etc.) that points
+                          into the project's subtree will be converted to
+                          relative, to ease compiling the project in a
+                          different directory. Defaults to first ancestor
+                          directory that contains a ".project" file.
     -M mode, --mode mode  Selects the build mode, "debug" or "release".
                           Defaults to "debug". This setting can still be
                           overridden on the make command line, by specifying
@@ -790,8 +877,6 @@ $progname [options] [directories, library and object files]...
     -llibrary             Additional library to link against
                           (e.g. -lmylibrary.lib)
     -p symbol, -psymbol   -P option to be passed to opp_msgc
-    -c filename, --configfile filename
-                          Included config file (default:"../../configuser.vc")
     -i filename, --includefragment filename
                           Append file to near end of Makefile. The file
                           makefrag.vc (if exists) is appended automatically
@@ -851,7 +936,7 @@ EXT_DIR_TSTAMPS = {extdirtstamps}
 LIBS = {libpath}{libs}{importlibs}
 
 # Output directory
-O = {outputdir}
+O = {outdir}
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
@@ -966,6 +1051,13 @@ print-info:
 {subdirs:}{~nmake:}	cd $@ && {makecommand}
 {subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {subdirs:}
+{extdirtstamps}$(EXT_DIR_TSTAMPS):
+{extdirtstamps}	@echo Error: $(@{nmake?:/=\}) does not exist.
+{extdirtstamps}	@echo This means that at least the above dependency directory has not been built.
+{extdirtstamps}	@echo Maybe you need to do a top-level make?
+{extdirtstamps}	@echo{nmake?.}
+{extdirtstamps}	@exit {nmake?/b }1
+{extdirtstamps}
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
