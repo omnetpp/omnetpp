@@ -9,6 +9,12 @@ OMNETPP_ROOT=..\..
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
+!if "$(CONFIGNAME)"==""
+L=$(OMNETPP_LIB_DIR)
+!else
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+!endif
+
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"
 
@@ -34,7 +40,7 @@ SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
 OBJS = $(CXXFILES:.cxx=.obj) jprogressmonitor.obj
 
-LIBS=$(OMNETPP_LIB_DIR)/common.lib $(OMNETPP_LIB_DIR)/nedxml.lib $(OMNETPP_LIB_DIR)/scave.lib $(OMNETPP_LIB_DIR)/layout.lib $(OMNETPP_LIB_DIR)/eventlog.lib
+LIBS=$L/common.lib $L/nedxml.lib $L/scave.lib $L/layout.lib $L/eventlog.lib
 
 DLL = opplibs.dll
 
