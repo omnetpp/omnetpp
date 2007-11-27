@@ -483,35 +483,6 @@ if test ! -x /usr/bin/perl; then
    AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
 fi
 
-# xsltproc
-AC_ARG_VAR(XSLTPROC, A command line xslt processor)
-AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, not found)
-
-if test "$XSLTPROC" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  xsltproc"
-   AC_MSG_WARN(xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc.)
-   AC_MSG_WARN(You can get it from http://xmlsoft.org/XSLT/)
-fi
-
-
-# Ghostscript
-AC_ARG_VAR(GHOSTSCRIPT, Ghostscript is used for EPS-JPG conversion by opp_neddoc)
-AC_CHECK_PROG(GHOSTSCRIPT, gs, gs,)
-
-if test "$GHOSTSCRIPT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Ghostscript"
-   AC_MSG_WARN(Ghostscript not found -- it is needed by opp_neddoc to create diagrams.)
-fi
-
-# "convert" from ImageMagick
-AC_ARG_VAR(CONVERT, convert (ImageMagick) is used for EPS-JPG conversion by opp_neddoc)
-AC_CHECK_PROG(CONVERT, convert, convert,)
-
-if test "$CONVERT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  ImageMagick"
-   AC_MSG_WARN(convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem.)
-fi
-
 # "dot" from Graphviz
 AC_ARG_VAR(DOT, Graph drawing program from the Graphviz package)
 AC_CHECK_PROG(DOT, dot, dot,)
@@ -519,15 +490,6 @@ AC_CHECK_PROG(DOT, dot, dot,)
 if test "$DOT" = ""; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
    AC_MSG_WARN(dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams.)
-fi
-
-# giftrans
-AC_ARG_VAR(GIFTRANS, Utility to make GIFs transparent)
-AC_CHECK_PROG(GIFTRANS, giftrans, giftrans,)
-
-if test "$GIFTRANS" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  giftrans"
-   AC_MSG_WARN(giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent.)
 fi
 
 # swig is used for building the ui support libs
@@ -926,10 +888,6 @@ AC_SUBST(SHLIB_LD)
 AC_SUBST(DLLTOOL)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
-AC_SUBST(XSLTPROC)
-AC_SUBST(GHOSTSCRIPT)
-AC_SUBST(CONVERT)
-AC_SUBST(GIFTRANS)
 AC_SUBST(DOT)
 
 AC_SUBST(DOXYGEN)

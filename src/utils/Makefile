@@ -15,7 +15,7 @@ endif
 all: $O/seedtool
 	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
 	cp opp_configfilepath $(OMNETPP_BIN_DIR)
-	if [ $$OS == "Windows_NT" ] ; then \
+	if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
 	fi

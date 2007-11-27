@@ -26,15 +26,13 @@ OMNeT++/OMNEST uses BLT mainly for its chart, graph and table (multi-column
 listbox) widgets. BLT is available from http://blt.sourceforge.net, and it
 is distributed under a BSD-like license.
 
-LibXML/LibXSLT
+LibXML2
 
-LibXML and LibXSLT are an open-source XML parser and XSLT processor,
-written by Daniel Veillard for the GNOME project. The source is available
-from http://www.xmlsoft.org. OMNeT++/OMNEST is bundled with Win32 binaries
-maintained by Igor Zlatkovic, and currently available from
-http://www.zlatkovic.com. LibXML, LibXSLT and ICONV (also a needed
-component) are distributed under the GNU Lesser General Public License
-(LGPL).
+LibXML2 is an open-source XML parser, written by Daniel Veillard for the GNOME
+project. The source is available from http://www.xmlsoft.org. OMNeT++/OMNEST 
+is bundled with Win32 binaries maintained by Igor Zlatkovic, and currently 
+available from http://www.zlatkovic.com. LibXML and ICONV (also a needed
+component) are distributed under the GNU Lesser General Public License (LGPL).
 
 Perl
 
@@ -52,20 +50,6 @@ GraphViz home page is http://www.graphviz.org. The package is distributed
 under the AT&T Graphviz Source Code Agreement which permits redistribution
 of binaries.
 
-Giftrans
-
-opp_neddoc also uses the little program giftrans, attributed to Andreas Ley
-<ley@rz.uni-karlsruhe.de> on the page http://www.gsp.com/cgi-bin/man.cgi?
-section=1&topic=giftrans, along with a BSD-like license.
-
-Ghostscript
-
-For completeness, opp_neddoc uses Ghostscript as well. Ghostscript is not
-bundled with the OMNeT++/OMNEST Win32 binary distribution: you have to
-download and install Ghostscript before OMNeT++/OMNEST. We recommend a
-recent version of AFPL Ghostscript (GNU Ghostscript is a bit behind with
-versions.)
-
 UnxUtils
 
 Several GNU Unix tools have been included: grep, gawk, pwd, sed, gzip,
@@ -74,6 +58,3 @@ the source is available from http://www.gnu.org. OMNeT++/OMNEST is bundled
 with binaries from UnxUtils, a package which contains Win32 binary ports of
 these tools. UnxUtils is hosted at sourceforge.net:
 http://unxutils.sourceforge.net.
-
-
-

@@ -641,11 +641,7 @@ LEXLIB
 MAKE
 DOXYGEN
 PERL
-XSLTPROC
-GHOSTSCRIPT
-CONVERT
 DOT
-GIFTRANS
 SWIG
 XMKMF
 CXXCPP
@@ -725,11 +721,7 @@ YACC
 YFLAGS
 DOXYGEN
 PERL
-XSLTPROC
-GHOSTSCRIPT
-CONVERT
 DOT
-GIFTRANS
 SWIG
 XMKMF
 CXXCPP'
@@ -1328,12 +1320,7 @@ Some influential environment variables:
               default value of `-d' given by some make applications.
   DOXYGEN     The Doxygen documentation tool
   PERL        The Perl interpreter
-  XSLTPROC    A command line xslt processor
-  GHOSTSCRIPT Ghostscript is used for EPS-JPG conversion by opp_neddoc
-  CONVERT     convert (ImageMagick) is used for EPS-JPG conversion by
-              opp_neddoc
   DOT         Graph drawing program from the Graphviz package
-  GIFTRANS    Utility to make GIFs transparent
   SWIG        The Swig interface generator
   XMKMF       Path to xmkmf, Makefile generator for X Window System
   CXXCPP      C++ preprocessor
@@ -3943,148 +3930,6 @@ echo "$as_me: error: Perl MUST be available as /usr/bin/perl. Creating a soft li
    { (exit 1); exit 1; }; }
 fi
 
-# xsltproc
-
-# Extract the first word of "xsltproc", so it can be a program name with args.
-set dummy xsltproc; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_XSLTPROC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$XSLTPROC"; then
-  ac_cv_prog_XSLTPROC="$XSLTPROC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_XSLTPROC="xsltproc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_XSLTPROC" && ac_cv_prog_XSLTPROC="not found"
-fi
-fi
-XSLTPROC=$ac_cv_prog_XSLTPROC
-if test -n "$XSLTPROC"; then
-  { echo "$as_me:$LINENO: result: $XSLTPROC" >&5
-echo "${ECHO_T}$XSLTPROC" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-
-if test "$XSLTPROC" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  xsltproc"
-   { echo "$as_me:$LINENO: WARNING: xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc." >&5
-echo "$as_me: WARNING: xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc." >&2;}
-   { echo "$as_me:$LINENO: WARNING: You can get it from http://xmlsoft.org/XSLT/" >&5
-echo "$as_me: WARNING: You can get it from http://xmlsoft.org/XSLT/" >&2;}
-fi
-
-
-# Ghostscript
-
-# Extract the first word of "gs", so it can be a program name with args.
-set dummy gs; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_GHOSTSCRIPT+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$GHOSTSCRIPT"; then
-  ac_cv_prog_GHOSTSCRIPT="$GHOSTSCRIPT" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_GHOSTSCRIPT="gs"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-GHOSTSCRIPT=$ac_cv_prog_GHOSTSCRIPT
-if test -n "$GHOSTSCRIPT"; then
-  { echo "$as_me:$LINENO: result: $GHOSTSCRIPT" >&5
-echo "${ECHO_T}$GHOSTSCRIPT" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-
-if test "$GHOSTSCRIPT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Ghostscript"
-   { echo "$as_me:$LINENO: WARNING: Ghostscript not found -- it is needed by opp_neddoc to create diagrams." >&5
-echo "$as_me: WARNING: Ghostscript not found -- it is needed by opp_neddoc to create diagrams." >&2;}
-fi
-
-# "convert" from ImageMagick
-
-# Extract the first word of "convert", so it can be a program name with args.
-set dummy convert; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_CONVERT+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CONVERT"; then
-  ac_cv_prog_CONVERT="$CONVERT" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_CONVERT="convert"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-CONVERT=$ac_cv_prog_CONVERT
-if test -n "$CONVERT"; then
-  { echo "$as_me:$LINENO: result: $CONVERT" >&5
-echo "${ECHO_T}$CONVERT" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-
-if test "$CONVERT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  ImageMagick"
-   { echo "$as_me:$LINENO: WARNING: convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem." >&5
-echo "$as_me: WARNING: convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem." >&2;}
-fi
-
 # "dot" from Graphviz
 
 # Extract the first word of "dot", so it can be a program name with args.
@@ -4129,52 +3974,6 @@ if test "$DOT" = ""; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
    { echo "$as_me:$LINENO: WARNING: dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams." >&5
 echo "$as_me: WARNING: dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams." >&2;}
-fi
-
-# giftrans
-
-# Extract the first word of "giftrans", so it can be a program name with args.
-set dummy giftrans; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_GIFTRANS+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$GIFTRANS"; then
-  ac_cv_prog_GIFTRANS="$GIFTRANS" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_GIFTRANS="giftrans"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-GIFTRANS=$ac_cv_prog_GIFTRANS
-if test -n "$GIFTRANS"; then
-  { echo "$as_me:$LINENO: result: $GIFTRANS" >&5
-echo "${ECHO_T}$GIFTRANS" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-
-if test "$GIFTRANS" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  giftrans"
-   { echo "$as_me:$LINENO: WARNING: giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent." >&5
-echo "$as_me: WARNING: giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent." >&2;}
 fi
 
 # swig is used for building the ui support libs
@@ -7067,10 +6866,6 @@ ac_config_files="$ac_config_files Makefile.inc src/utils/opp_neddoc test/core/ru
 
 
 
-
-
-
-
 #
 # Generate files
 #
@@ -7768,11 +7563,7 @@ LEXLIB!$LEXLIB$ac_delim
 MAKE!$MAKE$ac_delim
 DOXYGEN!$DOXYGEN$ac_delim
 PERL!$PERL$ac_delim
-XSLTPROC!$XSLTPROC$ac_delim
-GHOSTSCRIPT!$GHOSTSCRIPT$ac_delim
-CONVERT!$CONVERT$ac_delim
 DOT!$DOT$ac_delim
-GIFTRANS!$GIFTRANS$ac_delim
 SWIG!$SWIG$ac_delim
 XMKMF!$XMKMF$ac_delim
 CXXCPP!$CXXCPP$ac_delim
@@ -7801,6 +7592,10 @@ MSGC!$MSGC$ac_delim
 NEDTOOL!$NEDTOOL$ac_delim
 AS!$AS$ac_delim
 AR!$AR$ac_delim
+SHLIB_LD!$SHLIB_LD$ac_delim
+DLLTOOL!$DLLTOOL$ac_delim
+MAKEDEPEND!$MAKEDEPEND$ac_delim
+A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -7842,10 +7637,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-SHLIB_LD!$SHLIB_LD$ac_delim
-DLLTOOL!$DLLTOOL$ac_delim
-MAKEDEPEND!$MAKEDEPEND$ac_delim
-A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 DLL_LIB_SUFFIX!$DLL_LIB_SUFFIX$ac_delim
 LIB_SUFFIX!$LIB_SUFFIX$ac_delim
@@ -7879,7 +7670,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 35; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 31; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

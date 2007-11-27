@@ -80,13 +80,8 @@ LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
 # Doxygen is needed for generating HTML documentation from C++
 DOXYGEN_DIR=$(TOOLS_DIR:\=/)/doxygen
 
-# Following tools are needed by opp_neddoc for generating model documentation.
-# XSLTPROC is part of LibXSLT. DOT comes from the GraphViz package.
-# XSLTPROC is the only required one, GHOSTSCRIPT, GIFTRANS and DOT are optional
-# but of course affect documentation quality.
-XSLTPROC=$(TOOLS_DIR:\=/)/libxslt-1.1.14p.win32/bin/xsltproc.exe
-GHOSTSCRIPT=$(TOOLS_DIR:\=/)/gs/gs8.11/bin/gswin32c.exe
-GIFTRANS=$(TOOLS_DIR:\=/)/misc/giftrans.exe
+# dot is part of the GraphViz package, and is used for generating model 
+# documentation.
 DOT=$(TOOLS_DIR:\=/)/Graphviz/bin/dot.exe
 
 #
