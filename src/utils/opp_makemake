@@ -23,7 +23,6 @@ makemake();
 exit 0;
 
 #TODO:
-# GENERATEDHEADERS=... stuff;
 # support -Dsymbol=value
 # support building static library
 # support output dir
@@ -35,15 +34,11 @@ exit 0;
 #   {defaultmode:}MODE = {defaultmode}
 #   {defaultmode:}!endif
 #
-#TODO: to implement in the Java version:
+#TODO: to implement:
 # outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
 #
 #TODO: port to Java:
-# prefixQuoteJoin improvement (sep="\n" if #>5)
-# split msgccandhfiles to msgccfiles,msghfiles; remove GENERATEDHEADERS
 # --deep opcio
-# allow "" to mean false;
-# not needed: hasmsgfiles, hassubdir
 #
 
 sub makemake()
@@ -806,8 +801,10 @@ END
 
 sub template()
 {
-    # NOTE: the following template must be kept in sync with the
-    # "Makefile.TEMPLATE" file in the org.omnetpp.cdt plug-in!
+    #
+    # NOTE: the following template must be kept in sync with the file:
+    # <omnetpp>/ui/org.omnetpp.cdt/src/org/omnetpp/cdt/makefile/Makefile.TEMPLATE
+    #
     return <<'ENDTEMPLATE'
 #
 # OMNeT++/OMNEST Makefile for {target}

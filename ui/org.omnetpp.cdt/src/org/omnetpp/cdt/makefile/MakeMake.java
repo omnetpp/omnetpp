@@ -93,12 +93,12 @@ public class MakeMake {
         List<String> externaldirobjs = new ArrayList<String>();
         List<String> externaldirtstamps = new ArrayList<String>();
         List<String> objs = new ArrayList<String>();
-        List<String> generatedHeaders = new ArrayList<String>();
         List<String> linkDirs = new ArrayList<String>();
         List<String> externalObjects = new ArrayList<String>();
         List<String> tstampDirs = new ArrayList<String>();
         List<String> msgfiles = new ArrayList<String>();
-        List<String> msgccandhfiles = new ArrayList<String>();
+        List<String> msgccfiles = new ArrayList<String>();
+        List<String> msghfiles = new ArrayList<String>();
 
         target = abs2rel(target);
 
@@ -245,9 +245,8 @@ public class MakeMake {
         for (String i : msgfiles) {
             String h = i.replaceAll("\\.msg$", "_m.h");
             String cc = i.replaceAll("\\.msg$", "_m." + ccExt);
-            generatedHeaders.add(h);
-            msgccandhfiles.add(cc);
-            msgccandhfiles.add(h);
+            msgccfiles.add(cc);
+            msghfiles.add(h);
         }
 
         String makefrags = "";
@@ -278,7 +277,6 @@ public class MakeMake {
             }
             deps.append("\n");
         }
-        //TODO: into deps:  prefixQuoteJoin(generatedHeaders);
 
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("lbrace", "{");
@@ -313,10 +311,10 @@ public class MakeMake {
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);
-        m.put("msgccandhfiles", quoteJoin(msgccandhfiles));
+        m.put("msgccfiles", quoteJoin(msgccfiles));
+        m.put("msghfiles", quoteJoin(msghfiles));
         m.put("msgfiles", quoteJoin(msgfiles));
         m.put("objs", quoteJoin(objs));
-        m.put("hassubdir", !subdirs.isEmpty());
         m.put("subdirs", quoteJoin(subdirs));
         m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
@@ -356,15 +354,15 @@ public class MakeMake {
         return false;  // it was already OK
     }
 
-    protected String quoteJoin(List<String> args) {
-        return prefixQuoteJoin(args, "");
+    protected String quoteJoin(List<String> list) {
+        return prefixQuoteJoin(list, "");
     }
 
-    protected String prefixQuoteJoin(List<String> args, String prefix) {
-        StringBuilder result = new StringBuilder(args.size() * 32);
-        for (String i : args)
-            result.append(" ").append(prefix).append(quote(i));
-        //XXX split to several backslashed lines if too long?
+    protected String prefixQuoteJoin(List<String> list, String prefix) {
+        StringBuilder result = new StringBuilder(list.size() * 32);
+        String sep = list.size() > 5 ? " \\\n    " : " ";
+        for (String i : list)
+            result.append(sep).append(prefix).append(quote(i));
         return result.length()==0 ? "" : result.substring(1); // chop off leading space
     }
 

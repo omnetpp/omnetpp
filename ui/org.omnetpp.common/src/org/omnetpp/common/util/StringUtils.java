@@ -564,10 +564,12 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     /**
      * Performs template substitution. Constructs understood are:
      *  - {foo} gets replaced by (String)m.get("foo");
-     *  - {bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==true.
-     *  - {~bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==false.
-     *  - {bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==true
-     *  - {~bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==false
+     *  - {bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==true*
+     *  - {~bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==false*
+     *  - {bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==true*
+     *  - {~bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==false*
+     *  *true/false is interpreted as: for a String, "" is false and everything else is true;
+     *  instances of Boolean are also accepted.
      *  
      * Newlines inside {...} are not permitted; this allows detecting errors caused 
      * by misplaced braces. Also, nesting is not supported.
@@ -665,8 +667,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         Object object = map.get(key);
         if (object == null)
             throw new RuntimeException("template error: undefined template parameter '" + key + "'");
-        if (!(object instanceof Boolean))
-            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a boolean, but it is " + object.getClass().toString());
-        return (Boolean)object;
+        if (object instanceof Boolean)
+            return (Boolean)object;
+        else if (object instanceof String)
+            return ((String)object).length() != 0;
+        else
+            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string or boolean, but it is " + object.getClass().toString());
     }
 }
