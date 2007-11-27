@@ -264,8 +264,8 @@ CFLAGS_RELEASE=/MT /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
 # LIB_SUFFIX is either .lib or .dll
-#LIB_SUFFIX=.lib
-LIB_SUFFIX=.dll
+LIB_SUFFIX=.lib
+#LIB_SUFFIX=.dll
 
 HAVE_DLOPEN=0
 

@@ -29,16 +29,13 @@ exit 0;
 # into deps:  join(generatedHeaders);
 # project directory should be autodetected if not given!
 # use linkall.cmd on Windows!
-# ability to wire a default MODE into the generated makefile
-#   {defaultmode:}!ifndef MODE
-#   {defaultmode:}MODE = {defaultmode}
-#   {defaultmode:}!endif
 #
 #TODO: to implement:
 # outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
 #
 #TODO: port to Java:
 # --deep opcio
+# --mode (-M) opcio
 #
 
 sub makemake()
@@ -60,6 +57,7 @@ sub makemake()
     $linkWithObjects = 0;
     $tstamp = 1;
     $recursive = 0;
+    $mode = "";
     $userInterface = "ALL";
     $ccExt = "";
     $configFile = "";
@@ -114,6 +112,9 @@ sub makemake()
         }
         elsif ($arg eq "-P" || $arg eq "--projectdir") {
             $projectDir = shift;
+        }
+        elsif ($arg eq "-M" || $arg eq "--mode") {
+            $mode = shift;
         }
         elsif ($arg eq "-c" || $arg eq "--configfile") {
             $configFile = shift;
@@ -448,6 +449,7 @@ sub makemake()
         "exe" =>  $type eq "EXE",
         "so" =>  $type eq "SO",
         "nolink" =>  $type eq "NOLINK",
+        "mode" =>  $mode,
         "allenv" => ($userInterface =~ /^A/) ne "",
         "cmdenv" =>  ($userInterface =~ /^C/) ne "",
         "tkenv" =>  ($userInterface =~ /^T/) ne "",
@@ -854,6 +856,11 @@ MSG_H_FILES = {msghfiles}
 {subdirs:}SUBDIRS = {subdirs}
 {subdirs:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
 {subdirs:}
+{mode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
+{mode:}{nmake?!}ifndef MODE
+{mode:}MODE = {mode}
+{mode:}{nmake?!}endif
+{mode:}
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
@@ -873,15 +880,15 @@ MSG_H_FILES = {msghfiles}
 {~nmake:}CONFIGFILE = $(shell opp_configfilepath)
 {~nmake:}include $(CONFIGFILE)
 
-# Check $(MODE)
-{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
-{~nmake:}ifneq ($(MODE),"debug")
-{~nmake:}ifneq ($(MODE),"release")
-{~nmake:}# Actually, we should print an error message here, but GNU Make doesn't have that facility:
-{~nmake?#}error MODE must be "debug" or "release"
-{nmake:}!endif
-{~nmake:}endif
-{~nmake:}endif
+# Check that MODE is valid (not enabled, to allow implementing other MODEs)
+#{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
+#{nmake:}error MODE must be "debug" or "release"
+#{nmake:}!endif
+#{~nmake:}ifneq ($(MODE),"debug")
+#{~nmake:}ifneq ($(MODE),"release")
+#{~nmake:}$(error MODE must be "debug" or "release")
+#{~nmake:}endif
+#{~nmake:}endif
 
 # User interface libs
 CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
