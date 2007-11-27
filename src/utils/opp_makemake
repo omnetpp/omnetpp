@@ -27,7 +27,6 @@ exit 0;
 # support output dir
 # project directory should be autodetected if not given!
 # use linkall.cmd on Windows!
-# -X incorrectly implemented (matches substring: -X befools also ignores "foo" subdir)
 #
 #TODO: to implement:
 # outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
@@ -338,7 +337,7 @@ sub makemake()
 
     if ($recursive) {
         foreach $f (glob("*")) {
-            if (-d $f && !grep(/\Q$f\E/, @exceptSubdirs)) {  #XXX check IGNORABLE_DIRS
+            if (-d $f && !grep(/^\Q$f\E$/, @exceptSubdirs)) {  #XXX check IGNORABLE_DIRS
                 push(@subdirs, $f);
             }
         }
@@ -498,7 +497,7 @@ sub collectDirs($;$)
 
     my @result = ($dir);
     foreach $f (glob("$dir/*")) {
-        if (-d $f && !grep(/\Q$f\E/, @exceptSubdirs)) {  #XXX better check for exceptDirs; check IGNORABLE_DIRS too
+        if (-d $f && !grep(/^\Q$f\E$/, @exceptSubdirs)) {  #XXX better check for exceptDirs; check IGNORABLE_DIRS too
             push(@result, collectDirs($f, \@exceptDirs));
         }
     }
