@@ -100,7 +100,7 @@ tests: check-env base
 
 check-env:
 	@probefile=__probe__; \
-	if (echo '' >$(OMNETPP_BIN_DIR)/$$probefile && \
+	if (echo '#!/bin/sh' >$(OMNETPP_BIN_DIR)/$$probefile && \
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \
 	  if $$probefile >/dev/null 2>/dev/null; then :; else \
 	    echo '  *** Warning: $(OMNETPP_BIN_DIR) is not in the path, some components may not build!'; \
