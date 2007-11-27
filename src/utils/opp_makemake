@@ -23,19 +23,21 @@ makemake();
 exit 0;
 
 #TODO:
-# support -Dsymbol=value
 # support building static library
 # support output dir
-# into deps:  join(generatedHeaders);
 # project directory should be autodetected if not given!
 # use linkall.cmd on Windows!
+# -X incorrectly implemented (matches substring: -X befools also ignores "foo" subdir)
 #
 #TODO: to implement:
 # outputDir  (derive $O from projectdir + "obj/" + configname + project-relative path?)
+# invoke opp_makedepend in the end?
 #
 #TODO: port to Java:
 # --deep opcio
 # --mode (-M) opcio
+# -D opcio
+# "rem" => ""
 #
 
 sub makemake()
@@ -71,6 +73,7 @@ sub makemake()
     @libDirs = ();
     @libs = ();
     @importLibs = ();
+    @defines = ();
     @extraArgs = ();
 
     # process arg vector
@@ -88,13 +91,13 @@ sub makemake()
             $isNMake = 1;
         }
         elsif ($arg eq "-e" || $arg eq "--ext") {
-            $ccExt = shift;
+            $ccExt = shift @ARGV;
         }
         elsif ($arg eq "-o" || $arg eq "--outputfile") {
-            $target = shift;
+            $target = shift @ARGV;
         }
         elsif ($arg eq "--outputdir") {
-            $outputDir = shift;
+            $outputDir = shift @ARGV;
         }
         elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
@@ -103,28 +106,33 @@ sub makemake()
             $recursive = 1;
         }
         elsif ($arg eq "-X" || $arg eq "--except") {
-            my $dir = shift;
-            push(@exceptSubdirs, $dir);
+            push(@exceptSubdirs, shift @ARGV);
         }
         elsif ($arg =~ /^-X/) {
             my $dir = substr($arg, 2);
             push(@exceptSubdirs, $dir);
         }
+        elsif ($arg eq "-D" || $arg eq "--define") {
+            push(@defines, shift @ARGV);
+        }
+        elsif ($arg =~ /^-D/) {
+            my $define = substr($arg, 2);
+            push(@defines, $define);
+        }
         elsif ($arg eq "-P" || $arg eq "--projectdir") {
-            $projectDir = shift;
+            $projectDir = shift @ARGV;
         }
         elsif ($arg eq "-M" || $arg eq "--mode") {
-            $mode = shift;
+            $mode = shift @ARGV;
         }
         elsif ($arg eq "-c" || $arg eq "--configfile") {
-            $configFile = shift;
+            $configFile = shift @ARGV;
         }
         elsif ($arg eq "-n" || $arg eq "--nolink") {
             $type = "NOLINK";
         }
         elsif ($arg eq "-d" || $arg eq "--subdir") {
-            my $subdir = shift;
-            push(@subdirs, $subdir);
+            push(@subdirs, shift @ARGV);
         }
         elsif ($arg =~ /^-d/) {
             my $subdir = substr($arg, 2);
@@ -135,8 +143,7 @@ sub makemake()
             $type = "SO";
         }
         elsif ($arg eq "-t" || $arg eq "--importlib") {
-            my $importlib = shift;
-            push(@importLibs, $importlib);
+            push(@importLibs, shift @ARGV);
         }
         elsif ($arg eq "-S" || $arg eq "--fordll") {
             $compileForDll = 1;
@@ -148,27 +155,24 @@ sub makemake()
             $tstamp = 1;
         }
         elsif ($arg eq "-u" || $arg eq "--userinterface") {
-            my $userInterface = shift;
+            my $userInterface = shift @ARGV;
             $userInterface = uc($userInterface);
             if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
                 error("$progname: -u: specify All, Cmdenv or Tkenv");
             }
         }
         elsif ($arg eq "-i" || $arg eq "--includefragment") {
-            my $frag = shift;
-            push(@fragmentFiles, $frag);
+            push(@fragmentFiles, shift @ARGV);
         }
         elsif ($arg eq "-I") {
-            my $dir = shift;
-            push(@includeDirs, $dir);
+            push(@includeDirs, shift @ARGV);
         }
         elsif ($arg =~ /^-I/) {
             my $dir = substr($arg, 2);
             push(@includeDirs, $dir);
         }
         elsif ($arg eq "-L") {
-            my $dir = shift;
-            push(@libDirs, $dir);
+            push(@libDirs, shift @ARGV);
         }
         elsif ($arg =~ /^-L/) {
             my $dir = substr($arg, 2);
@@ -179,7 +183,7 @@ sub makemake()
             push(@libs, $lib);
         }
         elsif ($arg eq "-p") {
-            $exportDefOpt = shift;
+            $exportDefOpt = shift @ARGV;
         }
         elsif ($arg =~ /^-p/) {
             $exportDefOpt = substr($arg, 2);
@@ -427,9 +431,10 @@ sub makemake()
         }
     }
 
-    $deps = "";
+    $deps = "";  #FIXME
 
     %m = (
+        "rem" => "",  # allows putting comments into the template
         "lbrace" =>  "{",
         "rbrace" =>  "}",
         "nmake" =>  $isNMake,
@@ -459,6 +464,7 @@ sub makemake()
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
         "libpath" =>  prefixQuoteJoin(\@libDirs, (isNMake ? "/libpath:" : "-L")),
         "libs" =>  quoteJoin(\@libs),
+        "defines" => prefixQuoteJoin(\@defines, "-D"),
         "importlibs" =>  quoteJoin(\@importLibs),
         "link-o" =>  $isNMake ? "/out:" : "-o",
         "makecommand" =>  $makecommand,
@@ -749,6 +755,12 @@ $progname [options] [directories, library and object files]...
                           ease compiling the project in a different directory.
                           Defaults to first ancestor directory that contains
                           a ".project" file.
+    -M mode, --mode mode  Selects the build mode, "debug" or "release".
+                          Defaults to "debug". This setting can still be
+                          overridden on the make command line, by specifying
+                          "MAKE=debug" or "MAKE=release" as an extra argument.
+    -Dname=value, -D name=value, --define name=value
+                          Preprocessor symbol to be passed to the C++ compiler.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
                           directories. With this option, -u and -l have
@@ -880,15 +892,15 @@ MSG_H_FILES = {msghfiles}
 {~nmake:}CONFIGFILE = $(shell opp_configfilepath)
 {~nmake:}include $(CONFIGFILE)
 
-# Check that MODE is valid (not enabled, to allow implementing other MODEs)
-#{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
-#{nmake:}error MODE must be "debug" or "release"
-#{nmake:}!endif
-#{~nmake:}ifneq ($(MODE),"debug")
-#{~nmake:}ifneq ($(MODE),"release")
-#{~nmake:}$(error MODE must be "debug" or "release")
-#{~nmake:}endif
-#{~nmake:}endif
+{rem:}# Check that MODE is valid (not enabled, to allow implementing other MODEs)
+{rem:}{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
+{rem:}{nmake:}error MODE must be "debug" or "release"
+{rem:}{nmake:}!endif
+{rem:}{~nmake:}ifneq ($(MODE),"debug")
+{rem:}{~nmake:}ifneq ($(MODE),"release")
+{rem:}{~nmake:}$(error MODE must be "debug" or "release")
+{rem:}{~nmake:}endif
+{rem:}{~nmake:}endif
 
 # User interface libs
 CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
@@ -920,7 +932,7 @@ OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIB
 {nmake:}CFLAGS=$(CFLAGS) -DWIN32_DLL
 {nmake:}!endif
 
-COPTS = $(CFLAGS) {fordllopt} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS = $(CFLAGS) {fordllopt} {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 #------------------------------------------------------------------------------
