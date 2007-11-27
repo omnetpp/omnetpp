@@ -967,7 +967,7 @@ print-info:
 {nmake:}	- md $(O:/=\) 2>nul
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 
-{objs}$(OBJS): $(MSG_H_FILES)
+{objs:}$(OBJS): $(MSG_H_FILES)
 {objs:}
 generateheaders: $(MSG_H_FILES)
 {subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
