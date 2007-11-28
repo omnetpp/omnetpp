@@ -656,7 +656,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     private static String getFromMapAsString(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: undefined template parameter '" + key + "'");
+            throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
         if (!(object instanceof String))
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string, but it is " + object.getClass().toString());
         return (String)object;
@@ -666,7 +666,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
-            throw new RuntimeException("template error: undefined template parameter '" + key + "'");
+            throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
         if (object instanceof Boolean)
             return (Boolean)object;
         else if (object instanceof String)

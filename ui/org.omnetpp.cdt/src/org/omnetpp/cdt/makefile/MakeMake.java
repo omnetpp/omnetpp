@@ -61,7 +61,6 @@ public class MakeMake {
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
-     * @param configFileLocation TODO
      */
     public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
         this.folder = folder;
@@ -239,9 +238,9 @@ public class MakeMake {
         else {
             IPath outRootPath = new Path(p.outRoot);
             IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
-            IPath outRoot2 = new Path(abs2rel(outRootAbs.toString()));  // "<project>/out"
+            IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
             IPath subpath = folder.getProjectRelativePath();
-            outdir = outRoot2.append("$(CONFIGNAME)").append(subpath).toOSString();
+            outdir = outRootRel.append("$(CONFIGNAME)").append(subpath).toString();
         }
         
         // write dependencies
@@ -252,7 +251,7 @@ public class MakeMake {
             for (IFile sourceFile : fileDepsMap.keySet()) {
                 deps.append(sourceFile.getName() + ":");
                 for (IFile includeFile : fileDepsMap.get(sourceFile))
-                    deps.append(" " + abs2rel(includeFile.getLocation().toString()));
+                    deps.append(" " + abs2rel(includeFile.getLocation()).toString());
                 deps.append("\n");
             }
             deps.append("\n");
@@ -305,20 +304,6 @@ public class MakeMake {
         m.put("dllexportmacro", p.exportDefOpt==null ? "" : ("-P" + p.exportDefOpt));
 
         // now generate the makefile
-
-//TODO into the template
-//        if (!externaldirtstamps.isEmpty()) {
-//            out.println("$(EXT_DIR_TSTAMPS):");
-//            out.println("\t@echo Error: $(@:/=\\) does not exist.");
-//            out.println("\t@echo This means that at least the above dependency directory has not been built.");
-//            out.println("\t@echo Maybe you need to do a top-level make?");
-//            out.println("\t@echo.");
-//            out.println("\t@exit /b 1");
-//            out.println();
-//        }
-//
-// simplified because nmake doesn't support phony targets
-
         System.out.println("generating makefile for " + folder.toString());
         if (template == null) {
             template = FileUtils.readTextFile(MakeMake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
@@ -375,27 +360,30 @@ public class MakeMake {
      * "folderLocation"). All "\" are converted to "/".
      */
     protected String abs2rel(String location) throws CoreException {
-        IPath path = new Path(location);
-        if (!path.isAbsolute()) {
+        return abs2rel(new Path(location)).toString();
+    }
+    
+    protected IPath abs2rel(IPath location) throws CoreException {
+        if (!location.isAbsolute()) {
             // leave relative paths untouched
             return location;
         }
-        else if (projectLocation.isPrefixOf(path)) {
+        else if (projectLocation.isPrefixOf(location)) {
             // location is within the project, make it relative
-            return MakefileTools.makeRelativePath(path, folderLocation).toString();
+            return MakefileTools.makeRelativePath(location, folderLocation);
         }
         else {
             IProject containingProject = null;
-            for (IProject project : folder.getProject().getReferencedProjects()) { //XXX transitive closure of referenced projects
-                if (project.getLocation().isPrefixOf(path)) {
+            for (IProject project : folder.getProject().getReferencedProjects()) { //XXX should use transitive closure of referenced projects!
+                if (project.getLocation().isPrefixOf(location)) {
                     containingProject = project; break;
                 }
             }
             if (containingProject != null) {
                 // generate something like $(OTHER_PROJECT_DIR)/some/file
-                IPath projectRelativePath = path.removeFirstSegments(projectLocation.segmentCount());
+                IPath projectRelativePath = location.removeFirstSegments(projectLocation.segmentCount());
                 String symbolicProjectName = containingProject.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_DIR"; //FIXME must not begin with number! must not collide with symbolic name of another project!
-                return "$(" + symbolicProjectName + ")/" + projectRelativePath.toString();
+                return new Path("$(" + symbolicProjectName + ")").append(projectRelativePath);
             }
             else {
                 // points outside the project -- leave it as it is

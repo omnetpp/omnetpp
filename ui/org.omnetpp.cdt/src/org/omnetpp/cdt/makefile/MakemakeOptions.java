@@ -22,7 +22,7 @@ public class MakemakeOptions implements Cloneable {
     public boolean linkWithObjects = false;
     public boolean tstamp = true;
     public boolean recursive = false;
-    public String mode;
+    public String mode = "";
     public String userInterface = "ALL";
     public String ccext = null;
     public String exportDefOpt = "";

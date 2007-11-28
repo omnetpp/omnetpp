@@ -457,10 +457,10 @@ sub makemake()
     }
     else {
         my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
-        my $outRoot2 = abs2rel($outRootAbs, $projectDir);
+        my $outRootRel = abs2rel($outRootAbs, $projectDir);
         my $subpath = cwd();
         $subpath =~ s|^\Q$projectDir\E||;
-        $outdir = canonicalize("$outRoot2/\$(CONFIGNAME)/$subpath");
+        $outdir = canonicalize("$outRootRel/\$(CONFIGNAME)/$subpath");
     }
 
     $deps = "";  #FIXME
