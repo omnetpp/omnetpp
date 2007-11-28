@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -465,6 +466,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	public NedFileElementEx getContainingNedFileElement() {
 		return (NedFileElementEx) getParentWithTag(NEDElementTags.NED_NED_FILE);
 	}
+
+    public MsgFileElementEx getContainingMsgFileElement() {
+        return (MsgFileElementEx) getParentWithTag(NEDElementTags.NED_MSG_FILE);
+    }
 
     public INedTypeLookupContext getEnclosingLookupContext() {
         INEDElement node = getParent();

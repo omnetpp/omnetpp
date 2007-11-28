@@ -1,5 +1,6 @@
 package org.omnetpp.ned.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INEDElement;
@@ -46,6 +48,7 @@ import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
@@ -78,6 +81,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
     private static final String NED_EXTENSION = "ned";
+    private static final String MSG_EXTENSION = "msg";
 
     // list of objects that listen on *all* NED changes
     private NEDChangeListenerList nedModelChangeListenerList = null;
@@ -85,6 +89,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // associate IFiles with their NEDElement trees
     private final Map<IFile, NedFileElementEx> nedFiles = new HashMap<IFile, NedFileElementEx>();
     private final Map<NedFileElementEx, IFile> nedElementFiles = new HashMap<NedFileElementEx,IFile>();
+
+    // associate IFiles with their NEDElement trees
+    private final Map<IFile, MsgFileElementEx> msgFiles = new HashMap<IFile, MsgFileElementEx>();
+    private final Map<MsgFileElementEx, IFile> msgElementFiles = new HashMap<MsgFileElementEx,IFile>();
 
     // number of the editors connected to a given NED file
     private final Map<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
@@ -209,6 +217,20 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return files;
     }
 
+    public synchronized Set<IFile> getMsgFiles(IProject project) throws CoreException {
+        final Set<IFile> files = new HashSet<IFile>();
+
+        project.accept(new IResourceVisitor() {
+            public boolean visit(IResource resource) throws CoreException {
+                if (isMsgFile(resource))
+                    files.add((IFile)resource);
+                return true;
+            }
+        });
+        
+        return files;
+    }
+
     public synchronized boolean containsNedFileElement(IFile file) {
         return nedFiles.containsKey(file);
     }
@@ -218,10 +240,41 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedFiles.get(file);
     }
 
+    public synchronized MsgFileElementEx getMsgFileElement(IFile file) throws IOException, CoreException {
+        Assert.isTrue(isMsgFile(file), "file is not a MSG file");
+
+        if (!msgFiles.containsKey(file)) {
+            String source = FileUtils.readTextFile(file.getContents());
+            MsgFileElementEx element = NEDTreeUtil.parseMsgSource(source, new SysoutNedErrorStore(), file.toString());
+            msgFiles.put(file, element);
+            msgElementFiles.put(element, file);
+        }
+        
+        return msgFiles.get(file);
+    }
+
 	public synchronized IFile getNedFile(NedFileElementEx nedFileElement) {
     	Assert.isTrue(nedElementFiles.containsKey(nedFileElement) || nedFileElement==builtInDeclarationsFile, "NedFileElement is not in the resolver");
 		return nedElementFiles.get(nedFileElement);
 	}
+
+    public synchronized IFile getMsgFile(MsgFileElementEx msgFileElement) {
+        return msgElementFiles.get(msgFileElement);
+    }
+
+    public synchronized IFile getFile(INEDElement element) {
+        NedFileElementEx nedFileElement = element.getContainingNedFileElement();
+        
+        if (nedFileElement != null)
+            return getNedFile(nedFileElement);
+
+        MsgFileElementEx msgFileElement = element.getContainingMsgFileElement();
+        
+        if (msgFileElement != null)
+            return getMsgFile(msgFileElement);
+        
+        return null;
+    }
 
     /**
      * NED text editors should call this when editor content changes.
@@ -486,10 +539,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * It checks the file extension (".ned"), and whether the file is in one of
      * the NED source folders designated for the project.
      */
-    public boolean isNEDFile(IResource resource) {
-    	return (resource instanceof IFile &&
-    			NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
-    			getNedSourceFolderFor((IFile)resource) != null);
+    public boolean isNedFile(IResource resource) {
+        return isNedOrMsgFile(resource, NED_EXTENSION);
+    }
+    
+    public boolean isMsgFile(IResource resource) {
+        return isNedOrMsgFile(resource, MSG_EXTENSION);
+    }
+    
+    private boolean isNedOrMsgFile(IResource resource, String extension)  {
+        return (resource instanceof IFile &&
+                extension.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
+                getNedSourceFolderFor((IFile)resource) != null);
     }
 
     public IContainer[] getNedSourceFolders(IProject project) {
@@ -868,7 +929,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	    // Note: use "trash" list to avoid ConcurrentModificationException in nedFiles
 	    List <IFile> trash = new ArrayList<IFile>();
 	    for (IFile file : nedFiles.keySet())
-	        if (!isNEDFile(file))
+	        if (!isNedFile(file))
 	            trash.add(file);
 	    try {
 	        fireBeginChangeEvent();
@@ -918,7 +979,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
             workspaceRoot.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
-                    if (!nedFiles.containsKey(resource) && isNEDFile(resource))
+                    if (!nedFiles.containsKey(resource) && isNedFile(resource))
                         readNEDFile((IFile)resource, sync);
                     return true;
                 }
@@ -986,7 +1047,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();
                     // printDelta(delta);
-                    if (isNEDFile(resource)) {
+                    if (isNedFile(resource)) {
                     	IFile file = (IFile)resource;
                     	switch (delta.getKind()) {
                     	case IResourceDelta.REMOVED:

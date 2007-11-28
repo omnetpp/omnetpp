@@ -16,6 +16,7 @@ import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
 import org.omnetpp.ned.engine.NEDSyntaxValidator;
 import org.omnetpp.ned.engine.NEDTools;
+import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -57,31 +58,23 @@ public class NEDTreeUtil {
     }
 
 	/**
-	 * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
-	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
-	 * The passed fileName will only be used to fill in the NedFileElement element.
-	 * Callers should check INEDErrorStore to determine whether a parse error occurred.
-	 * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
-	 */
-	public static INEDElement parseNedSource(String source, INEDErrorStore errors, String fileName) {
-        return parse(source, fileName, errors);
-	}
-
-	/**
 	 * Load and parse NED file to a NEDElement tree. Returns a non-null,
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
  	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
 	 * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
 	public static NedFileElementEx loadNedSource(String filename, INEDErrorStore errors) {
-        return parse(null, filename, errors);
+        return parseNedSource(null, errors, filename);
 	}
 
-	/**
-	 * Parse the given source (when source!=null) or the given file (when source==null).
-	 * Never returns null. 
-	 */
-	private static NedFileElementEx parse(String source, String filename, INEDErrorStore errors) {
+    /**
+     * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
+     * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
+     * The passed fileName will only be used to fill in the NedFileElement element.
+     * Callers should check INEDErrorStore to determine whether a parse error occurred.
+     * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
+     */
+    public static NedFileElementEx parseNedSource(String source, INEDErrorStore errors, String filename) {
 		Assert.isTrue(filename != null);
 		NEDElement swigTree = null;
 		try {
@@ -133,7 +126,61 @@ public class NEDTreeUtil {
 				swigTree.delete();
 		}
 	}
+	
+    public static MsgFileElementEx parseMsgSource(String source, INEDErrorStore errors, String filename) {
+        Assert.isTrue(filename != null);
+        NEDElement swigTree = null;
+        try {
+            // parse
+            NEDErrorStore swigErrors = new NEDErrorStore();
+            NEDParser np = new NEDParser(swigErrors);
+            np.setParseExpressions(false);
+            swigTree = source!=null ? np.parseMSGText(source) : np.parseMSGFile(filename);
+            if (swigTree == null) {
+                // return an empty MsgFileElement if parsing totally failed
+                MsgFileElementEx fileNode = (MsgFileElementEx)NEDElementFactory.getInstance().createElement(NEDElementTags.NED_MSG_FILE, null);
+                fileNode.setFilename(filename);
+                return fileNode;
+            }
 
+            // set the file name property in the nedFileElement
+            if (NEDElementCode.swigToEnum(swigTree.getTagCode()) == NEDElementCode.NED_MSG_FILE)
+                swigTree.setAttribute("filename", filename);
+
+            if (!swigErrors.empty()) {
+                // There were parse errors, and the tree built may not be entirely correct.
+                // Typical problems are "mandatory attribute missing" especially with connections,
+                // due to parse errors before filling in the connection element was completed.
+                // Here we try to check and repair the tree by discarding elements that cause
+                // DTD validation error.
+                NEDTools.repairNEDElementTree(swigTree);
+            }
+
+            // run DTD validation (once again)
+            int numMessages = swigErrors.numMessages();
+            NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
+            dtdvalidator.validate(swigTree);
+            Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
+
+            // additional syntax-related validation
+            NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
+            syntaxValidator.validate(swigTree);
+
+            // convert tree to pure Java objects
+            INEDElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
+            Assert.isTrue(swigErrors.numMessages() == errors.getNumProblems(), "problems lost in translation");
+
+            // System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
+
+            return (MsgFileElementEx)pojoTree;
+        }
+        finally {
+            if (swigTree != null)
+                swigTree.delete();
+        }
+    }
+
+	
 	/**
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.
 	 * NOTE: There are two different NEDElement types handled in this function.

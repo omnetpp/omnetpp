@@ -35,6 +35,17 @@ public class NEDElementFactoryEx extends NEDElementFactory {
         if (tagname.equals(PropertyElementEx.getStaticTagName()))
             return new PropertyElementEx(parent);
 
+        if (tagname.equals(MsgFileElementEx.getStaticTagName()))
+            return new MsgFileElementEx(parent);
+        if (tagname.equals(MessageElementEx.getStaticTagName()))
+            return new MessageElementEx(parent);
+        if (tagname.equals(ClassElementEx.getStaticTagName()))
+            return new ClassElementEx(parent);
+        if (tagname.equals(StructElementEx.getStaticTagName()))
+            return new StructElementEx(parent);
+        if (tagname.equals(EnumElementEx.getStaticTagName()))
+            return new EnumElementEx(parent);
+
         return super.createElement(tagname, parent);
 	}
 
@@ -62,6 +73,17 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new ParamElementEx(parent);
         if (tagcode==NED_PROPERTY)
             return new PropertyElementEx(parent);
+
+        if (tagcode==NED_MSG_FILE)
+            return new MsgFileElementEx(parent);
+        if (tagcode==NED_MESSAGE)
+            return new MessageElementEx(parent);
+        if (tagcode==NED_CLASS)
+            return new ClassElementEx(parent);
+        if (tagcode==NED_STRUCT)
+            return new StructElementEx(parent);
+        if (tagcode==NED_ENUM)
+            return new EnumElementEx(parent);
 
 		return super.createElement(tagcode, parent);
 	}

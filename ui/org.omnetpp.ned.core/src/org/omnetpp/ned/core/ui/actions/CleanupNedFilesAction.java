@@ -71,7 +71,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
             NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
             container.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) throws CoreException {
-                    if (NEDResourcesPlugin.getNEDResources().isNEDFile(resource)) {
+                    if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
                         monitor.subTask(resource.getFullPath().toString());
                         cleanupNedFile((IFile)resource);
                         monitor.worked(1);

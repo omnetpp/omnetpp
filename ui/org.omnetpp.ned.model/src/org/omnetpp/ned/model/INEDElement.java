@@ -1,5 +1,6 @@
 package org.omnetpp.ned.model;
 
+import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
@@ -327,6 +328,11 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 * Returns the (nearest) NedFileElementEx parent of this element, or null.
 	 */
 	public NedFileElementEx getContainingNedFileElement();
+
+    /**
+     * Returns the (nearest) MsgFileElementEx parent of this element, or null.
+     */
+    public MsgFileElementEx getContainingMsgFileElement();
 
     /**
      * Returns the nearest INedTypeLookupContext parent of the element. This will

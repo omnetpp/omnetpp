@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
@@ -20,7 +21,7 @@ import org.omnetpp.ned.model.pojo.PackageElement;
  *
  * @author rhornig
  */
-public class NedFileElementEx extends NedFileElement implements INedTypeLookupContext {
+public class NedFileElementEx extends NedFileElement implements INedFileElement, INedTypeLookupContext {
 	protected boolean readOnly;
 
     protected NedFileElementEx() {
