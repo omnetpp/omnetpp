@@ -29,6 +29,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
  * 
  * @author Andras
  */
+//FIXME msg files don't generate proper cross-folder and cross-file dependencies!!!!!!!
 //TODO test that cross-project includes work well
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
@@ -82,7 +83,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         fileIncludes = new HashMap<IFile, List<Include>>();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                if (MakefileTools.isCppFile(resource) && buildSpec.isMakemakeFolder(resource.getParent())) {
+                if ((MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource)) && buildSpec.isMakemakeFolder(resource.getParent())) {
                     warnIfLinkedResource(resource);
                     processFileIncludes((IFile)resource);
                 }
