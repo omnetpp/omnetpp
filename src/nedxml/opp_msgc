@@ -779,7 +779,7 @@ sub processFile()
         $scrap =~ s/\n\n+/\n\n/sg;
         $scrap =~ s/^\n//s;
         $scrap =~ s/\n$//s;
-        print "$filename: Error: following parts of input file were not understood:\n"; $ret=1;
+        print "$filename: Error: following parts of the input file were not understood:\n"; $ret=1;
         print "'$scrap'\n";
     }
 
