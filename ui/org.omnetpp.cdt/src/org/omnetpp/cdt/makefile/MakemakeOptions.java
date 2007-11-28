@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.omnetpp.cdt.makefile;
 
 import java.util.ArrayList;
