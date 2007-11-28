@@ -20,6 +20,7 @@
 // @titlepage
 //
 // <center><h1>Queueing library</h1></center>
+// <a href="../../README.txt">See readme.txt</a>
 //
 
 package org.omnetpp.samples.queueing;
