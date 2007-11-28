@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.cdt.managedbuilder.gnu.ui,
  org.eclipse.cdt.managedbuilder.ui,
  org.eclipse.cdt.refactoring,
- org.eclipse.cdt.ui
+ org.eclipse.cdt.ui,
+ org.eclipse.core.variables
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
