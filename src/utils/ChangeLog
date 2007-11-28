@@ -10,6 +10,7 @@ opp_makemake option changes:
 old -P option (opp_msgc windows export/import symbol) became -p
 added --nmake option
 added -M, --mode option
+-c filename, --configfile filename option no longer exists, config file is found by calling opp_configfilepath
 
 
 from now on, we expect perl to be available as /usr/bin/perl on ALL SYSTEMS, including Cygwin and MSYS.

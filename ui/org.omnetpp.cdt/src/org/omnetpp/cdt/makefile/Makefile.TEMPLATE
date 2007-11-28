@@ -30,7 +30,7 @@ EXT_DIR_TSTAMPS = {extdirtstamps}
 LIBS = {libpath}{libs}{importlibs}
 
 # Output directory
-O = {outputdir}
+O = {outdir}
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
@@ -46,6 +46,11 @@ MSG_H_FILES = {msghfiles}
 {subdirs:}SUBDIRS = {subdirs}
 {subdirs:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
 {subdirs:}
+{mode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
+{mode:}{nmake?!}ifndef MODE
+{mode:}MODE = {mode}
+{mode:}{nmake?!}endif
+{mode:}
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
@@ -65,15 +70,15 @@ MSG_H_FILES = {msghfiles}
 {~nmake:}CONFIGFILE = $(shell opp_configfilepath)
 {~nmake:}include $(CONFIGFILE)
 
-# Check $(MODE)
-{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
-{~nmake:}ifneq ($(MODE),"debug")
-{~nmake:}ifneq ($(MODE),"release")
-{~nmake:}# Actually, we should print an error message here, but GNU Make doesn't have that facility:
-{~nmake?#}error MODE must be "debug" or "release"
-{nmake:}!endif
-{~nmake:}endif
-{~nmake:}endif
+{rem:}# Check that MODE is valid (not enabled, to allow implementing other MODEs)
+{rem:}{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
+{rem:}{nmake:}error MODE must be "debug" or "release"
+{rem:}{nmake:}!endif
+{rem:}{~nmake:}ifneq ($(MODE),"debug")
+{rem:}{~nmake:}ifneq ($(MODE),"release")
+{rem:}{~nmake:}$(error MODE must be "debug" or "release")
+{rem:}{~nmake:}endif
+{rem:}{~nmake:}endif
 
 # User interface libs
 CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
@@ -105,7 +110,7 @@ OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIB
 {nmake:}CFLAGS=$(CFLAGS) -DWIN32_DLL
 {nmake:}!endif
 
-COPTS = $(CFLAGS) {fordllopt} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS = $(CFLAGS) {fordllopt} {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 #------------------------------------------------------------------------------
@@ -140,6 +145,13 @@ print-info:
 {subdirs:}{~nmake:} cd $@ && {makecommand}
 {subdirs:}{nmake:}  cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {subdirs:}
+{extdirtstamps}$(EXT_DIR_TSTAMPS):
+{extdirtstamps} @echo Error: $(@{nmake?:/=\}) does not exist.
+{extdirtstamps} @echo This means that at least the above dependency directory has not been built.
+{extdirtstamps} @echo Maybe you need to do a top-level make?
+{extdirtstamps} @echo{nmake?.}
+{extdirtstamps} @exit {nmake?/b }1
+{extdirtstamps}
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:} $(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
@@ -152,7 +164,7 @@ print-info:
 {nmake:}    - md $(O:/=\) 2>nul
     $(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 
-{objs}$(OBJS): $(MSG_H_FILES)
+{objs:}$(OBJS): $(MSG_H_FILES)
 {objs:}
 generateheaders: $(MSG_H_FILES)
 {subdirs:}{nmake:}  @if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1

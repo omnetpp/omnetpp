@@ -33,13 +33,7 @@ exit 0;
 #
 #TODO: port to Java:
 # --deep opcio
-# --mode (-M) opcio
-# -D opcio
-# "rem" => ""
 # outdirroot
-# support -Pxxx  (without space)
-# --outputfile no longer supported
-# -c, --configfile no longer supported
 #
 
 sub makemake()
@@ -97,6 +91,9 @@ sub makemake()
         }
         elsif ($arg eq "-o") {
             $target = shift @ARGV;
+        }
+        elsif ($arg =~ /^-o/) {
+            $target = substr($arg, 2);
         }
         elsif ($arg eq "-O" || $arg eq "--out") {
             $outRoot = shift @ARGV;

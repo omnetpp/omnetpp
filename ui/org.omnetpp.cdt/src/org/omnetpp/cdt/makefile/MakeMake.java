@@ -29,15 +29,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//FIXME adjust perl/bash versions:
-//- commandline add support for "--" after which everything is extraArg
-//- commandline: rename old "-d" to "-S"
-//- commandline: add "-d" option
-//- here we store -P option (p.exportDefOpt) without the "-P"
-//- here we understand "-I" and "-L" both with and without space
-//- commandline: "--notstamp" should take effect with linkDirs as well!
-//- todo: must add support for "-DSYMBOL=value"
-//FIXME support Linux too
 public class MakeMake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -54,28 +45,25 @@ public class MakeMake {
     public MakeMake() {
     }
 
-    public static void main(String[] args) throws Throwable {
-        new MakeMake().generateMakefile(null /*FIXME use current working dir*/, args, null);
+    /**
+     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     */
+    public boolean generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
+        return generateMakefile(folder, new MakemakeOptions(args), perFileDeps, configFileLocation);
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        return generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
+    public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
+        return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps, configFileLocation);
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
+     * @param configFileLocation TODO
      */
-    public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
-    }
-
-    /**
-     * Returns true if Makefile was overwritten, and false if it was already up to date.
-     */
-    public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+    public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
         this.folder = folder;
         this.p = options;
         
@@ -116,27 +104,6 @@ public class MakeMake {
             throw new IllegalStateException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
 
         String configFile = "C:/home/omnetpp40/omnetpp/configuser.vc"; //FIXME should come from an Eclipse preference or something 
-        
-//XXX obsolete code
-//        if (isNMake) {
-//            configFile = p.configFile;
-//            if (configFile == null) {
-//                // try to find it in obvious places
-//                for (String f : new String[] {"configuser.vc", "../configuser.vc", "../../configuser.vc", "../../../configuser.vc", "../../../../configuser.vc"}) {
-//                    if (new File(directory.getPath() + File.separator + f).exists()) {
-//                        configFile = f;
-//                        break;
-//                    }
-//                }
-//                if (configFile == null)
-//                    throw new RuntimeException("warning: configuser.vc file not found -- specify its location with the -c option");
-//            }
-//            else {
-//                if (!new File(configFile).exists())
-//                    throw new RuntimeException("error: file " + configFile + " not found");
-//            }
-//            configFile = abs2rel(configFile);
-//        }
 
         // try to determine if .cc or .cpp files are used
         String ccExt = p.ccext;
@@ -264,6 +231,19 @@ public class MakeMake {
             }
         }
 
+        // determine outDir
+        String outdir;
+        if (StringUtils.isEmpty(p.outRoot)) {
+            outdir = ".";
+        }
+        else {
+            IPath outRootPath = new Path(p.outRoot);
+            IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
+            IPath outRoot2 = new Path(abs2rel(outRootAbs.toString()));  // "<project>/out"
+            IPath subpath = folder.getProjectRelativePath();
+            outdir = outRoot2.append("$(CONFIGNAME)").append(subpath).toOSString();
+        }
+        
         // write dependencies
         Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
 
@@ -279,10 +259,12 @@ public class MakeMake {
         }
 
         Map<String, Object> m = new HashMap<String, Object>();
+        m.put("rem", "");  // allows putting comments into the template
         m.put("lbrace", "{");
         m.put("rbrace", "}");
         m.put("nmake", isNMake);
         m.put("target", target + targetSuffix);
+        m.put("outdir", outdir);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", quoteJoin(p.args));
         m.put("configfile", configFile);
@@ -297,6 +279,7 @@ public class MakeMake {
         m.put("exe", p.type == MakemakeOptions.Type.EXE);
         m.put("so", p.type == MakemakeOptions.Type.SO);
         m.put("nolink", p.type == MakemakeOptions.Type.NOLINK);
+        m.put("mode", p.mode);
         m.put("allenv", p.userInterface.startsWith("A"));
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));
@@ -306,6 +289,7 @@ public class MakeMake {
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
         m.put("libs", quoteJoin(p.libs));
+        m.put("defines", prefixQuoteJoin(p.defines, "-D"));
         m.put("importlibs", quoteJoin(p.importLibs));
         m.put("link-o", isNMake ? "/out:" : "-o");
         m.put("makecommand", makecommand);

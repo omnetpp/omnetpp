@@ -221,10 +221,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             
             tmpOptions.force = true;
             
-            // use globally set config file, if not explicitly set
-            if (tmpOptions.configFile == null)
-                tmpOptions.configFile = buildSpec.getConfigFileLocation();
-
             // add dependent folders
             if (folderDeps.containsKey(folder))
                 for (IContainer dep : folderDeps.get(folder))
@@ -235,7 +231,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 if (MakefileTools.isGoodFolder(member) && !buildSpec.isExcludedFromBuild((IContainer)member))
                     tmpOptions.subdirs.add(member.getName());
 
-            boolean changed = new MakeMake().generateMakefile(folder, tmpOptions, perFileDeps);
+            boolean changed = new MakeMake().generateMakefile(folder, tmpOptions, perFileDeps, buildSpec.getConfigFileLocation());
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;

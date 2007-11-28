@@ -17,13 +17,14 @@ public class MakemakeOptions implements Cloneable {
     public String projectDir = null;  // not supported
     public Type type = Type.EXE;
     public String target = null;
+    public String outRoot = null;
     public boolean force = false;
     public boolean linkWithObjects = false;
     public boolean tstamp = true;
     public boolean recursive = false;
+    public String mode;
     public String userInterface = "ALL";
     public String ccext = null;
-    public String configFile = null;
     public String exportDefOpt = "";
     public boolean compileForDll;
     public boolean ignoreNedFiles = true; // note: no option for this
@@ -34,6 +35,7 @@ public class MakemakeOptions implements Cloneable {
     public List<String> libDirs = new ArrayList<String>();
     public List<String> libs = new ArrayList<String>();
     public List<String> importLibs = new ArrayList<String>();
+    public List<String> defines = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
     /**
@@ -76,9 +78,19 @@ public class MakemakeOptions implements Cloneable {
                 checkArg(argv, i);
                 ccext = argv[++i];
             }
-            else if (arg.equals("-o") || arg.equals("--outputfile")) {
+            else if (arg.equals("-o")) {
                 checkArg(argv, i);
                 target = argv[++i];
+            }
+            else if (arg.startsWith("-o")) {
+                target = arg.substring(2);
+            }
+            else if (arg.equals("-O") || arg.equals("--out")) {
+                checkArg(argv, i);
+                outRoot = argv[++i];
+            }
+            else if (arg.startsWith("-O")) {
+                outRoot = arg.substring(2);
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
                 throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
@@ -95,13 +107,29 @@ public class MakemakeOptions implements Cloneable {
                 String dir = arg.substring(2);
                 exceptSubdirs.add(dir);
             }
+            else if (arg.equals("-D") || arg.equals("--define")) {
+                checkArg(argv, i);
+                defines.add(argv[++i]);
+            }
+            else if (arg.startsWith("-D")) {
+                defines.add(arg.substring(2));
+            }
             else if (arg.equals("-P") || arg.equals("--projectdir")) {
                 checkArg(argv, i);
                 projectDir = argv[++i];
             }
-            else if (arg.equals("-c") || arg.equals("--configfile")) {
+            else if (arg.startsWith("-P")) {
+                projectDir = arg.substring(2);
+            }
+            else if (arg.equals("-M") || arg.equals("--mode")) {
                 checkArg(argv, i);
-                configFile = argv[++i];
+                mode = argv[++i];
+            }
+            else if (arg.startsWith("-M")) {
+                mode = arg.substring(2);
+            }
+            else if (arg.equals("-c") || arg.equals("--configfile")) {
+                throw new IllegalArgumentException("option $arg is no longer supported, config file is found automatically by invoking opp_configfilepath");
             }
             else if (arg.equals("-n") || arg.equals("--nolink")) {
                 type = Type.NOLINK;
@@ -111,8 +139,7 @@ public class MakemakeOptions implements Cloneable {
                 subdirs.add(argv[++i]);
             }
             else if (arg.startsWith("-d")) {
-                String dir = arg.substring(2);
-                subdirs.add(dir);
+                subdirs.add(arg.substring(2));
             }
             else if (arg.equals("-s") || arg.equals("--make-so")) {
                 compileForDll = true;
@@ -194,51 +221,38 @@ public class MakemakeOptions implements Cloneable {
      */
     public String[] toArgs() {
         List<String> result = new ArrayList<String>();
-
         if (!StringUtils.isEmpty(projectDir))
             add(result, "-P", projectDir);
-
         if (target != null)
             add(result, "-o", target);
-
+        if (outRoot != null)
+            add(result, "-O", outRoot);
         if (force)
             add(result, "-f");
-
         if (isNMake)
             add(result, "--nmake");
-
         if (linkWithObjects)
             add(result, "-w");
-
         if (!tstamp)
             add(result, "-x"); // no-tstamp
-
         if (recursive)
             add(result, "-r");
-
+        if (!StringUtils.isEmpty(mode))
+            add(result, "-M", mode);
         if (!"ALL".equals(userInterface))
             add(result, "-u", userInterface);
-
         if (type == Type.SO)
             add(result, "-s");
         else if (type == Type.NOLINK)
             add(result, "-n");
-
         if (!StringUtils.isEmpty(ccext))
-            add(result, "-e", ccext);  //XXX detect?
-
-        if (!StringUtils.isEmpty(configFile))
-            add(result, "-c", configFile); //XXX omit if can be detected?
-
+            add(result, "-e", ccext); 
         if (!StringUtils.isEmpty(exportDefOpt))
             add(result, "-p"+exportDefOpt);
-
         if (compileForDll && type != Type.SO)
             add(result, "-S");
-
         if (!ignoreNedFiles)
             add(result, "???"); //XXX
-
         addOpts2(result, fragmentFiles, "-i");
         addOpts2(result, subdirs, "-d");
         addOpts2(result, exceptSubdirs, "-X");
@@ -246,6 +260,7 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
         addOpts2(result, importLibs, "-t");
+        addOpts2(result, defines, "-D");
         result.addAll(extraArgs);
 
         return result.toArray(new String[]{});
@@ -273,6 +288,7 @@ public class MakemakeOptions implements Cloneable {
         return StringUtils.join(tmp, " ");  //FIXME quote args that contain whitespace
     }
 
+    ///FIXME make sure it's up to date!!!!!
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = new MakemakeOptions();
@@ -281,13 +297,14 @@ public class MakemakeOptions implements Cloneable {
         result.projectDir = projectDir;
         result.type = type;
         result.target = target;
+        result.outRoot = outRoot;
         result.force = force;
         result.linkWithObjects = linkWithObjects;
         result.tstamp = tstamp;
         result.recursive = recursive;
+        result.mode = mode;
         result.userInterface = userInterface;
         result.ccext = ccext;
-        result.configFile = configFile;
         result.exportDefOpt = exportDefOpt;
         result.compileForDll = compileForDll;
         result.ignoreNedFiles = ignoreNedFiles;
@@ -298,6 +315,7 @@ public class MakemakeOptions implements Cloneable {
         result.libDirs.addAll(libDirs);
         result.libs.addAll(libs);
         result.importLibs.addAll(importLibs);
+        result.defines.addAll(defines);
         result.extraArgs.addAll(extraArgs);
         return result;
     }
