@@ -27,6 +27,7 @@ exit 0;
 # use linkall.cmd on Windows!
 # potential problem: $(CONFIGNAME) determines both linker path AND output directory! so they are now linked!
 # warnings that come when -Odir is used
+# when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
 #
 #TODO: to implement:
 # invoke opp_makedepend in the end?
