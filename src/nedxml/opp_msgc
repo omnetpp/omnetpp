@@ -454,7 +454,7 @@ sub processFile()
             $scrap =~ s/^\n+//s;
             $scrap =~ s/\n+$//s;
             print "$filename: Error: some parts not understood in enum $enumname:\n"; $ret=1;
-            print STDERR "'$scrap'\n";
+            print "'$scrap'\n";
         }
 
         #
@@ -600,7 +600,7 @@ sub processFile()
             $scrap =~ s/^\n+//s;
             $scrap =~ s/\n+$//s;
             print "$filename: Error: some parts not understood in the 'properties' section of '$msgname':\n"; $ret=1;
-            print STDERR "'$scrap'\n";
+            print "'$scrap'\n";
         }
 
         #
@@ -751,7 +751,7 @@ sub processFile()
             $scrap =~ s/^\n+//s;
             $scrap =~ s/\n+$//s;
             print "$filename: Error: some parts not understood in '$msgname':\n"; $ret=1;
-            print STDERR "'$scrap'\n";
+            print "'$scrap'\n";
         }
 
         # now generate code
@@ -780,7 +780,7 @@ sub processFile()
         $scrap =~ s/^\n//s;
         $scrap =~ s/\n$//s;
         print "$filename: Error: following parts of input file were not understood:\n"; $ret=1;
-        print STDERR "'$scrap'\n";
+        print "'$scrap'\n";
     }
 
     print H "#endif // $hdef\n";
