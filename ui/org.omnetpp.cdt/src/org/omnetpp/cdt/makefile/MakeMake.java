@@ -97,7 +97,7 @@ public class MakeMake {
         for (String i : p.libDirs)
             libDirs.add(abs2rel(i));
 
-        String makecommand = isNMake ? "make" : "nmake /nologo /f Makefile.vc";
+        String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
         if (p.projectDir != null)
             throw new IllegalStateException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
@@ -311,6 +311,7 @@ public class MakeMake {
         }
 
         String content = StringUtils.substituteIntoTemplate(template, m);
+        content = content.replace("\r\n", "\n");  // make line endings consistent 
         byte[] bytes = content.getBytes();
 
         // only overwrite file if it does not already exist with the same content,

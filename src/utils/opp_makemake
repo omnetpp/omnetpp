@@ -33,7 +33,6 @@ exit 0;
 #
 #TODO: port to Java:
 # --deep opcio
-# outdirroot
 #
 
 sub makemake()
@@ -1048,13 +1047,13 @@ print-info:
 {subdirs:}{~nmake:}	cd $@ && {makecommand}
 {subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {subdirs:}
-{extdirtstamps}$(EXT_DIR_TSTAMPS):
-{extdirtstamps}	@echo Error: $(@{nmake?:/=\}) does not exist.
-{extdirtstamps}	@echo This means that at least the above dependency directory has not been built.
-{extdirtstamps}	@echo Maybe you need to do a top-level make?
-{extdirtstamps}	@echo{nmake?.}
-{extdirtstamps}	@exit {nmake?/b }1
-{extdirtstamps}
+{extdirtstamps:}$(EXT_DIR_TSTAMPS):
+{extdirtstamps:}	@echo Error: $(@{nmake?:/=\}) does not exist.
+{extdirtstamps:}	@echo This means that at least the above dependency directory has not been built.
+{extdirtstamps:}	@echo Maybe you need to do a top-level make?
+{extdirtstamps:}	@echo{nmake?.}
+{extdirtstamps:}	@exit {nmake?/b }1
+{extdirtstamps:}
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**

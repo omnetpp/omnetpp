@@ -122,72 +122,72 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 
 # Main target
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{exe:}  $({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
-{exe:}  @echo{nmake?.} >.tstamp
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
+{exe:}	@echo{nmake?.} >.tstamp
 {so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{so:}   $(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
-{so:}   @echo{nmake?.} >.tstamp
+{so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
+{so:}	@echo{nmake?.} >.tstamp
 {nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile} .tstamp
-{nolink:}   @{nmake?rem}{~nmake?#} Do nothing
+{nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 {nolink:}
 {nolink:}.tstamp: $(OBJS)
-{nolink:}   @echo{nmake?.} >.tstamp
+{nolink:}	@echo{nmake?.} >.tstamp
 
 print-info:
-{~nmake:}   @if [ -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
-{~nmake:}   @if [ ! -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** WARNING: Selected libs not available: directory \"$(OMNETPP_LIB_SUBDIR)\" doesn't exist"; fi
-{nmake:}    @if exist "$(OMNETPP_LIB_SUBDIR)" echo *** Info: MODE=$(MODE), using libs from "$(OMNETPP_LIB_SUBDIR)"
-{nmake:}    @if not exist "$(OMNETPP_LIB_SUBDIR)" echo *** WARNING: Selected libs not available: directory "$(OMNETPP_LIB_SUBDIR)" doesn't exist
+{~nmake:}	@if [ -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
+{~nmake:}	@if [ ! -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** WARNING: Selected libs not available: directory \"$(OMNETPP_LIB_SUBDIR)\" doesn't exist"; fi
+{nmake:}	@if exist "$(OMNETPP_LIB_SUBDIR)" echo *** Info: MODE=$(MODE), using libs from "$(OMNETPP_LIB_SUBDIR)"
+{nmake:}	@if not exist "$(OMNETPP_LIB_SUBDIR)" echo *** WARNING: Selected libs not available: directory "$(OMNETPP_LIB_SUBDIR)" doesn't exist
 
 {subdirs:}subdirs: $(SUBDIR_TARGETS)
 {subdirs:}
 {subdirs:}$(SUBDIR_TARGETS):
-{subdirs:}{~nmake:} cd $@ && {makecommand}
-{subdirs:}{nmake:}  cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
+{subdirs:}{~nmake:}	cd $@ && {makecommand}
+{subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {subdirs:}
-{extdirtstamps}$(EXT_DIR_TSTAMPS):
-{extdirtstamps} @echo Error: $(@{nmake?:/=\}) does not exist.
-{extdirtstamps} @echo This means that at least the above dependency directory has not been built.
-{extdirtstamps} @echo Maybe you need to do a top-level make?
-{extdirtstamps} @echo{nmake?.}
-{extdirtstamps} @exit {nmake?/b }1
-{extdirtstamps}
+{extdirtstamps:}$(EXT_DIR_TSTAMPS):
+{extdirtstamps:}	@echo Error: $(@{nmake?:/=\}) does not exist.
+{extdirtstamps:}	@echo This means that at least the above dependency directory has not been built.
+{extdirtstamps:}	@echo Maybe you need to do a top-level make?
+{extdirtstamps:}	@echo{nmake?.}
+{extdirtstamps:}	@exit {nmake?/b }1
+{extdirtstamps:}
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{msgfiles:} $(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
+{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
 {msgfiles:}
 .SUFFIXES: .{cc}
 
 {nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {~nmake:}$O/%.{obj}: %.{cc}
-{~nmake:}   @mkdir -p $O
-{nmake:}    - md $(O:/=\) 2>nul
-    $(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+{~nmake:}	@mkdir -p $O
+{nmake:}	- md $(O:/=\) 2>nul
+	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 
 {objs:}$(OBJS): $(MSG_H_FILES)
 {objs:}
 generateheaders: $(MSG_H_FILES)
-{subdirs:}{nmake:}  @if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
-{subdirs:}{~nmake:} for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
 clean:
-{nmake:}    -del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{nmake:}    -del *_n.{cc} *_n.h *_m.{cc} *_m.h 2>NUL
-{nmake:}    -del *.vec *.sca 2>NUL
-{~nmake:}   rm -f *.o *_n.{cc} *_n.h *_m.{cc} *_m.h .tstamp
-{~nmake:}   rm -f *.vec *.sca
-{subdirs:}{nmake:}  -if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
-{subdirs:}{~nmake:} for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
+{nmake:}	-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
+{nmake:}	-del *_n.{cc} *_n.h *_m.{cc} *_m.h 2>NUL
+{nmake:}	-del *.vec *.sca 2>NUL
+{~nmake:}	rm -f *.o *_n.{cc} *_n.h *_m.{cc} *_m.h .tstamp
+{~nmake:}	rm -f *.vec *.sca
+{subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
-    $(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
-{nmake:}    if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
-{~nmake:}   for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
+{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
 
 makefiles:
-    {progname} {args}
-{nmake:}    if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
-{~nmake:}   for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefiles) || exit 1; done
+	{progname} {args}
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
+{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefiles) || exit 1; done
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
