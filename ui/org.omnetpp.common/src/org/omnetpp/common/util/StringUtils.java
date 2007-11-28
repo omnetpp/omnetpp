@@ -598,11 +598,15 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             else {
                 int end = template.indexOf(endTag, start);
                 if (end != -1) {
-                    String tag = template.substring(start, end + endTagLen);
+                    end += endTagLen;
+                    String tag = template.substring(start, end);
                     System.out.println("processing " + tag);
-                    String key = template.substring(start+startTagLen, end);
+                    String key = template.substring(start+startTagLen, end - endTagLen);
                     if (key.indexOf('\n') != -1)
                         throw new RuntimeException("template error: newline inside " + quoteString(tag) + " (misplaced start/end tag?)");
+                    boolean isLoop = key.charAt(0) == '@'; //!!!
+                    if (isLoop)
+                        key = key.substring(1);
                     boolean isNegated = key.charAt(0)=='~';
                     if (isNegated) 
                         key = key.substring(1);  // drop "~"
@@ -616,7 +620,23 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
                     // determine replacement string, and possibly adjust start/end
                     String replacement = "";
-                    if (isOptLine) {
+                    if (isLoop) {
+                        // basic loop syntax: {@list} ... {list} ... {/list}
+                        String loopLabel = key; // for now
+                        String loopEndTag = startTag + "/" + loopLabel + endTag; // "{/var}" 
+                        int loopEndPos = template.indexOf(loopEndTag);
+                        if (loopEndPos == -1)
+                            throw new RuntimeException("template error: missing loop end marker " + loopEndPos);
+                        String loopBody = template.substring(end, loopEndPos);
+                        end = loopEndPos + loopEndTag.length();
+                        List<String> list = getFromMapAsList(map, key);
+                        for (String value : list) {
+                            map.put(key, value);
+                            replacement += substituteIntoTemplate(loopBody, map, startTag, endTag);
+                        }
+                        map.put(key, list); // restore map
+                    }
+                    else if (isOptLine) {
                         // replacing a whole line
                         if (getFromMapAsBool(map, key) != isNegated) {
                             // put line in: all variables OK
@@ -627,7 +647,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                             if (endLine == -1) 
                                 endLine = template.length();
                             replacement = "";
-                            end = endLine;
+                            end = endLine + 1;
                         }
                     }
                     else if (questionmarkPos != -1) {
@@ -644,7 +664,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     // do it: replace substring(start, end) with replacement, unless replacement==null
                     buf.append(template.substring(current, start));  // template code up to the {...}
                     buf.append(replacement);
-                    current = end + endTagLen;
+                    current = end;
                 }
             }
         }
@@ -673,5 +693,16 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             return ((String)object).length() != 0;
         else
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string or boolean, but it is " + object.getClass().toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> getFromMapAsList(Map<String, Object> map, String key) {
+        Object object = map.get(key);
+        if (object == null)
+            throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
+        if (object instanceof List)
+            return (List<String>)object;
+        else
+            throw new RuntimeException("template error: template parameter '" + key + "' was expected to be list, but it is " + object.getClass().toString());
     }
 }

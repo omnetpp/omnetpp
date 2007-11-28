@@ -549,6 +549,7 @@ sub collectDirs($;$)
 # Newlines inside {...} are not permitted; this allows detecting errors caused
 # by misplaced braces. Also, nesting is not supported.
 #
+sub substituteIntoTemplate($;$;$;$);
 sub substituteIntoTemplate($;$;$;$)
 {
     my ($template,$mapref,$startTag,$endTag) = @_;
@@ -567,11 +568,16 @@ sub substituteIntoTemplate($;$;$;$)
         else {
             my $end = index($template, $endTag, $start);
             if ($end != -1) {
-                my $tag = substr2($template, $start, $end + $endTagLen);
+                $end += $endTagLen;
+                my $tag = substr2($template, $start, $end);
                 #print("processing $tag\n");
-                my $key = substr2($template, $start+$startTagLen, $end);
+                my $key = substr2($template, $start+$startTagLen, $end - $endTagLen);
                 if (index($key, "\n") != -1) {
                     die("template error: newline inside \"$tag\" (misplaced start/end tag?)");
+                }
+                my $isLoop = substr($key, 0, 1) eq "@";
+                if ($isLoop) {
+                    $key = substr($key, 1);  # drop "@"
                 }
                 my $isNegated = substr($key, 0, 1) eq "~";
                 if ($isNegated) {
@@ -589,7 +595,24 @@ sub substituteIntoTemplate($;$;$;$)
 
                 # determine replacement string, and possibly adjust start/end
                 my $replacement = "";
-                if ($isOptLine) {
+                if ($isLoop) {
+                    # basic loop syntax: {@list} ... {list} ... {/list}
+                    my $loopLabel = $key; # for now
+                    my $loopEndTag = "$startTag/$loopLabel$endTag"; # "{/var}"
+                    my $loopEndPos = index($template, $loopEndTag);
+                    if ($loopEndPos == -1) {
+                        error("template error: missing loop end marker $loopEndPos");
+                    }
+                    my $loopBody = substr2($template, $end, $loopEndPos);
+                    $end = $loopEndPos + length($loopEndTag);
+                    my @list = @{getFromMapAsList(\%map, $key)};
+                    foreach $value (@list) {
+                        $map{$key} = $value;
+                        $replacement .= substituteIntoTemplate($loopBody, \%map, $startTag, $endTag);
+                    }
+                    $map{$key} = \@list; # restore map
+                }
+                elsif ($isOptLine) {
                     # replacing a whole line
                     my $condition = getFromMapAsBool(\%map, $key);
                     if ($isNegated ? !$condition : $condition) {
@@ -602,7 +625,7 @@ sub substituteIntoTemplate($;$;$;$)
                             $endLine = length($template);
                         }
                         $replacement = "";
-                        $end = $endLine;
+                        $end = $endLine + 1;
                     }
                 }
                 elsif ($questionmarkPos != -1) {
@@ -620,7 +643,7 @@ sub substituteIntoTemplate($;$;$;$)
                 # do it: replace substring(start, end) with replacement, unless replacement==null
                 $buf .= substr2($template, $current, $start);  # template code up to the {...}
                 $buf .= $replacement;
-                $current = $end + $endTagLen;
+                $current = $end;
             }
         }
     }
@@ -669,6 +692,16 @@ sub getFromMapAsBool($;$)
     die("template error: undefined template parameter '$key'") if (!defined($map{$key}));
     $value = $map{$key};
     return $value ? 1 : 0;
+}
+
+# for substituteIntoTemplate()
+sub getFromMapAsList($;$)
+{
+    my($mapref,$key) = @_;
+    my %map = %$mapref;
+    die("template error: undefined template parameter '$key'") if (!defined($map{$key}));
+    @$map{$key}; # try asserting that it's a list reference?
+    return $map{$key};
 }
 
 #
