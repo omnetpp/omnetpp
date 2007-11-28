@@ -249,7 +249,8 @@ public class MakeMake {
         StringBuilder deps = new StringBuilder();
         if (fileDepsMap != null) {
             for (IFile sourceFile : fileDepsMap.keySet()) {
-                deps.append(sourceFile.getName() + ":");
+                String objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
+                deps.append(objFileName + ":");
                 for (IFile includeFile : fileDepsMap.get(sourceFile))
                     deps.append(" " + abs2rel(includeFile.getLocation()).toString());
                 deps.append("\n");
@@ -301,7 +302,7 @@ public class MakeMake {
         m.put("subdirs", quoteJoin(subdirs));
         m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
-        m.put("dllexportmacro", p.exportDefOpt==null ? "" : ("-P" + p.exportDefOpt));
+        m.put("dllexportmacro", StringUtils.isEmpty(p.exportDefOpt) ? "" : ("-P" + p.exportDefOpt));
 
         // now generate the makefile
         System.out.println("generating makefile for " + folder.toString());

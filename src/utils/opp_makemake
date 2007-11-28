@@ -1054,16 +1054,16 @@ print-info:
 {extdirtstamps:}	@echo{nmake?.}
 {extdirtstamps:}	@exit {nmake?/b }1
 {extdirtstamps:}
-{msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) :: $(MSGFILES)
+{msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $**
+{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $?
 {msgfiles:}
 .SUFFIXES: .{cc}
 
 {nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {~nmake:}$O/%.{obj}: %.{cc}
 {~nmake:}	@mkdir -p $O
-{nmake:}	- md $(O:/=\) 2>nul
+{nmake:}	-@md $(O:/=\) 2>nul
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 
 {objs:}$(OBJS): $(MSG_H_FILES)
