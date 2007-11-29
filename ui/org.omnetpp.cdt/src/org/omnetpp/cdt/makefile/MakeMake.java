@@ -15,6 +15,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -29,6 +30,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//FIXME excepDirs!
 public class MakeMake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -83,9 +85,14 @@ public class MakeMake {
         List<String> linkDirs = new ArrayList<String>();
         List<String> externalObjects = new ArrayList<String>();
         List<String> tstampDirs = new ArrayList<String>();
+        List<String> ccfiles = new ArrayList<String>();
+        List<String> cppfiles = new ArrayList<String>();
+        List<String> nedfiles = new ArrayList<String>();
         List<String> msgfiles = new ArrayList<String>();
         List<String> msgccfiles = new ArrayList<String>();
         List<String> msghfiles = new ArrayList<String>();
+        List<String> sourceDirs = new ArrayList<String>();
+        List<String> backslashedSourceDirs = new ArrayList<String>();
 
         target = abs2rel(target);
 
@@ -104,10 +111,29 @@ public class MakeMake {
 
         String configFile = "C:/home/omnetpp40/omnetpp/configuser.vc"; //FIXME should come from an Eclipse preference or something 
 
+        // collect source files
+        if (!p.isDeep) {
+            ccfiles = glob("*.cc");
+            cppfiles = glob("*.cpp");
+            msgfiles = glob("*.msg");
+            nedfiles = glob("*.ned");
+        }
+        else {
+            sourceDirs = collectDirs(folder, p.exceptSubdirs);
+            for (String i : sourceDirs) {
+                IContainer f = folder.getFolder(new Path(i));
+                ccfiles.addAll(glob(f, "*.cc"));
+                cppfiles.addAll(glob(f, "*.cpp"));
+                msgfiles.addAll(glob(f, "*.msg"));
+                nedfiles.addAll(glob(f, "*.ned"));
+            }
+        }
+
+        for (String dir : sourceDirs)
+            backslashedSourceDirs.add(dir.replace('/', '\\'));
+        
         // try to determine if .cc or .cpp files are used
         String ccExt = p.ccext;
-        List<String> ccfiles = glob("*.cc");
-        List<String> cppfiles = glob("*.cpp");
         if (ccExt == null) {
             if (ccfiles.isEmpty() && !cppfiles.isEmpty())
                 ccExt = "cpp";
@@ -265,6 +291,7 @@ public class MakeMake {
         m.put("nmake", isNMake);
         m.put("target", target + targetSuffix);
         m.put("outdir", outdir);
+        m.put("isdeep", p.isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", quoteJoin(p.args));
         m.put("configfile", configFile);
@@ -303,6 +330,8 @@ public class MakeMake {
         m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
         m.put("dllexportmacro", StringUtils.isEmpty(p.exportDefOpt) ? "" : ("-P" + p.exportDefOpt));
+        m.put("sourcedirs", sourceDirs);
+        m.put("sourcedirs", backslashedSourceDirs);
 
         // now generate the makefile
         System.out.println("generating makefile for " + folder.toString());
@@ -323,6 +352,19 @@ public class MakeMake {
             return true;  // no change
         }
         return false;  // it was already OK
+    }
+
+    protected List<String> collectDirs(IContainer dir, List<String> exceptSubdirs) throws CoreException {
+        List<String> result = new ArrayList<String>();
+        collectDirs(dir, ".", exceptSubdirs, result);
+        return result;
+    }    
+
+    private void collectDirs(IContainer dir, String dirPath, List<String> exceptSubdirs, final List<String> result) throws CoreException {
+        result.add(dirPath);
+        for (IResource member : dir.members())
+            if (MakefileTools.isGoodFolder(member))  //FIXME TODO exceptDirs
+                collectDirs((IContainer)member, dirPath.equals(".") ? member.getName() : dirPath + "/" + member.getName(), exceptSubdirs, result);
     }
 
     protected String quoteJoin(List<String> list) {
@@ -349,6 +391,10 @@ public class MakeMake {
     }
 
     protected List<String> glob(String pattern) {
+        return glob(folder, pattern);
+    }
+    
+    protected List<String> glob(IContainer folder, String pattern) {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
         String[] files = folder.getLocation().toFile().list(new FilenameFilter() {
             public boolean accept(File dir, String name) {

@@ -15,6 +15,7 @@ public class MakemakeOptions implements Cloneable {
     public Type type = Type.EXE;
     public String target = null;
     public String outRoot = null;
+    public boolean isDeep = true;
     public boolean force = false;
     public boolean linkWithObjects = false;
     public boolean tstamp = true;
@@ -88,6 +89,12 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.startsWith("-O")) {
                 outRoot = arg.substring(2);
+            }
+            else if (arg.equals("--deep")) {
+                isDeep = true;
+            }
+            else if (arg.equals("--nodeep")) {
+                isDeep = false;
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
                 throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
@@ -224,6 +231,7 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-o", target);
         if (outRoot != null)
             add(result, "-O", outRoot);
+        add(result, isDeep ? "--deep" : "--nodeep");
         if (force)
             add(result, "-f");
         if (isNMake)
@@ -295,6 +303,7 @@ public class MakemakeOptions implements Cloneable {
         result.type = type;
         result.target = target;
         result.outRoot = outRoot;
+        result.isDeep = isDeep;
         result.force = force;
         result.linkWithObjects = linkWithObjects;
         result.tstamp = tstamp;

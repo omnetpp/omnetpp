@@ -15,7 +15,8 @@ TARGET = {target}
 {~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = {includepath}
+INCLUDE_PATH = {includepath}{@d:sourcedirs}\
+ -I{d}{/@}
 
 # Misc additional object and library files to link with
 EXTRA_OBJS = {extraobjs}
@@ -51,6 +52,7 @@ MSG_H_FILES = {msghfiles}
 {mode:}MODE = {mode}
 {mode:}{nmake?!}endif
 {mode:}
+
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
@@ -160,9 +162,18 @@ print-info:
 
 {nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {~nmake:}$O/%.{obj}: %.{cc}
-{~nmake:}	@mkdir -p $O
 {nmake:}	-@md $(O:/=\) 2>nul
+{~nmake:}	@mkdir -p $O
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+
+{@dir:sourcedirs,bsdir:backslashedsourcedirs}
+{nmake:}{lbrace}{dir}{rbrace}.cc{lbrace}$O/{dir}{rbrace}.{obj}:
+{~nmake:}$O/{dir}/%.{obj}: {dir}/%.{cc}
+{nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
+{~nmake:}	@mkdir -p $O/{dir}
+	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+{/@}
+
 
 {objs:}$(OBJS): $(MSG_H_FILES)
 {objs:}
@@ -179,7 +190,9 @@ clean:
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- *.{cc}{@d:sourcedirs} \
+	    {d}/*.{cc}{/@}
+
 {nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 {~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
 

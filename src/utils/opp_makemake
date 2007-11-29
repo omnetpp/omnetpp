@@ -29,10 +29,14 @@ exit 0;
 # warnings that come when -Odir is used
 # when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
 # if too many args are given: {progname} {args} becomes multi-line ==> nmake parser error
+# ha deep, akkor rekurziv builder letiltani? (subdirs, -r opcio, -d optio, etc)
+# implement isGoodDir correctly
+# into docu: --deep is the default!!!
 #
 #TODO: to implement:
 # invoke opp_makedepend in the end?
 # document --deep
+# make clean: not yet deep
 #
 #TODO: port to Java:
 # --deep, --nodeep opcio
@@ -53,7 +57,7 @@ sub makemake()
     $type = "EXE";
     $target = "";
     $outRoot = "";
-    $deep = 0; # FIXME set $deep=1 as default?? if it works well!!!
+    $isDeep = 1;
     $force = 0;
     $linkWithObjects = 0;
     $tstamp = 1;
@@ -105,10 +109,10 @@ sub makemake()
             $outRoot = substr($arg, 2);
         }
         elsif ($arg eq "--deep") {
-            $deep = 1;
+            $isDeep = 1;
         }
         elsif ($arg eq "--nodeep") {
-            $deep = 0;
+            $isDeep = 0;
         }
         elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
@@ -242,10 +246,14 @@ sub makemake()
     @linkDirs = ();
     @externalObjects = ();
     @tstampDirs = ();
+    @ccfiles = ();
+    @cppfiles = ();
+    @nedfiles = ();
     @msgfiles = ();
     @msgccfiles = ();
     @msghfiles = ();
     @sourceDirs = ();
+    @backslashedSourceDirs = ();
 
     # determine, and clean up format of project root dir
     if ($projectDir eq "") {
@@ -302,7 +310,7 @@ sub makemake()
     }
 
     # collect source files
-    if (!$deep) {
+    if (!$isDeep) {
         @ccfiles = glob("*.cc");
         @cppfiles = glob("*.cpp");
         @msgfiles = glob("*.msg");
@@ -312,16 +320,17 @@ sub makemake()
         @sourceDirs = collectDirs(".", \@exceptSubdirs);
         error("too many subdirs for --deep") if (@sourceDirs > 1000);
         #print join('  ', @sourceDirs);
-        @ccfiles = ();
-        @cppfiles = ();
-        @msgfiles = ();
-        @nedfiles = ();
         foreach $f (@sourceDirs) {
             push(@ccfiles, glob("$f/*.cc"));
             push(@cppfiles, glob("$f/*.cpp"));
             push(@msgfiles, glob("$f/*.msg"));
             push(@nedfiles, glob("$f/*.ned"));
         }
+    }
+
+    foreach my $i (@sourceDirs) {
+       $i =~ s|/|\\|g;
+       push(@backslashedSourceDirs, $i);
     }
 
     # try to determine if .cc or .cpp files are used
@@ -481,6 +490,7 @@ sub makemake()
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
         "outdir" => $outdir,
+        "isdeep" => $isDeep,
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
         "configfile" =>  $configFile,
@@ -519,7 +529,8 @@ sub makemake()
         "subdirtargets" =>  quoteJoin(\@subdirTargets),
         "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
         "dllexportmacro" =>  $exportDefOpt ? "-P$exportDefOpt" : "",
-        "sourcedirs" => \@sourceDirs
+        "sourcedirs" => \@sourceDirs,
+        "backslashedsourcedirs" => \@backslashedSourceDirs
     );
 
     $content = substituteIntoTemplate(template(), \%m, "{", "}");
@@ -813,9 +824,10 @@ sub abs2rel($;$;$;)
     while (1)
     {
        # keep cutting off common prefixes until no more
-       $inputpath =~ m|^(.*?/)|;
+       if (!($inputpath =~ m|^(.*?/)|)) {
+           last;
+       }
        my $prefix = $1;
-       last if ($prefix eq '');
        if ($referencedir =~ /^\Q$prefix\E/i) {
            $inputpath =~ s/^\Q$prefix\E//i;
            $referencedir =~ s/^\Q$prefix\E//i;
@@ -1057,6 +1069,7 @@ MSG_H_FILES = {msghfiles}
 {mode:}MODE = {mode}
 {mode:}{nmake?!}endif
 {mode:}
+
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
@@ -1170,11 +1183,11 @@ print-info:
 {~nmake:}	@mkdir -p $O
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 
-{@sourcedir:sourcedirs}
-{nmake:}{lbrace}{sourcedir}{rbrace}.cc{lbrace}$O/{sourcedir}{rbrace}.{obj}:
-{~nmake:}$O/%.{obj}: %.{cc}  FIXME ???
-{nmake:}	-@md $(O:/=\) 2>nul
-{~nmake:}	@mkdir -p $O/{sourcedir}
+{@dir:sourcedirs,bsdir:backslashedsourcedirs}
+{nmake:}{lbrace}{dir}{rbrace}.cc{lbrace}$O/{dir}{rbrace}.{obj}:
+{~nmake:}$O/{dir}/%.{obj}: {dir}/%.{cc}
+{nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
+{~nmake:}	@mkdir -p $O/{dir}
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 {/@}
 
@@ -1194,7 +1207,9 @@ clean:
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.{cc}
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- *.{cc}{@d:sourcedirs} \
+	    {d}/*.{cc}{/@}
+
 {nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 {~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
 
