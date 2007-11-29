@@ -31,9 +31,10 @@ exit 0;
 #
 #TODO: to implement:
 # invoke opp_makedepend in the end?
+# document --deep
 #
 #TODO: port to Java:
-# --deep opcio
+# --deep, --nodeep opcio
 #
 
 sub makemake()
@@ -51,6 +52,7 @@ sub makemake()
     $type = "EXE";
     $target = "";
     $outRoot = "";
+    $deep = 0; # FIXME set $deep=1 as default?? if it works well!!!
     $force = 0;
     $linkWithObjects = 0;
     $tstamp = 1;
@@ -100,6 +102,12 @@ sub makemake()
         }
         elsif ($arg =~ /^-O/) {
             $outRoot = substr($arg, 2);
+        }
+        elsif ($arg eq "--deep") {
+            $deep = 1;
+        }
+        elsif ($arg eq "--nodeep") {
+            $deep = 0;
         }
         elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
@@ -236,6 +244,7 @@ sub makemake()
     @msgfiles = ();
     @msgccfiles = ();
     @msghfiles = ();
+    @sourceDirs = ();
 
     # determine, and clean up format of project root dir
     if ($projectDir eq "") {
@@ -292,7 +301,6 @@ sub makemake()
     }
 
     # collect source files
-    $deep = 0;  # "--deep" is not implemented yet
     if (!$deep) {
         @ccfiles = glob("*.cc");
         @cppfiles = glob("*.cpp");
@@ -302,7 +310,7 @@ sub makemake()
     else {
         @sourceDirs = collectDirs(".", \@exceptSubdirs);
         error("too many subdirs for --deep") if (@sourceDirs > 1000);
-        print join('  ', @sourceDirs);
+        #print join('  ', @sourceDirs);
         @ccfiles = ();
         @cppfiles = ();
         @msgfiles = ();
@@ -332,10 +340,10 @@ sub makemake()
     }
     else {
         if ($ccExt eq "cc" && !@ccfiles && @cppfiles) {
-            warning("you specified -e cc but you have only .cpp files in this directory!");
+            warning("you specified -e cc but you have only .cpp files!");
         }
         if ($ccExt eq "cpp" && @ccfiles && !@cppfiles) {
-            warning("you specified -e cpp but you have only .cc files in this directory!");
+            warning("you specified -e cpp but you have only .cc files!");
         }
     }
 
@@ -357,7 +365,7 @@ sub makemake()
 
     if ($recursive) {
         foreach $f (glob("*")) {
-            if (-d $f && !grep(/^\Q$f\E$/, @exceptSubdirs)) {  #XXX check IGNORABLE_DIRS
+            if (isGoodDir($f, \@exceptSubdirs)) {
                 push(@subdirs, $f);
             }
         }
@@ -464,7 +472,6 @@ sub makemake()
     }
 
     $deps = "";  #FIXME
-    @colors = ("red", "green", "blue");  #FIXME
 
     %m = (
         "rem" => "",  # allows putting comments into the template
@@ -511,7 +518,7 @@ sub makemake()
         "subdirtargets" =>  quoteJoin(\@subdirTargets),
         "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
         "dllexportmacro" =>  $exportDefOpt ? "-P$exportDefOpt" : "",
-        "colors" => \@colors   #FIXME remove, just testing
+        "sourcedirs" => \@sourceDirs
     );
 
     $content = substituteIntoTemplate(template(), \%m, "{", "}");
@@ -530,13 +537,31 @@ sub collectDirs($;$)
     my ($dir,$exceptDirsRef) = @_;
     my @exceptDirs = @$exceptDirsRef;
 
-    my @result = ($dir);
+    my @result = ( canonicalize($dir) );
     foreach $f (glob("$dir/*")) {
-        if (-d $f && !grep(/^\Q$f\E$/, @exceptSubdirs)) {  #XXX better check for exceptDirs; check IGNORABLE_DIRS too
+        if (isGoodDir($f, \@exceptDirs)) {
             push(@result, collectDirs($f, \@exceptDirs));
         }
     }
     return @result;
+}
+
+
+sub isGoodDir($;$)
+{
+    my ($dirpath,$exceptDirsRef) = @_;
+    my @exceptDirs = @$exceptDirsRef;
+    if (!-d $dirpath) {
+        return 0;
+    }
+
+    my @IGNORABLE_DIRS = ("CVS", "RCS", "SCCS", "_darcs", "blib", ".git", ".svn", ".git", ".bzr", ".hg", "backups");
+
+    # better ignore!!! like: if (dir eq exceptdir || dir.endswith("/"+exceptdir))
+    $dirpath = canonicalize($dirpath);
+    my $dirname = $dirpath;
+    $dirname =~ s|^.*/||;
+    return !grep(/^\Q$dirpath\E$/, @exceptSubdirs) && !grep(/^\Q$dirname\E$/, @IGNORABLE_DIRS);
 }
 
 #
@@ -994,7 +1019,8 @@ TARGET = {target}
 {~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = {includepath}
+INCLUDE_PATH = {includepath}{@d:sourcedirs}\
+ -I{d}{/@}
 
 # Misc additional object and library files to link with
 EXTRA_OBJS = {extraobjs}
@@ -1139,9 +1165,18 @@ print-info:
 
 {nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {~nmake:}$O/%.{obj}: %.{cc}
-{~nmake:}	@mkdir -p $O
 {nmake:}	-@md $(O:/=\) 2>nul
+{~nmake:}	@mkdir -p $O
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+
+{@sourcedir:sourcedirs}
+{nmake:}{lbrace}{sourcedir}{rbrace}.cc{lbrace}$O/{sourcedir}{rbrace}.{obj}:
+{~nmake:}$O/%.{obj}: %.{cc}  FIXME ???
+{nmake:}	-@md $(O:/=\) 2>nul
+{~nmake:}	@mkdir -p $O/{sourcedir}
+	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+{/@}
+
 
 {objs:}$(OBJS): $(MSG_H_FILES)
 {objs:}
@@ -1169,9 +1204,6 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
-
-{@c:colors}{c} [[{@c2:colors}{c2} {/@}]], {/@}!
-
 ENDTEMPLATE
 }
 
