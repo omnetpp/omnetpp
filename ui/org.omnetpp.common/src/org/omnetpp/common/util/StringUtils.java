@@ -621,20 +621,39 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     // determine replacement string, and possibly adjust start/end
                     String replacement = "";
                     if (isLoop) {
-                        // basic loop syntax: {@list} ... {list} ... {/list}
-                        String loopLabel = key; // for now
-                        String loopEndTag = startTag + "/" + loopLabel + endTag; // "{/var}" 
-                        int loopEndPos = template.indexOf(loopEndTag);
+                        // basic loop syntax: {@i:list1,j:list2,...} ... {i} ... {/@}
+                        // this is parallel iteration, not nested loops!
+                        // first, find loop close tag {@}
+                        String loopEndTag = startTag + "/@" + endTag; 
+                        int loopEndPos = template.indexOf(loopEndTag, end);  //TODO: find matching, to enable nested loops
                         if (loopEndPos == -1)
-                            throw new RuntimeException("template error: missing loop end marker " + loopEndPos);
+                            throw new RuntimeException("template error: missing or misplaced loop end marker " + loopEndTag);
                         String loopBody = template.substring(end, loopEndPos);
                         end = loopEndPos + loopEndTag.length();
-                        List<String> list = getFromMapAsList(map, key);
-                        for (String value : list) {
-                            map.put(key, value);
+                        // parse loop spec: "i:list1,j:list2,..."
+                        List<String> loopVars = new ArrayList<String>();
+                        List<String> loopLists = new ArrayList<String>();
+                        for (String loopSpec : key.split(",")) {
+                            if (!loopSpec.matches(" *[a-zA-Z0-9_]+ *: *[a-zA-Z0-9_]+ *"))
+                                throw new RuntimeException("template error: syntax error in loop tag " + tag + ", " + startTag + "@var1:list1,var2:list2,..." + endTag + " expected in body");
+                            loopVars.add(StringUtils.substringBefore(loopSpec, ":").trim());
+                            loopLists.add(StringUtils.substringAfter(loopSpec, ":").trim());
+                        }
+                        // execute loop: iterate in parallel on all loop variables
+                        int length = getFromMapAsList(map, loopLists.get(0)).size();
+                        for (int i=0; i<length; i++) {
+                            for (int j=0; j<loopVars.size(); j++) {
+                                String loopVarJ = loopVars.get(j);
+                                List<String> loopListJ = getFromMapAsList(map, loopLists.get(j));
+                                if (loopListJ.size() != length)
+                                    throw new RuntimeException("template error: list lengths differ in " + tag);
+                                map.put(loopVarJ, loopListJ.get(i));
+                            }
                             replacement += substituteIntoTemplate(loopBody, map, startTag, endTag);
                         }
-                        map.put(key, list); // restore map
+                        // remove loop variables
+                        for (int j=0; j<loopVars.size(); j++)
+                            map.remove(loopVars.get(j));
                     }
                     else if (isOptLine) {
                         // replacing a whole line
