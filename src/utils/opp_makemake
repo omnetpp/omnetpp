@@ -28,6 +28,7 @@ exit 0;
 # potential problem: $(CONFIGNAME) determines both linker path AND output directory! so they are now linked!
 # warnings that come when -Odir is used
 # when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
+# if too many args are given: {progname} {args} becomes multi-line ==> nmake parser error
 #
 #TODO: to implement:
 # invoke opp_makedepend in the end?
@@ -502,7 +503,7 @@ sub makemake()
         "extdirtstamps" =>  quoteJoin(\@externaldirtstamps),
         "extraobjs" =>  quoteJoin(\@externalObjects),
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
-        "libpath" =>  prefixQuoteJoin(\@libDirs, (isNMake ? "/libpath:" : "-L")),
+        "libpath" =>  prefixQuoteJoin(\@libDirs, ($isNMake ? "/libpath:" : "-L")),
         "libs" =>  quoteJoin(\@libs),
         "defines" => prefixQuoteJoin(\@defines, "-D"),
         "importlibs" =>  quoteJoin(\@importLibs),
