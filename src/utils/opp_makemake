@@ -601,7 +601,7 @@ sub substituteIntoTemplate($;$;$;$)
                     # basic loop syntax: {@i:list1,j:list2,...} ... {i} ... {/@}
                     # this is parallel iteration, not nested loops!
                     # first, find loop close tag {@}
-                    my $loopEndTag = "$startTag/@$endTag"; # "{/var}"
+                    my $loopEndTag = "$startTag/\@$endTag"; # "{/var}"
                     my $loopEndPos = index($template, $loopEndTag, $end);  #TODO: find matching, to enable nested loops
                     if ($loopEndPos == -1) {
                         error("template error: missing or misplaced loop end marker $loopEndTag");
