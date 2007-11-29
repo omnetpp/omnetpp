@@ -568,6 +568,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      *  - {~bar?some text} gets replaced by "some text" if ((Boolean)m.get("bar"))==false*
      *  - {bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==true*
      *  - {~bar:} only keep the rest of the line if ((Boolean)m.get("bar"))==false*
+     *  - {@i1:list1,i2:list2,...} ... {i} ...{/@}  parallel iteration list1, list2 etc.
      *  *true/false is interpreted as: for a String, "" is false and everything else is true;
      *  instances of Boolean are also accepted.
      *  

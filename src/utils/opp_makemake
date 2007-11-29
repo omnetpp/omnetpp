@@ -546,6 +546,7 @@ sub collectDirs($;$)
 #  - {~bar?some text} gets replaced by "some text" if value of "bar" is false*
 #  - {bar:} only keep the rest of the line if value of "bar" is true*
 #  - {~bar:} only keep the rest of the line if value of "bar" is false*
+#  - {@i1:list1,i2:list2,...} ... {i} ...{/@}  parallel iteration list1, list2 etc.
 # * true/false are interpreted as in Perl: "" and "0" are false, everything else is true.
 #
 # Newlines inside {...} are not permitted; this allows detecting errors caused
