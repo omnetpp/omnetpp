@@ -19,7 +19,9 @@ public class StringUtils_substituteIntoTemplate extends TestCase {
         "line 6 {true?some-text}{~true?other-text}.\n" +
         "line 7 {false?some-text}{~false?other-text}.\n" +
         "Numbers: {@n:numbers}{n}, {/@}...\n" +
-        "Numbers+colors: {@n:numbers,c:colors} {n}=>{c}{/@}\n";
+        "Numbers+colors: {@n:numbers,c:colors} {n}=>{c}{/@}\n" + 
+        "Nesting: {@n:numbers}NUM={n}:{@c:colors}{c},{/@}END {/@}DONE\n" +
+        "Nesting2: {@c:colors}{c} [{@c2:colors}{c2} {/@}], {/@}DONE\n";
     private final String EXPECTED1 = 
         "line 2 - The-foo-value\n" +
         "line 4 - The-bar-value\n" +
@@ -27,8 +29,10 @@ public class StringUtils_substituteIntoTemplate extends TestCase {
         "line 6 some-text.\n" +
         "line 7 other-text.\n" +
         "Numbers: one, two, three, ...\n" +
-        "Numbers+colors:  one=>red two=>green three=>blue\n";
-
+        "Numbers+colors:  one=>red two=>green three=>blue\n" +
+        "Nesting: NUM=one:red,green,blue,END NUM=two:red,green,blue,END NUM=three:red,green,blue,END DONE\n" +
+        "Nesting2: red [red green blue ], green [red green blue ], blue [red green blue ], DONE\n";
+    
     @Test
     public void testSubstituteIntoTemplate() {
         Map<String, Object> m = new HashMap<String, Object>(); 

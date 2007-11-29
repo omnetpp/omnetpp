@@ -605,7 +605,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     String key = template.substring(start+startTagLen, end - endTagLen);
                     if (key.indexOf('\n') != -1)
                         throw new RuntimeException("template error: newline inside " + quoteString(tag) + " (misplaced start/end tag?)");
-                    boolean isLoop = key.charAt(0) == '@'; //!!!
+                    boolean isLoop = key.charAt(0) == '@';
                     if (isLoop)
                         key = key.substring(1);
                     boolean isNegated = key.charAt(0)=='~';
@@ -624,11 +624,18 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     if (isLoop) {
                         // basic loop syntax: {@i:list1,j:list2,...} ... {i} ... {/@}
                         // this is parallel iteration, not nested loops!
-                        // first, find loop close tag {@}
+                        // first, find loop close tag {/@}
                         String loopEndTag = startTag + "/@" + endTag; 
-                        int loopEndPos = template.indexOf(loopEndTag, end);  //TODO: find matching, to enable nested loops
-                        if (loopEndPos == -1)
-                            throw new RuntimeException("template error: missing or misplaced loop end marker " + loopEndTag);
+                        int balance = 1;
+                        int pos = end-1; // because we'll start with +1
+                        while (balance != 0) {
+                            pos = indexOfEither(template, startTag+"@", loopEndTag, pos+1);
+                            if (pos == -1)
+                                throw new RuntimeException("template error: missing loop end marker " + loopEndTag);
+                            boolean isStartTag = template.charAt(pos+startTagLen)=='@';
+                            balance += isStartTag ? 1 : -1;
+                        }
+                        int loopEndPos = pos;
                         String loopBody = template.substring(end, loopEndPos);
                         end = loopEndPos + loopEndTag.length();
                         // parse loop spec: "i:list1,j:list2,..."
@@ -692,6 +699,17 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         return buf.toString();
     }
 
+    // for substituteIntoTemplate()
+    private static int indexOfEither(String template, String substring1, String substring2, int from) {
+        int index1 = template.indexOf(substring1, from);
+        int index2 = template.indexOf(substring2, from);
+        if (index1 == -1)
+            return index2;
+        if (index2 == -1)
+            return index1;
+        return index1 < index2 ? index1 : index2;
+    }
+    
     // for substituteIntoTemplate()
     private static String getFromMapAsString(Map<String, Object> map, String key) {
         Object object = map.get(key);

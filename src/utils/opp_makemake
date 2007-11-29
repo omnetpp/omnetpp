@@ -546,7 +546,7 @@ sub collectDirs($;$)
 #  - {~bar?some text} gets replaced by "some text" if value of "bar" is false*
 #  - {bar:} only keep the rest of the line if value of "bar" is true*
 #  - {~bar:} only keep the rest of the line if value of "bar" is false*
-#  - {@i1:list1,i2:list2,...} ... {i} ...{/@}  parallel iteration list1, list2 etc.
+#  - {@i1:list1,i2:list2,...} ... {i1} ...{/@}  parallel iteration list1, list2 etc.
 # * true/false are interpreted as in Perl: "" and "0" are false, everything else is true.
 #
 # Newlines inside {...} are not permitted; this allows detecting errors caused
@@ -601,12 +601,19 @@ sub substituteIntoTemplate($;$;$;$)
                 if ($isLoop) {
                     # basic loop syntax: {@i:list1,j:list2,...} ... {i} ... {/@}
                     # this is parallel iteration, not nested loops!
-                    # first, find loop close tag {@}
+                    # first, find loop close tag {/@}
                     my $loopEndTag = "$startTag/\@$endTag"; # "{/var}"
-                    my $loopEndPos = index($template, $loopEndTag, $end);  #TODO: find matching, to enable nested loops
-                    if ($loopEndPos == -1) {
-                        error("template error: missing or misplaced loop end marker $loopEndTag");
+                    my $balance = 1;
+                    my $pos = $end-1;  # because we'll start with +1
+                    while ($balance != 0) {
+                        $pos = indexOfEither($template, "$startTag\@", $loopEndTag, $pos+1);
+                        if ($pos == -1) {
+                            error("template error: missing loop end marker $loopEndTag");
+                        }
+                        my $isStartTag = substr($template, $pos+$startTagLen,1) eq '@';
+                        $balance += $isStartTag ? 1 : -1;
                     }
+                    my $loopEndPos = $pos;
                     my $loopBody = substr2($template, $end, $loopEndPos);
                     $end = $loopEndPos + length($loopEndTag);
                     # parse loop spec: "i:list1,j:list2,..."
@@ -621,8 +628,8 @@ sub substituteIntoTemplate($;$;$;$)
                     }
                     # execute loop: iterate in parallel on all loop variables
                     my $length = @{getFromMapAsList(\%map, $loopLists[0])};
-                    for ($i=0; $i<$length; $i++) {
-                        for ($j=0; $j<@loopVars; $j++) {
+                    for (my $i=0; $i<$length; $i++) {
+                        for (my $j=0; $j<@loopVars; $j++) {
                             my $loopVarJ = $loopVars[$j];
                             my @loopListJ = @{getFromMapAsList(\%map, $loopLists[$j])};
                             if (@loopListJ != $length) {
@@ -698,6 +705,16 @@ sub prefixQuoteJoin($,$)
         $result .= $sep . $prefix . quote($i);
     }
     return $result eq "" ? "" : substr($result, 1); # chop off leading space
+}
+
+sub indexOfEither($;$;$;$)
+{
+    my($template,$substring1,$substring2,$from) = @_;
+    my $index1 = index($template, $substring1, $from);
+    my $index2 = index($template, $substring2, $from);
+    return $index2 if ($index1 == -1);
+    return $index1 if ($index2 == -1);
+    return $index1 < $index2 ? $index1 : $index2;
 }
 
 # for substituteIntoTemplate()
@@ -1153,7 +1170,7 @@ makefiles:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
 
-{@c:colors}{c}, {/@}!
+{@c:colors}{c} [[{@c2:colors}{c2} {/@}]], {/@}!
 
 ENDTEMPLATE
 }
