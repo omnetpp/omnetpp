@@ -7,7 +7,6 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
-import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.StructElement;
 
 public class StructElementEx extends StructElement implements IMsgTypeElement {
@@ -47,9 +46,5 @@ public class StructElementEx extends StructElement implements IMsgTypeElement {
 
     public Map<String, PropertyElementEx> getProperties() {
         return getMsgTypeInfo().getProperties();
-    }
-
-    public Map<String, FieldElement> getFields() {
-        return getMsgTypeInfo().getFields();
     }
 }

@@ -8,7 +8,6 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.ClassElement;
-import org.omnetpp.ned.model.pojo.FieldElement;
 
 public class ClassElementEx extends ClassElement implements IMsgTypeElement {
     private IMsgTypeInfo typeInfo;
@@ -47,9 +46,5 @@ public class ClassElementEx extends ClassElement implements IMsgTypeElement {
 
     public Map<String, PropertyElementEx> getProperties() {
         return getMsgTypeInfo().getProperties();
-    }
-
-    public Map<String, FieldElement> getFields() {
-        return getMsgTypeInfo().getFields();
     }
 }

@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.WordUtils;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -72,6 +74,8 @@ import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
 public class Neddoc {
     private String dotExecutablePath = "C:\\Workspace\\Tools\\Graphviz\\bin\\dot.exe";
+    
+    private String doxyExecutablePath = "C:\\Workspace\\Tools\\doxygen\\bin\\doxygen.exe";
     
     private String neddocProjectRelativePath = "Documentation/neddoc";
     
@@ -128,6 +132,8 @@ public class Neddoc {
                     Neddoc.this.monitor = monitor;
                     ensureEmptyNeddoc();
                     collectCaches();
+                    generateDoxy();
+                    collectDoxyMap();
                     generateCSS();
                     generateHTMLFrame();
                     generateFileList();
@@ -137,9 +143,10 @@ public class Neddoc {
                     generateFilePages();
                     generateTypePages();
                     generateFullDiagrams();
-                    monitor.done();
-
                     return Status.OK_STATUS;
+                }
+                catch (CancellationException e) {
+                    return Status.CANCEL_STATUS;
                 }
                 catch (Exception e) {
                     throw new RuntimeException(e);
@@ -153,6 +160,15 @@ public class Neddoc {
                             throw new RuntimeException(e);
                         }
                     }
+                    
+                    try {
+                        neddocFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+                    }
+                    catch (CoreException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    monitor.done();
                 }
             }
         };
@@ -161,37 +177,47 @@ public class Neddoc {
     }
 
     private void ensureEmptyNeddoc() throws CoreException {
-        monitor.beginTask("Emptying neddoc...", IProgressMonitor.UNKNOWN);
-        
-        File[] files = new File(neddocFolder.getLocation().toString()).listFiles();
-        
-        if (files != null)
-            for (File file : files)
-                file.delete();
-
-        if (!neddocFolder.exists())
-            neddocFolder.create(true , true, null);
-        
-        neddocFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-
-        monitor.done();
+        try {
+            if (!neddocFolder.exists())
+                neddocFolder.create(true , true, null);
+            
+            File[] files = new File(neddocFolder.getLocation().toString()).listFiles();
+            
+            monitor.beginTask("Emptying neddoc...", files.length);
+            
+            if (files != null) {
+                for (File file : files) {
+                    monitor.subTask(file.toString());
+                    file.delete();
+                    monitor.worked(1);
+                }
+            }
+    
+            neddocFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+        }
+        finally {
+            monitor.done();
+        }
     }
     
     private void collectCaches() throws Exception {
-        monitor.beginTask("Collecting ned files...", IProgressMonitor.UNKNOWN);
+        try {
+            monitor.beginTask("Collecting data...", 6);
 
-        collectFiles();
-        collectTypes();
-        collectTypeNames();
-        collectSubtypesMap();
-        collectImplementorsMap();
-        collectUsersMap();
-        collectDoxyMap();
-
-        monitor.done();
+            collectFiles();
+            collectTypes();
+            collectTypeNames();
+            collectSubtypesMap();
+            collectImplementorsMap();
+            collectUsersMap();
+        }
+        finally {
+            monitor.done();
+        }
     }
 
     private void collectFiles() throws CoreException {
+        monitor.subTask("Collecting NED and MSG files");
         files = new ArrayList<IFile>();
         files.addAll(nedResources.getNedFiles(project));
         files.addAll(msgResources.getMsgFiles(project));
@@ -200,10 +226,11 @@ public class Neddoc {
                 return o1.toString().compareToIgnoreCase(o2.toString());
             }
         });
-
+        monitor.worked(1);
     }
 
     private void collectTypes() throws CoreException, IOException {
+        monitor.subTask("Collecting types");
         for (IFile file : files) {
             if (nedResources.isNedFile(file))
                 typeElements.addAll(nedResources.getNedFileElement(file).getTopLevelTypeNodes());
@@ -216,9 +243,11 @@ public class Neddoc {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             }
         });
+        monitor.worked(1);
     }
 
     private void collectTypeNames() {
+        monitor.subTask("Collecting type names");
         StringBuffer buffer = new StringBuffer();
         for (ITypeElement typeElement : typeElements) {
             if (typeElement instanceof INedTypeElement) {
@@ -240,9 +269,11 @@ public class Neddoc {
             buffer.deleteCharAt(buffer.length() - 1);
 
         typeNamesPattern = Pattern.compile("\\b(" + buffer.toString() + ")\\b");
+        monitor.worked(1);
     }
 
     private void collectSubtypesMap() {
+        monitor.subTask("Collecting subtypes");
         for (ITypeElement subtype : typeElements) {
             ITypeElement supertype = subtype.getFirstExtendsRef();
 
@@ -256,9 +287,11 @@ public class Neddoc {
                 subtypesMap.put(supertype, subtypes);
             }
         }
+        monitor.worked(1);
     }
     
     private void collectImplementorsMap() {
+        monitor.subTask("Collecting implementors");
         for (ITypeElement typeElement : typeElements) {
             if (typeElement instanceof INedTypeElement && !(typeElement instanceof IInterfaceTypeElement)) {
                 INedTypeElement implementor = (INedTypeElement)typeElement;
@@ -274,9 +307,11 @@ public class Neddoc {
                 }
             }
         }
+        monitor.worked(1);
     }
     
     private void collectUsersMap() {
+        monitor.subTask("Collecting uses");
         for (ITypeElement userType : typeElements) {
             for (ITypeElement usedType : userType.getLocalUsedTypes()) {
                 ArrayList<ITypeElement> users = usersMap.get(usedType);
@@ -288,6 +323,7 @@ public class Neddoc {
                 usersMap.put(usedType, users);
             }
         }
+        monitor.worked(1);
     }
 
     private void collectDoxyMap() throws Exception {
@@ -299,13 +335,39 @@ public class Neddoc {
             NodeList nodes = (NodeList)XPathFactory.newInstance().newXPath().compile("//compound[@kind='class']/filename")
                 .evaluate(document, XPathConstants.NODESET);
             XPathExpression classNameXPath = XPathFactory.newInstance().newXPath().compile("name/text()");
-    
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                String fileName = node.getTextContent();
-                String className = (String)classNameXPath.evaluate(node.getParentNode(), XPathConstants.STRING);
-                doxyMap.put(className, fileName);
+
+            try {
+                monitor.beginTask("Collecting doxygen...", nodes.getLength());
+        
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Node node = nodes.item(i);
+                    String fileName = node.getTextContent();
+                    String className = (String)classNameXPath.evaluate(node.getParentNode(), XPathConstants.STRING);
+                    doxyMap.put(className, fileName);
+                    monitor.worked(1);
+                }
             }
+            finally {
+                monitor.done();
+            }
+        }
+    }
+
+    private void generateDoxy() throws Exception {
+        try {
+            monitor.beginTask("Generating doxy...", IProgressMonitor.UNKNOWN);
+            IFile doxyCfgFile = project.getFile("doxy.cfg");
+            
+            if (doxyCfgFile.exists()) {
+                // TODO: revive
+//                Process process = Runtime.getRuntime().exec(new String[] {doxyExecutablePath, doxyCfgFile.getLocation().toOSString()}, null, project.getLocation().toFile());
+//                
+//                if (process.waitFor() != 0)
+//                    throw new RuntimeException("doxy error occured");
+            }
+        }
+        finally {
+            monitor.done();
         }
     }
 
@@ -328,8 +390,15 @@ public class Neddoc {
             comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");     
 
             // extract existing <pre> sections to prevent tampering inside them
-            // TODO: $comment =~ s|&lt;pre&gt;(.*?)&lt;/pre&gt;|$pre{++$ctr}=$1;"<pre$ctr>"|gse;
-
+            final ArrayList<String> preList = new ArrayList<String>();
+            comment = replaceMatches(comment, "(?s)<pre>(.*?)</pre>", new IRegexpReplacementProvider() {
+                public String getReplacement(Matcher matcher) {
+                    preList.add(matcher.group(0));
+                    
+                    return "<pre" + (preList.size() - 1) + "/>";
+                }
+            });
+ 
             // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
             comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
 
@@ -382,21 +451,34 @@ public class Neddoc {
             }
 
             // now we can put back <pre> regions
-            // TODO: $comment =~ s|\<pre(\d+)\>|'<pre>'.$pre{$1}.'</pre>'|gse;
+            comment = replaceMatches(comment, "<pre(\\d+)/>", new IRegexpReplacementProvider() {
+                public String getReplacement(Matcher matcher) {
+                    return preList.get(Integer.parseInt(matcher.group(1)));
+                }
+            });
 
             // now we can trim excess blank lines
             comment = comment.replaceAll("\n\n+", "\n");
 
             // extract <nohtml> sections to prevent substituting inside them;
             // also backslashed words to prevent putting hyperlinks on them
-            // TODO: $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
-            // TODO: $comment =~ s|(\\[a-z_]+)|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
+            final ArrayList<String> nohtmlList = new ArrayList<String>();
+            comment = replaceMatches(comment, "(?s)<nohtml>(.*?)</nohtml>", new IRegexpReplacementProvider() {
+                public String getReplacement(Matcher matcher) {
+                    nohtmlList.add(matcher.group(0));
+                    
+                    return "<nohtml" + (nohtmlList.size() - 1) + "/>";
+                }
+            });
             
             // put hyperlinks on type names
             comment = replaceTypeReferences(comment);
             
-            // put back <nohtml> sections and backslashed words
-            // TODO: $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
+            comment = replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
+                public String getReplacement(Matcher matcher) {
+                    return nohtmlList.get(Integer.parseInt(matcher.group(1)));
+                }
+            });
 
             // remove backslashes; double backslashes become single ones
             comment = comment.replaceAll("\\\\(.)", "$1");
@@ -410,6 +492,22 @@ public class Neddoc {
 
         matcher.appendTail(buffer);
 
+        return buffer.toString();
+    }
+    
+    private interface IRegexpReplacementProvider {
+        public String getReplacement(Matcher matcher);
+    }
+    
+    private String replaceMatches(String comment, String regexp, IRegexpReplacementProvider provider) {
+        Matcher matcher = Pattern.compile(regexp).matcher(comment);
+        StringBuffer buffer = new StringBuffer();
+        
+        while (matcher.find())
+            matcher.appendReplacement(buffer, provider.getReplacement(matcher));
+
+        matcher.appendTail(buffer);
+        
         return buffer.toString();
     }
 
@@ -492,21 +590,24 @@ public class Neddoc {
     }
     
     private void generateIndexPages() throws Exception {
-        monitor.beginTask("Generating index pages...", IProgressMonitor.UNKNOWN);
-
-        withGeneratingTypeIndexHTMLFile("channels", ChannelElementEx.class);
-        withGeneratingTypeIndexHTMLFile("channel interfaces", ChannelInterfaceElementEx.class);
-        withGeneratingTypeIndexHTMLFile("module interfaces", ModuleInterfaceElementEx.class);
-        withGeneratingTypeIndexHTMLFile("simple modules", SimpleModuleElementEx.class);
-        withGeneratingTypeIndexHTMLFile("compound modules", CompoundModuleElementEx.class);
-        withGeneratingTypeIndexHTMLFile("all modules", IModuleTypeElement.class);
-        generateNetworkIndex();
-        withGeneratingTypeIndexHTMLFile("messages", MessageElementEx.class);
-        withGeneratingTypeIndexHTMLFile("classes", ClassElementEx.class);
-        withGeneratingTypeIndexHTMLFile("structs", StructElementEx.class);
-        withGeneratingTypeIndexHTMLFile("enums", EnumElementEx.class);
-
-        monitor.done();
+        try {
+            monitor.beginTask("Generating index pages...", IProgressMonitor.UNKNOWN);
+    
+            withGeneratingTypeIndexHTMLFile("channels", ChannelElementEx.class);
+            withGeneratingTypeIndexHTMLFile("channel interfaces", ChannelInterfaceElementEx.class);
+            withGeneratingTypeIndexHTMLFile("module interfaces", ModuleInterfaceElementEx.class);
+            withGeneratingTypeIndexHTMLFile("simple modules", SimpleModuleElementEx.class);
+            withGeneratingTypeIndexHTMLFile("compound modules", CompoundModuleElementEx.class);
+            withGeneratingTypeIndexHTMLFile("all modules", IModuleTypeElement.class);
+            generateNetworkIndex();
+            withGeneratingTypeIndexHTMLFile("messages", MessageElementEx.class);
+            withGeneratingTypeIndexHTMLFile("classes", ClassElementEx.class);
+            withGeneratingTypeIndexHTMLFile("structs", StructElementEx.class);
+            withGeneratingTypeIndexHTMLFile("enums", EnumElementEx.class);
+        }
+        finally {
+            monitor.done();
+        }
     }
 
     private void generateNavigationBar(String where) throws IOException {
@@ -651,94 +752,107 @@ public class Neddoc {
     }
     
     private void generateFilePages() throws Exception {
-        monitor.beginTask("Generating file pages...", IProgressMonitor.UNKNOWN);
+        try {
+            monitor.beginTask("Generating file pages...", files.size());
+    
+            for (final IFile file : files) {
+                withGeneratingHTMLFile(getFileName(file), new Runnable() {
+                    public void run() throws IOException, CoreException {
+                        monitor.subTask(file.toString());
 
-        for (final IFile file : files) {
-            withGeneratingHTMLFile(getFileName(file), new Runnable() {
-                public void run() throws IOException, CoreException {
-                    out("<h2 class=\"comptitle\">Ned File <i>" + file.getProjectRelativePath().toString() + "</i></h2>\r\n" + 
-                        "<h3 class=\"subtitle\">Contains:</h3>\r\n" + 
-                        "<ul>\r\n");
-
-                    List<? extends ITypeElement> typeElements;
-                    
-                    if (msgResources.isMsgFile(file))
-                        typeElements = msgResources.getMsgFileElement(file).getTopLevelTypeNodes();
-                    else
-                        typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
-
-                    for (ITypeElement typeElement : typeElements)
-                    {
-                        out("<li>\r\n" + 
-                            "   <a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
-                            "   <i> (" + typeElement.getReadableTagName() + ")</i>\r\n" + 
-                            "</li>\r\n");
+                        out("<h2 class=\"comptitle\">Ned File <i>" + file.getProjectRelativePath().toString() + "</i></h2>\r\n" + 
+                            "<h3 class=\"subtitle\">Contains:</h3>\r\n" + 
+                            "<ul>\r\n");
+    
+                        List<? extends ITypeElement> typeElements;
+                        
+                        if (msgResources.isMsgFile(file))
+                            typeElements = msgResources.getMsgFileElement(file).getTopLevelTypeNodes();
+                        else
+                            typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
+    
+                        for (ITypeElement typeElement : typeElements)
+                        {
+                            out("<li>\r\n" + 
+                                "   <a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
+                                "   <i> (" + typeElement.getReadableTagName() + ")</i>\r\n" + 
+                                "</li>\r\n");
+                        }
+                        
+                        out("</ul>\r\n"); 
+                        generateSourceContent(file);
+                        monitor.worked(1);
                     }
-                    
-                    out("</ul>\r\n"); 
-                    generateSourceContent(file);
-                }
-            });
+                });
+            }
         }
-
-        monitor.done();
+        finally {
+            monitor.done();
+        }
     }
     
     private void generateTypePages() throws Exception {
-        monitor.beginTask("Generating ned type pages...", IProgressMonitor.UNKNOWN);
-
-        for (final ITypeElement typeElement : typeElements) {
-            withGeneratingHTMLFile(getFileName(typeElement), new Runnable() {
-                public void run() throws Exception {
-                    out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
-                    generateFileReference(getNedOrMsgFile(typeElement));
-                    
-                    if (typeElement instanceof SimpleModuleElementEx)
-                        generateCppDefinitionReference(typeElement);
-
-                    String comment = typeElement.getComment();
-                    if (comment != null)
-                        out(processHTMLContent("<pre class=\"comment\">" + comment + "</pre>"));
-
-                    if (typeElement instanceof INedTypeElement) {
-                        INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
-
-                        generateTypeDiagram(nedTypeElement);
-                        generateUsageDiagram(nedTypeElement);
-                        generateInheritanceDiagram(nedTypeElement);
-                        generateExtendsTable(nedTypeElement);
-                        generateKnownSubtypesTable(nedTypeElement);
-                        generateUsedInTables(nedTypeElement);
-                        generateParametersTable(nedTypeElement);
-                        generatePropertiesTable(nedTypeElement);
-
-                        if (typeElement instanceof IModuleTypeElement)
-                            generateGatesTable((IModuleTypeElement)nedTypeElement);
-
-                        if (typeElement instanceof CompoundModuleElementEx)
-                            generateUnassignedParametersTable((CompoundModuleElementEx)nedTypeElement);
+        try {
+            monitor.beginTask("Generating ned type pages...", typeElements.size());
+    
+            for (final ITypeElement typeElement : typeElements) {
+                withGeneratingHTMLFile(getFileName(typeElement), new Runnable() {
+                    public void run() throws Exception {
+                        out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
+                        generateFileReference(getNedOrMsgFile(typeElement));
+                        
+                        if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
+                            generateCppDefinitionReference(typeElement);
+    
+                        String comment = typeElement.getComment();
+                        if (comment != null)
+                            out(processHTMLContent("<pre class=\"comment\">" + comment + "</pre>"));
+    
+                        if (typeElement instanceof INedTypeElement) {
+                            INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
+                            monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNEDTypeInfo().getFullyQualifiedName());
+    
+                            generateTypeDiagram(nedTypeElement);
+                            generateUsageDiagram(nedTypeElement);
+                            generateInheritanceDiagram(nedTypeElement);
+                            generateExtendsTable(nedTypeElement);
+                            generateKnownSubtypesTable(nedTypeElement);
+                            generateUsedInTables(nedTypeElement);
+                            generateParametersTable(nedTypeElement);
+                            generatePropertiesTable(nedTypeElement);
+    
+                            if (typeElement instanceof IModuleTypeElement)
+                                generateGatesTable((IModuleTypeElement)nedTypeElement);
+    
+                            if (typeElement instanceof CompoundModuleElementEx)
+                                generateUnassignedParametersTable((CompoundModuleElementEx)nedTypeElement);
+                        }
+                        else if (typeElement instanceof IMsgTypeElement) {
+                            IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
+                            monitor.subTask(msgTypeElement.getReadableTagName() + ": " + msgTypeElement.getName());
+    
+                            generateUsageDiagram(msgTypeElement);
+                            generateInheritanceDiagram(msgTypeElement);
+                            generateExtendsTable(msgTypeElement);
+                            generateKnownSubtypesTable(msgTypeElement);
+                            generateFieldsTable(msgTypeElement);
+                            generatePropertiesTable(msgTypeElement);
+                        }
+    
+                        generateSourceContent(typeElement);
+                        monitor.worked(1);
                     }
-                    else if (typeElement instanceof IMsgTypeElement) {
-                        IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
-
-                        generateUsageDiagram(msgTypeElement);
-                        generateInheritanceDiagram(msgTypeElement);
-                        generateExtendsTable(msgTypeElement);
-                        generateKnownSubtypesTable(msgTypeElement);
-                        generateFieldsTable(msgTypeElement);
-                        generatePropertiesTable(msgTypeElement);
-                    }
-
-                    generateSourceContent(typeElement);
-                }
-            });
+                });
+            }
         }
-        
-        monitor.done();
+        finally {
+            monitor.done();
+        }
     }
 
     private void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {
-        Map<String, FieldElement> fields = msgTypeElement.getFields();
+        Map<String, FieldElement> fields = msgTypeElement.getMsgTypeInfo().getFields();
+        Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
 
         if (fields.size() != 0) {
             out("<h3 class=\"subtitle\">Fields:</h3>\r\n" + 
@@ -752,8 +866,9 @@ public class Neddoc {
             for (String name : fields.keySet())
             {
                 FieldElement field = fields.get(name);
+                String trClass = localFields.containsKey(name) ? "local" : "inherited";
 
-                out("<tr>\r\n" + 
+                out("<tr class=\"" + trClass + "\">\r\n" + 
             		"   <td width=\"150\">" + name + "</td>\r\n" + 
             		"   <td width=\"100\">\r\n" + 
             		"      <i>\r\n");
@@ -1065,8 +1180,6 @@ public class Neddoc {
     }
 
     private void genereteTypeDiagrams() throws InterruptedException, CoreException {
-        monitor.beginTask("Generating type diagrams...", IProgressMonitor.UNKNOWN);
-
         ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResources.getNedFiles(project));
         
         final ExportImagesOfDiagramFilesOperation exportOperation = 
@@ -1088,27 +1201,42 @@ public class Neddoc {
                             return "NED Figure Provider";
                         }
                 
-            }, neddocFolder.getLocation(), true, null);
+            }, neddocFolder.getLocation(), true, null) {
+            
+            @Override
+            protected void refreshContainer(IContainer container, IProgressMonitor monitor) {
+                if (monitor.isCanceled())
+                    throw new CancellationException();
+            }
+        };
         exportOperation.setOverwriteMode(ExportImagesOfDiagramFilesOperation.OverwriteMode.ALL);
         exportOperation.run(monitor);
+    
+        try {
+            // KLUDGE: move generated images under neddocPath
+            monitor.beginTask("Moving type diagrams...", nedFiles.size());
 
-        // KLUDGE: move generated images under neddocPath
-        for (IFile file : nedFiles) {
-            List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
-
-            for (INedTypeElement typeElement : typeElements) {
-                String fileName = file.getName().replaceAll(".ned", "");
-                String imageName = typeElements.size() == 1 ? fileName : fileName + "_" + typeElement.getName();
-                IFile sourceImageFile = file.getParent().getFile(new Path(imageName + ".png"));
-
-                if (sourceImageFile.exists()) {
-                    IFile destinationImageFile = neddocFolder.getFile(getFileName(typeElement, "type", ".png"));
-                    sourceImageFile.move(destinationImageFile.getFullPath(), true, monitor);
+            for (IFile file : nedFiles) {
+                monitor.subTask(file.toString());
+                List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
+    
+                for (INedTypeElement typeElement : typeElements) {
+                    String fileName = file.getName().replaceAll(".ned", "");
+                    String imageName = typeElements.size() == 1 ? fileName : fileName + "_" + typeElement.getName();
+                    IFile sourceImageFile = file.getParent().getFile(new Path(imageName + ".png"));
+    
+                    if (sourceImageFile.exists()) {
+                        IFile destinationImageFile = neddocFolder.getFile(getFileName(typeElement, "type", ".png"));
+                        sourceImageFile.move(destinationImageFile.getFullPath(), true, monitor);
+                    }
                 }
+                
+                monitor.worked(1);
             }
         }
-        
-        monitor.done();
+        finally {
+            monitor.done();
+        }
     }
 
     private void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
@@ -1117,51 +1245,61 @@ public class Neddoc {
     }
     
     private void generateFullDiagrams() throws Exception {
-        final ArrayList<INedTypeElement> nedTypeElements = new ArrayList<INedTypeElement>();
-        final ArrayList<IMsgTypeElement> msgTypeElements = new ArrayList<IMsgTypeElement>();
-        
-        for (ITypeElement typeElement : this.typeElements) {
-            if (typeElement instanceof INedTypeElement)
-                nedTypeElements.add((INedTypeElement)typeElement);
-            else if (typeElement instanceof IMsgTypeElement)
-                msgTypeElements.add((IMsgTypeElement)typeElement);
+        try {
+            monitor.beginTask("Generating full diagrams...", 4);
+            final ArrayList<INedTypeElement> nedTypeElements = new ArrayList<INedTypeElement>();
+            final ArrayList<IMsgTypeElement> msgTypeElements = new ArrayList<IMsgTypeElement>();
+            
+            for (ITypeElement typeElement : this.typeElements) {
+                if (typeElement instanceof INedTypeElement)
+                    nedTypeElements.add((INedTypeElement)typeElement);
+                else if (typeElement instanceof IMsgTypeElement)
+                    msgTypeElements.add((IMsgTypeElement)typeElement);
+            }
+    
+            withGeneratingHTMLFile("full-ned-usage-diagram.html", new Runnable() {
+                public void run() throws Exception {
+                    out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" + 
+                		"<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" + 
+                		"Unresolved types are missing from the diagram.</p>\r\n");
+                    generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.png", "full-ned-usage-diagram.map");
+                }
+            });
+            monitor.worked(1);
+    
+            withGeneratingHTMLFile("full-ned-inheritance-diagram.html", new Runnable() {
+                public void run() throws Exception {
+                    out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" + 
+                        "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" + 
+                		"Unresolved types are missing from the diagram.</p>\r\n");
+                    generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.png", "full-ned-inheritance-diagram.map");
+                }
+            });
+            monitor.worked(1);
+    
+            withGeneratingHTMLFile("full-msg-usage-diagram.html", new Runnable() {
+                public void run() throws Exception {
+                    out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" + 
+                        "<p>The following diagram shows usage relationships between messages, classes and structs.\r\n" + 
+                        "Unresolved types are missing from the diagram.</p>\r\n");
+                    generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.png", "full-msg-usage-diagram.map");
+                }
+            });
+            monitor.worked(1);
+    
+            withGeneratingHTMLFile("full-msg-inheritance-diagram.html", new Runnable() {
+                public void run() throws Exception {
+                    out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" + 
+                        "<p>The following diagram shows the inheritance hierarchy between messages, classes and structs.\r\n" + 
+                        "Unresolved types are missing from the diagram.</p>\r\n");
+                    generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.png", "full-msg-inheritance-diagram.map");
+                }
+            });
+            monitor.worked(1);
         }
-
-        withGeneratingHTMLFile("full-ned-usage-diagram.html", new Runnable() {
-            public void run() throws Exception {
-                out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" + 
-            		"<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" + 
-            		"Unresolved types are missing from the diagram.</p>\r\n");
-                generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.png", "full-ned-usage-diagram.map");
-            }
-        });
-
-        withGeneratingHTMLFile("full-ned-inheritance-diagram.html", new Runnable() {
-            public void run() throws Exception {
-                out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" + 
-                    "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" + 
-            		"Unresolved types are missing from the diagram.</p>\r\n");
-                generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.png", "full-ned-inheritance-diagram.map");
-            }
-        });
-
-        withGeneratingHTMLFile("full-msg-usage-diagram.html", new Runnable() {
-            public void run() throws Exception {
-                out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" + 
-                    "<p>The following diagram shows usage relationships between messages, classes and structs.\r\n" + 
-                    "Unresolved types are missing from the diagram.</p>\r\n");
-                generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.png", "full-msg-usage-diagram.map");
-            }
-        });
-
-        withGeneratingHTMLFile("full-msg-inheritance-diagram.html", new Runnable() {
-            public void run() throws Exception {
-                out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" + 
-                    "<p>The following diagram shows the inheritance hierarchy between messages, classes and structs.\r\n" + 
-                    "Unresolved types are missing from the diagram.</p>\r\n");
-                generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.png", "full-msg-inheritance-diagram.map");
-            }
-        });
+        finally {
+            monitor.done();
+        }
     }
 
     private void generateUsageDiagram(ITypeElement typeElement) throws IOException {
@@ -1374,6 +1512,9 @@ public class Neddoc {
     }
 
     private void out(String string) throws IOException {
+        if (monitor.isCanceled())
+            throw new CancellationException();
+
         outputStreams.get(outputFile).write(string.getBytes());
     }
     

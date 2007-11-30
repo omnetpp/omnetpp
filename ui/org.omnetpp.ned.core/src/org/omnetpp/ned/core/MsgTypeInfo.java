@@ -8,23 +8,22 @@ import java.util.Set;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
-import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 // TODO: implement caching if performance turns out to be bad
 public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
-    protected IMsgTypeElement componentNode;
+    protected IMsgTypeElement typeNode;
     
     protected MsgResources resources;
 
     public MsgTypeInfo(IMsgTypeElement node) {
-        componentNode = node;
+        typeNode = node;
         resources = NEDResourcesPlugin.getMSGResources();
     }
 
-    public ITypeElement getFirstExtendsRef() {
-        String name = componentNode.getFirstExtends();
+    public IMsgTypeElement getFirstExtendsRef() {
+        String name = typeNode.getFirstExtends();
         
         if (name == null)
             return null;
@@ -35,7 +34,7 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
     public Set<IMsgTypeElement> getLocalUsedTypes() {
         Set<IMsgTypeElement> usedTypes = new HashSet<IMsgTypeElement>();
         
-        for (FieldElement field = (FieldElement)componentNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling()) {
+        for (FieldElement field = (FieldElement)typeNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling()) {
             IMsgTypeElement usedType = resources.lookupMsgType(field.getDataType());
             
             if (usedType != null)
@@ -45,10 +44,24 @@ public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
         return usedTypes;
     }
 
+    public Map<String, FieldElement> getLocalFields() {
+        Map<String, FieldElement> fields = new HashMap<String, FieldElement>();
+
+        for (FieldElement field = (FieldElement)typeNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling())
+            fields.put(field.getName(), field);
+        
+        return fields;
+    }
+
     public Map<String, FieldElement> getFields() {
         Map<String, FieldElement> fields = new HashMap<String, FieldElement>();
-        for (FieldElement field = (FieldElement)componentNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling())
-            fields.put(field.getName(), field);
+        
+        IMsgTypeElement typeElement = typeNode;
+        
+        while (typeElement != null) {
+            fields.putAll(typeElement.getMsgTypeInfo().getLocalFields());
+            typeElement = (IMsgTypeElement)typeElement.getMsgTypeInfo().getFirstExtendsRef();
+        }
 
         return fields;
     }
