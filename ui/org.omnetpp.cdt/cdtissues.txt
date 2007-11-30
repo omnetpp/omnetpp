@@ -12,6 +12,8 @@
   ilyen konfigot valasztok, akkor jol jon letre a project az uj tipussal, ha azonben
   olyan configot valasztok amit orokolt, akkor a project tipus nema kivalasztott lesz
   hanem a base project type (meg akkor is, ha tenyleg az uj project tipus volt kivalasztva)
+- pre and postbuild steps run *only* if cc files are not up to date. needs a checkbox
+  to run the buildsteps even if the cc files up to date
 
 
 patform:

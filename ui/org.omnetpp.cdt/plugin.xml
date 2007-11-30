@@ -138,5 +138,19 @@
             projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
       </projectType>      
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.omnetpp.cdt.preferences.OmnetppCdtPreferencePage"
+            id="org.omnetpp.cdt.OmnetppCdtPreferencePage"
+            name="OMNEST/OMNeT++">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.omnetpp.cdt.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>
