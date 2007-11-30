@@ -2,6 +2,7 @@ package org.omnetpp.ned.model.ex;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -26,12 +27,12 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
 
     protected ChannelElementEx() {
 		super();
-		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
 	}
 
     protected ChannelElementEx(INEDElement parent) {
 		super(parent);
-		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
 	}
 
     public INEDTypeInfo getNEDTypeInfo() {
@@ -82,4 +83,11 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public Map<String, PropertyElementEx> getProperties() {
+        return getNEDTypeInfo().getProperties();
+    }
+
+    public Set<INedTypeElement> getLocalUsedTypes() {
+        return getNEDTypeInfo().getLocalUsedTypes();
+    }
 }

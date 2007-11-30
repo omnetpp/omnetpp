@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -42,7 +43,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     private void init() {
         setName("Unnamed");
-		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
     }
 
     @Override
@@ -341,6 +342,10 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public Map<String, PropertyElementEx> getProperties() {
+        return getNEDTypeInfo().getProperties();
+    }
+
     // gate support
     public Map<String, GateElementEx> getGateSizes() {
         return getNEDTypeInfo().getGateSizes();
@@ -350,4 +355,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         return getNEDTypeInfo().getGateDeclarations();
     }
 
+    public Set<INedTypeElement> getLocalUsedTypes() {
+        return getNEDTypeInfo().getLocalUsedTypes();
+    }
 }

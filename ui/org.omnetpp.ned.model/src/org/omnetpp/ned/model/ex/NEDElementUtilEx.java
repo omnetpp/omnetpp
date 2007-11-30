@@ -223,7 +223,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
      * Selects a name for a toplevel type, ensuring that the name will be unique in the package.
      */
     public static String getUniqueNameForToplevelType(String currentName, NedFileElementEx nedFile) {
-        INEDTypeResolver res = NEDElement.getDefaultTypeResolver();
+        INEDTypeResolver res = NEDElement.getDefaultNedTypeResolver();
         IProject project = res.getNedFile(nedFile).getProject();
         Set<String> reservedNames = res.getReservedQNames(project);
         String currentQName = nedFile.getQNameAsPrefix() + currentName;
@@ -284,7 +284,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		if (effectiveType.contains(".")) {
 			String fullyQualifiedTypeName = effectiveType;
         	String simpleTypeName = StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
-			INEDTypeInfo existingSimilarType = NEDElement.getDefaultTypeResolver().lookupNedType(simpleTypeName, parent);
+			INEDTypeInfo existingSimilarType = NEDElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, parent);
 			if (existingSimilarType == null) {
 				// add import
 				theImport = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);

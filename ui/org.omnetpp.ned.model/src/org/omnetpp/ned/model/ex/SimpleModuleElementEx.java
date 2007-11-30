@@ -2,6 +2,7 @@ package org.omnetpp.ned.model.ex;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -35,7 +36,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
 
     private void init() {
         setName("Unnamed");
-		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
     }
 
     public INEDTypeInfo getNEDTypeInfo() {
@@ -88,6 +89,10 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public Map<String, PropertyElementEx> getProperties() {
+        return getNEDTypeInfo().getProperties();
+    }
+
     // gate support
     public Map<String, GateElementEx> getGateSizes() {
         return getNEDTypeInfo().getGateSizes();
@@ -97,4 +102,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
         return getNEDTypeInfo().getGateDeclarations();
     }
 
+    public Set<INedTypeElement> getLocalUsedTypes() {
+        return getNEDTypeInfo().getLocalUsedTypes();
+    }
 }

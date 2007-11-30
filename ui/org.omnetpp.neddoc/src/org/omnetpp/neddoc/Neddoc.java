@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,8 +34,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.image.export.PNGImageExporter;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.Pair;
+import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.ClassElementEx;
@@ -43,7 +47,10 @@ import org.omnetpp.ned.model.ex.EnumElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.MessageElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
+import org.omnetpp.ned.model.ex.MsgFileElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.StructElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -53,6 +60,8 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
+import org.omnetpp.ned.model.pojo.FieldElement;
+import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -74,7 +83,9 @@ public class Neddoc {
 
     private IProject project;
     
-    private NEDResources resources;
+    private NEDResources nedResources;
+    
+    private MsgResources msgResources;
     
     private IProgressMonitor monitor;
 
@@ -90,7 +101,7 @@ public class Neddoc {
 
     private Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
 
-    private Map<INedTypeElement, ArrayList<INedTypeElement>> usersMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
+    private Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
     
     private Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
     
@@ -103,7 +114,8 @@ public class Neddoc {
     public Neddoc(IProject project) {
         this.project = project;
 
-        resources = NEDResourcesPlugin.getNEDResources();
+        nedResources = NEDResourcesPlugin.getNEDResources();
+        msgResources = NEDResourcesPlugin.getMSGResources();
         neddocFolder = project.getFolder(neddocProjectRelativePath);
         doxyFolder = project.getFolder(doxyProjectRelativePath);
     }
@@ -181,8 +193,8 @@ public class Neddoc {
 
     private void collectFiles() throws CoreException {
         files = new ArrayList<IFile>();
-        files.addAll(resources.getNedFiles(project));
-        files.addAll(resources.getMsgFiles(project));
+        files.addAll(nedResources.getNedFiles(project));
+        files.addAll(msgResources.getMsgFiles(project));
         Collections.sort(files, new Comparator<IFile>() {
             public int compare(IFile o1, IFile o2) {
                 return o1.toString().compareToIgnoreCase(o2.toString());
@@ -193,10 +205,10 @@ public class Neddoc {
 
     private void collectTypes() throws CoreException, IOException {
         for (IFile file : files) {
-            if (resources.isNedFile(file))
-                typeElements.addAll(resources.getNedFileElement(file).getTopLevelTypeNodes());
-            else if (resources.isMsgFile(file))
-                typeElements.addAll(resources.getMsgFileElement(file).getTopLevelTypeNodes());
+            if (nedResources.isNedFile(file))
+                typeElements.addAll(nedResources.getNedFileElement(file).getTopLevelTypeNodes());
+            else if (msgResources.isMsgFile(file))
+                typeElements.addAll(msgResources.getMsgFileElement(file).getTopLevelTypeNodes());
         }
 
         Collections.sort(typeElements, new Comparator<ITypeElement>() {
@@ -217,7 +229,7 @@ public class Neddoc {
 
             String name = typeElement.getName();
             if (typeNamesMap.containsKey(name))
-                // TODO: warning, multiple names, ignoring short references in comments to those types
+                // multiple names, ignoring short references in comments to those types
                 typeNamesMap.put(name, null);
             else {
                 buffer.append(name + "|");
@@ -265,19 +277,15 @@ public class Neddoc {
     }
     
     private void collectUsersMap() {
-        for (ITypeElement typeElement : typeElements) {
-            if (typeElement instanceof INedTypeElement) {
-                INedTypeElement userType = (INedTypeElement)typeElement;
-
-                for (INedTypeElement usedType : userType.getNEDTypeInfo().getLocalUsedTypes()) {
-                    ArrayList<INedTypeElement> users = usersMap.get(usedType);
-                    
-                    if (users == null)
-                        users = new ArrayList<INedTypeElement>();
-                    
-                    users.add(userType);
-                    usersMap.put(usedType, users);
-                }
+        for (ITypeElement userType : typeElements) {
+            for (ITypeElement usedType : userType.getLocalUsedTypes()) {
+                ArrayList<ITypeElement> users = usersMap.get(usedType);
+                
+                if (users == null)
+                    users = new ArrayList<ITypeElement>();
+                
+                users.add(userType);
+                usersMap.put(usedType, users);
             }
         }
     }
@@ -436,8 +444,9 @@ public class Neddoc {
                 ".navbarlink { font-size:8pt; }\r\n" + 
                 ".indextitle { font-size:12pt; }\r\n" + 
                 ".comptitle  { font-size:14pt; }\r\n" + 
-                ".subtitle   { font-size:12pt; margin-bottom: 3px}\r\n" + 
+                ".subtitle   { font-size:12pt; margin-bottom: 3px }\r\n" + 
                 ".footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }\r\n" + 
+                ".inherited  { color:#A0A0A0 }\r\n" + 
                 "FIXME.paramtable { border:2px ridge; border-collapse:collapse;}\r\n" + 
                 ".src-keyword { font-weight:bold }\r\n" + 
                 ".src-comment { font-style:italic; color:#404040 }\r\n" + 
@@ -568,18 +577,20 @@ public class Neddoc {
                 out("<li><a href=\"overview.html\" target=\"mainframe\">Overview</a></li>\r\n");
         
                 if (isDotAvailable())
-                    out("<li><a href=\"full-usage-diagram.html\" target=\"mainframe\">Module Usage Diagram</a></li>\r\n" + 
-                        "<li><a href=\"class-inheritance-diagram.html\" target=\"mainframe\">Class Inheritance Diagram</a></li>\r\n"); 
+                    out("<li><a href=\"full-ned-usage-diagram.html\" target=\"mainframe\">Full NED Usage Diagram</a></li>\r\n" + 
+                        "<li><a href=\"full-ned-inheritance-diagram.html\" target=\"mainframe\">Class NED Inheritance Diagram</a></li>\r\n" +
+                        "<li><a href=\"full-msg-usage-diagram.html\" target=\"mainframe\">Full MSG Usage Diagram</a></li>\r\n" +
+                        "<li><a href=\"full-msg-inheritance-diagram.html\" target=\"mainframe\">Class MSG Inheritance Diagram</a></li>\r\n");
                 
                 out("</ul>\r\n<ul>\r\n");
 
                 for (IFile file : files) {
                     String comment = null;
                     
-                    if (resources.isNedFile(file))
-                        comment = resources.getNedFileElement(file).getComment();
-                    else if (resources.isMsgFile(file))
-                        comment = resources.getMsgFileElement(file).getComment();
+                    if (nedResources.isNedFile(file))
+                        comment = nedResources.getNedFileElement(file).getComment();
+                    else if (msgResources.isMsgFile(file))
+                        comment = msgResources.getMsgFileElement(file).getComment();
 
                     if (comment != null) {
                         Matcher matcher = externalPagesPattern.matcher(comment);
@@ -651,10 +662,10 @@ public class Neddoc {
 
                     List<? extends ITypeElement> typeElements;
                     
-                    if (resources.isMsgFile(file))
-                        typeElements = resources.getMsgFileElement(file).getTopLevelTypeNodes();
+                    if (msgResources.isMsgFile(file))
+                        typeElements = msgResources.getMsgFileElement(file).getTopLevelTypeNodes();
                     else
-                        typeElements = resources.getNedFileElement(file).getTopLevelTypeNodes();
+                        typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
                     for (ITypeElement typeElement : typeElements)
                     {
@@ -680,7 +691,7 @@ public class Neddoc {
             withGeneratingHTMLFile(getFileName(typeElement), new Runnable() {
                 public void run() throws Exception {
                     out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
-                    generateFileReference(resources.getFile(typeElement));
+                    generateFileReference(getNedOrMsgFile(typeElement));
                     
                     if (typeElement instanceof SimpleModuleElementEx)
                         generateCppDefinitionReference(typeElement);
@@ -699,6 +710,7 @@ public class Neddoc {
                         generateKnownSubtypesTable(nedTypeElement);
                         generateUsedInTables(nedTypeElement);
                         generateParametersTable(nedTypeElement);
+                        generatePropertiesTable(nedTypeElement);
 
                         if (typeElement instanceof IModuleTypeElement)
                             generateGatesTable((IModuleTypeElement)nedTypeElement);
@@ -709,11 +721,12 @@ public class Neddoc {
                     else if (typeElement instanceof IMsgTypeElement) {
                         IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
 
-//                        generateInheritanceDiagram(msgTypeElement);
+                        generateUsageDiagram(msgTypeElement);
+                        generateInheritanceDiagram(msgTypeElement);
                         generateExtendsTable(msgTypeElement);
                         generateKnownSubtypesTable(msgTypeElement);
-//                        generateFieldsTable(msgTypeElement);
-//                        generatePropertiesTable(msgTypeElement);
+                        generateFieldsTable(msgTypeElement);
+                        generatePropertiesTable(msgTypeElement);
                     }
 
                     generateSourceContent(typeElement);
@@ -724,17 +737,96 @@ public class Neddoc {
         monitor.done();
     }
 
+    private void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {
+        Map<String, FieldElement> fields = msgTypeElement.getFields();
+
+        if (fields.size() != 0) {
+            out("<h3 class=\"subtitle\">Fields:</h3>\r\n" + 
+        		"<table class=\"paramtable\">\r\n" + 
+        		"   <tr>\r\n" + 
+        		"      <th>Name</th>\r\n" + 
+        		"      <th>Type</th>\r\n" + 
+        		"      <th>Description</th>\r\n" + 
+        		"   </tr>\r\n");
+    
+            for (String name : fields.keySet())
+            {
+                FieldElement field = fields.get(name);
+
+                out("<tr>\r\n" + 
+            		"   <td width=\"150\">" + name + "</td>\r\n" + 
+            		"   <td width=\"100\">\r\n" + 
+            		"      <i>\r\n");
+        		
+                out(field.getDataType()); 
+        		if (field.getIsVector())
+                    out("[" + field.getVectorSize() + "]"); 
+
+        		out("</i>\r\n" + 
+            		"   </td>\r\n" + 
+            		"   <td>");
+        		generateTableComment(field.getComment());
+        		out("</td>\r\n" + 
+            		"</tr>\r\n"); 
+            }
+    
+            out("</table>\r\n");
+        }
+    }
+
+    private void generatePropertiesTable(ITypeElement typeElement) throws IOException {
+        Map<String, PropertyElementEx> properties = typeElement.getProperties();
+        
+        if (properties.size() != 0) {
+            out("<h3 class=\"subtitle\">Properties:</h3>\r\n" + 
+        		"<table class=\"paramtable\">\r\n" + 
+        		"   <tr>\r\n" + 
+        		"      <th>Name</th>\r\n" + 
+        		"      <th>Value</th>\r\n" + 
+        		"      <th>Description</th>\r\n" + 
+        		"   </tr>\r\n");
+    
+            for (String name : properties.keySet())
+            {
+                PropertyElementEx property = properties.get(name);
+                
+            	out("<tr>\r\n" + 
+            		"   <td width=\"150\">" + name + "</td>\r\n" + 
+            		"   <td width=\"100\"><i>");
+            	generatePropertyLiteralValues(property);
+            	out("</i></td>\r\n" + 
+            		"   <td>");
+            	generateTableComment(property.getComment());
+        		out("</td>\r\n" + 
+            		"</tr>\r\n"); 
+            }
+    
+            out("</table>\r\n");
+        }
+    }
+    
+    private void generatePropertyLiteralValues(PropertyElementEx property) throws IOException {
+        for (PropertyKeyElement key = property.getFirstPropertyKeyChild(); key != null; key = key.getNextPropertyKeySibling()) {
+            out(key.getFirstLiteralChild().getValue());
+
+            if (key.getNextPropertyKeySibling() != null)
+                out(",");
+        }
+    }
+
     private void generateUsedInTables(INedTypeElement typeElement) throws IOException {
         if (usersMap.containsKey(typeElement)) {
-            ArrayList<INedTypeElement> compoundModules = new ArrayList<INedTypeElement>();
-            ArrayList<INedTypeElement> networks = new ArrayList<INedTypeElement>();
+            ArrayList<CompoundModuleElementEx> compoundModules = new ArrayList<CompoundModuleElementEx>();
+            ArrayList<CompoundModuleElementEx> networks = new ArrayList<CompoundModuleElementEx>();
     
-            for (INedTypeElement userElement : usersMap.get(typeElement)) {
+            for (ITypeElement userElement : usersMap.get(typeElement)) {
                 if (userElement instanceof CompoundModuleElementEx) {
-                    if (((CompoundModuleElementEx)userElement).getIsNetwork())
-                        networks.add(userElement);
+                    CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)userElement;
+
+                    if (compoundModule.getIsNetwork())
+                        networks.add(compoundModule);
                     else
-                        compoundModules.add(userElement);
+                        compoundModules.add(compoundModule);
                 }
             }
     
@@ -758,6 +850,7 @@ public class Neddoc {
     }
     
     private void generateParametersTable(INedTypeElement typeElement) throws IOException {
+        Map<String, ParamElementEx> localParamsDeclarations = typeElement.getNEDTypeInfo().getLocalParamDeclarations();
         Map<String, ParamElementEx> paramsDeclarations = typeElement.getParamDeclarations();
         Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
 
@@ -774,8 +867,9 @@ public class Neddoc {
             for (String name : paramsDeclarations.keySet()) {
                 ParamElementEx paramDeclaration = paramsDeclarations.get(name);
                 ParamElementEx paramAssignment = paramsAssignments.get(name);
+                String trClass = localParamsDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out("<tr>\r\n" + 
+                out("<tr class=\"" + trClass + "\">\r\n" + 
             		"   <td width=\"150\">" + name + "</td>\r\n" + 
             		"   <td width=\"100\">\r\n" + 
             		"      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" + 
@@ -857,6 +951,7 @@ public class Neddoc {
     private void generateGatesTable(INedTypeElement typeElement) throws IOException {
         IModuleTypeElement module = (IModuleTypeElement)typeElement;
 
+        Map<String, GateElementEx> localGateDeclarations = module.getNEDTypeInfo().getLocalGateDeclarations();
         Map<String, GateElementEx> gateDeclarations = module.getGateDeclarations();
         Map<String, GateElementEx> gatesSizes = module.getGateSizes();
 
@@ -873,8 +968,9 @@ public class Neddoc {
             for (String name : gateDeclarations.keySet()) {
                 GateElementEx gateDeclaration = gateDeclarations.get(name);
                 GateElementEx gateSize = gatesSizes.get(name);
+                String trClass = localGateDeclarations.containsKey(name) ? "local" : "inherited"; 
 
-                out("<tr>\r\n" + 
+                out("<tr class=\"" + trClass + "\">\r\n" + 
                     "   <td width=\"150\">" + name + (gateDeclaration.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" + 
                     "   <td width=\"100\"><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" + 
                     "   <td width=\"50\">" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
@@ -956,10 +1052,7 @@ public class Neddoc {
             out("<h3 class=\"subtitle\">Extends:</h3>\r\n" + 
         		"<table>\r\n");
 
-            // TODO: more extends
-//          "   <xsl:for-each select=\"key(\'msg-or-class\',@extends-name)\">\r\n" + 
-//          "      <xsl:sort select=\"@name\"/>\r\n" + 
-//          "   </xsl:for-each>\r\n" + 
+            // TODO: more extends for interfaces
             ITypeElement supertype = typeElement.getFirstExtendsRef();
 
             if (supertype != null)
@@ -971,14 +1064,10 @@ public class Neddoc {
         }
     }
 
-    private void generateFullDiagrams() {
-        // TODO: generate full diagrams
-    }
-
     private void genereteTypeDiagrams() throws InterruptedException, CoreException {
         monitor.beginTask("Generating type diagrams...", IProgressMonitor.UNKNOWN);
 
-        ArrayList<IFile> nedFiles = new ArrayList<IFile>(resources.getNedFiles(project));
+        ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResources.getNedFiles(project));
         
         final ExportImagesOfDiagramFilesOperation exportOperation = 
             new ExportImagesOfDiagramFilesOperation(nedFiles,
@@ -1005,7 +1094,7 @@ public class Neddoc {
 
         // KLUDGE: move generated images under neddocPath
         for (IFile file : nedFiles) {
-            List<INedTypeElement> typeElements = resources.getNedFileElement(file).getTopLevelTypeNodes();
+            List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
             for (INedTypeElement typeElement : typeElements) {
                 String fileName = file.getName().replaceAll(".ned", "");
@@ -1022,151 +1111,176 @@ public class Neddoc {
         monitor.done();
     }
 
-    private void appendDotNode(StringBuffer dot, ITypeElement typeElement) {
-        appendDotNode(dot, typeElement, false);
-    }
-
-    private void appendDotNode(StringBuffer dot, ITypeElement typeElement, boolean highlight) {
-        String name = typeElement.getName();
-        dot.append(name + " ");
-        
-        dot.append("[URL=\"" + getFileName(typeElement) + "\",");
-
-        String color = "#ff0000";
-        if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).getIsNetwork())
-            color = highlight ? "#9090ff" : "#d0d0ff";
-        else if (typeElement instanceof CompoundModuleElementEx)
-            color = highlight ? "#fff700" : "#fffcaf";
-        else if (typeElement instanceof SimpleModuleElementEx)
-            color = highlight ? "#fff700" : "#fffcaf";
-        else if (typeElement instanceof ModuleInterfaceElementEx)
-            color = highlight ? "#fff700" : "#fffcaf";
-        else if (typeElement instanceof ChannelElementEx)
-            color = highlight ? "#90ff90" : "#d0ffd0";
-        else if (typeElement instanceof ChannelInterfaceElementEx)
-            color = highlight ? "#90ff90" : "#d0ffd0";
-        else if (typeElement instanceof MessageElementEx)
-            color = highlight ? "#fff700" : "#fffcaf";
-        else if (typeElement instanceof ClassElementEx)
-            color = highlight ? "#fff700" : "#fffcaf";
-        else if (typeElement instanceof StructElementEx)
-            color = highlight ? "#9090ff" : "#d0d0ff";
-        else if (typeElement instanceof EnumElementEx)
-            color = highlight ? "#90ff90" : "#d0ffd0";
-        dot.append("fillcolor=\"" + color + "\",");
-
-        if (typeElement instanceof IInterfaceTypeElement)
-            dot.append("style=\"filled,dashed\",");
-        
-        dot.append("tooltip=\"" + WordUtils.capitalize(typeElement.getReadableTagName()) + " " + name + "\"]");
-        dot.append(";\n");
-    }
-    
     private void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
         out("<img src=\"" + getFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
         // TODO: out("<map name=\"type-diagram\">" +  + "</map>\r\n"); 
     }
     
-    private void generateUsageDiagram(INedTypeElement typeElement) throws IOException {
-        out("<h3 class=\"subtitle\">Usage diagram:</h3>\r\n" + 
-            "<p>The following diagram shows usage relationships between modules,\r\n" + 
-            "networks and channels. Unresolved types are missing from the diagram.\r\n" + 
-            "Click <a href=\"full-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
+    private void generateFullDiagrams() throws Exception {
+        final ArrayList<INedTypeElement> nedTypeElements = new ArrayList<INedTypeElement>();
+        final ArrayList<IMsgTypeElement> msgTypeElements = new ArrayList<IMsgTypeElement>();
+        
+        for (ITypeElement typeElement : this.typeElements) {
+            if (typeElement instanceof INedTypeElement)
+                nedTypeElements.add((INedTypeElement)typeElement);
+            else if (typeElement instanceof IMsgTypeElement)
+                msgTypeElements.add((IMsgTypeElement)typeElement);
+        }
 
-        StringBuffer dot = new StringBuffer();
+        withGeneratingHTMLFile("full-ned-usage-diagram.html", new Runnable() {
+            public void run() throws Exception {
+                out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" + 
+            		"<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" + 
+            		"Unresolved types are missing from the diagram.</p>\r\n");
+                generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.png", "full-ned-usage-diagram.map");
+            }
+        });
+
+        withGeneratingHTMLFile("full-ned-inheritance-diagram.html", new Runnable() {
+            public void run() throws Exception {
+                out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" + 
+                    "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" + 
+            		"Unresolved types are missing from the diagram.</p>\r\n");
+                generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.png", "full-ned-inheritance-diagram.map");
+            }
+        });
+
+        withGeneratingHTMLFile("full-msg-usage-diagram.html", new Runnable() {
+            public void run() throws Exception {
+                out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" + 
+                    "<p>The following diagram shows usage relationships between messages, classes and structs.\r\n" + 
+                    "Unresolved types are missing from the diagram.</p>\r\n");
+                generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.png", "full-msg-usage-diagram.map");
+            }
+        });
+
+        withGeneratingHTMLFile("full-msg-inheritance-diagram.html", new Runnable() {
+            public void run() throws Exception {
+                out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" + 
+                    "<p>The following diagram shows the inheritance hierarchy between messages, classes and structs.\r\n" + 
+                    "Unresolved types are missing from the diagram.</p>\r\n");
+                generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.png", "full-msg-inheritance-diagram.map");
+            }
+        });
+    }
+
+    private void generateUsageDiagram(ITypeElement typeElement) throws IOException {
+        ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
+        typeElements.add(typeElement);
+
+        String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
+
+        out("<h3 class=\"subtitle\">Usage diagram:</h3>\r\n" + 
+            "<p>The following diagram shows usage relationships between types.\r\n" + 
+            "Unresolved types are missing from the diagram.\r\n" + 
+            "Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
+
+        generateUsageDiagram(typeElements, getFileName(typeElement, "usage", ".png"), getFileName(typeElement, "usage", ".map"));
+    }
+
+    private void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
+        DotGraph dot = new DotGraph();
 
         dot.append("digraph opp {\r\n" + 
                    "   node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];\r\n");
 
-        appendDotNode(dot, typeElement, true);
-
-        for (INedTypeElement usedTypeElement : typeElement.getNEDTypeInfo().getLocalUsedTypes()) {
-            appendDotNode(dot, usedTypeElement);
-            dot.append(typeElement.getName() + " -> " + usedTypeElement.getName() + ";\n");
-        }
-
-        ArrayList<INedTypeElement> users = usersMap.get(typeElement);
-        
-        if  (users != null) {
-            for (INedTypeElement user : users) {
-                appendDotNode(dot, user);
-                dot.append(user.getName() + " -> " + typeElement.getName() + ";\n");
+        for (ITypeElement typeElement : typeElements) {
+            dot.appendNode(typeElement, typeElements.size() == 1);
+    
+            for (ITypeElement usedTypeElement : typeElement.getLocalUsedTypes()) {
+                dot.appendNode(usedTypeElement);
+                dot.appendEdge(typeElement, usedTypeElement);
+            }
+    
+            ArrayList<ITypeElement> users = usersMap.get(typeElement);
+            
+            if  (users != null) {
+                for (ITypeElement user : users) {
+                    dot.appendNode(user);
+                    dot.appendEdge(user, typeElement);
+                }
             }
         }
         
         dot.append("}");
 
-        String imageFileName = getFileName(typeElement, "usage", ".gif");
-        String mapFileName = getFileName(typeElement, "usage", ".map");
-        generateDotOuput(dot.toString(), getFile(imageFileName), "gif");
-        generateDotOuput(dot.toString(), getFile(mapFileName), "cmap");
+        generateDotOuput(dot, getFile(imageFileName), "png");
+        generateDotOuput(dot, getFile(cmapFileName), "cmap");
 
         out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#usage-diagram\"/>");
-        out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getFile(mapFileName)) + "</map>\r\n"); 
+        out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getFile(cmapFileName)) + "</map>\r\n"); 
     }
     
-    private void generateInheritanceDiagram(INedTypeElement typeElement) throws IOException {
-        out("<h3 class=\"subtitle\">Inheritance diagram:</h3>\r\n" + 
-            "<p>The following diagram shows inheritance relationships between modules,\r\n" + 
-            "networks and channels. Unresolved types are missing from the diagram.\r\n" + 
-            "Click <a href=\"full-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
+    private void generateInheritanceDiagram(ITypeElement typeElement) throws IOException {
+        ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
+        typeElements.add(typeElement);
+        
+        String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
 
-        StringBuffer dot = new StringBuffer();
+        out("<h3 class=\"subtitle\">Inheritance diagram:</h3>\r\n" + 
+            "<p>The following diagram shows inheritance relationships for this type.\r\n" + 
+            "Unresolved types are missing from the diagram.\r\n" + 
+            "Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.</p>\r\n");
+
+        generateInheritanceDiagram(typeElements, getFileName(typeElement, "inheritance", ".png"), getFileName(typeElement, "inheritance", ".map"));
+    }
+
+    private void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
+        DotGraph dot = new DotGraph();
 
         dot.append("digraph opp {\r\n" + 
                    "   rankdir = BT;" +
         		   "   node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];\r\n" + 
         		   "   edge [arrowhead=empty,arrowtail=none];\r\n");
-        
-        appendDotNode(dot, typeElement, true);
-        
-        INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
-        
-        // TODO: what if there are more extends for interfaces
-        if (typeInfo.getFirstExtendsRef() != null) {
-            INedTypeElement extendz = typeInfo.getFirstExtendsRef();
-            appendDotNode(dot, extendz);
-            dot.append(typeElement.getName() + " -> " + extendz.getName() + ";\n");
-        }
 
-        if (typeElement instanceof IInterfaceTypeElement) {
-            ArrayList<INedTypeElement> implementors = implementorsMap.get(typeElement);
+        for (ITypeElement typeElement : typeElements) {
+            dot.appendNode(typeElement, typeElements.size() == 1);
             
-            if  (implementors != null) {
-                for (INedTypeElement implementor : implementors) {
-                    appendDotNode(dot, implementor);
-                    dot.append(implementor.getName() + " -> " + typeElement.getName() + " [style=dashed];\n");
-                }
+            // TODO: what if there are more extends for interfaces
+            if (typeElement.getFirstExtendsRef() != null) {
+                ITypeElement extendz = typeElement.getFirstExtendsRef();
+                dot.appendNode(extendz);
+                dot.appendEdge(typeElement, extendz);
             }
-        }
-        else {
-            Set<INedTypeElement> interfaces = typeInfo.getLocalInterfaces();
     
-            if  (interfaces != null) {
-                for (INedTypeElement interfaze : interfaces) {
-                    appendDotNode(dot, interfaze);
-                    dot.append(typeElement.getName() + " -> " + interfaze.getName() + " [style=dashed];\n");
+            if (typeElement instanceof IInterfaceTypeElement) {
+                ArrayList<INedTypeElement> implementors = implementorsMap.get(typeElement);
+                
+                if  (implementors != null) {
+                    for (INedTypeElement implementor : implementors) {
+                        dot.appendNode(implementor);
+                        dot.appendEdge(implementor, typeElement, "style=dashed");
+                    }
                 }
             }
-        }
+            else if (typeElement instanceof INedTypeElement) {
+                INEDTypeInfo typeInfo = ((INedTypeElement)typeElement).getNEDTypeInfo();
+                Set<INedTypeElement> interfaces = typeInfo.getLocalInterfaces();
         
-        ArrayList<ITypeElement> subtypes = subtypesMap.get(typeElement);
-
-        if (subtypes != null)
-            for (ITypeElement subtype : subtypes) {
-                appendDotNode(dot, subtype);
-                dot.append(subtype.getName() + " -> " + typeElement.getName() + ";\n");
+                if  (interfaces != null) {
+                    for (INedTypeElement interfaze : interfaces) {
+                        dot.appendNode(interfaze);
+                        dot.appendEdge(typeElement, interfaze, "style=dashed");
+                    }
+                }
             }
+            
+            ArrayList<ITypeElement> subtypes = subtypesMap.get(typeElement);
+    
+            if (subtypes != null)
+                for (ITypeElement subtype : subtypes) {
+                    dot.appendNode(subtype);
+                    dot.appendEdge(subtype, typeElement);
+                }
+        }
 
         dot.append("}");
         
-        String imageFileName = getFileName(typeElement, "inheritance", ".gif");
-        String mapFileName = getFileName(typeElement, "inheritance", ".map");
-        generateDotOuput(dot.toString(), getFile(imageFileName), "gif");
-        generateDotOuput(dot.toString(), getFile(mapFileName), "cmap");
+        generateDotOuput(dot, getFile(imageFileName), "png");
+        generateDotOuput(dot, getFile(cmapFileName), "cmap");
 
         out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#inheritance-diagram\"/>");
-        out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getFile(mapFileName)) + "</map>\r\n"); 
+        out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getFile(cmapFileName)) + "</map>\r\n"); 
     }
     
     private void generateSourceContent(IFile file) throws IOException, CoreException {
@@ -1211,10 +1325,10 @@ public class Neddoc {
         return new File(dotExecutablePath).exists();
     }
 
-    private void generateDotOuput(String dot, File outputFile, String format) throws IOException {
+    private void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
         Process process = Runtime.getRuntime().exec(new String[] {dotExecutablePath, "-T" + format, "-o", outputFile.toString()}, null, getFile("."));
         OutputStream outputStream = process.getOutputStream();
-        outputStream.write(dot.getBytes());
+        outputStream.write(dot.toString().getBytes());
         outputStream.close();
         
         long begin = System.currentTimeMillis();
@@ -1268,7 +1382,7 @@ public class Neddoc {
     }
     
     private String getFilePath(ITypeElement typeElement) {
-        IFile file = resources.getFile(typeElement);
+        IFile file = getNedOrMsgFile(typeElement);
 
         if (file != null) {
             IProject elementProject = file.getProject();
@@ -1285,31 +1399,121 @@ public class Neddoc {
     }
 
     private String getFileName(ITypeElement typeElement) {
+        return getFileName(typeElement, null, null);
+    }
+
+    private String getFileName(ITypeElement typeElement, String discriminator, String extension) {
+        String result = getFilePath(typeElement);
+        
         if (typeElement instanceof INedTypeElement)
-            return getFileName((INedTypeElement)typeElement);
+            result += ((INedTypeElement)typeElement).getNEDTypeInfo().getFullyQualifiedName();
         else if (typeElement instanceof IMsgTypeElement)
-            return getFileName((IMsgTypeElement)typeElement);
+            result += typeElement.getName();
+        
+        if (discriminator != null)
+            result += "-" + discriminator;
+        
+        if (extension != null)
+            result += extension;
         else
-            return null;
-    }
-
-    private String getFileName(INedTypeElement typeElement) {
-        return getFilePath(typeElement) + typeElement.getNEDTypeInfo().getFullyQualifiedName() + ".html";
-    }
-
-    private String getFileName(INedTypeElement typeElement, String discriminator, String extension) {
-        return getFilePath(typeElement) + typeElement.getNEDTypeInfo().getFullyQualifiedName() + "-" + discriminator + "-" + extension;
-    }
-
-    private String getFileName(IMsgTypeElement typeElement) {
-        return getFilePath(typeElement) + typeElement.getName() + ".html";
+            result += ".html";
+        
+        return result;
     }
 
     private File getFile(String relativePath) {
         return neddocFolder.getFile(new Path(relativePath)).getLocation().toFile();
     }
     
+    public synchronized IFile getNedOrMsgFile(INEDElement element) {
+        NedFileElementEx nedFileElement = element.getContainingNedFileElement();
+        
+        if (nedFileElement != null)
+            return nedResources.getNedFile(nedFileElement);
+
+        MsgFileElementEx msgFileElement = element.getContainingMsgFileElement();
+        
+        if (msgFileElement != null)
+            return msgResources.getMsgFile(msgFileElement);
+        
+        return null;
+    }
+
     private interface Runnable {
         public void run() throws Exception;
+    }
+    
+    private class DotGraph {
+        private StringBuffer buffer = new StringBuffer();
+        
+        private Set<ITypeElement> nodes = new HashSet<ITypeElement>();
+        
+        private Set<Pair<ITypeElement, ITypeElement>> edges = new HashSet<Pair<ITypeElement, ITypeElement>>();
+        
+        public void append(String text) {
+            buffer.append(text);
+        }
+        
+        public void appendNode(ITypeElement typeElement) {
+            appendNode(typeElement, false);
+        }
+
+        public void appendNode(ITypeElement typeElement, boolean highlight) {
+            if (!nodes.contains(typeElement)) {
+                nodes.add(typeElement);
+
+                String name = typeElement.getName();
+                append(name + " ");
+                
+                append("[URL=\"" + getFileName(typeElement) + "\",");
+    
+                String color = "#ff0000";
+                if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).getIsNetwork())
+                    color = highlight ? "#9090ff" : "#d0d0ff";
+                else if (typeElement instanceof CompoundModuleElementEx)
+                    color = highlight ? "#fff700" : "#fffcaf";
+                else if (typeElement instanceof SimpleModuleElementEx)
+                    color = highlight ? "#fff700" : "#fffcaf";
+                else if (typeElement instanceof ModuleInterfaceElementEx)
+                    color = highlight ? "#fff700" : "#fffcaf";
+                else if (typeElement instanceof ChannelElementEx)
+                    color = highlight ? "#90ff90" : "#d0ffd0";
+                else if (typeElement instanceof ChannelInterfaceElementEx)
+                    color = highlight ? "#90ff90" : "#d0ffd0";
+                else if (typeElement instanceof MessageElementEx)
+                    color = highlight ? "#fff700" : "#fffcaf";
+                else if (typeElement instanceof ClassElementEx)
+                    color = highlight ? "#fff700" : "#fffcaf";
+                else if (typeElement instanceof StructElementEx)
+                    color = highlight ? "#9090ff" : "#d0d0ff";
+                else if (typeElement instanceof EnumElementEx)
+                    color = highlight ? "#90ff90" : "#d0ffd0";
+                append("fillcolor=\"" + color + "\",");
+    
+                if (typeElement instanceof IInterfaceTypeElement)
+                    append("style=\"filled,dashed\",");
+                
+                append("tooltip=\"" + WordUtils.capitalize(typeElement.getReadableTagName()) + " " + name + "\"]");
+                append(";\n");
+            }
+        }
+        
+        public void appendEdge(ITypeElement sourceTypeElement, ITypeElement targetTypeElement) {
+            appendEdge(sourceTypeElement, targetTypeElement, "");
+        }
+
+        public void appendEdge(ITypeElement sourceTypeElement, ITypeElement targetTypeElement, String attributes) {
+            Pair<ITypeElement, ITypeElement> pair = new Pair<ITypeElement, ITypeElement>(sourceTypeElement, targetTypeElement);
+
+            if (!edges.contains(pair)) {
+                edges.add(pair);
+                append(sourceTypeElement.getName() + " -> " + targetTypeElement.getName() + " [" + attributes + "];\n");
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return buffer.toString();
+        }
     }
 }

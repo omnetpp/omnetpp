@@ -1,11 +1,18 @@
 package org.omnetpp.ned.model.ex;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
+import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
+import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.MessageElement;
 
 public class MessageElementEx extends MessageElement implements IMsgTypeElement {
+    private IMsgTypeInfo typeInfo;
+
     protected MessageElementEx() {
         super();
     }
@@ -13,13 +20,36 @@ public class MessageElementEx extends MessageElement implements IMsgTypeElement 
     protected MessageElementEx(INEDElement parent) {
         super(parent);
     }
+    
+    public IMsgTypeInfo getMsgTypeInfo() {
+        if (typeInfo == null)
+            typeInfo = getDefaultMsgTypeResolver().createTypeInfoFor(this);
+        
+        return typeInfo;
+    }
 
     public String getFirstExtends() {
-        return NEDElementUtilEx.getFirstExtends(this);
+        String name = getExtendsName();
+        
+        if (name != null && !name.equals(""))
+            return name;
+        else
+            return null;
     }
 
     public ITypeElement getFirstExtendsRef() {
-        // TODO:
-        return null;
+        return getMsgTypeInfo().getFirstExtendsRef();
+    }
+
+    public Set<IMsgTypeElement> getLocalUsedTypes() {
+        return getMsgTypeInfo().getLocalUsedTypes();
+    }
+
+    public Map<String, PropertyElementEx> getProperties() {
+        return getMsgTypeInfo().getProperties();
+    }
+
+    public Map<String, FieldElement> getFields() {
+        return getMsgTypeInfo().getFields();
     }
 }

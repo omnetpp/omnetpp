@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.pojo.PropertyElement;
@@ -97,7 +98,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, ParamElementEx> getLocalParamAssignments();
 
     /** Properties from the local parameters section */
-    public Map<String, PropertyElement> getLocalProperties();
+    public Map<String, PropertyElementEx> getLocalProperties();
 
     /** Gates declared locally within this type (i.e. where gate type is not empty) */
     public Map<String, GateElementEx> getLocalGateDeclarations();
@@ -131,7 +132,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
      * (Given the special inheritance rules for properties, this may not be what you want;
      * see getPropertyInheritanceChain().
      */
-    public Map<String, PropertyElement> getProperties();
+    public Map<String, PropertyElementEx> getProperties();
 
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
     public Map<String, GateElementEx> getGateDeclarations();

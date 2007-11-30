@@ -15,6 +15,7 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -64,8 +65,10 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     private transient NEDChangeListenerList listeners = null;
 
     // needed because we cannot write NEDResourcesPlugin.getNEDResources() (plug-in dependency cycle)
-    private static INEDTypeResolver defaultTypeResolver = null;
+    private static INEDTypeResolver defaultNedTypeResolver = null;
 
+    // needed because we cannot write NEDResourcesPlugin.getMsgResources() (plug-in dependency cycle)
+    private static IMsgTypeResolver defaultMsgTypeResolver = null;
 
 	public Iterator<INEDElement> iterator() {
 		final INEDElement e = this;
@@ -133,17 +136,17 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	/**
 	 * Sets the default NED type resolver. May only be invoked once.
 	 */
-	public static void setDefaultTypeResolver(INEDTypeResolver typeResolver) {
-		Assert.isTrue(defaultTypeResolver == null);
-		defaultTypeResolver = typeResolver;
+	public static void setDefaultNedTypeResolver(INEDTypeResolver typeResolver) {
+		Assert.isTrue(defaultNedTypeResolver == null);
+		defaultNedTypeResolver = typeResolver;
 	}
 
 	/**
 	 * Returns the default NED type resolver. Guaranteed to be non-null.
 	 */
-	public static INEDTypeResolver getDefaultTypeResolver() {
-		Assert.isTrue(defaultTypeResolver != null); // must have been set previously
-		return defaultTypeResolver;
+	public static INEDTypeResolver getDefaultNedTypeResolver() {
+		Assert.isTrue(defaultNedTypeResolver != null); // must have been set previously
+		return defaultNedTypeResolver;
 	}
 
 	/**
@@ -151,8 +154,24 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 	 * or returns null if the given string is null or "".
 	 */
 	public static INEDTypeInfo resolveTypeName(String typeName, INedTypeLookupContext context) {
-		return StringUtils.isEmpty(typeName) ? null : getDefaultTypeResolver().lookupNedType(typeName, context);
+		return StringUtils.isEmpty(typeName) ? null : getDefaultNedTypeResolver().lookupNedType(typeName, context);
 	}
+
+	/**
+     * Sets the default Msg type resolver. May only be invoked once.
+     */
+    public static void setDefaultMsgTypeResolver(IMsgTypeResolver typeResolver) {
+        Assert.isTrue(defaultMsgTypeResolver == null);
+        defaultMsgTypeResolver = typeResolver;
+    }
+
+    /**
+     * Returns the default Msg type resolver. Guaranteed to be non-null.
+     */
+    public static IMsgTypeResolver getDefaultMsgTypeResolver() {
+        Assert.isTrue(defaultMsgTypeResolver != null); // must have been set previously
+        return defaultMsgTypeResolver;
+    }
 
 	/**
 	 * Constructor

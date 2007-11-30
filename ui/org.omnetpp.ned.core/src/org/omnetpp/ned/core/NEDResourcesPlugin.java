@@ -29,14 +29,18 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	private static NEDResourcesPlugin plugin;
 
 	// The actual NED type resolver
-	private NEDResources resources;
+	private NEDResources nedResources;
+
+    // The actual MSG type resolver
+    private MsgResources msgResources;
 
 	/**
 	 * The constructor.
 	 */
 	public NEDResourcesPlugin() {
 		plugin = this;
-		resources = new NEDResources();
+		nedResources = new NEDResources();
+        msgResources = new MsgResources();
 	}
 
 	/**
@@ -49,7 +53,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
         PLUGIN_ID = getBundle().getSymbolicName();
         // System.out.println("NEDResourcesPlugin started");
 
-        resources.rebuildProjectsTable();
+        nedResources.rebuildProjectsTable();
+        msgResources.readAllMsgFiles();
         ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 	}
 
@@ -74,8 +79,15 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 * Returns the NED file cache of the shared instance of the plugin
 	 */
 	public static NEDResources getNEDResources() {
-		return plugin.resources;
+		return plugin.nedResources;
 	}
+
+    /**
+     * Returns the MSG file cache of the shared instance of the plugin
+     */
+    public static MsgResources getMSGResources() {
+        return plugin.msgResources;
+    }
 
 	/**
 	 * Returns an image descriptor for the image file at the given

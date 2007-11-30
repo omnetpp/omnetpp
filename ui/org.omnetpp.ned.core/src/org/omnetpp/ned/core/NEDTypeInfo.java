@@ -19,6 +19,7 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
@@ -50,7 +51,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	// local members
     protected boolean needsRefreshLocal;
 	protected Set<INedTypeElement> localInterfaces = new HashSet<INedTypeElement>();
-	protected Map<String, PropertyElement> localProperties = new LinkedHashMap<String, PropertyElement>();
+	protected Map<String, PropertyElementEx> localProperties = new LinkedHashMap<String, PropertyElementEx>();
     protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamValues = new LinkedHashMap<String, ParamElementEx>();
 	protected Map<String, GateElementEx> localGateDecls = new LinkedHashMap<String, GateElementEx>();
@@ -66,7 +67,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected boolean needsRefreshInherited;
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<INedTypeElement> allInterfaces = new HashSet<INedTypeElement>();
-	protected Map<String, PropertyElement> allProperties = new LinkedHashMap<String, PropertyElement>();
+	protected Map<String, PropertyElementEx> allProperties = new LinkedHashMap<String, PropertyElementEx>();
     protected Map<String, ParamElementEx> allParams = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> allParamValues = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, GateElementEx> allGates = new LinkedHashMap<String, GateElementEx>();
@@ -371,7 +372,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	protected INEDTypeResolver getResolver() {
-		return NEDElement.getDefaultTypeResolver();
+		return NEDElement.getDefaultNedTypeResolver();
 	}
 
     public INedTypeElement getFirstExtendsRef() {
@@ -399,7 +400,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localParamValues;
     }
 
-    public Map<String,PropertyElement> getLocalProperties() {
+    public Map<String, PropertyElementEx> getLocalProperties() {
     	refreshLocalMembersIfNeeded();
         return localProperties;
     }
@@ -454,7 +455,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return allParamValues;
     }
 
-    public Map<String, PropertyElement> getProperties() {
+    public Map<String, PropertyElementEx> getProperties() {
     	refreshInheritedMembersIfNeeded();
         return allProperties;
     }

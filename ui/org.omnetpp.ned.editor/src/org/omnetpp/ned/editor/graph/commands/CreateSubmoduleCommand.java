@@ -34,7 +34,7 @@ public class CreateSubmoduleCommand extends Command {
     @Override
     public boolean canExecute() {
         // check that the type exists
-    	return NEDElement.getDefaultTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
+    	return NEDElement.getDefaultNedTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
     }
 
     @Override

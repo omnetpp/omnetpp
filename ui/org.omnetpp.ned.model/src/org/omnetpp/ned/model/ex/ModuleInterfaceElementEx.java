@@ -2,6 +2,7 @@ package org.omnetpp.ned.model.ex;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -27,12 +28,12 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
 
     protected ModuleInterfaceElementEx() {
 		super();
-		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
 	}
 
     protected ModuleInterfaceElementEx(INEDElement parent) {
 		super(parent);
-		typeInfo = getDefaultTypeResolver().createTypeInfoFor(this);
+		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
 	}
 
     public INEDTypeInfo getNEDTypeInfo() {
@@ -84,6 +85,10 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public Map<String, PropertyElementEx> getProperties() {
+        return getNEDTypeInfo().getProperties();
+    }
+
     // gate support
     public Map<String, GateElementEx> getGateSizes() {
         return getNEDTypeInfo().getGateSizes();
@@ -93,4 +98,7 @@ public class ModuleInterfaceElementEx extends ModuleInterfaceElement implements 
         return getNEDTypeInfo().getGateDeclarations();
     }
 
+    public Set<INedTypeElement> getLocalUsedTypes() {
+        return getNEDTypeInfo().getLocalUsedTypes();
+    }
 }
