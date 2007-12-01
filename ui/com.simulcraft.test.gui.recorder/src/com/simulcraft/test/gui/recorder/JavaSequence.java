@@ -132,12 +132,19 @@ public class JavaSequence {
      * Generate Java code from the JavaExpr objects contained. 
      */
     public String generateCode() {
+        return generateCode(0, length());   
+    }
+    
+    /**
+     * Generate Java code from the JavaExpr objects contained. 
+     */
+    public String generateCode(int startIndex, int endIndex) {
         makeVariablesUnique();
 
         // a "chain" is an expression like: "object.method1().method2().method3();"
         String text = "";
         int endOfCurrentChain = 0;
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = startIndex; i < endIndex; i++) {
             JavaExpr expr = list.get(i);
             if (endOfCurrentChain == i) {
                 text = addSemicolonIfNeeded(text) + "\n";
