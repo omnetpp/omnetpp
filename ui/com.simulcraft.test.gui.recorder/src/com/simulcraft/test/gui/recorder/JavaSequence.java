@@ -143,7 +143,7 @@ public class JavaSequence {
 
         // a "chain" is an expression like: "object.method1().method2().method3();"
         String text = "";
-        int endOfCurrentChain = 0;
+        int endOfCurrentChain = startIndex;
         for (int i = startIndex; i < endIndex; i++) {
             JavaExpr expr = list.get(i);
             if (endOfCurrentChain == i) {

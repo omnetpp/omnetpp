@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
@@ -99,6 +100,8 @@ public class GUIRecorder implements Listener {
     private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
     private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
     private List<ICodeRewriter> codeRewriters = new ArrayList<ICodeRewriter>();
+    
+    private ListenerList listeners = new ListenerList();
 
     private static final int[] eventTypes = { 
             SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseMove, 
@@ -200,6 +203,14 @@ public class GUIRecorder implements Listener {
         this.shellToIgnore = shellToIgnore;
     }
 
+    public void addGuiRecorderListener(IGuiRecorderListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeGuiRecorderListener(IGuiRecorderListener listener) {
+        listeners.remove(listener);
+    }
+    
     public void handleEvent(final Event e) {
         if (isRecording && (!(e.widget instanceof Control) || ((Control)e.widget).getShell() != shellToIgnore)) {
             // record event, catching potential exceptions meanwhile
@@ -219,6 +230,8 @@ public class GUIRecorder implements Listener {
         // housekeeping: we need to keep modifier states ourselves (it doesn't arrive in the event) 
         updateModifierState(e);
 
+        int oldResultLength = result.length();
+        
         // collect the best one of the guesses
         int modificationCount = result.getModificationCount();
 
@@ -250,6 +263,11 @@ public class GUIRecorder implements Listener {
         
         // release stale UI objects
         result.forgetDisposedUIObjects();
+
+        // notify our listeners
+        if (result.length() != oldResultLength)
+            for (Object listener : listeners.getListeners())
+                ((IGuiRecorderListener)listener).elementsAdded(this);
     }
 
     private void updateModifierState(Event e) {
