@@ -24,10 +24,7 @@ import org.omnetpp.common.util.StringUtils;
 public class ResourceChangeTracker implements IResourceChangeListener {
     // if logFileContent is on, first X bytes of text files will be printed into the log
     protected boolean logFileContent = true;
-    protected long numFirstBytesToRead = 3000;
-
-    // for eliminating "Part Activated" message just after "Part Opened"
-    protected IWorkbenchPart partJustOpened; 
+    protected long numFirstBytesToLog = 16384;  //16K
 
     public ResourceChangeTracker() {
     }
@@ -92,7 +89,7 @@ public class ResourceChangeTracker implements IResourceChangeListener {
         if (logFileContent) {
             try {
                 // read at most numFirstBytesToRead
-                int length = (int) Math.min(numFirstBytesToRead, file.length());
+                int length = (int) Math.min(numFirstBytesToLog, file.length());
                 DataInputStream in = new DataInputStream(new FileInputStream(file));
                 byte[] content = new byte[length];
                 in.read(content);
