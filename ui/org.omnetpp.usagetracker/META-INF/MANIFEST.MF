@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Usagetracker Plug-in
+Bundle-SymbolicName: org.omnetpp.usagetracker;singleton:=true
+Bundle-Version: 4.0.0
+Bundle-Activator: org.omnetpp.usagetracker.Activator
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.core.filesystem,
+ org.omnetpp.common
+Eclipse-LazyStart: true
