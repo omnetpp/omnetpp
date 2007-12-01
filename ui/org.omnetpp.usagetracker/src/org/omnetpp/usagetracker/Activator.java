@@ -34,6 +34,7 @@ public class Activator extends Plugin {
                 new PartActivationTracker().hookListeners();
                 new IdleTimeTracker().hookListeners();
                 new ResourceChangeTracker().hookListeners();
+                new GUITracker().hookListeners();
             }
         });
 	}
