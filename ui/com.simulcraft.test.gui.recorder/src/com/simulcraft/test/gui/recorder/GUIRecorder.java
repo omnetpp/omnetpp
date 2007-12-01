@@ -1,35 +1,22 @@
 package com.simulcraft.test.gui.recorder;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -56,16 +43,11 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 
 import com.simulcraft.test.gui.recorder.event.ButtonEventRecognizer;
@@ -109,17 +91,10 @@ import com.simulcraft.test.gui.recorder.object.WorkbenchWindowShellRecognizer;
  */
 public class GUIRecorder implements Listener {
     // state
-    private boolean enabled = true;
+    private boolean isRecording = true;
     private int modifierState = 0;
     private JavaSequence result = new JavaSequence();
-    
-    // gui
-    private Shell panel;
-    private Button stopButton;
-    private Button startButton;
-    private boolean mouse1Down;
-    private int panelMoveOffsetX, panelMoveOffsetY;
-    private static int testSeqNumber;
+    private Shell shellToIgnore = null;  // points to the RecorderUI panel
 
     private List<IEventRecognizer> eventRecognizers = new ArrayList<IEventRecognizer>();
     private List<IObjectRecognizer> objectRecognizers = new ArrayList<IObjectRecognizer>();
@@ -173,8 +148,6 @@ public class GUIRecorder implements Listener {
         register(new WorkbenchPartCTabRecognizer(this));
         register(new WorkbenchPartCompositeRecognizer(this));
         register(new MultiPageEditorCTabRecognizer(this));
-        
-        createPanel();
     }
 
     protected void register(Object object) {
@@ -221,12 +194,33 @@ public class GUIRecorder implements Listener {
         return modifierState;
     }
 
+    public boolean isRecording() {
+        return isRecording;
+    }
+
+    public void startRecording() {
+        isRecording = true;
+    }
+    
+    public void stopRecording() {
+        isRecording = false;
+    }
+
+    public JavaSequence getResult() {
+        return result;
+    }
+    
+    public Shell getShellToIgnore() {
+        return shellToIgnore;
+    }
+
+    public void setShellToIgnore(Shell shellToIgnore) {
+        Assert.isTrue(this.shellToIgnore==null || shellToIgnore==null, "shellToIgnore already set");
+        this.shellToIgnore = shellToIgnore;
+    }
+
     public void handleEvent(final Event e) {
-        if (e.type == SWT.KeyDown && e.keyCode == SWT.SCROLL_LOCK) {
-            // handle on/off hotkey
-            setPanelVisible(!panel.isVisible());
-        }
-        else if (enabled && (!(e.widget instanceof Control) || ((Control)e.widget).getShell() != panel)) {
+        if (isRecording && (!(e.widget instanceof Control) || ((Control)e.widget).getShell() != shellToIgnore)) {
             // record event, catching potential exceptions meanwhile
             SafeRunner.run(new ISafeRunnable() {
                 public void run() throws Exception {
@@ -329,19 +323,6 @@ public class GUIRecorder implements Listener {
                 result.add(expr);
             }
         }
-    }
-
-    public String generateCode() {
-        String statements = result.generateCode();
-        String result = 
-            "import com.simulcraft.test.gui.access.*;\n" +
-            "\n" +
-            "public class UnnamedTestCase extends GUITestCase {\n" + 
-            "    public void testNew" + (++testSeqNumber) + "() {\n" +
-            "        " + statements.replace("\n", "\n        ").trim() + "\n" + 
-            "    }\n" + 
-            "}\n";
-        return result;
     }
 
     public Object resolveUIObject(Event e) {
@@ -474,124 +455,5 @@ public class GUIRecorder implements Listener {
         return null;
     }
 
-    protected void createPanel() {
-        panel = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
-        panel.setLayout(new FillLayout());
-        Composite composite = new Composite(panel, SWT.BORDER);
-        composite.setLayout(new GridLayout(3, false));
-        composite.setBackground(new Color(null,255,255,255));
-        
-        // create and configure buttons
-        startButton = new Button(composite, SWT.PUSH);
-        startButton.setText("Start");
-        startButton.setToolTipText("Start Recording UI Actions");
-        stopButton = new Button(composite, SWT.PUSH);
-        stopButton.setText("Stop");
-        stopButton.setToolTipText("Stop Recording");
-        Button hideButton = new Button(composite, SWT.PUSH);
-        hideButton.setText("X");
-        hideButton.setToolTipText("Hide Panel (hit Scroll Lock to show it again)");
-        startButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                startRecording();
-            }
-        });
-        stopButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                stopRecording();
-            }
-        });
-        hideButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                setPanelVisible(false);
-            }
-        });
-        
-        // allow panel to be moved around with the mouse
-        composite.addMouseListener(new MouseAdapter() {
-            public void mouseDown(MouseEvent e) {
-                mouse1Down = true;
-                Point p = Display.getCurrent().getCursorLocation();
-                Point loc = panel.getLocation();
-                panelMoveOffsetX = loc.x - p.x;
-                panelMoveOffsetY = loc.y - p.y;
-            }
-            public void mouseUp(MouseEvent e) {
-                mouse1Down = false;
-            }
-        });
-        composite.addMouseMoveListener(new MouseMoveListener() {
-            public void mouseMove(MouseEvent e) {
-                if (mouse1Down) {
-                    Point p = Display.getCurrent().getCursorLocation();
-                    panel.setLocation(p.x + panelMoveOffsetX, p.y + panelMoveOffsetY);
-                }
-            }
-        });
-        
-        // open panel
-        updatePanelState();
-        panel.layout();
-        panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-        panel.setLocation((int)(Display.getCurrent().getClientArea().width * 0.75), 10);
-        Control oldFocusControl = Display.getCurrent().getFocusControl();
-        panel.open();
-        if (oldFocusControl != null)
-            oldFocusControl.setFocus();
-    }
-
-    public void startRecording() {
-        enabled = true;
-        updatePanelState();
-    }
-    
-    public void stopRecording() {
-        enabled = false;
-        updatePanelState();
-        if (!result.isEmpty()) {
-            showResult();
-            result.clear();
-        }
-        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().forceActive();
-    }
-    
-    public void setPanelVisible(boolean visible) {
-        panel.setVisible(visible);
-    }
-    
-    protected void updatePanelState() {
-        //panel.setBackground(enabled ? new Color(null,255,0,0) : new Color(null,255,255,255));
-        startButton.setEnabled(!enabled);
-        stopButton.setEnabled(enabled);
-    }
-
-    @SuppressWarnings("restriction")
-    protected void showResult() {
-        // produce Java code
-        final String javaText = generateCode();
-
-        Display.getCurrent().asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    // save to a file
-                    String fileName = Activator.getDefault().getStateLocation().append("tmp.java").toOSString();
-                    File file = new File(fileName);
-                    FileUtils.copy(new ByteArrayInputStream(javaText.getBytes()), file);
-
-                    // open file in an editor
-                    final IEditorInput input = new FileStoreEditorInput(new LocalFile(file));
-                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, "org.eclipse.ui.DefaultTextEditor");
-                }
-                catch (IOException e) {
-                    MessageDialog.openError(null, "Error", "Cannot save recorded code into temporary file: " + e.getMessage());
-                    Activator.logError(e);
-                }
-                catch (PartInitException e) {
-                    MessageDialog.openError(null, "Error", "Cannot open editor to view recorded code: " + e.getMessage());
-                    Activator.logError(e);
-                }
-            }
-        });
-    }
-}
+ }
 

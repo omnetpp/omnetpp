@@ -10,6 +10,7 @@ public class Startup implements IStartup {
             public void run() {
                 GUIRecorder recorder = new GUIRecorder();
                 recorder.hookListeners();
+                new RecorderUI(recorder).hookListeners();
             }
         });
     }
