@@ -24,7 +24,7 @@ EnumStringIterator::EnumStringIterator(const char *s)
      // loop through string to check its syntax
      str = s;
      current = until = -1;
-     err = 0;
+     err = false;
      while ((*this)++ != -1);
 
      // position on first value
@@ -66,7 +66,7 @@ int EnumStringIterator::operator++(int)
      if (*str=='\0')
         return current=-1;
 
-     if (!get_number(str,current)) {err=1;return -1;}
+     if (!get_number(str,current)) {err=true;return -1;}
      until = -1;
      if (*str=='\0')
          ;
@@ -77,16 +77,16 @@ int EnumStringIterator::operator++(int)
          str++;
          if (*str=='.') str++;
          skip_whitespace(str);
-         if (!get_number(str,until)) {err=1;return -1;}
+         if (!get_number(str,until)) {err=true;return -1;}
          skip_whitespace(str);
          if (*str=='\0')
             ;
          else if (*str==',')
             str++;
          else
-            {err=1;return -1;}
+            {err=true;return -1;}
      }
      else
-         {err=1;return -1;}
+         {err=true;return -1;}
      return current;
 }

@@ -25,8 +25,8 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/expression.obj $O/lex.expressionyy.obj $O/expression.tab.obj \
       $O/matchexpression.obj $O/lex.matchexpressionyy.obj $O/matchexpression.tab.obj \
       $O/patternmatcher.obj $O/unitconversion.obj $O/displaystring.obj $O/fileglobber.obj \
-      $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj
-
+      $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
+      $O/enumstr.obj
 
 #
 # Automatic rules

@@ -21,7 +21,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"$O/cmdenv.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib
 
-OBJS= $O/cmdenv.obj $O/enumstr.obj
+OBJS= $O/cmdenv.obj
 
 #
 # Automatic rules
@@ -65,7 +65,6 @@ clean:
 $O/cmdenv.obj: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
-  enumstr.h \
   ../../include/csimplemodule.h \
   ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
@@ -102,5 +101,3 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-$O/enumstr.obj: enumstr.cc \
-  enumstr.h

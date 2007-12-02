@@ -21,7 +21,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common 
 
 IMPLIBS= -L$L -lsim_std -lenvir
 
-OBJS = $O/cmdenv.o $O/enumstr.o
+OBJS = $O/cmdenv.o
 
 #
 # Automatic rules
@@ -64,7 +64,6 @@ clean:
 $O/cmdenv.o: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
-  enumstr.h \
   ../envir/appreg.h \
   ../../include/csimplemodule.h \
   ../../include/ccomponenttype.h \
@@ -108,10 +107,3 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-$O/enumstr.o: enumstr.cc \
-  enumstr.h \
-  cmddefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h
