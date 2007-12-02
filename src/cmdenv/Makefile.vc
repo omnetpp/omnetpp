@@ -11,7 +11,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /DBUILDING_CMDENV /Fd"cmdenv.pdb"
-OBJS = cmdenv.obj enumstr.obj heap.obj
+OBJS = cmdenv.obj heap.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
 
 #
@@ -49,7 +49,6 @@ clean:
 cmdenv.obj: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
-  enumstr.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/platdep/time.h \
@@ -75,6 +74,4 @@ cmdenv.obj: cmdenv.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cpar.h
-enumstr.obj: enumstr.cc \
-  enumstr.h
 heap.obj: heap.cc

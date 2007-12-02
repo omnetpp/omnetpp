@@ -26,7 +26,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir -DBUILDING_CMDENV
 
-OBJS = cmdenv.o enumstr.o heap.o
+OBJS = cmdenv.o heap.o
 
 #
 # Automatic rules
@@ -61,7 +61,6 @@ clean:
 cmdenv.o: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
-  enumstr.h \
   ../envir/appreg.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
@@ -94,6 +93,4 @@ cmdenv.o: cmdenv.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cpar.h
-enumstr.o: enumstr.cc \
-  enumstr.h
 heap.o: heap.cc

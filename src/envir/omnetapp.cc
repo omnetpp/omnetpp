@@ -41,6 +41,7 @@
 #include "cxmldoccache.h"
 #include "cstrtokenizer2.h"
 #include "chasher.h"
+#include "enumstr.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -409,17 +410,41 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         sprintf(parname,"%s.%s.partition-id", parentmod->fullPath().c_str(), modname);
     else
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
-    int procId = getConfig()->getAsInt2(getRunSectionName(simulation.runNumber()),"Partitioning",parname,-1);
-    if (procId<0)
-        throw new cRuntimeError("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
-    if (procId>=parsimcomm->getNumPartitions())
-        throw new cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
-                                procId,parname,parsimcomm->getNumPartitions());
-    // FIXME This solution is not entirely correct. Rather, we'd have to check if
-    // myProcId is CONTAINED in the set of procIds defined for the children of this
-    // module.
-    int myProcId = parsimcomm->getProcId();
-    return procId==myProcId;
+    const char *procIds = getConfig()->getAsString2(getRunSectionName(simulation.runNumber()),"Partitioning",parname,"");
+    if (!procIds || !procIds[0])
+    {
+        // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
+        if (!parentmod->parentModule())
+            throw new cRuntimeError("incomplete partitioning: missing value for '%s'",parname);
+        // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
+        return true;
+    }
+    else if (strcmp(procIds, "*")==0)
+    {
+        // present on all partitions (provided that ancestors have "*" set as well)
+        return true;
+    }
+    else
+    {
+        // we expect a partition Id (or partition Ids, separated by commas) where this
+        // module needs to be instantiated. So we return true if any of the numbers
+        // is the Id of the local partition, otherwise false.
+        EnumStringIterator procIdIter(procIds);
+        if (procIdIter.error())
+            throw new cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
+                                    "(allowed syntax: '', '*', '1', '0,3,5-7')", procIds, parname);
+        int numPartitions = parsimcomm->getNumPartitions();
+        int myProcId = parsimcomm->getProcId();
+        for (; procIdIter()!=-1; procIdIter++)
+        {
+            if (procIdIter() >= numPartitions)
+                throw new cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
+                                        procIdIter(), parname, numPartitions);
+            if (procIdIter() == myProcId)
+                return true;
+        }
+        return false;
+    }
 #else
     return true;
 #endif
