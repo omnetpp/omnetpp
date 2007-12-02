@@ -1,3 +1,30 @@
+parsim: partition-id behavior changed. TODO add the following info to the manual:
+	The patch alters the behavior of the <patter>.partition-id inifile entries. 
+	With the new code, you'd normally set up partitioning like this:
+	  - specify a concrete partition-id for compound modules which will be, 
+	    in whole, on one partition
+	  - there's no need to specify anything for its submodules
+	  - for compound modules that have parts on more than one partition, list
+	    all those partitions in the partition-id string (e.g: 0,1,2); this is
+	    necessary because if a compound module is marked as belonging to
+	    some partition X, it will be created as "placeholder" on all other
+	    partitions, and no attempt will be made to create submodules in it.
+	  - "*" is a synonym for "all partitions"
+
+	For example, if there's a network which consists of 2 subnets (subnet1, subnet2), 
+	and within the subnets you have 100 hosts, and you'd like to run it in 4 partitions, 
+	the setup could look like this:
+
+	  Net.subnet1.partition-id = *  # or 0,1,2,3; or 0-3
+	  Net.subnet2.partition-id = *
+	  Net.subnet1.host[0..49].partition-id = 0
+	  Net.subnet1.host[50..99].partition-id = 1
+	  Net.subnet2.host[0..49].partition-id = 2
+	  Net.subnet2.host[50..99].partition-id = 3
+
+	No need to specify anything for the "tcp", "ip" etc submodules of hosts, 
+	because they inherit the setting from their parent compound module.
+
 configuration handling rewritten...
 iterators, etc
 
