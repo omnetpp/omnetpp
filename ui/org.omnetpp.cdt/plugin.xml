@@ -139,18 +139,14 @@
       </projectType>      
    </extension>
    <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="org.omnetpp.cdt.preferences.OmnetppCdtPreferencePage"
-            id="org.omnetpp.cdt.OmnetppCdtPreferencePage"
-            name="OMNEST/OMNeT++">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.omnetpp.cdt.preferences.PreferenceInitializer">
-      </initializer>
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
+            id="org.omnetpp.cdt.wizard.newCppProjectWizard"
+            name="OMNEST/OMNeT++ Project with Cpp support"
+            project="true">
+      </wizard>
    </extension>
 
 </plugin>
