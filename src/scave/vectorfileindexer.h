@@ -17,6 +17,7 @@
 
 #include <string>
 #include "resultfilemanager.h"
+#include "progressmonitor.h"
 
 /**
  * FIXME comment
@@ -24,7 +25,7 @@
 class SCAVE_API VectorFileIndexer
 {
     public:
-        void generateIndex(const char *filename);
+        void generateIndex(const char *filename, IProgressMonitor *monitor = NULL);
 };
 
 #endif
