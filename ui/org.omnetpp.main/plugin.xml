@@ -156,4 +156,18 @@
          </action>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.omnetpp.ide.preferences.OmnetppPreferencePage"
+            id="org.omnetpp.cdt.OmnetppCdtPreferencePage"
+            name="OMNEST/OMNeT++">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.omnetpp.ide.preferences.OmnetppPreferenceInitializer">
+      </initializer>
+   </extension>
 </plugin>
