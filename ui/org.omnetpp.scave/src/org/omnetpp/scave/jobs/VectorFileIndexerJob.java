@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.omnetpp.scave.engineext.IndexFile;
 
 /**
@@ -54,10 +55,12 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 					monitor.subTask("Indexing "+file.getName());
 					synchronized (lock) {
 						if (file.exists() && !isIndexFileUpToDate(file)) {
-							IndexFile.performIndexing(file);
+							IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
+							IndexFile.performIndexing(file, subMonitor);
+							if (subMonitor.isCanceled())
+								return Status.CANCEL_STATUS;
 						}
 					}
-					monitor.worked(1);
 				}
 			}
 			finally {

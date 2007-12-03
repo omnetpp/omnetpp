@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubProgressMonitor;
 
 public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 
@@ -106,12 +107,17 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 				try {
 					File path = file.getLocation().toFile();
 					if (path.exists() && !isIndexFileUpToDate(path))
-						performIndexing(file);
+					{
+						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
+						performIndexing(file, subMonitor);
+						if (subMonitor.isCanceled())
+							throw new OperationCanceledException();
+					}
 				}
 				catch (Exception e) {
 					Activator.logError(e);
+					monitor.worked(1);
 				}
-				monitor.worked(1);
 			}
 		}
 		finally {

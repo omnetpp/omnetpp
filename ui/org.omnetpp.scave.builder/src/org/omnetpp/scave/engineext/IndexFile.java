@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.scave.builder.Activator;
 import org.omnetpp.scave.engine.VectorFileIndexer;
@@ -147,7 +148,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 * Perform indexing the given vector file, and add error/warning
 	 * markers to the file if there's any problem. 
 	 */
-	public static void performIndexing(IFile vectorFile) {
+	public static void performIndexing(IFile vectorFile, IProgressMonitor monitor) {
 		try {
 			vectorFile.deleteMarkers(MARKERTYPE_SCAVEPROBLEM, true, IResource.DEPTH_ZERO);
 
@@ -156,7 +157,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
 			System.out.println("started indexing " + vectorFile);
 			long startTime = System.currentTimeMillis();
-			indexer.generateIndex(osFileName);
+			indexer.generateIndex(osFileName, monitor);
 			System.out.println("finished indexing " + vectorFile + ", " + (System.currentTimeMillis()-startTime) + "ms");
 		}
 		catch (ResultFileFormatException e) {
