@@ -85,7 +85,7 @@ void cLinkDelayLookahead::startRun()
 
                     // store
                     int procId = pg->getRemoteProcId();
-                    if (segInfo[procId].minDelay==-1 || segInfo[procId].minDelay<linkDelay)
+                    if (segInfo[procId].minDelay==-1 || segInfo[procId].minDelay > linkDelay)
                         segInfo[procId].minDelay = linkDelay;
                 }
             }
