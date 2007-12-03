@@ -1,4 +1,4 @@
-package org.omnetpp.usagetracker;
+package com.simulcraft.gui.usagetracker;
 
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbench;

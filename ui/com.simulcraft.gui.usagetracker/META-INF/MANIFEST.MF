@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Usagetracker Plug-in
 Bundle-SymbolicName: com.simulcraft.gui.usagetracker;singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.usagetracker.Activator
+Bundle-Activator: com.simulcraft.gui.usagetracker.Activator
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
