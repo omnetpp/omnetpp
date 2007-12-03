@@ -19,6 +19,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
@@ -37,6 +39,7 @@ import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
+import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
@@ -47,6 +50,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
+
+import sun.beans.editors.FontEditor;
 
 /**
  * Edit form of charts.
@@ -203,12 +208,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);
 			graphTitleText = createTextField("Graph title:", group);
-			graphTitleFontText = createTextField("Title font:", group);
+			graphTitleFontText = createFontField("Title font:", group);
 			axisTitlesGroup = createGroup("Axis titles", panel);
 			xAxisTitleText = createTextField("X axis title:", axisTitlesGroup);
 			yAxisTitleText = createTextField("Y axis title:", axisTitlesGroup);
-			axisTitleFontText = createTextField("Axis title font:", axisTitlesGroup);
-			labelFontText = createTextField("Label font:", axisTitlesGroup);
+			axisTitleFontText = createFontField("Axis title font:", axisTitlesGroup);
+			labelFontText = createFontField("Label font:", axisTitlesGroup);
 			xLabelsRotateByCombo = createComboField("Rotate X labels by:", axisTitlesGroup, new String[] {"0", "30", "45", "60", "90"});
 		}
 		else if (TAB_AXES.equals(name)) {
@@ -231,7 +236,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			group = createGroup("Appearance", panel);
 			displayBorderCheckbox = createCheckboxField("Border", group);
 			displayBorderCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			legendFontText = createTextField("Legend font:", group);
+			legendFontText = createFontField("Legend font:", group);
 			legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class, false);
 			legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
 			displayLegendCheckbox.addSelectionListener(new SelectionAdapter() {
@@ -414,6 +419,36 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			}
 		});
 		return colorField;
+	}
+	
+	protected Text createFontField(String labelText, Composite parent) {
+		Label label = new Label(parent, SWT.NONE);
+		label.setText(labelText);
+		Composite panel = new Composite(parent, SWT.NONE);
+		panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		panel.setLayout(layout);
+		final Text text = new Text(panel, SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		Button button = new Button(panel, SWT.NONE);
+		button.setText("...");
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				if (!text.isDisposed()) {
+					FontDialog dialog = new FontDialog(text.getShell());
+					
+					FontData font = Converter.stringToFontdata(text.getText());
+					if (font != null)
+						dialog.setFontList(new FontData[] {font});
+					font = dialog.open();
+					if (font != null)
+						text.setText(Converter.fontdataToString(font));
+				}
+			}
+		});
+		return text;
 	}
 
 	/**
