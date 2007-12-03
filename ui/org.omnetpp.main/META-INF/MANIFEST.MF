@@ -11,4 +11,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.omnetpp.common
 Eclipse-LazyStart: true
-Export-Package: org.omnetpp.ide.wizard
+Export-Package: org.omnetpp.ide,
+ org.omnetpp.ide.wizard
