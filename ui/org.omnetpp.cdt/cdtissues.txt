@@ -5,7 +5,7 @@
   be teszi az object file-t hanem szinten a source melle...
 - ha include ban pl: ${workspace_loc:/inetfw/Src/Nodes} van megadva es a konyvtar nem letezik akkor egy ures -I opciot general
   ami hibat okoz mert a compiler lenyeli a kovetkezo opciot. (ne genraljon ilyenkor -I-t)
-- nem lehet egy meglevo toolhoz/project tipushoz hozzaadni mondjuk egy macroSupplier osztalyt
+? nem lehet egy meglevo toolhoz/project tipushoz hozzaadni mondjuk egy macroSupplier osztalyt
   az egyetlen megioldas ha a teljes toolchain-t lemasolom es ujrairom.
 - ha uj project tiust veszek fel (ami orokol egy regibol), 
   akkor ha abban definialok egy uj config-t (az oroklottek melle) es a new project wizardban 

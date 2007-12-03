@@ -142,11 +142,23 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
-            id="org.omnetpp.cdt.wizard.newCppProjectWizard"
-            name="OMNEST/OMNeT++ Project with Cpp support"
+            class="org.omnetpp.cdt.wizard.OmnetCDTNewProjectWizard"
+            icon="icons/newoproject.gif"
+            id="org.omnetpp.cdt.wizard.newProjectWizard"
+            name="OMNEST/OMNeT++ Project TEST"
             project="true">
+         <description>
+            Create a Project that can handle OMNEST/OMNeT++ specific files and supports CDT.
+         </description>
       </wizard>
+   </extension>
+   <extension point="org.eclipse.cdt.core.templates">
+      <template
+            id="org.omnetpp.cdt.templates.EmptyManaged"
+            filterPattern=".*"
+            location="templates/managed/template.xml"
+            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+      </template>
    </extension>
 
 </plugin>

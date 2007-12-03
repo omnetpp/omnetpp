@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<template type="ProjTempl" version="1.0" supplier="Eclipse.org" revision="1.0" author=""
+        copyright="Copyright (c) 2007 Symbian Software Limited and others. All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available athttp://www.eclipse.org/legal/epl-v10.html"
+        id="org.omnetpp.cdt.templates.EmptyManaged" label="Empty Simulation Project (executable) - Managed make" description="">
+    <property-group id="basics" label="%HelloWorld.basics.label" description="%HelloWorld.basics.description" type="PAGES-ONLY" help="help.html">
+        <property id="sourceDir"
+                label="%HelloWorld.sourceDir.label"
+                description="%HelloWorld.sourceDir.description"
+                type="input"
+                default="%HelloWorld.sourceDir.default"
+                pattern="[a-zA-Z0-9]+"
+                persist="true"/>
+    </property-group>
+    
+    <process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+        <simple name="name" value="$(projectName)" /> 
+        <simple name="artifactExtension" value="exe" /> 
+        <simple name="isCProject" value="false" /> 
+    </process>
+
+    <process type="org.eclipse.cdt.core.CreateSourceFolder">
+        <simple name="projectName" value="$(projectName)"/>
+        <simple name="path" value="$(sourceDir)"/>
+    </process>
+
+</template>
+
