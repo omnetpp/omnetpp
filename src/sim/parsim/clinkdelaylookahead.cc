@@ -92,11 +92,10 @@ void cLinkDelayLookahead::startRun()
         }
     }
 
-    // FIXME what to do if 2 procIds are not connected (minDelay=-1)?
-    // set mindelay to INFINITY?
-    //for (i=0; i<numSeg; i++)
-    //    if (i!=myProcId && segInfo[procId].minDelay==-1)
-    //        ev << "    not connected\n";//????????????
+    // if two partitions are not connected, the lookeahead is "infinity"
+    for (i=0; i<numSeg; i++)
+        if (i!=myProcId && segInfo[i].minDelay==-1)
+            segInfo[i].minDelay = MAXTIME;
 
     for (i=0; i<numSeg; i++)
         if (i!=myProcId)
