@@ -92,11 +92,14 @@ void cLinkDelayLookahead::startRun()
         }
     }
 
-    // FIXME what to do if 2 procIds are not connected (minDelay=-1)?
-    // set mindelay to INFINITY?
-    //for (i=0; i<numSeg; i++)
-    //    if (i!=myProcId && segInfo[procId].minDelay==-1)
-    //        ev << "    not connected\n";//????????????
+    // if two partitions are not connected, the lookeahead is "very large"
+    // TODO use this once Tkenv is prepared to handle it:
+    //  const double ZERO = 0.0;
+    //  const double POSITIVE_INFINITY = 1.0/ZERO;
+    const double HUGE_LOOKAHEAD = 1e308;
+    for (i=0; i<numSeg; i++)
+        if (i!=myProcId && segInfo[i].minDelay==-1)
+            segInfo[i].minDelay = HUGE_LOOKAHEAD;
 
     for (i=0; i<numSeg; i++)
         if (i!=myProcId)
