@@ -12,4 +12,6 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.common
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide,
+ org.omnetpp.ide.preferences,
+ org.omnetpp.ide.properties,
  org.omnetpp.ide.wizard

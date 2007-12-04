@@ -2,9 +2,9 @@ package org.omnetpp.ide.preferences;
 
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-
 import org.omnetpp.ide.Activator;
 
 /**
@@ -26,6 +26,8 @@ public class OmnetppPreferencePage
 	implements IWorkbenchPreferencePage {
 
 	public static final String OMNETPP_ROOT = "omnetppRoot";
+	public static final String DOXYGEN_EXECUTABLE = "doxygenExecutable";
+    public static final String GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
 
     public OmnetppPreferencePage() {
 		super(GRID);
@@ -38,6 +40,8 @@ public class OmnetppPreferencePage
 	    // FIXME naming is not correct - not install location) 
 		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, 
 				"OMNEST/OMNeT++ install location:", getFieldEditorParent()));
+		addField(new FileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
+        addField(new FileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)

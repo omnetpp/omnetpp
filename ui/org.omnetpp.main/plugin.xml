@@ -135,6 +135,21 @@
          </enabledWhen>
       </page>
       <page
+            category="org.omnetpp.main.OmnetppCategory"
+            class="org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage"
+            id="org.omnetpp.main.DocumentationGenerator"
+            name="Documentation Generator">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="org.omnetpp.main.omnetppnature">
+               </test>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
             class="org.omnetpp.ide.properties.EmptyPropertyPage"
             id="org.omnetpp.main.OmnetppCategory"
             name="OMNEST/OMNeT++">

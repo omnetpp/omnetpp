@@ -18,7 +18,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="org.omnetpp.neddoc.commands.neddocCommand"
-            class="org.omnetpp.neddoc.handlers.NeddocHandler">
+            class="org.omnetpp.neddoc.handlers.DocumentationGeneratorHandler">
       </handler>
    </extension>
    <extension
