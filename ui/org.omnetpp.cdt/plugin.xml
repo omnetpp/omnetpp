@@ -152,6 +152,20 @@
          </description>
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
+            icon="icons/newoproject.gif"
+            id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
+            name="OMNEST/OMNeT++ Project for C++ Development (EXPERIMENTAL)"
+            project="true">
+         <description>
+            Create a Project that can handle OMNEST/OMNeT++ specific files and supports CDT.
+         </description>
+      </wizard>
+   </extension>
    <extension point="org.eclipse.cdt.core.templates">
       <template
             id="org.omnetpp.cdt.templates.EmptyManaged"

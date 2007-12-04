@@ -42,6 +42,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.omnetpp.common.image.export.PNGImageExporter;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
@@ -79,53 +80,53 @@ import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
 import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
 public class DocumentationGenerator {
-    private String dotExecutablePath;
+    protected String dotExecutablePath;
     
-    private String doxyExecutablePath;
+    protected String doxyExecutablePath;
     
-    private IPath documentationRootPath;
+    protected IPath documentationRootPath;
     
-    private IPath rootRelativeDoxyPath;
+    protected IPath rootRelativeDoxyPath;
 
-    private IPath doxyRelativeRootPath;
+    protected IPath doxyRelativeRootPath;
 
-    private IPath absoluteDoxyConfigFilePath;
+    protected IPath absoluteDoxyConfigFilePath;
 
-    private IPath rootRelativeNeddocPath;
+    protected IPath rootRelativeNeddocPath;
 
-    private IPath neddocRelativeRootPath;
+    protected IPath neddocRelativeRootPath;
     
-    private IProject project;
+    protected IProject project;
     
-    private NEDResources nedResources;
+    protected NEDResources nedResources;
     
-    private MsgResources msgResources;
+    protected MsgResources msgResources;
     
-    private IProgressMonitor monitor;
+    protected IProgressMonitor monitor;
 
-    private File currentOutputFile;
+    protected File currentOutputFile;
 
-    private Map<File, FileOutputStream> outputStreams = new HashMap<File, FileOutputStream>();
+    protected Map<File, FileOutputStream> outputStreams = new HashMap<File, FileOutputStream>();
     
-    private ArrayList<IFile> files = new ArrayList<IFile>(); 
+    protected ArrayList<IFile> files = new ArrayList<IFile>(); 
     
-    private ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
+    protected ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
 
-    private Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
+    protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
 
-    private Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
+    protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
 
-    private Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
+    protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
     
-    private Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
+    protected Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
     
-    private Map<String, String> doxyMap = new HashMap<String, String>();
+    protected Map<String, String> doxyMap = new HashMap<String, String>();
 
-    private Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
+    protected Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
     
-    private Pattern typeNamesPattern;
+    protected Pattern typeNamesPattern;
 
-    private GeneratorConfiguration configuration;
+    protected GeneratorConfiguration configuration;
 
     public DocumentationGenerator(IProject project) {
         this.project = project;
@@ -215,7 +216,7 @@ public class DocumentationGenerator {
         job.schedule();
     }
 
-    private void ensureEmptyNeddoc() throws CoreException {
+    protected void ensureEmptyNeddoc() throws CoreException {
         IPath neddocPath = getFullNeddocPath();
         File neddocFile = neddocPath.toFile();
 
@@ -244,7 +245,7 @@ public class DocumentationGenerator {
         refreshFolder(neddocPath);
     }
 
-    private void refreshFolder(IPath path) throws CoreException {
+    protected void refreshFolder(IPath path) throws CoreException {
         IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
         if (path.toString().startsWith(workspaceRoot.getLocation().toString())) {
@@ -253,7 +254,7 @@ public class DocumentationGenerator {
         }
     }
     
-    private void collectCaches() throws Exception {
+    protected void collectCaches() throws Exception {
         try {
             monitor.beginTask("Collecting data...", 6);
 
@@ -269,7 +270,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void collectFiles() throws CoreException {
+    protected void collectFiles() throws CoreException {
         monitor.subTask("Collecting NED and MSG files");
         files = new ArrayList<IFile>();
         files.addAll(nedResources.getNedFiles(project));
@@ -282,7 +283,7 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
 
-    private void collectTypes() throws CoreException, IOException {
+    protected void collectTypes() throws CoreException, IOException {
         monitor.subTask("Collecting types");
         for (IFile file : files) {
             if (nedResources.isNedFile(file))
@@ -299,7 +300,7 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
 
-    private void collectTypeNames() {
+    protected void collectTypeNames() {
         monitor.subTask("Collecting type names");
         StringBuffer buffer = new StringBuffer();
         for (ITypeElement typeElement : typeElements) {
@@ -325,7 +326,7 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
 
-    private void collectSubtypesMap() {
+    protected void collectSubtypesMap() {
         monitor.subTask("Collecting subtypes");
         for (ITypeElement subtype : typeElements) {
             ITypeElement supertype = subtype.getFirstExtendsRef();
@@ -343,7 +344,7 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
     
-    private void collectImplementorsMap() {
+    protected void collectImplementorsMap() {
         monitor.subTask("Collecting implementors");
         for (ITypeElement typeElement : typeElements) {
             if (typeElement instanceof INedTypeElement && !(typeElement instanceof IInterfaceTypeElement)) {
@@ -363,7 +364,7 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
     
-    private void collectUsersMap() {
+    protected void collectUsersMap() {
         monitor.subTask("Collecting uses");
         for (ITypeElement userType : typeElements) {
             for (ITypeElement usedType : userType.getLocalUsedTypes()) {
@@ -379,7 +380,7 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
 
-    private void collectDoxyMap() throws Exception {
+    protected void collectDoxyMap() throws Exception {
         File doxyTagsFile = getFullDoxyPath().append("doxytags.xml").toFile();
 
         if (doxyTagsFile.exists()) {
@@ -407,7 +408,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateDoxy() throws Exception {
+    protected void generateDoxy() throws Exception {
         if (configuration.generateDoxy) {
             try {
                 monitor.beginTask("Generating doxy...", IProgressMonitor.UNKNOWN);
@@ -434,7 +435,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private String processHTMLContent(String html) {
+    protected String processHTMLContent(String html) {
         Matcher matcher = preSpanPattern.matcher(html);
         StringBuffer buffer = new StringBuffer();
 
@@ -558,11 +559,11 @@ public class DocumentationGenerator {
         return buffer.toString();
     }
     
-    private interface IRegexpReplacementProvider {
+    protected interface IRegexpReplacementProvider {
         public String getReplacement(Matcher matcher);
     }
     
-    private String replaceMatches(String comment, String regexp, IRegexpReplacementProvider provider) {
+    protected String replaceMatches(String comment, String regexp, IRegexpReplacementProvider provider) {
         Matcher matcher = Pattern.compile(regexp).matcher(comment);
         StringBuffer buffer = new StringBuffer();
         
@@ -574,7 +575,7 @@ public class DocumentationGenerator {
         return buffer.toString();
     }
 
-    private String replaceTypeReferences(String comment) {
+    protected String replaceTypeReferences(String comment) {
         Matcher matcher = typeNamesPattern.matcher(comment);
         StringBuffer buffer = new StringBuffer();
         
@@ -590,7 +591,7 @@ public class DocumentationGenerator {
         return buffer.toString();
     }
     
-    private void generateCSS() throws IOException {
+    protected void generateCSS() throws IOException {
         FileUtils.writeTextFile(getFile("style.css"),
                 "body,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }\r\n" + 
                 "body,td,p,ul,ol,li { font-size:10pt }\r\n" + 
@@ -615,7 +616,7 @@ public class DocumentationGenerator {
                 ".src-number  { color:#0000c0 }\r\n");
     }
 
-    private void generateHTMLFrame() throws IOException {
+    protected void generateHTMLFrame() throws IOException {
         FileUtils.writeTextFile(getFile("index.html"),
             "<html>\n" + 
             "   <head>\n" + 
@@ -636,7 +637,7 @@ public class DocumentationGenerator {
             "</html>\n"); 
     }
     
-    private void generateFileList() throws Exception {
+    protected void generateFileList() throws Exception {
         withGeneratingHTMLFile("files.html", new Runnable() {
             public void run() throws Exception {
                 out("<h3 class=\"indextitle\">NED and MSG Files</h3>\r\n" + 
@@ -652,7 +653,7 @@ public class DocumentationGenerator {
         });
     }
     
-    private void generateIndexPages() throws Exception {
+    protected void generateIndexPages() throws Exception {
         try {
             monitor.beginTask("Generating index pages...", IProgressMonitor.UNKNOWN);
     
@@ -673,7 +674,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateNavigationBar(String where) throws IOException {
+    protected void generateNavigationBar(String where) throws IOException {
         out("<p class=\"navbar\">\r\n");
         generateNavigationBarLink("selected topics", where);
         out(" - modules ("); 
@@ -701,14 +702,14 @@ public class DocumentationGenerator {
         out("</p>\r\n");
     }
 
-    private void generateNavigationBarLink(String label, String where) throws IOException {
+    protected void generateNavigationBarLink(String label, String where) throws IOException {
         if (label.equals(where))
             out("<span class=\"navbarlink\">" + label + "</span>\r\n");
         else
             out("<a href=\"" + label.replace(" ", "-") + ".html\" class=\"navbarlink\">" + label + "</a>\r\n");
     }
 
-    private void withGeneratingTypeIndexHTMLFile(final String where, final Class<?> clazz) throws Exception {
+    protected void withGeneratingTypeIndexHTMLFile(final String where, final Class<?> clazz) throws Exception {
         withGeneratingNavigationHTMLFile(where, new Runnable() {
             public void run() throws Exception {
                 generateTypeIndex(clazz);
@@ -716,7 +717,7 @@ public class DocumentationGenerator {
         });
     }
 
-    private void withGeneratingNavigationHTMLFile(final String where, final Runnable content) throws Exception {
+    protected void withGeneratingNavigationHTMLFile(final String where, final Runnable content) throws Exception {
         withGeneratingHTMLFile(where.replace(" ", "-") + ".html", new Runnable() {
             public void run() throws Exception {
                 generateNavigationBar(where);
@@ -731,11 +732,11 @@ public class DocumentationGenerator {
         });
     }
 
-    private void generateSelectedTopics() throws Exception {
+    protected void generateSelectedTopics() throws Exception {
         withGeneratingNavigationHTMLFile("selected topics", new Runnable() {
-            private Pattern externalPagesPattern = Pattern.compile("(?m)@externalpage (.*?), *(.*)");
+            protected Pattern externalPagesPattern = Pattern.compile("(?m)@externalpage (.*?), *(.*)");
 
-            private Pattern pagePattern = Pattern.compile("(?s) +(.*?), *(.*?)\n(.*)");
+            protected Pattern pagePattern = Pattern.compile("(?s) +(.*?), *(.*?)\n(.*)");
 
             public void run() throws Exception {
                 out("<li><a href=\"overview.html\" target=\"mainframe\">Overview</a></li>\r\n");
@@ -792,25 +793,25 @@ public class DocumentationGenerator {
         });
     }
     
-    private void generatePageReference(String fileName, String title) throws IOException {
+    protected void generatePageReference(String fileName, String title) throws IOException {
         out("<li>\r\n" + 
             "   <a href=\"" + fileName + "\" target=\"mainframe\">" + title + "</a>\r\n" + 
             "</li>\r\n");
     }
     
-    private void generateTypeIndexEntry(ITypeElement typeElement) throws Exception {
+    protected void generateTypeIndexEntry(ITypeElement typeElement) throws Exception {
         out("<li>\r\n" + 
             "   <a href=\"" + getFileName(typeElement) + "\" target=\"mainframe\">" + typeElement.getName() + "</a>\r\n" + 
             "</li>\r\n");
     }
     
-    private void generateTypeIndex(Class<?> clazz) throws Exception {
+    protected void generateTypeIndex(Class<?> clazz) throws Exception {
         for (ITypeElement typeElement : typeElements)
             if (clazz.isInstance(typeElement))
                 generateTypeIndexEntry(typeElement);
     }
     
-    private void generateNetworkIndex() throws Exception {
+    protected void generateNetworkIndex() throws Exception {
         withGeneratingNavigationHTMLFile("networks", new Runnable() {
             public void run() throws Exception {
                 for (ITypeElement typeElement : typeElements)
@@ -820,7 +821,7 @@ public class DocumentationGenerator {
         });
     }
     
-    private void generateFilePages() throws Exception {
+    protected void generateFilePages() throws Exception {
         try {
             monitor.beginTask("Generating file pages...", files.size());
     
@@ -860,7 +861,7 @@ public class DocumentationGenerator {
         }
     }
     
-    private void generateTypePages() throws Exception {
+    protected void generateTypePages() throws Exception {
         try {
             monitor.beginTask("Generating ned type pages...", typeElements.size());
     
@@ -920,7 +921,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {
+    protected void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {
         Map<String, FieldElement> fields = msgTypeElement.getMsgTypeInfo().getFields();
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
 
@@ -959,7 +960,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generatePropertiesTable(ITypeElement typeElement) throws IOException {
+    protected void generatePropertiesTable(ITypeElement typeElement) throws IOException {
         Map<String, PropertyElementEx> properties = typeElement.getProperties();
         
         if (properties.size() != 0) {
@@ -990,7 +991,7 @@ public class DocumentationGenerator {
         }
     }
     
-    private void generatePropertyLiteralValues(PropertyElementEx property) throws IOException {
+    protected void generatePropertyLiteralValues(PropertyElementEx property) throws IOException {
         for (PropertyKeyElement key = property.getFirstPropertyKeyChild(); key != null; key = key.getNextPropertyKeySibling()) {
             out(key.getFirstLiteralChild().getValue());
 
@@ -999,7 +1000,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateUsedInTables(INedTypeElement typeElement) throws IOException {
+    protected void generateUsedInTables(INedTypeElement typeElement) throws IOException {
         if (usersMap.containsKey(typeElement)) {
             ArrayList<CompoundModuleElementEx> compoundModules = new ArrayList<CompoundModuleElementEx>();
             ArrayList<CompoundModuleElementEx> networks = new ArrayList<CompoundModuleElementEx>();
@@ -1034,7 +1035,7 @@ public class DocumentationGenerator {
         }
     }
     
-    private void generateParametersTable(INedTypeElement typeElement) throws IOException {
+    protected void generateParametersTable(INedTypeElement typeElement) throws IOException {
         Map<String, ParamElementEx> localParamsDeclarations = typeElement.getNEDTypeInfo().getLocalParamDeclarations();
         Map<String, ParamElementEx> paramsDeclarations = typeElement.getParamDeclarations();
         Map<String, ParamElementEx> paramsAssignments = typeElement.getParamAssignments();
@@ -1070,7 +1071,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateUnassignedParametersTable(INedTypeElement typeElement) throws IOException {
+    protected void generateUnassignedParametersTable(INedTypeElement typeElement) throws IOException {
         ArrayList<ArrayList<Object>> params = new ArrayList<ArrayList<Object>>();
         collectUnassignedParameters(null, typeElement.getNEDTypeInfo().getSubmodules(), params);
 
@@ -1102,7 +1103,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void collectUnassignedParameters(String prefix, Map<String, SubmoduleElementEx> typeElementMap, ArrayList<ArrayList<Object>> params) throws IOException {
+    protected void collectUnassignedParameters(String prefix, Map<String, SubmoduleElementEx> typeElementMap, ArrayList<ArrayList<Object>> params) throws IOException {
         for (SubmoduleElementEx submodule : typeElementMap.values()) {
             INedTypeElement typeElement = submodule.getEffectiveTypeRef();
 
@@ -1133,7 +1134,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateGatesTable(INedTypeElement typeElement) throws IOException {
+    protected void generateGatesTable(INedTypeElement typeElement) throws IOException {
         IModuleTypeElement module = (IModuleTypeElement)typeElement;
 
         Map<String, GateElementEx> localGateDeclarations = module.getNEDTypeInfo().getLocalGateDeclarations();
@@ -1169,12 +1170,12 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateTableComment(String comment) throws IOException {
+    protected void generateTableComment(String comment) throws IOException {
         if (comment != null)
             out(processHTMLContent("<span class=\"comment\">" + comment + "</span>"));
     }
 
-    private void generateTypeReference(ITypeElement typeElement) throws IOException {
+    protected void generateTypeReference(ITypeElement typeElement) throws IOException {
         out("<tr>\r\n" + 
             "   <td>\r\n" + 
             "      <a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
@@ -1191,7 +1192,7 @@ public class DocumentationGenerator {
             "</tr>\r\n");
     }
 
-    private void generateUnresolvedTypeReference(String name) throws IOException {
+    protected void generateUnresolvedTypeReference(String name) throws IOException {
         out("<tr>\r\n" + 
     		"   <td>\r\n" + 
     		name + 
@@ -1202,7 +1203,7 @@ public class DocumentationGenerator {
     		"</tr>\r\n");
     }
 
-    private void generateCppDefinitionReference(ITypeElement typeElement) throws IOException {
+    protected void generateCppDefinitionReference(ITypeElement typeElement) throws IOException {
         String className = typeElement.getName();
 
         if (typeElement instanceof INedTypeElement) {
@@ -1216,11 +1217,11 @@ public class DocumentationGenerator {
             out("<p><b>C++ definition: <a href=\"" + doxyRelativeRootPath.append(rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"_top\">click here</a></b></p>\r\n");
     }
 
-    private void generateFileReference(IFile file) throws IOException {
+    protected void generateFileReference(IFile file) throws IOException {
         out("<p><b>File: <a href=\"" + getFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b></p>\r\n");
     }
 
-    private void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
+    protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
         if (subtypesMap.containsKey(typeElement)) {
             out("<h3 class=\"subtitle\">Known subclasses:</h3>\r\n" + 
         		"<table>\r\n");
@@ -1232,7 +1233,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateExtendsTable(ITypeElement typeElement) throws IOException {
+    protected void generateExtendsTable(ITypeElement typeElement) throws IOException {
         if (typeElement.getFirstExtends() != null) {
             out("<h3 class=\"subtitle\">Extends:</h3>\r\n" + 
         		"<table>\r\n");
@@ -1249,7 +1250,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateNedTypeFigures() throws InterruptedException, CoreException {
+    protected void generateNedTypeFigures() throws InterruptedException, CoreException {
         if (configuration.generateNedTypeFigures) {
             ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResources.getNedFiles(project));
             
@@ -1312,14 +1313,14 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
+    protected void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
         if (configuration.generateNedTypeFigures) {
             out("<img src=\"" + getFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
             // TODO: out("<map name=\"type-diagram\">" +  + "</map>\r\n"); 
         }
     }
     
-    private void generateFullDiagrams() throws Exception {
+    protected void generateFullDiagrams() throws Exception {
         try {
             monitor.beginTask("Generating full diagrams...", (configuration.generateUsageDiagrams ? 2 : 0) + (configuration.generateInheritanceDiagrams ? 2 : 0));
             final ArrayList<INedTypeElement> nedTypeElements = new ArrayList<INedTypeElement>();
@@ -1385,7 +1386,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateUsageDiagram(ITypeElement typeElement) throws IOException {
+    protected void generateUsageDiagram(ITypeElement typeElement) throws IOException {
         if (configuration.generateUsageDiagrams) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
@@ -1401,7 +1402,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
+    protected void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
         if (configuration.generateUsageDiagrams) {
             DotGraph dot = new DotGraph();
     
@@ -1436,7 +1437,7 @@ public class DocumentationGenerator {
         }
     }
     
-    private void generateInheritanceDiagram(ITypeElement typeElement) throws IOException {
+    protected void generateInheritanceDiagram(ITypeElement typeElement) throws IOException {
         if (configuration.generateInheritanceDiagrams) {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
@@ -1452,7 +1453,7 @@ public class DocumentationGenerator {
         }
     }
 
-    private void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
+    protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName, String cmapFileName) throws IOException {
         if (configuration.generateInheritanceDiagrams) {
             DotGraph dot = new DotGraph();
     
@@ -1512,20 +1513,20 @@ public class DocumentationGenerator {
         }
     }
     
-    private void generateSourceContent(IFile file) throws IOException, CoreException {
+    protected void generateSourceContent(IFile file) throws IOException, CoreException {
         generateSourceContent(FileUtils.readTextFile(file.getContents()));
     }
 
-    private void generateSourceContent(ITypeElement typeElement) throws IOException {
+    protected void generateSourceContent(ITypeElement typeElement) throws IOException {
         generateSourceContent(typeElement.getNEDSource());
     }
 
-    private void generateSourceContent(String source) throws IOException {
+    protected void generateSourceContent(String source) throws IOException {
         out("<h3 class=\"subtitle\">Source code:</h3>\r\n" + 
             "<pre class=\"src\">" + source + "</pre>\r\n");
     }
 
-    private void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
+    protected void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
         withGeneratingHTMLFile(fileName, new Runnable() {
             public void run() throws Exception {
                 out(content);
@@ -1533,7 +1534,7 @@ public class DocumentationGenerator {
         });
     }
     
-    private void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
+    protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
         File oldCurrentOutputFile = currentOutputFile;
 
         setCurrentOutputFile(fileName);
@@ -1550,7 +1551,7 @@ public class DocumentationGenerator {
             currentOutputFile = oldCurrentOutputFile;
     }
 
-    private void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
+    protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
         Process process = Runtime.getRuntime().exec(new String[] {dotExecutablePath, "-T" + format, "-o", outputFile.toString()}, null, getFile("."));
         OutputStream outputStream = process.getOutputStream();
         outputStream.write(dot.toString().getBytes());
@@ -1580,7 +1581,7 @@ public class DocumentationGenerator {
         throw new RuntimeException("timeout occured when generating " + outputFile.toString());
     }
     
-    private String getParamTypeAsString(ParamElementEx param) {
+    protected String getParamTypeAsString(ParamElementEx param) {
         String type = param.getAttribute(GateElementEx.ATT_TYPE);
 
         if (type == null)
@@ -1589,7 +1590,7 @@ public class DocumentationGenerator {
             return type;
     }
 
-    private void setCurrentOutputFile(String fileName) throws FileNotFoundException {
+    protected void setCurrentOutputFile(String fileName) throws FileNotFoundException {
         File file = getFile(fileName);
 
         if (!outputStreams.containsKey(fileName))
@@ -1598,18 +1599,18 @@ public class DocumentationGenerator {
         currentOutputFile = file;
     }
 
-    private void out(String string) throws IOException {
+    protected void out(String string) throws IOException {
         if (monitor.isCanceled())
             throw new CancellationException();
 
         outputStreams.get(currentOutputFile).write(string.getBytes());
     }
     
-    private IPath getFilePath(IFile file) {
+    protected IPath getFilePath(IFile file) {
         return new Path("");
     }
     
-    private IPath getFilePath(ITypeElement typeElement) {
+    protected IPath getFilePath(ITypeElement typeElement) {
         IFile file = getNedOrMsgFile(typeElement);
 
         if (file != null) {
@@ -1622,15 +1623,15 @@ public class DocumentationGenerator {
         return new Path("");
     }
 
-    private String getFileName(IFile file) {
+    protected String getFileName(IFile file) {
         return getFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")) + ".html";
     }
 
-    private String getFileName(ITypeElement typeElement) {
+    protected String getFileName(ITypeElement typeElement) {
         return getFileName(typeElement, null, null);
     }
 
-    private String getFileName(ITypeElement typeElement, String discriminator, String extension) {
+    protected String getFileName(ITypeElement typeElement, String discriminator, String extension) {
         String fileName = "";
         
         if (typeElement instanceof INedTypeElement)
@@ -1649,7 +1650,7 @@ public class DocumentationGenerator {
         return getFilePath(typeElement).append(fileName).toString();
     }
     
-    private File getFile(String relativePath) {
+    protected File getFile(String relativePath) {
         return getFullNeddocPath().append(relativePath).toFile();
     }
     
@@ -1667,33 +1668,28 @@ public class DocumentationGenerator {
         return null;
     }
     
-    private IPath getReversePath(IPath path) {
-        String result = "";
-
-        for (int i = 0; i < path.segmentCount(); i++)
-            result = result + "../";
-        
-        return new Path(result);
+    protected IPath getReversePath(IPath path) {
+        return new Path(StringUtils.repeat("../", path.segmentCount()));
     }
 
-    private IPath getFullNeddocPath() {
+    protected IPath getFullNeddocPath() {
         return documentationRootPath.append(rootRelativeNeddocPath);
     }
 
-    private IPath getFullDoxyPath() {
+    protected IPath getFullDoxyPath() {
         return documentationRootPath.append(rootRelativeDoxyPath);
     }
 
-    private interface Runnable {
+    protected interface Runnable {
         public void run() throws Exception;
     }
     
-    private class DotGraph {
-        private StringBuffer buffer = new StringBuffer();
+    protected class DotGraph {
+        StringBuffer buffer = new StringBuffer();
         
-        private Set<ITypeElement> nodes = new HashSet<ITypeElement>();
+        Set<ITypeElement> nodes = new HashSet<ITypeElement>();
         
-        private Set<Pair<ITypeElement, ITypeElement>> edges = new HashSet<Pair<ITypeElement, ITypeElement>>();
+        Set<Pair<ITypeElement, ITypeElement>> edges = new HashSet<Pair<ITypeElement, ITypeElement>>();
         
         public void append(String text) {
             buffer.append(text);
