@@ -1,11 +1,16 @@
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.scave.editors.ResultFilesTracker.isDerived;
+import static org.omnetpp.scave.editors.ResultFilesTracker.isResultFile;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.InputFile;
@@ -24,7 +29,7 @@ public class AddResultFileAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(editor.getSite().getShell(), ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
+		ResultFileSelectionDialog dialog = new ResultFileSelectionDialog(editor.getSite().getShell(), ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
 		dialog.setTitle("Select Result File");
 		if (dialog.open() == Window.OK) {
 			Object[] result = dialog.getResult();
@@ -46,5 +51,18 @@ public class AddResultFileAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		return true;
+	}
+	
+	private static class ResultFileSelectionDialog extends ResourceListSelectionDialog
+	{
+		public ResultFileSelectionDialog(Shell shell, IContainer container, int typeMask) {
+			super(shell, container, typeMask);
+		}
+
+		@Override
+		protected boolean select(IResource resource) {
+			return resource instanceof IFile && isResultFile((IFile)resource)
+						&& !isDerived(resource);
+		}
 	}
 }

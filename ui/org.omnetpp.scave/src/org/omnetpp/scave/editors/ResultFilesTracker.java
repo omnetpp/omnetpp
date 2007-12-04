@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -233,7 +234,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		IResource resource = workspaceRoot.findMember(resourcePath);
 		if (resource instanceof IFile) {
 			IFile file = (IFile)resource;
-			if (!isDerived(file))
+			if (isResultFile(file) && !isDerived(file))
 				loadFile(file);
 		}
 	}
@@ -244,15 +245,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * When not, it generates the index first and then loads it from the index.
 	 */
 	private void loadFile(final IFile file) {
+		Assert.isLegal(isResultFile(file));
 		if (debug) System.out.format("  loadFile: %s ", file);
 		synchronized (lock) {
-		if (isResultFile(file)) {
 			if (file.getLocation().toFile().exists()) {
 				loadFileInternal(file);
 			}
-		}
-		else
-			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 		}
 	}
 
@@ -368,7 +366,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	/**
 	 * Returns true iff <code>file</code> is a result file (scalar or vector).
 	 */
-	private boolean isResultFile(IFile file) {
+	public static boolean isResultFile(IFile file) {
 		try {
 			if (file.getContentDescription() != null) {
 				IContentType contentType = file.getContentDescription().getContentType();
@@ -377,18 +375,17 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		} catch (CoreException e) {
 			// the file might not exists, so content description is not available
 			String extension = file.getFileExtension();
-			return "sca".equals(extension) ||  "vec".equals(extension) || "vci".equals(extension);
+			return "sca".equals(extension) ||  "vec".equals(extension)/* || "vci".equals(extension)*/;
 		}
 		return false;
 	}
 	
 	/**
-	 * Returns true if the file or one of its parents is derived.
+	 * Returns true if the resource or one of its parents is derived.
 	 * 
 	 * @return
 	 */
-	private boolean isDerived(IFile file) {
-		IResource resource = file;
+	public static boolean isDerived(IResource resource) {
 		while (!(resource instanceof IProject) && !resource.isDerived())
 			resource = resource.getParent();
 		return resource.isDerived();
@@ -397,9 +394,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	/**
 	 * Return true iff the <code>file</code> matches any of the input files.
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean inputsMatches(IFile file) {
-		for (InputFile inputfile : (List<InputFile>)inputs.getInputs())
+		for (InputFile inputfile : inputs.getInputs())
 			if (matchFile(file, inputfile))
 				return true;
 		return false;
