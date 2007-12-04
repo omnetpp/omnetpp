@@ -19,6 +19,7 @@
 #define __SIMKERNELDEFS_H
 
 #include <stddef.h>
+#include <float.h>
 #include <math.h>
 #include "platdep/platdefs.h"
 
@@ -104,7 +105,7 @@
 // "Legacy" module: double simtime_t
 typedef double   simtime_t;
 typedef double   const_simtime_t;
-#define MAXTIME  HUGE_VAL
+#define MAXTIME  DBL_MAX
 #define SIMTIME_STR(t) simtimeToStr(t)
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
