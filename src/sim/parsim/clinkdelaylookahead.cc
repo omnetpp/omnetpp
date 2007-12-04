@@ -93,9 +93,6 @@ void cLinkDelayLookahead::startRun()
     }
 
     // if two partitions are not connected, the lookeahead is "very large"
-    // TODO use this once Tkenv is prepared to handle it:
-    //  const double ZERO = 0.0;
-    //  const double POSITIVE_INFINITY = 1.0/ZERO;
     const double HUGE_LOOKAHEAD = 1e308;
     for (i=0; i<numSeg; i++)
         if (i!=myProcId && segInfo[i].minDelay==-1)
