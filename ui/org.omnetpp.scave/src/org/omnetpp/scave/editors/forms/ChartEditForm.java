@@ -51,8 +51,6 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
-import sun.beans.editors.FontEditor;
-
 /**
  * Edit form of charts.
  *
