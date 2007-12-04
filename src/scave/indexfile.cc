@@ -189,7 +189,6 @@ void RunData::writeToFile(FILE *file, const char *filename) const
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
 }
-
 //=========================================================================
 static bool isFileReadable(const char *filename)
 {
@@ -258,14 +257,8 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
     // when the fingerprint not found assume the index file is being written therefore it is up to date
     if (!index)
         return true;
-
-    struct stat s;
-    bool uptodate = false;
-    if (stat(vectorFileName.c_str(), &s) == 0)
-    {
-        uptodate = (s.st_mtime == index->fingerprint.lastModified) && (s.st_size == index->fingerprint.fileSize);
-    }
-
+    
+    bool uptodate = index->fingerprint.check(vectorFileName.c_str());
     delete index;
     return uptodate;
 }
@@ -279,6 +272,16 @@ FingerPrint::FingerPrint(const char *vectorFileName)
 
     this->lastModified = (long)s.st_mtime;
     this->fileSize = (long)s.st_size;
+}
+
+bool FingerPrint::check(const char *vectorFileName)
+{
+    struct stat s;
+    if (stat(vectorFileName, &s) == 0)
+    {
+        return (this->lastModified == s.st_mtime) && (this->fileSize == s.st_size);
+    }
+    return false;
 }
 
 //=========================================================================

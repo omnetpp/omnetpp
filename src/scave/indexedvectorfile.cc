@@ -33,6 +33,10 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
     IndexFileReader indexReader(ifname.c_str());
     index = indexReader.readAll(); // XXX do not read whole index
     vector = index->getVectorById(vectorId);
+    
+    if (!vector)
+    	throw opp_runtime_error("Vector with vectorId %ld not found in file '%s'",
+    			vectorId, filename);
 }
 
 IndexedVectorFileReader::~IndexedVectorFileReader()

@@ -52,7 +52,12 @@ public class ChartLine {
 	}
 	
 	public ResultItem getResultItem() {
-		return id != -1 && manager != null ? manager.getItem(id) : null;
+		try {
+			return id != -1 && manager != null ? manager.getItem(id) : null;
+		} catch (Exception e) {
+			// no such result item, the file was unloaded
+			return null;
+		}
 	}
 	
 	public String toString() {

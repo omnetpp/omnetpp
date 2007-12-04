@@ -170,6 +170,7 @@ struct FingerPrint {
 
     FingerPrint() : lastModified(0), fileSize(0) {}
     FingerPrint(const char *vectorFileName);
+    bool check(const char *vectorFileName);
 };
 
 /**
