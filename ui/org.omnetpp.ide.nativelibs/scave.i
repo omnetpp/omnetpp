@@ -333,6 +333,7 @@ int strdictcmp(const char *s1, const char *s2);
 
 %ignore ResultItem::moduleNameRef;
 %ignore ResultItem::nameRef;
+%newobject ResultItem::getEnum() const;
 %extend ResultItem {
    std::string getModuleName() {return *self->moduleNameRef;}
    std::string getName() {return *self->nameRef;}
