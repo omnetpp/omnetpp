@@ -11,6 +11,9 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
+/**
+ * FIXME levy: please add description!!!!
+ */
 // TODO: implement caching if performance turns out to be bad
 public class MsgTypeInfo implements IMsgTypeInfo, NEDElementTags {
     protected IMsgTypeElement typeNode;

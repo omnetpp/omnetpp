@@ -22,6 +22,9 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
 
+/**
+ * FIXME levy: please add description, to the class, and to the methods!!!!
+ */
 public class MsgResources implements IMsgTypeResolver {
     private static final String MSG_EXTENSION = "msg";
 

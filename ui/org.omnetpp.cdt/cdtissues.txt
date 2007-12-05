@@ -37,3 +37,6 @@ Eclipse Platform sources which usually have very high quality documentation.
 
 Perhaps a documenting campaign could help, while CDT developers still remember
 what is what?
+
+Other example: in Core, org.eclipse.cdt.core.parser.* -- almost everything there
+written by jcamelon, practically not documented.
