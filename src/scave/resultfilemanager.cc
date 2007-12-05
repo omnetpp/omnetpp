@@ -774,8 +774,12 @@ ID ResultFileManager::addComputedVector(const char *name, const char *file, Comp
     if (!fileRunRef)
     	fileRunRef = addFileRun(fileRef, runRef);
     
-    VectorResult newVector = VectorResult(vector);
+    VectorResult newVector = VectorResult();
     newVector.computation = computation;
+    newVector.vectorId = vector.vectorId;
+    newVector.columns = vector.columns;
+    // TODO which attributes should be copied?
+    newVector.moduleNameRef = vector.moduleNameRef;
     newVector.nameRef = stringSetFindOrInsert(names, name);
     newVector.fileRunRef = fileRunRef;
     newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
