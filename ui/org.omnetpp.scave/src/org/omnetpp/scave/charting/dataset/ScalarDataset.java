@@ -25,7 +25,7 @@ import org.omnetpp.scave.model2.StatUtils;
  *
  * @author tomi
  */
-public class ScalarDataset implements IScalarDataset {
+public class ScalarDataset implements IAveragedScalarDataset {
 	
 	private static ResultItemFields defaultGrouping =  new ResultItemFields(new StringVector()); //new ResultItemFields(MODULE).complement();
 

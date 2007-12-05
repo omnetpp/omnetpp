@@ -49,8 +49,10 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
+import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
 import org.omnetpp.scave.charting.dataset.IDataset;
-import org.omnetpp.scave.charting.dataset.ScalarDataset;
+import org.omnetpp.scave.charting.dataset.IScalarDataset;
+import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 
@@ -60,7 +62,7 @@ import org.omnetpp.scave.charting.plotter.SquareSymbol;
  * @author tomi
  */
 public class ScalarChart extends ChartCanvas {
-	private ScalarDataset dataset;
+	private IScalarDataset dataset;
 
 	private LinearAxis valueAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC);
 	private DomainAxis domainAxis = new DomainAxis(this);
@@ -96,17 +98,17 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	public void doSetDataset(IDataset dataset) {
-		if (dataset != null && !(dataset instanceof ScalarDataset))
-			throw new IllegalArgumentException("must be an ScalarDataset");
+		if (dataset != null && !(dataset instanceof IScalarDataset))
+			throw new IllegalArgumentException("must be an IScalarDataset");
 		
-		this.dataset = (ScalarDataset)dataset;
+		this.dataset = (IScalarDataset)dataset;
 		updateLegend();
 		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();
 	}
 	
-	public ScalarDataset getDataset() {
+	public IScalarDataset getDataset() {
 		return dataset;
 	}
 	
@@ -613,11 +615,19 @@ public class ScalarChart extends ChartCanvas {
 				int row = rowColumn / numColumns;
 				int column = rowColumn % numColumns;
 				String key = (String) dataset.getColumnKey(column);
-				double value = dataset.getValue(row, column);
-				double halfInterval = dataset.getConfidenceInterval(row, column, CONFIDENCE_LEVEL);
-
+				String valueStr = null;
+				if (dataset instanceof IStringValueScalarDataset) {
+					valueStr = ((IStringValueScalarDataset)dataset).getValueAsString(row, column);
+				}
+				if (valueStr == null) {
+					double value = dataset.getValue(row, column);
+					double halfInterval = Double.NaN;
+					if (dataset instanceof IAveragedScalarDataset)
+						halfInterval = ((IAveragedScalarDataset)dataset).getConfidenceInterval(row, column, CONFIDENCE_LEVEL);
+					valueStr = formatValue(value, halfInterval);
+				}
 				String line1 = StringEscapeUtils.escapeHtml(key);
-				String line2 = "value: " + formatValue(value, halfInterval);
+				String line2 = "value: " + valueStr;
 				int maxLength = Math.max(line1.length(), line2.length());
 				outSizeConstraint.preferredWidth = 20 + maxLength * 7;
 				outSizeConstraint.preferredHeight = 25 + 2 * 12;

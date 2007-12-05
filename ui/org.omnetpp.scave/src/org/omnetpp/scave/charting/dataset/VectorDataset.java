@@ -4,19 +4,22 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.ResultItemValueFormatter;
 
 /**
  * IXYDataset implementation for output vectors.
  *
  * @author tomi
  */
-public class VectorDataset implements IXYDataset {
+public class VectorDataset implements IStringValueXYDataset {
 	
 	private IDList idlist;
 	private String[] seriesKeys;
 	private XYArray[] seriesData;
+	private ResultItemValueFormatter[] formatters; 
 
 	/**
 	 * Creates an empty dataset.
@@ -25,6 +28,7 @@ public class VectorDataset implements IXYDataset {
 		this.idlist = new IDList();
 		this.seriesKeys = new String[] {};
 		this.seriesData = new XYArray[] {};
+		this.formatters = new ResultItemValueFormatter[] {};
 	}
 	
 	/**
@@ -51,6 +55,11 @@ public class VectorDataset implements IXYDataset {
 		this(idlist, lineNameFormat, manager);
 		Assert.isTrue(seriesData != null || idlist.size() == seriesData.length);
 		this.seriesData = seriesData;
+		this.formatters = new ResultItemValueFormatter[idlist.size()];
+		for (int i = 0; i < formatters.length; ++i) {
+			ResultItem vector = manager.getItem(idlist.get(i));
+			formatters[i] = new ResultItemValueFormatter(vector);
+		}
 	}
 	
 	public int getSeriesCount() {
@@ -73,12 +82,22 @@ public class VectorDataset implements IXYDataset {
 		return seriesData[series].getPreciseX(item);
 	}
 	
+	public String getXAsString(int series, int item) {
+		BigDecimal xp = getPreciseX(series, item);
+		return xp != null ? xp.toString() : String.format("%g", getX(series, item)); 
+	}
+	
 	public double getY(int series, int item) {
 		return seriesData[series].getY(item);
 	}
 
 	public BigDecimal getPreciseY(int series, int item) {
 		return new BigDecimal(getY(series, item));
+	}
+	
+	public String getYAsString(int series, int item) {
+		ResultItemValueFormatter formatter = formatters[series];
+		return formatter.format(getY(series, item));
 	}
 	
 	public long getID(int series) {

@@ -1,7 +1,8 @@
 package org.omnetpp.scave.charting.dataset;
 
 /**
- * 
+ * Represents an XY dataset where the x,y coordinates are
+ * computed by averaging.
  *
  * @author tomi
  */

@@ -49,15 +49,4 @@ public interface IScalarDataset extends IDataset {
      * @throws IndexOutOfBoundsException if <code>row</code> or <code>column</code> is out of bounds.
      */
     public double getValue(int row, int column);
-    
-    /**
-     * Returns the half length of the confidence interval for the
-     * value associated with the cell.
-     * 
-     * @param row  the row index
-     * @param column  the column index
-     * @param p  the confidence level
-     * @return the half interval length of NaN if not applicable
-     */
-    public double getConfidenceInterval(int row, int column, double p);
 }
