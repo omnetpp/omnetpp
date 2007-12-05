@@ -57,8 +57,7 @@ public class NedFigureProvider extends AbstractFigureProvider {
                 for (INedTypeElement typeElement : typeElements) {
                     NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
                     String filebasename = StringUtils.chomp(diagramFile.getName(), "."+diagramFile.getFileExtension());
-                    String imageName = typeElements.size() == 1 && typeElement.getName().endsWith(filebasename) ?
-                            typeElement.getName() : filebasename+"_"+typeElement.getName(); 
+                    String imageName = getFigureName(typeElements, typeElement, filebasename); 
                     result.put(editPart.getFigure(),  imageName);
                 }
                 
@@ -67,5 +66,10 @@ public class NedFigureProvider extends AbstractFigureProvider {
         });
         
         return results[0];
+    }
+
+    public static String getFigureName(List<INedTypeElement> typeElements, INedTypeElement typeElement, String fileBaseName) {
+        return typeElements.size() == 1 && typeElement.getName().endsWith(fileBaseName) ?
+            typeElement.getName() : fileBaseName + "_" + typeElement.getName();
     }
 }

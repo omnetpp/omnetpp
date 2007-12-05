@@ -47,6 +47,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
@@ -139,7 +140,7 @@ public class DocumentationGenerator {
     
     protected Map<String, String> doxyMap = new HashMap<String, String>();
 
-    protected Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
+//    protected Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
     
     protected Pattern typeNamesPattern;
 
@@ -458,128 +459,115 @@ public class DocumentationGenerator {
         }
     }
 
-    protected String processHTMLContent(String html) {
-        Matcher matcher = preSpanPattern.matcher(html);
-        StringBuffer buffer = new StringBuffer();
+    protected String processHTMLContent(String clazz, String comment) {
+        // add sentries to facilitate processing
+        comment = "\n\n" + comment + "\n\n";
 
-        while (matcher.find())
-        {
-            String clazz = matcher.group(2);
-            String comment = matcher.group(3);
+        // remove '//#' lines (those are comments to be ignored by documentation generation)
+        comment = comment.replaceAll("(?s)(?<=\n)[ \t]*//#.*?\n", "\n");
 
-            // add sentries to facilitate processing
-            comment = "\n\n" + comment + "\n\n";
+        // remove '// ', '/// ' and '//////...' from beginning of lines
+        comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");     
 
-            // remove '//#' lines (those are comments to be ignored by documentation generation)
-            comment = comment.replaceAll("(?s)\n *//#.*?\n", "\n");
-
-            // remove '// ', '/// ' and '//////...' from beginning of lines
-            comment = comment.replaceAll("(?s)\n[ \t]*//+ ?", "\n");     
-
-            // extract existing <pre> sections to prevent tampering inside them
-            final ArrayList<String> preList = new ArrayList<String>();
-            comment = replaceMatches(comment, "(?s)<pre>(.*?)</pre>", new IRegexpReplacementProvider() {
-                public String getReplacement(Matcher matcher) {
-                    preList.add(matcher.group(0));
-                    
-                    return "<pre" + (preList.size() - 1) + "/>";
-                }
-            });
+        // extract existing <pre> sections to prevent tampering inside them
+        final ArrayList<String> preList = new ArrayList<String>();
+        comment = replaceMatches(comment, "(?s)<pre>(.*?)</pre>", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                preList.add(matcher.group(0));
+                
+                return "<pre" + (preList.size() - 1) + "/>";
+            }
+        });
  
             // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
-            comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
+        comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
 
-            // lines outside <pre> containing whitespace only count as blank
-            comment = comment.replaceAll("(?s)\n[ \t]+\n", "\n\n");
+        // lines outside <pre> containing whitespace only count as blank
+        comment = comment.replaceAll("(?s)\n[ \t]+\n", "\n\n");
 
-            // insert blank line (for later processing) in front of lines beginning with '- ' or '-# '
-            comment = comment.replaceAll("(?s)\n( *-#? )", "\n\n$1");
+        // insert blank line (for later processing) in front of lines beginning with '- ' or '-# '
+        comment = comment.replaceAll("(?s)\n( *-#? )", "\n\n$1");
 
-            // if briefcomment, keep only the 1st paragraph
-            if (clazz.equals("briefcomment"))
-               comment = comment.replaceAll("(?s)(.*?[^ \t\n].*?)\n\n.*", "$1\n\n");
+        // if briefcomment, keep only the 1st paragraph
+        if (clazz.equals("briefcomment"))
+           comment = comment.replaceAll("(?s)(.*?[^ \t\n].*?)\n\n.*", "$1\n\n");
 
-            // format @author, @date, @todo, @bug, @see, @since, @warning, @version
-            comment = comment.replaceAll("@author\\b", "\n\n<b>Author:</b>");
-            comment = comment.replaceAll("@date\\b", "\n\n<b>Date:</b>");
-            comment = comment.replaceAll("@todo\\b", "\n\n<b>TODO:</b>");
-            comment = comment.replaceAll("@bug\\b", "\n\n<b>BUG:</b>");
-            comment = comment.replaceAll("@see\\b", "\n\n<b>See also:</b>");
-            comment = comment.replaceAll("@since\\b", "\n\n<b>Since:</b>");
-            comment = comment.replaceAll("@warning\\b", "\n\n<b>WARNING:</b>");
-            comment = comment.replaceAll("@version\\b", "\n\n<b>Version:</b>");
-            comment = comment.replaceAll("\n\n\n+", "\n\n");
+        // format @author, @date, @todo, @bug, @see, @since, @warning, @version
+        comment = comment.replaceAll("@author\\b", "\n\n<b>Author:</b>");
+        comment = comment.replaceAll("@date\\b", "\n\n<b>Date:</b>");
+        comment = comment.replaceAll("@todo\\b", "\n\n<b>TODO:</b>");
+        comment = comment.replaceAll("@bug\\b", "\n\n<b>BUG:</b>");
+        comment = comment.replaceAll("@see\\b", "\n\n<b>See also:</b>");
+        comment = comment.replaceAll("@since\\b", "\n\n<b>Since:</b>");
+        comment = comment.replaceAll("@warning\\b", "\n\n<b>WARNING:</b>");
+        comment = comment.replaceAll("@version\\b", "\n\n<b>Version:</b>");
+        comment = comment.replaceAll("\n\n\n+", "\n\n");
 
-            // wrap paragraphs NOT beginning with '-' into <p></p>.
-            // well, we should write "paragraphs not beginning with '- ' or '-# '", but
-            // how do you say that in a Perl regex?
-            // (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
-            // see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
-            comment = comment.replaceAll("(?s)(?<=\n\n)[ \t]*([^- \t\n].*?)(?=\n\n)", "<p>$1</p>");
+        // wrap paragraphs NOT beginning with '-' into <p></p>.
+        // well, we should write "paragraphs not beginning with '- ' or '-# '", but
+        // how do you say that in a Perl regex?
+        // (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
+        // see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
+        comment = comment.replaceAll("(?s)(?<=\n\n)[ \t]*([^- \t\n].*?)(?=\n\n)", "<p>$1</p>");
 
-            // wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
-            // every 3 spaces increase indent level by one.
-            comment = comment.replaceAll("(?s)(?<=\n\n)          *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>");
-            comment = comment.replaceAll("(?s)(?<=\n\n)       *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><li>$1</li></ul></ul></ul>");
-            comment = comment.replaceAll("(?s)(?<=\n\n)    *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><li>$1</li></ul></ul>");
-            comment = comment.replaceAll("(?s)(?<=\n\n) *-[ \t]+(.*?)(?=\n\n)", "  <ul><li>$1</li></ul>");
-            for (int i = 0; i < 4; i++) {
-                comment = comment.replaceAll("(?s)</ul>[ \t\n]*<ul>", "\n\n  ");
-            }
-
-            // wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
-            // every 3 spaces increase indent level by one.
-            comment = comment.replaceAll("(?s)(?<=\n\n)          *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>");
-            comment = comment.replaceAll("(?s)(?<=\n\n)       *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><li>$1</li></ol></ol></ol>");
-            comment = comment.replaceAll("(?s)(?<=\n\n)    *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><li>$1</li></ol></ol>");
-            comment = comment.replaceAll("(?s)(?<=\n\n) *-#[ \t]+(.*?)(?=\n\n)", "  <ol><li>$1</li></ol>");
-            for (int i = 0; i < 4; i++) {
-                comment = comment.replaceAll("(?s)</ol>[ \t\n]*<ol>", "\n\n  ");
-            }
-
-            // now we can put back <pre> regions
-            comment = replaceMatches(comment, "<pre(\\d+)/>", new IRegexpReplacementProvider() {
-                public String getReplacement(Matcher matcher) {
-                    return preList.get(Integer.parseInt(matcher.group(1)));
-                }
-            });
-
-            // now we can trim excess blank lines
-            comment = comment.replaceAll("\n\n+", "\n");
-
-            // extract <nohtml> sections to prevent substituting inside them;
-            // also backslashed words to prevent putting hyperlinks on them
-            final ArrayList<String> nohtmlList = new ArrayList<String>();
-            comment = replaceMatches(comment, "(?s)<nohtml>(.*?)</nohtml>", new IRegexpReplacementProvider() {
-                public String getReplacement(Matcher matcher) {
-                    nohtmlList.add(matcher.group(0));
-                    
-                    return "<nohtml" + (nohtmlList.size() - 1) + "/>";
-                }
-            });
-            
-            // put hyperlinks on type names
-            comment = replaceTypeReferences(comment);
-            
-            comment = replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
-                public String getReplacement(Matcher matcher) {
-                    return nohtmlList.get(Integer.parseInt(matcher.group(1)));
-                }
-            });
-
-            // remove backslashes; double backslashes become single ones
-            comment = comment.replaceAll("\\\\(.)", "$1");
-
-            // escape $ signs to avoid referring groups in appendReplacement
-            comment = comment.replace("$", "\\$");
-            
-            // finished with this comment, put it back into original html file
-            matcher.appendReplacement(buffer, comment);
+        // wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
+        // every 3 spaces increase indent level by one.
+        comment = comment.replaceAll("(?s)(?<=\n\n)          *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><ul><li>$1</li></ul></ul></ul></ul>");
+        comment = comment.replaceAll("(?s)(?<=\n\n)       *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><ul><li>$1</li></ul></ul></ul>");
+        comment = comment.replaceAll("(?s)(?<=\n\n)    *-[ \t]+(.*?)(?=\n\n)", "  <ul><ul><li>$1</li></ul></ul>");
+        comment = comment.replaceAll("(?s)(?<=\n\n) *-[ \t]+(.*?)(?=\n\n)", "  <ul><li>$1</li></ul>");
+        for (int i = 0; i < 4; i++) {
+            comment = comment.replaceAll("(?s)</ul>[ \t\n]*<ul>", "\n\n  ");
         }
 
-        matcher.appendTail(buffer);
+        // wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
+        // every 3 spaces increase indent level by one.
+        comment = comment.replaceAll("(?s)(?<=\n\n)          *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><ol><li>$1</li></ol></ol></ol></ol>");
+        comment = comment.replaceAll("(?s)(?<=\n\n)       *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><ol><li>$1</li></ol></ol></ol>");
+        comment = comment.replaceAll("(?s)(?<=\n\n)    *-#[ \t]+(.*?)(?=\n\n)", "  <ol><ol><li>$1</li></ol></ol>");
+        comment = comment.replaceAll("(?s)(?<=\n\n) *-#[ \t]+(.*?)(?=\n\n)", "  <ol><li>$1</li></ol>");
+        for (int i = 0; i < 4; i++) {
+            comment = comment.replaceAll("(?s)</ol>[ \t\n]*<ol>", "\n\n  ");
+        }
 
-        return buffer.toString();
+        // now we can trim excess blank lines
+        comment = comment.replaceAll("\n\n+", "\n");
+
+        // now we can put back <pre> regions
+        comment = replaceMatches(comment, "<pre(\\d+)/>", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                return preList.get(Integer.parseInt(matcher.group(1)));
+            }
+        });
+
+        // extract <nohtml> sections to prevent substituting inside them;
+        // also backslashed words to prevent putting hyperlinks on them
+        final ArrayList<String> nohtmlList = new ArrayList<String>();
+        comment = replaceMatches(comment, "(?s)<nohtml>(.*?)</nohtml>", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                nohtmlList.add(matcher.group(1));
+                
+                return "<nohtml" + (nohtmlList.size() - 1) + "/>";
+            }
+        });
+        
+        // put hyperlinks on type names
+        comment = replaceTypeReferences(comment);
+
+        // put back <nohtml> sections
+        comment = replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                return nohtmlList.get(Integer.parseInt(matcher.group(1)));
+            }
+        });
+
+        // remove backslashes; double backslashes become single ones
+        comment = comment.replaceAll("\\\\(.)", "$1");
+
+        // escape $ signs to avoid referring groups in appendReplacement
+        comment = comment.replace("$", "\\$");
+
+        return comment;
     }
     
     protected interface IRegexpReplacementProvider {
@@ -591,7 +579,7 @@ public class DocumentationGenerator {
         StringBuffer buffer = new StringBuffer();
         
         while (matcher.find())
-            matcher.appendReplacement(buffer, provider.getReplacement(matcher));
+            matcher.appendReplacement(buffer, provider.getReplacement(matcher).replace("$", "\\$"));
 
         matcher.appendTail(buffer);
         
@@ -757,9 +745,9 @@ public class DocumentationGenerator {
 
     protected void generateSelectedTopics() throws Exception {
         withGeneratingNavigationHTMLFile("selected topics", new Runnable() {
-            protected Pattern externalPagesPattern = Pattern.compile("(?m)@externalpage (.*?), *(.*)");
+            protected Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
 
-            protected Pattern pagePattern = Pattern.compile("(?s) +(.*?), *(.*?)\n(.*)");
+            protected Pattern pagePattern = Pattern.compile(" +([^,\n]+),? *(.*?)\n((.|\n)*)");
 
             public void run() throws Exception {
                 out("<li><a href=\"overview.html\" target=\"mainframe\">Overview</a></li>\r\n");
@@ -790,26 +778,30 @@ public class DocumentationGenerator {
 
                     if (comment != null) {
                         Matcher matcher = externalPagesPattern.matcher(comment);
-                        while (matcher.find())
+                        StringBuffer buffer = new StringBuffer();
+                        
+                        while (matcher.find()) {
                             generatePageReference(matcher.group(1), matcher.group(2));
-                        comment = comment.replaceAll("(?m)@externalpage .*?\n", "");
+                            matcher.appendReplacement(buffer, "");
+                        }
+
+                        matcher.appendTail(buffer);
+                        comment = buffer.toString();
 
                         if (comment.contains("@page") || comment.contains("@titlepage")) {
-                            String[] pages = comment.split("@page|@titlepage");
+                            String[] pages = comment.split("(?m)^//[ \t]*(@page|@titlepage)");
+
                             for (String page : pages) {
                                 matcher = pagePattern.matcher(page);
         
                                 if (matcher.matches()) {
                                     generatePageReference(matcher.group(1), matcher.group(2));
-                                    withGeneratingHTMLFile(matcher.group(1), 
-                                        processHTMLContent("<h2>" + matcher.group(2) + "</h2>" +
-                                                           "<pre class=\"comment\">" + matcher.group(3) + "</pre>"));
+                                    withGeneratingHTMLFile(matcher.group(1),
+                                        "<h2>" + matcher.group(2) + "</h2>" + processHTMLContent("comment", matcher.group(3)));
                                 }
                                 else if (page.charAt(0) == '\n') {
                                     withGeneratingHTMLFile("overview.html", 
-                                        processHTMLContent("<pre class=\"comment\">" + page + "</pre>" +
-                                                           "<hr/>\r\n" + 
-                                                           "<p>Generated by neddoc.</p>\r\n"));
+                                        processHTMLContent("comment", page + "<hr/>\r\n" + "<p>Generated by neddoc.</p>\r\n"));
                                     overviewGenerated = true;
                                 }
                             }
@@ -833,6 +825,9 @@ public class DocumentationGenerator {
     }
     
     protected void generatePageReference(String fileName, String title) throws IOException {
+        if (title == null || title.equals(""))
+            title = fileName;
+
         out("<li>\r\n" + 
             "   <a href=\"" + fileName + "\" target=\"mainframe\">" + title + "</a>\r\n" + 
             "</li>\r\n");
@@ -914,8 +909,10 @@ public class DocumentationGenerator {
                             generateCppDefinitionReference(typeElement);
     
                         String comment = typeElement.getComment();
-                        if (comment != null)
-                            out(processHTMLContent("<pre class=\"comment\">" + comment + "</pre>"));
+                        if (comment == null)
+                            out("<p>(no description)</p>");
+                        else
+                            out(processHTMLContent("comment", comment));
     
                         if (typeElement instanceof INedTypeElement) {
                             INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
@@ -1211,7 +1208,7 @@ public class DocumentationGenerator {
 
     protected void generateTableComment(String comment) throws IOException {
         if (comment != null)
-            out(processHTMLContent("<span class=\"comment\">" + comment + "</span>"));
+            out(processHTMLContent("comment", comment));
     }
 
     protected void generateTypeReference(ITypeElement typeElement) throws IOException {
@@ -1223,7 +1220,7 @@ public class DocumentationGenerator {
 
         String comment = typeElement.getComment();
         if (comment != null)
-            out(processHTMLContent("<span class=\"briefcomment\">" + comment + "</span>")); 
+            out(processHTMLContent("briefcomment", comment)); 
         else
             out("<i>(no description)</i>\r\n");
         
@@ -1333,11 +1330,10 @@ public class DocumentationGenerator {
         
                     for (INedTypeElement typeElement : typeElements) {
                         String fileName = file.getName().replaceAll(".ned", "");
-                        String imageName = typeElements.size() == 1 ? fileName : fileName + "_" + typeElement.getName();
+                        String imageName = NedFigureProvider.getFigureName(typeElements, typeElement, fileName);
                         File sourceImageFile = file.getParent().getFile(new Path(imageName + ".png")).getLocation().toFile();
         
                         if (sourceImageFile.exists()) {
-                            // TODO: what if not project relative output directory is used
                             IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".png"));
                             sourceImageFile.renameTo(destinationImagePath.toFile());
                         }
