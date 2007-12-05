@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,7 +19,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.WordUtils;
@@ -31,6 +29,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,6 +41,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.omnetpp.common.image.export.PNGImageExporter;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.ned.core.MsgResources;
@@ -79,6 +79,23 @@ import de.unikassel.imageexport.exporters.ImageExporter;
 import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
 import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
+/**
+ * This class generates documentation for a single OMNeT++/OMNEST project. It calls doxygen if requested and generates
+ * documentation from NED and MSG files found in the project. The result is a bunch of HTML and PNG files.
+ * 
+ * The tool relies on the doxygen and graphviz dot executable which are invoked through the runtime's exec facility.
+ * The documentation generation takes place in a background job (thread) and a progress monitor is used to present
+ * its state to the user. The whole process might take several minutes for large projects such as the INET framework.
+ * 
+ * The generated documentation consists of the following things:
+ *  - doxygen documentation (several different kind of pages)
+ *  - one page for each NED and MSG file showing its content and a list of declared types
+ *  - one page for each type defined in NED and MSG files showing the type's figure, an inheritance, a usage diagram and 
+ *    various other tables.
+ *  - several index pages each listing the declared types of a kind
+ *  - other pages extracted from NED and MSG file comments
+ *  - separate full inheritance and usage diagrams for NED and MSG files
+ */
 public class DocumentationGenerator {
     protected String dotExecutablePath;
     
@@ -389,7 +406,6 @@ public class DocumentationGenerator {
             Document document = factory.newDocumentBuilder().parse(stream);
             NodeList nodes = (NodeList)XPathFactory.newInstance().newXPath().compile("//compound[@kind='class']/filename")
                 .evaluate(document, XPathConstants.NODESET);
-            XPathExpression classNameXPath = XPathFactory.newInstance().newXPath().compile("name/text()");
 
             try {
                 monitor.beginTask("Collecting doxygen...", nodes.getLength());
@@ -397,7 +413,9 @@ public class DocumentationGenerator {
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Node node = nodes.item(i);
                     String fileName = node.getTextContent();
-                    String className = (String)classNameXPath.evaluate(node.getParentNode(), XPathConstants.STRING);
+                    Node nameNode = node.getParentNode().getFirstChild().getNextSibling();
+                    Assert.isTrue(nameNode.getNodeName().equals("name"));
+                    String className = nameNode.getTextContent();
                     doxyMap.put(className, fileName);
                     monitor.worked(1);
                 }
@@ -410,6 +428,9 @@ public class DocumentationGenerator {
 
     protected void generateDoxy() throws Exception {
         if (configuration.generateDoxy) {
+            if (doxyExecutablePath == null || !new File(doxyExecutablePath).exists())
+                throw new RuntimeException("The Doxygen executable path is invalid, set it using Window/Preferences...\nPath: " + doxyExecutablePath);
+
             try {
                 monitor.beginTask("Generating doxy...", IProgressMonitor.UNKNOWN);
                 File doxyConfigFile = absoluteDoxyConfigFilePath.toFile();
@@ -419,15 +440,17 @@ public class DocumentationGenerator {
                     content = content.replaceAll("(?m)^\\s*OUTPUT_DIRECTORY\\s*=.*?$", "OUTPUT_DIRECTORY=" + getFullDoxyPath().toOSString().replace("\\", "\\\\"));
                     content = content.replaceAll("(?m)^\\s*GENERATE_TAGFILE\\s*=.*?$", "GENERATE_TAGFILE=" + getFullDoxyPath().append("doxytags.xml").toOSString().replace("\\", "\\\\"));
                     File modifiedDoxyConfigFile = documentationRootPath.append("temp-doxy.cfg").toFile();
-                    FileUtils.writeTextFile(modifiedDoxyConfigFile, content);
 
-                    Process process = Runtime.getRuntime().exec(new String[] {doxyExecutablePath, modifiedDoxyConfigFile.toString()}, null, project.getLocation().toFile());
-                    
-                    if (process.waitFor() != 0)
-                        throw new RuntimeException("doxy error occured");
-                    
-                    modifiedDoxyConfigFile.delete();
+                    try {
+                        FileUtils.writeTextFile(modifiedDoxyConfigFile, content);
+                        ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
+                    }
+                    finally {
+                        modifiedDoxyConfigFile.delete();
+                    }
                 }
+                else
+                    throw new RuntimeException("Doxygen configuration file not found at: " + absoluteDoxyConfigFilePath);
             }
             finally {
                 monitor.done();
@@ -583,7 +606,7 @@ public class DocumentationGenerator {
             ITypeElement typeElement = typeNamesMap.get(matcher.group(1));
 
             if (typeElement != null)
-                matcher.appendReplacement(buffer, "<a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+                matcher.appendReplacement(buffer, "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
         }
 
         matcher.appendTail(buffer);
@@ -592,7 +615,7 @@ public class DocumentationGenerator {
     }
     
     protected void generateCSS() throws IOException {
-        FileUtils.writeTextFile(getFile("style.css"),
+        FileUtils.writeTextFile(getOutputFile("style.css"),
                 "body,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }\r\n" + 
                 "body,td,p,ul,ol,li { font-size:10pt }\r\n" + 
                 "h1 { font-size:18pt; text-align:center }\r\n" + 
@@ -617,7 +640,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateHTMLFrame() throws IOException {
-        FileUtils.writeTextFile(getFile("index.html"),
+        FileUtils.writeTextFile(getOutputFile("index.html"),
             "<html>\n" + 
             "   <head>\n" + 
             "      <title>Model documentation -- generated from NED files</title>\n" + 
@@ -645,7 +668,7 @@ public class DocumentationGenerator {
 
                 for (IFile file : files)
                     out("<li>\r\n" + 
-                        "   <a href=\"" + getFileName(file) + "\" target=\"mainframe\">" + file.getProjectRelativePath() + "</a>\r\n" + 
+                        "   <a href=\"" + getOutputFileName(file) + "\" target=\"mainframe\">" + file.getProjectRelativePath() + "</a>\r\n" + 
                         "</li>\r\n");
 
                 out("</ul>\r\n");
@@ -755,6 +778,8 @@ public class DocumentationGenerator {
                 
                 out("</ul>\r\n<ul>\r\n");
 
+                boolean overviewGenerated = false;
+
                 for (IFile file : files) {
                     String comment = null;
                     
@@ -780,15 +805,29 @@ public class DocumentationGenerator {
                                         processHTMLContent("<h2>" + matcher.group(2) + "</h2>" +
                                                            "<pre class=\"comment\">" + matcher.group(3) + "</pre>"));
                                 }
-                                else if (page.charAt(0) == '\n')
+                                else if (page.charAt(0) == '\n') {
                                     withGeneratingHTMLFile("overview.html", 
                                         processHTMLContent("<pre class=\"comment\">" + page + "</pre>" +
                                                            "<hr/>\r\n" + 
                                                            "<p>Generated by neddoc.</p>\r\n"));
+                                    overviewGenerated = true;
+                                }
                             }
                         }
                     }
                 }
+                
+                if (!overviewGenerated)
+                    withGeneratingHTMLFile("overview.html", 
+                        "<center><h1>OMNeT++ Model Documentation</h1></center>\r\n" + 
+                		"<center><i>Generated from NED and MSG files</i></center>\r\n" + 
+                		"<p>This documentation has been generated from NED and MSG files.</p>\r\n" + 
+                		"<p>Use the links in the left frame to navigate around.</p>\r\n" + 
+                		"<p>Hint for model developers: if you don\'t like this page, try creating\r\n" + 
+                		"a <tt>package.ned</tt> file with the <tt>@titlepage</tt> directive\r\n" + 
+                		"embedded in a comment.</p>\r\n" +
+                		"<hr/>\r\n" + 
+                        "<p>Generated by neddoc.</p>\r\n");
             }
         });
     }
@@ -801,7 +840,7 @@ public class DocumentationGenerator {
     
     protected void generateTypeIndexEntry(ITypeElement typeElement) throws Exception {
         out("<li>\r\n" + 
-            "   <a href=\"" + getFileName(typeElement) + "\" target=\"mainframe\">" + typeElement.getName() + "</a>\r\n" + 
+            "   <a href=\"" + getOutputFileName(typeElement) + "\" target=\"mainframe\">" + typeElement.getName() + "</a>\r\n" + 
             "</li>\r\n");
     }
     
@@ -826,7 +865,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating file pages...", files.size());
     
             for (final IFile file : files) {
-                withGeneratingHTMLFile(getFileName(file), new Runnable() {
+                withGeneratingHTMLFile(getOutputFileName(file), new Runnable() {
                     public void run() throws IOException, CoreException {
                         monitor.subTask(file.toString());
 
@@ -844,7 +883,7 @@ public class DocumentationGenerator {
                         for (ITypeElement typeElement : typeElements)
                         {
                             out("<li>\r\n" + 
-                                "   <a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
+                                "   <a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
                                 "   <i> (" + typeElement.getReadableTagName() + ")</i>\r\n" + 
                                 "</li>\r\n");
                         }
@@ -866,7 +905,7 @@ public class DocumentationGenerator {
             monitor.beginTask("Generating ned type pages...", typeElements.size());
     
             for (final ITypeElement typeElement : typeElements) {
-                withGeneratingHTMLFile(getFileName(typeElement), new Runnable() {
+                withGeneratingHTMLFile(getOutputFileName(typeElement), new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
                         generateFileReference(getNedOrMsgFile(typeElement));
@@ -1108,7 +1147,7 @@ public class DocumentationGenerator {
             INedTypeElement typeElement = submodule.getEffectiveTypeRef();
 
             if (typeElement != null) {
-                String newPrefix = (prefix == null ? "" : prefix + ".") + "<a href=\"" + getFileName(typeElement) + "\">" + submodule.getName() + "</a>";
+                String newPrefix = (prefix == null ? "" : prefix + ".") + "<a href=\"" + getOutputFileName(typeElement) + "\">" + submodule.getName() + "</a>";
     
                 if (typeElement instanceof CompoundModuleElementEx)
                     collectUnassignedParameters(newPrefix, typeElement.getNEDTypeInfo().getSubmodules(), params);
@@ -1178,7 +1217,7 @@ public class DocumentationGenerator {
     protected void generateTypeReference(ITypeElement typeElement) throws IOException {
         out("<tr>\r\n" + 
             "   <td>\r\n" + 
-            "      <a href=\"" + getFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
+            "      <a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" + 
             "   </td>\r\n" + 
             "   <td>\r\n"); 
 
@@ -1218,7 +1257,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateFileReference(IFile file) throws IOException {
-        out("<p><b>File: <a href=\"" + getFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b></p>\r\n");
+        out("<p><b>File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b></p>\r\n");
     }
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
@@ -1299,7 +1338,7 @@ public class DocumentationGenerator {
         
                         if (sourceImageFile.exists()) {
                             // TODO: what if not project relative output directory is used
-                            IPath destinationImagePath = getFullNeddocPath().append(getFileName(typeElement, "type", ".png"));
+                            IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".png"));
                             sourceImageFile.renameTo(destinationImagePath.toFile());
                         }
                     }
@@ -1315,7 +1354,7 @@ public class DocumentationGenerator {
 
     protected void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
         if (configuration.generateNedTypeFigures) {
-            out("<img src=\"" + getFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
+            out("<img src=\"" + getOutputFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
             // TODO: out("<map name=\"type-diagram\">" +  + "</map>\r\n"); 
         }
     }
@@ -1398,7 +1437,7 @@ public class DocumentationGenerator {
                 "Unresolved types are missing from the diagram.\r\n" + 
                 "Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.</p>\r\n");
     
-            generateUsageDiagram(typeElements, getFileName(typeElement, "usage", ".png"), getFileName(typeElement, "usage", ".map"));
+            generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".png"), getOutputFileName(typeElement, "usage", ".map"));
         }
     }
 
@@ -1429,11 +1468,11 @@ public class DocumentationGenerator {
             
             dot.append("}");
     
-            generateDotOuput(dot, getFile(imageFileName), "png");
-            generateDotOuput(dot, getFile(cmapFileName), "cmap");
+            generateDotOuput(dot, getOutputFile(imageFileName), "png");
+            generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
     
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#usage-diagram\"/>");
-            out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getFile(cmapFileName)) + "</map>\r\n"); 
+            out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n"); 
         }
     }
     
@@ -1449,7 +1488,7 @@ public class DocumentationGenerator {
                 "Unresolved types are missing from the diagram.\r\n" + 
                 "Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.</p>\r\n");
     
-            generateInheritanceDiagram(typeElements, getFileName(typeElement, "inheritance", ".png"), getFileName(typeElement, "inheritance", ".map"));
+            generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".png"), getOutputFileName(typeElement, "inheritance", ".map"));
         }
     }
 
@@ -1505,11 +1544,11 @@ public class DocumentationGenerator {
     
             dot.append("}");
             
-            generateDotOuput(dot, getFile(imageFileName), "png");
-            generateDotOuput(dot, getFile(cmapFileName), "cmap");
+            generateDotOuput(dot, getOutputFile(imageFileName), "png");
+            generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
     
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#inheritance-diagram\"/>");
-            out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getFile(cmapFileName)) + "</map>\r\n"); 
+            out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n"); 
         }
     }
     
@@ -1552,33 +1591,10 @@ public class DocumentationGenerator {
     }
 
     protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
-        Process process = Runtime.getRuntime().exec(new String[] {dotExecutablePath, "-T" + format, "-o", outputFile.toString()}, null, getFile("."));
-        OutputStream outputStream = process.getOutputStream();
-        outputStream.write(dot.toString().getBytes());
-        outputStream.close();
+        if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
+            throw new RuntimeException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nPath: " + dotExecutablePath);
         
-        long begin = System.currentTimeMillis();
-        
-        while (System.currentTimeMillis() - begin < 10000) {
-            try {
-                Thread.sleep(10);
-            }
-            catch (InterruptedException e) {
-                // void, ignore
-            }
-
-            try {
-                if (process.exitValue() != 0)
-                    throw new RuntimeException("dot error occured when generating " + outputFile.toString());
-
-                return;
-            }
-            catch (Exception e) {
-                // ignore exitValue errors
-            }
-        }
-        
-        throw new RuntimeException("timeout occured when generating " + outputFile.toString());
+        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10);
     }
     
     protected String getParamTypeAsString(ParamElementEx param) {
@@ -1591,7 +1607,7 @@ public class DocumentationGenerator {
     }
 
     protected void setCurrentOutputFile(String fileName) throws FileNotFoundException {
-        File file = getFile(fileName);
+        File file = getOutputFile(fileName);
 
         if (!outputStreams.containsKey(fileName))
             outputStreams.put(file, new FileOutputStream(file));
@@ -1606,11 +1622,11 @@ public class DocumentationGenerator {
         outputStreams.get(currentOutputFile).write(string.getBytes());
     }
     
-    protected IPath getFilePath(IFile file) {
+    protected IPath getOutputFilePath(IFile file) {
         return new Path("");
     }
     
-    protected IPath getFilePath(ITypeElement typeElement) {
+    protected IPath getOutputFilePath(ITypeElement typeElement) {
         IFile file = getNedOrMsgFile(typeElement);
 
         if (file != null) {
@@ -1623,15 +1639,15 @@ public class DocumentationGenerator {
         return new Path("");
     }
 
-    protected String getFileName(IFile file) {
-        return getFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")) + ".html";
+    protected String getOutputFileName(IFile file) {
+        return getOutputFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")) + ".html";
     }
 
-    protected String getFileName(ITypeElement typeElement) {
-        return getFileName(typeElement, null, null);
+    protected String getOutputFileName(ITypeElement typeElement) {
+        return getOutputFileName(typeElement, null, null);
     }
 
-    protected String getFileName(ITypeElement typeElement, String discriminator, String extension) {
+    protected String getOutputFileName(ITypeElement typeElement, String discriminator, String extension) {
         String fileName = "";
         
         if (typeElement instanceof INedTypeElement)
@@ -1647,14 +1663,14 @@ public class DocumentationGenerator {
         else
             fileName += ".html";
         
-        return getFilePath(typeElement).append(fileName).toString();
+        return getOutputFilePath(typeElement).append(fileName).toString();
     }
     
-    protected File getFile(String relativePath) {
+    protected File getOutputFile(String relativePath) {
         return getFullNeddocPath().append(relativePath).toFile();
     }
     
-    public synchronized IFile getNedOrMsgFile(INEDElement element) {
+    protected IFile getNedOrMsgFile(INEDElement element) {
         NedFileElementEx nedFileElement = element.getContainingNedFileElement();
         
         if (nedFileElement != null)
@@ -1706,7 +1722,7 @@ public class DocumentationGenerator {
                 String name = typeElement.getName();
                 append(name + " ");
                 
-                append("[URL=\"" + getFileName(typeElement) + "\",");
+                append("[URL=\"" + getOutputFileName(typeElement) + "\",");
     
                 String color = "#ff0000";
                 if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).getIsNetwork())

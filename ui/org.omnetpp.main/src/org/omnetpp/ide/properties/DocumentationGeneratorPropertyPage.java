@@ -19,6 +19,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 
+/**
+ * This is a property page displayed in project properties to set the project specific parameters for documentation generation.
+ * The property values are stored on the project as persistent properties.
+ * The parameters are the following project relative paths:
+ *  - doxygen configuration file
+ *  - generated doxygen documentation
+ *  - generated neddoc documentation
+ * 
+ * @author levy
+ */
 public class DocumentationGeneratorPropertyPage 
     extends PropertyPage
 {

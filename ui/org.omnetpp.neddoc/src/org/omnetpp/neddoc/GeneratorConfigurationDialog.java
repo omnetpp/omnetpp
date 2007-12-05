@@ -31,6 +31,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
 
+/**
+ * This is the documentation generator configuration dialog displayed before generating documentation for an OMNeT++/OMNEST project.
+ * The dialog shows the list of open projects to allow generating documentation for multiple projects at once. Besides it allows
+ * to control what is included in the documentation with respect to doxygen, NED type figures, inheritance and usage diagrams, etc.
+ * 
+ * The documentation generators are configured to put the result either under the project preconfigured by the user using the project 
+ * properties page or to a separate directory given in this dialog.
+ * 
+ * @author levy
+ */
 public class GeneratorConfigurationDialog
     extends TitleAreaDialog
 {
@@ -264,6 +274,9 @@ public class GeneratorConfigurationDialog
         super.configureShell(newShell);
     }
     
+    /**
+     * Creates the list of preconfigured documentation generators.
+     */
     @Override
     protected void okPressed() {
         generators =  new ArrayList<DocumentationGenerator>();
@@ -299,7 +312,10 @@ public class GeneratorConfigurationDialog
 
         super.okPressed();
     }
-    
+
+    /**
+     * Returns the list of preconfigured documentation generators. This method is intended to be called when the dialog result is OK.
+     */
     public List<DocumentationGenerator> getConfiguredDocumentationGenerators() {
         return generators;
     }

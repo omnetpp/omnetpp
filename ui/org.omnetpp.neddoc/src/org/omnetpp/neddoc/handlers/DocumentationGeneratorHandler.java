@@ -14,6 +14,8 @@ import org.omnetpp.neddoc.GeneratorConfiguration;
 import org.omnetpp.neddoc.GeneratorConfigurationDialog;
 
 /**
+ * This controls the documentation generation for one or multiple OMNeT++/OMNEST projects.
+ * 
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */

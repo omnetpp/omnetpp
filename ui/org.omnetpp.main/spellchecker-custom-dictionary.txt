@@ -255,3 +255,7 @@ dataflow
 preprocess
 timestamp
 keypress
+preconfigured
+doxygen
+graphviz
+exec
