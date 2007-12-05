@@ -7,35 +7,42 @@ import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
-import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-
+import org.eclipse.ui.INewWizard;
+import org.eclipse.ui.IWorkbench;
 import org.omnetpp.cdt.cdtpatches.CDTMainWizardPage_Patched;
-import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizardPage;
 
 
 /**
- * Like CDT's CCProjectWizard, but a bit customized for our purposes.
+ * Like OmnetppNewProjectWizard, but continues in a customized 
+ * "New CDT Project" Wizard.
  * 
  * @author Andras
  */
-public class OmnetppCCProjectWizard extends CDTCommonProjectWizard {
+public class OmnetppCCProjectWizard extends Wizard implements INewWizard {
+
+    protected NewOmnetppProjectWizardPage projectPage;
+    private CCProjectWizard nestedWizard;
+
     /**
      * Customizations: 
      *   (1) hide project name / location because we have a separate page for that
      *   (2) filter the project types and templates shown
      */
-    protected class CustomizedCDTMainPage extends CDTMainWizardPage_Patched {
+    class CustomizedCDTMainPage extends CDTMainWizardPage_Patched {
         public CustomizedCDTMainPage() {
             super(CUIPlugin.getResourceString("CProjectWizard"));
             setTitle("Select Project Type");
@@ -76,53 +83,61 @@ public class OmnetppCCProjectWizard extends CDTCommonProjectWizard {
         }
         
         @Override
-        protected ArrayList<EntryDescriptor> filterItems(ArrayList<EntryDescriptor> items) {
-            ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
-            for (EntryDescriptor entry : items) {
-                if (entry.getId().startsWith("org.eclipse.cdt.build") ||
-                        entry.getId().startsWith("org.omnetpp"))
-                    newItems.add(entry);
-            }
-            return newItems;
+        protected ArrayList filterItems(ArrayList items) {
+            //TODO: show only OMNeT++-related templates
+            return super.filterItems(items);
         }
     }
 
-    protected NewOmnetppProjectWizardPage projectPage;
+    class CCProjectWizard extends CDTCommonProjectWizard {
 
-    public OmnetppCCProjectWizard() {
-        super(UIMessages.getString("NewModelProjectWizard.2"), UIMessages.getString("NewModelProjectWizard.3")); //$NON-NLS-1$ //$NON-NLS-2$
+        public CCProjectWizard() {
+            super(UIMessages.getString("NewModelProjectWizard.2"), UIMessages.getString("NewModelProjectWizard.3")); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
+        @Override
+        public void addPages() {
+            fMainPage = new CustomizedCDTMainPage();
+            addPage(fMainPage);
+        }
+        
+        public String[] getNatures() {
+            return new String[] { CProjectNature.C_NATURE_ID, CCProjectNature.CC_NATURE_ID };
+        }
+        
+        protected IProject continueCreation(IProject prj) {
+            try {
+                CProjectNature.addCNature(prj, new NullProgressMonitor());
+                CCProjectNature.addCCNature(prj, new NullProgressMonitor());
+            } catch (CoreException e) {} //FIXME report error
+            return prj;
+        }
     }
-    
+
     @Override
     public void addPages() {
-        projectPage = new NewOmnetppProjectWizardPage();
+        projectPage = new NewOmnetppProjectWizardPage() {
+            @Override
+            public IWizardPage getNextPage() {
+                return nestedWizard.getStartingPage();
+            }
+        };
         addPage(projectPage);
 
-        fMainPage = new CustomizedCDTMainPage();
-        addPage(fMainPage);
+        nestedWizard.addPages();
     }
     
-    public String[] getNatures() {
-        return new String[] { CProjectNature.C_NATURE_ID, CCProjectNature.CC_NATURE_ID };
-    }
-    
-    protected IProject continueCreation(IProject prj) {
-        try {
-            CProjectNature.addCNature(prj, new NullProgressMonitor());
-            CCProjectNature.addCCNature(prj, new NullProgressMonitor());
-        } catch (CoreException e) {} //FIXME report error
-        return prj;
-    }
-
     @Override
     public boolean performFinish() {
-        boolean ok = super.performFinish();
-        if (ok) {
-            // add omnetpp nature
-            ProjectUtils.addOmnetppNature(newProject);
-            //TODO: configure project for OMNeT++
-        }
-        return ok;
+        // TODO add omnetpp nature to selected project
+        return false;
     }
-    
+
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+        nestedWizard = new CCProjectWizard();
+        nestedWizard.init(workbench, selection);
+        nestedWizard.setContainer(getContainer());
+    }
 }
+
+
