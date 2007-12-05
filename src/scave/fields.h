@@ -40,10 +40,12 @@ class SCAVE_API ResultItemField
 		static const int RUN_ID			= 2;
 		static const int MODULE_ID		= 3;
 		static const int NAME_ID		= 4;
-		static const int RUN_ATTR_ID	= 5;
+		static const int ATTR_ID		= 5;
+		static const int RUN_ATTR_ID	= 6;
+		static const int RUN_PARAM_ID	= 7;
 	private:
         int id;
-		std::string name; // constant names above + run attribute names
+		std::string name; // constant names above + attribute/param names
         static int getFieldID(const std::string fieldName);
 	public:
 		ResultItemField(const std::string fieldName);
@@ -51,6 +53,16 @@ class SCAVE_API ResultItemField
 		std::string getFieldValue(const ResultItem &d);
 		bool equal(const ResultItem &d1, const ResultItem &d2) const;
 		int compare(const ResultItem &d1, const ResultItem &d2) const;
+};
+
+class SCAVE_API ResultItemAttribute
+{
+	public:
+		static char *const TYPE;
+		static char *const ENUM;
+		
+		static StringVector getAttributeNames();
+		static bool isAttributeName(const std::string name);
 };
 
 
@@ -66,11 +78,24 @@ class SCAVE_API RunAttribute
 		static char *const DATETIME;
 		
 		static StringVector getAttributeNames();
+		static bool isAttributeName(const std::string name);
 };
 
 inline const char *getAttribute(const ResultItem &d, const std::string attrName)
 {
+    const char *value = d.getAttribute(attrName.c_str()); 
+    return value ? value : ""; 
+}
+
+inline const char *getRunAttribute(const ResultItem &d, const std::string attrName)
+{
     const char *value = d.fileRunRef->runRef->getAttribute(attrName.c_str()); 
+    return value ? value : ""; 
+}
+
+inline const char *getRunParam(const ResultItem &d, const std::string paramName)
+{
+    const char *value = d.fileRunRef->runRef->getModuleParam(paramName.c_str()); 
     return value ? value : ""; 
 }
 
@@ -82,7 +107,9 @@ inline std::string ResultItemField::getFieldValue(const ResultItem &d)
 	case RUN_ID:		return d.fileRunRef->runRef->runName;
 	case MODULE_ID:		return *d.moduleNameRef;
 	case NAME_ID:		return *d.nameRef;
-	case RUN_ATTR_ID:	return getAttribute(d, name);
+	case ATTR_ID:		return getAttribute(d, name);
+	case RUN_ATTR_ID:	return getRunAttribute(d, name);
+	case RUN_PARAM_ID:	return getRunParam(d, name);
 	default:			return "";
 	}
 }
@@ -102,7 +129,9 @@ inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) c
 	case MODULE_ID:		return d1.moduleNameRef == d2.moduleNameRef;
 	case NAME_ID:		return d1.nameRef == d2.nameRef;
                         // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
-	case RUN_ATTR_ID:	return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
+	case ATTR_ID:	return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
+	case RUN_ATTR_ID:	return strcmpFIXME(getRunAttribute(d1, name), getRunAttribute(d2, name)) == 0;
+	case RUN_PARAM_ID:	return strcmpFIXME(getRunParam(d1, name), getRunParam(d2, name)) == 0;
 	}
 	// not reached
 	return true;
@@ -123,8 +152,12 @@ inline int ResultItemField::compare(const ResultItem &d1, const ResultItem &d2) 
 				          d2.moduleNameRef->c_str());
 	case NAME_ID:
 		return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str());
-	case RUN_ATTR_ID:
+	case ATTR_ID:
 		return strdictcmp(getAttribute(d1, name), getAttribute(d2, name));
+	case RUN_ATTR_ID:
+		return strdictcmp(getRunAttribute(d1, name), getRunAttribute(d2, name));
+	case RUN_PARAM_ID:
+		return strdictcmp(getRunParam(d1, name), getRunParam(d2, name));
 	default:
 		return false;
 	}

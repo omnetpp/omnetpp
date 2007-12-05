@@ -55,6 +55,11 @@ struct SCAVE_API ResultItem
 
     ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computation(NULL) {}
 
+    const char *getAttribute(const char *attrName) const {
+        StringMap::const_iterator it = attributes.find(attrName);
+        return it==attributes.end() ? NULL : it->second.c_str();
+    }
+    
     /**
      * Returns the type of this result item (INT,DOUBLE,ENUM).
      * If neither "type" nor "enum" attribute is given it returns DOUBLE.

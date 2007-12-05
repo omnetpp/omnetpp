@@ -29,6 +29,25 @@
 using namespace std;
 
 /*----------------------------------------
+ *            ResultItemAttribute
+ *----------------------------------------*/
+char *const ResultItemAttribute::TYPE  = "type";
+char *const ResultItemAttribute::ENUM = "enum";
+
+StringVector ResultItemAttribute::getAttributeNames()
+{
+    StringVector names = StringVector();
+    names.push_back(TYPE);
+    names.push_back(ENUM);
+    return names;
+}
+
+bool ResultItemAttribute::isAttributeName(const string name)
+{
+	return name == TYPE || name == ENUM;
+}
+
+/*----------------------------------------
  *              RunAttribute
  *----------------------------------------*/
 char *const RunAttribute::EXPERIMENT  = "experiment";
@@ -52,6 +71,13 @@ StringVector RunAttribute::getAttributeNames()
     return names;
 }
 
+bool RunAttribute::isAttributeName(const string name)
+{
+	return name == EXPERIMENT || name == MEASUREMENT || name == REPLICATION ||
+			name == CONFIG || name == RUNNUMBER || name == NETWORKNAME ||
+			name == DATETIME;
+}
+
 /*----------------------------------------
  *              ResultItemField
  *----------------------------------------*/
@@ -72,6 +98,8 @@ int ResultItemField::getFieldID(const string fieldName)
     else if (fieldName == ResultItemField::RUN) return ResultItemField::RUN_ID;
     else if (fieldName == ResultItemField::MODULE) return ResultItemField::MODULE_ID;
     else if (fieldName == ResultItemField::NAME) return ResultItemField::NAME_ID;
+    else if (ResultItemAttribute::isAttributeName(fieldName)) return ResultItemField::ATTR_ID;
+    else if (fieldName.find_first_of('.') != string::npos) return ResultItemField::RUN_PARAM_ID;
     else return ResultItemField::RUN_ATTR_ID;
 }
 
@@ -87,7 +115,9 @@ StringVector ResultItemFields::getFieldNames()
     names.push_back(ResultItemField::RUN);
     names.push_back(ResultItemField::MODULE);
     names.push_back(ResultItemField::NAME);
-    StringVector attrNames = RunAttribute::getAttributeNames();
+    StringVector attrNames = ResultItemAttribute::getAttributeNames();
+    names.insert(names.end(), attrNames.begin(), attrNames.end());
+    attrNames = RunAttribute::getAttributeNames();
     names.insert(names.end(), attrNames.begin(), attrNames.end());
     return names;
 }
