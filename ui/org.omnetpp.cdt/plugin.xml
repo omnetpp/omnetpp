@@ -142,8 +142,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.cdt.wizard.OmnetCDTNewProjectWizard"
-            icon="icons/newoproject.gif"
+            class="org.omnetpp.cdt.wizard.NewOmnetppCCProjectWizard"
             id="org.omnetpp.cdt.wizard.newProjectWizard"
             name="OMNEST/OMNeT++ Project TEST"
             project="true">
@@ -157,7 +156,6 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
-            icon="icons/newoproject.gif"
             id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
             name="OMNEST/OMNeT++ Project for C++ Development (EXPERIMENTAL)"
             project="true">
@@ -170,7 +168,13 @@
       <template
             id="org.omnetpp.cdt.templates.EmptyManaged"
             filterPattern=".*"
-            location="templates/managed/template.xml"
+            location="templates/managed/empty/template.xml"
+            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+      </template>
+      <template
+            id="org.omnetpp.cdt.templates.EmptyMake"
+            filterPattern=".*"
+            location="templates/make/empty/template.xml"
             projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
       </template>
    </extension>

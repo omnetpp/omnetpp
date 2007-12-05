@@ -135,7 +135,7 @@ public class DocumentationGeneratorPropertyPage
 	}
 
     private IProject getProject() {
-        return (IProject)getElement();
+        return (IProject)getElement().getAdapter(IProject.class);
     }
     
     public static String getDoxyPath(IProject project) throws CoreException {

@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -16,12 +12,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import org.omnetpp.common.project.ProjectUtils;
+
 /**
  * Add/remove OMNeT++ nature to the selected project.
  * 
  * @author Andras
  */
-//FIXME "Add Nature" should rather be a wizard? Like CDT's "Convert to C++ project" wizard. What about "Remove Nature"?
 public class ToggleNatureAction implements IObjectActionDelegate {
     private ISelection selection;
 
@@ -34,14 +31,14 @@ public class ToggleNatureAction implements IObjectActionDelegate {
         if (anyProjectMissesNature(projects)) {
             // add OMNeT++ Nature
             for (IProject project : projects)
-                if (!hasNature(project))
-                    addNature(project);
+                if (!ProjectUtils.hasOmnetppNature(project))
+                    ProjectUtils.addOmnetppNature(project);
         }
         else {
             // remove OMNeT++ Nature
             for (IProject project : projects)
-                if (hasNature(project))
-                    removeNature(project);
+                if (ProjectUtils.hasOmnetppNature(project))
+                    ProjectUtils.removeOmnetppNature(project);
         }
     }
 
@@ -69,18 +66,6 @@ public class ToggleNatureAction implements IObjectActionDelegate {
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
     }
 
-    private boolean hasNature(IProject project) {
-        try {
-            IProjectDescription description = project.getDescription();
-            String[] natures = description.getNatureIds();
-            return ArrayUtils.contains(natures, OmnetppNature.NATURE_ID);
-        } 
-        catch (CoreException e) {
-            Activator.getDefault().logError(e);
-            return false;
-        }
-    }
-    
     @SuppressWarnings("unchecked")
     private List<IProject> getSelectedOpenProjects() {
         List<IProject> projects = new ArrayList<IProject>();
@@ -101,36 +86,8 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 
     private boolean anyProjectMissesNature(List<IProject> projects) {
         for (IProject project : projects)
-            if (!hasNature(project))
+            if (!ProjectUtils.hasOmnetppNature(project))
                 return true;
         return false;
-    }
-
-    private void addNature(IProject project) {
-        try {
-            Assert.isTrue(!hasNature(project));
-            IProjectDescription description = project.getDescription();
-            String[] natures = description.getNatureIds();
-            description.setNatureIds((String[])ArrayUtils.add(natures, OmnetppNature.NATURE_ID));
-            project.setDescription(description, null);
-            // note: builders are added automatically, by OmnetppNature.configure()
-        } 
-        catch (CoreException e) {
-            Activator.getDefault().logError(e);
-        }
-    }
-
-    private void removeNature(IProject project) {
-        try {
-            Assert.isTrue(hasNature(project));
-            IProjectDescription description = project.getDescription();
-            String[] natures = description.getNatureIds();
-            description.setNatureIds((String[])ArrayUtils.removeElement(natures, OmnetppNature.NATURE_ID));
-            project.setDescription(description, null);
-            // note: builders are removed automatically, by OmnetppNature.deconfigure()
-        } 
-        catch (CoreException e) {
-            Activator.getDefault().logError(e);
-        }
     }
 }

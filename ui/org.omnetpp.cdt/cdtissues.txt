@@ -14,6 +14,7 @@
   hanem a base project type (meg akkor is, ha tenyleg az uj project tipus volt kivalasztva)
 - pre and postbuild steps run *only* if cc files are not up to date. needs a checkbox
   to run the buildsteps even if the cc files up to date
+- CWizardHandler.canFinich !!!
 
 
 patform:

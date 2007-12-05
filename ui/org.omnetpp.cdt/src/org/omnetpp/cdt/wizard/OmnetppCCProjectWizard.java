@@ -7,6 +7,7 @@ import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
+import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -16,7 +17,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+
 import org.omnetpp.cdt.cdtpatches.CDTMainWizardPage_Patched;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizardPage;
 
@@ -73,9 +76,14 @@ public class OmnetppCCProjectWizard extends CDTCommonProjectWizard {
         }
         
         @Override
-        protected ArrayList filterItems(ArrayList items) {
-            //TODO: show only OMNeT++-related templates
-            return super.filterItems(items);
+        protected ArrayList<EntryDescriptor> filterItems(ArrayList<EntryDescriptor> items) {
+            ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
+            for (EntryDescriptor entry : items) {
+                if (entry.getId().startsWith("org.eclipse.cdt.build") ||
+                        entry.getId().startsWith("org.omnetpp"))
+                    newItems.add(entry);
+            }
+            return newItems;
         }
     }
 
@@ -110,9 +118,11 @@ public class OmnetppCCProjectWizard extends CDTCommonProjectWizard {
     public boolean performFinish() {
         boolean ok = super.performFinish();
         if (ok) {
-            getProject(false);  //XXX "get" function with side effect?
+            // add omnetpp nature
+            ProjectUtils.addOmnetppNature(newProject);
             //TODO: configure project for OMNeT++
         }
         return ok;
     }
+    
 }

@@ -7,12 +7,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -127,5 +133,45 @@ public class ProjectUtils {
 	private static String getProjectRelativePathOf(IProject project, IContainer container) {
 		return container.equals(project) ? "." : container.getProjectRelativePath().toString();
 	}
+
+    public static boolean hasOmnetppNature(IProject project) {
+        try {
+            IProjectDescription description = project.getDescription();
+            String[] natures = description.getNatureIds();
+            return ArrayUtils.contains(natures, IConstants.NATURE_ID);
+        } 
+        catch (CoreException e) {
+            CommonPlugin.logError(e);
+            return false;
+        }
+    }
+
+    public static void addOmnetppNature(IProject project) {
+        try {
+            Assert.isTrue(!hasOmnetppNature(project));
+            IProjectDescription description = project.getDescription();
+            String[] natures = description.getNatureIds();
+            description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.NATURE_ID));
+            project.setDescription(description, null);
+            // note: builders are added automatically, by OmnetppNature.configure()
+        } 
+        catch (CoreException e) {
+            CommonPlugin.logError(e);
+        }
+    }
+
+    public static void removeOmnetppNature(IProject project) {
+        try {
+            Assert.isTrue(hasOmnetppNature(project));
+            IProjectDescription description = project.getDescription();
+            String[] natures = description.getNatureIds();
+            description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.NATURE_ID));
+            project.setDescription(description, null);
+            // note: builders are removed automatically, by OmnetppNature.deconfigure()
+        } 
+        catch (CoreException e) {
+            CommonPlugin.logError(e);
+        }
+    }
 
 }

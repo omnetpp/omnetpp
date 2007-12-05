@@ -16,4 +16,8 @@ public interface IConstants {
 	
     public static final String VECTORFILEINDEXER_BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
     public static final String MAKEFILEBUILDER_BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
+    /**
+     * ID of this project nature
+     */
+    public static final String NATURE_ID = "org.omnetpp.main.omnetppnature";
 }

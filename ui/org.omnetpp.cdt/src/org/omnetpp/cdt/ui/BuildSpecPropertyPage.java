@@ -84,7 +84,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		composite.setLayout(new GridLayout(2, false));
 
-		final IProject project = (IProject) getElement();
+		final IProject project = (IProject) getElement().getAdapter(IProject.class);
 
         createWrapLabel(composite, 
                 "Makefiles will be automatically generated in folders marked so. " +
@@ -336,7 +336,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 	private void loadBuildSpecFile() {
 		try {
-		    IProject project = (IProject) getElement();
+		    IProject project = (IProject) getElement().getAdapter(IProject.class);
 		    buildSpec = BuildSpecUtils.readBuildSpecFile(project);
 		    if (buildSpec == null)
 		        buildSpec = new BuildSpecification();
@@ -352,7 +352,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 	private void saveBuildSpecFile() {
 		try {
-			IProject project = (IProject)getElement();
+			IProject project = (IProject)getElement().getAdapter(IProject.class);
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
 		} 
 		catch (CoreException e) {

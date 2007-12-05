@@ -483,7 +483,7 @@ public class CDTMainWizardPage_Patched extends CDTMainWizardPage {
     }
 
     //(AV) added 
-    protected ArrayList filterItems(ArrayList items) {
+    protected ArrayList<EntryDescriptor> filterItems(ArrayList<EntryDescriptor> items) {
         return items;
     }
 

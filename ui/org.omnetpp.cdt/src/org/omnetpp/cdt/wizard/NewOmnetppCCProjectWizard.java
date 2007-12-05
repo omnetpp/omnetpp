@@ -1,7 +1,25 @@
-package org.omnetpp.ide.wizard;
+package org.omnetpp.cdt.wizard;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
+import org.eclipse.cdt.managedbuilder.core.IBuilder;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IProjectType;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
+import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
+import org.eclipse.cdt.managedbuilder.internal.core.ToolChain;
+import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
+import org.eclipse.cdt.ui.newui.UIMessages;
+import org.eclipse.cdt.ui.text.ICCompletionProposal;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -11,6 +29,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -25,11 +44,11 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.ide.Activator;
 
-public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
+public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 	
-	NewOmnetppProjectWizardPage page;
+	NewOmnetppCCProjectWizardPage page;
 
-	public NewOmnetppProjectWizard() {
+	public NewOmnetppCCProjectWizard() {
 		setWindowTitle("New OMNeT++ project");
 	}
 
@@ -38,15 +57,70 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void addPages() {
-		page = new NewOmnetppProjectWizardPage();
+		page = new NewOmnetppCCProjectWizardPage();
 		addPage(page);
 	}
 
 	@Override
 	public boolean performFinish() {
         IProject project = createNewProject();
+        try {
+//            IProjectType pt = ManagedBuildManager.getProjectType("cdt.managedbuild.target.gnu.mingw.exe");
+//            IManagedProject mp = ManagedBuildManager.createManagedProject(project, pt);
+            CCorePlugin.getDefault().convertProjectToNewCC(project, ManagedBuildManager.CFG_DATA_PROVIDER_ID, new NullProgressMonitor());
+            ICProjectDescription des = CCorePlugin.getDefault().getProjectDescription(project);
+            ICConfigurationDescription aconf = des.getActiveConfiguration();
+            aconf.setName("Release");
+            aconf.setDescription("An omnet++ release configuration");
+            
+            CCorePlugin.getDefault().setProjectDescription(project, des);
+            
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         return project != null;
 	}
+	
+//    public void createStandardProject(IProject project)  throws CoreException {
+//        ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+//        ICProjectDescription des = mngr.createProjectDescription(project, false, true);
+//        ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
+//        ManagedProject mProj = new ManagedProject(des);
+//        info.setManagedProject(mProj);
+//
+//        ICConfigurationDescription acfg = des.getActiveConfiguration();
+//
+//        CfgHolder cfgs[] = new CfgHolder()[] { new CfgHolder()};
+//        cfgs = CfgHolder.unique(fConfigPage.getCfgItems(defaults));
+//        cfgs = CfgHolder.reorder(cfgs);
+//            
+//        for (int i=0; i<cfgs.length; i++) {
+//            String s = (cfgs[i].getToolChain() == null) ? "0" : ((ToolChain)(cfgs[i].getToolChain())).getId();  //$NON-NLS-1$
+//            Configuration cfg = new Configuration(mProj, (ToolChain)cfgs[i].getToolChain(), ManagedBuildManager.calculateChildId(s, null), cfgs[i].getName());
+//            IBuilder bld = cfg.getEditableBuilder();
+//            if (bld != null) {
+//                if(bld.isInternalBuilder()){
+//                    IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
+//                    IBuilder prefBuilder = prefCfg.getBuilder();
+//                    cfg.changeBuilder(prefBuilder, ManagedBuildManager.calculateChildId(cfg.getId(), null), prefBuilder.getName());
+//                    bld = cfg.getEditableBuilder();
+//                    bld.setBuildPath(null);
+//                }
+//                bld.setManagedBuildOn(false);
+//            } else {
+//                System.out.println(UIMessages.getString("StdProjectTypeHandler.3")); //$NON-NLS-1$
+//            }
+//            cfg.setArtifactName(removeSpaces(project.getName()));
+//            CConfigurationData data = cfg.getConfigurationData();
+//            des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
+//        }
+//        mngr.setProjectDescription(project, des);
+//        
+//        doPostProcess(project);
+//    }
+	
+	
 	
 	private IProject createNewProject() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();

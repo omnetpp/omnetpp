@@ -9,11 +9,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.IConstants;
 
 public class OmnetppNature implements IProjectNature {
-	/**
-	 * ID of this project nature
-	 */
-	public static final String NATURE_ID = "org.omnetpp.main.omnetppnature";
-
 	private IProject project;
 
 	/*

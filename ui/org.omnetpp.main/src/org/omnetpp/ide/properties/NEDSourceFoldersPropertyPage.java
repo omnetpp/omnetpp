@@ -56,7 +56,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		composite.setLayout(new GridLayout(2, false));
 
-		final IProject project = (IProject) getElement();
+		final IProject project = getProject();
 
         createWrapLabel(composite, 
                 "NED Source Folders are root folders for the NED package hierarchy. " +
@@ -111,6 +111,10 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 		return composite;
 	}
 
+    private IProject getProject() {
+        return (IProject) getElement().getAdapter(IProject.class);
+    }
+
 	public static Label createWrapLabel(Composite parent, String text, int hspan, int wrapwidth) {
 	    // code from SWTFactory (debug.internal.ui)
 	    Label l = new Label(parent, SWT.NONE | SWT.WRAP);
@@ -125,7 +129,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 
 	protected void performDefaults() {
 		treeViewer.setAllChecked(false);
-		IProject project = (IProject) getElement();
+		IProject project = getProject();
 		treeViewer.setChecked(project, true);
 	}
 	
@@ -136,7 +140,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 
 	private void loadNedFoldersFile() {
 		try {
-			IProject project = (IProject) getElement();
+			IProject project = getProject();
 			IContainer[] folders = ProjectUtils.readNedFoldersFile(project);
 
 			for (IContainer folder : folders) {
@@ -157,7 +161,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 
 	private void saveNedFoldersFile() {
 		try {
-			IProject project = (IProject)getElement();
+			IProject project = getProject();
 			IContainer[] folders = (IContainer[]) ArrayUtils.addAll(new IContainer[]{}, treeViewer.getCheckedElements());
 			ProjectUtils.saveNedFoldersFile(project, folders);
 		} 
