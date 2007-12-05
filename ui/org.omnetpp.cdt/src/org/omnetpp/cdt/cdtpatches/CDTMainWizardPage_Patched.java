@@ -58,6 +58,8 @@ import org.eclipse.ui.PlatformUI;
  * 
  * Modifications marked with (AV).
  * 
+ * See also: https://bugs.eclipse.org/bugs/show_bug.cgi?id=211935  
+ *
  * @author Andras
  */
 public class CDTMainWizardPage_Patched extends CDTMainWizardPage {
