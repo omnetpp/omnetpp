@@ -16,21 +16,33 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
-import org.omnetpp.common.IConstants;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.Activator;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 	
-	NewOmnetppProjectWizardPage page;
+	protected NewOmnetppProjectCreationPage projectPage;
+
+	public static class NewOmnetppProjectCreationPage extends WizardNewProjectCreationPage {
+
+	    public NewOmnetppProjectCreationPage() {
+	        super("OMNEST/OMNeT++ Project");
+	        setTitle("OMNEST/OMNeT++ Project");
+	        setDescription("Creates a new OMNEST/OMNeT++ Project.");
+	        setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newoprj_wiz.png"));
+	    }
+	}
 
 	public NewOmnetppProjectWizard() {
-		setWindowTitle("New OMNeT++ project");
+		setWindowTitle("New OMNEST/OMNeT++ Project");
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -38,8 +50,8 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void addPages() {
-		page = new NewOmnetppProjectWizardPage();
-		addPage(page);
+		projectPage = new NewOmnetppProjectCreationPage();
+		addPage(projectPage);
 	}
 
 	@Override
@@ -48,14 +60,14 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         return project != null;
 	}
 	
-	private IProject createNewProject() {
+	protected IProject createNewProject() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String projectName = page.getProjectName();
+		String projectName = projectPage.getProjectName();
         final IProject projectHandle =  workspace.getRoot().getProject(projectName);
         
         // get a project descriptor
         IPath defaultPath = Platform.getLocation();
-        IPath newPath = page.getLocationPath();
+        IPath newPath = projectPage.getLocationPath();
         if (defaultPath.equals(newPath))
 			newPath = null;
         
@@ -67,7 +79,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         // define the operation to create a new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
-                createProject(description, projectHandle, monitor);
+                createOmnetppProject(description, projectHandle, monitor);
             }
         };
 
@@ -98,7 +110,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         return projectHandle;
 	}
 	
-    private void createProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
+    private void createOmnetppProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
         try {
             monitor.beginTask("", 2000);
 
@@ -110,12 +122,11 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 
             // add the project nature after now, after project creation, so that builders 
             // get properly configured (Project.create() doesn't do it).
-            IProjectDescription description2 = projectHandle.getDescription();
-            description2.setNatureIds(new String[] {IConstants.NATURE_ID});
-            projectHandle.setDescription(description2, monitor);
+            ProjectUtils.addOmnetppNature(projectHandle);
         } 
         finally {
             monitor.done();
         }
     }
+
 }
