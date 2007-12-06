@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -140,8 +141,6 @@ public class DocumentationGenerator {
     
     protected Map<String, String> doxyMap = new HashMap<String, String>();
 
-//    protected Pattern preSpanPattern = Pattern.compile("(?s)<(pre|span) class=\"(comment|briefcomment)\">(.*?)</\\1>");
-    
     protected Pattern typeNamesPattern;
 
     protected GeneratorConfiguration configuration;
@@ -540,19 +539,40 @@ public class DocumentationGenerator {
             }
         });
 
+        // escape html content
+        comment = StringEscapeUtils.escapeHtml(comment);
+
         // extract <nohtml> sections to prevent substituting inside them;
         // also backslashed words to prevent putting hyperlinks on them
         final ArrayList<String> nohtmlList = new ArrayList<String>();
-        comment = replaceMatches(comment, "(?s)<nohtml>(.*?)</nohtml>", new IRegexpReplacementProvider() {
+        comment = replaceMatches(comment, "(?s)&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;", new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
                 nohtmlList.add(matcher.group(1));
                 
                 return "<nohtml" + (nohtmlList.size() - 1) + "/>";
             }
         });
-        
+        comment = replaceMatches(comment, "(?i)(\\\\[a-z_]+)", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                nohtmlList.add(matcher.group(1));
+                
+                return "<nohtml" + (nohtmlList.size() - 1) + "/>";
+            }
+        });
+
         // put hyperlinks on type names
         comment = replaceTypeReferences(comment);
+
+        // restore accented characters e.g. "&ouml;" from their "&amp;ouml;" forms
+        comment = comment.replaceAll("&amp;([a-z]+);", "&$1;");
+
+        // restore " from &quot; (important for attributes of html tags, see below)
+        comment = comment.replaceAll("&quot;","\"");
+
+        // restore html elements and leave other content untouched
+        String htmlElements = "a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|pre|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
+        comment = comment.replaceAll("&lt;((" + htmlElements + ")( [^\n]*?)?/?)&gt;", "<$1>");
+        comment = comment.replaceAll("&lt;(/(" + htmlElements + "))&gt;", "<$1>");
 
         // put back <nohtml> sections
         comment = replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
@@ -747,7 +767,7 @@ public class DocumentationGenerator {
         withGeneratingNavigationHTMLFile("selected topics", new Runnable() {
             protected Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
 
-            protected Pattern pagePattern = Pattern.compile(" +([^,\n]+),? *(.*?)\n((.|\n)*)");
+            protected Pattern pagePattern = Pattern.compile(" +([^,\n]+),? *(.*?)\n(?s)(.*)");
 
             public void run() throws Exception {
                 out("<li><a href=\"overview.html\" target=\"mainframe\">Overview</a></li>\r\n");
@@ -793,7 +813,7 @@ public class DocumentationGenerator {
 
                             for (String page : pages) {
                                 matcher = pagePattern.matcher(page);
-        
+
                                 if (matcher.matches()) {
                                     generatePageReference(matcher.group(1), matcher.group(2));
                                     withGeneratingHTMLFile(matcher.group(1),
@@ -808,7 +828,7 @@ public class DocumentationGenerator {
                         }
                     }
                 }
-                
+
                 if (!overviewGenerated)
                     withGeneratingHTMLFile("overview.html", 
                         "<center><h1>OMNeT++ Model Documentation</h1></center>\r\n" + 
