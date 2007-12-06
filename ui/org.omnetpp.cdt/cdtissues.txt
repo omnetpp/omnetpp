@@ -44,6 +44,7 @@ written by jcamelon, practically not documented.
 =====================================================================
 
 Problems with the toolchain extensibility model
+reported as: https://bugs.eclipse.org/bugs/show_bug.cgi?id=212127
 
 Current way of adding a tool to a toolchain is to "extend" it, that is, 
 create a new toolchain which "subclasses" the existing toolchain, and 
