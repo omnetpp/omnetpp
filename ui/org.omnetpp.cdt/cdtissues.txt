@@ -48,12 +48,15 @@ Problems with the toolchain extensibility model
 Current way of adding a tool to a toolchain is to "extend" it, that is, 
 create a new toolchain which "subclasses" the existing toolchain, and 
 add the tool to that. It seems to be not possible to add a tool to
-an *existing* toolchain. (Please mark this bug as invalid if I have overseen
-something)
+an *existing* toolchain. (When I tried it, I got "Managed Build system manifest
+file error: Duplicate identifier cdt.managedbuild.toolchain.gnu.mingw.base 
+for element type ToolChain", and further NPE in the "New C++ Project"
+wizard, so I assume this kind of usage is not envisioned. Please mark this bug
+as invalid if I have overseen something.)
 
-This creates problems: suppose Team A extends CDT by integrating some tools
-(say bison and flex), creating com.teama.* toolchains, and publishes it as 
-a plug-in. Meanwhile, an independent team (Team B) integrates some other 
+This creates the following problems: suppose Team A extends CDT by integrating
+some tools (say bison and flex), creating com.teama.* toolchains, and publishes 
+it as a plug-in. Meanwhile, an independent team (Team B) integrates some other 
 tools, for example swig, resulting in com.teamb.* toolchains, and also 
 release it as a new plug-in. Now, if you are in a third team that would 
 like to use both bison/flex and swig in the same project (without creating 
@@ -73,7 +76,9 @@ of the toolchain hierarchy, and it would automatically appear everywhere.
 
 To further highlight the point, please imagine if the way of extending 
 a perspective in the Eclipse platform (say adding a menu item) would be
-to "subclass" from it... Not hard to imagine what this would result in.
+to "subclass" from it... Each vendor would subclass it in different ways,
+and we'd end up with a huge number of slightly difference perspectives...)
+
 
 
 
