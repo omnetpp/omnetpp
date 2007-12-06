@@ -1,8 +1,6 @@
-package org.omnetpp.cdt.wizard;
+package org.omnetpp.cdt.wizard.tmp;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -12,9 +10,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
@@ -26,19 +22,19 @@ import org.eclipse.cdt.ui.templateengine.Template;
 import org.eclipse.cdt.ui.templateengine.TemplateEngineUI;
 import org.eclipse.cdt.ui.templateengine.TemplatesChoiceWizard;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.wizard.IWizardPage;
 
-import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.wizard.NewOmnetppProjectWizardPage;
+import org.omnetpp.ide.wizard.NewOmnetppProjectWizard.NewOmnetppProjectCreationPage;
 
 
 public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
 
-    class NewProjectPage extends NewOmnetppProjectWizardPage implements IWizardDataPage {
+    class NewProjectPage extends NewOmnetppProjectCreationPage implements IWizardDataPage {
+        
         public Map getPageData() {
                 Map data = new HashMap();
                 String projName = super.getProjectName().trim();
@@ -49,6 +45,11 @@ public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
                 data.put("baseNameLower", basename.toLowerCase() ); //$NON-NLS-1$
                 data.put("location", super.getLocationPath().toPortableString()); //$NON-NLS-1$
                 return data;
+        }
+
+        public void setNextPage(IWizardPage next) {
+            // TODO Auto-generated method stub
+            
         }
     }
 

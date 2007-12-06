@@ -1,4 +1,4 @@
-package org.omnetpp.cdt.wizard;
+package org.omnetpp.cdt.wizard.tmp;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;

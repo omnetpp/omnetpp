@@ -19,5 +19,5 @@ public interface IConstants {
     /**
      * ID of this project nature
      */
-    public static final String NATURE_ID = "org.omnetpp.main.omnetppnature";
+    public static final String OMNETPP_NATURE_ID = "org.omnetpp.main.omnetppnature";
 }

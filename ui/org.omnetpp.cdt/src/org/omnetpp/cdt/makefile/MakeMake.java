@@ -121,7 +121,7 @@ public class MakeMake {
         else {
             sourceDirs = collectDirs(folder, p.exceptSubdirs);
             for (String i : sourceDirs) {
-                IContainer f = folder.getFolder(new Path(i));
+                IContainer f = i.equals(".") ? folder : folder.getFolder(new Path(i));
                 ccfiles.addAll(glob(f, "*.cc"));
                 cppfiles.addAll(glob(f, "*.cpp"));
                 msgfiles.addAll(glob(f, "*.msg"));
@@ -331,7 +331,7 @@ public class MakeMake {
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
         m.put("dllexportmacro", StringUtils.isEmpty(p.exportDefOpt) ? "" : ("-P" + p.exportDefOpt));
         m.put("sourcedirs", sourceDirs);
-        m.put("sourcedirs", backslashedSourceDirs);
+        m.put("backslashedsourcedirs", backslashedSourceDirs);
 
         // now generate the makefile
         System.out.println("generating makefile for " + folder.toString());

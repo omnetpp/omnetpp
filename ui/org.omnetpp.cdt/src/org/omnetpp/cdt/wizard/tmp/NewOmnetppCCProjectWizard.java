@@ -1,4 +1,4 @@
-package org.omnetpp.cdt.wizard;
+package org.omnetpp.cdt.wizard.tmp;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -185,7 +185,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             // add the project nature after now, after project creation, so that builders 
             // get properly configured (Project.create() doesn't do it).
             IProjectDescription description2 = projectHandle.getDescription();
-            description2.setNatureIds(new String[] {IConstants.NATURE_ID});
+            description2.setNatureIds(new String[] {IConstants.OMNETPP_NATURE_ID});
             projectHandle.setDescription(description2, monitor);
         } 
         finally {

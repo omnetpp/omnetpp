@@ -138,7 +138,7 @@ public class ProjectUtils {
         try {
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
-            return ArrayUtils.contains(natures, IConstants.NATURE_ID);
+            return ArrayUtils.contains(natures, IConstants.OMNETPP_NATURE_ID);
         } 
         catch (CoreException e) {
             CommonPlugin.logError(e);
@@ -146,12 +146,17 @@ public class ProjectUtils {
         }
     }
 
+    /**
+     * Add the omnetpp nature to the project (if the project does not have already)
+     * @param project
+     */
     public static void addOmnetppNature(IProject project) {
         try {
-            Assert.isTrue(!hasOmnetppNature(project));
+            if (hasOmnetppNature(project))
+                return;
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
-            description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.NATURE_ID));
+            description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
             project.setDescription(description, null);
             // note: builders are added automatically, by OmnetppNature.configure()
         } 
@@ -160,12 +165,16 @@ public class ProjectUtils {
         }
     }
 
+    /**
+     * Removes the omnetpp project nature
+     */
     public static void removeOmnetppNature(IProject project) {
         try {
-            Assert.isTrue(hasOmnetppNature(project));
+            if (!hasOmnetppNature(project))
+                return;
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
-            description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.NATURE_ID));
+            description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.OMNETPP_NATURE_ID));
             project.setDescription(description, null);
             // note: builders are removed automatically, by OmnetppNature.deconfigure()
         } 
