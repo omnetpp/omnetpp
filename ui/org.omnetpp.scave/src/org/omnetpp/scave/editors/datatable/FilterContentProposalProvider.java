@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterSyntax;
 import org.omnetpp.scave.model2.FilterUtil;
@@ -22,11 +23,12 @@ class FilterContentProposalProvider implements IContentProposalProvider
 {
 	private static final boolean debug = true;
 
-	private static ContentProposal[] fieldProposals;
 	private static ContentProposal[] binaryOperatorProposals;
 	private static ContentProposal[] unaryOperatorProposals;
 	private static ContentProposal noProposal = new ContentProposal("", "No proposal");
 	
+	// Proposals for field names
+	private ContentProposal[] fieldProposals;
 	// Maps fields names to patterns
 	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
 	
@@ -40,11 +42,6 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	
 	
 	static {
-		String[] filterFields = ResultItemFields.getFieldNames().toArray();
-		fieldProposals = new ContentProposal[filterFields.length];
-		for (int i = 0; i < filterFields.length; ++i) {
-			fieldProposals[i] = new ContentProposal(filterFields[i], filterFields[i]+"()");
-		}
 		binaryOperatorProposals = new ContentProposal[] {
 				new ContentProposal("OR"),
 				new ContentProposal("AND")
@@ -52,6 +49,14 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		unaryOperatorProposals = new ContentProposal[] {
 				new ContentProposal("NOT")
 		};
+	}
+	
+	public FilterContentProposalProvider() {
+		String[] filterFields = ResultItemFields.getFieldNames().toArray();
+		fieldProposals = new ContentProposal[filterFields.length];
+		for (int i = 0; i < filterFields.length; ++i) {
+			fieldProposals[i] = new ContentProposal(filterFields[i], filterFields[i]+"()");
+		}
 	}
 	
 	/**
@@ -62,14 +67,20 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	 */
 	public void setFilterHints(FilterHints hints) {
 		// add pattern proposals for the filter hints
+		FilterField[] fields = hints.getFields();
+		fieldProposals = new ContentProposal[fields.length];
+		for (int i = 0; i < fields.length; ++i) {
+			String fieldName = fields[i].getFullName();
+			fieldProposals[i] = new ContentProposal(fieldName, fieldName+"()");
+		}
 		patternProposals.clear();
-		for (String field : ResultItemFields.getFieldNames().toArray()) {
+		for (FilterField field : fields /*ResultItemFields.getFieldNames().toArray()*/) {
 			String[] patterns = hints.getHints(field);
 			if (patterns != null) {
 				ContentProposal[] proposals = new ContentProposal[patterns.length];
 				for (int i = 0; i < patterns.length; ++i)
 					proposals[i] = new ContentProposal(patterns[i]);
-				patternProposals.put(field, proposals);
+				patternProposals.put(field.getFullName(), proposals);
 			}
 		}
 	}
@@ -101,7 +112,8 @@ class FilterContentProposalProvider implements IContentProposalProvider
 				if (type == Node.FIELDPATTERN && token == parent.getField() && !atEnd) {
 					startIndex = token.getStartPos();
 					endIndex = token.getEndPos();
-					decorators = (parent.getOpeningParen().isEmpty() ? DEC_OP : DEC_NONE) |
+					decorators = DEC_QUOTE |
+								 (parent.getOpeningParen().isEmpty() ? DEC_OP : DEC_NONE) |
 								 (parent.getPattern().isEmpty() && parent.getClosingParen().isEmpty() ? DEC_CP : DEC_NONE);
 					collectFilteredProposals(result, fieldProposals, "", startIndex, endIndex, decorators);
 				}
@@ -141,7 +153,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					endIndex = parent.getPattern().getEndPos();
 					String field = FilterUtil.getDefaultField();
 					collectFilteredProposals(result, unaryOperatorProposals, prefix, startIndex, endIndex, DEC_NONE);
-					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, DEC_OP | DEC_CP);
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, DEC_QUOTE | DEC_OP | DEC_CP);
 					collectFilteredProposals(result, patternProposals.get(field), prefix, startIndex, endIndex, DEC_QUOTE);
 				}
 				// inside unary operator: replace unary operator
@@ -163,7 +175,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 						 (type == Node.ROOT && token.getType() == FilterSyntax.TokenType.END)) {
 					int spaceBefore = (token.getEndPos() == position ? DEC_SP_BEFORE : DEC_NONE);
 					collectFilteredProposals(result, unaryOperatorProposals, "", position, position, spaceBefore);
-					collectFilteredProposals(result, fieldProposals, "", position, position, spaceBefore | DEC_OP | DEC_CP);
+					collectFilteredProposals(result, fieldProposals, "", position, position, spaceBefore | DEC_QUOTE | DEC_OP | DEC_CP);
 					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | DEC_QUOTE);
 				}
 			}

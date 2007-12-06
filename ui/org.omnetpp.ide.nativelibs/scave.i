@@ -333,7 +333,9 @@ int strdictcmp(const char *s1, const char *s2);
 
 %ignore ResultItem::moduleNameRef;
 %ignore ResultItem::nameRef;
+
 %newobject ResultItem::getEnum() const;
+
 %extend ResultItem {
    std::string getModuleName() {return *self->moduleNameRef;}
    std::string getName() {return *self->nameRef;}
@@ -357,6 +359,28 @@ ADD_CPTR_EQUALS_AND_HASHCODE(Run);
 ADD_CPTR_EQUALS_AND_HASHCODE(FileRun);
 ADD_CPTR_EQUALS_AND_HASHCODE(ResultItem);
 CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
+
+%newobject ResultFileManager::getUniqueFiles(const IDList&) const;
+%newobject ResultFileManager::getUniqueRuns(const IDList&) const;
+%newobject ResultFileManager::getUniqueFileRuns(const IDList&) const;
+%newobject ResultFileManager::getUniqueModuleNames(const IDList&) const;
+%newobject ResultFileManager::getUniqueNames(const IDList&) const;
+%newobject ResultFileManager::getUniqueAttributeNames(const IDList&) const;
+%newobject ResultFileManager::getUniqueRunAttributeNames(const RunList *) const;
+%newobject ResultFileManager::getUniqueModuleParamNames(const RunList *) const;
+%newobject ResultFileManager::getUniqueAttributeValues(const IDList &, const char *) const;
+%newobject ResultFileManager::getUniqueRunAttributeValues(const RunList&, const char *) const;
+%newobject ResultFileManager::getUniqueModuleParamValues(const RunList&, const char *) const;
+
+%newobject ResultFileManager::getFileAndRunNumberFilterHints(const IDList&) const;
+%newobject ResultFileManager::getFilePathFilterHints(const ResultFileList&) const;
+%newobject ResultFileManager::getRunNameFilterHints(const RunList&) const;
+%newobject ResultFileManager::getModuleFilterHints(const IDList&) const;
+%newobject ResultFileManager::getNameFilterHints(const IDList&) const;
+%newobject ResultFileManager::getResultItemAttributeFilterHints(const IDList&, const char*) const;
+%newobject ResultFileManager::getRunAttributeFilterHints(const RunList&, const char*) const;
+%newobject ResultFileManager::getModuleParamFilterHints(const RunList&, const char*) const;
+
 %include "resultfilemanager.h"
 
 /* ------------- datasorter.h  ----------------- */

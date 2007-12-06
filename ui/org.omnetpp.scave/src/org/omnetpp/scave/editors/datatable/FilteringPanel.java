@@ -1,8 +1,8 @@
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.model2.FilterField.MODULE;
+import static org.omnetpp.scave.model2.FilterField.NAME;
+import static org.omnetpp.scave.model2.FilterField.RUN;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;

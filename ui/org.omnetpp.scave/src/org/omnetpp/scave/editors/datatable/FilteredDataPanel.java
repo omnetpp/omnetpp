@@ -93,7 +93,7 @@ public class FilteredDataPanel extends Composite {
 			}
 		});
 	}
-
+	
 	protected void configureFilterPanel() {
 		SelectionListener selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -118,7 +118,8 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	protected void updateFilterCombos() {
-		filterPanel.setFilterHints(getFilterHints());
+		if (!filterPanel.isDisposed())
+			filterPanel.setFilterHints(getFilterHints());
 	}
 
 	public FilterHints getFilterHints() {

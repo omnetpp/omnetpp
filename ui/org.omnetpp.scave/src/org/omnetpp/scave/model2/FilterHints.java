@@ -1,31 +1,33 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.engine.ResultItemField.FILE;
-import static org.omnetpp.scave.engine.ResultItemField.MODULE;
-import static org.omnetpp.scave.engine.ResultItemField.NAME;
-import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.model2.FilterField.FILE;
+import static org.omnetpp.scave.model2.FilterField.MODULE;
+import static org.omnetpp.scave.model2.FilterField.NAME;
+import static org.omnetpp.scave.model2.FilterField.RUN;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model2.FilterField.Kind;
 
 /**
  * Given an IDList, produces hints for different filter fields such as
- * module name, statistic name, etc.
+ * module name, statistic name, run attributes etc.
  *
  * @author tomi
  */
 public class FilterHints {
+	
 	private static final String[] EMPTY = new String[0];
-
-	private Map<String,String[]> hints = new HashMap<String, String[]>();
+	
+	private Map<FilterField,String[]> hints = new HashMap<FilterField, String[]>();
 
 	public FilterHints() {
 	}
@@ -38,50 +40,37 @@ public class FilterHints {
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 
-		setHints(FILE, getFileNameFilterHints(fileList));
-		setHints(RUN, getRunNameFilterHints(runList));
+		setHints(FILE, manager.getFilePathFilterHints(fileList).toArray());
+		setHints(RUN, manager.getRunNameFilterHints(runList).toArray());
 		setHints(MODULE, manager.getModuleFilterHints(idlist).toArray());
 		setHints(NAME, manager.getNameFilterHints(idlist).toArray());
-		for (String attrName : RunAttribute.getAttributeNames().toArray())
-			setHints(attrName, getFilterHintsForRunAttribute(manager, runList, attrName));
+		for (String attrName : manager.getUniqueAttributeNames(idlist).keys().toArray())
+			setHints(Kind.ItemField, attrName, manager.getResultItemAttributeFilterHints(idlist, attrName).toArray());
+		for (String attrName : manager.getUniqueRunAttributeNames(runList).keys().toArray())
+			setHints(Kind.RunAttribute, attrName, manager.getRunAttributeFilterHints(runList, attrName).toArray());
+		for (String paramName : manager.getUniqueModuleParamNames(runList).keys().toArray())
+			setHints(Kind.ModuleParam, paramName, manager.getModuleParamFilterHints(runList, paramName).toArray());
 	}
-
-	public String[] getHints(String fieldName) {
-		if (hints.containsKey(fieldName))
-			return hints.get(fieldName);
+	
+	public FilterField[] getFields() {
+		Set<FilterField> keys = hints.keySet();
+		FilterField[] fields = keys.toArray(new FilterField[keys.size()]);
+		Arrays.sort(fields);
+		return fields;
+	}
+	
+	public String[] getHints(FilterField field) {
+		if (hints.containsKey(field))
+			return hints.get(field);
 		else
 			return EMPTY;
 	}
 
-	public void setHints(String fieldName, String[] value) {
-		this.hints.put(fieldName, value);
+	private void setHints(FilterField field, String[] value) {
+		this.hints.put(field, value);
 	}
 
-	private static String[] getFileNameFilterHints(ResultFileList fileList) {
-		String[] hints = new String[(int)fileList.size() + 1];
-		hints[0] = "*";
-		for (int i = 0; i < fileList.size(); ++i)
-			hints[i+1] = fileList.get(i).getFilePath();
-		return hints;
-	}
-
-	private static String[] getRunNameFilterHints(RunList runList) {
-		StringVector hints = new StringVector();
-		hints.add("*");
-		for (int i = 0; i < runList.size(); ++i) {
-			String runName = runList.get(i).getRunName();
-			if (runName.length() > 0)
-				hints.add(runName);
-		}
-		return hints.toArray();
-	}
-
-	private static String[] getFilterHintsForRunAttribute(ResultFileManager manager, RunList runList, String attrName) {
-		StringVector values = manager.getUniqueAttributeValues(runList, attrName);
-		String[] filterHints = new String[(int)values.size() + 1];
-		filterHints[0] = "*";
-		for (int i = 0; i < values.size(); ++i)
-			filterHints[i+1] = values.get(i);
-		return filterHints;
+	private void setHints(Kind kind, String name, String[] value) {
+		this.hints.put(new FilterField(kind, name), value);
 	}
 }

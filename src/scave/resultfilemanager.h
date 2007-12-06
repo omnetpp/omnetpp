@@ -165,9 +165,9 @@ struct SCAVE_API Run
         StringMap::const_iterator it = attributes.find(attrName);
         return it==attributes.end() ? NULL : it->second.c_str();
     }
-    const char *getModuleParam(const char *namePattern) const {
-        StringMap::const_iterator it = moduleParams.find(namePattern);
-        return it==attributes.end() ? NULL : it->second.c_str();
+    const char *getModuleParam(const char *paramName) const {
+        StringMap::const_iterator it = moduleParams.find(paramName);
+        return it==moduleParams.end() ? NULL : it->second.c_str();
     }
 };
 
@@ -271,11 +271,18 @@ class SCAVE_API ResultFileManager
     int getTypeOf(ID id) const {return _type(id);} // SCALAR/VECTOR/HISTOGRAM
 
     // the following are needed for filter combos
+    // Note: their return value is allocated with new and callers should delete them
     ResultFileList *getUniqueFiles(const IDList& ids) const; //XXX why returns pointer?
     RunList *getUniqueRuns(const IDList& ids) const;
     FileRunList *getUniqueFileRuns(const IDList& ids) const;
     StringSet *getUniqueModuleNames(const IDList& ids) const;
     StringSet *getUniqueNames(const IDList& ids) const;
+    StringSet *getUniqueAttributeNames(const IDList &ids) const;
+    StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
+    StringSet *getUniqueModuleParamNames(const RunList *runList) const;
+    StringSet *getUniqueAttributeValues(const IDList &ids, const char *attrName) const;
+    StringSet *getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
+    StringSet *getUniqueModuleParamValues(const RunList& runList, const char *paramName) const;
 
     // getting lists of data items
     IDList getAllScalars() const;
@@ -328,9 +335,6 @@ class SCAVE_API ResultFileManager
     FileRun *getFileRun(ResultFile *file, Run *run) const;
     ID getItemByName(FileRun *fileRun, const char *module, const char *name) const;
 
-    // get unique values of an attribute ("experiment",etc) in a set of Runs
-    StringVector getUniqueAttributeValues(const RunList& runList, const char *attrName) const;
-
     // filtering files and runs
     RunList filterRunList(const RunList& runList, const char *runNameFilter,
                                                   const StringMap& attrFilter) const;
@@ -342,9 +346,14 @@ class SCAVE_API ResultFileManager
     // utility
     //void dump(ResultFile *fileRef, std::ostream& out) const;
 
-    StringVector getFileAndRunNumberFilterHints(const IDList& idlist);
-    StringVector getModuleFilterHints(const IDList& idlist);
-    StringVector getNameFilterHints(const IDList& idlist);
+    StringVector *getFileAndRunNumberFilterHints(const IDList& idlist) const;
+    StringVector *getFilePathFilterHints(const ResultFileList &fileList) const;
+    StringVector *getRunNameFilterHints(const RunList &runList) const;
+    StringVector *getModuleFilterHints(const IDList& idlist) const;
+    StringVector *getNameFilterHints(const IDList& idlist)const;
+	StringVector *getResultItemAttributeFilterHints(const IDList &idlist, const char *attrName) const;
+	StringVector *getRunAttributeFilterHints(const RunList &runList, const char *attrName) const;
+	StringVector *getModuleParamFilterHints(const RunList &runList, const char * paramName) const;
 };
 
 inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const

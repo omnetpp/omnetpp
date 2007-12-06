@@ -195,7 +195,7 @@ ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
 {
     // collect unique runs in this dataset
     std::set<ResultFile*> set;
-    for (int i=0; i<(int)ids.size(); i++)
+    for (int i=0; i<ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef->fileRef);
 
     // convert to list for easier handling at recipient
@@ -209,7 +209,7 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
 {
     // collect unique runs in this dataset
     std::set<Run*> set;
-    for (int i=0; i<(int)ids.size(); i++)
+    for (int i=0; i<ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef->runRef);
 
     // convert to list for easier handling at recipient
@@ -223,7 +223,7 @@ FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
 {
     // collect unique FileRuns in this dataset
     std::set<FileRun*> set;
-    for (int i=0; i<(int)ids.size(); i++)
+    for (int i=0; i<ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef);
 
     // convert to list for easier handling at recipient
@@ -237,7 +237,7 @@ StringSet *ResultFileManager::getUniqueModuleNames(const IDList& ids) const
 {
     // collect unique module names in this dataset
     StringSet *set = new StringSet();
-    for (int i=0; i<(int)ids.size(); i++)
+    for (int i=0; i<ids.size(); i++)
         set->insert(*getItem(ids.get(i)).moduleNameRef);
     return set;
 }
@@ -246,9 +246,83 @@ StringSet *ResultFileManager::getUniqueNames(const IDList& ids) const
 {
     // collect unique scalar/vector names in this dataset
     StringSet *set = new StringSet();
-    for (int i=0; i<(int)ids.size(); i++)
+    for (int i=0; i<ids.size(); i++)
         set->insert(*getItem(ids.get(i)).nameRef);
     return set;
+}
+
+StringSet *ResultFileManager::getUniqueAttributeNames(const IDList &ids) const
+{
+	StringSet *set = new StringSet;
+	for (int i=0; i<ids.size(); i++)
+	{
+		const StringMap &attributes = getItem(ids.get(i)).attributes;
+		for(StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+			set->insert(it->first);
+	}
+	return set;
+}
+
+StringSet *ResultFileManager::getUniqueRunAttributeNames(const RunList *runList) const
+{
+	StringSet *set = new StringSet;
+	for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef)
+	{
+		const StringMap &attributes = (*runRef)->attributes;
+		for(StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+			set->insert(it->first);
+	}
+	return set;
+}
+
+StringSet *ResultFileManager::getUniqueModuleParamNames(const RunList *runList) const
+{
+	StringSet *set = new StringSet;
+	for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef)
+	{
+		const StringMap &params = (*runRef)->moduleParams;
+		for(StringMap::const_iterator it = params.begin(); it != params.end(); ++it)
+			set->insert(it->first);
+	}
+	return set;
+}
+
+StringSet *ResultFileManager::getUniqueAttributeValues(const IDList &ids, const char *attrName) const
+{
+	StringSet *values = new StringSet;
+	for (int i = 0; i < ids.size(); ++i)
+	{
+		const char *value = getItem(ids.get(i)).getAttribute(attrName);
+		if (value != NULL)
+			values->insert(value);
+	}
+	return values;
+}
+
+StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const
+{
+    StringSet *values = new StringSet;
+	for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef)
+    {
+        const char *value = (*runRef)->getAttribute(attrName);
+        if (value!=NULL)
+            values->insert(value);
+    }
+
+    return values;
+}
+
+StringSet *ResultFileManager::getUniqueModuleParamValues(const RunList& runList, const char *paramName) const
+{
+	StringSet *values = new StringSet;
+	for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef)
+	{
+		const char *value = (*runRef)->getModuleParam(paramName);
+		if (value != NULL)
+			values->insert(value);
+	}
+	
+	return values;
 }
 
 const ScalarResult& ResultFileManager::getScalar(ID id) const
@@ -428,26 +502,6 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     return 0;
 }
 
-StringVector ResultFileManager::getUniqueAttributeValues(const RunList& runList, const char *attrName) const
-{
-    StringSet values;
-    for (int i=0; i<(int)runList.size(); i++)
-    {
-        const char *value = runList[i]->getAttribute(attrName);
-        if (value!=NULL)
-            values.insert(value);
-    }
-
-    // copy into a vector
-    StringVector vec;
-    for (StringSet::iterator it=values.begin(); it!=values.end(); it++)
-        vec.push_back(*it);
-
-    // sort it and return the result
-    std::sort(vec.begin(), vec.end());
-    return vec;
-}
-
 RunList ResultFileManager::filterRunList(const RunList& runList,
                                          const char *runNameFilter,
                                          const StringMap& attrFilter) const
@@ -608,7 +662,9 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getModuleName() const { return item.moduleNameRef->c_str(); }
         const char *getFileName() const { return item.fileRunRef->fileRef->filePath.c_str(); }
         const char *getRunName() const { return item.fileRunRef->runRef->runName.c_str(); }
+        const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName); }
         const char *getRunAttribute(const char *attrName) const { return item.fileRunRef->runRef->getAttribute(attrName); }
+        const char *getModuleParam(const char *paramName) const { return item.fileRunRef->runRef->getModuleParam(paramName); }
 };
 
 const char *MatchableResultItem::getDefaultAttribute() const
@@ -626,8 +682,12 @@ const char *MatchableResultItem::getAttribute(const char *name) const
         return getFileName();
     else if (strcasecmp("run", name) == 0)
         return getRunName();
+    else if (strncasecmp("attr:", name, 5) == 0)
+    	return getRunAttribute(name+5);
+    else if (strncasecmp("param:", name, 6) == 0)
+    	return getModuleParam(name+6);
     else
-        return getRunAttribute(name);
+        return getResultItemAttribute(name);
 }
 
 IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern) const
@@ -1161,6 +1221,10 @@ void ResultFileManager::unloadFile(ResultFile *file)
     }
 }
 
+/*--------------------------------------------------------------------------
+ *                        compute filter hints
+ *--------------------------------------------------------------------------*/
+
 /**
  * Utility class: collects strings that occur at least twice.
  */
@@ -1183,7 +1247,7 @@ class DuplicateStringCollector
     }
 };
 
-StringVector ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist)
+StringVector *ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist) const
 {
     FileRunList *fileRuns = getUniqueFileRuns(idlist);
 
@@ -1208,15 +1272,35 @@ StringVector ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idl
     delete fileRuns;
 
     // sort and concatenate them, and return the result
-    StringVector wildvec = coll.get();
+    StringVector *wildvec = new StringVector(coll.get());
     std::sort(vec.begin(), vec.end());
-    std::sort(wildvec.begin(), wildvec.end());
-    //vec.insert(vec.end(), wildvec.begin(), wildvec.end());
-    wildvec.insert(wildvec.end(), vec.begin(), vec.end());
+    std::sort(wildvec->begin(), wildvec->end());
+    wildvec->insert(wildvec->end(), vec.begin(), vec.end());
     return wildvec;
 }
 
-StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist)
+StringVector *ResultFileManager::getFilePathFilterHints(const ResultFileList &fileList) const
+{
+	StringVector *filterHints = new StringVector;
+	for (ResultFileList::const_iterator it = fileList.begin(); it != fileList.end(); ++it)
+		filterHints->push_back((*it)->filePath);
+	std::sort(filterHints->begin(), filterHints->end());
+	filterHints->insert(filterHints->begin(), "*");
+	return filterHints;
+}
+
+StringVector *ResultFileManager::getRunNameFilterHints(const RunList &runList) const
+{
+	StringVector *filterHints = new StringVector;
+	for (RunList::const_iterator it = runList.begin(); it != runList.end(); ++it)
+		if ((*it)->runName.size() > 0)
+			filterHints->push_back((*it)->runName);
+	std::sort(filterHints->begin(), filterHints->end());
+	filterHints->insert(filterHints->begin(), "*");
+	return filterHints;
+}
+
+StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) const
 {
     StringSet& names = *getUniqueModuleNames(idlist);
 
@@ -1245,16 +1329,15 @@ StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist)
     delete &names;
 
     // sort and concatenate them, and return the result
-    StringVector wildvec = coll.get();
-    wildvec.push_back(std::string("*"));
+    StringVector *wildvec = new StringVector(coll.get());
+    wildvec->push_back(std::string("*"));
     std::sort(vec.begin(), vec.end());
-    std::sort(wildvec.begin(), wildvec.end());
-    //vec.insert(vec.end(), wildvec.begin(), wildvec.end());
-    wildvec.insert(wildvec.end(), vec.begin(), vec.end());
+    std::sort(wildvec->begin(), wildvec->end());
+    wildvec->insert(wildvec->end(), vec.begin(), vec.end());
     return wildvec;
 }
 
-StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
+StringVector *ResultFileManager::getNameFilterHints(const IDList& idlist) const
 {
     StringSet& names = *getUniqueNames(idlist);
 
@@ -1280,13 +1363,40 @@ StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
     delete &names;
 
     // sort and concatenate them, and return the result
-    StringVector wildvec = coll.get();
-    wildvec.push_back(std::string("*"));
+    StringVector *wildvec = new StringVector(coll.get());
+    wildvec->push_back(std::string("*"));
     std::sort(vec.begin(), vec.end());
-    std::sort(wildvec.begin(), wildvec.end());
-    //vec.insert(vec.end(), wildvec.begin(), wildvec.end());
-    wildvec.insert(wildvec.end(), vec.begin(), vec.end());
+    std::sort(wildvec->begin(), wildvec->end());
+    wildvec->insert(wildvec->end(), vec.begin(), vec.end());
     return wildvec;
 }
+
+StringVector *ResultFileManager::getResultItemAttributeFilterHints(const IDList &idlist, const char *attrName) const
+{
+	StringSet *attrValues = getUniqueAttributeValues(idlist, attrName);
+	StringVector *filterHints = new StringVector(attrValues->begin(), attrValues->end());
+	filterHints->insert(filterHints->begin(), "*");
+	delete attrValues;
+	return filterHints;
+}
+
+StringVector *ResultFileManager::getRunAttributeFilterHints(const RunList &runList, const char *attrName) const
+{
+	StringSet *attrValues = getUniqueRunAttributeValues(runList, attrName);
+	StringVector *filterHints = new StringVector(attrValues->begin(), attrValues->end());
+	filterHints->insert(filterHints->begin(), "*");
+	delete attrValues;
+	return filterHints;
+}
+
+StringVector *ResultFileManager::getModuleParamFilterHints(const RunList &runList, const char * paramName) const
+{
+	StringSet *paramValues = getUniqueModuleParamValues(runList, paramName);
+	StringVector *filterHints = new StringVector(paramValues->begin(), paramValues->end());
+	filterHints->insert(filterHints->begin(), "*");
+	delete paramValues;
+	return filterHints;
+}
+
 
 

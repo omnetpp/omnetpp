@@ -205,11 +205,46 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkDeleted();
 		return super.getModuleFilterHints(idlist);
 	}
+	
+	
+
+	@Override
+	public StringVector getFilePathFilterHints(ResultFileList fileList) {
+		checkDeleted();
+		return super.getFilePathFilterHints(fileList);
+	}
+
+	@Override
+	public StringVector getRunNameFilterHints(RunList runList) {
+		checkDeleted();
+		return super.getRunNameFilterHints(runList);
+	}
 
 	@Override
 	public StringVector getNameFilterHints(IDList idlist) {
 		checkDeleted();
 		return super.getNameFilterHints(idlist);
+	}
+	
+	@Override
+	public StringVector getModuleParamFilterHints(RunList runList,
+			String paramName) {
+		checkDeleted();
+		return super.getModuleParamFilterHints(runList, paramName);
+	}
+
+	@Override
+	public StringVector getResultItemAttributeFilterHints(IDList idlist,
+			String attrName) {
+		checkDeleted();
+		return super.getResultItemAttributeFilterHints(idlist, attrName);
+	}
+
+	@Override
+	public StringVector getRunAttributeFilterHints(RunList runList,
+			String attrName) {
+		checkDeleted();
+		return super.getRunAttributeFilterHints(runList, attrName);
 	}
 
 	@Override
@@ -243,10 +278,10 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public StringVector getUniqueAttributeValues(RunList runList,
+	public StringSet getUniqueRunAttributeValues(RunList runList,
 			String attrName) {
 		checkDeleted();
-		return super.getUniqueAttributeValues(runList, attrName);
+		return super.getUniqueRunAttributeValues(runList, attrName);
 	}
 
 	@Override
@@ -277,6 +312,37 @@ public class ResultFileManagerEx extends ResultFileManager {
 	public RunList getUniqueRuns(IDList ids) {
 		checkDeleted();
 		return super.getUniqueRuns(ids);
+	}
+	
+	@Override
+	public StringSet getUniqueAttributeNames(IDList ids) {
+		checkDeleted();
+		return super.getUniqueAttributeNames(ids);
+	}
+
+	@Override
+	public StringSet getUniqueAttributeValues(IDList ids, String attrName) {
+		checkDeleted();
+		return super.getUniqueAttributeValues(ids, attrName);
+	}
+
+	@Override
+	public StringSet getUniqueModuleParamNames(RunList runList) {
+		checkDeleted();
+		return super.getUniqueModuleParamNames(runList);
+	}
+
+	@Override
+	public StringSet getUniqueModuleParamValues(RunList runList,
+			String paramName) {
+		checkDeleted();
+		return super.getUniqueModuleParamValues(runList, paramName);
+	}
+
+	@Override
+	public StringSet getUniqueRunAttributeNames(RunList runList) {
+		checkDeleted();
+		return super.getUniqueRunAttributeNames(runList);
 	}
 
 	@Override
@@ -345,5 +411,11 @@ public class ResultFileManagerEx extends ResultFileManager {
 		long id = super.addComputedVector(name, file, computationID, input, processingOp);
 		notifyListeners();
 		return id;
+	}
+
+	@Override
+	public long getComputedVector(long computationID, long inputID) {
+		checkDeleted();
+		return super.getComputedVector(computationID, inputID);
 	}
 }
