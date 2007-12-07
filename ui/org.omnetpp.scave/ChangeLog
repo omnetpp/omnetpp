@@ -1,3 +1,27 @@
+2007-12-07
+----------
+
+Additions:
+
+   + Indexing and dataflow network operations can be interrupted and their progress
+     is monitored.
+
+   + Results can be filtered by each run attribute and module parameters saved
+     in the result files.
+
+   + Values of vectors having an enum type are displayed as enum names in the "Output Vector"
+     view and tooltips.
+
+Fixes:
+
+   + Fonts can be selected from the FontDialog in the Chart edit dialogs.
+
+   + Eclipse crashed when the "Output Vector" view was opened and the displayed
+     file was deleted or modified.
+
+   + When an "vci" file was added to the input files, the analysis file could not be reopened.
+
+
 2007-11-23
 ----------
 
