@@ -8,11 +8,13 @@ Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
+ org.eclipse.jface.text,
  org.omnetpp.common,
  org.omnetpp.main,
  org.omnetpp.ned.core,
  org.omnetpp.ned.model,
  org.omnetpp.ned.editor,
+ org.omnetpp.msg.editor,
  org.omnetpp.ide.nativelibs,
  de.unikassel.imageexport
 Eclipse-LazyStart: true

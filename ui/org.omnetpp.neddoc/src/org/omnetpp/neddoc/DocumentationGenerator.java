@@ -39,16 +39,29 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.image.export.PNGImageExporter;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
+import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
+import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
+import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
+import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
+import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
+import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
+import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
+import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
@@ -73,7 +86,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -403,7 +415,7 @@ public class DocumentationGenerator {
         if (doxyTagsFile.exists()) {
             FileInputStream stream = new FileInputStream(doxyTagsFile);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            Document document = factory.newDocumentBuilder().parse(stream);
+            org.w3c.dom.Document document = factory.newDocumentBuilder().parse(stream);
             NodeList nodes = (NodeList)XPathFactory.newInstance().newXPath().compile("//compound[@kind='class']/filename")
                 .evaluate(document, XPathConstants.NODESET);
 
@@ -889,7 +901,6 @@ public class DocumentationGenerator {
                             "<ul>\r\n");
     
                         List<? extends ITypeElement> typeElements;
-                        
                         if (msgResources.isMsgFile(file))
                             typeElements = msgResources.getMsgFileElement(file).getTopLevelTypeNodes();
                         else
@@ -967,6 +978,7 @@ public class DocumentationGenerator {
     
                         if (configuration.generateSourceContent)
                             generateSourceContent(typeElement);
+    
                         monitor.worked(1);
                     }
                 });
@@ -1569,16 +1581,146 @@ public class DocumentationGenerator {
     }
     
     protected void generateSourceContent(IFile file) throws IOException, CoreException {
-        generateSourceContent(FileUtils.readTextFile(file.getContents()));
+        generateSourceContent(FileUtils.readTextFile(file.getContents()), nedResources.isNedFile(file));
     }
 
     protected void generateSourceContent(ITypeElement typeElement) throws IOException {
-        generateSourceContent(typeElement.getNEDSource());
+        generateSourceContent(typeElement.getNEDSource(), typeElement instanceof INedTypeElement);
     }
 
-    protected void generateSourceContent(String source) throws IOException {
+    protected void generateSourceContent(String source, boolean nedSource) throws IOException {
         out("<h3 class=\"subtitle\">Source code:</h3>\r\n" + 
-            "<pre class=\"src\">" + source + "</pre>\r\n");
+            "<pre class=\"src\">");
+
+        org.eclipse.jface.text.Document document = new org.eclipse.jface.text.Document(source);
+        ITokenScanner partitioner = nedSource ? new NedSyntaxHighlightPartitionScanner() : new MsgSyntaxHighlightPartitionScanner();
+        partitioner.setRange(document, 0, document.getLength());
+
+        StringBuffer buffer = new StringBuffer();
+        Object bufferTokenData = null;
+        ITokenScanner scanner = null;
+        NedPrivateDocColorizerScanner nedPrivateDocColorizerScanner = new NedPrivateDocColorizerScanner();
+        NedDocColorizerScanner nedDocColorizerScanner = new NedDocColorizerScanner();
+        NedCodeColorizerScanner nedCodeColorizerScanner = new NedCodeColorizerScanner();
+        MsgPrivateDocColorizerScanner msgPrivateDocColorizerScanner = new MsgPrivateDocColorizerScanner();
+        MsgDocColorizerScanner msgDocColorizerScanner = new MsgDocColorizerScanner();
+        MsgCodeColorizerScanner msgCodeColorizerScanner = new MsgCodeColorizerScanner();
+
+        while (true) {
+            IToken token = partitioner.nextToken();
+            Object data = token.getData();
+            
+            if (token.isEOF()) {
+                if (buffer.length() != 0)
+                    generateSourcePartition(scanner, buffer.toString());
+
+                break;
+            }
+
+            if (bufferTokenData != data && buffer.length() != 0) {
+                generateSourcePartition(scanner, buffer.toString());
+                buffer = new StringBuffer();
+                bufferTokenData = null;
+            }
+
+            int offset = partitioner.getTokenOffset();
+            int length = partitioner.getTokenLength();
+            buffer.append(source.substring(offset, offset + length));
+            bufferTokenData = data;
+
+            if (nedSource) {
+                if (NedSyntaxHighlightPartitionScanner.NED_PRIVATE_DOC.equals(data))
+                    scanner = nedPrivateDocColorizerScanner;
+                else if (NedSyntaxHighlightPartitionScanner.NED_DOC.equals(data))
+                    scanner = nedDocColorizerScanner;
+                else
+                    scanner = nedCodeColorizerScanner;
+            }
+            else {
+                if (MsgSyntaxHighlightPartitionScanner.MSG_PRIVATE_DOC.equals(data))
+                    scanner = msgPrivateDocColorizerScanner;
+                else if (MsgSyntaxHighlightPartitionScanner.MSG_DOC.equals(data))
+                    scanner = msgDocColorizerScanner;
+                else
+                    scanner = msgCodeColorizerScanner;
+            }
+        }
+
+        out("</pre>\r\n");
+    }
+
+    protected void generateSourcePartition(ITokenScanner scanner, String source) throws IOException {
+        org.eclipse.jface.text.Document partition = new org.eclipse.jface.text.Document(source);
+        scanner.setRange(partition, 0, source.length());
+        StringBuffer buffer = new StringBuffer();
+        Object bufferTokenData = null;
+        
+        while (true) {
+            IToken token = scanner.nextToken();
+            
+            if (token.isEOF()) {
+                if (buffer.length() != 0)
+                    generateHTMLSpan(buffer.toString(), (TextAttribute)bufferTokenData);
+
+                break;
+            }
+
+            Object data = token.getData();
+            
+            if (bufferTokenData != data && buffer.length() != 0) {
+                generateHTMLSpan(buffer.toString(), (TextAttribute)bufferTokenData);
+                buffer = new StringBuffer();
+                bufferTokenData = null;
+            }
+
+            int offset = scanner.getTokenOffset();
+            int length = scanner.getTokenLength();
+            buffer.append(source.substring(offset, offset + length));
+            bufferTokenData = data;
+        }
+    }
+    
+    protected void generateHTMLSpan(String source, TextAttribute textAttribute) throws IOException {
+        out("<span style=\"");
+        if (textAttribute != null)
+            generateHTMLStyle(textAttribute);
+        out("\">");
+        out(StringEscapeUtils.escapeHtml(source));
+        out("</span>");
+    }
+    
+    protected void generateHTMLStyle(TextAttribute textAttribute) throws IOException {
+        Color foregroundColor = textAttribute.getForeground();
+        Color backgroundColor = textAttribute.getBackground();
+        
+        if (backgroundColor != null) {
+            out("background-color: ");
+            generateHTMLColor(backgroundColor);
+            out("; ");
+        }
+
+        if (foregroundColor != null) {
+            out("color: ");
+            generateHTMLColor(foregroundColor);
+            out("; ");
+        }
+
+        int style = textAttribute.getStyle();
+        
+        if ((style & SWT.ITALIC) != 0)
+            out("font-style: italic; ");
+        
+        if ((style & SWT.BOLD) != 0)
+            out("font-weight: bold; ");
+    }
+
+    protected void generateHTMLColor(Color color) throws IOException {
+        out("#" + colorToHexString(color.getRed()) + colorToHexString(color.getGreen()) + colorToHexString(color.getBlue()));
+    }
+    
+    protected String colorToHexString(int number) {
+        return ((number < 16) ? "0" : "") + Integer.toHexString(number);
+            
     }
 
     protected void withGeneratingHTMLFile(String fileName, final String content) throws Exception {
