@@ -12,6 +12,7 @@ import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterSyntax;
 import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.FilterField.Kind;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
@@ -25,10 +26,13 @@ class FilterContentProposalProvider implements IContentProposalProvider
 
 	private static ContentProposal[] binaryOperatorProposals;
 	private static ContentProposal[] unaryOperatorProposals;
+	private static ContentProposal[] fieldPrefixProposals;
 	private static ContentProposal noProposal = new ContentProposal("", "No proposal");
 	
 	// Proposals for field names
 	private ContentProposal[] fieldProposals;
+	// Proposals for prefixed field names
+	private ContentProposal[] prefixedFieldProposals;
 	// Maps fields names to patterns
 	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
 	
@@ -49,10 +53,15 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		unaryOperatorProposals = new ContentProposal[] {
 				new ContentProposal("NOT")
 		};
+		fieldPrefixProposals = new ContentProposal[] {
+				new ContentProposal("attr:"),
+				new ContentProposal("param:")
+		};
 	}
 	
 	public FilterContentProposalProvider() {
 		String[] filterFields = ResultItemFields.getFieldNames().toArray();
+		prefixedFieldProposals = new ContentProposal[0];
 		fieldProposals = new ContentProposal[filterFields.length];
 		for (int i = 0; i < filterFields.length; ++i) {
 			fieldProposals[i] = new ContentProposal(filterFields[i], filterFields[i]+"()");
@@ -68,13 +77,19 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	public void setFilterHints(FilterHints hints) {
 		// add pattern proposals for the filter hints
 		FilterField[] fields = hints.getFields();
-		fieldProposals = new ContentProposal[fields.length];
-		for (int i = 0; i < fields.length; ++i) {
-			String fieldName = fields[i].getFullName();
-			fieldProposals[i] = new ContentProposal(fieldName, fieldName+"()");
+		List<ContentProposal> fieldProposals = new ArrayList<ContentProposal>();
+		List<ContentProposal> prefixedFieldProposals = new ArrayList<ContentProposal>();
+		for (FilterField field : fields) {
+			String fieldName = field.getFullName();
+			if (field.getKind() == Kind.ItemField)
+				fieldProposals.add(new ContentProposal(fieldName, fieldName+"()"));
+			else
+				prefixedFieldProposals.add(new ContentProposal(fieldName, fieldName+"()"));
 		}
+		this.fieldProposals = fieldProposals.toArray(new ContentProposal[fieldProposals.size()]);
+		this.prefixedFieldProposals = prefixedFieldProposals.toArray(new ContentProposal[fieldProposals.size()]);
 		patternProposals.clear();
-		for (FilterField field : fields /*ResultItemFields.getFieldNames().toArray()*/) {
+		for (FilterField field : fields) {
 			String[] patterns = hints.getHints(field);
 			if (patterns != null) {
 				ContentProposal[] proposals = new ContentProposal[patterns.length];
@@ -116,6 +131,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 								 (parent.getOpeningParen().isEmpty() ? DEC_OP : DEC_NONE) |
 								 (parent.getPattern().isEmpty() && parent.getClosingParen().isEmpty() ? DEC_CP : DEC_NONE);
 					collectFilteredProposals(result, fieldProposals, "", startIndex, endIndex, decorators);
+					collectFilteredProposals(result, fieldPrefixProposals, "", startIndex, endIndex, DEC_NONE);
 				}
 				// after field name: complete field name
 				else if (type == Node.FIELDPATTERN && token == parent.getField() && atEnd) {
@@ -123,6 +139,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					startIndex = token.getStartPos();
 					endIndex = token.getEndPos();
 					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex,	DEC_QUOTE);
+					collectFilteredProposals(result, prefixedFieldProposals, prefix, startIndex, endIndex, DEC_QUOTE);
 				}
 				// inside the pattern of a field pattern: replace pattern with filter hints of the field
 				else if (type == Node.FIELDPATTERN && token == parent.getPattern() && !atEnd) {
@@ -154,6 +171,9 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					String field = FilterUtil.getDefaultField();
 					collectFilteredProposals(result, unaryOperatorProposals, prefix, startIndex, endIndex, DEC_NONE);
 					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, DEC_QUOTE | DEC_OP | DEC_CP);
+					collectFilteredProposals(result, fieldPrefixProposals, prefix, startIndex, endIndex, DEC_NONE);
+					if (endIndex > startIndex)
+						collectFilteredProposals(result, prefixedFieldProposals, prefix, startIndex, endIndex, DEC_QUOTE | DEC_OP | DEC_CP);
 					collectFilteredProposals(result, patternProposals.get(field), prefix, startIndex, endIndex, DEC_QUOTE);
 				}
 				// inside unary operator: replace unary operator
@@ -176,6 +196,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					int spaceBefore = (token.getEndPos() == position ? DEC_SP_BEFORE : DEC_NONE);
 					collectFilteredProposals(result, unaryOperatorProposals, "", position, position, spaceBefore);
 					collectFilteredProposals(result, fieldProposals, "", position, position, spaceBefore | DEC_QUOTE | DEC_OP | DEC_CP);
+					collectFilteredProposals(result, fieldPrefixProposals, "", position, position, spaceBefore);
 					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | DEC_QUOTE);
 				}
 			}
