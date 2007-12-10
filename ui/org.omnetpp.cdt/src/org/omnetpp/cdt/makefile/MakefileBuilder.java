@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -21,6 +22,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+
+import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 
@@ -221,6 +224,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             MakemakeOptions tmpOptions = options.clone();
             
             tmpOptions.force = true;
+            tmpOptions.isNMake = CDTUtils.isMsvcToolchainActive(getProject());
             
             // add dependent folders
             if (folderDeps.containsKey(folder))

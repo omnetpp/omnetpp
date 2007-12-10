@@ -29,7 +29,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.ide.Activator;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * This property page is shown for OMNeT++ Projects (projects with the
@@ -171,7 +171,7 @@ public class NEDSourceFoldersPropertyPage extends PropertyPage {
 	} 
 
 	private void errorDialog(String message, Throwable e) {
-		IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+		IStatus status = new Status(IMarker.SEVERITY_ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e);
 		ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
 	}
 }

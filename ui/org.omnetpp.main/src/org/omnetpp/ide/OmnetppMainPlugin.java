@@ -8,18 +8,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class OmnetppMainPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static String PLUGIN_ID;
 
 	// The shared instance
-	private static Activator plugin;
+	private static OmnetppMainPlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public OmnetppMainPlugin() {
 		plugin = this;
 	}
 
@@ -44,7 +44,7 @@ public class Activator extends AbstractUIPlugin {
 	/**
 	 * Returns the shared instance
 	 */
-	public static Activator getDefault() {
+	public static OmnetppMainPlugin getDefault() {
 		return plugin;
 	}
 	

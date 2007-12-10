@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
+
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
@@ -141,6 +142,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
                 removeFolderOptions();
             }});
         
+        // FIXME class cast exception if buildspec did not exist
         // configure treeviewer
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
 	        @Override

@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
 /**
  * An opp_nmakemake implementation. May be invoked as a command-line tool
@@ -109,7 +111,10 @@ public class MakeMake {
         if (p.projectDir != null)
             throw new IllegalStateException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
 
-        String configFile = "C:/home/omnetpp40/omnetpp/configuser.vc"; //FIXME should come from an Eclipse preference or something 
+        String omnetppRoot = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
+        if (StringUtils.isEmpty(omnetppRoot))
+            throw new IllegalStateException("OMNeT++ root must be set in Window/Preferences");
+        String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc"); 
 
         // collect source files
         if (!p.isDeep) {

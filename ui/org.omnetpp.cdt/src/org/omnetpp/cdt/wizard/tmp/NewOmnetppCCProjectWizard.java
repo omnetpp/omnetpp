@@ -42,7 +42,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 import org.omnetpp.common.IConstants;
-import org.omnetpp.ide.Activator;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 	
@@ -163,7 +163,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             }
             else {
                 // Unexpected runtime exceptions and errors may still occur.
-            	Activator.getDefault().logError(t);
+            	OmnetppMainPlugin.getDefault().logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
             }
             return null;

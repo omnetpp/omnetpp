@@ -5,7 +5,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.omnetpp.ide.Activator;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * This class represents a preference page that
@@ -31,7 +31,7 @@ public class OmnetppPreferencePage
 
     public OmnetppPreferencePage() {
 		super(GRID);
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setPreferenceStore(OmnetppMainPlugin.getDefault().getPreferenceStore());
 		setDescription("Specify the directory where the Makefile.inc or configuser.vc are located. " +
 				"This is usually the root folder of the OMNEST/OMNeT++ installation.");
 	}

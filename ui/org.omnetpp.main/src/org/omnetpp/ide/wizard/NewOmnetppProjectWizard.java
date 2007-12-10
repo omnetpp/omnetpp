@@ -25,7 +25,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.ide.Activator;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 	
@@ -101,7 +101,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
             }
             else {
                 // Unexpected runtime exceptions and errors may still occur.
-            	Activator.getDefault().logError(t);
+            	OmnetppMainPlugin.getDefault().logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
             }
             return null;

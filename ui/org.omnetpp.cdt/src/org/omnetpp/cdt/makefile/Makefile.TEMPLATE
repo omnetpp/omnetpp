@@ -69,7 +69,21 @@ MSG_H_FILES = {msghfiles}
 {nmake:}!endif
 {nmake:}
 {nmake:}!include $(CONFIGFILE)
+
+{~nmake:}ifneq ("$(OMNETPP_CONFIGFILE)","")
+{~nmake:}CONFIGFILE = $(OMNETPP_CONFIGFILE)
+{~nmake:}else
+{~nmake:}ifneq ("$(OMNETPP_ROOT)","")
+{~nmake:}CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
+{~nmake:}else
 {~nmake:}CONFIGFILE = $(shell opp_configfilepath)
+{~nmake:}endif
+{~nmake:}endif
+{~nmake:}
+{~nmake:}#if !exist($(CONFIGFILE))
+{~nmake:}#$(error '$(CONFIGFILE)' does not exist -- specify "Makefile.inc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line nmake argument), or add the OMNeT++ bin directory to the path.)
+{~nmake:}#endif
+{~nmake:}
 {~nmake:}include $(CONFIGFILE)
 
 {rem:}# Check that MODE is valid (not enabled, to allow implementing other MODEs)
@@ -123,6 +137,8 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 #------------------------------------------------------------------------------
 
 # Main target
+all: $(TARGET)
+
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
@@ -183,7 +199,7 @@ generateheaders: $(MSG_H_FILES)
 
 clean:
 {nmake:}	-cd /d $(O:/=\) && del $(VC_AUX_FILES) .tstamp *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O && rm -f .tstamp *.obj $(TARGET)
+{~nmake:}	-cd $O && rm -f .tstamp *.o $(TARGET)
 	-{nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}
 	-{nmake?del}{~nmake?rm -f} *.vec *.sca {nmake?2>nul}
 {subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
@@ -203,3 +219,4 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
+

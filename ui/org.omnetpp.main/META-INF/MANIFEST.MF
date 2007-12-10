@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNEST/OMNeT++ Integrated Development Environment
 Bundle-SymbolicName: org.omnetpp.main;singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.ide.Activator
+Bundle-Activator: org.omnetpp.ide.OmnetppMainPlugin
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,

@@ -163,7 +163,7 @@ public class DocumentationGenerator {
         nedResources = NEDResourcesPlugin.getNEDResources();
         msgResources = NEDResourcesPlugin.getMSGResources();
         
-        IPreferenceStore store = org.omnetpp.ide.Activator.getDefault().getPreferenceStore();
+        IPreferenceStore store = org.omnetpp.ide.OmnetppMainPlugin.getDefault().getPreferenceStore();
         dotExecutablePath = store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE);
         doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
     }
