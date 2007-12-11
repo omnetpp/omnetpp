@@ -42,101 +42,39 @@
    </extension>
    <extension
          point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
-            id="cdt.managedbuild.target.gnu.exe"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
-      </projectType>     
+      <managedBuildRevision
+            fileVersion="4.0.0">
+      </managedBuildRevision>
       
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-            id="cdt.managedbuild.target.gnu.so"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
-      </projectType>
           
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
-            id="cdt.managedbuild.target.gnu.lib"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">                        
-      </projectType>
       
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
-            id="cdt.managedbuild.target.gnu.cygwin.exe"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">                                  
-      </projectType>              
          
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-            id="cdt.managedbuild.target.gnu.cygwin.so"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">            
-      </projectType>
                        
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
-            id="cdt.managedbuild.target.gnu.cygwin.lib"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">            
-      </projectType>
 
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
-            id="cdt.managedbuild.target.gnu.mingw.exe"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">                                  
-      </projectType>              
          
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-            id="cdt.managedbuild.target.gnu.mingw.so"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">            
-      </projectType>
                        
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
-            id="cdt.managedbuild.target.gnu.mingw.lib"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">            
-      </projectType>
 
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
-            id="cdt.managedbuild.target.macosx.exe"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
-       </projectType>      
             
-      <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-            id="cdt.managedbuild.target.macosx.so"
-            isAbstract="false"
-            isTest="false"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">            
-      </projectType>
       
       <projectType
-            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
-            id="cdt.managedbuild.target.macosx.lib"
-            isAbstract="false"
-            isTest="false"
+            id="org.omnetpp.cdt.omnetppProjectType"
+            name="OMNEST/OMNeT++ Project"
             projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
-      </projectType>      
+         <configuration
+               id="org.omnetpp.cdt.msvc.configuration.release"
+               name="Release"
+               parent="org.eclipse.cdt.msvc.configuration">
+            <toolChain
+                  id="org.omnetpp.cdt.msvc.toolchain.release"
+                  superClass="org.eclipse.cdt.msvc.toolchain.base">
+            </toolChain>
+         </configuration>
+      </projectType>
+      <toolChain
+            id="org.omnetpp.cdt.msvc.toolchain.base"
+            isAbstract="true"
+            superClass="org.eclipse.cdt.msvc.toolchain.base">
+      </toolChain>      
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
