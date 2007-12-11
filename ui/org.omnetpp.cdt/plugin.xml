@@ -4,12 +4,12 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            category="org.omnetpp.main.OmnetppCategory"
-            class="org.omnetpp.cdt.ui.BuildSpecPropertyPage"
+            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
+            class="org.omnetpp.cdt.ui.OmnetppCDTFolderPropertyPage"
             id="org.omnetpp.cdt.BuildSpec"
-            name="C++ Makefile Generation">
+            name="OMNEST/OMNeT++">
          <enabledWhen>
-             <adapt type="org.eclipse.core.resources.IProject">
+             <adapt type="org.eclipse.core.resources.IContainer">
                <and>
                   <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
                   <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.ccnature"/>
@@ -45,17 +45,6 @@
       <managedBuildRevision
             fileVersion="4.0.0">
       </managedBuildRevision>
-      
-          
-      
-         
-                       
-
-         
-                       
-
-            
-      
       <projectType
             id="org.omnetpp.cdt.omnetppProjectType"
             name="OMNEST/OMNeT++ Project"
@@ -80,7 +69,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.omnetpp.wizards"
-            class="org.omnetpp.cdt.wizard.tmp.NewOmnetppCCProjectWizard"
+            class="org.omnetpp.cdt.tmp.NewOmnetppCCProjectWizard"
             id="org.omnetpp.cdt.wizard.newProjectWizard"
             name="OMNEST/OMNeT++ Project TEST"
             project="true">

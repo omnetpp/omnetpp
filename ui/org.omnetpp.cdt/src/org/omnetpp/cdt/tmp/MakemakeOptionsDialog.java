@@ -1,4 +1,4 @@
-package org.omnetpp.cdt.ui;
+package org.omnetpp.cdt.tmp;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.ui.MakemakeOptionsPanel;
 import org.omnetpp.common.ui.EditableList;
 import org.omnetpp.common.util.StringUtils;
 

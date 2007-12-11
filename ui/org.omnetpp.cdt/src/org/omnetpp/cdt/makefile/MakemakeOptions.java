@@ -133,7 +133,7 @@ public class MakemakeOptions implements Cloneable {
                 mode = arg.substring(2);
             }
             else if (arg.equals("-c") || arg.equals("--configfile")) {
-                throw new IllegalArgumentException("option $arg is no longer supported, config file is found automatically by invoking opp_configfilepath");
+                throw new IllegalArgumentException("option "+arg+" is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
             }
             else if (arg.equals("-n") || arg.equals("--nolink")) {
                 type = Type.NOLINK;

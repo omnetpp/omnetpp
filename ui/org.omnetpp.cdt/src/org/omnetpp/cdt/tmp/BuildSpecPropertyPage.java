@@ -1,4 +1,4 @@
-package org.omnetpp.cdt.ui;
+package org.omnetpp.cdt.tmp;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +48,7 @@ import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
  *
  * @author Andras
  */
+//FIXME OMNEST/OMNeT++ category in Project Properties also appear if project is NOT an OMNeT++ project...
 //TODO: "Show Dependencies" (of a folder)
 //TODO: out-of-directory build
 public class BuildSpecPropertyPage extends PropertyPage {
