@@ -1,25 +1,11 @@
-package org.omnetpp.cdt.wizard.tmp;
+package org.omnetpp.cdt.tmp;
 
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
-import org.eclipse.cdt.managedbuilder.core.IBuilder;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-import org.eclipse.cdt.managedbuilder.core.IProjectType;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
-import org.eclipse.cdt.managedbuilder.internal.core.ToolChain;
-import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
-import org.eclipse.cdt.ui.newui.UIMessages;
-import org.eclipse.cdt.ui.text.ICCompletionProposal;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -40,7 +26,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
-
 import org.omnetpp.common.IConstants;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
