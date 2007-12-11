@@ -65,12 +65,40 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // create pages
+        Composite generalPage = createTabPage("General");
+        Composite scopePage = createTabPage("Makefile Scope");
         Composite targetPage = createTabPage("Target");
         Composite includePage = createTabPage("Include");
         Composite linkPage = createTabPage("Link");
         Composite customPage = createTabPage("Custom");
 
         tabfolder.setSelection(0);
+        
+        // "General" page
+        generalPage.setLayout(new GridLayout(1,false));
+        Button enabled = createCheckbox(generalPage, "Generate Makefile in this directory");
+        createLabel(generalPage, "WARNING: Makefiles are not in used because this project \nis configured for CDT-managed Makefiles..........."); //FIXME
+        createLabel(generalPage, "Output directory (project relative) (when empty, build artifacts are created in the source directory):");
+        Text outputDirText = new Text(generalPage, SWT.BORDER);
+        outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        // "Scope" page
+        scopePage.setLayout(new GridLayout(1,false));
+        Group group1 = new Group(scopePage, SWT.NONE);
+        group1.setText("Select one:");
+        group1.setLayout(new GridLayout(1,false));
+        group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        Button deepRadioButton = createRadioButton(group1, "Deep (process all source files from this subdirectory tree) (RECOMMENDED)");
+        Button recurseRadioButton = createRadioButton(group1, "Recursive (process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist)");
+        Button nonrecurseRadioButton = createRadioButton(group1, "Local (process source files in this directory only, and ignore subdirectories)");
+        createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
+        //createLabel(generalPage, "Ignore the following directories (in addition to directories marked as \"Excluded\") (applies to Deep and Recursive):");
+        //EditableList excludedDirsList = new EditableList(generalPage, SWT.BORDER);
+        //excludedDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
+        EditableList subdirsDirsList = new EditableList(scopePage, SWT.BORDER);
+        subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
         
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
@@ -108,10 +136,10 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
-        Group linkGroup = createGroup(linkPage, "Link with:");
+        Group linkGroup = createGroup(linkPage, "Link additionally with:");
         linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         linkGroup.setLayout(new GridLayout(1,false));
-        Button cb1 = createCheckbox(linkGroup, "All object files in this project");
+        Button cb1 = createCheckbox(linkGroup, "All object files in this project"); //XXX radiobutton?
         Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles");
         Button cb3 = createCheckbox(linkGroup, "Code from referenced projects");
         createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
