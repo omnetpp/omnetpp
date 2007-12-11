@@ -1,47 +1,30 @@
 package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipse.ui.model.WorkbenchContentProvider;
-
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.MakefileTools;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
-import org.omnetpp.cdt.tmp.MakemakeOptionsDialog;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * This property page is shown for folders in an OMNeT++ CDT Project, and lets the user 
@@ -67,12 +50,37 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 	 * @see PreferencePage#createContents(Composite)
 	 */
 	protected Control createContents(Composite parent) {
+	    Group group = new Group(parent, SWT.NONE);
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+	    group.setLayout(new GridLayout(1,false));
+        final Button enableMakefileCheckbox = createCheckbox(group, "Generate Makefile automatically");
+        enableMakefileCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        
+        Text message = new Text(group, SWT.MULTI);
+        message.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        message.setEditable(false);
+        message.setText("WARNING: Makefiles are not in use because this project is configured for CDT-managed Makefiles...........");
+        
 	    contents = new MakemakeOptionsPanel(parent, SWT.NONE, null); //XXX
 	    contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
+
+	    enableMakefileCheckbox.addSelectionListener(new SelectionAdapter() {
+	        @Override
+	        public void widgetSelected(SelectionEvent e) {
+	            boolean enabled = enableMakefileCheckbox.getSelection();
+	            contents.setVisible(enabled);
+	        } 
+	    });
+	    
 		loadBuildSpecFile();
 		
 		return contents;
+	}
+
+	protected Button createCheckbox(Composite parent, String text) {
+	    Button button = new Button(parent, SWT.CHECK);
+	    button.setText(text);
+	    return button;
 	}
 
 	public boolean performOk() {

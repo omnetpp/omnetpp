@@ -29,6 +29,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     public MakemakeOptionsPanel(Composite parent,int style, MakemakeOptions initialValue) {
         super(parent, style);
+        result = initialValue == null ? new MakemakeOptions() : initialValue.clone();
         createContents();
     }
 
@@ -52,8 +53,6 @@ public class MakemakeOptionsPanel extends Composite {
         
         // "General" page
         generalPage.setLayout(new GridLayout(1,false));
-        Button enabled = createCheckbox(generalPage, "Generate Makefile in this directory");
-        createLabel(generalPage, "WARNING: Makefiles are not in used because this project \nis configured for CDT-managed Makefiles..........."); //FIXME
         createLabel(generalPage, "Output directory (project relative) (when empty, build artifacts are created in the source directory):");
         Text outputDirText = new Text(generalPage, SWT.BORDER);
         outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -74,7 +73,6 @@ public class MakemakeOptionsPanel extends Composite {
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         EditableList subdirsDirsList = new EditableList(scopePage, SWT.BORDER);
         subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
         
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
@@ -131,117 +129,6 @@ public class MakemakeOptionsPanel extends Composite {
         Text makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
-        
-//      enum Type {EXE, SO, NOLINK};
-//      public List<String> args;
-//      public String makefile = "Makefile.vc";
-        
-//      public String projectDir = ""; ==> inputfield with browse button (BASEDIR IS THE PROJECT!!!)
-        
-//      public Type type = Type.EXE;
-
-//EXE
-//SO
-//LIB
-//NOLINK
-//ALL
-        
-//      public String target = null;   EXE, SO, LIB
-//      public boolean linkWithObjects = false;  EXE
-//      public boolean tstamp = true;  EXE, SO?
-//      public boolean recursive = false; ALL
-//      public String userInterface;  EXE
-//      public String ccext = null;  ALL
-//      public String configFile     ALL
-//      public String exportDefOpt   ALL
-//      public boolean compileForDll  NOLINK
-//      public List<String> fragmentFiles   ALL, inputfield
-//      public List<String> subdirs         ALL, inputfield
-//      public List<String> exceptSubdirs   ALL, inputfield  -- ignore?
-//      public List<String> includeDirs     ALL, listbox
-//      public List<String> libDirs =       EXE, SO?
-//      public List<String> libs =          EXE, SO?
-//      public List<String> importLibs      EXE, SO?
-//      public List<String> extraArgs       EXE, SO?
-
-        
-        
-        
-//		// Section combobox
-//		Composite comboWithLabel = new Composite(composite, SWT.NONE);
-//		comboWithLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-//
-//		Label comboLabel = new Label(comboWithLabel, SWT.NONE);
-//		comboLabel.setText("Section:");
-//		sectionsCombo = new Combo(comboWithLabel, SWT.BORDER | SWT.READ_ONLY);
-//		comboWithLabel.setLayout(new GridLayout(2, false));
-//		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-//		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-//
-//		networkNameLabel = createLabel(composite, "Network: n/a");
-//		sectionChainLabel = createLabel(composite, "Section fallback chain: n/a  ");
-//
-//		sectionsCombo.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent e) {
-//				buildTableContents();
-//			}
-//		});
-//		
-//		// radiobutton group
-//        Group group = new Group(composite, SWT.NONE);
-//		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-//		group.setText("Pattern style");
-//		group.setLayout(new GridLayout(1, false));
-//
-//        // radiobuttons
-//		createRadioButton(group, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
-//		Button b = createRadioButton(group, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
-//		createRadioButton(group, "Full path except network name (*.host[*].mac.queueSize)", KeyType.ANYNETWORK_FULLPATH);
-//		createRadioButton(group, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
-//		b.setSelection(true);
-//		keyType = KeyType.MODULE_AND_PARAM; // must agree with selected radiobutton
-//        
-//		// table group
-//        Group group2 = new Group(composite, SWT.NONE);
-//		group2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//		group2.setText("Select keys to insert");
-//		group2.setLayout(new GridLayout(1, false));
-//      
-//		// checkboxes
-//		skipCheckbox = new Button(group2, SWT.CHECK);
-//		skipCheckbox.setText("Skip parameters that have a default value");
-//		addApplyCheckbox = new Button(group2, SWT.CHECK);
-//		addApplyCheckbox.setText("Insert corresponding \"**.apply-default=true\" line into the file");
-//		skipCheckbox.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent e) {
-//				addApplyCheckbox.setSelection(skipCheckbox.getSelection());
-//				buildTableContents();
-//			}
-//		});
-//		GridData gridData = new GridData();
-//		gridData.horizontalIndent = 20;
-//		addApplyCheckbox.setLayoutData(gridData);
-//		
-//        // table and buttons
-//		listViewer = CheckboxTableViewer.newCheckList(group2, SWT.BORDER);
-//        GridData data = new GridData(GridData.FILL_BOTH);
-//        data.heightHint = SIZING_SELECTION_WIDGET_HEIGHT;
-//        data.widthHint = SIZING_SELECTION_WIDGET_WIDTH;
-//        listViewer.getTable().setLayoutData(data);
-//
-//        listViewer.setContentProvider(new ArrayContentProvider());
-//        listViewer.setLabelProvider(new LabelProvider() {
-//			@Override
-//			public String getText(Object element) {
-//				ParamResolution res = (ParamResolution) element;
-//				return getKeyFor(res);
-//			}
-//        });
-//
-//        addSelectionButtons(group2);
-//
-//        buildTableContents();
-        
         Dialog.applyDialogFont(composite);
         
         return composite;
@@ -281,7 +168,19 @@ public class MakemakeOptionsPanel extends Composite {
 	    return composite;
 	}
 	
-	/**
+//	public void setEnabled(boolean enabled) {
+//	    for (TabItem item : tabfolder.getItems())
+//	        setEnabledRecursive(item.getControl(), enabled);
+//	}
+//	
+//	private static void setEnabledRecursive(Control control, boolean enabled) {
+//	    control.setEnabled(enabled);
+//	    if (control instanceof Composite)
+//	        for (Control child : ((Composite)control).getChildren())
+//	            setEnabledRecursive(child, enabled);
+//    }
+
+    /**
 	 * Returns the result of the dialog.
 	 */
 	public MakemakeOptions getResult() {
