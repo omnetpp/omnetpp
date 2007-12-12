@@ -9,7 +9,7 @@ OMNETPP_ROOT=..\..
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"==""
+!if "$(CONFIGNAME)"=="."
 L=$(OMNETPP_LIB_DIR)
 !else
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)

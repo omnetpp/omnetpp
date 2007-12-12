@@ -39,7 +39,7 @@ public class OmnetppNature implements IProjectNature {
 	    if (findBuilderIndex(desc.getBuildSpec(), builderId) == -1) {
 	        ICommand command = desc.newCommand();
 	        command.setBuilderName(builderId);
-	        desc.setBuildSpec((ICommand[])ArrayUtils.add(desc.getBuildSpec(), command));
+	        desc.setBuildSpec((ICommand[])ArrayUtils.add(desc.getBuildSpec(), 0, command));
 	    }
 	}
 	

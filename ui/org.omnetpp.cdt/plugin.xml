@@ -45,35 +45,127 @@
       <managedBuildRevision
             fileVersion="4.0.0">
       </managedBuildRevision>
-      <projectType
-            id="org.omnetpp.cdt.omnetppProjectType"
-            name="OMNEST/OMNeT++ Project"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
-         <configuration
-               id="org.omnetpp.cdt.msvc.configuration.release"
-               name="Release"
-               parent="org.eclipse.cdt.msvc.configuration">
-            <toolChain
-                  id="org.omnetpp.cdt.msvc.toolchain.release"
-                  superClass="org.eclipse.cdt.msvc.toolchain.base">
-            </toolChain>
-         </configuration>
-      </projectType>
+      <builder
+            autoBuildTarget="all"
+            cleanBuildTarget="clean"
+            command="make"
+            errorParsers="org.eclipse.cdt.core.MakeErrorParser"
+            id="org.omnetpp.cdt.opp_makemake.builder"
+            ignoreErrCmd="-k"
+            incrementalBuildTarget="all"
+            isAbstract="true"
+            isVariableCaseSensitive="true"
+            macroInputDirRelPathValue="$(dir $&lt;)"
+            macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
+            macroInputFileExtValue="$(suffix $(notdir $&lt;))"
+            macroInputFileNameValue="$(notdir $&lt;)"
+            macroInputFileRelPathValue="$&lt;"
+            macroOutputDirRelPathValue="$(dir $@)"
+            macroOutputFileBaseNameValue="$(basename $(notdir $@))"
+            macroOutputFileExtValue="$(suffix $(notdir $@))"
+            macroOutputFileNameValue="$(notdir $@)"
+            macroOutputFileRelPathValue="$@"
+            name="OMNEST/OMNeT++ Make Builder (opp_makemake)"
+            parallelBuildCmd="-j*"
+            reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
+            supportsManagedBuild="false"
+            variableFormat="${=}">
+      </builder>   
+      <builder
+            command="nmake"
+            id="org.omnetpp.cdt.opp_nmakemake.builder"
+            isAbstract="true"
+            name="OMNEST/OMNeT++ Make Builder (opp_nmakemake - for MS Visual C++)"
+            superClass="org.omnetpp.cdt.opp_makemake.builder">
+      </builder>
       <toolChain
             id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
-            superClass="org.eclipse.cdt.msvc.toolchain.base">
-      </toolChain>      
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            category="org.omnetpp.wizards"
-            class="org.omnetpp.cdt.tmp.NewOmnetppCCProjectWizard"
-            id="org.omnetpp.cdt.wizard.newProjectWizard"
-            name="OMNEST/OMNeT++ Project TEST"
-            project="true">
-      </wizard>
+            name="Microsoft Visual C++ for OMNEST/OMNeT++"
+            osList="win32"
+            superClass="org.eclipse.cdt.msvc.toolchain.base"
+            supportsManagedBuild="false">
+         <builder
+               id="org.omnetpp.cdt.msvc.builder"
+               isAbstract="true"
+               superClass="org.omnetpp.cdt.opp_nmakemake.builder">
+         </builder>
+      </toolChain>
+      <toolChain
+            id="org.omnetpp.cdt.mingw.toolchain.base"
+            isAbstract="true"
+            name="MinGW GCC for OMNEST/OMNeT++"
+            osList="win32"
+            superClass="cdt.managedbuild.toolchain.gnu.mingw.base"
+            supportsManagedBuild="false">
+         <builder
+               id="org.omnetpp.cdt.mingw.builder"
+               isAbstract="true"
+               superClass="org.omnetpp.cdt.opp_makemake.builder">
+         </builder>
+      </toolChain>
+      <projectType
+            id="org.omnetpp.cdt.omnetppProjectType"
+            name="OMNEST/OMNeT++ Simulation"
+            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
+         <configuration
+               id="org.omnetpp.cdt.msvc.config.release"
+               name="msvc80-release"
+               parent="org.eclipse.cdt.msvc.configuration">
+            <toolChain
+                  id="org.omnetpp.cdt.msvc.toolchain.release"
+                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
+               <builder
+                     arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
+                     id="org.omnetpp.cdt.msvc.builder.release"
+                     superClass="org.omnetpp.cdt.msvc.builder">
+               </builder>
+            </toolChain>
+         </configuration>
+         <configuration
+               id="org.omnetpp.cdt.msvc.config.debug"
+               name="msvc80-debug"
+               parent="org.eclipse.cdt.msvc.configuration">
+            <toolChain
+                  id="org.omnetpp.cdt.msvc.toolchain.debug"
+                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
+               <builder
+                     arguments="-f Makefile.vc MODE=debug CONFIGNAME=${ConfigName}"
+                     id="org.omnetpp.cdt.msvc.builder.debug"
+                     superClass="org.omnetpp.cdt.msvc.builder">
+               </builder>
+            </toolChain>
+         </configuration>
+
+         <configuration
+               id="org.omnetpp.cdt.mingw.config.release"
+               name="mingw-release"
+               parent="cdt.managedbuild.config.gnu.mingw.base">
+            <toolChain
+                  id="org.omnetpp.cdt.mingw.toolchain.release"
+                  superClass="org.omnetpp.cdt.mingw.toolchain.base">
+               <builder
+                     arguments="MODE=release CONFIGNAME=${ConfigName}"
+                     id="org.omnetpp.cdt.mingw.builder.release"
+                     superClass="org.omnetpp.cdt.mingw.builder">
+               </builder>
+            </toolChain>
+         </configuration>
+         <configuration
+               id="org.omnetpp.cdt.mingw.config.debug"
+               name="mingw-debug"
+               parent="cdt.managedbuild.config.gnu.mingw.base">
+            <toolChain
+                  id="org.omnetpp.cdt.mingw.toolchain.debug"
+                  superClass="org.omnetpp.cdt.mingw.toolchain.base">
+               <builder
+                     arguments="MODE=debug CONFIGNAME=${ConfigName}"
+                     id="org.omnetpp.cdt.mingw.builder.debug"
+                     superClass="org.omnetpp.cdt.mingw.builder">
+               </builder>
+            </toolChain>
+         </configuration>
+      </projectType>      
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -91,16 +183,10 @@
    </extension>
    <extension point="org.eclipse.cdt.core.templates">
       <template
-            id="org.omnetpp.cdt.templates.EmptyManaged"
-            filterPattern=".*"
-            location="templates/managed/empty/template.xml"
-            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
-      </template>
-      <template
             id="org.omnetpp.cdt.templates.EmptyMake"
             filterPattern=".*"
             location="templates/make/empty/template.xml"
-            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+            projectType="org.omnetpp.cdt.omnetppProjectType">
       </template>
    </extension>
 

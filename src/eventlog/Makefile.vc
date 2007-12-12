@@ -7,7 +7,7 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"==""
+!if "$(CONFIGNAME)"=="."
 O=.
 L=$(OMNETPP_LIB_DIR)
 !else

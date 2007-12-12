@@ -3,7 +3,7 @@
 #
 !include ..\..\configuser.vc
 
-!if "$(CONFIGNAME)"==""
+!if "$(CONFIGNAME)"=="."
 O=.
 L=$(OMNETPP_LIB_DIR)
 !else

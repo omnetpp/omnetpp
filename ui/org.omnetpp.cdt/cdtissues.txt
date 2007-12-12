@@ -15,6 +15,14 @@
 - pre and postbuild steps run *only* if cc files are not up to date. needs a checkbox
   to run the buildsteps even if the cc files up to date
 - CWizardHandler.canFinich !!!
+- filtering in the select projectType page/makefile project nem veszi figyelembe
+  a toolchain-ek isAbstract attributumat. az absztraktokat is kiirja
+- project/properties/toolchain valtasnal minden toolchaint felsorol, illetve
+  az osszes bulidert felsorolja nem csak azt ami a kivalasztott toolchainhez
+  van rendelve. 
+- miert lehet csak 1 buildert felvenni egy toolchainhez (pl lehetne internal,
+  gnu make, nmake, cmake stb...)
+- BuildSustemEnvironmentSupplier - spelling mistake
 
 
 patform:

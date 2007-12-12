@@ -92,8 +92,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         protected ArrayList<EntryDescriptor> filterItems(ArrayList<EntryDescriptor> items) {
             ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
             for (EntryDescriptor entry : items) {
-                if (entry.getId().startsWith("org.eclipse.cdt.build") ||
-                        entry.getId().startsWith("org.omnetpp"))
+                if (entry.getId().startsWith("org.omnetpp"))
                     newItems.add(entry);
             }
             return newItems;
@@ -184,7 +183,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         }
         // the OMNET nature is always added
         ProjectUtils.addOmnetppNature(projectPage.getProjectHandle());
-            
         return true;
     }    
 

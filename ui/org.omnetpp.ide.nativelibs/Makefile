@@ -4,7 +4,7 @@
 
 include ../../Makefile.inc
 
-ifeq ($(strip $(CONFIGNAME)),)
+ifeq ("$(strip $(CONFIGNAME))",".")
 L=$(OMNETPP_LIB_DIR)
 else
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
