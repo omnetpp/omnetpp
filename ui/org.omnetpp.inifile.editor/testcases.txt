@@ -1,3 +1,8 @@
+TODO: in the Parameters table, color "apply-default" differently, so that it stands out from the parameters.
+     (we must visually indicate that it's not a parameter)
+
+
+
 Corner cases to include in testing:
 ===================================
 
