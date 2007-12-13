@@ -7,14 +7,19 @@
             category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
             class="org.omnetpp.cdt.ui.OmnetppCDTFolderPropertyPage"
             id="org.omnetpp.cdt.BuildSpec"
-            name="OMNEST/OMNeT++">
+            name="Makemake (OMNEST/OMNeT++)">
          <enabledWhen>
-             <adapt type="org.eclipse.core.resources.IContainer">
-               <and>
-                  <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
-                  <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.ccnature"/>
-               </and>
-             </adapt>         
+            <and>
+                <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
+	            <or>
+	               <adapt
+	                     type="org.eclipse.core.resources.IProject">
+	               </adapt>
+	               <adapt
+	                     type="org.eclipse.core.resources.IFolder">
+	               </adapt>
+	            </or>
+            </and>
          </enabledWhen>
       </page>
    </extension>

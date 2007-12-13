@@ -26,13 +26,13 @@ public class EditableList extends Composite {
     protected Button remove;
 
 	public EditableList(Composite parent, int style) {
-		super(parent, SWT.NONE);
+		super(parent, style);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = 0;
 		gridLayout.marginHeight = 0;
 		setLayout(gridLayout);
 		
-		list = new List(this, style);
+		list = new List(this, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
 
 		add = new Button(this, SWT.NONE);
@@ -127,5 +127,15 @@ public class EditableList extends Composite {
 	public List getList() {
 		return list;
 	}
+
+    public void setItemsAsList(java.util.List<String> strings) {
+        list.removeAll();
+        for (String s : strings)
+            list.add(s);
+    }
+
+    public java.util.List<String> getItemsAsList() {
+	    return Arrays.asList(list.getItems());
+    }
 
 }

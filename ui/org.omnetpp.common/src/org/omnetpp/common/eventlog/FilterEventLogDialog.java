@@ -720,7 +720,7 @@ public class FilterEventLogDialog
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayout(new GridLayout(2, false));
 
-        final EditableList editableList = new EditableList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+        final EditableList editableList = new EditableList(panel, SWT.NONE);
         editableList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         FilterDialogTreeNode treeNode = new FilterDialogTreeNode(label, panel) {
