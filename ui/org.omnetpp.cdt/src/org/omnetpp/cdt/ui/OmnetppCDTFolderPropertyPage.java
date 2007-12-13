@@ -2,10 +2,17 @@ package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
 
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -26,6 +33,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * This property page is shown for folders in an OMNeT++ CDT Project, and lets the user 
@@ -34,12 +42,14 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
  * @author Andras
  */
 public class OmnetppCDTFolderPropertyPage extends PropertyPage {
-    protected MakemakeOptionsPanel contents;
     
     // state
     protected BuildSpecification buildSpec;
 
-    private Button enableMakefileCheckbox;
+    // controls
+    protected Button enableMakefileCheckbox;
+    protected Text informationalMessage;
+    protected MakemakeOptionsPanel contents;
 
 	/**
 	 * Constructor.
@@ -58,10 +68,10 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
         enableMakefileCheckbox = createCheckbox(group, "Generate Makefile automatically");
         enableMakefileCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         
-        Text message = new Text(group, SWT.MULTI);
-        message.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        message.setEditable(false);
-        message.setText(getInformationalMessage());
+        informationalMessage = new Text(group, SWT.MULTI);
+        informationalMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        informationalMessage.setEditable(false);
+        informationalMessage.setForeground(ColorFactory.RED2);
         
 	    contents = new MakemakeOptionsPanel(parent, SWT.NONE); 
 	    contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -79,27 +89,64 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 		enableMakefileCheckbox.setSelection(folderOptions != null);
         contents.populate(folderOptions != null ? folderOptions : new MakemakeOptions());
 		
-        updateDialogState();
+        updatePageState();
 
         return contents;
 	}
 
-    protected void updateDialogState() {
+	@Override
+	public void setVisible(boolean visible) {
+	    super.setVisible(visible);
+	    updatePageState();
+	}
+
+    protected void updatePageState() {
         contents.setVisible(enableMakefileCheckbox.getSelection());
+        //setErrorMessage(getInformationalMessage());
+        String message = getInformationalMessage();
+        if (message == null)
+            informationalMessage.setText("");
+        else
+            informationalMessage.setText(message);
     }
 
     protected String getInformationalMessage() {
-        //XXX return some message to be displayed to the user.
-        // display info if: 
-        //  - this directory is under a "deep" makefile
-        //  - this directory is excluded
-        //  - this directory is not under a source folder
-        // display warning if:
-        //  - managed make is turned on (CDT's "Generate Makefiles automatically")
-        //  - makefile consistency error (i.e. a subdir doesn't contain a makefile,
-        //    or makefile generation is turned on on a directory under a "deep" makefile dir)
+        // Check CDT settings
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getResource().getProject());
+        if (buildInfo == null)
+            return "Cannot access CDT build information for this project. Is this a CDT project?";
+        IConfiguration configuration = buildInfo.getDefaultConfiguration();
+        if (configuration == null)
+            return "No active CDT configuration -- please create one.";
+        if (configuration.isManagedBuildOn())
+            return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the \"C/C++ Build\" page.";
+        if (CDataUtil.isExcluded(getResource().getProjectRelativePath(), configuration.getSourceEntries())) 
+            return "This folder is excluded from build (or not marked as source folder).";  //XXX clear & disable checkbox too?
+        //FIXME does not work: macro resolver returns "" so buildLocation becomes empty path. why???
+        //IPath buildLocation = configuration.getBuilder().getBuildLocation();
+        //IPath projectLocation = getResource().getProject().getLocation();
+        //if (!projectLocation.isPrefixOf(buildLocation))
+        //    return "Build directory is outside the project! Please adjust it on the \"C/C++ Build\" page.";
+        
+        IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
+        if (ancestorMakemakeFolder != null) {
+            MakemakeOptions ancestorMakemakeOptions = buildSpec.getFolderOptions(ancestorMakemakeFolder);
+            if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
+                return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
+        }
+        
+        //XXX return some message to be displayed to the user, if:
+        //  - CDT make folder is not the project root (or: if a makefile is unreachable)
+        //  - makefile consistency error (i.e. a subdir doesn't contain a makefile)
         //  - something else is wrong?
-        return "WARNING: Makefiles are not in use because this project is configured for CDT-managed Makefiles...........";
+        return null;
+    }
+
+    protected IContainer ancestorMakemakeFolder() {
+        IContainer folder = getResource().getParent();
+        while (!(folder instanceof IWorkspaceRoot) && buildSpec.getFolderOptions(folder)==null)
+            folder = folder.getParent();
+        return buildSpec.getFolderOptions(folder)==null ? null : folder;
     }
 
     protected Button createCheckbox(Composite parent, String text) {

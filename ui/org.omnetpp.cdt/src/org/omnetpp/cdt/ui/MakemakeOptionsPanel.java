@@ -2,7 +2,6 @@ package org.omnetpp.cdt.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -36,6 +35,8 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite linkPage;
     private Composite customPage;
 
+    private Text outputDirText;
+
     private Button deepMakefileRadioButton;
     private Button recursiveMakefileRadioButton;
     private Button localMakefileRadioButton;
@@ -57,7 +58,6 @@ public class MakemakeOptionsPanel extends Composite {
     private Text makefragText;
 
     private EditableList linkObjectsList;
-
 
     public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
@@ -83,7 +83,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "General" page
         generalPage.setLayout(new GridLayout(1,false));
         createLabel(generalPage, "Output directory (project relative) (when empty, build artifacts are created in the source directory):");
-        Text outputDirText = new Text(generalPage, SWT.BORDER);
+        outputDirText = new Text(generalPage, SWT.BORDER);
         outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         // "Scope" page
@@ -92,9 +92,9 @@ public class MakemakeOptionsPanel extends Composite {
         group1.setText("Select one:");
         group1.setLayout(new GridLayout(1,false));
         group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        deepMakefileRadioButton = createRadioButton(group1, "Deep (process all source files from this subdirectory tree) (RECOMMENDED)");
-        recursiveMakefileRadioButton = createRadioButton(group1, "Recursive (process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist)");
-        localMakefileRadioButton = createRadioButton(group1, "Local (process source files in this directory only, and ignore subdirectories)");
+        deepMakefileRadioButton = createRadioButton(group1, "Deep (recommended)", "Process all source files from this subdirectory tree");
+        recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
+        localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         subdirsDirsList = new EditableList(scopePage, SWT.NONE);
@@ -106,19 +106,18 @@ public class MakemakeOptionsPanel extends Composite {
         group.setText("Target type:");
         group.setLayout(new GridLayout(1,false));
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        targetExecutableRadioButton = createRadioButton(group, "Executable");
-        targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll or .so)");
-        targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)");
-        targetCompileOnlyRadioButton = createRadioButton(group, "Compile only");
+        targetExecutableRadioButton = createRadioButton(group, "Executable", null);
+        targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll or .so)", null);
+        targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)", null);
+        targetCompileOnlyRadioButton = createRadioButton(group, "Compile only", null);
         Group targetNameGroup = new Group(targetPage, SWT.NONE);
         targetNameGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         targetNameGroup.setLayout(new GridLayout(2,false));
         targetNameGroup.setText("Target name:");
-        defaultTargetName = createRadioButton(targetNameGroup, "Default");
+        defaultTargetName = createRadioButton(targetNameGroup, "Default", "Default target name will be derived from the directory name");
         defaultTargetName.setLayoutData(new GridData());
-        defaultTargetName.setToolTipText("Default target name will be derived from the directory name");
         ((GridData)defaultTargetName.getLayoutData()).horizontalSpan = 2;
-        specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name or relative path: ");
+        specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name or relative path: ", null);
         targetNameText = new Text(targetNameGroup, SWT.BORDER);
         targetNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -178,9 +177,11 @@ public class MakemakeOptionsPanel extends Composite {
         return button;
     }
 
-    protected Button createRadioButton(Composite parent, String text) {
+    protected Button createRadioButton(Composite parent, String text, String tooltip) {
         Button button = new Button(parent, SWT.RADIO);
         button.setText(text);
+        if (tooltip != null)
+            button.setToolTipText(tooltip);
         return button;
     }
 
@@ -207,6 +208,9 @@ public class MakemakeOptionsPanel extends Composite {
 //  }
 
     public void populate(MakemakeOptions data) {
+        // "General" text
+        outputDirText.setText(StringUtils.nullToEmpty(data.outRoot));
+        
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
         recursiveMakefileRadioButton.setSelection(data.recursive);
@@ -231,7 +235,6 @@ public class MakemakeOptionsPanel extends Composite {
         autoIncludePathCheckbox.setSelection(false); //TODO
         includeDirsList.setItemsAsList(data.includeDirs);
 
-        data.outRoot = null; //TODO
         data.linkWithObjects = false; //TODO
         data.tstamp = true; //TODO
         data.mode = ""; //TODO
@@ -259,6 +262,9 @@ public class MakemakeOptionsPanel extends Composite {
     public MakemakeOptions getResult() {
         MakemakeOptions result = new MakemakeOptions();
 
+        // "General" text
+        result.outRoot = outputDirText.getText();
+
         // "Scope" page
         result.isDeep = deepMakefileRadioButton.getSelection();
         result.recursive = recursiveMakefileRadioButton.getSelection();
@@ -283,7 +289,6 @@ public class MakemakeOptionsPanel extends Composite {
         autoIncludePathCheckbox.getSelection(); //TODO
         result.includeDirs.addAll(includeDirsList.getItemsAsList());
 
-        result.outRoot = null; //TODO
         result.linkWithObjects = false; //TODO
         result.tstamp = true; //TODO
         result.mode = ""; //TODO

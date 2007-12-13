@@ -231,9 +231,9 @@ public class MakemakeOptions implements Cloneable {
         List<String> result = new ArrayList<String>();
         if (!StringUtils.isEmpty(projectDir))
             add(result, "-P", projectDir);
-        if (target != null)
+        if (!StringUtils.isEmpty(target))
             add(result, "-o", target);
-        if (outRoot != null)
+        if (!StringUtils.isEmpty(outRoot))
             add(result, "-O", outRoot);
         add(result, isDeep ? "--deep" : "--nodeep");
         if (force)
