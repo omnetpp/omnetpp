@@ -24,7 +24,7 @@ import org.eclipse.ui.internal.ReopenEditorMenu;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
 
-public class OmnetProjectMacroSupplier implements IProjectBuildMacroSupplier {
+public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
     private static String INCLUDE_DIRS_MACRO = "IncludeDirs";
     private static String MESSAGE_DIRS_MACRO = "MessageDirs";
 

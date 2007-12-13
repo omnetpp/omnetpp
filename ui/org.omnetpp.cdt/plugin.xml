@@ -9,17 +9,22 @@
             id="org.omnetpp.cdt.BuildSpec"
             name="Makemake (OMNEST/OMNeT++)">
          <enabledWhen>
-            <and>
-                <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
 	            <or>
 	               <adapt
 	                     type="org.eclipse.core.resources.IProject">
+                   <test
+                         property="org.eclipse.core.resources.projectNature"
+                         value="org.omnetpp.main.omnetppnature">
+                   </test>
 	               </adapt>
 	               <adapt
 	                     type="org.eclipse.core.resources.IFolder">
+                   <test
+                         property="org.eclipse.core.resources.projectNature"
+                         value="org.omnetpp.main.omnetppnature">
+                   </test>
 	               </adapt>
 	            </or>
-            </and>
          </enabledWhen>
       </page>
    </extension>
@@ -112,7 +117,8 @@
       <projectType
             id="org.omnetpp.cdt.omnetppProjectType"
             name="OMNEST/OMNeT++ Simulation"
-            projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
+            projectEnvironmentSupplier="org.omnetpp.cdt.OmnetppProjectEnvironmentSupplier"
+            projectMacroSupplier="org.omnetpp.cdt.OmnetppProjectMacroSupplier">
          <configuration
                id="org.omnetpp.cdt.msvc.config.release"
                name="msvc-release"

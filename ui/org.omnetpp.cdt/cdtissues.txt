@@ -32,6 +32,7 @@
 - miert lehet csak 1 buildert felvenni egy toolchainhez (pl lehetne internal,
   gnu make, nmake, cmake stb...)
 - BuildSustemEnvironmentSupplier - spelling mistake
+- EnvirinmentVariable - spelling mistake
 - WEBSITE: developer faq (http://wiki.eclipse.org/CDT/Developer/FAQ) 
   is virtually empty, while many such questions are in the user faq
   (http://wiki.eclipse.org/CDT/User/FAQ#Working_on_the_CDT).
