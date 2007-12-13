@@ -476,10 +476,12 @@ sub makemake()
     else {
         my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
         my $outRootRel = abs2rel($outRootAbs, $projectDir);
-        my $subpath = cwd();
-        $subpath =~ s|^\Q$projectDir\E||;
-        $outdir = canonicalize("$outRootRel/\$(CONFIGNAME)/$subpath");
+        $outdir = canonicalize("$outRootRel");
     }
+
+    my $projectrelpath = cwd();
+    $projectrelpath =~ s|^\Q$projectDir\E||;
+
 
     $deps = "";  #FIXME
 
@@ -490,6 +492,7 @@ sub makemake()
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
         "outdir" => $outdir,
+        "projectrelpath" => $projectrelpath,
         "isdeep" => $isDeep,
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
@@ -1050,7 +1053,15 @@ EXT_DIR_TSTAMPS = {extdirtstamps}
 LIBS = {libpath}{libs}{importlibs}
 
 # Output directory
-O = {outdir}
+
+{~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
+{nmake:}!if "$(CONFIGNAME)"=="."
+O=.
+{~nmake:}else
+{nmake:}!else
+O = {outdir}/$(CONFIGNAME)/{projectrelpath}
+{nmake:}!endif
+{~nmake:}endif
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
@@ -1091,7 +1102,7 @@ MSG_H_FILES = {msghfiles}
 
 {~nmake:}ifneq ("$(OMNETPP_CONFIGFILE)","")
 {~nmake:}CONFIGFILE = $(OMNETPP_CONFIGFILE)
-{~nmake:}else 
+{~nmake:}else
 {~nmake:}ifneq ("$(OMNETPP_ROOT)","")
 {~nmake:}CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
 {~nmake:}else
