@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -22,7 +21,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -108,7 +106,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         delta.accept(new IResourceDeltaVisitor() {
             public boolean visit(IResourceDelta delta) throws CoreException {
                 IResource resource = delta.getResource();
-                boolean isSourceFile = MakefileTools.isCppFile(resource) && !buildSpec.isExcludedFromBuild(resource.getParent());
+                boolean isSourceFile = MakefileTools.isCppFile(resource); /* FIXME and not in an excluded folder*/
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
                         if (isSourceFile) {
@@ -127,7 +125,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                             fileIncludes.remove(resource);
                         break;
                 }
-                return MakefileTools.isGoodFolder(resource) && !buildSpec.isExcludedFromBuild((IContainer)resource);
+                return MakefileTools.isGoodFolder(resource); /*FIXME and not excluded from build*/
             }
         });
     }
@@ -187,7 +185,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 this.result = result;
             }
             public boolean visit(IResource resource) throws CoreException {
-                if (MakefileTools.isGoodFolder(resource) && (buildSpec==null || !buildSpec.isExcludedFromBuild((IContainer)resource))) { 
+                if (MakefileTools.isGoodFolder(resource) /*FIXME and not excluded from build*/) { 
                     result.add((IContainer)resource);
                     return true;
                 }
@@ -233,7 +231,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             
             // add subfolders
             for (IResource member : folder.members())
-                if (MakefileTools.isGoodFolder(member) && !buildSpec.isExcludedFromBuild((IContainer)member))
+                if (MakefileTools.isGoodFolder(member) /*FIXME and not excluded from build*/)
                     tmpOptions.subdirs.add(member.getName());
 
             boolean changed = new MakeMake().generateMakefile(folder, tmpOptions, perFileDeps, buildSpec.getConfigFileLocation());

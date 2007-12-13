@@ -7,6 +7,10 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 
+/**
+ * Value object to represent opp_makemake command-line options in a parsed form.
+ * @author Andras
+ */
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SO, NOLINK};
     public List<String> args;

@@ -12,15 +12,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,13 +30,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 
 /**
  * This property page is shown for OMNeT++ CDT Projects, and lets the user 
@@ -117,23 +110,23 @@ public class BuildSpecPropertyPage extends PropertyPage {
         optionsButton = createButton(buttons, "Options...");
         removeOptionsButton = createButton(buttons, "Remove Options");
 
-        // configure buttons
-        generatedMakefileButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                setFolderType(FolderType.GENERATED_MAKEFILE);
-            }});
-        customMakefileButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                setFolderType(FolderType.CUSTOM_MAKEFILE);
-            }});
-        excludeButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                setFolderType(FolderType.EXCLUDED_FROM_BUILD);
-            }});
-        defaultButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                setFolderType(null);
-            }});
+//        // configure buttons
+//        generatedMakefileButton.addSelectionListener(new SelectionAdapter() {
+//            public void widgetSelected(SelectionEvent e) {
+//                setFolderType(FolderType.GENERATED_MAKEFILE);
+//            }});
+//        customMakefileButton.addSelectionListener(new SelectionAdapter() {
+//            public void widgetSelected(SelectionEvent e) {
+//                setFolderType(FolderType.CUSTOM_MAKEFILE);
+//            }});
+//        excludeButton.addSelectionListener(new SelectionAdapter() {
+//            public void widgetSelected(SelectionEvent e) {
+//                setFolderType(FolderType.EXCLUDED_FROM_BUILD);
+//            }});
+//        defaultButton.addSelectionListener(new SelectionAdapter() {
+//            public void widgetSelected(SelectionEvent e) {
+//                setFolderType(null);
+//            }});
         optionsButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 editFolderOptions();
@@ -156,50 +149,50 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	        }
 	    });
 
-		treeViewer.setLabelProvider(new LabelProvider() {
-		    
-            @Override
-            public Image getImage(Object element) {
-                IContainer folder = (IContainer) element;
-                switch (buildSpec.getFolderType(folder)) {
-                    case CUSTOM_MAKEFILE: return IMAGE_FOLDER_CUSTOM;
-                    case EXCLUDED_FROM_BUILD: return IMAGE_FOLDER_EXCLUDED;
-                    case GENERATED_MAKEFILE: 
-                        MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-                        if (makemakeOptions == null) makemakeOptions = new MakemakeOptions(); //FIXME getFolderOptions should never return null??
-                        switch (makemakeOptions.type) {
-                            case EXE: return IMAGE_FOLDER_EXE;
-                            case SO: return IMAGE_FOLDER_DLL;
-                            //case LIB: return IMAGE_FOLDER_LIB; //XXX no such type! 
-                            case NOLINK: return IMAGE_FOLDER_NOLINK;
-                        }
-                }
-                return null;
-            }
-
-            @Override
-            public String getText(Object element) {
-                IContainer folder = (IContainer) element;
-                String additionalText = "";
-
-                boolean isInherited = buildSpec.isFolderTypeInherited(folder);
-                switch (buildSpec.getFolderType(folder)) {
-                    case CUSTOM_MAKEFILE: additionalText = isInherited ? "(custom)" : "CUSTOM"; break;
-                    case EXCLUDED_FROM_BUILD: additionalText = isInherited ? "(exclude)" : "EXCLUDE"; break;
-                    case GENERATED_MAKEFILE: additionalText = isInherited ? "(makemake)" : "MAKEMAKE"; break;
-                }
-                MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-                if (buildSpec.isMakemakeFolder(folder) && makemakeOptions != null) {
-                    String args = makemakeOptions.toString();
-                    additionalText += ": " + (buildSpec.isFolderOptionsInherited(folder) ? "("+args+")" : args);
-                }
-                
-                if (additionalText.length() > 0)
-                    return folder.getName() + " -- " + additionalText;
-                else
-                    return folder.getName();
-            }
-		}); 
+//		treeViewer.setLabelProvider(new LabelProvider() {
+//		    
+//            @Override
+//            public Image getImage(Object element) {
+//                IContainer folder = (IContainer) element;
+//                switch (buildSpec.getFolderType(folder)) {
+//                    case CUSTOM_MAKEFILE: return IMAGE_FOLDER_CUSTOM;
+//                    case EXCLUDED_FROM_BUILD: return IMAGE_FOLDER_EXCLUDED;
+//                    case GENERATED_MAKEFILE: 
+//                        MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
+//                        if (makemakeOptions == null) makemakeOptions = new MakemakeOptions(); //FIXME getFolderOptions should never return null??
+//                        switch (makemakeOptions.type) {
+//                            case EXE: return IMAGE_FOLDER_EXE;
+//                            case SO: return IMAGE_FOLDER_DLL;
+//                            //case LIB: return IMAGE_FOLDER_LIB; //XXX no such type! 
+//                            case NOLINK: return IMAGE_FOLDER_NOLINK;
+//                        }
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            public String getText(Object element) {
+//                IContainer folder = (IContainer) element;
+//                String additionalText = "";
+//
+//                boolean isInherited = buildSpec.isFolderTypeInherited(folder);
+//                switch (buildSpec.getFolderType(folder)) {
+//                    case CUSTOM_MAKEFILE: additionalText = isInherited ? "(custom)" : "CUSTOM"; break;
+//                    case EXCLUDED_FROM_BUILD: additionalText = isInherited ? "(exclude)" : "EXCLUDE"; break;
+//                    case GENERATED_MAKEFILE: additionalText = isInherited ? "(makemake)" : "MAKEMAKE"; break;
+//                }
+//                MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
+//                if (buildSpec.isMakemakeFolder(folder) && makemakeOptions != null) {
+//                    String args = makemakeOptions.toString();
+//                    additionalText += ": " + (buildSpec.isFolderOptionsInherited(folder) ? "("+args+")" : args);
+//                }
+//                
+//                if (additionalText.length() > 0)
+//                    return folder.getName() + " -- " + additionalText;
+//                else
+//                    return folder.getName();
+//            }
+//		}); 
 	        
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
@@ -239,40 +232,40 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	}
 
 	protected void updateButtonStates() {
-	    IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
-	    
-	    int generatedMakefileCount = 0;
-	    for (Object o : sel.toArray())
-	        if (buildSpec.getFolderType((IContainer)o) == FolderType.GENERATED_MAKEFILE)
-	            generatedMakefileCount++;
-	    
-	    generatedMakefileButton.setEnabled(!sel.isEmpty());
-	    customMakefileButton.setEnabled(!sel.isEmpty());
-	    excludeButton.setEnabled(!sel.isEmpty());
-	    defaultButton.setEnabled(!sel.isEmpty());
-	    optionsButton.setEnabled(generatedMakefileCount > 0);
-	    removeOptionsButton.setEnabled(generatedMakefileCount > 0);
+//	    IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
+//	    
+//	    int generatedMakefileCount = 0;
+//	    for (Object o : sel.toArray())
+//	        if (buildSpec.getFolderType((IContainer)o) == FolderType.GENERATED_MAKEFILE)
+//	            generatedMakefileCount++;
+//	    
+//	    generatedMakefileButton.setEnabled(!sel.isEmpty());
+//	    customMakefileButton.setEnabled(!sel.isEmpty());
+//	    excludeButton.setEnabled(!sel.isEmpty());
+//	    defaultButton.setEnabled(!sel.isEmpty());
+//	    optionsButton.setEnabled(generatedMakefileCount > 0);
+//	    removeOptionsButton.setEnabled(generatedMakefileCount > 0);
 	}
 
-    protected void setFolderType(FolderType folderType) {
-        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
-        for (Object o : sel.toArray()) {
-            buildSpec.setFolderType((IContainer)o, folderType);
-            if (folderType == FolderType.EXCLUDED_FROM_BUILD)
-                setFolderTypeInSubtree((IContainer)o, null); // if EXCLUDED, all folders below must be also EXCLUDED
-            else
-                ; //FIXME ensure it has no EXCLUDED parent! if so, don't let the user change the type 
-        }
-        treeViewer.refresh();
-        updateButtonStates();
-    }
+//    protected void setFolderType(FolderType folderType) {
+//        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
+//        for (Object o : sel.toArray()) {
+//            buildSpec.setFolderType((IContainer)o, folderType);
+//            if (folderType == FolderType.EXCLUDED_FROM_BUILD)
+//                setFolderTypeInSubtree((IContainer)o, null); // if EXCLUDED, all folders below must be also EXCLUDED
+//            else
+//                ; //FIXME ensure it has no EXCLUDED parent! if so, don't let the user change the type 
+//        }
+//        treeViewer.refresh();
+//        updateButtonStates();
+//    }
 
-    protected void setFolderTypeInSubtree(IContainer parentFolder, FolderType folderType) {
-        for (IContainer folder : buildSpec.getFolders())
-            if (containsFolder(parentFolder, folder))
-                buildSpec.setFolderType(folder, folderType);
-    }
-
+//    protected void setFolderTypeInSubtree(IContainer parentFolder, FolderType folderType) {
+//        for (IContainer folder : buildSpec.getFolders())
+//            if (containsFolder(parentFolder, folder))
+//                buildSpec.setFolderType(folder, folderType);
+//    }
+//
     private boolean containsFolder(IContainer parentFolder, IContainer folder) {
         boolean isChild = false;
         for (IContainer cur = folder.getParent(); cur != null; cur = cur.getParent())
@@ -283,40 +276,40 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
     @SuppressWarnings("unchecked")
     protected void editFolderOptions() {
-        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
-
-        // dialog default value: take it from first suitable folder 
-        MakemakeOptions options = null;
-        for (IContainer folder : (List<IContainer>)sel.toList())
-            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null && !buildSpec.isFolderOptionsInherited(folder))
-                options = buildSpec.getFolderOptions(folder);
-        String value = options == null ? "" : options.toString();
-
-        //XXX just testing
-        MakemakeOptionsDialog dlg = new MakemakeOptionsDialog(getShell(), options);
-        dlg.open();
-        
-        // open dialog  
-        //TODO something more sophisticated...
-        InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, new IInputValidator() {
-            public String isValid(String newText) {
-                try {
-                    new MakemakeOptions(newText);
-                } catch (Exception e) {
-                    return e.getMessage();
-                }
-                return null;
-            }
-        });
-        if (dialog.open() == Window.OK) {
-            String args = dialog.getValue();
-            for (IContainer folder : (List<IContainer>)sel.toList())
-                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE)
-                    buildSpec.setFolderOptions(folder, new MakemakeOptions(args));
-            
-            treeViewer.refresh();
-            updateButtonStates();
-        }
+//        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
+//
+//        // dialog default value: take it from first suitable folder 
+//        MakemakeOptions options = null;
+//        for (IContainer folder : (List<IContainer>)sel.toList())
+//            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null && !buildSpec.isFolderOptionsInherited(folder))
+//                options = buildSpec.getFolderOptions(folder);
+//        String value = options == null ? "" : options.toString();
+//
+//        //XXX just testing
+//        MakemakeOptionsDialog dlg = new MakemakeOptionsDialog(getShell(), options);
+//        dlg.open();
+//        
+//        // open dialog  
+//        //TODO something more sophisticated...
+//        InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, new IInputValidator() {
+//            public String isValid(String newText) {
+//                try {
+//                    new MakemakeOptions(newText);
+//                } catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//                return null;
+//            }
+//        });
+//        if (dialog.open() == Window.OK) {
+//            String args = dialog.getValue();
+//            for (IContainer folder : (List<IContainer>)sel.toList())
+//                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE)
+//                    buildSpec.setFolderOptions(folder, new MakemakeOptions(args));
+//            
+//            treeViewer.refresh();
+//            updateButtonStates();
+//        }
     }
 
     protected void removeFolderOptions() {

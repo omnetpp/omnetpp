@@ -1,5 +1,9 @@
 package org.omnetpp.cdt.ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -13,6 +17,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.ui.EditableList;
 import org.omnetpp.common.util.StringUtils;
 
@@ -22,14 +27,40 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class MakemakeOptionsPanel extends Composite {
-	// the result
-    private MakemakeOptions result;
-
+    // controls
     private TabFolder tabfolder;
+    private Composite generalPage;
+    private Composite scopePage;
+    private Composite targetPage;
+    private Composite includePage;
+    private Composite linkPage;
+    private Composite customPage;
 
-    public MakemakeOptionsPanel(Composite parent,int style, MakemakeOptions initialValue) {
+    private Button deepMakefileRadioButton;
+    private Button recursiveMakefileRadioButton;
+    private Button localMakefileRadioButton;
+
+    private EditableList subdirsDirsList;
+    private Button targetExecutableRadioButton;
+    private Button targetSharedLibRadioButton;
+    private Button targetStaticLibRadioButton;
+    private Button targetCompileOnlyRadioButton;
+
+    private Button defaultTargetName;
+    private Button specifyTargetNameRadioButton;
+    private Text targetNameText;
+
+    private Button autoIncludePathCheckbox;
+    private EditableList includeDirsList;
+
+    private Text extraMakemakeOptionsText;
+    private Text makefragText;
+
+    private EditableList linkObjectsList;
+
+
+    public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
-        result = initialValue == null ? new MakemakeOptions() : initialValue.clone();
         createContents();
     }
 
@@ -41,16 +72,14 @@ public class MakemakeOptionsPanel extends Composite {
         tabfolder = new TabFolder(composite, SWT.TOP);
         tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        // create pages
-        Composite generalPage = createTabPage("General");
-        Composite scopePage = createTabPage("Makefile Scope");
-        Composite targetPage = createTabPage("Target");
-        Composite includePage = createTabPage("Include");
-        Composite linkPage = createTabPage("Link");
-        Composite customPage = createTabPage("Custom");
-
+        generalPage = createTabPage("General");
+        scopePage = createTabPage("Makefile Scope");
+        targetPage = createTabPage("Target");
+        includePage = createTabPage("Include");
+        linkPage = createTabPage("Link");
+        customPage = createTabPage("Custom");
         tabfolder.setSelection(0);
-        
+
         // "General" page
         generalPage.setLayout(new GridLayout(1,false));
         createLabel(generalPage, "Output directory (project relative) (when empty, build artifacts are created in the source directory):");
@@ -63,127 +92,218 @@ public class MakemakeOptionsPanel extends Composite {
         group1.setText("Select one:");
         group1.setLayout(new GridLayout(1,false));
         group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        Button deepRadioButton = createRadioButton(group1, "Deep (process all source files from this subdirectory tree) (RECOMMENDED)");
-        Button recurseRadioButton = createRadioButton(group1, "Recursive (process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist)");
-        Button nonrecurseRadioButton = createRadioButton(group1, "Local (process source files in this directory only, and ignore subdirectories)");
+        deepMakefileRadioButton = createRadioButton(group1, "Deep (process all source files from this subdirectory tree) (RECOMMENDED)");
+        recursiveMakefileRadioButton = createRadioButton(group1, "Recursive (process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist)");
+        localMakefileRadioButton = createRadioButton(group1, "Local (process source files in this directory only, and ignore subdirectories)");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
-        //createLabel(generalPage, "Ignore the following directories (in addition to directories marked as \"Excluded\") (applies to Deep and Recursive):");
-        //EditableList excludedDirsList = new EditableList(generalPage, SWT.BORDER);
-        //excludedDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
-        EditableList subdirsDirsList = new EditableList(scopePage, SWT.BORDER);
+        subdirsDirsList = new EditableList(scopePage, SWT.NONE);
         subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
         Group group = new Group(targetPage, SWT.NONE);
         group.setText("Target type:");
         group.setLayout(new GridLayout(1,false));
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        Button targetExecutableRadioButton = createRadioButton(group, "Executable");
-        Button targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll or .so)");
-        Button targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)");
-        Button targetCompileOnlyRadioButton = createRadioButton(group, "Compile only");
-
+        targetExecutableRadioButton = createRadioButton(group, "Executable");
+        targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll or .so)");
+        targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)");
+        targetCompileOnlyRadioButton = createRadioButton(group, "Compile only");
         Group targetNameGroup = new Group(targetPage, SWT.NONE);
         targetNameGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         targetNameGroup.setLayout(new GridLayout(2,false));
         targetNameGroup.setText("Target name:");
-        Button defaultTargetName = createRadioButton(targetNameGroup, "Default");
+        defaultTargetName = createRadioButton(targetNameGroup, "Default");
         defaultTargetName.setLayoutData(new GridData());
         defaultTargetName.setToolTipText("Default target name will be derived from the directory name");
         ((GridData)defaultTargetName.getLayoutData()).horizontalSpan = 2;
-        Button specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name or relative path: ");
-        Text targetNameText = new Text(targetNameGroup, SWT.BORDER);
+        specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name or relative path: ");
+        targetNameText = new Text(targetNameGroup, SWT.BORDER);
         targetNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        
+
         // "Include" page
         includePage.setLayout(new GridLayout(1,false));
-        Button autoCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines");
-        autoCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines");
+        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
 
         createLabel(includePage, "Additional include directories:");
-        EditableList includeList = new EditableList(includePage, SWT.BORDER);
-        includeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        includeList.setAddDialogTitle("Add Include Directory");
-        includeList.setAddDialogMessage("Enter include directory:");  //XXX workspace path? fs path?
-        
+        includeDirsList = new EditableList(includePage, SWT.NONE);
+        includeDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        includeDirsList.setAddDialogTitle("Add Include Directory");
+        includeDirsList.setAddDialogMessage("Enter include directory:");  //XXX workspace path? fs path?
+
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
         Group linkGroup = createGroup(linkPage, "Link additionally with:");
         linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         linkGroup.setLayout(new GridLayout(1,false));
+        //FIXME are these combo boxes needed? do they correspond to any makemake settings?
         Button cb1 = createCheckbox(linkGroup, "All object files in this project"); //XXX radiobutton?
         Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles");
-        Button cb3 = createCheckbox(linkGroup, "Code from referenced projects");
+        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects"); //XXX or static/dynamic libs?
         createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
-        EditableList linkWith = new EditableList(linkPage, SWT.BORDER);
-        linkWith.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+        linkObjectsList = new EditableList(linkPage, SWT.NONE);
+        linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         createLabel(customPage, "Extra makemake options:");
-        Text extraMakemakeOptionsText = new Text(customPage, SWT.BORDER);
+        extraMakemakeOptionsText = new Text(customPage, SWT.BORDER);
         extraMakemakeOptionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         createLabel(customPage, "Code fragment to be inserted into the Makefile:");
-        Text makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
+        makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         Dialog.applyDialogFont(composite);
-        
+
         return composite;
     }
 
-	protected Label createLabel(Composite composite, String text) {
-		Label label = new Label(composite, SWT.NONE);
-		label.setText(text);
-		return label;
-	}
+    protected Label createLabel(Composite composite, String text) {
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(text);
+        return label;
+    }
 
-	protected Group createGroup(Composite composite, String text) {
-	    Group group = new Group(composite, SWT.NONE);
-	    group.setText(text);
+    protected Group createGroup(Composite composite, String text) {
+        Group group = new Group(composite, SWT.NONE);
+        group.setText(text);
         return group;
     }
 
-	protected Button createCheckbox(Composite parent, String text) {
-	    Button button = new Button(parent, SWT.CHECK);
-	    button.setText(text);
-	    return button;
-	}
+    protected Button createCheckbox(Composite parent, String text) {
+        Button button = new Button(parent, SWT.CHECK);
+        button.setText(text);
+        return button;
+    }
 
-	protected Button createRadioButton(Composite parent, String text) {
-	    Button button = new Button(parent, SWT.RADIO);
-	    button.setText(text);
-	    return button;
-	}
+    protected Button createRadioButton(Composite parent, String text) {
+        Button button = new Button(parent, SWT.RADIO);
+        button.setText(text);
+        return button;
+    }
 
-	
-	protected Composite createTabPage(String text) {
-	    TabItem item = new TabItem(tabfolder, SWT.NONE);
-	    item.setText(text);
-	    Composite composite = new Composite(tabfolder, SWT.NONE);
+
+    protected Composite createTabPage(String text) {
+        TabItem item = new TabItem(tabfolder, SWT.NONE);
+        item.setText(text);
+        Composite composite = new Composite(tabfolder, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	    item.setControl(composite);
-	    return composite;
-	}
-	
-//	public void setEnabled(boolean enabled) {
-//	    for (TabItem item : tabfolder.getItems())
-//	        setEnabledRecursive(item.getControl(), enabled);
-//	}
-//	
-//	private static void setEnabledRecursive(Control control, boolean enabled) {
-//	    control.setEnabled(enabled);
-//	    if (control instanceof Composite)
-//	        for (Control child : ((Composite)control).getChildren())
-//	            setEnabledRecursive(child, enabled);
-//    }
+        item.setControl(composite);
+        return composite;
+    }
 
+//  public void setEnabled(boolean enabled) {
+//  for (TabItem item : tabfolder.getItems())
+//  setEnabledRecursive(item.getControl(), enabled);
+//  }
+
+//  private static void setEnabledRecursive(Control control, boolean enabled) {
+//  control.setEnabled(enabled);
+//  if (control instanceof Composite)
+//  for (Control child : ((Composite)control).getChildren())
+//  setEnabledRecursive(child, enabled);
+//  }
+
+    public void populate(MakemakeOptions data) {
+        // "Scope" page
+        deepMakefileRadioButton.setSelection(data.isDeep);
+        recursiveMakefileRadioButton.setSelection(data.recursive);
+        localMakefileRadioButton.setSelection(!data.isDeep && !data.recursive);
+        subdirsDirsList.setItemsAsList(data.subdirs);
+
+        // "Target" page
+        switch (data.type) {
+            case EXE: targetExecutableRadioButton.setSelection(true); break;
+            case NOLINK: targetCompileOnlyRadioButton.setSelection(true); break;
+            case SO: targetSharedLibRadioButton.setSelection(true); break;
+            //TODO case STATICLIB: targetStaticLibRadioButton.setSelection(true); break;
+        }
+        if (StringUtils.isEmpty(data.target))
+            defaultTargetName.setSelection(true); 
+        else {
+            specifyTargetNameRadioButton.setSelection(true);
+            targetNameText.setText(data.target);
+        }
+
+        // "Include" page
+        autoIncludePathCheckbox.setSelection(false); //TODO
+        includeDirsList.setItemsAsList(data.includeDirs);
+
+        data.outRoot = null; //TODO
+        data.linkWithObjects = false; //TODO
+        data.tstamp = true; //TODO
+        data.mode = ""; //TODO
+        data.userInterface = "ALL"; //TODO
+        data.ccext = null; //TODO
+        data.exportDefOpt = ""; //TODO
+        data.compileForDll = false; //TODO
+
+        data.fragmentFiles = new ArrayList<String>();  //TODO
+        data.exceptSubdirs = new ArrayList<String>(); //TODO
+        data.libDirs = new ArrayList<String>(); //TODO
+        data.libs = new ArrayList<String>(); //TODO
+        data.importLibs = new ArrayList<String>(); //TODO
+        data.defines = new ArrayList<String>(); //TODO
+
+        extraMakemakeOptionsText.setText(""); //XXX
+        linkObjectsList.setItemsAsList(data.extraArgs);
+
+        makefragText.setText("xxx..."); //TODO
+    }
+    
     /**
-	 * Returns the result of the dialog.
-	 */
-	public MakemakeOptions getResult() {
-		return result;
-	}
+     * Returns the current settings
+     */
+    public MakemakeOptions getResult() {
+        MakemakeOptions result = new MakemakeOptions();
+
+        // "Scope" page
+        result.isDeep = deepMakefileRadioButton.getSelection();
+        result.recursive = recursiveMakefileRadioButton.getSelection();
+        result.subdirs.addAll(subdirsDirsList.getItemsAsList());
+
+        // "Target" page
+        if (targetExecutableRadioButton.getSelection())
+            result.type = Type.EXE;
+        else if (targetSharedLibRadioButton.getSelection())
+            result.type = Type.SO; //FIXME rename to DYNAMICLIB
+        else if (targetStaticLibRadioButton.getSelection())
+            result.type = Type.SO; //FIXME introduce Type.STATICLIB !!
+        else if (targetCompileOnlyRadioButton.getSelection())
+            result.type = Type.NOLINK;
+
+        if (defaultTargetName.getSelection()) 
+            result.target = null;
+        else 
+            result.target = targetNameText.getText();
+
+        // "Include" page
+        autoIncludePathCheckbox.getSelection(); //TODO
+        result.includeDirs.addAll(includeDirsList.getItemsAsList());
+
+        result.outRoot = null; //TODO
+        result.linkWithObjects = false; //TODO
+        result.tstamp = true; //TODO
+        result.mode = ""; //TODO
+        result.userInterface = "ALL"; //TODO
+        result.ccext = null; //TODO
+        result.exportDefOpt = ""; //TODO
+        result.compileForDll = false; //TODO
+
+        result.fragmentFiles = new ArrayList<String>();  //TODO
+        result.exceptSubdirs = new ArrayList<String>(); //TODO
+        result.libDirs = new ArrayList<String>(); //TODO
+        result.libs = new ArrayList<String>(); //TODO
+        result.importLibs = new ArrayList<String>(); //TODO
+        result.defines = new ArrayList<String>(); //TODO
+
+        result.extraArgs.addAll(Arrays.asList(extraMakemakeOptionsText.getText().split(" "))); //TODO honor quoting etc
+        result.extraArgs.addAll(linkObjectsList.getItemsAsList());
+
+	    makefragText.getText(); //TODO
+
+        return result;
+    }
 }

@@ -53,7 +53,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
     	
         // page group
         Composite dialogArea = (Composite) super.createDialogArea(parent);
-        contents = new MakemakeOptionsPanel(dialogArea, SWT.NONE, null);
+        contents = new MakemakeOptionsPanel(dialogArea, SWT.NONE);
         return dialogArea;
     }
     

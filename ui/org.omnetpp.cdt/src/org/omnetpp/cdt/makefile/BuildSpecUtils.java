@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.omnetpp.cdt.makefile.BuildSpecification.FolderType;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -44,25 +43,12 @@ public class BuildSpecUtils {
                     //TODO version check
                 }
                 else {
-                    Matcher matcher = Pattern.compile("(.*?):(.*?)(,(.*))?").matcher(line);
+                    Matcher matcher = Pattern.compile("(.*?):(.*)").matcher(line);
                     if (matcher.matches()) {
                         String folderPath = matcher.group(1).trim();
-                        String folderType = matcher.group(2).trim();
-                        String args = StringUtils.nullToEmpty(matcher.group(4));
+                        String args = matcher.group(2).trim();
                         
                         IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
-                        FolderType type;
-                        if (folderType.equals("custom"))
-                            type = FolderType.CUSTOM_MAKEFILE;
-                        else if (folderType.equals("exclude"))
-                            type = FolderType.EXCLUDED_FROM_BUILD;
-                        else if (folderType.equals("makemake"))
-                            type = FolderType.GENERATED_MAKEFILE;
-                        else
-                            type = null; // inherited
-                        if (type != null)
-                            buildSpec.setFolderType(folder, type);
-                        
                         if (!StringUtils.isEmpty(args)) {
                             MakemakeOptions makemakeOptions = new MakemakeOptions(args);
                             buildSpec.setFolderOptions(folder, makemakeOptions);
@@ -85,29 +71,14 @@ public class BuildSpecUtils {
         // assemble file content to save
         String content = "version 4.0\n";
         for (IContainer folder : buildSpec.getFolders()) {
-            FolderType folderType = buildSpec.getFolderType(folder);
-            String folderTypeText;
-            if (buildSpec.isFolderTypeInherited(folder))
-                folderTypeText = "-";
-            if (folderType == FolderType.CUSTOM_MAKEFILE)
-                folderTypeText = "custom";
-            else if (folderType == FolderType.EXCLUDED_FROM_BUILD)
-                folderTypeText = "exclude";
-            else
-                folderTypeText = "makemake";
-
-
             String options = "";
-            if (!buildSpec.isFolderOptionsInherited(folder)) {
-                MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
-                options = makemakeOptions == null ? "" : makemakeOptions.toString();
-                if (options.trim().equals(""))
-                    options = "--";
-            }
+            MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
+            options = makemakeOptions == null ? "" : makemakeOptions.toString();
+            if (options.trim().equals(""))
+                options = "--";
 
-            content += getProjectRelativePathOf(project, folder) + ": " + folderTypeText; 
             if (!StringUtils.isEmpty(options))
-                content += ", " + options;
+                content += getProjectRelativePathOf(project, folder) + ": " + options;
             content += "\n";
         }
 
