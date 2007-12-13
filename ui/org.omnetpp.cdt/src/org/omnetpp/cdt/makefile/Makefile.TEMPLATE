@@ -31,7 +31,15 @@ EXT_DIR_TSTAMPS = {extdirtstamps}
 LIBS = {libpath}{libs}{importlibs}
 
 # Output directory
-O = {outdir}
+
+{~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
+{nmake:}!if "$(CONFIGNAME)"=="."
+O=.
+{~nmake:}else
+{nmake:}!else
+O = {outdir}/$(CONFIGNAME)/{projectrelpath}
+{nmake:}!endif
+{~nmake:}endif
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}

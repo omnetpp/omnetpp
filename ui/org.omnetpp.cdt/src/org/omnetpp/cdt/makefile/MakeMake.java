@@ -270,9 +270,9 @@ public class MakeMake {
             IPath outRootPath = new Path(p.outRoot);
             IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
             IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
-            IPath subpath = folder.getProjectRelativePath();
-            outdir = outRootRel.append("$(CONFIGNAME)").append(subpath).toString();
+            outdir = outRootRel.toString();
         }
+        String projectrelpath = folder.getProjectRelativePath().toString(); 
         
         // write dependencies
         Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
@@ -295,7 +295,8 @@ public class MakeMake {
         m.put("rbrace", "}");
         m.put("nmake", isNMake);
         m.put("target", target + targetSuffix);
-        m.put("outdir", outdir);
+        m.put("outdir", outdir); 
+        m.put("projectrelpath", projectrelpath); 
         m.put("isdeep", p.isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", quoteJoin(p.args));

@@ -110,7 +110,7 @@
             projectMacroSupplier="org.omnetpp.cdt.OmnetProjectMacroSupplier">
          <configuration
                id="org.omnetpp.cdt.msvc.config.release"
-               name="msvc80-release"
+               name="msvc-release"
                parent="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.release"
@@ -124,7 +124,7 @@
          </configuration>
          <configuration
                id="org.omnetpp.cdt.msvc.config.debug"
-               name="msvc80-debug"
+               name="msvc-debug"
                parent="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.debug"
