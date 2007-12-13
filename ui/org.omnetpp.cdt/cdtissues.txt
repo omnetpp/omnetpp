@@ -15,6 +15,15 @@
 - pre and postbuild steps run *only* if cc files are not up to date. needs a checkbox
   to run the buildsteps even if the cc files up to date
 - CWizardHandler.canFinich !!!
+- method starts with capital letter: ManagedBuildManager.OutputDuplicateIdError()
+  and other Output...() methods
+- ManagedBuildManager.getBuildInfo(IResource): since the returned IManagedBuildInfo is
+  project-wide, the method's parameter type should actually be IProject not IResource
+  (instead of internally calling resources.getProject()).
+- IManagedBuildInfo.setSelectedConfiguration(): this is method is a UI thing
+  (it returns the config selected in the property dialog) -- should not be 
+  part of IManagedBuildInfo at all
+- ManagedMakeProject: seems to be dead code: not used anywhere. Should be removed?
 - filtering in the select projectType page/makefile project nem veszi figyelembe
   a toolchain-ek isAbstract attributumat. az absztraktokat is kiirja
 - project/properties/toolchain valtasnal minden toolchaint felsorol, illetve
@@ -23,6 +32,10 @@
 - miert lehet csak 1 buildert felvenni egy toolchainhez (pl lehetne internal,
   gnu make, nmake, cmake stb...)
 - BuildSustemEnvironmentSupplier - spelling mistake
+- WEBSITE: developer faq (http://wiki.eclipse.org/CDT/Developer/FAQ) 
+  is virtually empty, while many such questions are in the user faq
+  (http://wiki.eclipse.org/CDT/User/FAQ#Working_on_the_CDT).
+  Move stuff from user faq to developer faq?
 
 
 patform:
