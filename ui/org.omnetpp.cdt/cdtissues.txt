@@ -36,7 +36,8 @@
   is virtually empty, while many such questions are in the user faq
   (http://wiki.eclipse.org/CDT/User/FAQ#Working_on_the_CDT).
   Move stuff from user faq to developer faq?
-
+- CProject class: full of empty catch phrases!!! exceptions plain swallowed,
+  neither logged nor thrown on!!! (CoreException, CModelException, etc). 
 
 patform:
 - the ${} parser should match the correct ending }. 
