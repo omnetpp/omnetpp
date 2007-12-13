@@ -129,9 +129,9 @@
             id="org.omnetpp.main.NEDSourceFolders"
             name="NED Source Folders">
          <enabledWhen>
-             <adapt type="org.eclipse.core.resources.IProject">
-                  <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
-             </adapt>         
+            <adapt type="org.eclipse.core.resources.IProject">
+               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
+            </adapt>
          </enabledWhen>
       </page>
       <page
@@ -140,12 +140,8 @@
             id="org.omnetpp.main.DocumentationGenerator"
             name="Documentation Generator">
          <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IProject">
-               <test
-                     property="org.eclipse.core.resources.projectNature"
-                     value="org.omnetpp.main.omnetppnature">
-               </test>
+            <adapt type="org.eclipse.core.resources.IProject">
+               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
             </adapt>
          </enabledWhen>
       </page>
@@ -153,6 +149,11 @@
             class="org.omnetpp.ide.properties.EmptyPropertyPage"
             id="org.omnetpp.main.OmnetppCategory"
             name="OMNEST/OMNeT++">
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject">
+               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
+            </adapt>
+         </enabledWhen>
       </page>
    </extension>
    <extension
