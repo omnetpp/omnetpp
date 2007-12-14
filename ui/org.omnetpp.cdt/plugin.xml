@@ -117,7 +117,6 @@
       <projectType
             id="org.omnetpp.cdt.omnetppProjectType"
             name="OMNEST/OMNeT++ Simulation"
-            projectEnvironmentSupplier="org.omnetpp.cdt.OmnetppProjectEnvironmentSupplier"
             projectMacroSupplier="org.omnetpp.cdt.OmnetppProjectMacroSupplier">
          <configuration
                id="org.omnetpp.cdt.msvc.config.release"

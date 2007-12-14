@@ -84,6 +84,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         fileIncludes = new HashMap<IFile, List<Include>>();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
+                // FIXME ignore _m.cc files
                 if ((MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource)) && buildSpec.isMakemakeFolder(resource.getParent())) {
                     warnIfLinkedResource(resource);
                     processFileIncludes((IFile)resource);
@@ -136,7 +137,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime1 = System.currentTimeMillis();
 
         // collect folders
-        IContainer[] folders = collectFolders();
+        IContainer[] folders = buildSpec.getFolders(); //collectFolders();
         
         // register folders in the marker synchronizer
         for (IContainer folder : folders) {
@@ -174,6 +175,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * Collect "interesting" folders in this project and all referenced projects;
      * that is, omits excluded folders, team-private folders ("CVS", ".svn"), etc.
      */
+    // XXX not needed anymore 
     protected IContainer[] collectFolders() throws CoreException, IOException {
         final List<IContainer> result = new ArrayList<IContainer>();
         
@@ -229,11 +231,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 for (IContainer dep : folderDeps.get(folder))
                     tmpOptions.includeDirs.add(dep.getLocation().toString());
             
-            // add subfolders
-            for (IResource member : folder.members())
-                if (MakefileTools.isGoodFolder(member) /*FIXME and not excluded from build*/)
-                    tmpOptions.subdirs.add(member.getName());
-
             boolean changed = new MakeMake().generateMakefile(folder, tmpOptions, perFileDeps, buildSpec.getConfigFileLocation());
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);

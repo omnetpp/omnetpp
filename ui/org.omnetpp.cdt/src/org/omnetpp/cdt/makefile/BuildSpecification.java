@@ -34,7 +34,9 @@ public class BuildSpecification {
     }
 
     public boolean isMakemakeFolder(IContainer folder) {
-        return folderOptions.containsKey(folder);
+        // FIXME should return true ONLY for folders within a deep makefiles source tree
+//        return folderOptions.containsKey(folder);
+        return true;
     }
 
     public MakemakeOptions getFolderOptions(IContainer folder) {

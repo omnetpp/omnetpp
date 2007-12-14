@@ -126,11 +126,10 @@ public class MakeMake {
         else {
             sourceDirs = collectDirs(folder, p.exceptSubdirs);
             for (String i : sourceDirs) {
-                IContainer f = i.equals(".") ? folder : folder.getFolder(new Path(i));
-                ccfiles.addAll(glob(f, "*.cc"));
-                cppfiles.addAll(glob(f, "*.cpp"));
-                msgfiles.addAll(glob(f, "*.msg"));
-                nedfiles.addAll(glob(f, "*.ned"));
+                ccfiles.addAll(glob(i, "*.cc"));
+                cppfiles.addAll(glob(i, "*.cpp"));
+                msgfiles.addAll(glob(i, "*.msg"));
+                nedfiles.addAll(glob(i, "*.ned"));
             }
         }
 
@@ -224,21 +223,27 @@ public class MakeMake {
         for (String i : tstampDirs)
             externaldirtstamps.add(quote(i + "/.tstamp"));
 
-        String[] objpatts = p.ignoreNedFiles ? new String[] {"*.msg", "*." + ccExt} : new String[] {"*.ned", "*.msg", "*." + ccExt};
-        for (String objpatt : objpatts) {
-            for (String i : glob(objpatt)) {
-                i = i.replaceAll("\\*[^ ]*", "");
-                i = i.replaceAll("[^ ]*_n\\." + ccExt + "$", "");
-                i = i.replaceAll("[^ ]*_m\\." + ccExt + "$", "");
-                i = i.replaceAll("\\.ned$", "_n." + objExt);
-                i = i.replaceAll("\\.msg$", "_m." + objExt);
-                i = i.replaceAll("\\." + ccExt + "$", "." + objExt);
-                if (!i.equals(""))
-                    objs.add("$O/" + i);
-            }
+        
+        List<String> sources = new ArrayList<String>();
+        if (ccExt.equals("cc"))
+            sources.addAll(ccfiles);
+        if (ccExt.equals("cpp"))
+            sources.addAll(cppfiles);
+        sources.addAll(msgfiles);
+        if (!p.ignoreNedFiles) 
+            sources.addAll(nedfiles);
+        
+        for (String i : sources) {
+            i = i.replaceAll("\\*[^ ]*", "");
+            i = i.replaceAll("[^ ]*_n\\." + ccExt + "$", "");
+            i = i.replaceAll("[^ ]*_m\\." + ccExt + "$", "");
+            i = i.replaceAll("\\.ned$", "_n." + objExt);
+            i = i.replaceAll("\\.msg$", "_m." + objExt);
+            i = i.replaceAll("\\." + ccExt + "$", "." + objExt);
+            if (!i.equals(""))
+                objs.add("$O/" + i);
         }
 
-        msgfiles = glob("*.msg");
         for (String i : msgfiles) {
             String h = i.replaceAll("\\.msg$", "_m.h");
             String cc = i.replaceAll("\\.msg$", "_m." + ccExt);
@@ -275,18 +280,46 @@ public class MakeMake {
         String projectrelpath = folder.getProjectRelativePath().toString(); 
         
         // write dependencies
-        Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
-
+        // FIXME factor out common parts
         StringBuilder deps = new StringBuilder();
-        if (fileDepsMap != null) {
-            for (IFile sourceFile : fileDepsMap.keySet()) {
-                String objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
-                deps.append(objFileName + ":");
-                for (IFile includeFile : fileDepsMap.get(sourceFile))
-                    deps.append(" " + abs2rel(includeFile.getLocation()).toString());
+        if (!p.isDeep) {
+            Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
+            if (fileDepsMap != null) {
+                for (IFile sourceFile : fileDepsMap.keySet()) {
+                    String objFileName;
+                    if (sourceFile.getFileExtension().equals("msg"))
+                        objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "_m." + objExt);
+                    else
+                        objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
+                    deps.append(objFileName + ":");
+                    for (IFile includeFile : fileDepsMap.get(sourceFile))
+                        deps.append(" " + abs2rel(includeFile.getLocation()).toString());
+                    deps.append("\n");
+                }
                 deps.append("\n");
             }
-            deps.append("\n");
+        }
+        else {
+            for (IContainer depfolder : perFileDeps.keySet()) {
+                // FIXME only within the make folder
+                Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(depfolder);
+                String makefolderRelPath = abs2rel(depfolder.getLocation()).toString();
+                if (StringUtils.isNotEmpty(makefolderRelPath))
+                    makefolderRelPath += "/";
+                for (IFile sourceFile : fileDepsMap.keySet()) {
+                    String objFileName;
+                    if (sourceFile.getFileExtension().equals("msg"))
+                        objFileName = makefolderRelPath+sourceFile.getName().replaceFirst("\\.[^.]+$", "_m." + objExt);
+                    else
+                        objFileName = makefolderRelPath+sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
+                    
+                    deps.append(objFileName + ": "+makefolderRelPath+sourceFile.getName());
+                    for (IFile includeFile : fileDepsMap.get(sourceFile))
+                        deps.append(" " + abs2rel(includeFile.getLocation()).toString());
+                    deps.append("\n");
+                }
+            }
+            
         }
 
         Map<String, Object> m = new HashMap<String, Object>();
@@ -396,17 +429,22 @@ public class MakeMake {
         return file;
     }
 
+    // FIXME filename should not contain /
     protected List<String> glob(String pattern) {
-        return glob(folder, pattern);
+        return glob(".", pattern);
     }
     
-    protected List<String> glob(IContainer folder, String pattern) {
+    protected List<String> glob(String subFolder, String pattern) {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
-        String[] files = folder.getLocation().toFile().list(new FilenameFilter() {
+        String[] files = folder.getLocation().append(subFolder).toFile().list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.matches(regex);
             }});
-        return Arrays.asList(files==null ? new String[0] : files);
+        List<String> result = new ArrayList<String>();
+        if (files != null)
+            for (String name : files)
+                result.add(subFolder+"/"+name);
+        return result;
     }
 
     /**
