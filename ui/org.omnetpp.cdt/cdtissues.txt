@@ -42,6 +42,8 @@
 - "Managed Build system manifest file error" message: goes to standard error. Why not into the log???
 - unused (obsolete?) classes: MakeProject, ManagedMakeProject
 - the file ".cdtbuild" is mentioned in the code several times, but really only ".cproject" is used in 4.0
+- typo in ManagedBuildManager: TEST_CONSISTANCE (should be TEST_CONSISTENCE)
+
 
 platform:
 - the ${} parser should match the correct ending }. 

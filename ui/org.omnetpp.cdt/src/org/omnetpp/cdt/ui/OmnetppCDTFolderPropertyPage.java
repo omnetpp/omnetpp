@@ -2,7 +2,11 @@ package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -12,7 +16,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -120,13 +123,16 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
             return "No active CDT configuration -- please create one.";
         if (configuration.isManagedBuildOn())
             return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the \"C/C++ Build\" page.";
-        if (CDataUtil.isExcluded(getResource().getProjectRelativePath(), configuration.getSourceEntries())) 
+        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+        if (CDataUtil.isExcluded(getResource().getProjectRelativePath(), sourceEntries)) 
             return "This folder is excluded from build (or not marked as source folder).";  //XXX clear & disable checkbox too?
         //FIXME does not work: macro resolver returns "" so buildLocation becomes empty path. why???
         //IPath buildLocation = configuration.getBuilder().getBuildLocation();
         //IPath projectLocation = getResource().getProject().getLocation();
         //if (!projectLocation.isPrefixOf(buildLocation))
         //    return "Build directory is outside the project! Please adjust it on the \"C/C++ Build\" page.";
+        
+        // check build command; check builder type
         
         IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
         if (ancestorMakemakeFolder != null) {
