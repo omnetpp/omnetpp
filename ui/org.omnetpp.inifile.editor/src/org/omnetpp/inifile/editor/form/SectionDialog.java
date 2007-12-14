@@ -252,7 +252,7 @@ public class SectionDialog extends TitleAreaDialog {
 			return "Config name cannot be empty";
 		if (configName.contains(" ") || configName.contains("\t"))
 			throw new RuntimeException("Config name must not contain spaces");
-		if (!configName.replaceAll("[a-zA-Z0-9-_]", "").isEmpty())
+		if (!configName.replaceAll("[a-zA-Z0-9-_]", "").equals(""))
 			throw new RuntimeException("Config name contains illegal character(s)");
 		if (!(CONFIG_+configName).equals(originalSectionName))
 			if (doc.containsSection(CONFIG_+configName)) 

@@ -380,7 +380,7 @@ public class InifileDocument implements IInifileDocument {
     public /*static*/ String validateSectionName(String section) {
         if (section==null || section.equals(""))
             return "Section name cannot be empty";
-        if (!section.replaceAll("[a-zA-Z0-9-_ ]", "").isEmpty())
+        if (!section.replaceAll("[a-zA-Z0-9-_ ]", "").equals(""))
             return "Section name contains illegal character(s)";
         return null;
     }

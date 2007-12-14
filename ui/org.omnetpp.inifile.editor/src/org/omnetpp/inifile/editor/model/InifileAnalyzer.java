@@ -519,9 +519,9 @@ public class InifileAnalyzer {
 					try {
 						String from = StringUtils.substringBefore(interval, "..").trim();
 						String to = StringUtils.substringAfter(interval, "..").trim();
-						if (!from.isEmpty() && !from.contains("${")) 
+						if (!from.equals("") && !from.contains("${")) 
 							Double.parseDouble(from);  // check format
-						if (!to.isEmpty() && !to.contains("${")) 
+						if (!to.equals("") && !to.contains("${")) 
 							Double.parseDouble(to);  // check format
 					} 
 					catch (NumberFormatException ex) {
