@@ -121,7 +121,9 @@ public class GenericTreeNode {
 	public GenericTreeNode[] getChildren(int start, int end) {
 		Assert.isLegal(0 <= start && start < children.length);
 		Assert.isLegal(start <= end && end <= children.length);
-		return Arrays.copyOfRange(children, start, end);
+		GenericTreeNode[] result = new GenericTreeNode[end-start];
+		System.arraycopy(children, start, result, 0, end-start);
+		return result;
 	}
 	
 	public GenericTreeNode getChild(int index) {
