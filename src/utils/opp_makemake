@@ -1200,7 +1200,7 @@ print-info:
 {extdirtstamps:}	@echo{nmake?.}
 {extdirtstamps:}	@exit {nmake?/b }1
 {extdirtstamps:}
-{msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES)
+{msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES) # FIXME does not work - use iteration
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $?
 {msgfiles:}
@@ -1220,9 +1220,6 @@ print-info:
 	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
 {/@}
 
-
-{objs:}$(OBJS): $(MSG_H_FILES)
-{objs:}
 generateheaders: $(MSG_H_FILES)
 {subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
