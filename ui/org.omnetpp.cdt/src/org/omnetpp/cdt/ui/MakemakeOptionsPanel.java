@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,31 +38,42 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite linkPage;
     private Composite customPage;
 
+    // "General" page
     private Text outputDirText;
 
+    // "Scope" page
     private Button deepMakefileRadioButton;
     private Button recursiveMakefileRadioButton;
     private Button localMakefileRadioButton;
 
+    // "Target" page
     private EditableList subdirsDirsList;
     private Button targetExecutableRadioButton;
     private Button targetSharedLibRadioButton;
     private Button targetStaticLibRadioButton;
     private Button targetCompileOnlyRadioButton;
-
     private Button defaultTargetName;
     private Button specifyTargetNameRadioButton;
     private Text targetNameText;
 
+    // "Include" page
     private Button autoIncludePathCheckbox;
     private EditableList includeDirsList;
 
+    // "Compile" page
     private Combo ccextCombo;
+    private Button compileForDllCheckbox;
+    private Text exportDefText;
+    private EditableList definesList;
+
+    // "Link" page
+    private EditableList linkObjectsList;
 
     private Text extraMakemakeOptionsText;
     private Text makefragText;
+    private Button cmdenvCheckbox;
+    private Button tkenvCheckbox;
 
-    private EditableList linkObjectsList;
 
     public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
@@ -153,22 +165,49 @@ public class MakemakeOptionsPanel extends Composite {
         dllGroup.setText("Windows DLLs");
         dllGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         dllGroup.setLayout(new GridLayout(2,false));
-        Button compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines WIN32_DLL as preprocessor symbol"); //XXX new
+        compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines WIN32_DLL as preprocessor symbol"); //XXX new
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-        createLabel(dllGroup, "DLL export symbol for msg files:");
-        Text exportDefText = new Text(dllGroup, SWT.BORDER);  //XXX new
+        Label exportDefLabel = createLabel(dllGroup, "DLL export symbol for msg files:");
+        exportDefText = new Text(dllGroup, SWT.BORDER); //XXX needs to be validated! no spaces etc
         exportDefText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        exportDefText.setToolTipText(
-                "Name of the macro (#define) which expands to __dllexport/__dllimport \n" +
-        		"when WIN32_DLL is defined. The message compiler needs to know it \n" +
-        		"in order to be able to add it to generated classes.");
+        String exportDefTooltip = 
+            "Name of the macro (#define) which expands to __dllexport/__dllimport \n" +
+            "when WIN32_DLL is defined. The message compiler needs to know it \n" +
+            "in order to be able to add it to generated classes.";
+        exportDefLabel.setToolTipText(exportDefTooltip);
+        exportDefText.setToolTipText(exportDefTooltip);
         
         createLabel(compilePage, "Preprocessor symbols to define:");
-        EditableList definesList = new EditableList(compilePage, SWT.NONE); 
+        definesList = new EditableList(compilePage, SWT.NONE); 
         definesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        definesList.setAddDialogTitle("Add Preprocessor Symbol");
+        definesList.setAddDialogMessage("Enter symbol in NAME or NAME=value format:");
+        definesList.setInputValidator(new IInputValidator() {
+            public String isValid(String newText) {
+                String name = newText.contains("=") ? StringUtils.substringBefore(newText, "=") : newText;
+                String value = newText.contains("=") ? StringUtils.substringAfter(newText, "=") : null;
+                if (name.equals(""))
+                    return "Symbol name is empty";
+                if (!name.matches("(?i)[A-Z_][A-Z0-9_]*"))
+                    return "Invalid symbol name \""+ name +"\"";
+                if (value != null && (value.contains(" ") || value.contains("\t")))
+                    return "Value should not contain whitespace";
+                return null;
+            }
+        });
 
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
+
+        Group envGroup = createGroup(linkPage, "User interface:");
+        envGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        envGroup.setLayout(new GridLayout(2,false));
+        createLabel(envGroup, "User interface libraries to link with:");
+        Combo envirCombo = new Combo(envGroup, SWT.BORDER | SWT.READ_ONLY);  //XXX new
+        envirCombo.add("All");
+        envirCombo.add("Tkenv");
+        envirCombo.add("Cmdenv");
+        
         Group linkGroup = createGroup(linkPage, "Link additionally with:");
         linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         linkGroup.setLayout(new GridLayout(1,false));
@@ -272,10 +311,13 @@ public class MakemakeOptionsPanel extends Composite {
         includeDirsList.setItemsAsList(data.includeDirs); //explain: these are extra include dirs!
 
         // "Compile" page
-        data.ccext = null; //TODO
-        data.exportDefOpt = ""; //TODO
-        data.compileForDll = false; //TODO
-        data.defines = new ArrayList<String>(); //TODO
+        if (data.ccext == null)
+            ccextCombo.setText("autodetect"); //XXX duplicate string literal
+        else
+            ccextCombo.setText("." + data.ccext);
+        compileForDllCheckbox.setSelection(data.compileForDll);
+        exportDefText.setText(StringUtils.nullToEmpty(data.exportDefOpt));
+        definesList.setItemsAsList(data.defines);
         data.mode = ""; //TODO (needed?)
 
         // to the "Link" page:
@@ -284,7 +326,6 @@ public class MakemakeOptionsPanel extends Composite {
         data.userInterface = "ALL"; //TODO
         data.libDirs = new ArrayList<String>(); //TODO
         data.libs = new ArrayList<String>(); //TODO
-        data.importLibs = new ArrayList<String>(); //FIXME the "importLibs" field is redundant, remove!!!! plain "libs" is enough!!! 
 
         extraMakemakeOptionsText.setText(""); //XXX
         data.fragmentFiles = new ArrayList<String>();  //TODO
@@ -326,21 +367,24 @@ public class MakemakeOptionsPanel extends Composite {
         autoIncludePathCheckbox.getSelection(); //TODO
         result.includeDirs.addAll(includeDirsList.getItemsAsList());
 
+        // "Compile" page
+        String ccextText = ccextCombo.getText().trim().replace(".", "");
+        result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
+        result.compileForDll = compileForDllCheckbox.getSelection();
+        result.exportDefOpt = exportDefText.getText().trim();
+        result.defines.addAll(definesList.getItemsAsList());
+        
+
+        //--------
         result.linkWithObjects = false; //TODO
         result.tstamp = true; //TODO
         result.mode = ""; //TODO
         result.userInterface = "ALL"; //TODO
-        result.ccext = null; //TODO
-        result.exportDefOpt = ""; //TODO
-        result.compileForDll = false; //TODO
 
-        result.fragmentFiles = new ArrayList<String>();  //TODO
-        result.exceptSubdirs = new ArrayList<String>(); //TODO
         result.libDirs = new ArrayList<String>(); //TODO
         result.libs = new ArrayList<String>(); //TODO
-        result.importLibs = new ArrayList<String>(); //TODO
-        result.defines = new ArrayList<String>(); //TODO
 
+        result.fragmentFiles = new ArrayList<String>();  //TODO
         result.extraArgs.addAll(Arrays.asList(extraMakemakeOptionsText.getText().split(" "))); //TODO honor quoting etc
         result.extraArgs.addAll(linkObjectsList.getItemsAsList());
 

@@ -27,8 +27,8 @@ EXT_DIR_OBJS = {extdirobjs}
 # Timestamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS = {extdirtstamps}
 
-# Additional libraries (-L, -l, -t options)
-LIBS = {libpath}{libs}{importlibs}
+# Additional libraries (-L, -l options)
+LIBS = {libpath}{libs}
 
 # Output directory
 

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.List;
 public class EditableList extends Composite {
     protected String addDialogTitle = "Add element";
     protected String addDialogMessage = "Please enter the data";
+    protected IInputValidator inputValidator;
     protected boolean emptyStringAllowed = false;
     protected boolean forceUnique = true;
     protected List list;
@@ -54,6 +55,13 @@ public class EditableList extends Composite {
 				onRemoveButton();
 			}
 		});
+
+        inputValidator = new IInputValidator() {
+            public String isValid(String newText) {
+                return isValidNewItem(newText);
+            }
+        };
+
 	}
 
     @Override
@@ -99,11 +107,7 @@ public class EditableList extends Composite {
 	 * Override if you need a different Add dialog.
 	 */
     protected void onAddButton() {
-        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", new IInputValidator() {
-            public String isValid(String newText) {
-                return isValidNewItem(newText);
-            }
-        });
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), addDialogTitle, addDialogMessage, "", inputValidator);
         if (dialog.open() == Window.OK)
             list.add(dialog.getValue());
     }
@@ -124,6 +128,14 @@ public class EditableList extends Composite {
         list.remove(list.getSelectionIndices());
     }
 
+    public IInputValidator getInputValidator() {
+        return inputValidator;
+    }
+
+    public void setInputValidator(IInputValidator inputValidator) {
+        this.inputValidator = inputValidator;
+    }
+
 	public List getList() {
 		return list;
 	}
@@ -137,5 +149,6 @@ public class EditableList extends Composite {
     public java.util.List<String> getItemsAsList() {
 	    return Arrays.asList(list.getItems());
     }
+
 
 }

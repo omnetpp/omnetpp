@@ -32,7 +32,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  *
  * @author Andras
  */
-//FIXME excepDirs!
+//FIXME excepDirs must be implicit ("Excluded from build")
 public class MakeMake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -356,7 +356,6 @@ public class MakeMake {
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
         m.put("libs", quoteJoin(p.libs));
         m.put("defines", prefixQuoteJoin(p.defines, "-D"));
-        m.put("importlibs", quoteJoin(p.importLibs));
         m.put("link-o", isNMake ? "/out:" : "-o");
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");

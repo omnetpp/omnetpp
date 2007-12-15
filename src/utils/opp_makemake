@@ -75,7 +75,6 @@ sub makemake()
     @includeDirs = ();
     @libDirs = ();
     @libs = ();
-    @importLibs = ();
     @defines = ();
     @extraArgs = ();
 
@@ -162,9 +161,6 @@ sub makemake()
         elsif ($arg eq "-s" || $arg eq "--make-so") {
             $compileForDll = 1;
             $type = "SO";
-        }
-        elsif ($arg eq "-t" || $arg eq "--importlib") {
-            push(@importLibs, shift @ARGV);
         }
         elsif ($arg eq "-S" || $arg eq "--fordll") {
             $compileForDll = 1;
@@ -519,7 +515,6 @@ sub makemake()
         "libpath" =>  prefixQuoteJoin(\@libDirs, ($isNMake ? "/libpath:" : "-L")),
         "libs" =>  quoteJoin(\@libs),
         "defines" => prefixQuoteJoin(\@defines, "-D"),
-        "importlibs" =>  quoteJoin(\@importLibs),
         "link-o" =>  $isNMake ? "/out:" : "-o",
         "makecommand" =>  $makecommand,
         "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
@@ -968,9 +963,6 @@ $progname [options] [directories, library and object files]...
     -s, --make-so         Build a DLL. Useful if you want to load the
                           model dynamically (via the load-libs= omnetpp.ini or
                           the -l Cmdenv/Tkenv command-line option).
-    -t library, --importlib library
-                          With -t (build DLL) option: specifies an import
-                          library for the DLL.
     -d, --fordll          Compile C++ files for use in DLLs (i.e. with the
                           WIN32_DLL symbol defined). The -s (build DLL) option
                           implies this one.
@@ -1049,8 +1041,8 @@ EXT_DIR_OBJS = {extdirobjs}
 # Timestamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS = {extdirtstamps}
 
-# Additional libraries (-L, -l, -t options)
-LIBS = {libpath}{libs}{importlibs}
+# Additional libraries (-L, -l options)
+LIBS = {libpath}{libs}
 
 # Output directory
 

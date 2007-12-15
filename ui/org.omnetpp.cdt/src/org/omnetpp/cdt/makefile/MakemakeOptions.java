@@ -36,7 +36,6 @@ public class MakemakeOptions implements Cloneable {
     public List<String> includeDirs = new ArrayList<String>();
     public List<String> libDirs = new ArrayList<String>();
     public List<String> libs = new ArrayList<String>();
-    public List<String> importLibs = new ArrayList<String>();
     public List<String> defines = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
@@ -153,10 +152,6 @@ public class MakemakeOptions implements Cloneable {
                 compileForDll = true;
                 type = Type.SO;
             }
-            else if (arg.equals("-t") || arg.equals("--importlib")) {
-                checkArg(argv, i);
-                importLibs.add(argv[++i]);
-            }
             else if (arg.equals("-S") || arg.equals("--fordll")) {
                 compileForDll = true;
             }
@@ -268,7 +263,6 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, includeDirs, "-I");
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
-        addOpts2(result, importLibs, "-t");
         addOpts2(result, defines, "-D");
         result.addAll(extraArgs);
 
@@ -324,7 +318,6 @@ public class MakemakeOptions implements Cloneable {
         result.includeDirs.addAll(includeDirs);
         result.libDirs.addAll(libDirs);
         result.libs.addAll(libs);
-        result.importLibs.addAll(importLibs);
         result.defines.addAll(defines);
         result.extraArgs.addAll(extraArgs);
         return result;
