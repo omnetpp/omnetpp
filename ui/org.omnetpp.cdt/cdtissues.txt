@@ -46,6 +46,7 @@
 - IBuildEnvironmentVariable defines ENVVAR_* but they are defined in its ancestor
   IEnvironmentVariable too (unnecessary)
 - typo in ManagedBuildManager: TEST_CONSISTANCE (should be TEST_CONSISTENCE)
+- misleading comment for IsGnuCygwinToolChainSupported: is say this class is "NOT used currently", but it is!
 
 
 platform:
