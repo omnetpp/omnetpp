@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -24,9 +23,10 @@ import org.omnetpp.common.util.StringUtils;
 
 
 /**
- *XXX 
+ * UI for editing MakemakeOptions
  * @author Andras
  */
+//XXX use CDT's FileListControl for file lists?
 public class MakemakeOptionsPanel extends Composite {
     // controls
     private TabFolder tabfolder;
@@ -37,6 +37,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite compilePage;
     private Composite linkPage;
     private Composite customPage;
+    private Composite previewPage;
 
     // "General" page
     private Text outputDirText;
@@ -58,13 +59,13 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Include" page
     private Button autoIncludePathCheckbox;
-    private EditableList includeDirsList;
+//    private EditableList includeDirsList;
 
     // "Compile" page
     private Combo ccextCombo;
     private Button compileForDllCheckbox;
     private Text exportDefText;
-    private EditableList definesList;
+//    private EditableList definesList;
 
     // "Link" page
     private EditableList linkObjectsList;
@@ -86,12 +87,13 @@ public class MakemakeOptionsPanel extends Composite {
         tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         generalPage = createTabPage("General");
-        scopePage = createTabPage("Makefile Scope");
+        scopePage = createTabPage("Scope");
         targetPage = createTabPage("Target");
         includePage = createTabPage("Include");
         compilePage = createTabPage("Compile");
         linkPage = createTabPage("Link");
         customPage = createTabPage("Custom");
+        previewPage = createTabPage("Preview");
         tabfolder.setSelection(0);
 
         // "General" page
@@ -139,12 +141,13 @@ public class MakemakeOptionsPanel extends Composite {
         includePage.setLayout(new GridLayout(1,false));
         autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null); //FIXME really? for deep, this should also enable that all source folders are include dirs as well. Or specify a different flag for that?
         autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+        createLabel(includePage, "Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
 
-        createLabel(includePage, "Additional include directories:");
-        includeDirsList = new EditableList(includePage, SWT.NONE);
-        includeDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        includeDirsList.setAddDialogTitle("Add Include Directory");
-        includeDirsList.setAddDialogMessage("Enter include directory:");  //XXX workspace path? fs path?
+//        createLabel(includePage, "Additional include directories:");
+//        includeDirsList = new EditableList(includePage, SWT.NONE);
+//        includeDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//        includeDirsList.setAddDialogTitle("Add Include Directory");
+//        includeDirsList.setAddDialogMessage("Enter include directory:");
 
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
@@ -173,25 +176,27 @@ public class MakemakeOptionsPanel extends Composite {
             "in order to be able to add it to generated classes.";
         exportDefLabel.setToolTipText(exportDefTooltip);
         exportDefText.setToolTipText(exportDefTooltip);
-        
-        createLabel(compilePage, "Preprocessor symbols to define:");
-        definesList = new EditableList(compilePage, SWT.NONE); 
-        definesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        definesList.setAddDialogTitle("Add Preprocessor Symbol");
-        definesList.setAddDialogMessage("Enter symbol in NAME or NAME=value format:");
-        definesList.setInputValidator(new IInputValidator() {
-            public String isValid(String newText) {
-                String name = newText.contains("=") ? StringUtils.substringBefore(newText, "=") : newText;
-                String value = newText.contains("=") ? StringUtils.substringAfter(newText, "=") : null;
-                if (name.equals(""))
-                    return "Symbol name is empty";
-                if (!name.matches("(?i)[A-Z_][A-Z0-9_]*"))
-                    return "Invalid symbol name \""+ name +"\"";
-                if (value != null && (value.contains(" ") || value.contains("\t")))
-                    return "Value should not contain whitespace";
-                return null;
-            }
-        });
+
+        createLabel(compilePage, "Additional preprocessor symbols can be specified in the C/C++ General -> Paths and symbols page.");
+
+//        createLabel(compilePage, "Preprocessor symbols to define:");
+//        definesList = new EditableList(compilePage, SWT.NONE); 
+//        definesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//        definesList.setAddDialogTitle("Add Preprocessor Symbol");
+//        definesList.setAddDialogMessage("Enter symbol in NAME or NAME=value format:");
+//        definesList.setInputValidator(new IInputValidator() {
+//            public String isValid(String newText) {
+//                String name = newText.contains("=") ? StringUtils.substringBefore(newText, "=") : newText;
+//                String value = newText.contains("=") ? StringUtils.substringAfter(newText, "=") : null;
+//                if (name.equals(""))
+//                    return "Symbol name is empty";
+//                if (!name.matches("(?i)[A-Z_][A-Z0-9_]*"))
+//                    return "Invalid symbol name \""+ name +"\"";
+//                if (value != null && (value.contains(" ") || value.contains("\t")))
+//                    return "Value should not contain whitespace";
+//                return null;
+//            }
+//        });
 
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
@@ -205,10 +210,6 @@ public class MakemakeOptionsPanel extends Composite {
         envirCombo.add("Tkenv");
         envirCombo.add("Cmdenv");
 
-        //XXX use CDT's FileListControl for file lists?
-        //XXX take libpath and includepath from CDT?
-        //XXX take symbols from CDT?
-        
         Group linkGroup = createGroup(linkPage, "Link additionally with:");
         linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         linkGroup.setLayout(new GridLayout(1,false));
@@ -216,6 +217,7 @@ public class MakemakeOptionsPanel extends Composite {
         Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
         Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
         Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
+        createLabel(linkPage, "Additional library paths can be specified in the C/C++ General -> Paths and symbols page.");
         createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
         linkObjectsList = new EditableList(linkPage, SWT.NONE);
         linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -229,6 +231,9 @@ public class MakemakeOptionsPanel extends Composite {
         makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        // "Preview" page
+        //TODO readonly text for vanilla options and translated options
+        
         Dialog.applyDialogFont(composite);
 
         return composite;
@@ -309,7 +314,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         autoIncludePathCheckbox.setSelection(false); //TODO with deep: all source dir is implicitly an include dir as well
-        includeDirsList.setItemsAsList(data.includeDirs); //explain: these are extra include dirs!
 
         // "Compile" page
         if (data.ccext == null)
@@ -318,14 +322,12 @@ public class MakemakeOptionsPanel extends Composite {
             ccextCombo.setText("." + data.ccext);
         compileForDllCheckbox.setSelection(data.compileForDll);
         exportDefText.setText(StringUtils.nullToEmpty(data.exportDefOpt));
-        definesList.setItemsAsList(data.defines);
         data.mode = ""; //TODO (needed?)
 
         // to the "Link" page:
         data.linkWithObjects = false; //TODO explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
         data.tstamp = true; //TODO
         data.userInterface = "ALL"; //TODO
-        data.libDirs = new ArrayList<String>(); //TODO
         data.libs = new ArrayList<String>(); //TODO
 
         extraMakemakeOptionsText.setText(""); //XXX
@@ -366,23 +368,18 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         autoIncludePathCheckbox.getSelection(); //TODO
-        result.includeDirs.addAll(includeDirsList.getItemsAsList());
 
         // "Compile" page
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.compileForDll = compileForDllCheckbox.getSelection();
         result.exportDefOpt = exportDefText.getText().trim();
-        result.defines.addAll(definesList.getItemsAsList());
         
 
-        //--------
         result.linkWithObjects = false; //TODO
         result.tstamp = true; //TODO
         result.mode = ""; //TODO
         result.userInterface = "ALL"; //TODO
-
-        result.libDirs = new ArrayList<String>(); //TODO
         result.libs = new ArrayList<String>(); //TODO
 
         result.fragmentFiles = new ArrayList<String>();  //TODO
