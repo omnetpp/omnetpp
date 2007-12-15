@@ -5,7 +5,7 @@
          point="org.eclipse.ui.propertyPages">
       <page
             category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
-            class="org.omnetpp.cdt.ui.FolderMakemakePropertyPage"
+            class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
             id="org.omnetpp.cdt.BuildSpec"
             name="Makemake (OMNEST/OMNeT++)">
          <enabledWhen>

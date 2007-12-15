@@ -51,7 +51,7 @@ import org.omnetpp.common.color.ColorFactory;
  *
  * @author Andras
  */
-public class FolderMakemakePropertyPage extends PropertyPage {
+public class MakemakeFolderPropertyPage extends PropertyPage {
     
     // state
     protected BuildSpecification buildSpec;
@@ -64,7 +64,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
 	/**
 	 * Constructor.
 	 */
-	public FolderMakemakePropertyPage() {
+	public MakemakeFolderPropertyPage() {
 		super();
 	}
 
