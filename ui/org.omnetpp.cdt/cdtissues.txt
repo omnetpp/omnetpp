@@ -2,21 +2,24 @@
 - olyan toolt nem lehet felvenni ami source file-t general. (ld msg compiler)
   ha a tool megvaltoztatja az output directoryt (ImanagedOutpuFileNameProvider) 
   es a source filemelle teszi a kimenetet nem medig a target/config dirbe, 
-  akkor a compiler utana mar iszont nem a target/config
-  be teszi az object file-t hanem szinten a source melle...
-- ha include ban pl: ${workspace_loc:/inetfw/Src/Nodes} van megadva es a konyvtar nem letezik akkor egy ures -I opciot general
-  ami hibat okoz mert a compiler lenyeli a kovetkezo opciot. (ne genraljon ilyenkor -I-t)
+  akkor a compiler utana mar iszont nem a target/config-be teszi az object file-t 
+  hanem szinten a source melle... filed under: https://bugs.eclipse.org/bugs/show_bug.cgi?id=211858.
+- ha include ban pl: ${workspace_loc:/inetfw/Src/Nodes} van megadva es a konyvtar nem letezik 
+  akkor egy ures -I opciot general ami hibat okoz mert a compiler lenyeli a kovetkezo opciot. 
+  (ne genraljon ilyenkor -I-t)
 ? nem lehet egy meglevo toolhoz/project tipushoz hozzaadni mondjuk egy macroSupplier osztalyt
   az egyetlen megioldas ha a teljes toolchain-t lemasolom es ujrairom.
-- ha uj project tiust veszek fel (ami orokol egy regibol), 
+  see bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=212127
+- ha uj project tipust veszek fel (ami orokol egy regibol), 
   akkor ha abban definialok egy uj config-t (az oroklottek melle) es a new project wizardban 
   ilyen konfigot valasztok, akkor jol jon letre a project az uj tipussal, ha azonben
   olyan configot valasztok amit orokolt, akkor a project tipus nema kivalasztott lesz
   hanem a base project type (meg akkor is, ha tenyleg az uj project tipus volt kivalasztva)
 - pre and postbuild steps run *only* if cc files are not up to date. needs a checkbox
-  to run the buildsteps even if the cc files up to date
-- CWizardHandler.canFinich !!!
-- method starts with capital letter: ManagedBuildManager.OutputDuplicateIdError()
+  to run the buildsteps even if the cc files up to date; 
+  filed under https://bugs.eclipse.org/bugs/show_bug.cgi?id=211862
+- typo: CWizardHandler.canFinich
+- method names start with capital letter: ManagedBuildManager.OutputDuplicateIdError()
   and other Output...() methods
 - ManagedBuildManager.getBuildInfo(IResource): since the returned IManagedBuildInfo is
   project-wide, the method's parameter type should actually be IProject not IResource
