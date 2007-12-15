@@ -34,7 +34,7 @@ LIBS = {libpath}{libs}{importlibs}
 
 {~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
 {nmake:}!if "$(CONFIGNAME)"=="."
-O=.
+O = .
 {~nmake:}else
 {nmake:}!else
 O = {outdir}/$(CONFIGNAME)/{projectrelpath}

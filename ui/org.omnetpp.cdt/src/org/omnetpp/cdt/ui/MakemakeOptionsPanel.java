@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -32,6 +33,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite scopePage;
     private Composite targetPage;
     private Composite includePage;
+    private Composite compilePage;
     private Composite linkPage;
     private Composite customPage;
 
@@ -53,6 +55,8 @@ public class MakemakeOptionsPanel extends Composite {
 
     private Button autoIncludePathCheckbox;
     private EditableList includeDirsList;
+
+    private Combo ccextCombo;
 
     private Text extraMakemakeOptionsText;
     private Text makefragText;
@@ -76,6 +80,7 @@ public class MakemakeOptionsPanel extends Composite {
         scopePage = createTabPage("Makefile Scope");
         targetPage = createTabPage("Target");
         includePage = createTabPage("Include");
+        compilePage = createTabPage("Compile");
         linkPage = createTabPage("Link");
         customPage = createTabPage("Custom");
         tabfolder.setSelection(0);
@@ -123,7 +128,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         includePage.setLayout(new GridLayout(1,false));
-        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines");
+        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null); //FIXME really? for deep, this should also enable that all source folders are include dirs as well. Or specify a different flag for that?
         autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
 
         createLabel(includePage, "Additional include directories:");
@@ -132,15 +137,45 @@ public class MakemakeOptionsPanel extends Composite {
         includeDirsList.setAddDialogTitle("Add Include Directory");
         includeDirsList.setAddDialogMessage("Enter include directory:");  //XXX workspace path? fs path?
 
+        // "Compile" page
+        compilePage.setLayout(new GridLayout(1,false));
+        Group srcGroup = new Group(compilePage, SWT.NONE);
+        srcGroup.setText("Sources");
+        srcGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        srcGroup.setLayout(new GridLayout(2,false));
+        createLabel(srcGroup, "C++ file extension:");
+        ccextCombo = new Combo(srcGroup, SWT.BORDER | SWT.READ_ONLY);  //XXX new
+        ccextCombo.add("autodetect");
+        ccextCombo.add(".cc");
+        ccextCombo.add(".cpp");
+        
+        Group dllGroup = new Group(compilePage, SWT.NONE);
+        dllGroup.setText("Windows DLLs");
+        dllGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        dllGroup.setLayout(new GridLayout(2,false));
+        Button compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines WIN32_DLL as preprocessor symbol"); //XXX new
+        compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        createLabel(dllGroup, "DLL export symbol for msg files:");
+        Text exportDefText = new Text(dllGroup, SWT.BORDER);  //XXX new
+        exportDefText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        exportDefText.setToolTipText(
+                "Name of the macro (#define) which expands to __dllexport/__dllimport \n" +
+        		"when WIN32_DLL is defined. The message compiler needs to know it \n" +
+        		"in order to be able to add it to generated classes.");
+        
+        createLabel(compilePage, "Preprocessor symbols to define:");
+        EditableList definesList = new EditableList(compilePage, SWT.NONE); 
+        definesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
         Group linkGroup = createGroup(linkPage, "Link additionally with:");
         linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         linkGroup.setLayout(new GridLayout(1,false));
         //FIXME are these combo boxes needed? do they correspond to any makemake settings?
-        Button cb1 = createCheckbox(linkGroup, "All object files in this project"); //XXX radiobutton?
-        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles");
-        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects"); //XXX or static/dynamic libs?
+        Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
+        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
+        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
         createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
         linkObjectsList = new EditableList(linkPage, SWT.NONE);
         linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -171,9 +206,11 @@ public class MakemakeOptionsPanel extends Composite {
         return group;
     }
 
-    protected Button createCheckbox(Composite parent, String text) {
+    protected Button createCheckbox(Composite parent, String text, String tooltip) {
         Button button = new Button(parent, SWT.CHECK);
         button.setText(text);
+        if (tooltip != null)
+            button.setToolTipText(tooltip);
         return button;
     }
 
@@ -184,7 +221,6 @@ public class MakemakeOptionsPanel extends Composite {
             button.setToolTipText(tooltip);
         return button;
     }
-
 
     protected Composite createTabPage(String text) {
         TabItem item = new TabItem(tabfolder, SWT.NONE);
@@ -232,25 +268,26 @@ public class MakemakeOptionsPanel extends Composite {
         }
 
         // "Include" page
-        autoIncludePathCheckbox.setSelection(false); //TODO
-        includeDirsList.setItemsAsList(data.includeDirs);
+        autoIncludePathCheckbox.setSelection(false); //TODO with deep: all source dir is implicitly an include dir as well
+        includeDirsList.setItemsAsList(data.includeDirs); //explain: these are extra include dirs!
 
-        data.linkWithObjects = false; //TODO
-        data.tstamp = true; //TODO
-        data.mode = ""; //TODO
-        data.userInterface = "ALL"; //TODO
+        // "Compile" page
         data.ccext = null; //TODO
         data.exportDefOpt = ""; //TODO
         data.compileForDll = false; //TODO
+        data.defines = new ArrayList<String>(); //TODO
+        data.mode = ""; //TODO (needed?)
 
-        data.fragmentFiles = new ArrayList<String>();  //TODO
-        data.exceptSubdirs = new ArrayList<String>(); //TODO
+        // to the "Link" page:
+        data.linkWithObjects = false; //TODO explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
+        data.tstamp = true; //TODO
+        data.userInterface = "ALL"; //TODO
         data.libDirs = new ArrayList<String>(); //TODO
         data.libs = new ArrayList<String>(); //TODO
-        data.importLibs = new ArrayList<String>(); //TODO
-        data.defines = new ArrayList<String>(); //TODO
+        data.importLibs = new ArrayList<String>(); //FIXME the "importLibs" field is redundant, remove!!!! plain "libs" is enough!!! 
 
         extraMakemakeOptionsText.setText(""); //XXX
+        data.fragmentFiles = new ArrayList<String>();  //TODO
         linkObjectsList.setItemsAsList(data.extraArgs);
 
         makefragText.setText("xxx..."); //TODO
