@@ -71,9 +71,6 @@ public class MakemakeOptionsPanel extends Composite {
 
     private Text extraMakemakeOptionsText;
     private Text makefragText;
-    private Button cmdenvCheckbox;
-    private Button tkenvCheckbox;
-
 
     public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
@@ -207,6 +204,10 @@ public class MakemakeOptionsPanel extends Composite {
         envirCombo.add("All");
         envirCombo.add("Tkenv");
         envirCombo.add("Cmdenv");
+
+        //XXX use CDT's FileListControl for file lists?
+        //XXX take libpath and includepath from CDT?
+        //XXX take symbols from CDT?
         
         Group linkGroup = createGroup(linkPage, "Link additionally with:");
         linkGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));

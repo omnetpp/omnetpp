@@ -3,7 +3,13 @@ package org.omnetpp.cdt.ui;
 import java.io.IOException;
 
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICFolderDescription;
+import org.eclipse.cdt.core.settings.model.ICIncludePathEntry;
+import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
+import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
@@ -16,6 +22,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -44,7 +51,7 @@ import org.omnetpp.common.color.ColorFactory;
  *
  * @author Andras
  */
-public class OmnetppCDTFolderPropertyPage extends PropertyPage {
+public class FolderMakemakePropertyPage extends PropertyPage {
     
     // state
     protected BuildSpecification buildSpec;
@@ -57,7 +64,7 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 	/**
 	 * Constructor.
 	 */
-	public OmnetppCDTFolderPropertyPage() {
+	public FolderMakemakePropertyPage() {
 		super();
 	}
 
@@ -104,6 +111,18 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 	}
 
     protected void updatePageState() {
+        IProject project = getResource().getProject();
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
+        ICFolderDescription folderDescription = activeConfiguration.getRootFolderDescription();
+        ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
+        ICLanguageSetting lang = languageSettings[1];
+        ICLanguageSettingEntry[] langSettingEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
+        for (ICLanguageSettingEntry inc : langSettingEntries) {
+            System.out.printf(">>>%s<<< value='%s', isBuiltin=%b  isLocal=%b flags=%d\n", inc.toString(), inc.getValue(), inc.isBuiltIn(), ((ICIncludePathEntry)inc).isLocal(), inc.getFlags());
+        }
+        // languageId: org.eclipse.cdt.core.g++, name: C++ source file
+        
         contents.setVisible(enableMakefileCheckbox.getSelection());
         //setErrorMessage(getInformationalMessage());
         String message = getInformationalMessage();
