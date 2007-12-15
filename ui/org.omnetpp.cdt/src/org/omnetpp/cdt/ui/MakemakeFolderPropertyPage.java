@@ -111,18 +111,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 	}
 
     protected void updatePageState() {
-        IProject project = getResource().getProject();
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
-        ICFolderDescription folderDescription = activeConfiguration.getRootFolderDescription();
-        ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
-        ICLanguageSetting lang = languageSettings[1];
-        ICLanguageSettingEntry[] langSettingEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-        for (ICLanguageSettingEntry inc : langSettingEntries) {
-            System.out.printf(">>>%s<<< value='%s', isBuiltin=%b  isLocal=%b flags=%d\n", inc.toString(), inc.getValue(), inc.isBuiltIn(), ((ICIncludePathEntry)inc).isLocal(), inc.getFlags());
-        }
-        // languageId: org.eclipse.cdt.core.g++, name: C++ source file
-        
         contents.setVisible(enableMakefileCheckbox.getSelection());
         //setErrorMessage(getInformationalMessage());
         String message = getInformationalMessage();

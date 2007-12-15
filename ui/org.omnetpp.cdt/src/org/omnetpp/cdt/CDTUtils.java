@@ -7,7 +7,7 @@ import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IProject;
 
 /**
- * Utility class dealing with CDT-s managed build classes.
+ * Utility class dealing with CDT's managed build classes.
  * @author rhornig
  */
 public class CDTUtils {

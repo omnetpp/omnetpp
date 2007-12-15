@@ -32,7 +32,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  *
  * @author Andras
  */
-//FIXME exceptDirs must be implicit ("Excluded from build")
+//FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 

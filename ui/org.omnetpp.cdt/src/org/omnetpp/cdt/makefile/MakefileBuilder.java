@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.MakefileTools.Include;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 
@@ -218,20 +217,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            if (options == null) 
-                options = new MakemakeOptions();
-            
-            MakemakeOptions tmpOptions = options.clone();
-            
-            tmpOptions.force = true;
-            tmpOptions.isNMake = CDTUtils.isMsvcToolchainActive(getProject());
-            
-            // add dependent folders
-            if (folderDeps.containsKey(folder))
-                for (IContainer dep : folderDeps.get(folder))
-                    tmpOptions.includeDirs.add(dep.getLocation().toString());
-            
-            boolean changed = MetaMakemake.generateMakefile(folder, tmpOptions, perFileDeps, buildSpec.getConfigFileLocation());
+            boolean changed = MetaMakemake.generateMakefile(folder, options, folderDeps, perFileDeps, buildSpec.getConfigFileLocation());
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;

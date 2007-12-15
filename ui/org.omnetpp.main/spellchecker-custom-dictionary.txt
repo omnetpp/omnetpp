@@ -260,3 +260,6 @@ doxygen
 graphviz
 exec
 outdated
+dodgy
+cdt
+dirs
