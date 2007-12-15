@@ -51,7 +51,7 @@ public class BuildSpecUtils {
                         IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                         if (!StringUtils.isEmpty(args)) {
                             MakemakeOptions makemakeOptions = new MakemakeOptions(args);
-                            buildSpec.setFolderOptions(folder, makemakeOptions);
+                            buildSpec.setMakemakeOptions(folder, makemakeOptions);
                         }
                     }
                     else {
@@ -70,9 +70,9 @@ public class BuildSpecUtils {
     public static void saveBuildSpecFile(IProject project, BuildSpecification buildSpec) throws CoreException {
         // assemble file content to save
         String content = "version 4.0\n";
-        for (IContainer folder : buildSpec.getFolders()) {
+        for (IContainer folder : buildSpec.getMakemakeFolders()) {
             String options = "";
-            MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
+            MakemakeOptions makemakeOptions = buildSpec.getMakemakeOptions(folder);
             options = makemakeOptions == null ? "" : makemakeOptions.toString();
             if (options.trim().equals(""))
                 options = "--";

@@ -206,7 +206,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 		// expand so that all "interesting" points are visible, but open at least the project node
 		treeViewer.expandToLevel(2);
-		for (IContainer folder : buildSpec.getFolders())
+		for (IContainer folder : buildSpec.getMakemakeFolders())
 	        treeViewer.expandToLevel(folder, 0);
 		
 		return composite;
@@ -315,7 +315,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
     protected void removeFolderOptions() {
         IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
         for (Object o : sel.toArray())
-            buildSpec.setFolderOptions((IContainer)o, null);
+            buildSpec.setMakemakeOptions((IContainer)o, null);
         treeViewer.refresh();
         updateButtonStates();
     }

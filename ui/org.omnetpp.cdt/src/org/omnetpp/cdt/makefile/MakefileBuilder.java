@@ -137,7 +137,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime1 = System.currentTimeMillis();
 
         // collect folders
-        IContainer[] folders = buildSpec.getFolders(); //collectFolders();
+        IContainer[] folders = buildSpec.getMakemakeFolders(); //collectFolders();
         
         // register folders in the marker synchronizer
         for (IContainer folder : folders) {
@@ -217,7 +217,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
-            MakemakeOptions options = buildSpec.getFolderOptions(folder);
+            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             if (options == null) 
                 options = new MakemakeOptions();
             
@@ -231,7 +231,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 for (IContainer dep : folderDeps.get(folder))
                     tmpOptions.includeDirs.add(dep.getLocation().toString());
             
-            boolean changed = new MakeMake().generateMakefile(folder, tmpOptions, perFileDeps, buildSpec.getConfigFileLocation());
+            boolean changed = MetaMakemake.generateMakefile(folder, tmpOptions, perFileDeps, buildSpec.getConfigFileLocation());
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;

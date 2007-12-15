@@ -49,8 +49,10 @@
 - IBuildEnvironmentVariable defines ENVVAR_* but they are defined in its ancestor
   IEnvironmentVariable too (unnecessary)
 - typo in ManagedBuildManager: TEST_CONSISTANCE (should be TEST_CONSISTENCE)
+- typo in ManagedBuildManager: getLoaddedBuildInfo()
 - misleading comment for IsGnuCygwinToolChainSupported: is say this class is "NOT used currently", but it is!
-
+- ICPathEntry.getFullPath(): document: it actually returns project relative path, not full path
+- ICPathEntry.getExclusionPatterns(): these are actually paths relative to the source folder represented by ICPathEntry
 
 platform:
 - the ${} parser should match the correct ending }. 

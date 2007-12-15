@@ -88,7 +88,7 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 	    });
         
 		loadBuildSpecFile();
-		MakemakeOptions folderOptions = buildSpec.getFolderOptions(getResource());
+		MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(getResource());
 		enableMakefileCheckbox.setSelection(folderOptions != null);
         contents.populate(folderOptions != null ? folderOptions : new MakemakeOptions());
 		
@@ -136,7 +136,7 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
         
         IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
         if (ancestorMakemakeFolder != null) {
-            MakemakeOptions ancestorMakemakeOptions = buildSpec.getFolderOptions(ancestorMakemakeFolder);
+            MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
             if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
                 return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
         }
@@ -150,9 +150,9 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 
     protected IContainer ancestorMakemakeFolder() {
         IContainer folder = getResource().getParent();
-        while (!(folder instanceof IWorkspaceRoot) && buildSpec.getFolderOptions(folder)==null)
+        while (!(folder instanceof IWorkspaceRoot) && buildSpec.getMakemakeOptions(folder)==null)
             folder = folder.getParent();
-        return buildSpec.getFolderOptions(folder)==null ? null : folder;
+        return buildSpec.getMakemakeOptions(folder)==null ? null : folder;
     }
 
     protected Button createCheckbox(Composite parent, String text) {
@@ -163,9 +163,9 @@ public class OmnetppCDTFolderPropertyPage extends PropertyPage {
 
 	public boolean performOk() {
         if (enableMakefileCheckbox.getSelection() == true)
-            buildSpec.setFolderOptions(getResource(), contents.getResult());
+            buildSpec.setMakemakeOptions(getResource(), contents.getResult());
         else
-            buildSpec.setFolderOptions(getResource(), null);
+            buildSpec.setMakemakeOptions(getResource(), null);
 		saveBuildSpecFile();
 		return true;
 	}

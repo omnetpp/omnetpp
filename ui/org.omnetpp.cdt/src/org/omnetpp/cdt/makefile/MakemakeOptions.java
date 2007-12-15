@@ -12,6 +12,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class MakemakeOptions implements Cloneable {
+    // opp_makemake options
     public enum Type {EXE, SO, NOLINK};
     public List<String> args;
     public boolean isNMake = false;
@@ -38,6 +39,10 @@ public class MakemakeOptions implements Cloneable {
     public List<String> libs = new ArrayList<String>();
     public List<String> defines = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
+
+    // "meta" options (--meta:xxx): they get interpreted by MetaMakemake, 
+    // and translated to normal makemake options.
+    public boolean metaFoo;  //XXX
 
     /**
      * Create makemake options with the default settings.

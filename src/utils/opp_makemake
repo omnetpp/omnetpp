@@ -205,6 +205,9 @@ sub makemake()
         elsif ($arg =~ /^-p/) {
             $exportDefOpt = substr($arg, 2);
         }
+        elsif ($arg =~ /^--meta:/) {
+            error("$progname: --meta options not supported: they rely on information only available inside the IDE");
+        }
         else {
             # FIXME add support for "--" after which everything is extraArg
             if ($arg ne "--") {
@@ -1048,7 +1051,7 @@ LIBS = {libpath}{libs}
 
 {~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
 {nmake:}!if "$(CONFIGNAME)"=="."
-O=.
+O = .
 {~nmake:}else
 {nmake:}!else
 O = {outdir}/$(CONFIGNAME)/{projectrelpath}
