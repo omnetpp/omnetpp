@@ -50,7 +50,7 @@ public class MetaMakemake {
         //TODO interpret meta-options
         
         System.out.println("Translated makemake options for " + folder + ": " + translatedOptions.toString());
-        return new Makemake0().generateMakefile(folder, translatedOptions, perFileDeps, configFileLocation);
+        return new Makemake().generateMakefile(folder, translatedOptions, perFileDeps, configFileLocation);
     }
 
     /**

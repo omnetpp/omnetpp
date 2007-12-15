@@ -33,7 +33,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * @author Andras
  */
 //FIXME exceptDirs must be implicit ("Excluded from build")
-public class Makemake0 {
+public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
     private String template;
@@ -46,7 +46,7 @@ public class Makemake0 {
     private IPath projectLocation;
     private IPath folderLocation;
 
-    public Makemake0() {
+    public Makemake() {
     }
 
     /**
@@ -374,7 +374,7 @@ public class Makemake0 {
         // now generate the makefile
         System.out.println("generating makefile for " + folder.toString());
         if (template == null) {
-            template = FileUtils.readTextFile(Makemake0.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
+            template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
             template = template.replace("\r\n", "\n");
         }
 
