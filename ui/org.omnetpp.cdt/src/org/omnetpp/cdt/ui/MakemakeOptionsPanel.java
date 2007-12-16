@@ -201,18 +201,18 @@ public class MakemakeOptionsPanel extends Composite {
 //        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
 //        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
         createLabel(linkGroup, "Libraries to link with (-l):");
-        libsList = new EditableList(linkGroup, SWT.NONE);
+        libsList = new EditableList(linkGroup, SWT.NONE); //XXX this is NOT platform independent now!!! MSVC doesn't accept "-l" option!
         libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(linkGroup, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
         createLabel(linkGroup, "Extra object files and libs to link with (wildcards allowed):");
         linkObjectsList = new EditableList(linkGroup, SWT.NONE);
-        linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));  //XXX how to make platform independent (*.o vs *.obj)?
 
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         createLabel(customPage, "Code fragment to be inserted into the Makefile (Makefrag):");
         makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
-        makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); //XXX todo actually load/save makefrag file!
         createLabel(customPage, "Other fragment files to include:");
         makefragsList = new EditableList(customPage, SWT.NONE);
         makefragsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
