@@ -84,6 +84,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
                 // FIXME ignore _m.cc files
+                //FIXME process all source folders except CDT-excluded ones
                 if ((MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource)) && buildSpec.isMakemakeFolder(resource.getParent())) {
                     warnIfLinkedResource(resource);
                     processFileIncludes((IFile)resource);
@@ -170,44 +171,44 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         System.out.println("Generated " + folders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
-    /**
-     * Collect "interesting" folders in this project and all referenced projects;
-     * that is, omits excluded folders, team-private folders ("CVS", ".svn"), etc.
-     */
-    // XXX not needed anymore 
-    protected IContainer[] collectFolders() throws CoreException, IOException {
-        final List<IContainer> result = new ArrayList<IContainer>();
-        
-        class FolderCollector implements IResourceVisitor {
-            BuildSpecification buildSpec;
-            List<IContainer> result;
-            public FolderCollector(BuildSpecification buildSpec, List<IContainer> result) {
-                this.buildSpec = buildSpec;
-                this.result = result;
-            }
-            public boolean visit(IResource resource) throws CoreException {
-                if (MakefileTools.isGoodFolder(resource) /*FIXME and not excluded from build*/) { 
-                    result.add((IContainer)resource);
-                    return true;
-                }
-                return false;
-            }
-        };
-        
-        // collect folders from this project and all referenced projects
-        getProject().accept(new FolderCollector(buildSpec, result));
-        for (IProject referencedProject : getProject().getReferencedProjects()) {
-            BuildSpecification referencedBuildSpec = BuildSpecUtils.readBuildSpecFile(referencedProject);
-            referencedProject.accept(new FolderCollector(referencedBuildSpec, result));
-        }
-
-        // sort by full path
-        Collections.sort(result, new Comparator<IContainer>() {
-            public int compare(IContainer o1, IContainer o2) {
-                return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
-            }});
-        return result.toArray(new IContainer[]{});
-    }
+//    /**
+//     * Collect "interesting" folders in this project and all referenced projects;
+//     * that is, omits excluded folders, team-private folders ("CVS", ".svn"), etc.
+//     */
+//    // XXX not needed anymore 
+//    protected IContainer[] collectFolders() throws CoreException, IOException {
+//        final List<IContainer> result = new ArrayList<IContainer>();
+//        
+//        class FolderCollector implements IResourceVisitor {
+//            BuildSpecification buildSpec;
+//            List<IContainer> result;
+//            public FolderCollector(BuildSpecification buildSpec, List<IContainer> result) {
+//                this.buildSpec = buildSpec;
+//                this.result = result;
+//            }
+//            public boolean visit(IResource resource) throws CoreException {
+//                if (MakefileTools.isGoodFolder(resource) /*FIXME and not excluded from build*/) { 
+//                    result.add((IContainer)resource);
+//                    return true;
+//                }
+//                return false;
+//            }
+//        };
+//        
+//        // collect folders from this project and all referenced projects
+//        getProject().accept(new FolderCollector(buildSpec, result));
+//        for (IProject referencedProject : getProject().getReferencedProjects()) {
+//            BuildSpecification referencedBuildSpec = BuildSpecUtils.readBuildSpecFile(referencedProject);
+//            referencedProject.accept(new FolderCollector(referencedBuildSpec, result));
+//        }
+//
+//        // sort by full path
+//        Collections.sort(result, new Comparator<IContainer>() {
+//            public int compare(IContainer o1, IContainer o2) {
+//                return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
+//            }});
+//        return result.toArray(new IContainer[]{});
+//    }
 
     /**
      * Generate makefile in the given folder.
