@@ -148,9 +148,6 @@ sub makemake()
         elsif ($arg eq "-c" || $arg eq "--configfile") {
             error("option $arg is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
         }
-        elsif ($arg eq "-n" || $arg eq "--nolink") {
-            $type = "NOLINK";
-        }
         elsif ($arg eq "-d" || $arg eq "--subdir") {
             push(@subdirs, shift @ARGV);
         }
@@ -158,9 +155,15 @@ sub makemake()
             my $subdir = substr($arg, 2);
             push(@subdirs, $subdir);
         }
+        elsif ($arg eq "-n" || $arg eq "--nolink") {
+            $type = "NOLINK";
+        }
         elsif ($arg eq "-s" || $arg eq "--make-so") {
             $compileForDll = 1;
-            $type = "SO";
+            $type = "SHAREDLIB";
+        }
+        elsif ($arg eq "-a" || $arg eq "--make-lib") {
+            $type = "STATICLIB";
         }
         elsif ($arg eq "-S" || $arg eq "--fordll") {
             $compileForDll = 1;
@@ -361,8 +364,10 @@ sub makemake()
     $targetSuffix = "";
     if ($type eq "EXE") {
         $targetSuffix = $isNMake ? ".exe" : "";
-    } elsif ($type eq "SO") {
+    } elsif ($type eq "SHAREDLIB") {
         $targetSuffix = $isNMake ? ".dll" : ".so";
+    } elsif ($type eq "STATICLIB") {
+        $targetSuffix = $isNMake ? ".lib" : ".a";
     }
 
     # prepare subdirs. First, check that all specified subdirs exist
@@ -505,7 +510,8 @@ sub makemake()
         "obj" =>  $objExt,
         "deps" =>  $deps,
         "exe" =>  $type eq "EXE",
-        "so" =>  $type eq "SO",
+        "sharedlib" =>  $type eq "SHAREDLIB",
+        "staticlib" =>  $type eq "STATICLIB",
         "nolink" =>  $type eq "NOLINK",
         "mode" =>  $mode,
         "allenv" => ($userInterface =~ /^A/) ne "",
@@ -963,12 +969,13 @@ $progname [options] [directories, library and object files]...
                           library. Useful for models with parts in several
                           directories. With this option, -u and -l have
                           no effect.
-    -s, --make-so         Build a DLL. Useful if you want to load the
-                          model dynamically (via the load-libs= omnetpp.ini or
-                          the -l Cmdenv/Tkenv command-line option).
+    -s, --make-so         Build shared library (.so or .dll). Useful if you want
+                          to load the model dynamically (via the load-libs=
+                          omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
+    -a, --make-lib        Create static library (.a or .lib).
     -d, --fordll          Compile C++ files for use in DLLs (i.e. with the
-                          WIN32_DLL symbol defined). The -s (build DLL) option
-                          implies this one.
+                          WIN32_DLL symbol defined). The -s (build shares library)
+                          option implies this one.
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
@@ -1167,9 +1174,12 @@ all: $(TARGET)
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
-{so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
-{so:}	@echo{nmake?.} >.tstamp
+{sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{sharedlib:}	$(SHLIB_LD) {link-o}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
+{sharedlib:}	@echo{nmake?.} >.tstamp
+{staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{staticlib:}	$(AR) {link-o}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
+{staticlib:}	@echo{nmake?.} >.tstamp
 {nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile} .tstamp
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 {nolink:}

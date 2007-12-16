@@ -162,8 +162,8 @@ public class BuildSpecPropertyPage extends PropertyPage {
 //                        if (makemakeOptions == null) makemakeOptions = new MakemakeOptions(); //FIXME getFolderOptions should never return null??
 //                        switch (makemakeOptions.type) {
 //                            case EXE: return IMAGE_FOLDER_EXE;
-//                            case SO: return IMAGE_FOLDER_DLL;
-//                            //case LIB: return IMAGE_FOLDER_LIB; //XXX no such type! 
+//                            case SHAREDLIB: return IMAGE_FOLDER_DLL;
+//                            case STATICLIB: return IMAGE_FOLDER_LIB; 
 //                            case NOLINK: return IMAGE_FOLDER_NOLINK;
 //                        }
 //                }

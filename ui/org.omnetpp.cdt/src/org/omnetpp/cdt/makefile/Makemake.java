@@ -160,7 +160,7 @@ public class Makemake {
         String targetSuffix = "";
         if (p.type == MakemakeOptions.Type.EXE)
             targetSuffix = isNMake ? ".exe" : "";
-        else if (p.type == MakemakeOptions.Type.SO)
+        else if (p.type == MakemakeOptions.Type.SHAREDLIB)
             targetSuffix = isNMake ? ".dll" : ".so";
 
         // prepare subdirs. First, check that all specified subdirs exist
@@ -343,7 +343,8 @@ public class Makemake {
         m.put("obj", objExt);
         m.put("deps", deps.toString());
         m.put("exe", p.type == MakemakeOptions.Type.EXE);
-        m.put("so", p.type == MakemakeOptions.Type.SO);
+        m.put("sharedlib", p.type == MakemakeOptions.Type.SHAREDLIB);
+        m.put("staticlib", p.type == MakemakeOptions.Type.STATICLIB);
         m.put("nolink", p.type == MakemakeOptions.Type.NOLINK);
         m.put("mode", p.mode);
         m.put("allenv", p.userInterface.startsWith("A"));

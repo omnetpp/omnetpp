@@ -286,9 +286,9 @@ public class MakemakeOptionsPanel extends Composite {
         // "Target" page
         switch (data.type) {
             case EXE: targetExecutableRadioButton.setSelection(true); break;
+            case SHAREDLIB: targetSharedLibRadioButton.setSelection(true); break;
+            case STATICLIB: targetStaticLibRadioButton.setSelection(true); break;
             case NOLINK: targetCompileOnlyRadioButton.setSelection(true); break;
-            case SO: targetSharedLibRadioButton.setSelection(true); break;
-            //TODO case STATICLIB: targetStaticLibRadioButton.setSelection(true); break;
         }
         if (StringUtils.isEmpty(data.target))
             defaultTargetName.setSelection(true); 
@@ -339,9 +339,9 @@ public class MakemakeOptionsPanel extends Composite {
         if (targetExecutableRadioButton.getSelection())
             result.type = Type.EXE;
         else if (targetSharedLibRadioButton.getSelection())
-            result.type = Type.SO; //FIXME rename to DYNAMICLIB
+            result.type = Type.SHAREDLIB;
         else if (targetStaticLibRadioButton.getSelection())
-            result.type = Type.SO; //FIXME introduce Type.STATICLIB !!
+            result.type = Type.STATICLIB;
         else if (targetCompileOnlyRadioButton.getSelection())
             result.type = Type.NOLINK;
         result.target = defaultTargetName.getSelection() ? null : targetNameText.getText();

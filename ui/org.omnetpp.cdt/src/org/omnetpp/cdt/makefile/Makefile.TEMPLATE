@@ -150,9 +150,12 @@ all: $(TARGET)
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
-{so:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{so:}	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
-{so:}	@echo{nmake?.} >.tstamp
+{sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{sharedlib:}	$(SHLIB_LD) {link-o}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
+{sharedlib:}	@echo{nmake?.} >.tstamp
+{staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{staticlib:}	$(AR) {link-o}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
+{staticlib:}	@echo{nmake?.} >.tstamp
 {nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile} .tstamp
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 {nolink:}
@@ -224,4 +227,3 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
-

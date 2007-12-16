@@ -13,7 +13,7 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class MakemakeOptions implements Cloneable {
     // opp_makemake options
-    public enum Type {EXE, SO, NOLINK};
+    public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     public List<String> args;
     public boolean isNMake = false;
     public String projectDir = null;  // not supported
@@ -143,9 +143,6 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("-c") || arg.equals("--configfile")) {
                 throw new IllegalArgumentException("option "+arg+" is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
             }
-            else if (arg.equals("-n") || arg.equals("--nolink")) {
-                type = Type.NOLINK;
-            }
             else if (arg.equals("-d") || arg.equals("--subdir")) {
                 checkArg(argv, i);
                 subdirs.add(argv[++i]);
@@ -153,9 +150,15 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-d")) {
                 subdirs.add(arg.substring(2));
             }
+            else if (arg.equals("-n") || arg.equals("--nolink")) {
+                type = Type.NOLINK;
+            }
             else if (arg.equals("-s") || arg.equals("--make-so")) {
                 compileForDll = true;
-                type = Type.SO;
+                type = Type.SHAREDLIB;
+            }
+            else if (arg.equals("-a") || arg.equals("--make-lib")) {
+                type = Type.STATICLIB;
             }
             else if (arg.equals("-S") || arg.equals("--fordll")) {
                 compileForDll = true;
@@ -248,17 +251,19 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-r");
         if (!StringUtils.isEmpty(mode))
             add(result, "-M", mode);
-        if (!"ALL".equals(userInterface))
+        if (!"ALL".equalsIgnoreCase(userInterface))
             add(result, "-u", userInterface);
-        if (type == Type.SO)
-            add(result, "-s");
-        else if (type == Type.NOLINK)
+        if (type == Type.NOLINK)
             add(result, "-n");
+        else if (type == Type.SHAREDLIB)
+            add(result, "-s");
+        else if (type == Type.STATICLIB)
+            add(result, "-a");
         if (!StringUtils.isEmpty(ccext))
             add(result, "-e", ccext); 
         if (!StringUtils.isEmpty(exportDefOpt))
             add(result, "-p"+exportDefOpt);
-        if (compileForDll && type != Type.SO)
+        if (compileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
         if (!ignoreNedFiles)
             add(result, "???"); //XXX
