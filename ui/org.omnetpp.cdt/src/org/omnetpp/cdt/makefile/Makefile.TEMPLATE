@@ -205,11 +205,10 @@ generateheaders: $(MSG_H_FILES)
 {subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
-clean:
-{nmake:}	-cd /d $(O:/=\) && del $(VC_AUX_FILES) .tstamp *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O && rm -f .tstamp *.o $(TARGET)
-	-{nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}
-	-{nmake?del}{~nmake?rm -f} *.vec *.sca {nmake?2>nul}
+clean:{@dir:sourcedirs,bsdir:backslashedsourcedirs}
+{nmake:}	-cd /d $(O:/=\)\{bsdir} && del $(VC_AUX_FILES) .tstamp *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
+{~nmake:}	-cd $O/{dir} && rm -f .tstamp *.o $(TARGET)
+	-cd /d {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
 {subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 

@@ -23,23 +23,14 @@ makemake();
 exit 0;
 
 #TODO:
-# support building static library
 # use linkall.cmd on Windows!
-# potential problem: $(CONFIGNAME) determines both linker path AND output directory! so they are now linked!
-# warnings that come when -Odir is used
+# perl warnings when -Odir is used
 # when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
 # if too many args are given: {progname} {args} becomes multi-line ==> nmake parser error
 # ha deep, akkor rekurziv builder letiltani? (subdirs, -r opcio, -d optio, etc)
 # implement isGoodDir correctly
-# into docu: --deep is the default!!!
-#
-#TODO: to implement:
 # invoke opp_makedepend in the end?
-# document --deep
-# make clean: not yet deep
-#
-#TODO: port to Java:
-# --deep, --nodeep opcio
+# with --deep, -d<subdir> should imply -X<subdir>
 #
 
 sub makemake()
@@ -947,11 +938,28 @@ $progname [options] [directories, library and object files]...
                           the current directory (for <projectroot> see -P).
                           An absolute directory path can also be specified,
                           resulting in <absolute-dir>/$(CONFIGNAME)/<subpath>.
-    -r, --recurse         Call make recursively in all subdirectories. If you
-                          need to maintain a specific order, declare dependen-
-                          cies in the makefrag.vc file.
+    --deep                Generates a "deep" Makefile; this is also the default.
+                          A deep Makefile will compile the whole source tree
+                          under the current directory, not just files in the
+                          make directory. The include path will be set up to
+                          include all directories in the source tree. Deep is
+                          not compatible with -r (recursive make), but -d
+                          (directory to recurse into) may be used. Directories
+                          may be excluded using -X.
+    --nodeep              Turns off --deep.
+    -r, --recurse         Causes make to recursively descend into all subdir-
+                          ectories; subdirectories are expected to contain
+                          makefiles themselves. If you need to maintain a
+                          specific order, declare dependencies in the
+                          makefrag(.vc) file. Subdirectories may be excluded
+                          using -X. See also -d.
     -X directory, -Xdirectory, --except directory
-                          With -r (recurse) option: ignore the given directory
+                          With -r and --deep option: ignore the given directory
+    -dsubdir, -d subdir, --subdir subdir
+                          Causes make to recursively descend into the given
+                          directory. The directory does not need to be the
+                          child of the make directory. When used with --deep,
+                          -d also implies -X for that directory.
     -P directory, --projectdir directory
                           Specifies the project root directory. Any absolute
                           path (-I, -L, object file names, etc.) that points
@@ -973,7 +981,7 @@ $progname [options] [directories, library and object files]...
                           to load the model dynamically (via the load-libs=
                           omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
     -a, --make-lib        Create static library (.a or .lib).
-    -d, --fordll          Compile C++ files for use in DLLs (i.e. with the
+    -S, --fordll          Compile C++ files for use in DLLs (i.e. with the
                           WIN32_DLL symbol defined). The -s (build shares library)
                           option implies this one.
     -w, --withobjects     Link with all object files found in -I directories,
@@ -1231,11 +1239,10 @@ generateheaders: $(MSG_H_FILES)
 {subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
-clean:
-{nmake:}	-cd /d $(O:/=\) && del $(VC_AUX_FILES) .tstamp *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O && rm -f .tstamp *.o $(TARGET)
-	-{nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}
-	-{nmake?del}{~nmake?rm -f} *.vec *.sca {nmake?2>nul}
+clean:{@dir:sourcedirs,bsdir:backslashedsourcedirs}
+{nmake:}	-cd /d $(O:/=\)\{bsdir} && del $(VC_AUX_FILES) .tstamp *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
+{~nmake:}	-cd $O/{dir} && rm -f .tstamp *.o $(TARGET)
+	-cd /d {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
 {subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
