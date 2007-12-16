@@ -277,7 +277,9 @@ public class Makemake {
             IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
             outdir = outRootRel.toString();
         }
-        String projectrelpath = folder.getProjectRelativePath().toString(); 
+
+        // determine subpath: the project-relative path of this folder
+        String subpath = folder.getProjectRelativePath().toString(); 
         
         // write dependencies
         // FIXME factor out common parts
@@ -329,7 +331,7 @@ public class Makemake {
         m.put("nmake", isNMake);
         m.put("target", target + targetSuffix);
         m.put("outdir", outdir); 
-        m.put("projectrelpath", projectrelpath); 
+        m.put("subpath", subpath); 
         m.put("isdeep", p.isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", quoteJoin(p.args));
@@ -338,6 +340,7 @@ public class Makemake {
         m.put("-l", isNMake ? "" : "-l");
         m.put(".lib", isNMake ? ".lib" : "");
         m.put("-u", isNMake ? "/include:" : "-u");
+        m.put("-out", isNMake ? "/out:" : "-o");
         m.put("_dir", "_dir");
         m.put("cc", ccExt);
         m.put("obj", objExt);
@@ -355,9 +358,8 @@ public class Makemake {
         m.put("extraobjs", quoteJoin(externalObjects));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
-        m.put("libs", quoteJoin(p.libs));
+        m.put("libs", p.libs);
         m.put("defines", prefixQuoteJoin(p.defines, "-D"));
-        m.put("link-o", isNMake ? "/out:" : "-o");
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);

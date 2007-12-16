@@ -483,9 +483,9 @@ sub makemake()
         $outdir = canonicalize("$outRootRel");
     }
 
-    my $projectrelpath = cwd();
-    $projectrelpath =~ s|^\Q$projectDir\E||;
-
+    # determine subpath: the project-relative path of this folder
+    my $subpath = cwd();
+    $subpath =~ s|^\Q$projectDir\E||;
 
     $deps = "";  #FIXME
 
@@ -496,7 +496,7 @@ sub makemake()
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
         "outdir" => $outdir,
-        "projectrelpath" => $projectrelpath,
+        "subpath" => $subpath,
         "isdeep" => $isDeep,
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  quoteJoin(\@args),
@@ -505,6 +505,7 @@ sub makemake()
         "-l" =>  $isNMake ? "" : "-l",
         ".lib" =>  $isNMake ? ".lib" : "",
         "-u" =>  $isNMake ? "/include:" : "-u",
+        "-out" =>  $isNMake ? "/out:" : "-o",
         "_dir" =>  "_dir",
         "cc" =>  $ccExt,
         "obj" =>  $objExt,
@@ -522,9 +523,8 @@ sub makemake()
         "extraobjs" =>  quoteJoin(\@externalObjects),
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
         "libpath" =>  prefixQuoteJoin(\@libDirs, ($isNMake ? "/libpath:" : "-L")),
-        "libs" =>  quoteJoin(\@libs),
+        "libs" =>  \@libs,
         "defines" => prefixQuoteJoin(\@defines, "-D"),
-        "link-o" =>  $isNMake ? "/out:" : "-o",
         "makecommand" =>  $makecommand,
         "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
         "makefrags" =>  $makefrags,
@@ -990,8 +990,10 @@ $progname [options] [directories, library and object files]...
                           Defaults to "all".
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
-    -llibrary             Additional library to link against
-                          (e.g. -lmylibrary.lib)
+    -llibrary             Additional library to link against. On Unix, -lfoo
+                          will link with libfoo.so or libfoo.a; on Windows,
+                          with foo.lib. The library path (see -L) will be
+                          searched in both cases.
     -p symbol, -psymbol   -P option to be passed to opp_msgc
     -i filename, --includefragment filename
                           Append file to near end of Makefile. The file
@@ -1039,7 +1041,7 @@ TARGET = {target}
 {~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = {includepath}{@d:sourcedirs}\
+INCLUDE_PATH = {includepath}{@d:sourcedirs} \
  -I{d}{/@}
 
 # Misc additional object and library files to link with
@@ -1052,7 +1054,7 @@ EXT_DIR_OBJS = {extdirobjs}
 EXT_DIR_TSTAMPS = {extdirtstamps}
 
 # Additional libraries (-L, -l options)
-LIBS = {libpath}{libs}
+LIBS = {libpath}{@lib:libs} {-l}{lib}{.lib}{/@}
 
 # Output directory
 
@@ -1061,7 +1063,7 @@ LIBS = {libpath}{libs}
 O = .
 {~nmake:}else
 {nmake:}!else
-O = {outdir}/$(CONFIGNAME)/{projectrelpath}
+O = {outdir}/$(CONFIGNAME)/{subpath}
 {nmake:}!endif
 {~nmake:}endif
 
@@ -1172,13 +1174,13 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 all: $(TARGET)
 
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {link-o}$(TARGET)
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$(TARGET)
 {exe:}	@echo{nmake?.} >.tstamp
 {sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{sharedlib:}	$(SHLIB_LD) {link-o}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
+{sharedlib:}	$(SHLIB_LD) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
 {sharedlib:}	@echo{nmake?.} >.tstamp
 {staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
-{staticlib:}	$(AR) {link-o}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
+{staticlib:}	$(AR) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
 {staticlib:}	@echo{nmake?.} >.tstamp
 {nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile} .tstamp
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
