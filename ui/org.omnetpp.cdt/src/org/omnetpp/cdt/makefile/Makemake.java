@@ -52,21 +52,21 @@ public class Makemake {
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
-        return generateMakefile(folder, new MakemakeOptions(args), perFileDeps, configFileLocation);
+    public boolean generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        return generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
-        return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps, configFileLocation);
+    public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
     }
 
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, String configFileLocation) throws IOException, CoreException {
+    public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         this.folder = folder;
         this.p = options;
         
@@ -312,7 +312,7 @@ public class Makemake {
         m.put("subpath", subpath); 
         m.put("isdeep", isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
-        m.put("args", quoteJoin(p.args));
+        m.put("args", p.toString());
         m.put("configfile", configFile);
         m.put("-L", isNMake ? "/libpath:" : "-L");
         m.put("-l", isNMake ? "" : "-l");

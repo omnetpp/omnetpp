@@ -1141,15 +1141,15 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 #------------------------------------------------------------------------------
 
 # Main target
-all: $(TARGET)
+all: $O/$(TARGET)
 
-{exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$(TARGET)
-{sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{sharedlib:}	$(SHLIB_LD) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
-{staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{staticlib:}	$(AR) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS)
-{nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile}
+{exe:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
+{sharedlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
+{staticlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{staticlib:}	$(AR) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
+{nolink:}$O/$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
 print-info:
@@ -1188,10 +1188,13 @@ generateheaders: $(MSG_H_FILES)
 {subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
-clean:{@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}	-cd /d $(O:/=\)\{bsdir} && del $(VC_AUX_FILES) *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O/{dir} && rm -f *.o $(TARGET)
-	-cd /d {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
+clean:
+{nmake:}	-cd $(O:/=\) && del $(VC_AUX_FILES) $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
+{~nmake:}	-cd $O && rm -f $(TARGET)
+{@dir:sourcedirs,bsdir:backslashedsourcedirs}
+{nmake:}	-cd $(O:/=\)\{bsdir} && del *.obj 2>NUL
+{~nmake:}	-cd $O/{dir} && rm -f *.o
+	-cd {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
 {subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 

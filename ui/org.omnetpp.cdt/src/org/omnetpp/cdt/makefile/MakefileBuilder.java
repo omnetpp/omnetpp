@@ -152,8 +152,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
         System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
 
-        buildSpec.setConfigFileLocation(getProject().getLocation().toOSString()+"/configuser.vc"); //FIXME not here, not hardcoded!
-        
         if (generateMakemakefile) {
             //XXX this should probably become body of some Action
             Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
@@ -218,7 +216,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            boolean changed = MetaMakemake.generateMakefile(folder, options, folderDeps, perFileDeps, buildSpec.getConfigFileLocation());
+            boolean changed = MetaMakemake.generateMakefile(folder, options, folderDeps, perFileDeps);
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;

@@ -39,10 +39,9 @@ public class MetaMakemake {
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
     public static boolean generateMakefile(IContainer folder, MakemakeOptions options, 
-            Map<IContainer,Set<IContainer>> folderDeps, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps, 
-            String configFileLocation) throws IOException, CoreException {
+            Map<IContainer,Set<IContainer>> folderDeps, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         MakemakeOptions translatedOptions = translateOptions(folder, options, folderDeps);
-        return new Makemake().generateMakefile(folder, translatedOptions, perFileDeps, configFileLocation);
+        return new Makemake().generateMakefile(folder, translatedOptions, perFileDeps);
     }
 
     /** 

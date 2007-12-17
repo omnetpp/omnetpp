@@ -11,20 +11,11 @@ import org.eclipse.core.resources.IContainer;
  * @author Andras
  */
 public class BuildSpecification {
-    private String configFileLocation;
     private Map<IContainer,MakemakeOptions> folderMakemakeOptions = new HashMap<IContainer,MakemakeOptions>();
 
     public BuildSpecification() {
     }
     
-    public String getConfigFileLocation() {
-        return configFileLocation;
-    }
-
-    public void setConfigFileLocation(String configFileLocation) {
-        this.configFileLocation = configFileLocation;
-    }
-
     /** 
      * Returns the set of folders for which there's some explicitly set
      * folder type or option. Child folders of those inherit the settings.

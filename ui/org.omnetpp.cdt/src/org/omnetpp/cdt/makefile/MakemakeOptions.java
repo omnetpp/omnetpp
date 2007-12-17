@@ -13,7 +13,6 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
-    public List<String> args;
     
     // opp_makemake options
     public boolean isNMake = false;
@@ -48,7 +47,6 @@ public class MakemakeOptions implements Cloneable {
      * Create makemake options with the default settings.
      */
     public MakemakeOptions() {
-        this.args = new ArrayList<String>();
     }
 
     public MakemakeOptions(String args) {
@@ -66,8 +64,6 @@ public class MakemakeOptions implements Cloneable {
      * Parse the argument list into the member variables
      */
     public void parseArgs(String[] argv) {
-        this.args = Arrays.asList(argv);
-
         // process arguments
         int i;
         for (i = 0; i < argv.length; i++) {
@@ -279,7 +275,8 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
         addOpts2(result, defines, "-D");
-        result.add("--");
+        if (!extraArgs.isEmpty())
+            result.add("--");
         result.addAll(extraArgs);
 
         return result.toArray(new String[]{});
@@ -311,7 +308,6 @@ public class MakemakeOptions implements Cloneable {
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = new MakemakeOptions();
-        result.args = args;
         result.isNMake = isNMake;
         result.projectDir = projectDir;
         result.type = type;
