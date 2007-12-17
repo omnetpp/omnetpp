@@ -69,7 +69,8 @@ public class MakemakeOptions implements Cloneable {
         this.args = Arrays.asList(argv);
 
         // process arguments
-        for (int i = 0; i < argv.length; i++) {
+        int i;
+        for (i = 0; i < argv.length; i++) {
             String arg = argv[i];
             if (arg.equals("-h") || arg.equals("--help")) {
                 // TODO
@@ -210,15 +211,21 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-p")) {
                 dllExportMacro = arg.substring(2);
             }
+            else if (arg.equals("--")) {
+                break;
+            }
             else {
                 Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
-                //FIXME add support for "--" after which everything is extraArg
-                if (!arg.equals("--")) {
-                    if (arg.startsWith("-"))
-                        throw new IllegalArgumentException("unrecognized option: " + arg);
-                    extraArgs.add(arg);
-                }
+                if (arg.startsWith("-"))
+                    throw new IllegalArgumentException("unrecognized option: " + arg);
+                extraArgs.add(arg);
             }
+        }
+
+        // process args after "--"
+        ++i;
+        for (; i < argv.length; i++) {
+            extraArgs.add(argv[i]);
         }
     }
 
@@ -266,7 +273,7 @@ public class MakemakeOptions implements Cloneable {
         if (compileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
         if (!ignoreNedFiles)
-            add(result, "???"); //XXX
+            add(result, "-N");
         addOpts2(result, fragmentFiles, "-i");
         addOpts2(result, subdirs, "-d");
         addOpts2(result, exceptSubdirs, "-X");
@@ -274,6 +281,7 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
         addOpts2(result, defines, "-D");
+        result.add("--");
         result.addAll(extraArgs);
 
         return result.toArray(new String[]{});

@@ -202,15 +202,20 @@ sub makemake()
         elsif ($arg =~ /^--meta:/) {
             error("$progname: --meta options not supported: they rely on information only available inside the IDE");
         }
-        else {
-            # FIXME add support for "--" after which everything is extraArg
-            if ($arg ne "--") {
-                if ($arg =~ /^-/) {
-                    error("unrecognized option: $arg");
-                }
-                push(@extraArgs, $arg);
-            }
+        elsif ($arg eq "--") {
+            last;
         }
+        else {
+            error("unrecognized option: $arg") if ($arg =~ /^-/);
+            push(@extraArgs, $arg);
+        }
+    }
+
+    # process args after "--"
+    while (@ARGV)
+    {
+        $arg = shift @ARGV;
+        push(@extraArgs, $arg);
     }
 
 
@@ -572,7 +577,7 @@ sub isGoodDir($;$)
 
     my @IGNORABLE_DIRS = ("CVS", "RCS", "SCCS", "_darcs", "blib", ".git", ".svn", ".git", ".bzr", ".hg", "backups");
 
-    # better ignore!!! like: if (dir eq exceptdir || dir.endswith("/"+exceptdir))
+    #FIXME better ignore!!! like: if (dir eq exceptdir || dir.endswith("/"+exceptdir))
     $dirpath = canonicalize($dirpath);
     my $dirname = $dirpath;
     $dirname =~ s|^.*/||;
