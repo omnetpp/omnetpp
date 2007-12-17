@@ -112,9 +112,10 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
             int bufferSize;  // size of the allocated buffer
             char *bufferPtr; // pointer to the current position in the buffer
             int bufferNumOfRecords; //
+            bool finished;
 
             VectorInputPort(int id, std::string moduleName, std::string name, std::string columns, int bufferSize, Node *owner)
-                : Port(owner), vector(id, moduleName, name, columns, bufferSize)
+                : Port(owner), vector(id, moduleName, name, columns, bufferSize), finished(false)
                 { this->allocateBuffer(bufferSize); vector.blocks.push_back(Block()); }
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 

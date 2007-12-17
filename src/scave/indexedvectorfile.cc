@@ -301,12 +301,16 @@ void IndexedVectorFileWriterNode::process()
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
     {
         VectorInputPort *port=*it;
-        if (port->channel()->length()>0)
-            writeRecordsToBuffer(port);
-        if (port->channel()->eof()) {
-            if (port->hasBufferedData())
-                writeBufferToFile(port);
-            writeIndex(port);
+        if (!port->finished)
+        {
+	        if (port->channel()->length()>0)
+	            writeRecordsToBuffer(port);
+	        if (port->channel()->eof()) {
+	            if (port->hasBufferedData())
+	                writeBufferToFile(port);
+	            writeIndex(port);
+	            port->finished = true;
+	        }
         }
     }
 
@@ -317,7 +321,7 @@ bool IndexedVectorFileWriterNode::finished() const
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
     {
         VectorInputPort *port=*it;
-        if (!port->channel()->eof() || port->hasBufferedData())
+        if (!port->finished)
             return false;
     }
 
