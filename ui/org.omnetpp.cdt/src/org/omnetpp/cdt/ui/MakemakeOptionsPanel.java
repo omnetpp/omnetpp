@@ -319,7 +319,6 @@ public class MakemakeOptionsPanel extends Composite {
         
         // to the "Link" page:
         data.linkWithObjects = false; //TODO explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
-        data.tstamp = true; //TODO
         data.mode = null; //TODO
         makefragText.setText("xxx..."); //TODO
     }
@@ -366,7 +365,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         //---
         result.linkWithObjects = false; //TODO
-        result.tstamp = true; //TODO
         result.mode = ""; //TODO
 	    makefragText.getText(); //TODO
 

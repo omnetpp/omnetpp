@@ -24,7 +24,6 @@ public class MakemakeOptions implements Cloneable {
     public boolean isRecursive = false;
     public boolean force = false;
     public boolean linkWithObjects = false;
-    public boolean tstamp = true;
     public String mode = "";
     public String userInterface = "ALL";
     public String ccext = null;
@@ -168,7 +167,7 @@ public class MakemakeOptions implements Cloneable {
                 linkWithObjects = true;
             }
             else if (arg.equals("-x") || arg.equals("--notstamp")) {
-                tstamp = false;
+                throw new IllegalArgumentException(arg + ": obsolete option, please remove");
             }
             else if (arg.equals("-u") || arg.equals("--userinterface")) {
                 checkArg(argv, i);
@@ -252,8 +251,6 @@ public class MakemakeOptions implements Cloneable {
             add(result, "--nmake");
         if (linkWithObjects)
             add(result, "-w");
-        if (!tstamp)
-            add(result, "-x"); // no-tstamp
         if (isRecursive)
             add(result, "-r");
         if (!StringUtils.isEmpty(mode))
@@ -322,7 +319,6 @@ public class MakemakeOptions implements Cloneable {
         result.isDeep = isDeep;
         result.force = force;
         result.linkWithObjects = linkWithObjects;
-        result.tstamp = tstamp;
         result.isRecursive = isRecursive;
         result.mode = mode;
         result.userInterface = userInterface;

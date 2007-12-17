@@ -84,11 +84,9 @@ public class Makemake {
 
         String target = p.target == null ? folder.getName() : p.target;
         List<String> externaldirobjs = new ArrayList<String>();
-        List<String> externaldirtstamps = new ArrayList<String>();
         List<String> objs = new ArrayList<String>();
         List<String> linkDirs = new ArrayList<String>();
         List<String> externalObjects = new ArrayList<String>();
-        List<String> tstampDirs = new ArrayList<String>();
         List<String> ccfiles = new ArrayList<String>();
         List<String> cppfiles = new ArrayList<String>();
         List<String> nedfiles = new ArrayList<String>();
@@ -219,17 +217,6 @@ public class Makemake {
         for (String i : linkDirs)
             externaldirobjs.add(i + "/*." + objExt);
 
-        for (String i : includeDirs)
-            if (p.tstamp && !i.equals("."))
-                tstampDirs.add(i);
-        for (String i : linkDirs)
-            if (p.tstamp)
-                tstampDirs.add(i);
-
-        for (String i : tstampDirs)
-            externaldirtstamps.add(quote(i + "/.tstamp"));
-
-        
         List<String> sources = new ArrayList<String>();
         if (ccExt.equals("cc"))
             sources.addAll(ccfiles);
@@ -360,7 +347,6 @@ public class Makemake {
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));
         m.put("extdirobjs", quoteJoin(externaldirobjs));
-        m.put("extdirtstamps", quoteJoin(externaldirtstamps));
         m.put("extraobjs", quoteJoin(externalObjects));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));

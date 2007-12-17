@@ -27,7 +27,6 @@ exit 0;
 # perl warnings when -Odir is used
 # when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
 # if too many args are given: {progname} {args} becomes multi-line ==> nmake parser error
-# ha deep, akkor rekurziv builder letiltani? (subdirs, -r opcio, -d optio, etc)
 # implement isGoodDir correctly
 # invoke opp_makedepend in the end?
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
@@ -52,7 +51,6 @@ sub makemake()
     $isRecursive = 0;
     $force = 0;
     $linkWithObjects = 0;
-    $tstamp = 1;
     $mode = "";
     $userInterface = "ALL";
     $ccExt = "";
@@ -163,7 +161,7 @@ sub makemake()
             $linkWithObjects = 1;
         }
         elsif ($arg eq "-x" || $arg eq "--notstamp") {
-            $tstamp = 1;
+            error("$progname: $arg: obsolete option, please remove");
         }
         elsif ($arg eq "-u" || $arg eq "--userinterface") {
             my $userInterface = shift @ARGV;
@@ -238,12 +236,10 @@ sub makemake()
     $target = $target eq "" ? $folderName : $target;
 
     @externaldirobjs = ();
-    @externaldirtstamps = ();
     @objs = ();
     @generatedHeaders = ();
     @linkDirs = ();
     @externalObjects = ();
-    @tstampDirs = ();
     @ccfiles = ();
     @cppfiles = ();
     @nedfiles = ();
@@ -417,21 +413,6 @@ sub makemake()
         push(@externaldirobjs, "$i/*.$objExt");
     }
 
-    foreach $i (@includeDirs) {
-        if ($tstamp && $i ne ".") {
-            push(@tstampDirs, $i);
-        }
-    }
-
-    foreach $i (@linkDirs) {
-        if ($tstamp) {
-            push(@tstampDirs, $i);
-        }
-    }
-    foreach $i (@tstampDirs) {
-        push(@externaldirtstamps, quote("$i/.tstamp"));
-    }
-
     @sources = ();
     push(@sources, @ccfiles) if ($ccExt eq "cc");
     push(@sources, @cppfiles) if ($ccExt eq "cpp");
@@ -520,7 +501,6 @@ sub makemake()
         "cmdenv" =>  ($userInterface =~ /^C/) ne "",
         "tkenv" =>  ($userInterface =~ /^T/) ne "",
         "extdirobjs" =>  quoteJoin(\@externaldirobjs),
-        "extdirtstamps" =>  quoteJoin(\@externaldirtstamps),
         "extraobjs" =>  quoteJoin(\@externalObjects),
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
         "libpath" =>  prefixQuoteJoin(\@libDirs, ($isNMake ? "/libpath:" : "-L")),
@@ -999,9 +979,6 @@ $progname [options] [directories, library and object files]...
                           -n option is present. Dependencies between directo-
                           ries have be handled in high Makefiles (see -r
                           option).
-    -x, --notstamp        Do not require a .tstamp file to be present in the
-                          link directories and (if -w option is present)
-                          -I directories after this option.
     -u name, --userinterface name
                           Selects the user interface libraries to link with.
                           Possible values are "all", "Cmdenv", and "Tkenv".
@@ -1066,9 +1043,6 @@ EXTRA_OBJS = {extraobjs}
 
 # Object files from other directories to link with
 EXT_DIR_OBJS = {extdirobjs}
-
-# Timestamps of other directories (used as dependency)
-EXT_DIR_TSTAMPS = {extdirtstamps}
 
 # Additional libraries (-L, -l options)
 LIBS = {libpath}{@lib:libs} {-l}{lib}{.lib}{/@}
@@ -1190,20 +1164,14 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 # Main target
 all: $(TARGET)
 
-{exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$(TARGET)
-{exe:}	@echo{nmake?.} >.tstamp
-{sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {sharedlib:}	$(SHLIB_LD) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
-{sharedlib:}	@echo{nmake?.} >.tstamp
-{staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) {subdirs?subdirs} {makefile}
+{staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {staticlib:}	$(AR) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
-{staticlib:}	@echo{nmake?.} >.tstamp
-{nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile} .tstamp
+{nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
-{nolink:}
-{nolink:}.tstamp: $(OBJS)
-{nolink:}	@echo{nmake?.} >.tstamp
 
 print-info:
 {~nmake:}	@if [ -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
@@ -1217,13 +1185,6 @@ print-info:
 {subdirs:}{~nmake:}	cd $@ && {makecommand}
 {subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
 {subdirs:}
-{extdirtstamps:}$(EXT_DIR_TSTAMPS):
-{extdirtstamps:}	@echo Error: $(@{nmake?:/=\}) does not exist.
-{extdirtstamps:}	@echo This means that at least the above dependency directory has not been built.
-{extdirtstamps:}	@echo Maybe you need to do a top-level make?
-{extdirtstamps:}	@echo{nmake?.}
-{extdirtstamps:}	@exit {nmake?/b }1
-{extdirtstamps:}
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES) # FIXME does not work - use iteration
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $?
@@ -1249,8 +1210,8 @@ generateheaders: $(MSG_H_FILES)
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
 clean:{@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}	-cd /d $(O:/=\)\{bsdir} && del $(VC_AUX_FILES) .tstamp *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O/{dir} && rm -f .tstamp *.o $(TARGET)
+{nmake:}	-cd /d $(O:/=\)\{bsdir} && del $(VC_AUX_FILES) *.obj $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
+{~nmake:}	-cd $O/{dir} && rm -f *.o $(TARGET)
 	-cd /d {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
 {subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
