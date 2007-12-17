@@ -75,6 +75,8 @@ public class Makemake {
         folderLocation = folder.getLocation();
 
         boolean isNMake = p.isNMake;
+        boolean isRecursive = p.isRecursive;
+        boolean isDeep = p.isDeep;
 
         String makefile = isNMake ? "Makefile.vc" : "Makefile";
         if (file(makefile).isFile() && !p.force)
@@ -106,6 +108,10 @@ public class Makemake {
         for (String i : p.libDirs)
             libDirs.add(abs2rel(i));
 
+        // isRecursive and deep do not mix
+        if (isRecursive) 
+            isDeep = false;
+
         String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
         if (p.projectDir != null)
@@ -117,7 +123,7 @@ public class Makemake {
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc"); 
 
         // collect source files
-        if (!p.isDeep) {
+        if (!isDeep) {
             ccfiles = glob("*.cc");
             cppfiles = glob("*.cpp");
             msgfiles = glob("*.msg");
@@ -171,7 +177,7 @@ public class Makemake {
             if (!file(subdir).isDirectory())
                 throw new IllegalArgumentException("subdirectory '" + subdir + "' does not exist");
 
-        if (p.recursive) {
+        if (isRecursive) {
             File[] list = directory.listFiles(new FileFilter() {
                 public boolean accept(File file) {
                     if (file.isDirectory()) {
@@ -284,7 +290,7 @@ public class Makemake {
         // write dependencies
         // FIXME factor out common parts
         StringBuilder deps = new StringBuilder();
-        if (!p.isDeep) {
+        if (!isDeep) {
             Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
             if (fileDepsMap != null) {
                 for (IFile sourceFile : fileDepsMap.keySet()) {
@@ -332,7 +338,7 @@ public class Makemake {
         m.put("target", target + targetSuffix);
         m.put("outdir", outdir); 
         m.put("subpath", subpath); 
-        m.put("isdeep", p.isDeep);
+        m.put("isdeep", isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", quoteJoin(p.args));
         m.put("configfile", configFile);
@@ -370,7 +376,7 @@ public class Makemake {
         m.put("subdirs", quoteJoin(subdirs));
         m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
-        m.put("dllexportmacro", StringUtils.isEmpty(p.exportDefOpt) ? "" : ("-P" + p.exportDefOpt));
+        m.put("dllexportmacro", StringUtils.isEmpty(p.dllExportMacro) ? "" : ("-P" + p.dllExportMacro));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
 

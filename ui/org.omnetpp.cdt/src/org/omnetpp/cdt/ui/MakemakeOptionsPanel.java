@@ -61,7 +61,7 @@ public class MakemakeOptionsPanel extends Composite {
     // "Compile" page
     private Combo ccextCombo;
     private Button compileForDllCheckbox;
-    private Text exportDefText;
+    private Text dllExportMacroText;
 
     // "Link" page
     private Combo userInterfaceCombo;
@@ -154,15 +154,15 @@ public class MakemakeOptionsPanel extends Composite {
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
         compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines WIN32_DLL as preprocessor symbol"); //XXX new
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-        Label exportDefLabel = createLabel(dllGroup, "DLL export symbol for msg files:");
-        exportDefText = new Text(dllGroup, SWT.BORDER); //XXX needs to be validated! no spaces etc
-        exportDefText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        String exportDefTooltip = 
+        Label dllExportMacroLabel = createLabel(dllGroup, "DLL export symbol for msg files:");
+        dllExportMacroText = new Text(dllGroup, SWT.BORDER); //XXX needs to be validated! no spaces etc
+        dllExportMacroText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        String dllExportMacroTooltip = 
             "Name of the macro (#define) which expands to __dllexport/__dllimport \n" +
             "when WIN32_DLL is defined. The message compiler needs to know it \n" +
             "in order to be able to add it to generated classes.";
-        exportDefLabel.setToolTipText(exportDefTooltip);
-        exportDefText.setToolTipText(exportDefTooltip);
+        dllExportMacroLabel.setToolTipText(dllExportMacroTooltip);
+        dllExportMacroText.setToolTipText(dllExportMacroTooltip);
 
         createLabel(compilePage, "NOTE: Additional preprocessor symbols can be specified in the C/C++ General -> Paths and symbols page.");
 
@@ -279,8 +279,8 @@ public class MakemakeOptionsPanel extends Composite {
     public void populate(MakemakeOptions data) {
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
-        recursiveMakefileRadioButton.setSelection(data.recursive);
-        localMakefileRadioButton.setSelection(!data.isDeep && !data.recursive);
+        recursiveMakefileRadioButton.setSelection(data.isRecursive);
+        localMakefileRadioButton.setSelection(!data.isDeep && !data.isRecursive);
         subdirsDirsList.setItemsAsList(data.subdirs);
 
         // "Target" page
@@ -307,7 +307,7 @@ public class MakemakeOptionsPanel extends Composite {
         else
             ccextCombo.setText("." + data.ccext);
         compileForDllCheckbox.setSelection(data.compileForDll);
-        exportDefText.setText(StringUtils.nullToEmpty(data.exportDefOpt));
+        dllExportMacroText.setText(StringUtils.nullToEmpty(data.dllExportMacro));
 
         // "Link" page
         userInterfaceCombo.setText(data.userInterface);
@@ -332,7 +332,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Scope" page
         result.isDeep = deepMakefileRadioButton.getSelection();
-        result.recursive = recursiveMakefileRadioButton.getSelection();
+        result.isRecursive = recursiveMakefileRadioButton.getSelection();
         result.subdirs.addAll(subdirsDirsList.getItemsAsList());
 
         // "Target" page
@@ -354,7 +354,7 @@ public class MakemakeOptionsPanel extends Composite {
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.compileForDll = compileForDllCheckbox.getSelection();
-        result.exportDefOpt = exportDefText.getText().trim();
+        result.dllExportMacro = dllExportMacroText.getText().trim();
 
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();

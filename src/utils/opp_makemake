@@ -30,7 +30,7 @@ exit 0;
 # ha deep, akkor rekurziv builder letiltani? (subdirs, -r opcio, -d optio, etc)
 # implement isGoodDir correctly
 # invoke opp_makedepend in the end?
-# with --deep, -d<subdir> should imply -X<subdir>
+# with --deep, -d<subdir> should imply -X<subdir> (in Java too)
 #
 
 sub makemake()
@@ -49,15 +49,15 @@ sub makemake()
     $target = "";
     $outRoot = "";
     $isDeep = 1;
+    $isRecursive = 0;
     $force = 0;
     $linkWithObjects = 0;
     $tstamp = 1;
-    $recursive = 0;
     $mode = "";
     $userInterface = "ALL";
     $ccExt = "";
     $configFile = "";
-    $exportDefOpt = "";
+    $dllExportMacro = "";
     $compileForDll = 0;
     $ignoreNedFiles = 1;
     @fragmentFiles = ();
@@ -108,7 +108,7 @@ sub makemake()
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
         }
         elsif ($arg eq "-r" || $arg eq "--recurse") {
-            $recursive = 1;
+            $isRecursive = 1;
         }
         elsif ($arg eq "-X" || $arg eq "--except") {
             push(@exceptSubdirs, shift @ARGV);
@@ -194,10 +194,10 @@ sub makemake()
             push(@libs, $lib);
         }
         elsif ($arg eq "-p") {
-            $exportDefOpt = shift @ARGV;
+            $dllExportMacro = shift @ARGV;
         }
         elsif ($arg =~ /^-p/) {
-            $exportDefOpt = substr($arg, 2);
+            $dllExportMacro = substr($arg, 2);
         }
         elsif ($arg =~ /^--meta:/) {
             error("$progname: --meta options not supported: they rely on information only available inside the IDE");
@@ -289,6 +289,11 @@ sub makemake()
         push(@libDirs, abs2rel($i,$projectDir));
     }
 
+    # recursive and deep do not mix
+    if ($isRecursive) {
+        $isDeep = 0;
+    }
+
     $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
     # find configuser.vc / Makefile.inc
@@ -368,7 +373,7 @@ sub makemake()
         }
     }
 
-    if ($recursive) {
+    if ($isRecursive) {
         foreach $f (glob("*")) {
             if (isGoodDir($f, \@exceptSubdirs)) {
                 push(@subdirs, $f);
@@ -526,7 +531,7 @@ sub makemake()
         "subdirs" =>  quoteJoin(\@subdirs),
         "subdirtargets" =>  quoteJoin(\@subdirTargets),
         "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
-        "dllexportmacro" =>  $exportDefOpt ? "-P$exportDefOpt" : "",
+        "dllexportmacro" =>  $dllExportMacro ? "-P$dllExportMacro" : "",
         "sourcedirs" => \@sourceDirs,
         "backslashedsourcedirs" => \@backslashedSourceDirs
     );
@@ -1024,7 +1029,6 @@ END
 }
 
 
-# FIXME clean target does not delete the file recursively
 sub template()
 {
     #

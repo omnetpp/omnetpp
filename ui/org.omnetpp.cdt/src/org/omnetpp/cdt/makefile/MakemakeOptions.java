@@ -21,14 +21,14 @@ public class MakemakeOptions implements Cloneable {
     public String target = null;
     public String outRoot = null;
     public boolean isDeep = true;
+    public boolean isRecursive = false;
     public boolean force = false;
     public boolean linkWithObjects = false;
     public boolean tstamp = true;
-    public boolean recursive = false;
     public String mode = "";
     public String userInterface = "ALL";
     public String ccext = null;
-    public String exportDefOpt = "";
+    public String dllExportMacro = "";
     public boolean compileForDll;
     public boolean ignoreNedFiles = true; // note: no option for this
     public List<String> fragmentFiles = new ArrayList<String>();
@@ -108,7 +108,7 @@ public class MakemakeOptions implements Cloneable {
                 throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
             }
             else if (arg.equals("-r") || arg.equals("--recurse")) {
-                recursive = true;
+                isRecursive = true;
             }
             else if (arg.equals("-X") || arg.equals("--except")) {
                 checkArg(argv, i);
@@ -205,10 +205,10 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("-p")) {
                 checkArg(argv, i);
-                exportDefOpt = argv[++i];
+                dllExportMacro = argv[++i];
             }
             else if (arg.startsWith("-p")) {
-                exportDefOpt = arg.substring(2);
+                dllExportMacro = arg.substring(2);
             }
             else {
                 Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
@@ -247,7 +247,7 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-w");
         if (!tstamp)
             add(result, "-x"); // no-tstamp
-        if (recursive)
+        if (isRecursive)
             add(result, "-r");
         if (!StringUtils.isEmpty(mode))
             add(result, "-M", mode);
@@ -261,8 +261,8 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-a");
         if (!StringUtils.isEmpty(ccext))
             add(result, "-e", ccext); 
-        if (!StringUtils.isEmpty(exportDefOpt))
-            add(result, "-p"+exportDefOpt);
+        if (!StringUtils.isEmpty(dllExportMacro))
+            add(result, "-p"+dllExportMacro);
         if (compileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
         if (!ignoreNedFiles)
@@ -315,11 +315,11 @@ public class MakemakeOptions implements Cloneable {
         result.force = force;
         result.linkWithObjects = linkWithObjects;
         result.tstamp = tstamp;
-        result.recursive = recursive;
+        result.isRecursive = isRecursive;
         result.mode = mode;
         result.userInterface = userInterface;
         result.ccext = ccext;
-        result.exportDefOpt = exportDefOpt;
+        result.dllExportMacro = dllExportMacro;
         result.compileForDll = compileForDll;
         result.ignoreNedFiles = ignoreNedFiles;
         result.fragmentFiles.addAll(fragmentFiles);
