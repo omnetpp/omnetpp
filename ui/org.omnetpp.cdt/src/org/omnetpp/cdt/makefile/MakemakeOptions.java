@@ -12,9 +12,10 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class MakemakeOptions implements Cloneable {
-    // opp_makemake options
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     public List<String> args;
+    
+    // opp_makemake options
     public boolean isNMake = false;
     public String projectDir = null;  // not supported
     public Type type = Type.EXE;
