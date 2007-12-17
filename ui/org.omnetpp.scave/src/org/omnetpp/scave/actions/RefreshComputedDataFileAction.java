@@ -8,7 +8,7 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater;
 public class RefreshComputedDataFileAction extends AbstractScaveAction {
 
 	public RefreshComputedDataFileAction() {
-		setText("Refresh computed");
+		setText("Refresh computed data");
 	}
 
 	@Override
