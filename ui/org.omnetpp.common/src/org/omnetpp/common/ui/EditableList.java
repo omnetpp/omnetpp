@@ -15,7 +15,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.List;
 
-
+/**
+ * A compound control which contains a listbox and Add/Remove buttons
+ * @author Levy
+ */
+//TODO needs an Edit button as well, potentially also Move Up/Down buttons; see also CDT's FileControlList
 public class EditableList extends Composite {
     protected String addDialogTitle = "Add element";
     protected String addDialogMessage = "Please enter the data";
