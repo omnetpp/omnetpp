@@ -83,10 +83,8 @@ public class Makemake {
             throw new IllegalStateException("use -f to force overwriting existing " + makefile);
 
         String target = p.target == null ? folder.getName() : p.target;
-        List<String> externaldirobjs = new ArrayList<String>();
         List<String> objs = new ArrayList<String>();
-        List<String> linkDirs = new ArrayList<String>();
-        List<String> externalObjects = new ArrayList<String>();
+        List<String> extraObjs = new ArrayList<String>();
         List<String> ccfiles = new ArrayList<String>();
         List<String> cppfiles = new ArrayList<String>();
         List<String> nedfiles = new ArrayList<String>();
@@ -196,26 +194,13 @@ public class Makemake {
 
         for (String arg : p.extraArgs) {
             Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
-            if (file(arg).isDirectory()) {
-                arg = abs2rel(arg);
-                linkDirs.add(arg);
-            }
-            else if (file(arg).isFile()) {
-                arg = abs2rel(arg);
-                externalObjects.add(arg);
-            }
-            else {
-                throw new IllegalArgumentException("'" + arg + "' is neither an existing file/dir nor a valid option");
-            }
+            extraObjs.add(arg);
         }
 
         if (p.linkWithObjects)
             for (String i : includeDirs)
                 if (!i.equals("."))
-                    externaldirobjs.add(i + "/*." + objExt);
-
-        for (String i : linkDirs)
-            externaldirobjs.add(i + "/*." + objExt);
+                    extraObjs.add(i + "/*." + objExt);
 
         List<String> sources = new ArrayList<String>();
         if (ccExt.equals("cc"))
@@ -346,8 +331,7 @@ public class Makemake {
         m.put("allenv", p.userInterface.startsWith("A"));
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));
-        m.put("extdirobjs", quoteJoin(externaldirobjs));
-        m.put("extraobjs", quoteJoin(externalObjects));
+        m.put("extraobjs", quoteJoin(extraObjs));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
         m.put("libs", p.libs);

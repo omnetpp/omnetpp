@@ -235,11 +235,9 @@ sub makemake()
 
     $target = $target eq "" ? $folderName : $target;
 
-    @externaldirobjs = ();
     @objs = ();
     @generatedHeaders = ();
-    @linkDirs = ();
-    @externalObjects = ();
+    @extraObjs = ();
     @ccfiles = ();
     @cppfiles = ();
     @nedfiles = ();
@@ -387,30 +385,14 @@ sub makemake()
         push(@subdirTargets, $subdir . ($isNMake ? "_dir" : ""));  #XXX make sure none contains "_dir" as substring
     }
 
-    foreach $arg (@extraArgs) {
-        if (-d $arg) {
-            $arg = abs2rel($arg,$projectDir);
-            push(@linkDirs, $arg);
-        }
-        elsif (-f $arg) {
-            $arg = abs2rel($arg,$projectDir);
-            push(@externalObjects, $arg);
-        }
-        else {
-            error("'$arg' is neither an existing file/dir nor a valid option");
-        }
-    }
+    @extraObjs = @extraArgs;  #FIXME rename extraArgs?
 
     if ($linkWithObjects) {
         foreach $i (@includeDirs) {
             if ($i ne ".") {
-                push(@externaldirobjs, "$i/*.$objExt");
+                push(@extraObjs, "$i/*.$objExt");
             }
         }
-    }
-
-    foreach $i (@linkDirs) {
-        push(@externaldirobjs, "$i/*.$objExt");
     }
 
     @sources = ();
@@ -500,8 +482,7 @@ sub makemake()
         "allenv" => ($userInterface =~ /^A/) ne "",
         "cmdenv" =>  ($userInterface =~ /^C/) ne "",
         "tkenv" =>  ($userInterface =~ /^T/) ne "",
-        "extdirobjs" =>  quoteJoin(\@externaldirobjs),
-        "extraobjs" =>  quoteJoin(\@externalObjects),
+        "extraobjs" =>  quoteJoin(\@extraObjs),
         "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
         "libpath" =>  prefixQuoteJoin(\@libDirs, ($isNMake ? "/libpath:" : "-L")),
         "libs" =>  \@libs,
@@ -911,7 +892,7 @@ sub usage()
 $progname: create a Makefile for an OMNeT++/OMNEST model, based on
 source files in current directory
 
-$progname [options] [directories, library and object files]...
+$progname [options] [object files or libraries]
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
     --nmake               Generate Makefile.vc for Visual C++ and nmake.exe
@@ -972,12 +953,12 @@ $progname [options] [directories, library and object files]...
                           omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
     -a, --make-lib        Create static library (.a or .lib).
     -S, --fordll          Compile C++ files for use in DLLs (i.e. with the
-                          WIN32_DLL symbol defined). The -s (build shares library)
-                          option implies this one.
+                          WIN32_DLL symbol defined). The -s (build shared
+                          library) option implies this one.
     -w, --withobjects     Link with all object files found in -I directories,
-                          or include them if library is created. Ignored when
+                          or add them to the created library. Ignored when
                           -n option is present. Dependencies between directo-
-                          ries have be handled in high Makefiles (see -r
+                          ries have be handled in upper Makefiles (see -r
                           option).
     -u name, --userinterface name
                           Selects the user interface libraries to link with.
@@ -996,17 +977,19 @@ $progname [options] [directories, library and object files]...
                           if no -i options are given. This option is useful
                           if a source file (.ned, .msg or .cc) is to be
                           generated from other files.
-    directory             Link with all object files in that directory.
-                          Dependencies between directories have to be added
-                          manually. See also -w option.
-    library or object     Link with that file
+    object file or library
+                          Arguments will simply get added to the linker (or
+                          librarian) command line. Thus, wildcards, and macros
+                          such as \$(CONFIGNAME) are accepted, and will be
+                          resolved at build time.
 
-Default output is Makefile.vc, which you can invoke by typing
-  nmake -f Makefile.vc
-With the -n and -s options, -u and -l have no effect. makefrag.vc (and the
--i option) is useful when a source file (.ned, .msg or .cc) is to be generated
-from other files, or when you want to add extra dependencies that opp_makemake
-could not figure out.
+Default output is Makefile (with --nmake: Makefile.vc), which you can invoke
+by typing "make" (with nmake: "nmake -f Makefile.vc").
+
+The contents of the makefrag file (with --nmake: makefrag.vc) will be built
+into the generated makefile, letting you to override the default target,
+change variables, etc.
+
 END
 }
 
@@ -1038,17 +1021,13 @@ TARGET = {target}
 INCLUDE_PATH = {includepath}{@d:sourcedirs} \
  -I{d}{/@}
 
-# Misc additional object and library files to link with
+# Additional object and library files to link with
 EXTRA_OBJS = {extraobjs}
-
-# Object files from other directories to link with
-EXT_DIR_OBJS = {extdirobjs}
 
 # Additional libraries (-L, -l options)
 LIBS = {libpath}{@lib:libs} {-l}{lib}{.lib}{/@}
 
 # Output directory
-
 {~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
 {nmake:}!if "$(CONFIGNAME)"=="."
 O = .
@@ -1165,11 +1144,11 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 all: $(TARGET)
 
 {exe:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$(TARGET)
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$(TARGET)
 {sharedlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{sharedlib:}	$(SHLIB_LD) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
+{sharedlib:}	$(SHLIB_LD) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
 {staticlib:}$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{staticlib:}	$(AR) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)
+{staticlib:}	$(AR) {-out}$(TARGET) $(OBJS) $(EXTRA_OBJS)
 {nolink:}$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
