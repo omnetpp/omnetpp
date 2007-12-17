@@ -74,7 +74,6 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	              
 	/**
 	 * Utility function to plot the symbols
-	 * @param transform TODO
 	 */
 	protected void plotSymbols(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		if (symbol == null)

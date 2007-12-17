@@ -9,7 +9,7 @@ import org.omnetpp.common.engine.BigDecimal;
  *
  * @author tomi
  */
-public class RandomXYDataset implements IXYDataset {
+public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 
 	String[] seriesKeys;
 	double[][] xCoords;

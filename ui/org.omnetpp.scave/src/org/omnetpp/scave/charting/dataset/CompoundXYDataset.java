@@ -2,7 +2,7 @@ package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
 
-public class CompoundXYDataset implements IAveragedXYDataset {
+public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDataset {
 
 	private IXYDataset[] seriesToDatasetMap;
 	private int[] seriesToOffsetMap;

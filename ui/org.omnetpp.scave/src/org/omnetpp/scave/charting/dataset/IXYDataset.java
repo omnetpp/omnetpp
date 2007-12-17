@@ -4,7 +4,9 @@ import org.omnetpp.common.engine.BigDecimal;
 
 /**
  * Interface for content of charts displaying x-y series.
- *
+ * Within each series the items are ordered according to
+ * x coordinates.
+ * 
  * @author tomi
  */
 public interface IXYDataset extends IDataset {
@@ -53,6 +55,16 @@ public interface IXYDataset extends IDataset {
     public BigDecimal getPreciseX(int series, int item);
     
     /**
+     * Returns the minimum value of the x coordinates.
+     */
+    public double getMinX();
+
+    /**
+     * Returns the maximum value of the x coordinates.
+     */
+    public double getMaxX();
+    
+    /**
      * Returns the y-value for an item within a series.
      * It may return NaN if the corresponding x does not
      * have a y.
@@ -71,4 +83,14 @@ public interface IXYDataset extends IDataset {
      * @return The y-value.
      */
     public BigDecimal getPreciseY(int series, int item);
+    
+    /**
+     * Returns the minimum value of the y coordinates.
+     */
+    public double getMinY();
+    
+    /**
+     * Returns the maximum value of the y coordinates.
+     */
+    public double getMaxY();
 }

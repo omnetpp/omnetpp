@@ -452,27 +452,35 @@ public class VectorChart extends ChartCanvas {
 
 		if (dataset!=null && dataset.getSeriesCount() > 0) {
 			// calculate bounding box
-			long startTime = System.currentTimeMillis();
-			long numOfPoints = 0;
-			for (int series = 0; series < dataset.getSeriesCount(); series++) {
-				int n = dataset.getItemCount(series);
-				if (n > 0) {
-//					// X must be increasing
-					minX = Math.min(minX, transformX(dataset.getX(series, 0)));
-					maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
-					for (int i = 0; i < n; i++) {
-						double y = transformY(dataset.getY(series, i));
-						if (!Double.isNaN(y)) {
-							minY = Math.min(minY, y);
-							maxY = Math.max(maxY, y);
+			if (transform != null) {
+				long startTime = System.currentTimeMillis();
+				long numOfPoints = 0;
+				for (int series = 0; series < dataset.getSeriesCount(); series++) {
+					int n = dataset.getItemCount(series);
+					if (n > 0) {
+						// X must be increasing
+						minX = Math.min(minX, transformX(dataset.getX(series, 0)));
+						maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
+						for (int i = 0; i < n; i++) {
+							double y = transformY(dataset.getY(series, i));
+							if (!Double.isNaN(y)) {
+								minY = Math.min(minY, y);
+								maxY = Math.max(maxY, y);
+							}
 						}
+	
+						numOfPoints += n;
 					}
-
-					numOfPoints += n;
 				}
+				long duration = System.currentTimeMillis() - startTime;
+				System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
 			}
-			long duration = System.currentTimeMillis() - startTime;
-			System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
+			else {
+				minX = dataset.getMinX();
+				maxX = dataset.getMaxX();
+				minY = dataset.getMinY();
+				maxY = dataset.getMaxY();
+			}
 		}
 		
 		if (minX > maxX) {

@@ -18,7 +18,7 @@ import org.omnetpp.scave.model2.StatUtils;
  * 
  * @author tomi
  */
-public class ScalarScatterPlotDataset implements IAveragedXYDataset {
+public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAveragedXYDataset {
 	
 	private XYDataset scalars;      // first rows contains X values,
 	                        		// other rows contain Y values (NaN if missing)

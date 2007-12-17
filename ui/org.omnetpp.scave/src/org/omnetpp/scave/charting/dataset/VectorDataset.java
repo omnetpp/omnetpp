@@ -14,7 +14,8 @@ import org.omnetpp.scave.model2.ResultItemValueFormatter;
  *
  * @author tomi
  */
-public class VectorDataset implements IStringValueXYDataset {
+// TODO bounds should be read from the vector files
+public class VectorDataset extends XYDatasetSupport implements IStringValueXYDataset {
 	
 	private IDList idlist;
 	private String[] seriesKeys;

@@ -6,7 +6,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model2.DatasetManager;
 
-public class VectorScatterPlotDataset implements IXYDataset {
+public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDataset {
 
 	private XYArray[] vectors;  // each array contains X,Y values
 	private String[] keys;
