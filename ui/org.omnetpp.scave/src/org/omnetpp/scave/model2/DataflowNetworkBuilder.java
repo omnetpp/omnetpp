@@ -230,8 +230,8 @@ public class DataflowNetworkBuilder {
 	class ComputeNode extends CompoundNode
 	{
 		PortWrapper inPort;
-		PortWrapper outPort1;
-		PortWrapper outPort2;
+		PortWrapper outPort1; // computed
+		PortWrapper outPort2; // orig
 		ProcessingOp operation;
 		Node teeNode, filterNode;
 		boolean disconnected1, disconnected2;
@@ -265,10 +265,11 @@ public class DataflowNetworkBuilder {
 			else if (out == outPort2) {
 				disconnected2 = true;
 				idToOutputPortMap.remove(outPort2.id);
-				idToOutputPortMap.put(inPort.id, inPort.channel.out);
 			}
-			if (disconnected1 && disconnected2)
+			if (disconnected1 && disconnected2) {
+				idToOutputPortMap.put(inPort.id, inPort.channel.out);
 				disconnect(inPort.channel);
+			}
 		}
 
 		public void createNodes(DataflowManager manager) {
@@ -839,7 +840,7 @@ public class DataflowNetworkBuilder {
 				connect(outPort, inPort);
 			}
 			else {
-				addArrayBuilderNode(id); // XXX remove branch
+				removeOutputPort(id);
 			}
 		}
 		return writer;
