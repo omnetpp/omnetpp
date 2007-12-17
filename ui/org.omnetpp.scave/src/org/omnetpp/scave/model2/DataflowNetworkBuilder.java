@@ -1,9 +1,9 @@
 package org.omnetpp.scave.model2;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -704,7 +704,7 @@ public class DataflowNetworkBuilder {
 				
 				// follow the channels backwards
 				// until a reader node or a previously created node reached
-				Queue<ChannelWrapper> pendingChannels = new ArrayDeque<ChannelWrapper>();
+				Queue<ChannelWrapper> pendingChannels = new LinkedList<ChannelWrapper>();
 				for (PortWrapper inPort : sinkNode.inPorts)
 					pendingChannels.offer(inPort.channel);
 				
