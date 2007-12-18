@@ -171,6 +171,8 @@ public class Makemake {
             targetSuffix = isNMake ? ".exe" : "";
         else if (p.type == MakemakeOptions.Type.SHAREDLIB)
             targetSuffix = isNMake ? ".dll" : ".so";
+        else if (p.type == MakemakeOptions.Type.STATICLIB)
+            targetSuffix = isNMake ? ".lib" : ".a";
 
         // prepare subdirs. First, check that all specified subdirs exist
         List<String> subdirs = new ArrayList<String>();
