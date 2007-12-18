@@ -155,7 +155,6 @@ sub makemake()
             $type = "NOLINK";
         }
         elsif ($arg eq "-s" || $arg eq "--make-so") {
-            $compileForDll = 1;
             $type = "SHAREDLIB";
         }
         elsif ($arg eq "-a" || $arg eq "--make-lib") {
@@ -231,6 +230,10 @@ sub makemake()
     $makefile = $isNMake ? "Makefile.vc" : "Makefile";
     if (-f $makefile && $force ne 1) {
         error("use -f to force overwriting existing $makefile");
+    }
+
+    if ($type eq "SHAREDLIB") {
+        $compileForDll = 1;
     }
 
     $folder = cwd;

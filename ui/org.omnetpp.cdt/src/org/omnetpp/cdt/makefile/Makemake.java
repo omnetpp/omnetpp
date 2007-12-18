@@ -82,6 +82,7 @@ public class Makemake {
         String makefile = isNMake ? "Makefile.vc" : "Makefile";
         if (file(makefile).isFile() && !p.force)
             throw new IllegalStateException("use -f to force overwriting existing " + makefile);
+        boolean compileForDll = p.compileForDll || p.type==MakemakeOptions.Type.SHAREDLIB;
 
         String target = p.target == null ? folder.getName() : p.target;
         List<String> objs = new ArrayList<String>();
@@ -351,7 +352,7 @@ public class Makemake {
         m.put("objs", quoteJoin(objs));
         m.put("subdirs", quoteJoin(subdirs));
         m.put("subdirtargets", quoteJoin(subdirTargets));
-        m.put("fordllopt", p.compileForDll ? "/DWIN32_DLL" : "");
+        m.put("fordllopt", compileForDll ? "/DWIN32_DLL" : "");
         m.put("dllexportmacro", StringUtils.isEmpty(p.dllExportMacro) ? "" : ("-P" + p.dllExportMacro));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);

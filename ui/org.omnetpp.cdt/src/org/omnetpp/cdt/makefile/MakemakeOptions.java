@@ -71,7 +71,7 @@ public class MakemakeOptions implements Cloneable {
         for (i = 0; i < argv.length; i++) {
             String arg = argv[i];
             if (arg.equals("-h") || arg.equals("--help")) {
-                // TODO
+                // ignore
             }
             else if (arg.equals("-f") || arg.equals("--force")) {
                 force = true;
@@ -156,7 +156,6 @@ public class MakemakeOptions implements Cloneable {
                 type = Type.NOLINK;
             }
             else if (arg.equals("-s") || arg.equals("--make-so")) {
-                compileForDll = true;
                 type = Type.SHAREDLIB;
             }
             else if (arg.equals("-a") || arg.equals("--make-lib")) {
