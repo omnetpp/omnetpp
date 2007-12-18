@@ -32,6 +32,7 @@ exit 0;
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
 # convert between .o and .obj in extraArgs!
 # -i (makefile fragment) option needed..?
+# makefrag vs makefrag.vc: which one to include??? use only one, but send that through template processing? (IDE only edits makefrag but not makefrag.vc)
 #
 
 sub makemake()
@@ -54,7 +55,7 @@ sub makemake()
     $noDeepIncludes = 0;
     $force = 0;
     $linkWithObjects = 0;
-    $mode = "";
+    $defaultMode = "debug";
     $userInterface = "ALL";
     $ccExt = "";
     $configFile = "";
@@ -135,10 +136,10 @@ sub makemake()
             $projectDir = substr($arg, 2);
         }
         elsif ($arg eq "-M" || $arg eq "--mode") {
-            $mode = shift @ARGV;
+            $defaultMode = shift @ARGV;
         }
         elsif ($arg =~ /^-M/) {
-            $mode = substr($arg, 2);
+            $defaultMode = substr($arg, 2);
         }
         elsif ($arg eq "-c" || $arg eq "--configfile") {
             error("option $arg is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
@@ -490,7 +491,7 @@ sub makemake()
         "sharedlib" =>  $type eq "SHAREDLIB",
         "staticlib" =>  $type eq "STATICLIB",
         "nolink" =>  $type eq "NOLINK",
-        "mode" =>  $mode,
+        "defaultmode" =>  $defaultMode,
         "allenv" => ($userInterface =~ /^A/) ne "",
         "cmdenv" =>  ($userInterface =~ /^C/) ne "",
         "tkenv" =>  ($userInterface =~ /^T/) ne "",
@@ -1068,7 +1069,7 @@ MSG_H_FILES = {msghfiles}
 {subdirs:}
 {mode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {mode:}{nmake?!}ifndef MODE
-{mode:}MODE = {mode}
+{mode:}MODE = {defaultmode}
 {mode:}{nmake?!}endif
 {mode:}
 

@@ -26,7 +26,7 @@ public class MakemakeOptions implements Cloneable {
     public boolean noDeepIncludes = false;
     public boolean force = false;
     public boolean linkWithObjects = false;
-    public String mode = "";
+    public String defaultMode = "debug";
     public String userInterface = "ALL";
     public String ccext = null;
     public String dllExportMacro = "";
@@ -135,12 +135,12 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-P")) {
                 projectDir = arg.substring(2);
             }
-            else if (arg.equals("-M") || arg.equals("--mode")) {
+            else if (arg.equals("-M") || arg.equals("--defaultMode")) {
                 checkArg(argv, i);
-                mode = argv[++i];
+                defaultMode = argv[++i];
             }
             else if (arg.startsWith("-M")) {
-                mode = arg.substring(2);
+                defaultMode = arg.substring(2);
             }
             else if (arg.equals("-c") || arg.equals("--configfile")) {
                 throw new IllegalArgumentException("option "+arg+" is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
@@ -255,8 +255,8 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-w");
         if (isRecursive)
             add(result, "-r");
-        if (!StringUtils.isEmpty(mode))
-            add(result, "-M", mode);
+        if (!StringUtils.isEmpty(defaultMode))
+            add(result, "-M", defaultMode);
         if (noDeepIncludes)
             result.add("--no-deep-includes");
         if (!StringUtils.isEmpty(userInterface) && !userInterface.equalsIgnoreCase("All"))
@@ -325,7 +325,7 @@ public class MakemakeOptions implements Cloneable {
         result.noDeepIncludes = noDeepIncludes;
         result.force = force;
         result.linkWithObjects = linkWithObjects;
-        result.mode = mode;
+        result.defaultMode = defaultMode;
         result.userInterface = userInterface;
         result.ccext = ccext;
         result.dllExportMacro = dllExportMacro;

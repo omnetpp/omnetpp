@@ -33,6 +33,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * @author Andras
  */
 //FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
+//FIXME makefrag vs makefrag.vc: which one to include??? use only one, but send that through template processing?
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -332,7 +333,7 @@ public class Makemake {
         m.put("sharedlib", p.type == MakemakeOptions.Type.SHAREDLIB);
         m.put("staticlib", p.type == MakemakeOptions.Type.STATICLIB);
         m.put("nolink", p.type == MakemakeOptions.Type.NOLINK);
-        m.put("mode", p.mode);
+        m.put("defaultmode", p.defaultMode);
         m.put("allenv", p.userInterface.startsWith("A"));
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));

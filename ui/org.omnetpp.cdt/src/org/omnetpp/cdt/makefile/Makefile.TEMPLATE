@@ -49,7 +49,7 @@ MSG_H_FILES = {msghfiles}
 {subdirs:}
 {mode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {mode:}{nmake?!}ifndef MODE
-{mode:}MODE = {mode}
+{mode:}MODE = {defaultmode}
 {mode:}{nmake?!}endif
 {mode:}
 

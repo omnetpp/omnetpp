@@ -25,7 +25,6 @@ import org.omnetpp.common.util.StringUtils;
  * UI for editing MakemakeOptions
  * @author Andras
  */
-//XXX use CDT's FileListControl for file lists?
 //TODO update enable/disable state on changes
 //TODO preview page
 public class MakemakeOptionsPanel extends Composite {
@@ -278,7 +277,7 @@ public class MakemakeOptionsPanel extends Composite {
 //  setEnabledRecursive(child, enabled);
 //  }
 
-    public void populate(MakemakeOptions data) {
+    public void populate(MakemakeOptions data, String makefragContents) {
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
         recursiveMakefileRadioButton.setSelection(data.isRecursive);
@@ -317,12 +316,12 @@ public class MakemakeOptionsPanel extends Composite {
         linkObjectsList.setList(data.extraArgs.toArray(new String[]{}));
         
         // "Custom" page
+        if (makefragContents != null)
+            makefragText.setText(makefragContents);
         makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
         
         // to the "Link" page:
         data.linkWithObjects = false; //TODO explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
-        data.mode = null; //TODO
-        makefragText.setText("xxx..."); //TODO
     }
     
     /**
@@ -367,9 +366,11 @@ public class MakemakeOptionsPanel extends Composite {
 
         //---
         result.linkWithObjects = false; //TODO
-        result.mode = ""; //TODO
-	    makefragText.getText(); //TODO
 
         return result;
+    }
+    
+    public String getMakefragContents() {
+        return makefragText.getText();
     }
 }
