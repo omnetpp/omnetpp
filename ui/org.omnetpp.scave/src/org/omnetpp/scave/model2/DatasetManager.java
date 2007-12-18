@@ -140,7 +140,7 @@ public class DatasetManager {
 				idlist.substract(selected);
 				for (int i = 0; i < selected.size(); ++i) {
 					long id = selected.get(i);
-					idlist.add(ensureComputedResultItem(apply, id, manager));
+					idlist.add(ensureComputedResultItem(apply, id, i, manager));
 				}
 			}
 			return this;
@@ -152,7 +152,7 @@ public class DatasetManager {
 				int size = (int)selected.size();
 				for (int i = 0; i < size; ++i) {
 					long id = selected.get(i);
-					idlist.add(ensureComputedResultItem(compute, id, manager));
+					idlist.add(ensureComputedResultItem(compute, id, i, manager));
 				}
 			}
 			return this;
@@ -477,7 +477,7 @@ public class DatasetManager {
 	}
 	
 	
-	static long ensureComputedResultItem(ProcessingOp operation, long inputID, ResultFileManager manager) {
+	static long ensureComputedResultItem(ProcessingOp operation, long inputID, int vectorId, ResultFileManager manager) {
 		long computationID = getFilterNodeID(operation);
 		long id = manager.getComputedVector(computationID, inputID);
 		if (id == -1) {
@@ -485,7 +485,7 @@ public class DatasetManager {
 			VectorResult vector = manager.getVector(inputID);
 			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
 			String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);
-			id = manager.addComputedVector(name, fileName, computationID, inputID, operation);
+			id = manager.addComputedVector(vectorId, name, fileName, computationID, inputID, operation);
 		}
 		return id;
 	}

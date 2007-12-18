@@ -406,9 +406,9 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public long addComputedVector(String name, String file, long computationID, long input, Object processingOp) {
+	public long addComputedVector(int vectorId, String name, String file, long computationID, long input, Object processingOp) {
 		checkDeleted();
-		long id = super.addComputedVector(name, file, computationID, input, processingOp);
+		long id = super.addComputedVector(vectorId, name, file, computationID, input, processingOp);
 		notifyListeners();
 		return id;
 	}

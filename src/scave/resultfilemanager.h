@@ -319,7 +319,7 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     // computed data
-    ID addComputedVector(const char *name, const char *file, ComputationID computationID, ID inputID, ComputationNode node);
+    ID addComputedVector(int vectorId, const char *name, const char *file, ComputationID computationID, ID inputID, ComputationNode node);
     ID getComputedVector(ComputationID computationID, ID inputID);
 
     /**

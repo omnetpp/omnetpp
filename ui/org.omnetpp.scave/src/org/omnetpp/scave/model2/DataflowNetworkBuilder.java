@@ -189,13 +189,15 @@ public class DataflowNetworkBuilder {
 		PortWrapper inPort;
 		PortWrapper outPort;
 		ProcessingOp operation;
+		int outVectorId;
 		
-		public ApplyNode(ProcessingOp operation) {
+		public ApplyNode(ProcessingOp operation, int outVectorId) {
 			super(operation.getOperation(), EMPTY_ATTRS);
 			attrs = new StringMap();
 			for (Param param : operation.getParams())
 				attrs.set(param.getName(), param.getValue());
 			this.operation = operation;
+			this.outVectorId = outVectorId;
 			addInputPort(inPort = new PortWrapper(-1, "in"));
 			addOutputPort(outPort = new PortWrapper(-1, "out"));
 			
@@ -205,7 +207,7 @@ public class DataflowNetworkBuilder {
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
 			//System.out.format("Connecting %x%n", inPort.id);
-			outPort.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, resultfileManager); 
+			outPort.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager); 
 			idToOutputPortMap.remove(inPort.id);
 			idToOutputPortMap.put(outPort.id, outPort);
 		}
@@ -233,11 +235,13 @@ public class DataflowNetworkBuilder {
 		PortWrapper outPort1; // computed
 		PortWrapper outPort2; // orig
 		ProcessingOp operation;
+		int outVectorId;
 		Node teeNode, filterNode;
 		boolean disconnected1, disconnected2;
 		
-		public ComputeNode(Compute operation) {
+		public ComputeNode(Compute operation, int outVectorId) {
 			this.operation = operation;
+			this.outVectorId = outVectorId;
 			addInputPort(inPort = new PortWrapper(-1, "in"));
 			addOutputPort(outPort1 = new PortWrapper(-1, "out1"));
 			addOutputPort(outPort2 = new PortWrapper(-1, "out2"));
@@ -247,7 +251,7 @@ public class DataflowNetworkBuilder {
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
 			//System.out.format("Connecting %x%n", inPort.id);
-			outPort1.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, resultfileManager); 
+			outPort1.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager); 
 			outPort2.id = inPort.id;
 			idToOutputPortMap.put(outPort1.id, outPort1);
 			idToOutputPortMap.put(outPort2.id, outPort2);
@@ -574,7 +578,7 @@ public class DataflowNetworkBuilder {
 				if (apply.getOperation() != null) {
 					IDList idlist = select(getIDs(), apply.getFilters());
 					for (int i = 0; i < idlist.size(); ++i) {
-						addApplyNode(idlist.get(i), apply);
+						addApplyNode(idlist.get(i), apply, i);
 					}
 				}
 				return this;
@@ -584,7 +588,7 @@ public class DataflowNetworkBuilder {
 				if (compute.getOperation() != null) {
 					IDList idlist = select(getIDs(), compute.getFilters());
 					for (int i = 0; i < idlist.size(); ++i) {
-						addComputeNode(idlist.get(i), compute);
+						addComputeNode(idlist.get(i), compute, i);
 					}
 				}
 				return this;
@@ -793,14 +797,14 @@ public class DataflowNetworkBuilder {
 		return node;
 	}
 	
-	private ComputeNode addComputeNode(long id, Compute operation) {
-		ComputeNode computeNode = new ComputeNode(operation);
+	private ComputeNode addComputeNode(long id, Compute operation, int outVectorId) {
+		ComputeNode computeNode = new ComputeNode(operation, outVectorId);
 		connect(getOutputPort(id), computeNode.inPort);
 		return computeNode;
 	}
 
-	private ApplyNode addApplyNode(long id, ProcessingOp operation) {
-		ApplyNode applyNode = new ApplyNode(operation);
+	private ApplyNode addApplyNode(long id, ProcessingOp operation, int outVectorId) {
+		ApplyNode applyNode = new ApplyNode(operation, outVectorId);
 		connect(getOutputPort(id), applyNode.inPort);
 		return applyNode;
 	}
@@ -834,8 +838,7 @@ public class DataflowNetworkBuilder {
 			if (vector.isComputed()) {
 				if (writer == null)
 					writer =  new VectorFileWriterNode(fileName);
-				vector.setVectorId(i); // XXX should not be checked in
-				PortWrapper inPort = writer.addInputPort(id, i, vector.getModuleName(), vector.getName(), vector.getColumns());
+				PortWrapper inPort = writer.addInputPort(id, vector.getVectorId(), vector.getModuleName(), vector.getName(), vector.getColumns());
 				PortWrapper outPort = getOutputPort(id);
 				connect(outPort, inPort);
 			}
