@@ -25,7 +25,7 @@
 using namespace std;
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
-  filename(filename), index(NULL), reader(filename, bufferSize), tokenizer(), fFinished(false)
+  ReaderNode(filename, bufferSize), index(NULL), fFinished(false)
 {
 
 }

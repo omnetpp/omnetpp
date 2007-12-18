@@ -44,6 +44,13 @@ class SCAVE_API DataflowManager
         // returns true of a node has finished; if so, also closes
         // its input an output channels.
         bool updateNodeFinished(Node *node);
+        
+        // returns true if the node is a reader node
+        // (i.e. the category of its type is "reader-node")
+        bool isReaderNode(Node *node);
+        
+        // helper to estimate the total amount of work
+        int64 totalBytesToBeRead();
 
     public:
         /**

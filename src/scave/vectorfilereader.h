@@ -19,6 +19,7 @@
 #include <string>
 #include "node.h"
 #include "nodetype.h"
+#include "commonnodes.h"
 #include "filereader.h"
 #include "linetokenizer.h"
 #include "resultfilemanager.h"
@@ -32,7 +33,7 @@ Datum parseColumns(char **tokens, int numtokens, const std::string &columns, con
 /**
  * Producer node which reads an output vector file.
  */
-class SCAVE_API VectorFileReaderNode : public Node
+class SCAVE_API VectorFileReaderNode : public ReaderNode
 {
     public:
         typedef std::vector<Port> PortVector;
@@ -40,10 +41,8 @@ class SCAVE_API VectorFileReaderNode : public Node
         typedef std::string ColumnSpec;
         typedef std::map<int,ColumnSpec> ColumnMap;
     private:
-    	std::string filename;
         Portmap ports;
         ColumnMap columns;
-        FileReader reader;
         LineTokenizer tokenizer;
         bool fFinished;
 
@@ -63,7 +62,7 @@ class SCAVE_API VectorFileReaderNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "vectorfilereader";}
-        virtual const char *category() const {return "multi-port source";}
+        virtual const char *category() const {return "reader-node";}
         virtual const char *description() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;

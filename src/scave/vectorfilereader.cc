@@ -26,7 +26,7 @@ using namespace std;
 
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
-  filename(fileName), reader(fileName, bufferSize), tokenizer(), fFinished(false)
+  ReaderNode(fileName, bufferSize), fFinished(false)
 {
 }
 

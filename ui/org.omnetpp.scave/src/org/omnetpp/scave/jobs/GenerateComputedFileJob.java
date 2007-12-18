@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -49,7 +50,7 @@ public class GenerateComputedFileJob extends WorkspaceJob
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		try {
 			if (monitor != null)
-				monitor.beginTask("Generate computed file", IProgressMonitor.UNKNOWN);
+				monitor.beginTask("Generate computed file", 100);
 			
 			Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
 			if (dataset == null)
@@ -60,12 +61,16 @@ public class GenerateComputedFileJob extends WorkspaceJob
 
 			DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 			DataflowManager network = builder.build(dataset, operation, operation.getComputedFile());
-			if (debug)
-				network.dump();
+			if (debug) network.dump();
 			
-			if (monitor != null)
+			IProgressMonitor subMonitor = null;
+			if (monitor != null) {
+				monitor.worked(10);
 				monitor.subTask("Execute dataflow network");
-			network.execute(monitor);
+				subMonitor = new SubProgressMonitor(monitor, 90);
+			}
+			
+			network.execute(subMonitor);
 			
 			if (monitor != null && monitor.isCanceled())
 				return Status.CANCEL_STATUS;

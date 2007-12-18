@@ -19,6 +19,7 @@
 #include <string>
 #include "node.h"
 #include "nodetype.h"
+#include "commonnodes.h"
 #include "filereader.h"
 #include "linetokenizer.h"
 #include "indexfile.h"
@@ -31,7 +32,7 @@
 /**
  * Producer node which reads an output vector file.
  */
-class SCAVE_API IndexedVectorFileReaderNode : public Node
+class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 {
     typedef std::vector<Port> PortVector;
 
@@ -46,10 +47,8 @@ class SCAVE_API IndexedVectorFileReaderNode : public Node
     typedef std::map<int,PortData> PortMap;
 
 	private:
-    	std::string filename;
         PortMap ports;
         VectorFileIndex *index;
-        FileReader reader;
         LineTokenizer tokenizer;
         bool fFinished;
 
@@ -73,7 +72,7 @@ class SCAVE_API IndexedVectorFileReaderNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "indexedvectorfilereader";}
-        virtual const char *category() const {return "multi-port source";}
+        virtual const char *category() const {return "reader-node";}
         virtual const char *description() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
