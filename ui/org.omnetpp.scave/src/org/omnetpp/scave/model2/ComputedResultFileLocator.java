@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.model.ProcessingOp;
 
 /**
@@ -45,6 +46,8 @@ public class ComputedResultFileLocator {
 					operation.setComputedFile(file.getAbsolutePath());
 					operation.setComputedFileUpToDate(false);
 					file.deleteOnExit();
+					File indexFile = IndexFile.getIndexFileFor(file);
+					indexFile.deleteOnExit();
 					return file.getAbsolutePath();
 				} catch (IOException e) {}
 			}
