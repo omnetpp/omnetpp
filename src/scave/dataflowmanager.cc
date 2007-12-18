@@ -225,5 +225,6 @@ void DataflowManager::dump()
              prodNode, prodNode->nodeType()->name(),
              consNode, consNode->nodeType()->name());
     }
+    fflush(stdout);
 }
 
