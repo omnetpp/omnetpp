@@ -203,11 +203,11 @@ public class MakemakeOptionsPanel extends Composite {
 //        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
 //        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
 //        createLabel(linkGroup, "Libraries to link with (-l):");
-        libsList = new FileListControl(linkPage, "Libraries to link with (-l):", 0 /*XXX BROWSE_NONE*/);
+        libsList = new FileListControl(linkPage, "Libraries to link with: (-l option)", 0 /*XXX BROWSE_NONE*/);
         //libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(linkPage, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
         //createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
-        linkObjectsList = new FileListControl(linkPage, "Link additionally with (wildcards, macros allowed):", 0  /*XXX BROWSE_NONE*/);
+        linkObjectsList = new FileListControl(linkPage, "Link additionally with: (folder-relative path, wildcards; macros allowed)", 0  /*XXX BROWSE_NONE*/);
         //linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Custom" page
