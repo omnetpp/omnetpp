@@ -188,6 +188,15 @@ while (@ARGV)
     }
 }
 
+# Remove "^" from the beginning of the prefix. This is needed to get
+# "nmake -f Makefile.vc depend" working with both vc71 and vc80.
+# In makemake-generated makefiles, objprefix is supposed to be "$O",
+# and to prevent "$O" from being resolved prematurely by nmake, it needs
+# to be quoted with "^"; however, vc80's nmake (unlike vc71 nmake) doesn't
+# remove "^" from the command-line that actually invokes opp_makedep.
+# Hence the workaround. Greetings to Microsoft.
+$ObjPrefix =~ s/^\^//;
+
 #
 # If no files given, print warning
 #

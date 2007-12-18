@@ -30,6 +30,8 @@ exit 0;
 # implement isGoodDir correctly
 # invoke opp_makedepend in the end?
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
+# convert between .o and .obj in extraArgs!
+# -i (makefile fragment) option needed..?
 #
 
 sub makemake()
