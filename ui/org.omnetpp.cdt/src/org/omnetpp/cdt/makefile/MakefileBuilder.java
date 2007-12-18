@@ -217,6 +217,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             boolean changed = MetaMakemake.generateMakefile(folder, options, folderDeps, perFileDeps);
+            //FIXME remove makefile if any exception occurred here, so that build won't continue with CDT?
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);
             return changed;

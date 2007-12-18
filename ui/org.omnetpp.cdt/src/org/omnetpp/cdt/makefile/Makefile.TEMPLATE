@@ -47,11 +47,11 @@ MSG_H_FILES = {msghfiles}
 {subdirs:}SUBDIRS = {subdirs}
 {subdirs:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
 {subdirs:}
-{mode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
-{mode:}{nmake?!}ifndef MODE
-{mode:}MODE = {defaultmode}
-{mode:}{nmake?!}endif
-{mode:}
+{defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
+{defaultmode:}{nmake?!}ifndef MODE
+{defaultmode:}MODE = {defaultmode}
+{defaultmode:}{nmake?!}endif
+{defaultmode:}
 
 #------------------------------------------------------------------------------
 

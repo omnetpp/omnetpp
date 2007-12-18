@@ -384,11 +384,13 @@ public class Makemake {
         return result;
     }    
 
-    private void collectDirs(IContainer dir, String dirPath, List<String> exceptSubdirs, final List<String> result) throws CoreException {
-        result.add(dirPath);
-        for (IResource member : dir.members())
-            if (MakefileTools.isGoodFolder(member))  //FIXME TODO exceptDirs
-                collectDirs((IContainer)member, dirPath.equals(".") ? member.getName() : dirPath + "/" + member.getName(), exceptSubdirs, result);
+    protected void collectDirs(IContainer dir, String dirPath, List<String> exceptSubdirs, final List<String> result) throws CoreException {
+        if (!exceptSubdirs.contains(dirPath)) {
+            result.add(dirPath);
+            for (IResource member : dir.members())
+                if (MakefileTools.isGoodFolder(member))
+                    collectDirs((IContainer)member, dirPath.equals(".") ? member.getName() : dirPath + "/" + member.getName(), exceptSubdirs, result);
+        }
     }
 
     protected String quoteJoin(List<String> list) {
