@@ -96,6 +96,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.obj: bigdecimal.cc \
+  opp_ctype.h \
   bigdecimal.h \
   commondefs.h \
   exception.h
@@ -104,7 +105,11 @@ $O/commonutil.obj: commonutil.cc \
   commondefs.h \
   exception.h
 $O/displaystring.obj: displaystring.cc \
+  opp_ctype.h \
   displaystring.h \
+  commondefs.h
+$O/enumstr.obj: enumstr.cc \
+  enumstr.h \
   commondefs.h
 $O/exception.obj: exception.cc \
   exception.h \
@@ -133,7 +138,10 @@ $O/filereader.obj: filereader.cc \
   exception.h \
   commondefs.h
 $O/fileutil.obj: fileutil.cc \
+  opp_ctype.h \
   fileutil.h \
+  stringtokenizer.h \
+  exception.h \
   commondefs.h
 $O/fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
@@ -174,6 +182,7 @@ $O/matchexpression.tab.obj: matchexpression.tab.cc \
   exception.h \
   commondefs.h
 $O/patternmatcher.obj: patternmatcher.cc \
+  opp_ctype.h \
   patternmatcher.h \
   stringutil.h \
   exception.h \
@@ -187,11 +196,13 @@ $O/stringtokenizer.obj: stringtokenizer.cc \
   commondefs.h
 $O/stringutil.obj: stringutil.cc \
   commonutil.h \
+  opp_ctype.h \
   stringutil.h \
   stringtokenizer.h \
   commondefs.h \
   exception.h
 $O/unitconversion.obj: unitconversion.cc \
+  opp_ctype.h \
   unitconversion.h \
   commondefs.h \
   exception.h

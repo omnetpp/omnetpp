@@ -93,16 +93,10 @@ public class Makemake {
         List<String> msghfiles = new ArrayList<String>();
         List<String> sourceDirs = new ArrayList<String>();
         List<String> backslashedSourceDirs = new ArrayList<String>();
-
-        target = abs2rel(target);
-
         List<String> includeDirs = new ArrayList<String>();
         List<String> libDirs = new ArrayList<String>();
 
-        for (String i : p.includeDirs)
-            includeDirs.add(abs2rel(i));
-        for (String i : p.libDirs)
-            libDirs.add(abs2rel(i));
+        target = abs2rel(target);
 
         // isRecursive and deep do not mix
         if (isRecursive) 
@@ -137,6 +131,17 @@ public class Makemake {
 
         for (String dir : sourceDirs)
             backslashedSourceDirs.add(dir.replace('/', '\\'));
+
+        // include dirs and lib dirs
+        for (String i : p.includeDirs)
+            includeDirs.add(abs2rel(i));
+        if (!p.noDeepIncludes)
+            for (String i : sourceDirs)
+                includeDirs.add(i);
+
+        for (String i : p.libDirs)
+            libDirs.add(abs2rel(i));
+
         
         // try to determine if .cc or .cpp files are used
         String ccExt = p.ccext;

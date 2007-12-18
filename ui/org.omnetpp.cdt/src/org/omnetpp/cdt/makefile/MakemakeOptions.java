@@ -11,6 +11,7 @@ import org.omnetpp.common.util.StringUtils;
  * Value object to represent opp_makemake command-line options in a parsed form.
  * @author Andras
  */
+//FIXME parse() probably shouldn't throw exception, as it blows up reading the .oppbuildspec file if there's any errors in it 
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     
@@ -22,6 +23,7 @@ public class MakemakeOptions implements Cloneable {
     public String outRoot = null;
     public boolean isDeep = true;
     public boolean isRecursive = false;
+    public boolean noDeepIncludes = false;
     public boolean force = false;
     public boolean linkWithObjects = false;
     public String mode = "";
@@ -101,9 +103,6 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("--nodeep")) {
                 isDeep = false;
             }
-            else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
-                throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
-            }
             else if (arg.equals("-r") || arg.equals("--recurse")) {
                 isRecursive = true;
             }
@@ -116,12 +115,18 @@ public class MakemakeOptions implements Cloneable {
                 String dir = arg.substring(2);
                 exceptSubdirs.add(dir);
             }
+            else if (arg.equals("--no-deep-includes")) {
+                noDeepIncludes = true;
+            }
             else if (arg.equals("-D") || arg.equals("--define")) {
                 checkArg(argv, i);
                 defines.add(argv[++i]);
             }
             else if (arg.startsWith("-D")) {
                 defines.add(arg.substring(2));
+            }
+            else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
+                throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
             }
             else if (arg.equals("-P") || arg.equals("--projectdir")) {
                 checkArg(argv, i);
@@ -252,7 +257,9 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-r");
         if (!StringUtils.isEmpty(mode))
             add(result, "-M", mode);
-        if (!"ALL".equalsIgnoreCase(userInterface))
+        if (noDeepIncludes)
+            result.add("--no-deep-includes");
+        if (!StringUtils.isEmpty(userInterface) && !userInterface.equalsIgnoreCase("All"))
             add(result, "-u", userInterface);
         if (type == Type.NOLINK)
             add(result, "-n");
@@ -263,7 +270,7 @@ public class MakemakeOptions implements Cloneable {
         if (!StringUtils.isEmpty(ccext))
             add(result, "-e", ccext); 
         if (!StringUtils.isEmpty(dllExportMacro))
-            add(result, "-p"+dllExportMacro);
+            add(result, "-p" + dllExportMacro);
         if (compileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
         if (!ignoreNedFiles)
@@ -314,9 +321,10 @@ public class MakemakeOptions implements Cloneable {
         result.target = target;
         result.outRoot = outRoot;
         result.isDeep = isDeep;
+        result.isRecursive = isRecursive;
+        result.noDeepIncludes = noDeepIncludes;
         result.force = force;
         result.linkWithObjects = linkWithObjects;
-        result.isRecursive = isRecursive;
         result.mode = mode;
         result.userInterface = userInterface;
         result.ccext = ccext;

@@ -187,8 +187,8 @@ $O/inspector.obj: inspector.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
-  tkutil.h \
-  tkdefs.h
+  tkdefs.h \
+  tkutil.h
 $O/inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -279,8 +279,8 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
-  tkutil.h \
-  tkdefs.h
+  tkdefs.h \
+  tkutil.h
 $O/layouterenv.obj: layouterenv.cc \
   layouterenv.h \
   tklib.h \
@@ -474,9 +474,9 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  tkdefs.h \
   inspector.h \
-  tkutil.h \
-  tkdefs.h
+  tkutil.h
 $O/statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -516,9 +516,10 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
+  tkdefs.h \
   inspector.h \
-  tkutil.h \
-  tkdefs.h
+  tkutil.h
+$O/tclcode.obj: tclcode.cc
 $O/tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -535,6 +536,7 @@ $O/tkapp.obj: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
@@ -624,11 +626,16 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
-  tkutil.h \
-  tkdefs.h
+  tkdefs.h \
+  tkutil.h
 $O/tklib.obj: tklib.cc \
   tklib.h \
-  tkapp.h
+  tkapp.h \
+  tkdefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h
 $O/tkutil.obj: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
@@ -704,4 +711,8 @@ $O/visitor.obj: visitor.cc \
   ../../include/ccomponenttype.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
-  tkapp.h
+  tkapp.h \
+  tkdefs.h
+$O/tcl2c.obj: tcl2c.c
+$O/tkImgPNG.obj: tkImgPNG.c
+$O/tkImgPNGInit.obj: tkImgPNGInit.c

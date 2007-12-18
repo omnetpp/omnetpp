@@ -1,5 +1,8 @@
 package org.omnetpp.cdt.ui;
 
+import java.util.Arrays;
+
+import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -15,7 +18,6 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
-import org.omnetpp.common.ui.EditableList;
 import org.omnetpp.common.util.StringUtils;
 
 
@@ -46,7 +48,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Button localMakefileRadioButton;
 
     // "Target" page
-    private EditableList subdirsDirsList;
+    private FileListControl subdirsDirsList;
     private Button targetExecutableRadioButton;
     private Button targetSharedLibRadioButton;
     private Button targetStaticLibRadioButton;
@@ -56,7 +58,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Text targetNameText;
 
     // "Include" page
-    private Button autoIncludePathCheckbox;
+    private Button deepIncludesCheckbox;
 
     // "Compile" page
     private Combo ccextCombo;
@@ -65,12 +67,12 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Link" page
     private Combo userInterfaceCombo;
-    private EditableList libsList;
-    private EditableList linkObjectsList;
+    private FileListControl libsList;
+    private FileListControl linkObjectsList;
 
     // "Custom" page
     private Text makefragText;
-    private EditableList makefragsList;
+    private FileListControl makefragsList;
 
     
     public MakemakeOptionsPanel(Composite parent, int style) {
@@ -103,8 +105,8 @@ public class MakemakeOptionsPanel extends Composite {
         localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
-        subdirsDirsList = new EditableList(scopePage, SWT.NONE);
-        subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        subdirsDirsList = new FileListControl(scopePage, "Sub-make Directories", 2 /*XXX FileListControl.BROWSE_DIR*/);
+        //subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
@@ -132,12 +134,13 @@ public class MakemakeOptionsPanel extends Composite {
         
         // "Include" page
         includePage.setLayout(new GridLayout(1,false));
-        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null); //FIXME really? for deep, this should also enable that all source folders are include dirs as well. Or specify a different flag for that?
-        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+        deepIncludesCheckbox = createCheckbox(includePage, "Add all source folders of deep makefile to the include path", null); 
+//        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null); //FIXME really? for deep, this should also enable that all source folders are include dirs as well. Or specify a different flag for that?
+//        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
         createLabel(includePage, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
 
 //        createLabel(includePage, "Additional include directories:");
-//        includeDirsList = new EditableList(includePage, SWT.NONE);
+//        includeDirsList = new FileListControl(includePage, SWT.NONE);
 //        includeDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 //        includeDirsList.setAddDialogTitle("Add Include Directory");
 //        includeDirsList.setAddDialogMessage("Enter include directory:");
@@ -167,7 +170,7 @@ public class MakemakeOptionsPanel extends Composite {
         createLabel(compilePage, "NOTE: Additional preprocessor symbols can be specified in the C/C++ General -> Paths and symbols page.");
 
 //        createLabel(compilePage, "Preprocessor symbols to define:");
-//        definesList = new EditableList(compilePage, SWT.NONE); 
+//        definesList = new FileListControl(compilePage, SWT.NONE); 
 //        definesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 //        definesList.setAddDialogTitle("Add Preprocessor Symbol");
 //        definesList.setAddDialogMessage("Enter symbol in NAME or NAME=value format:");
@@ -190,10 +193,9 @@ public class MakemakeOptionsPanel extends Composite {
 
         Group envGroup = createGroup(linkPage, "User interface:", 2);
         createLabel(envGroup, "User interface libraries to link with:");
-        userInterfaceCombo = new Combo(envGroup, SWT.BORDER | SWT.READ_ONLY);  //XXX new
-        userInterfaceCombo.add("All");
-        userInterfaceCombo.add("Tkenv");
-        userInterfaceCombo.add("Cmdenv");
+        userInterfaceCombo = new Combo(envGroup, SWT.BORDER | SWT.READ_ONLY);
+        for (String i : new String[] {"All", "Tkenv", "Cmdenv"}) // note: should be consistent with populate()!
+            userInterfaceCombo.add(i);
 
         Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
 //        //FIXME are these combo boxes needed? do they correspond to any makemake settings?
@@ -201,12 +203,12 @@ public class MakemakeOptionsPanel extends Composite {
 //        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
 //        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
         createLabel(linkGroup, "Libraries to link with (-l):");
-        libsList = new EditableList(linkGroup, SWT.NONE); //XXX this is NOT platform independent now!!! MSVC doesn't accept "-l" option!
-        libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        libsList = new FileListControl(linkGroup, "Libraries (-l)", 0 /*XXX BROWSE_NONE*/);
+        //libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(linkGroup, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
         createLabel(linkGroup, "Extra object files and libs to link with (wildcards allowed):");
-        linkObjectsList = new EditableList(linkGroup, SWT.NONE);
-        linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));  //XXX how to make platform independent (*.o vs *.obj)?
+        linkObjectsList = new FileListControl(linkGroup, "Link additionally with:", 0  /*XXX BROWSE_NONE*/);
+        //linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
@@ -214,8 +216,8 @@ public class MakemakeOptionsPanel extends Composite {
         makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); //XXX todo actually load/save makefrag file!
         createLabel(customPage, "Other fragment files to include:");
-        makefragsList = new EditableList(customPage, SWT.NONE);
-        makefragsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        makefragsList = new FileListControl(customPage, "Make fragments", 0 /*XXX BROWSE_NONE*/);
+        //makefragsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Preview" page
         //TODO readonly text for vanilla options and translated options
@@ -281,7 +283,7 @@ public class MakemakeOptionsPanel extends Composite {
         deepMakefileRadioButton.setSelection(data.isDeep);
         recursiveMakefileRadioButton.setSelection(data.isRecursive);
         localMakefileRadioButton.setSelection(!data.isDeep && !data.isRecursive);
-        subdirsDirsList.setItemsAsList(data.subdirs);
+        subdirsDirsList.setList(data.subdirs.toArray(new String[]{}));
 
         // "Target" page
         switch (data.type) {
@@ -299,7 +301,7 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.setText(StringUtils.nullToEmpty(data.outRoot));
 
         // "Include" page
-        autoIncludePathCheckbox.setSelection(false); //TODO with deep: all source dir is implicitly an include dir as well
+        deepIncludesCheckbox.setSelection(!data.noDeepIncludes);
 
         // "Compile" page
         if (data.ccext == null)
@@ -310,12 +312,12 @@ public class MakemakeOptionsPanel extends Composite {
         dllExportMacroText.setText(StringUtils.nullToEmpty(data.dllExportMacro));
 
         // "Link" page
-        userInterfaceCombo.setText(data.userInterface);
-        libsList.setItemsAsList(data.libs);
-        linkObjectsList.setItemsAsList(data.extraArgs);
+        userInterfaceCombo.setText(StringUtils.capitalize(data.userInterface.toLowerCase()));
+        libsList.setList(data.libs.toArray(new String[]{}));
+        linkObjectsList.setList(data.extraArgs.toArray(new String[]{}));
         
         // "Custom" page
-        makefragsList.setItemsAsList(data.fragmentFiles);
+        makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
         
         // to the "Link" page:
         data.linkWithObjects = false; //TODO explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
@@ -332,7 +334,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Scope" page
         result.isDeep = deepMakefileRadioButton.getSelection();
         result.isRecursive = recursiveMakefileRadioButton.getSelection();
-        result.subdirs.addAll(subdirsDirsList.getItemsAsList());
+        result.subdirs.addAll(Arrays.asList(subdirsDirsList.getItems()));
 
         // "Target" page
         if (targetExecutableRadioButton.getSelection())
@@ -347,7 +349,7 @@ public class MakemakeOptionsPanel extends Composite {
         result.outRoot = outputDirText.getText();
 
         // "Include" page
-        autoIncludePathCheckbox.getSelection(); //TODO
+        result.noDeepIncludes = !deepIncludesCheckbox.getSelection();
 
         // "Compile" page
         String ccextText = ccextCombo.getText().trim().replace(".", "");
@@ -357,11 +359,11 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();
-        result.libs.addAll(libsList.getItemsAsList());
-        result.extraArgs.addAll(linkObjectsList.getItemsAsList());
+        result.libs.addAll(Arrays.asList(libsList.getItems()));
+        result.extraArgs.addAll(Arrays.asList(linkObjectsList.getItems()));
         
         // "Custom" page
-        result.fragmentFiles.addAll(makefragsList.getItemsAsList());
+        result.fragmentFiles.addAll(Arrays.asList(makefragsList.getItems()));
 
         //---
         result.linkWithObjects = false; //TODO

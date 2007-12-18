@@ -51,6 +51,7 @@ sub makemake()
     $outRoot = "";
     $isDeep = 1;
     $isRecursive = 0;
+    $noDeepIncludes = 0;
     $force = 0;
     $linkWithObjects = 0;
     $mode = "";
@@ -104,9 +105,6 @@ sub makemake()
         elsif ($arg eq "--nodeep") {
             $isDeep = 0;
         }
-        elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
-            error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
-        }
         elsif ($arg eq "-r" || $arg eq "--recurse") {
             $isRecursive = 1;
         }
@@ -117,12 +115,18 @@ sub makemake()
             my $dir = substr($arg, 2);
             push(@exceptSubdirs, $dir);
         }
+        elsif ($arg eq "--no-deep-includes") {
+            $noDeepIncludes = 1;
+        }
         elsif ($arg eq "-D" || $arg eq "--define") {
             push(@defines, shift @ARGV);
         }
         elsif ($arg =~ /^-D/) {
             my $define = substr($arg, 2);
             push(@defines, $define);
+        }
+        elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
+            error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
         }
         elsif ($arg eq "-P" || $arg eq "--projectdir") {
             $projectDir = shift @ARGV;
@@ -281,15 +285,6 @@ sub makemake()
 
     $target = abs2rel($target,$projectDir);
 
-    @tmp = @includeDirs;
-    foreach $i (@tmp) {
-        push(@includeDirs, abs2rel($i,$projectDir));
-    }
-    @tmp = @libDirs;
-    foreach $i (@tmp) {
-        push(@libDirs, abs2rel($i,$projectDir));
-    }
-
     # recursive and deep do not mix
     if ($isRecursive) {
         $isDeep = 0;
@@ -330,6 +325,21 @@ sub makemake()
     foreach my $i (@sourceDirs) {
        $i =~ s|/|\\|g;
        push(@backslashedSourceDirs, $i);
+    }
+
+    # include dirs and lib dirs
+    @tmp = @includeDirs;
+    foreach $i (@tmp) {
+        push(@includeDirs, abs2rel($i,$projectDir));
+    }
+    if (!$noDeepIncludes) {
+        foreach ($i (@sourceDirs)) {
+            push(@includeDirs, $i);
+        }
+    }
+    @tmp = @libDirs;
+    foreach $i (@tmp) {
+        push(@libDirs, abs2rel($i,$projectDir));
     }
 
     # try to determine if .cc or .cpp files are used
@@ -933,6 +943,10 @@ $progname [options] [object files or libraries]
                           directory. The directory does not need to be the
                           child of the make directory. When used with --deep,
                           -d also implies -X for that directory.
+    --no-deep-includes    Normally, when a deep makefile is created, all source
+                          directories will get added to the include path.
+                          Specifying this option turns off that behavior, and
+                          lets the user explicitly specify all include dirs.
     -P directory, --projectdir directory
                           Specifies the project root directory. Any absolute
                           path (-I, -L, object file names, etc.) that points
@@ -1020,8 +1034,7 @@ TARGET = {target}
 {~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = {includepath}{@d:sourcedirs} \
- -I{d}{/@}
+INCLUDE_PATH = {includepath}
 
 # Additional object and library files to link with
 EXTRA_OBJS = {extraobjs}

@@ -94,7 +94,8 @@ $O/arraybuilder.obj: arraybuilder.cc \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/channel.obj: channel.cc \
   channel.h \
   ../common/commonutil.h \
@@ -113,7 +114,8 @@ $O/commonnodes.obj: commonnodes.cc \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/compoundfilter.obj: compoundfilter.cc \
   ../common/commonutil.h \
   compoundfilter.h \
@@ -125,12 +127,14 @@ $O/compoundfilter.obj: compoundfilter.cc \
   commonnodes.h \
   dataflowmanager.h \
   node.h \
+  ../common/progressmonitor.h \
   channel.h \
   scavedefs.h \
   ../common/bigdecimal.h
 $O/customfilter.obj: customfilter.cc \
   channel.h \
   customfilter.h \
+  scaveutils.h \
   ../common/commonutil.h \
   node.h \
   ../common/commondefs.h \
@@ -141,6 +145,7 @@ $O/customfilter.obj: customfilter.cc \
   ../common/expression.h \
   nodetype.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   ../common/stringutil.h
 $O/dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
@@ -151,7 +156,8 @@ $O/dataflowmanager.obj: dataflowmanager.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
-  ../common/bigdecimal.h
+  ../common/bigdecimal.h \
+  ../common/progressmonitor.h
 $O/datasorter.obj: datasorter.cc \
   resultfilemanager.h \
   ../common/commonutil.h \
@@ -178,7 +184,8 @@ $O/diffquot.obj: diffquot.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/enumtype.obj: enumtype.cc \
   ../common/stringtokenizer.h \
   scaveutils.h \
@@ -188,19 +195,20 @@ $O/enumtype.obj: enumtype.cc \
   ../common/bigdecimal.h \
   ../common/exception.h
 $O/export.obj: export.cc \
+  ../common/opp_ctype.h \
+  scaveutils.h \
   export.h \
+  ../common/commondefs.h \
   scavedefs.h \
   ../common/bigdecimal.h \
+  ../common/exception.h \
   xyarray.h \
   resultfilemanager.h \
   datasorter.h \
-  ../common/commondefs.h \
-  ../common/exception.h \
   idlist.h \
   enumtype.h \
   ../common/commonutil.h \
   statistics.h \
-  scaveutils.h \
   ../common/patternmatcher.h \
   fields.h \
   ../common/stringutil.h
@@ -229,10 +237,12 @@ $O/filewriter.obj: filewriter.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/filternodes.obj: filternodes.cc \
   channel.h \
   filternodes.h \
+  ../common/stringutil.h \
   ../common/commonutil.h \
   node.h \
   ../common/commondefs.h \
@@ -241,7 +251,8 @@ $O/filternodes.obj: filternodes.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/idlist.obj: idlist.cc \
   idlist.h \
   resultfilemanager.h \
@@ -272,16 +283,18 @@ $O/indexedvectorfile.obj: indexedvectorfile.cc \
   resultfilemanager.h \
   statistics.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h
 $O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
+  ../common/opp_ctype.h \
   channel.h \
   scaveutils.h \
   vectorfilereader.h \
   indexedvectorfilereader.h \
+  ../common/commondefs.h \
   ../common/commonutil.h \
   node.h \
-  ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h \
@@ -290,6 +303,7 @@ $O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   ../common/linetokenizer.h \
   resultfilemanager.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h \
   statistics.h \
@@ -318,7 +332,8 @@ $O/mergernodes.obj: mergernodes.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/nodetype.obj: nodetype.cc \
   ../common/commonutil.h \
   nodetype.h \
@@ -326,6 +341,7 @@ $O/nodetype.obj: nodetype.cc \
   ../common/exception.h \
   dataflowmanager.h \
   node.h \
+  ../common/progressmonitor.h \
   channel.h \
   scavedefs.h \
   ../common/bigdecimal.h
@@ -355,6 +371,7 @@ $O/nodetyperegistry.obj: nodetyperegistry.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   channel.h \
   commonnodes.h \
   xyarray.h \
@@ -369,13 +386,15 @@ $O/nodetyperegistry.obj: nodetyperegistry.cc \
   ../common/expression.h \
   ../common/stringutil.h
 $O/octaveexport.obj: octaveexport.cc \
+  ../common/opp_ctype.h \
   octaveexport.h \
+  ../common/commondefs.h \
   scavedefs.h \
   xyarray.h \
   ../common/exception.h \
-  ../common/bigdecimal.h \
-  ../common/commondefs.h
+  ../common/bigdecimal.h
 $O/resultfilemanager.obj: resultfilemanager.cc \
+  ../common/opp_ctype.h \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   ../common/filereader.h \
@@ -384,10 +403,10 @@ $O/resultfilemanager.obj: resultfilemanager.cc \
   indexfile.h \
   scaveutils.h \
   resultfilemanager.h \
+  ../common/commonutil.h \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
-  ../common/commonutil.h \
   statistics.h \
   ../common/bigdecimal.h \
   idlist.h \
@@ -422,6 +441,7 @@ $O/scavetool.obj: scavetool.cc \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   node.h \
+  ../common/progressmonitor.h \
   channel.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
@@ -447,7 +467,8 @@ $O/slidingwinavg.obj: slidingwinavg.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/stddev.obj: stddev.cc \
   channel.h \
   stddev.h \
@@ -460,7 +481,8 @@ $O/stddev.obj: stddev.cc \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/teenode.obj: teenode.cc \
   channel.h \
   teenode.h \
@@ -472,8 +494,10 @@ $O/teenode.obj: teenode.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/vectorfileindexer.obj: vectorfileindexer.cc \
+  ../common/opp_ctype.h \
   ../common/stringutil.h \
   scaveutils.h \
   scaveexception.h \
@@ -488,16 +512,18 @@ $O/vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/bigdecimal.h \
   statistics.h \
   resultfilemanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h
 $O/vectorfilereader.obj: vectorfilereader.cc \
+  ../common/opp_ctype.h \
   channel.h \
   scaveutils.h \
   scaveexception.h \
   vectorfilereader.h \
+  ../common/commondefs.h \
   ../common/commonutil.h \
   node.h \
-  ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h \
@@ -506,6 +532,7 @@ $O/vectorfilereader.obj: vectorfilereader.cc \
   ../common/linetokenizer.h \
   resultfilemanager.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h \
   statistics.h
@@ -522,6 +549,7 @@ $O/vectorfilewriter.obj: vectorfilewriter.cc \
   nodetype.h \
   resultfilemanager.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h \
   statistics.h \
@@ -537,7 +565,8 @@ $O/windowavg.obj: windowavg.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/xyarray.obj: xyarray.cc \
   xyarray.h \
   scavedefs.h \
@@ -555,4 +584,5 @@ $O/xyplotnode.obj: xyplotnode.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h

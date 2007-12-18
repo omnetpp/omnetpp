@@ -15,8 +15,7 @@ TARGET = {target}
 {~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = {includepath}{@d:sourcedirs} \
- -I{d}{/@}
+INCLUDE_PATH = {includepath}
 
 # Additional object and library files to link with
 EXTRA_OBJS = {extraobjs}

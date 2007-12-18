@@ -267,7 +267,6 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
-  ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
@@ -276,6 +275,7 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
+  ../../include/opp_string.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -284,14 +284,15 @@ $O/inifilereader.obj: inifilereader.cc \
   inifilereader.h \
   fsutils.h \
   ../../include/cexception.h \
+  envdefs.h \
   ../../include/cconfigreader.h \
-  ../../include/util.h \
-  ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
-  ../../include/platdep/inttypes.h
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h
 $O/ivfilemgr.obj: ivfilemgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -471,6 +472,7 @@ $O/scenario.obj: scenario.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
+  envdefs.h \
   ../../include/opp_string.h
 $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   sectionbasedconfig.h \
@@ -490,6 +492,7 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
+  envdefs.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -508,10 +511,11 @@ $O/speedometer.obj: speedometer.cc \
 $O/valueiterator.obj: valueiterator.cc \
   valueiterator.h \
   ../../include/cexception.h \
+  envdefs.h \
   ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
   ../../include/util.h
