@@ -19,8 +19,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.internal.ReopenEditorMenu;
-
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
 
@@ -92,7 +90,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
             try {
                 proj.accept(new IResourceVisitor() {
                     public boolean visit(IResource resource) throws CoreException {
-                        if (resource instanceof IContainer && MakefileTools.isGoodFolder(resource)) {
+                        if (MakefileTools.isGoodFolder(resource)) {
                             if (!CDataUtil.isExcluded(resource.getProjectRelativePath(), srcEntries)
                                     && containsFileMatchingPattern((IContainer)resource))
                                 result.add(optionPrefix+resource.getLocation().toString());

@@ -50,7 +50,7 @@ public class BuildSpecUtils {
                         
                         IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                         if (!StringUtils.isEmpty(args)) {
-                            MakemakeOptions makemakeOptions = new MakemakeOptions(args);
+                            MakemakeOptions makemakeOptions = new MakemakeOptions(args); //FIXME possible illegal argument exception!!!
                             buildSpec.setMakemakeOptions(folder, makemakeOptions);
                         }
                     }

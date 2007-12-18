@@ -306,6 +306,7 @@ public class MakefileTools {
         return result;
     }
 
+    //XXX currently not used
     public static Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
         final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
 
@@ -331,6 +332,11 @@ public class MakefileTools {
             }
         }
         return result;
+    }
+
+    public static boolean isNonGeneratedCppFile(IResource resource) {
+        // not an _m.cc or _n.cc file
+        return isCppFile(resource) && !resource.getName().matches("_[mn]\\.[^.]+$"); 
     }
 
     public static boolean isCppFile(IResource resource) {

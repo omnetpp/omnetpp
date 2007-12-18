@@ -1,14 +1,14 @@
 package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -49,7 +49,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         try {
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
-            buildSpec = BuildSpecUtils.readBuildSpecFile(getProject());
+            buildSpec = BuildSpecUtils.readBuildSpecFile(getProject()); //XXX possible IllegalArgumentException
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
 
@@ -81,15 +81,13 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // (note: warning for linked-in folders will be issued in generateMakefiles())
         monitor.subTask("Scanning source files in project " + getProject().getName() + "...");
         fileIncludes = new HashMap<IFile, List<Include>>();
+        final ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(getProject()).getDefaultConfiguration().getSourceEntries();
         getProject().accept(new IResourceVisitor() {
             public boolean visit(IResource resource) throws CoreException {
-                // FIXME ignore _m.cc files
-                //FIXME process all source folders except CDT-excluded ones
-                if ((MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource)) && buildSpec.isMakemakeFolder(resource.getParent())) {
-                    warnIfLinkedResource(resource);
+                warnIfLinkedResource(resource);
+                if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
                     processFileIncludes((IFile)resource);
-                }
-                return MakefileTools.isGoodFolder(resource); //FIXME skip folders where no makefile is generated
+                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
             }
         });
         generateMakefiles(monitor);
@@ -98,35 +96,34 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
         monitor.subTask("Scanning changed files in project " + getProject().getName() + "...");
         processDelta(delta);
-        generateMakefiles(monitor);  //TODO optimize: maybe only in directories affected by the delta
+        generateMakefiles(monitor);
     }
 
     protected void processDelta(IResourceDelta delta) throws CoreException {
         // re-parse changed C++ source files for #include; also warn for linked-in files
         // (note: warning for linked-in folders will be issued in generateMakefiles())
+        final ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(getProject()).getDefaultConfiguration().getSourceEntries();
         delta.accept(new IResourceDeltaVisitor() {
             public boolean visit(IResourceDelta delta) throws CoreException {
                 IResource resource = delta.getResource();
-                boolean isSourceFile = MakefileTools.isCppFile(resource); /* FIXME and not in an excluded folder*/
+                boolean isSourceFile = MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource);
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        if (isSourceFile) {
-                            warnIfLinkedResource(resource);
+                        warnIfLinkedResource(resource);
+                        if (isSourceFile)
                             processFileIncludes((IFile)resource);
-                        }
                         break;
                     case IResourceDelta.CHANGED:
-                        if (isSourceFile) {
-                            warnIfLinkedResource(resource);
+                        warnIfLinkedResource(resource);
+                        if (isSourceFile)
                             processFileIncludes((IFile)resource);
-                        }
                         break;
                     case IResourceDelta.REMOVED: 
                         if (isSourceFile) 
                             fileIncludes.remove(resource);
                         break;
                 }
-                return MakefileTools.isGoodFolder(resource); /*FIXME and not excluded from build*/
+                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
             }
         });
     }
@@ -137,13 +134,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime1 = System.currentTimeMillis();
 
         // collect folders
-        IContainer[] folders = buildSpec.getMakemakeFolders(); //collectFolders();
+        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
         
         // register folders in the marker synchronizer
-        for (IContainer folder : folders) {
-            markerSynchronizer.register(folder);
-            warnIfLinkedResource(folder);
-        }
+        for (IContainer makemakeFolder : makemakeFolders)
+            markerSynchronizer.register(makemakeFolder);
         
         // discover cross-folder dependencies
         Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
@@ -154,8 +149,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         if (generateMakemakefile) {
             //XXX this should probably become body of some Action
-            Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(folders);
-            String makeMakeFile = MakefileTools.generateMakeMakeFile(folders, folderDeps, targetNames);
+            Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(makemakeFolders);
+            String makeMakeFile = MakefileTools.generateMakeMakeFile(makemakeFolders, folderDeps, targetNames);
             IFile file = getProject().getFile("Makemakefile");
             MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
         }
@@ -163,10 +158,9 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
         monitor.subTask("Updating makefiles...");
-        for (IContainer folder : folders)
-            if (folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder)) 
-                generateMakefileFor(folder, folderDeps, perFileDeps);
-        System.out.println("Generated " + folders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
+        for (IContainer makemakeFolder : makemakeFolders)
+            generateMakefileFor(makemakeFolder, folderDeps, perFileDeps);
+        System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
 //    /**
@@ -243,7 +237,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     }
     
     protected void warnIfLinkedResource(IResource resource) {
-        if (resource.isLinked())
+        if (resource.isLinked() && !(resource instanceof IProject))
             addMarker(resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
     }
     

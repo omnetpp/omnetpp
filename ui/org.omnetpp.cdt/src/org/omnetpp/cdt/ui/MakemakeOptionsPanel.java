@@ -10,6 +10,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -56,14 +57,14 @@ public class MakemakeOptionsPanel extends Composite {
     private Button deepMakefileRadioButton;
     private Button recursiveMakefileRadioButton;
     private Button localMakefileRadioButton;
+    private FileListControl subdirsDirsList;
 
     // "Target" page
-    private FileListControl subdirsDirsList;
     private Button targetExecutableRadioButton;
     private Button targetSharedLibRadioButton;
     private Button targetStaticLibRadioButton;
     private Button targetCompileOnlyRadioButton;
-    private Button defaultTargetName;
+    private Button defaultTargetNameRadionButton;
     private Button specifyTargetNameRadioButton;
     private Text targetNameText;
 
@@ -122,7 +123,7 @@ public class MakemakeOptionsPanel extends Composite {
         localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
-        subdirsDirsList = new FileListControl(scopePage, "Sub-make Directories", BROWSE_DIR);
+        subdirsDirsList = new FileListControl(scopePage, "Sub-make directories", BROWSE_DIR);
         //subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Target" page
@@ -133,9 +134,9 @@ public class MakemakeOptionsPanel extends Composite {
         targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)", null);
         targetCompileOnlyRadioButton = createRadioButton(group, "Compile only", null);
         Group targetNameGroup = createGroup(targetPage, "Target name:", 2);
-        defaultTargetName = createRadioButton(targetNameGroup, "Default", "Default target name will be derived from the directory name");
-        defaultTargetName.setLayoutData(new GridData());
-        ((GridData)defaultTargetName.getLayoutData()).horizontalSpan = 2;
+        defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "Default target name will be derived from the directory name");
+        defaultTargetNameRadionButton.setLayoutData(new GridData());
+        ((GridData)defaultTargetNameRadionButton.getLayoutData()).horizontalSpan = 2;
         specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name or relative path: ", null);
         targetNameText = new Text(targetNameGroup, SWT.BORDER);
         targetNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -247,34 +248,9 @@ public class MakemakeOptionsPanel extends Composite {
 
         Dialog.applyDialogFont(composite);
 
-        tabfolder.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                activeTabChanged();
-            }
-        });
-        optionsText.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-                optionsTextChanged();
-            }
-        });
+        hookListeners();
         
         return composite;
-    }
-
-    protected void activeTabChanged() {
-        if (tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage) {
-            // switched to "Preview" page -- update its contents
-            MakemakeOptions options = getResult();
-            optionsText.setText(options.toString());
-            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options, null).toString());
-            
-        }
-    }
-
-    protected void optionsTextChanged() {
-        // re-parse options text modified by user
-        MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
-        populate(updatedOptions, makefragText.getText());
     }
 
     protected Label createLabel(Composite composite, String text) {
@@ -328,10 +304,93 @@ public class MakemakeOptionsPanel extends Composite {
 //  setEnabledRecursive(child, enabled);
 //  }
 
+    protected void hookListeners() {
+        // maintain consistency between dialog controls and the "Preview" page
+        tabfolder.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                activeTabChanged();
+            }
+        });
+        optionsText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                optionsTextChanged();
+            }
+        });
+        
+        // validate dialog contents on changes
+        SelectionListener sel = new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateDialogState();
+            }
+        };
+        ModifyListener mod = new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                updateDialogState();
+            }
+        };
+
+        deepMakefileRadioButton.addSelectionListener(sel);
+        recursiveMakefileRadioButton.addSelectionListener(sel);
+        localMakefileRadioButton.addSelectionListener(sel);
+        subdirsDirsList.getListControl().addSelectionListener(sel);
+
+        targetExecutableRadioButton.addSelectionListener(sel);
+        targetSharedLibRadioButton.addSelectionListener(sel);
+        targetStaticLibRadioButton.addSelectionListener(sel);
+        targetCompileOnlyRadioButton.addSelectionListener(sel);
+
+        defaultTargetNameRadionButton.addSelectionListener(sel);
+        specifyTargetNameRadioButton.addSelectionListener(sel);
+        targetNameText.addModifyListener(mod);
+        outputDirText.addModifyListener(mod);
+
+        deepIncludesCheckbox.addSelectionListener(sel);
+
+        ccextCombo.addSelectionListener(sel);
+        compileForDllCheckbox.addSelectionListener(sel);
+        dllExportMacroText.addModifyListener(mod);
+
+        userInterfaceCombo.addSelectionListener(sel);
+        libsList.getListControl().addSelectionListener(sel);
+        linkObjectsList.getListControl().addSelectionListener(sel);
+
+        makefragText.addModifyListener(mod);
+        makefragsList.getListControl().addSelectionListener(sel);  //XXX does not work for list control
+    }
+
+    protected void activeTabChanged() {
+        if (tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage) {
+            // switched to "Preview" page -- update its contents
+            MakemakeOptions options = getResult();
+            optionsText.setText(options.toString());
+            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options, null).toString());
+        }
+    }
+
+    protected void optionsTextChanged() {
+        // re-parse options text modified by user
+        MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
+        populate(updatedOptions, makefragText.getText());
+    }
+
+    protected void updateDialogState() {
+        boolean compileOnly = targetCompileOnlyRadioButton.getSelection();
+        defaultTargetNameRadionButton.setEnabled(!compileOnly);
+        specifyTargetNameRadioButton.setEnabled(!compileOnly);
+        targetNameText.setEnabled(specifyTargetNameRadioButton.getSelection() && !compileOnly);
+        userInterfaceCombo.setEnabled(targetExecutableRadioButton.getSelection());
+        libsList.setEnabled(!compileOnly);
+        linkObjectsList.setEnabled(!compileOnly);
+        
+        System.out.println("VAL!!!");
+        //TODO
+    }
+    
     public void setFolder(IContainer folder) {
         this.folder = folder;
     }
-    
+
     public void populate(MakemakeOptions data, String makefragContents) {
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
@@ -340,18 +399,14 @@ public class MakemakeOptionsPanel extends Composite {
         subdirsDirsList.setList(data.subdirs.toArray(new String[]{}));
 
         // "Target" page
-        switch (data.type) {
-            case EXE: targetExecutableRadioButton.setSelection(true); break;
-            case SHAREDLIB: targetSharedLibRadioButton.setSelection(true); break;
-            case STATICLIB: targetStaticLibRadioButton.setSelection(true); break;
-            case NOLINK: targetCompileOnlyRadioButton.setSelection(true); break;
-        }
-        if (StringUtils.isEmpty(data.target))
-            defaultTargetName.setSelection(true); 
-        else {
-            specifyTargetNameRadioButton.setSelection(true);
-            targetNameText.setText(data.target);
-        }
+        targetExecutableRadioButton.setSelection(data.type==Type.EXE);
+        targetSharedLibRadioButton.setSelection(data.type==Type.SHAREDLIB);
+        targetStaticLibRadioButton.setSelection(data.type==Type.STATICLIB);
+        targetCompileOnlyRadioButton.setSelection(data.type==Type.NOLINK); 
+
+        defaultTargetNameRadionButton.setSelection(StringUtils.isEmpty(data.target)); 
+        specifyTargetNameRadioButton.setSelection(!StringUtils.isEmpty(data.target));
+        targetNameText.setText(StringUtils.nullToEmpty(data.target));
         outputDirText.setText(StringUtils.nullToEmpty(data.outRoot));
 
         // "Include" page
@@ -371,8 +426,7 @@ public class MakemakeOptionsPanel extends Composite {
         linkObjectsList.setList(data.extraArgs.toArray(new String[]{}));
         
         // "Custom" page
-        if (makefragContents != null)
-            makefragText.setText(makefragContents);
+        makefragText.setText(StringUtils.nullToEmpty(makefragContents));
         makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
         
         // to the "Link" page:
@@ -399,7 +453,7 @@ public class MakemakeOptionsPanel extends Composite {
             result.type = Type.STATICLIB;
         else if (targetCompileOnlyRadioButton.getSelection())
             result.type = Type.NOLINK;
-        result.target = defaultTargetName.getSelection() ? null : targetNameText.getText();
+        result.target = defaultTargetNameRadionButton.getSelection() ? null : targetNameText.getText();
         result.outRoot = outputDirText.getText();
 
         // "Include" page
@@ -420,7 +474,7 @@ public class MakemakeOptionsPanel extends Composite {
         result.fragmentFiles.addAll(Arrays.asList(makefragsList.getItems()));
 
         //---
-        result.linkWithObjects = false; //TODO
+        result.linkWithObjects = false; //XXX has wrong name!!
 
         return result;
     }
