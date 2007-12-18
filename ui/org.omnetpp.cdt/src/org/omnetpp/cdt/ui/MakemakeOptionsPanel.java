@@ -197,17 +197,17 @@ public class MakemakeOptionsPanel extends Composite {
         for (String i : new String[] {"All", "Tkenv", "Cmdenv"}) // note: should be consistent with populate()!
             userInterfaceCombo.add(i);
 
-        Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
+//        Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
 //        //FIXME are these combo boxes needed? do they correspond to any makemake settings?
 //        Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
 //        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
 //        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
-        createLabel(linkGroup, "Libraries to link with (-l):");
-        libsList = new FileListControl(linkGroup, "Libraries (-l)", 0 /*XXX BROWSE_NONE*/);
+//        createLabel(linkGroup, "Libraries to link with (-l):");
+        libsList = new FileListControl(linkPage, "Libraries to link with (-l):", 0 /*XXX BROWSE_NONE*/);
         //libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        createLabel(linkGroup, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
-        createLabel(linkGroup, "Extra object files and libs to link with (wildcards allowed):");
-        linkObjectsList = new FileListControl(linkGroup, "Link additionally with:", 0  /*XXX BROWSE_NONE*/);
+        createLabel(linkPage, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
+        //createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
+        linkObjectsList = new FileListControl(linkPage, "Link additionally with (wildcards, macros allowed):", 0  /*XXX BROWSE_NONE*/);
         //linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Custom" page
