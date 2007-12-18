@@ -239,48 +239,48 @@ public class MakemakeOptions implements Cloneable {
      */
     public String[] toArgs() {
         List<String> result = new ArrayList<String>();
-        if (!StringUtils.isEmpty(projectDir))
-            add(result, "-P", projectDir);
-        if (!StringUtils.isEmpty(target))
-            add(result, "-o", target);
-        if (!StringUtils.isEmpty(outRoot))
-            add(result, "-O", outRoot);
-        add(result, isDeep ? "--deep" : "--nodeep");
         if (force)
             add(result, "-f");
         if (isNMake)
             add(result, "--nmake");
-        if (linkWithObjects)
-            add(result, "-w");
-        if (isRecursive)
-            add(result, "-r");
-        if (!StringUtils.isEmpty(defaultMode))
-            add(result, "-M", defaultMode);
-        if (noDeepIncludes)
-            result.add("--no-deep-includes");
-        if (!StringUtils.isEmpty(userInterface) && !userInterface.equalsIgnoreCase("All"))
-            add(result, "-u", userInterface);
         if (type == Type.NOLINK)
             add(result, "-n");
         else if (type == Type.SHAREDLIB)
             add(result, "-s");
         else if (type == Type.STATICLIB)
             add(result, "-a");
+        add(result, isDeep ? "--deep" : "--nodeep");
+        if (isRecursive)
+            add(result, "-r");
+        if (!StringUtils.isEmpty(projectDir))
+            add(result, "-P", projectDir);
+        if (!StringUtils.isEmpty(target))
+            add(result, "-o", target);
+        if (!StringUtils.isEmpty(outRoot))
+            add(result, "-O", outRoot);
+        if (linkWithObjects)
+            add(result, "-w");
+        if (!StringUtils.isEmpty(defaultMode))
+            add(result, "-M", defaultMode);
+        if (!StringUtils.isEmpty(userInterface) && !userInterface.equalsIgnoreCase("All"))
+            add(result, "-u", userInterface);
         if (!StringUtils.isEmpty(ccext))
             add(result, "-e", ccext); 
         if (!StringUtils.isEmpty(dllExportMacro))
             add(result, "-p" + dllExportMacro);
         if (compileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
+        if (noDeepIncludes)
+            result.add("--no-deep-includes");
         if (!ignoreNedFiles)
             add(result, "-N");
         addOpts2(result, fragmentFiles, "-i");
         addOpts2(result, subdirs, "-d");
-        addOpts2(result, exceptSubdirs, "-X");
+        addOpts1(result, exceptSubdirs, "-X");
         addOpts1(result, includeDirs, "-I");
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
-        addOpts2(result, defines, "-D");
+        addOpts1(result, defines, "-D");
         if (!extraArgs.isEmpty())
             result.add("--");
         result.addAll(extraArgs);

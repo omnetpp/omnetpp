@@ -3,8 +3,13 @@ package org.omnetpp.cdt.ui;
 import java.util.Arrays;
 
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -17,6 +22,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.util.StringUtils;
 
@@ -26,8 +32,13 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //TODO update enable/disable state on changes
-//TODO preview page
 public class MakemakeOptionsPanel extends Composite {
+    // constants for CDT's FileListControl which are private;
+    // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
+    protected static final int BROWSE_NONE = 0;
+    protected static final int BROWSE_FILE = 1;
+    protected static final int BROWSE_DIR = 2;
+    
     // controls
     private TabFolder tabfolder;
     private Composite scopePage;
@@ -72,8 +83,15 @@ public class MakemakeOptionsPanel extends Composite {
     // "Custom" page
     private Text makefragText;
     private FileListControl makefragsList;
-
     
+    // "Preview" page
+    private Text optionsText;
+    private Text translatedOptionsText;
+    
+    // the folder whose properties we're editing; needed for Preview panel / translated options
+    private IContainer folder;
+
+
     public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
         createContents();
@@ -104,7 +122,7 @@ public class MakemakeOptionsPanel extends Composite {
         localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
-        subdirsDirsList = new FileListControl(scopePage, "Sub-make Directories", 2 /*XXX FileListControl.BROWSE_DIR*/);
+        subdirsDirsList = new FileListControl(scopePage, "Sub-make Directories", BROWSE_DIR);
         //subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Target" page
@@ -202,28 +220,61 @@ public class MakemakeOptionsPanel extends Composite {
 //        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
 //        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
 //        createLabel(linkGroup, "Libraries to link with (-l):");
-        libsList = new FileListControl(linkPage, "Libraries to link with: (-l option)", 0 /*XXX BROWSE_NONE*/);
+        libsList = new FileListControl(linkPage, "Libraries to link with: (-l option)", BROWSE_NONE);
         //libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(linkPage, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
         //createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
-        linkObjectsList = new FileListControl(linkPage, "Link additionally with: (folder-relative path, wildcards; macros allowed)", 0  /*XXX BROWSE_NONE*/);
+        linkObjectsList = new FileListControl(linkPage, "Link additionally with: (folder-relative path, wildcards; macros allowed)", BROWSE_NONE);
         //linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         createLabel(customPage, "Code fragment to be inserted into the Makefile (Makefrag):");
         makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
-        makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); //XXX todo actually load/save makefrag file!
+        makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(customPage, "Other fragment files to include:");
-        makefragsList = new FileListControl(customPage, "Make fragments", 0 /*XXX BROWSE_NONE*/);
+        makefragsList = new FileListControl(customPage, "Make fragments", BROWSE_NONE);
         //makefragsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Preview" page
-        //TODO readonly text for vanilla options and translated options
-        
+        previewPage.setLayout(new GridLayout(1,false));
+        createLabel(previewPage, "Makemake options:");
+        optionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.WRAP);
+        optionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        createLabel(previewPage, "Makemake options modified with CDT settings:");
+        translatedOptionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
+        translatedOptionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
         Dialog.applyDialogFont(composite);
 
+        tabfolder.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                activeTabChanged();
+            }
+        });
+        optionsText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                optionsTextChanged();
+            }
+        });
+        
         return composite;
+    }
+
+    protected void activeTabChanged() {
+        if (tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage) {
+            // switched to "Preview" page -- update its contents
+            MakemakeOptions options = getResult();
+            optionsText.setText(options.toString());
+            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options, null).toString());
+            
+        }
+    }
+
+    protected void optionsTextChanged() {
+        // re-parse options text modified by user
+        MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
+        populate(updatedOptions, makefragText.getText());
     }
 
     protected Label createLabel(Composite composite, String text) {
@@ -277,6 +328,10 @@ public class MakemakeOptionsPanel extends Composite {
 //  setEnabledRecursive(child, enabled);
 //  }
 
+    public void setFolder(IContainer folder) {
+        this.folder = folder;
+    }
+    
     public void populate(MakemakeOptions data, String makefragContents) {
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
@@ -321,7 +376,7 @@ public class MakemakeOptionsPanel extends Composite {
         makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
         
         // to the "Link" page:
-        data.linkWithObjects = false; //TODO explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
+        data.linkWithObjects = false; //TODO; also explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
     }
     
     /**

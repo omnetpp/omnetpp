@@ -89,6 +89,8 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             } 
         });
 
+        contents.setFolder(getResource());
+        
         loadBuildSpecFile();
         String makefragContents = readMakefrag();
         MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(getResource());

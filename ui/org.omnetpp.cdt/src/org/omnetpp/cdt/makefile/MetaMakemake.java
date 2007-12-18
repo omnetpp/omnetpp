@@ -66,7 +66,7 @@ public class MetaMakemake {
 
         // add dependent folders
         //XXX should this be a meta-option?
-        if (folderDeps.containsKey(folder))
+        if (folderDeps != null && folderDeps.containsKey(folder))
             for (IContainer dep : folderDeps.get(folder))
                 translatedOptions.includeDirs.add(dep.getLocation().toString());
 
