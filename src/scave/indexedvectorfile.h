@@ -48,7 +48,6 @@ typedef std::vector<OutputVectorEntry> Entries;
 class SCAVE_API IndexedVectorFileReader
 {
     std::string fname;  // file name of the vector file
-    FileReader *reader; // reader of the vector file
 
     VectorFileIndex *index; // index of the vector file, loaded fully into the memory
     const VectorData *vector;     // index data of the read vector, points into index

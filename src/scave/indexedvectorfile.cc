@@ -27,7 +27,7 @@
 //=========================================================================
 
 IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vectorId)
-    : fname(filename), reader(NULL), index(NULL), vector(NULL), currentBlock(NULL)
+    : fname(filename), index(NULL), vector(NULL), currentBlock(NULL)
 {
     std::string ifname = IndexFile::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
@@ -41,8 +41,6 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
 {
-    if (reader!=NULL)
-        delete reader;
     if (index != NULL)
         delete index;
 }
@@ -62,14 +60,6 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 
 void IndexedVectorFileReader::loadBlock(const Block &block)
 {
-    if (reader==NULL)
-    {
-        size_t bufferSize = vector->blockSize;
-        if (bufferSize < MIN_BUFFER_SIZE)
-            bufferSize = MIN_BUFFER_SIZE;
-        reader=new FileReader(fname.c_str(), bufferSize);
-    }
-
     if (currentBlock == &block)
         return;
 
@@ -78,8 +68,13 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
         currentEntries.clear();
     }
 
+    size_t bufferSize = vector->blockSize;
+    if (bufferSize < MIN_BUFFER_SIZE)
+        bufferSize = MIN_BUFFER_SIZE;
+    FileReader reader(fname.c_str(), bufferSize);
+
     long count=block.count();
-    reader->seekTo(block.startOffset);
+    reader.seekTo(block.startOffset);
     currentEntries.resize(count);
 
     char *line, **tokens;
@@ -92,8 +87,8 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
 
     for (int i=0; i<count; ++i)
     {
-        CHECK(line=reader->getNextLineBufferPointer(), "Unexpected end of file", block, i);
-        int len = reader->getLastLineLength();
+        CHECK(line=reader.getNextLineBufferPointer(), "Unexpected end of file", block, i);
+        int len = reader.getLastLineLength();
 
         tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
@@ -129,7 +124,7 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
         loadBlock(*(vector->getBlockBySerial(serial)));
     }
 
-    return &currentEntries[serial - currentBlock->startSerial];
+    return &currentEntries.at(serial - currentBlock->startSerial);
 }
 
 OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(simultime_t simtime, bool after)
