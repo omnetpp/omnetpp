@@ -72,7 +72,7 @@ public class MetaMakemake {
         
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
-        if (referencedProjects.length> 0) {
+        if (referencedProjects.length > 0) {
             for (IProject referencedProject : referencedProjects) {
                 String name = Makemake.makeSymbolicProjectName(referencedProject);
                 String path;
