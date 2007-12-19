@@ -185,28 +185,20 @@ public class DatasetManager {
 		DataflowManager dataflowManager = builder.build(dataset, lastItemToProcess, true);
 		List<Node> arrayBuilders = builder.getArrayBuilders();
 		dataflowManager.dump();
-		return executeDataflowNetwork(dataflowManager, arrayBuilders);
+		return executeDataflowNetwork(dataflowManager, arrayBuilders, null);
 	}
 	
-	public static XYArray getDataOfVector(ResultFileManager manager, long id) {
-		IDList idlist = new IDList();
-		idlist.add(id);
-		XYArray[] data = getDataOfVectors(manager, idlist);
-		Assert.isTrue(data != null && data.length == 1);
-		return data[0];
-	}
-	
-	public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist) {
+	public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor monitor) {
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(idlist);
 		List<Node> arrayBuilders = builder.getArrayBuilders();
-		return executeDataflowNetwork(dataflowManager, arrayBuilders);
+		return executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
 	}
 	
-	private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders) {
+	private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders, IProgressMonitor monitor) {
 		long startTime = System.currentTimeMillis();
 		if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
-			manager.execute();
+			manager.execute(monitor);
 		System.out.println("dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		XYArray[] result = new XYArray[arrayBuilders.size()];
@@ -237,7 +229,6 @@ public class DatasetManager {
 	
 	public static VectorDataset createVectorDataset(LineChart chart, Dataset dataset,
 			String lineNameFormat, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) {
-		//TODO update progressMonitor
 		if (dataset == null)
 			dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		
@@ -249,7 +240,7 @@ public class DatasetManager {
 		if (dataflowManager != null) {
 			List<Node> arrayBuilders = builder.getArrayBuilders();
 			dataflowManager.dump();
-			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
+			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
 		}
 		
 		return dataValues != null ?
@@ -267,7 +258,7 @@ public class DatasetManager {
 
 		List<Node> arrayBuilders = builder.getArrayBuilders();
 		dataflowManager.dump();
-		XYArray[] dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
+		XYArray[] dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
 		
 		return new Pair<IDList, XYArray[]>(idlist, dataValues);
 	}
@@ -339,7 +330,7 @@ public class DatasetManager {
 				if (dataflowManager != null) {
 					List<Node> arrayBuilders = builder.getArrayBuilders();
 					dataflowManager.dump();
-					xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders);
+					xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
 					if (xyVectors != null) {
 						for (int i = 0; i < xyVectors.length; ++i)
 							xyVectors[i].sortByX();
@@ -511,7 +502,7 @@ public class DatasetManager {
 			outAttrs.set(key, inputAttrs.get(key));
 		
 		NodeType type = NodeTypeRegistry.instance().getNodeType(operation);
-		type.mapVectorAttributes(outAttrs);
+		type.mapVectorAttributes(outAttrs); // TODO pass warnings
 		return outAttrs;
 	}
 }

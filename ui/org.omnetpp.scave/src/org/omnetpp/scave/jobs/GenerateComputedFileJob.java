@@ -23,7 +23,7 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionCallback;
  */
 public class GenerateComputedFileJob extends WorkspaceJob
 {
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 	
 	ProcessingOp operation;
 	ResultFileManager manager;
@@ -48,6 +48,10 @@ public class GenerateComputedFileJob extends WorkspaceJob
 
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+		long startTime = 0;
+		if (debug)
+			startTime = System.currentTimeMillis();
+		
 		try {
 			if (monitor != null)
 				monitor.beginTask("Generate computed file", 100);
@@ -83,6 +87,10 @@ public class GenerateComputedFileJob extends WorkspaceJob
 		finally {
 			if (monitor != null)
 				monitor.done();
+			if (debug) {
+				long endTime = System.currentTimeMillis();
+				System.out.format("Generated computed file in %s ms%n", endTime - startTime);
+			}
 		}
 	}
 }

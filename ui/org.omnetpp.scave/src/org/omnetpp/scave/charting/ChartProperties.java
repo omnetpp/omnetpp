@@ -36,7 +36,6 @@ import org.omnetpp.scave.model2.DatasetManager;
  * Property source for charts.  
  * @author tomi
  */
-//XXX should take the default values from ChartDefaults
 public class ChartProperties extends PropertySource {
 
 	/**

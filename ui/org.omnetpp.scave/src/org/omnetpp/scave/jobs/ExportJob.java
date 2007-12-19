@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
@@ -120,22 +121,15 @@ public class ExportJob extends WorkspaceJob
 
 	protected IStatus exportVectors(ScaveExport exporter, IProgressMonitor monitor) {
 		XYArray[] data = null;
+		IProgressMonitor subMonitor = new SubProgressMonitor(monitor, vectors.size());
 		if (dataset != null) {
 			Pair<IDList, XYArray[]> pair =
-				DatasetManager.readAndComputeVectorData(dataset, datasetItem, manager, null);
+				DatasetManager.readAndComputeVectorData(dataset, datasetItem, manager, subMonitor);
 			vectors = pair.first;
 			data = pair.second;
-			monitor.worked((int)vectors.size());
 		}
 		else {
-			data = new XYArray[(int)vectors.size()];
-			for (int i = 0; i < vectors.size(); ++i) {
-				if (monitor.isCanceled())
-					return Status.CANCEL_STATUS;
-				long id = vectors.get(i);
-				data[i] = DatasetManager.getDataOfVector(manager, id);
-				monitor.worked(1);
-			}
+			data = DatasetManager.getDataOfVectors(manager, vectors, subMonitor);
 		}
 		
 		if (monitor.isCanceled())
