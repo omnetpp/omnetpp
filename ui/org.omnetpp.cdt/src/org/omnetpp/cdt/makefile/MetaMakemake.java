@@ -78,7 +78,6 @@ public class MetaMakemake {
                     path = MakefileTools.makeRelativePath(referencedProject.getLocation(), folder.getLocation()).toString();
                 else
                     path = referencedProject.getLocation().toString();
-                //FIXME TODO quote path if it contains space!!!
                 translatedOptions.makefileDefines.add(name + "=" + path);
             }
         }
