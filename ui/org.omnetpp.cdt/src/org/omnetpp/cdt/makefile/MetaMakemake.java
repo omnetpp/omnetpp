@@ -2,6 +2,7 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,11 +15,13 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -48,7 +51,7 @@ public class MetaMakemake {
     /** 
      * Translates makemake options
      */
-    public static MakemakeOptions translateOptions(IContainer folder, MakemakeOptions options, Map<IContainer, Set<IContainer>> folderDeps) {
+    public static MakemakeOptions translateOptions(IContainer folder, MakemakeOptions options, Map<IContainer, Set<IContainer>> folderDeps) throws CoreException {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = folder.getProject();
@@ -67,7 +70,7 @@ public class MetaMakemake {
 
         //TODO interpret meta-options (currently none)
         
-        // add symbols for locations of referenced projects
+        // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
         if (referencedProjects.length> 0) {
             for (IProject referencedProject : referencedProjects) {
@@ -82,14 +85,42 @@ public class MetaMakemake {
             }
         }
 
-        // add dependent folders
-        //XXX should this be a meta-option?
-        if (folderDeps != null && folderDeps.containsKey(folder))
-            for (IContainer dep : folderDeps.get(folder))
-                translatedOptions.includeDirs.add(dep.getLocation().toString());
+        // add extra include folders
+        if (folderDeps != null) {
+            // we're looking for include path of the source folders covered by this makefile
+            List<IContainer> srcFolders;
+            if (options.isDeep)
+                srcFolders = collectSourceFolders(folder); // every folder under this makemake folder
+            else
+                srcFolders = Arrays.asList(new IContainer[]{ folder });
+            
+            // find the referenced folders for each srcFolder, and add to include path if it's outside this deep makefile
+            for (IContainer srcFolder : srcFolders)
+                if (folderDeps.containsKey(srcFolder))  
+                    for (IContainer dep : folderDeps.get(srcFolder))
+                        if (!srcFolder.getFullPath().isPrefixOf(dep.getFullPath()))  // only add if "dep" is outside "folder"!
+                            if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not already in there
+                                translatedOptions.includeDirs.add(dep.getLocation().toString());
+        }
 
         System.out.println("Translated makemake options for " + folder + ": " + translatedOptions.toString());
         return translatedOptions;
+    }
+
+    protected static List<IContainer> collectSourceFolders(IContainer folder) throws CoreException {
+        List<IContainer> result = new ArrayList<IContainer>();
+        ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(folder.getProject()).getDefaultConfiguration().getSourceEntries();//XXX can something be null here?
+        collectSourceFolders(folder, result, sourceEntries);
+        return result;
+    }    
+
+    protected static void collectSourceFolders(IContainer folder, List<IContainer> result, ICSourceEntry[] sourceEntries) throws CoreException {
+        if (!CDataUtil.isExcluded(folder.getProjectRelativePath(), sourceEntries)) {
+            result.add(folder);
+            for (IResource member : folder.members())
+                if (MakefileTools.isGoodFolder(member))
+                    collectSourceFolders((IContainer)member, result, sourceEntries);
+        }
     }
 
     /**

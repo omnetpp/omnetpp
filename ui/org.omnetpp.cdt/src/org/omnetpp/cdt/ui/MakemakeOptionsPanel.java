@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -364,7 +365,11 @@ public class MakemakeOptionsPanel extends Composite {
             // switched to "Preview" page -- update its contents
             MakemakeOptions options = getResult();
             optionsText.setText(options.toString());
-            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options, null).toString());
+            try {
+                translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options, null).toString());
+            } catch (CoreException e) {
+                //XXX
+            }
         }
     }
 
@@ -372,7 +377,11 @@ public class MakemakeOptionsPanel extends Composite {
         // re-parse options text modified by user
         MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
         populate(updatedOptions, makefragText.getText());
-        translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions, null).toString());
+        try {
+            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions, null).toString());
+        } catch (CoreException e) {
+            //XXX
+        }
     }
 
     protected void updateDialogState() {
