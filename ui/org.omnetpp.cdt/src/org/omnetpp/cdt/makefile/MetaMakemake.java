@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -50,9 +51,11 @@ public class MetaMakemake {
     public static MakemakeOptions translateOptions(IContainer folder, MakemakeOptions options, Map<IContainer, Set<IContainer>> folderDeps) {
         MakemakeOptions translatedOptions = options.clone();
 
+        IProject project = folder.getProject();
+
         // add -f, and potentially --nmake 
         translatedOptions.force = true;
-        translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(folder.getProject());
+        translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
 
         // add -X option for each excluded folder in CDT
         translatedOptions.exceptSubdirs.addAll(getExcludedPathsWithinFolder(folder));
@@ -63,6 +66,22 @@ public class MetaMakemake {
         translatedOptions.defines.addAll(getMacrosFor(folder));
 
         //TODO interpret meta-options (currently none)
+        
+        // add symbols for locations of referenced projects
+        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
+        if (referencedProjects.length> 0) {
+            for (IProject referencedProject : referencedProjects) {
+                String name = Makemake.makeSymbolicProjectName(referencedProject);
+                String path;
+                // use relative path if the two projects are in the same OS directory, otherwise absolute path
+                if (project.getLocation().removeLastSegments(1).equals(referencedProject.getLocation().removeLastSegments(1)))
+                    path = MakefileTools.makeRelativePath(referencedProject.getLocation(), folder.getLocation()).toString();
+                else
+                    path = referencedProject.getLocation().toString();
+                //FIXME TODO quote path if it contains space!!!
+                translatedOptions.makefileDefines.add(name + "=" + path);
+            }
+        }
 
         // add dependent folders
         //XXX should this be a meta-option?

@@ -14,9 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
@@ -69,19 +67,35 @@ public class ProjectUtils {
 	public static IProject[] getAllReferencedOmnetppProjects(IProject project) {
 		try {
 			Set<IProject> result = new HashSet<IProject>();
-			collectAllReferencedOmnetppProjects(project, result);
+			collectAllReferencedOmnetppProjects(project, true, result);
 			return result.toArray(new IProject[]{});
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	/**
+     * Returns the transitive closure of all projects referenced from the given project,
+     * excluding the project itself.
+     *
+     * Potential CoreExceptions are re-thrown as RuntimeException.
+     */
+    public static IProject[] getAllReferencedProjects(IProject project) {
+        try {
+            Set<IProject> result = new HashSet<IProject>();
+            collectAllReferencedOmnetppProjects(project, false, result);
+            return result.toArray(new IProject[]{});
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 	// helper for getAllReferencedOmnetppProjects()
-	private static void collectAllReferencedOmnetppProjects(IProject project, Set<IProject> result) throws CoreException {
+	private static void collectAllReferencedOmnetppProjects(IProject project, boolean requireOmnetppNature, Set<IProject> result) throws CoreException {
 		for (IProject dependency : project.getReferencedProjects()) {
-			if (isOpenOmnetppProject(dependency) && !result.contains(dependency)) {
+			if ((requireOmnetppNature ? isOpenOmnetppProject(dependency) : project.isAccessible()) && !result.contains(dependency)) {
 				result.add(dependency);
-				collectAllReferencedOmnetppProjects(dependency, result);
+				collectAllReferencedOmnetppProjects(dependency, requireOmnetppNature, result);
 			}
 		}
 	}

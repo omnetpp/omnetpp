@@ -111,7 +111,7 @@ public class Makemake {
 
         String omnetppRoot = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
         if (StringUtils.isEmpty(omnetppRoot))
-            throw new IllegalStateException("OMNeT++ root must be set in Window/Preferences");
+            throw new IllegalStateException("OMNeT++ root must be set in Window|Preferences");
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc"); 
 
         // collect source files
@@ -464,7 +464,7 @@ public class Makemake {
             if (containingProject != null) {
                 // generate something like $(OTHER_PROJECT_DIR)/some/file
                 IPath projectRelativePath = location.removeFirstSegments(projectLocation.segmentCount());
-                String symbolicProjectName = containingProject.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_DIR"; //FIXME must not begin with number! must not collide with symbolic name of another project!
+                String symbolicProjectName = makeSymbolicProjectName(containingProject);
                 return new Path("$(" + symbolicProjectName + ")").append(projectRelativePath);
             }
             else {
@@ -472,5 +472,10 @@ public class Makemake {
                 return location;
             }
         }
+    }
+
+    public static String makeSymbolicProjectName(IProject project) {
+        //FIXME must not begin with number! must not collide with symbolic name of another project!
+        return project.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_PROJ";
     }
 }
