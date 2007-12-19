@@ -39,6 +39,7 @@ public class MakemakeOptions implements Cloneable {
     public List<String> libDirs = new ArrayList<String>();
     public List<String> libs = new ArrayList<String>();
     public List<String> defines = new ArrayList<String>();
+    public List<String> makefileDefines = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
     // "meta" options (--meta:xxx): they get interpreted by MetaMakemake, 
@@ -124,6 +125,13 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.startsWith("-D")) {
                 defines.add(arg.substring(2));
+            }
+            else if (arg.equals("-K") || arg.equals("--makefile-define")) {
+                checkArg(argv, i);
+                makefileDefines.add(argv[++i]);
+            }
+            else if (arg.startsWith("-K")) {
+                makefileDefines.add(arg.substring(2));
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
                 throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
@@ -281,6 +289,7 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
         addOpts1(result, defines, "-D");
+        addOpts1(result, makefileDefines, "-K");
         if (!extraArgs.isEmpty())
             result.add("--");
         result.addAll(extraArgs);
@@ -337,6 +346,7 @@ public class MakemakeOptions implements Cloneable {
         result.libDirs.addAll(libDirs);
         result.libs.addAll(libs);
         result.defines.addAll(defines);
+        result.makefileDefines.addAll(defines);
         result.extraArgs.addAll(extraArgs);
         return result;
     }

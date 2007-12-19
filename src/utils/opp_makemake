@@ -69,6 +69,7 @@ sub makemake()
     @libDirs = ();
     @libs = ();
     @defines = ();
+    @makefileDefines = ();
     @extraArgs = ();
 
     # process arg vector
@@ -125,6 +126,13 @@ sub makemake()
         elsif ($arg =~ /^-D/) {
             my $define = substr($arg, 2);
             push(@defines, $define);
+        }
+        elsif ($arg eq "-K" || $arg eq "--makefile-define") {
+            push(@makefileDefines, shift @ARGV);
+        }
+        elsif ($arg =~ /^-K/) {
+            my $define = substr($arg, 2);
+            push(@makefileDefines, $define);
         }
         elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
             error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
@@ -337,7 +345,7 @@ sub makemake()
         push(@includeDirs, abs2rel($i,$projectDir));
     }
     if (!$noDeepIncludes) {
-        foreach ($i (@sourceDirs)) {
+        foreach $i (@sourceDirs) {
             push(@includeDirs, $i);
         }
     }
@@ -503,6 +511,7 @@ sub makemake()
         "libpath" =>  prefixQuoteJoin(\@libDirs, ($isNMake ? "/libpath:" : "-L")),
         "libs" =>  \@libs,
         "defines" => prefixQuoteJoin(\@defines, "-D"),
+        "makefiledefines" => \@makefileDefines,
         "makecommand" =>  $makecommand,
         "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
         "makefrags" =>  $makefrags,
@@ -1075,6 +1084,9 @@ MSG_H_FILES = {msghfiles}
 {defaultmode:}MODE = {defaultmode}
 {defaultmode:}{nmake?!}endif
 {defaultmode:}
+# Other makefile variables (-K)
+{@d:makefiledefines}{d}
+{/@}
 
 #------------------------------------------------------------------------------
 

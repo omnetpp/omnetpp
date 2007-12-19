@@ -345,6 +345,7 @@ public class Makemake {
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
         m.put("libs", p.libs);
         m.put("defines", prefixQuoteJoin(p.defines, "-D"));
+        m.put("makefiledefines", p.makefileDefines);
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);

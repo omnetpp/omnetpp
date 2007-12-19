@@ -52,6 +52,9 @@ MSG_H_FILES = {msghfiles}
 {defaultmode:}MODE = {defaultmode}
 {defaultmode:}{nmake?!}endif
 {defaultmode:}
+# Other makefile variables (-K)
+{@d:makefiledefines}{d}
+{/@}
 
 #------------------------------------------------------------------------------
 
