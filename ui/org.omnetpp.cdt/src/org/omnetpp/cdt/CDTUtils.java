@@ -1,5 +1,6 @@
 package org.omnetpp.cdt;
 
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
@@ -35,6 +36,14 @@ public class CDTUtils {
         // we identify the tool-chain by assuming that its id contains the below string.
         return getActiveToolChain(project).getId().contains(".msvc.");
     }
-    
-    
+
+    /**
+     * Returns empty array for non-CDT projects.
+     */
+    public static ICSourceEntry[] getSourceEntriesIfExist(IProject project) {
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+        IConfiguration activeConfiguration = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
+        return activeConfiguration==null ? new ICSourceEntry[0] : activeConfiguration.getSourceEntries();
+    }
+
 }
