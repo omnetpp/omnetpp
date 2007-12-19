@@ -102,6 +102,11 @@ Node *AdderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void AdderNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double"; // XXX int?
+}
+
 //-----
 
 bool MultiplierNode::isReady() const
@@ -150,6 +155,11 @@ Node *MultiplierNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void MultiplierNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double"; // XXX int?
+}
+
 //-----
 
 bool DividerNode::isReady() const
@@ -196,6 +206,11 @@ Node *DividerNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
+}
+
+void DividerNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
 }
 
 //-----
@@ -247,6 +262,12 @@ Node *ModuloNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void ModuloNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double"; // XXX int?
+}
+
+
 //-----
 
 bool DifferenceNode::isReady() const
@@ -295,6 +316,14 @@ Node *DifferenceNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void DifferenceNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	if (attrs["type"] != "int")
+		attrs["type"] = "double";
+	// TODO interpolation-mode
+}
+
+
 //-----
 
 bool TimeDiffNode::isReady() const
@@ -341,6 +370,13 @@ Node *TimeDiffNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     mgr->addNode(node);
     return node;
 }
+
+void TimeDiffNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+	attrs["interpolationmode"] = "backward-sample-hold";
+}
+
 
 //-----
 
@@ -407,6 +443,12 @@ Node *MovingAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
+void MovingAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
+
+
 //-----
 
 bool SumNode::isReady() const
@@ -453,6 +495,13 @@ Node *SumNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     mgr->addNode(node);
     return node;
 }
+
+void SumNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	if (attrs["type"] != "int")
+		attrs["type"] = "double";
+}
+
 
 //------
 
@@ -546,6 +595,12 @@ Node *LinearTrendNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void LinearTrendNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
+
+
 //-----
 
 bool CropNode::isReady() const
@@ -611,6 +666,12 @@ void MeanNode::process()
         out()->write(&d,1);
     }
 }
+
+void MeanNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
+
 
 //--
 
@@ -680,6 +741,12 @@ Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     mgr->addNode(node);
     return node;
 }
+
+void RemoveRepeatsNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	// TODO interpolationmode
+}
+
 
 //-----
 
@@ -818,6 +885,12 @@ Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void IntegrateNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
+
+
 //-----
 
 bool TimeAverageNode::isReady() const
@@ -883,6 +956,11 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+void TimeAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
+
 //-----
 
 bool DivideByTimeNode::isReady() const
@@ -922,4 +1000,10 @@ Node *DivideByTimeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     mgr->addNode(node);
     return node;
 }
+
+void DivideByTimeNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
+
 

@@ -55,7 +55,7 @@ class SCAVE_API NodeType
         virtual const char *description() const = 0;
 
         /**
-         * Returns true if this node should appear in the UI.
+         * Returns true if this node should not appear in the UI.
          */
         virtual bool isHidden() const = 0;
 
@@ -87,6 +87,12 @@ class SCAVE_API NodeType
          * Get the named port of the give node instance.
          */
         virtual Port *getPort(Node *node, const char *portname) const = 0;
+
+        /**
+         * Maps input vector attributes to output vector attributes.
+         * This method is called for filter nodes only.
+         */
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 

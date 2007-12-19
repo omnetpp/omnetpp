@@ -820,7 +820,8 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
 
 
 // create a file for each dataset?
-ID ResultFileManager::addComputedVector(int vectorId, const char *name, const char *file, ComputationID computationID, ID input, ComputationNode computation)
+ID ResultFileManager::addComputedVector(int vectorId, const char *name, const char *file,
+		const StringMap &attributes, ComputationID computationID, ID input, ComputationNode computation)
 {
     assert(getTypeOf(input) == VECTOR);
 
@@ -838,10 +839,10 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
     newVector.vectorId = vectorId;
     newVector.computation = computation;
     newVector.columns = vector.columns;
-    // TODO which attributes should be copied?
     newVector.moduleNameRef = vector.moduleNameRef;
     newVector.nameRef = stringSetFindOrInsert(names, name);
     newVector.fileRunRef = fileRunRef;
+    newVector.attributes = attributes;
     newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(true, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);

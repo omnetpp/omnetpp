@@ -10,6 +10,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.common.util.StringUtils;
@@ -63,6 +64,7 @@ public class DataflowNetworkBuilder {
 	private Map<ResultFile,ReaderNode> fileToReaderNodeMap = new HashMap<ResultFile,ReaderNode>();
 	private Map<Long,PortWrapper> idToOutputPortMap = new LinkedHashMap<Long,PortWrapper>();
 	private ResultFileManager resultfileManager;
+	private List<IStatus> warnings = new ArrayList<IStatus>();
 
 	abstract class NodeWrapper
 	{
@@ -207,7 +209,7 @@ public class DataflowNetworkBuilder {
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
 			//System.out.format("Connecting %x%n", inPort.id);
-			outPort.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager); 
+			outPort.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager, warnings); 
 			idToOutputPortMap.remove(inPort.id);
 			idToOutputPortMap.put(outPort.id, outPort);
 		}
@@ -251,7 +253,7 @@ public class DataflowNetworkBuilder {
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
 			//System.out.format("Connecting %x%n", inPort.id);
-			outPort1.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager); 
+			outPort1.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager, warnings); 
 			outPort2.id = inPort.id;
 			idToOutputPortMap.put(outPort1.id, outPort1);
 			idToOutputPortMap.put(outPort2.id, outPort2);
@@ -486,6 +488,7 @@ public class DataflowNetworkBuilder {
 	 * Builds a dataflow network for reading the data of the given vectors.
 	 */
 	public DataflowManager build(IDList idlist) {
+		warnings.clear();
 		for (int i = 0; i < (int)idlist.size(); ++i) {
 			addReaderNode(idlist.get(i));
 		}
@@ -498,6 +501,7 @@ public class DataflowNetworkBuilder {
 	 * the given dataset item.
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, boolean createDataflowManager) {
+		warnings.clear();
 		buildInternal(dataset, target);
 		addArrayBuilderNodes();
 		return createDataflowManager ? buildNetwork() : null;
@@ -508,6 +512,7 @@ public class DataflowNetworkBuilder {
 	 * vector file.
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, String fileName) {
+		warnings.clear();
 		buildInternal(dataset, target);
 		addVectorFileWriterNode(fileName);
 		return buildNetwork();
@@ -530,6 +535,10 @@ public class DataflowNetworkBuilder {
 		for (ArrayBuilderNode node : arrayBuilderNodes)
 			result.add(node.node);
 		return result;
+	}
+	
+	public List<IStatus> getWarnings() {
+		return warnings;
 	}
 
 	private void buildInternal(Dataset dataset, final DatasetItem target) {

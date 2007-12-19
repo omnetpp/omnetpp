@@ -50,4 +50,8 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
     }
 }
 
+void NodeType::mapVectorAttributes(StringMap &attrs) const
+{
+}
+
 

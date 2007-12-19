@@ -62,6 +62,7 @@ class SCAVE_API AdderNodeType : public FilterNodeType
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -88,6 +89,7 @@ class SCAVE_API MultiplierNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -114,6 +116,7 @@ class SCAVE_API DividerNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -140,6 +143,7 @@ class SCAVE_API ModuloNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -166,6 +170,7 @@ class SCAVE_API DifferenceNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -192,6 +197,7 @@ class SCAVE_API TimeDiffNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -220,6 +226,7 @@ class SCAVE_API MovingAverageNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -246,6 +253,7 @@ class SCAVE_API SumNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 //----
 
@@ -296,6 +304,7 @@ class SCAVE_API LinearTrendNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -347,6 +356,7 @@ class SCAVE_API MeanNodeType : public FilterNodeType
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 #endif
@@ -377,6 +387,7 @@ class SCAVE_API RemoveRepeatsNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -445,6 +456,7 @@ class SCAVE_API IntegrateNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -474,6 +486,7 @@ class SCAVE_API TimeAverageNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 //----
@@ -498,5 +511,6 @@ class SCAVE_API DivideByTimeNodeType : public FilterNodeType
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 

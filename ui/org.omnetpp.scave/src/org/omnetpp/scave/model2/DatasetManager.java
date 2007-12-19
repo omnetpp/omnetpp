@@ -9,11 +9,13 @@ import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.common.util.Pair;
@@ -27,11 +29,14 @@ import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
+import org.omnetpp.scave.engine.NodeType;
+import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
@@ -82,12 +87,14 @@ public class DatasetManager {
 		private IDList idlist;
 		private EObject target;
 		private boolean finished;
+		private List<IStatus> warnings;
 
 		public ProcessDatasetSwitch(ResultFileManager manager, EObject target, ResultType type) {
 			this.manager = manager;
 			this.type = type;
 			this.target = target;
 			this.idlist = new IDList();
+			this.warnings = new ArrayList<IStatus>();
 		}
 
 		public IDList getIDList() {
@@ -140,7 +147,7 @@ public class DatasetManager {
 				idlist.substract(selected);
 				for (int i = 0; i < selected.size(); ++i) {
 					long id = selected.get(i);
-					idlist.add(ensureComputedResultItem(apply, id, i, manager));
+					idlist.add(ensureComputedResultItem(apply, id, i, manager, warnings));
 				}
 			}
 			return this;
@@ -152,7 +159,7 @@ public class DatasetManager {
 				int size = (int)selected.size();
 				for (int i = 0; i < size; ++i) {
 					long id = selected.get(i);
-					idlist.add(ensureComputedResultItem(compute, id, i, manager));
+					idlist.add(ensureComputedResultItem(compute, id, i, manager, warnings));
 				}
 			}
 			return this;
@@ -476,8 +483,7 @@ public class DatasetManager {
 		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(filterPattern), manager);
 	}
 	
-	
-	static long ensureComputedResultItem(ProcessingOp operation, long inputID, int vectorId, ResultFileManager manager) {
+	static long ensureComputedResultItem(ProcessingOp operation, long inputID, int vectorId, ResultFileManager manager, /*out*/ List<IStatus> warnings) {
 		long computationID = getFilterNodeID(operation);
 		long id = manager.getComputedVector(computationID, inputID);
 		if (id == -1) {
@@ -485,12 +491,27 @@ public class DatasetManager {
 			VectorResult vector = manager.getVector(inputID);
 			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
 			String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);
-			id = manager.addComputedVector(vectorId, name, fileName, computationID, inputID, operation);
+			StringMap attributes = mapVectorAttributes(vector, operation, warnings);
+			id = manager.addComputedVector(vectorId, name, fileName, attributes, computationID, inputID, operation);
 		}
 		return id;
 	}
 	
-	static long getFilterNodeID(ProcessingOp operation) {
+	private static long getFilterNodeID(ProcessingOp operation) {
 		return operation.hashCode();
+	}
+	
+	static StringMap mapVectorAttributes(VectorResult input, ProcessingOp processingOp, /*out*/List<IStatus> warnings) {
+		String operation = processingOp.getOperation();
+		StringMap inputAttrs = input.getAttributes();
+		StringMap outAttrs = new StringMap();
+		if (operation == null)
+			return outAttrs;
+		for (String key : inputAttrs.keys().toArray()) // TODO use clone()
+			outAttrs.set(key, inputAttrs.get(key));
+		
+		NodeType type = NodeTypeRegistry.instance().getNodeType(operation);
+		type.mapVectorAttributes(outAttrs);
+		return outAttrs;
 	}
 }
