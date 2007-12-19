@@ -1,3 +1,13 @@
+SS SimulationStartEntry // first line of an event log file
+{
+   v int version
+   rid string runId
+}
+
+SE SimulationEndEntry // optional last line of an event log file
+{
+}
+
 BU BubbleEntry // display a bubble message
 {
    id int moduleId // id of the module which printed the bubble message

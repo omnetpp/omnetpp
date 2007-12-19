@@ -15,6 +15,7 @@
 
 #include <sstream>
 #include <string.h>
+#include <sys/stat.h>
 #include "platmisc.h"
 #include "commonutil.h"
 #include "filereader.h"
@@ -45,8 +46,11 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     dataEnd = NULL;
     currentDataPointer = NULL;
 
-    lastLineStartOffset = -1;
-    lastLineEndOffset = -1;
+    lastLineOffset = -1;
+    lastLineLength = -1;
+
+    currentLineStartOffset = -1;
+    currentLineEndOffset = -1;
 }
 
 FileReader::~FileReader()
@@ -55,9 +59,20 @@ FileReader::~FileReader()
     ensureFileClosed();
 }
 
-bool FileReader::isChanged()
+FileReader::FileChangedState FileReader::getFileChangedState()
 {
-    return fileSize != getFileSizeInternal();
+    if (fileSize != getFileSizeInternal()) {
+        seekTo(lastLineOffset);
+        char *currentLastLine = getNextLineBufferPointer();
+        int currentLineLength = getCurrentLineLength();
+
+        if (currentLastLine && currentLineLength == lastLineLength && !strncmp(currentLastLine, lastLine.c_str(), lastLineLength))
+            return APPENDED;
+        else
+            return OVERWRITTEN;
+    }
+
+    return UNCHANGED;
 }
 
 void FileReader::synchronize()
@@ -66,7 +81,14 @@ void FileReader::synchronize()
 
     if (fileSize != this->fileSize) {
         this->fileSize = fileSize;
-        fillBuffer(true);
+        dataBegin = dataEnd = NULL;
+
+        // read in last line
+        seekTo(getFileSize());
+        char *line = getPreviousLineBufferPointer();
+        lastLineLength = getCurrentLineLength();
+        lastLineOffset = getCurrentLineStartOffset();
+        lastLine.assign(line, lastLineLength);
     }
 }
 
@@ -79,6 +101,7 @@ void FileReader::ensureFileOpen()
         if (!f)
             throw opp_runtime_error("Cannot open file `%s'", fileName.c_str());
 
+        synchronize();
         seekTo(0);
     }
 }
@@ -269,6 +292,15 @@ char *FileReader::getNextLineBufferPointer()
     Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
+    switch (getFileChangedState()) {
+        case OVERWRITTEN:
+            throw opp_runtime_error("File `%s' has been overwritten", fileName.c_str());
+        case APPENDED:
+            synchronize();
+        default:
+           break;
+    }
+
     fillBuffer(true);
 
     if (!isLineStart(currentDataPointer)) {
@@ -277,23 +309,23 @@ char *FileReader::getNextLineBufferPointer()
         if (nextLineDataPointer)
             currentDataPointer = nextLineDataPointer;
         else {
-            lastLineStartOffset = lastLineEndOffset = -1;
+            currentLineStartOffset = currentLineEndOffset = -1;
 
             return NULL;
         }
     }
 
-    lastLineStartOffset = pointerToFileOffset(currentDataPointer);
+    currentLineStartOffset = pointerToFileOffset(currentDataPointer);
     char *nextLineDataPointer = findNextLineStart(currentDataPointer);
 
     if (nextLineDataPointer) {
         currentDataPointer = nextLineDataPointer;
-        lastLineEndOffset = pointerToFileOffset(currentDataPointer);
+        currentLineEndOffset = pointerToFileOffset(currentDataPointer);
 
-        return fileOffsetToPointer(lastLineStartOffset);
+        return fileOffsetToPointer(currentLineStartOffset);
     }
     else {
-        lastLineStartOffset = lastLineEndOffset = -1;
+        currentLineStartOffset = currentLineEndOffset = -1;
 
         return NULL;
     }
@@ -306,6 +338,9 @@ char *FileReader::getPreviousLineBufferPointer()
     Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
+    if (getFileChangedState() == OVERWRITTEN)
+        throw opp_runtime_error("File `%s' has been overwritten", fileName.c_str());
+
     fillBuffer(false);
 
     if (!isLineStart(currentDataPointer)) {
@@ -314,23 +349,23 @@ char *FileReader::getPreviousLineBufferPointer()
         if (previousLineDataPointer)
             currentDataPointer = previousLineDataPointer;
         else {
-            lastLineStartOffset = lastLineEndOffset = -1;
+            currentLineStartOffset = currentLineEndOffset = -1;
 
             return NULL;
         }
     }
 
-    lastLineEndOffset = pointerToFileOffset(currentDataPointer);
+    currentLineEndOffset = pointerToFileOffset(currentDataPointer);
     char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
 
     if (previousLineDataPointer) {
         currentDataPointer = previousLineDataPointer;
-        lastLineStartOffset = pointerToFileOffset(currentDataPointer);
+        currentLineStartOffset = pointerToFileOffset(currentDataPointer);
 
-        return fileOffsetToPointer(lastLineStartOffset);
+        return fileOffsetToPointer(currentLineStartOffset);
     }
     else {
-        lastLineStartOffset = lastLineEndOffset = -1;
+        currentLineStartOffset = currentLineEndOffset = -1;
 
         return NULL;
     }
@@ -354,7 +389,7 @@ char *FileReader::findNextLineBufferPointer(const char *search)
 {
     char *line;
     while ((line = getNextLineBufferPointer()) != NULL)
-        if (strnistr(line, search, getLastLineLength()))
+        if (strnistr(line, search, getCurrentLineLength()))
             return line;
 
     return NULL;
@@ -364,7 +399,7 @@ char *FileReader::findPreviousLineBufferPointer(const char *search)
 {
     char *line;
     while ((line = getPreviousLineBufferPointer()) != NULL)
-        if (strnistr(line, search, getLastLineLength()))
+        if (strnistr(line, search, getCurrentLineLength()))
             return line;
 
     return NULL;
@@ -382,6 +417,12 @@ int64 FileReader::getFileSizeInternal()
 {
     ensureFileOpen();
 
+    struct stat s;
+    fstat(fileno(f), &s);
+    return s.st_size;
+
+    /* TODO: remove this
+    // TODO: check if this is hell slow
     file_offset_t tmp = filereader_ftell(f);
     filereader_fseek(f, 0, SEEK_END);
     int64 fileSize = filereader_ftell(f);
@@ -391,6 +432,7 @@ int64 FileReader::getFileSizeInternal()
         throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
     return fileSize;
+    */
 }
 
 void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)

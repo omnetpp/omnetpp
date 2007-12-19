@@ -209,7 +209,7 @@ void offsets(Options options)
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
-                fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getLastLineLength(), fileReader->getNextLineBufferPointer());
+                fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getCurrentLineLength(), fileReader->getNextLineBufferPointer());
             }
 
             fprintf(options.outputFile, "%lld\n", offset);
@@ -295,6 +295,23 @@ void echo(Options options)
         fprintf(stdout, "# Echoing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
+}
+
+void cat(Options options)
+{
+    if (options.verbose)
+        fprintf(stdout, "# Cating from file %s\n", options.inputFileName);
+
+    FileReader *fileReader = new FileReader(options.inputFileName);
+
+    long begin = clock();
+    char *line;
+    while ((line = fileReader->getNextLineBufferPointer()))
+        fprintf(stdout, "%.*s", fileReader->getCurrentLineLength(), line);
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Cating of %lld lines and %lld bytes form log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void filter(Options options)
@@ -488,10 +505,12 @@ int main(int argc, char **argv)
                     events(options);
                 else if (!strcmp(command, "ranges"))
                     ranges(options);
-                else if (!strcmp(command, "echo"))
-                    echo(options);
                 else if (!strcmp(command, "filter"))
                     filter(options);
+                else if (!strcmp(command, "echo"))
+                    echo(options);
+                else if (!strcmp(command, "cat"))
+                    cat(options);
                 else
                     usage("Unknown or invalid command");
             }

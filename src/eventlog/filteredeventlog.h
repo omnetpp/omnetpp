@@ -110,6 +110,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 
         bool matchesFilter(IEvent *event);
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward, long stopEventNumber = -1);
+        FilteredEvent *getMatchingEventInDirection(IEvent *event, bool forward, long stopEventNumber = -1);
         std::vector<int> getSelectedModuleIds();
 
         // IEventLog interface

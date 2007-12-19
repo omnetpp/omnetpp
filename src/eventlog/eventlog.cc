@@ -22,8 +22,12 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
     numParsedEvents = 0;
     approximateNumberOfEvents = -1;
+
     progressCallInterval = CLOCKS_PER_SEC;
     lastProgressCall = -1;
+
+    firstEvent = NULL;
+    lastEvent = NULL;
 
     parseInitializationLogEntries();
 }
@@ -57,12 +61,14 @@ void EventLog::synchronize()
     IEventLog::synchronize();
     EventLogIndex::synchronize();
 
-    IEvent *lastEvent = getLastEvent();
     approximateNumberOfEvents = -1;
 
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
         it->second->synchronize();
 
+    firstEvent = NULL;
+
+    IEvent *lastEvent = getLastEvent();
     if (lastEvent) {
         eventNumberToEventMap.erase(lastEvent->getEventNumber());
         offsetToEventMap.erase(lastEvent->getBeginOffset());
@@ -71,6 +77,7 @@ void EventLog::synchronize()
             IEvent::unlinkEvents(lastEvent->getPreviousEvent(), lastEvent);
 
         delete lastEvent;
+        lastEvent = NULL;
     }
 }
 
@@ -151,7 +158,7 @@ void EventLog::parseInitializationLogEntries()
         if (!line)
             break;
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line, reader->getLastLineLength());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line, reader->getCurrentLineLength());
 
         if (dynamic_cast<EventEntry *>(eventLogEntry)) {
             delete eventLogEntry;
@@ -176,22 +183,26 @@ void EventLog::printInitializationLogEntries(FILE *file)
 
 Event *EventLog::getFirstEvent()
 {
-    file_offset_t offset = getFirstEventOffset();
+    if (!firstEvent) {
+        file_offset_t offset = getFirstEventOffset();
     
-    if (offset == -1)
-        return NULL;
-    else
-        return getEventForBeginOffset(offset);
+        if (offset != -1)
+            firstEvent = getEventForBeginOffset(offset);
+    }
+
+    return firstEvent;
 }
 
 Event *EventLog::getLastEvent()
 {
-    file_offset_t offset = getLastEventOffset();
+    if (!lastEvent) {
+        file_offset_t offset = getLastEventOffset();
 
-    if (offset == -1)
-        return NULL;
-    else
-        return getEventForBeginOffset(offset);
+        if (offset != -1)
+            lastEvent = getEventForBeginOffset(offset);
+    }
+
+    return lastEvent;
 }
 
 Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
@@ -254,7 +265,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
 
         do {
             if (line[0] == 'E' && line[1] == ' ')
-                return getEventForBeginOffset(reader->getLastLineStartOffset())->getEventLogEntry(index - 1);
+                return getEventForBeginOffset(reader->getCurrentLineStartOffset())->getEventLogEntry(index - 1);
             else if (line[0] != '\r' && line[0] != '\n')
                 index++;
         }

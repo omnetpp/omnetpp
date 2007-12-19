@@ -89,7 +89,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 	    		}
 	    	}
 	    	
-	        tokenizer.tokenize(line, reader.getLastLineLength());
+	        tokenizer.tokenize(line, reader.getCurrentLineLength());
 	        numTokens = tokenizer.numTokens();
 	        tokens = tokenizer.tokens();
 	        lineNo = reader.getNumReadLines();
@@ -148,14 +148,14 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 	            {
 	                if (currentVectorRef != NULL)
 	                {
-	                    currentBlock.size = (long)(reader.getLastLineStartOffset() - currentBlock.startOffset);
+	                    currentBlock.size = (long)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
 	                    if (currentBlock.size > currentVectorRef->blockSize)
 	                        currentVectorRef->blockSize = currentBlock.size;
 	                    currentVectorRef->addBlock(currentBlock);
 	                }
 	
 	                currentBlock = Block();
-	                currentBlock.startOffset = reader.getLastLineStartOffset();
+	                currentBlock.startOffset = reader.getCurrentLineStartOffset();
 	                currentVectorRef = index.getVectorById(vectorId);
 	                if (currentVectorRef == NULL)
 	                    throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);

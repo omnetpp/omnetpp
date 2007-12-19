@@ -312,7 +312,7 @@ VectorFileIndex *IndexFileReader::readAll()
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int lineNum = reader.getNumReadLines();
-        int len=reader.getLastLineLength();
+        int len=reader.getCurrentLineLength();
         numTokens=tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
         parseLine(tokens, numTokens, index, lineNum);
@@ -331,7 +331,7 @@ VectorFileIndex *IndexFileReader::readFingerprint()
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int lineNum = reader.getNumReadLines();
-        int len = reader.getLastLineLength();
+        int len = reader.getCurrentLineLength();
         numTokens = tokenizer.tokenize(line,len);
         tokens = tokenizer.tokens();
 

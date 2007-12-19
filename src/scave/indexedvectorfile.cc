@@ -88,7 +88,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
     for (int i=0; i<count; ++i)
     {
         CHECK(line=reader.getNextLineBufferPointer(), "Unexpected end of file", block, i);
-        int len = reader.getLastLineLength();
+        int len = reader.getCurrentLineLength();
 
         tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();

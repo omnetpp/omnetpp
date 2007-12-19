@@ -40,9 +40,13 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
     protected:
         long numParsedEvents;
         long approximateNumberOfEvents;
+
         long progressCallInterval;
         long lastProgressCall; // as returned by clock()
         ProgressMonitor progressMonitor;
+
+        Event *firstEvent;
+        Event *lastEvent;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event

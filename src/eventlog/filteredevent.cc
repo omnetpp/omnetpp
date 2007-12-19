@@ -72,7 +72,7 @@ FilteredEvent *FilteredEvent::getPreviousEvent()
 {
     if (!previousEvent && filteredEventLog->getFirstEvent() != this)
     {
-        previousEvent = filteredEventLog->getMatchingEventInDirection(eventNumber - 1, false);
+        previousEvent = filteredEventLog->getMatchingEventInDirection(getEvent()->getPreviousEvent(), false);
 
         if (previousEvent)
             IEvent::linkEvents(previousEvent, this);
@@ -85,7 +85,7 @@ FilteredEvent *FilteredEvent::getNextEvent()
 {
     if (!nextEvent && filteredEventLog->getLastEvent() != this)
     {
-        nextEvent = filteredEventLog->getMatchingEventInDirection(eventNumber + 1, true);
+        nextEvent = filteredEventLog->getMatchingEventInDirection(getEvent()->getNextEvent(), true);
 
         if (nextEvent)
             Event::linkEvents(this, nextEvent);

@@ -1107,7 +1107,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
             ResultItem *resultItemRef = NULL;
             while ((line=freader.getNextLineBufferPointer())!=NULL)
             {
-                int len = freader.getLastLineLength();
+                int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);
                 char **tokens = tokenizer.tokens();
                 processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, freader.getNumReadLines());

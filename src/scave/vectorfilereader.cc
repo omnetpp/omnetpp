@@ -115,7 +115,7 @@ void VectorFileReaderNode::process()
     for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=NULL; k++)
     {
         int lineNo = (int)reader.getNumReadLines();
-        int length = reader.getLastLineLength();
+        int length = reader.getCurrentLineLength();
         tokenizer.tokenize(line, length);
 
         int numtokens = tokenizer.numTokens();

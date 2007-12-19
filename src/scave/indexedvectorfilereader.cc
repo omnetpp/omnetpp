@@ -122,8 +122,8 @@ bool IndexedVectorFileReaderNode::readNextBlock(PortData &portData)
     char *line;
     for (long k = 0; k < count && (line=reader.getNextLineBufferPointer())!=NULL; ++k)
     {
-        offset = reader.getLastLineStartOffset();
-        int length = reader.getLastLineLength();
+        offset = reader.getCurrentLineStartOffset();
+        int length = reader.getCurrentLineLength();
         tokenizer.tokenize(line, length);
 
         int numtokens = tokenizer.numTokens();

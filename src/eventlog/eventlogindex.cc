@@ -398,9 +398,9 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     }
 
     // find event number and simulation time in line ("# 12345 t 1.2345")
-    tokenizer.tokenize(line, reader->getLastLineLength());
-    lineStartOffset = reader->getLastLineStartOffset();
-    lineEndOffset = reader->getLastLineEndOffset();
+    tokenizer.tokenize(line, reader->getCurrentLineLength());
+    lineStartOffset = reader->getCurrentLineStartOffset();
+    lineEndOffset = reader->getCurrentLineEndOffset();
 
     int numTokens = tokenizer.numTokens();
     char **tokens = tokenizer.tokens();

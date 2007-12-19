@@ -33,8 +33,8 @@ typedef int64 file_offset_t;  // off_t on Linux
    __int64 __cdecl _ftelli64 (FILE *stream);
 # endif
 #else
-# define filereader_ftell ftello
-# define filereader_fseek fseeko
+# define filereader_ftell ftello64
+# define filereader_fseek fseeko64
 #endif
 */
 
@@ -47,11 +47,9 @@ typedef int64 file_offset_t;  // off_t on Linux
 #define filereader_ftell ftell
 #define filereader_fseek fseek
 #else
-#define filereader_ftell ftello
-#define filereader_fseek fseeko
+#define filereader_ftell ftello64
+#define filereader_fseek fseeko64
 #endif
-
-
 
 /**
  * Reads a file line by line. It has to be very efficient since
@@ -82,12 +80,17 @@ class COMMON_API FileReader
     char *dataBegin;
     char *dataEnd;
 
+    // the very last line of the file as currently known
+    file_offset_t lastLineOffset;
+    int lastLineLength;
+    std::string lastLine;
+
     // the position where readNextLine() or readPreviousLine() starts from
     char *currentDataPointer;
 
     // the pointer returned by readNextLine() or readPreviousLine()
-    file_offset_t lastLineStartOffset;
-    file_offset_t lastLineEndOffset;
+    file_offset_t currentLineStartOffset;
+    file_offset_t currentLineEndOffset;
 
     // total number of lines read in so far
     int64 numReadLines;
@@ -118,16 +121,23 @@ class COMMON_API FileReader
     int64 getFileSizeInternal();
 
   public:
+    enum FileChangedState {
+        UNCHANGED,
+        APPENDED,
+        OVERWRITTEN,
+    };
+
     /**
      * Creates a tokenizer object for the given file, with the given
      * buffer size. The file doesn't get opened yet.
+     * Automatically follows file content when appended.
      */
     FileReader(const char *fileName, size_t bufferSize = 64 * 1024);
 
     /**
      * Destructor.
      */
-    ~FileReader();
+    virtual ~FileReader();
 
     /**
      * This method is called automatically whenever the file is accessed.
@@ -135,14 +145,16 @@ class COMMON_API FileReader
     void ensureFileOpen();
 
     /**
-     * This method is called automatically from the destructor, but might be useful to release the file when it is not needed for a long period of time.
+     * This method is called automatically from the destructor, but might be useful to release the file when it is 
+     * not needed for a long period of time.
      */
     void ensureFileClosed();
 
     /**
-     * Checks if file has been changed on disk.
+     * Checks if file has been changed on disk. A file change is considered to be an append if it did not change the 
+     * content of the line (starting at the same offset) which was the last before the change.
      */
-    bool isChanged();
+    FileChangedState getFileChangedState();
 
     /**
      * Updates internal state to reflect file changes on disk.
@@ -152,7 +164,8 @@ class COMMON_API FileReader
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.
      * It returns NULL after EOF. Incomplete last line gets ignored (returns NULL)
-     * as it is possible that the file is currently being written into.
+     * as it is possible that the file is currently being written into. When new lines are appended to the file subsequent
+     * calls will return non NULL and continue reading lines from that on.
      * Moves the current position to the end of the line just returned.
      */
     char *getNextLineBufferPointer();
@@ -177,21 +190,21 @@ class COMMON_API FileReader
     /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
      */
-    file_offset_t getLastLineStartOffset() { return lastLineStartOffset; }
+    file_offset_t getCurrentLineStartOffset() { return currentLineStartOffset; }
 
     /**
      * Returns the end offset of the line last parsed with readNextLine() or readPreviousLine().
      * This points to the start offset of the next line, so it includes the CR/LF of the previous line.
      */
-    file_offset_t getLastLineEndOffset() { return lastLineEndOffset; }
+    file_offset_t getCurrentLineEndOffset() { return currentLineEndOffset; }
 
     /**
      * Returns the length of the last line including CR/LF.
      */
-    int getLastLineLength() { return lastLineEndOffset - lastLineStartOffset; }
+    int getCurrentLineLength() { return currentLineEndOffset - currentLineStartOffset; }
 
     /**
-     * Returns the size of the file.
+     * Returns the size of the file when last time synchronize was called.
      */
     int64 getFileSize();
 
