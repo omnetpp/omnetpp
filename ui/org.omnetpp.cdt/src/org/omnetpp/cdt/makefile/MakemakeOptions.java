@@ -42,9 +42,9 @@ public class MakemakeOptions implements Cloneable {
     public List<String> makefileDefines = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
-    // "meta" options (--meta:xxx): they get interpreted by MetaMakemake, 
+    // "meta" options (--meta:...): they get interpreted by MetaMakemake, 
     // and translated to normal makemake options.
-    public boolean metaFoo;  //XXX
+    public boolean metaAutoIncludePath = false;
 
     /**
      * Create makemake options with the default settings.
@@ -143,7 +143,7 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-P")) {
                 projectDir = arg.substring(2);
             }
-            else if (arg.equals("-M") || arg.equals("--defaultMode")) {
+            else if (arg.equals("-M") || arg.equals("--mode")) {
                 checkArg(argv, i);
                 defaultMode = argv[++i];
             }
@@ -219,6 +219,9 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-p")) {
                 dllExportMacro = arg.substring(2);
             }
+            else if (arg.equals("--meta:auto-include-path")) {
+                metaAutoIncludePath = true;
+            }
             else if (arg.equals("--")) {
                 break;
             }
@@ -290,6 +293,8 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libs, "-l");
         addOpts1(result, defines, "-D");
         addOpts1(result, makefileDefines, "-K");
+        if (metaAutoIncludePath)
+            result.add("--meta:auto-include-path");
         if (!extraArgs.isEmpty())
             result.add("--");
         result.addAll(extraArgs);
@@ -348,6 +353,7 @@ public class MakemakeOptions implements Cloneable {
         result.defines.addAll(defines);
         result.makefileDefines.addAll(defines);
         result.extraArgs.addAll(extraArgs);
+        result.metaAutoIncludePath = metaAutoIncludePath;
         return result;
     }
 }

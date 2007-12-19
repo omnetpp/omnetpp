@@ -86,7 +86,7 @@ public class MetaMakemake {
         }
 
         // add extra include folders
-        if (folderDeps != null) {
+        if (options.metaAutoIncludePath && folderDeps != null) {
             // we're looking for include path of the source folders covered by this makefile
             List<IContainer> srcFolders;
             if (options.isDeep)
@@ -101,6 +101,9 @@ public class MetaMakemake {
                         if (!srcFolder.getFullPath().isPrefixOf(dep.getFullPath()))  // only add if "dep" is outside "folder"!
                             if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not already in there
                                 translatedOptions.includeDirs.add(dep.getLocation().toString());
+
+            // clear processed setting
+            translatedOptions.metaAutoIncludePath = false;
         }
 
         System.out.println("Translated makemake options for " + folder + ": " + translatedOptions.toString());

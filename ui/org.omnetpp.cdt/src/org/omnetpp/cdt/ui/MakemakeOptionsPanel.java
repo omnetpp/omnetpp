@@ -71,6 +71,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Include" page
     private Button deepIncludesCheckbox;
+    private Button autoIncludePathCheckbox;
 
     // "Compile" page
     private Combo ccextCombo;
@@ -154,8 +155,8 @@ public class MakemakeOptionsPanel extends Composite {
         // "Include" page
         includePage.setLayout(new GridLayout(1,false));
         deepIncludesCheckbox = createCheckbox(includePage, "Add all source folders of deep makefile to the include path", null); 
-//        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null); //FIXME really? for deep, this should also enable that all source folders are include dirs as well. Or specify a different flag for that?
-//        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null);
+        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
         createLabel(includePage, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
 
 //        createLabel(includePage, "Additional include directories:");
@@ -347,6 +348,7 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.addModifyListener(mod);
 
         deepIncludesCheckbox.addSelectionListener(sel);
+        autoIncludePathCheckbox.addSelectionListener(sel);
 
         ccextCombo.addSelectionListener(sel);
         compileForDllCheckbox.addSelectionListener(sel);
@@ -421,6 +423,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         deepIncludesCheckbox.setSelection(!data.noDeepIncludes);
+        autoIncludePathCheckbox.setSelection(data.metaAutoIncludePath);
 
         // "Compile" page
         if (data.ccext == null)
@@ -468,6 +471,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Include" page
         result.noDeepIncludes = !deepIncludesCheckbox.getSelection();
+        result.metaAutoIncludePath = autoIncludePathCheckbox.getSelection();
 
         // "Compile" page
         String ccextText = ccextCombo.getText().trim().replace(".", "");
