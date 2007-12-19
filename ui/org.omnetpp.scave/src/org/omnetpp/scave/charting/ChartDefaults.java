@@ -84,7 +84,7 @@ public class ChartDefaults {
 
 	// lines
 	public static final boolean DEFAULT_DISPLAY_LINE = true;
-	public static final LineType DEFAULT_LINE_STYLE = null; //LineType.Linear;
+	public static final LineType DEFAULT_LINE_STYLE = null; // use interpolationmode attr of vectors
 	public static final Integer DEFAULT_SYMBOL_SIZE = 4;
 	
 	
