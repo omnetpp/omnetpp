@@ -19,29 +19,21 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
     // currently the environment variable cannot be pre/appended because of the above issue.
     // we have to get it by hand and append the rest automatically so we have to pass in the 
     // outer provider
+    // It seems that only the project properties dialog  hasprobles with it. If the focs is on the environment tab
+    // and we open the properties dialog, the value is wrongly set. On the other hand if the focus is on an other
+    // tab when we open it the path is correctly displayed
     private static class OmnetppBinPathEnvironmentVariable implements IBuildEnvironmentVariable {
-        private IEnvironmentVariableProvider provider;
-        private IManagedProject project;
 
         public OmnetppBinPathEnvironmentVariable() {
         }
         
-//        public OmnetppBinPathEnvironmentVariable(IManagedProject project,
-//                IEnvironmentVariableProvider provider) {
-//            this.project = project;
-//            this.provider = provider;
-//        }
-
         public String getName() {
             return "PATH";
         }
         
         public String getValue() {
             // FIXME in fact we have to look into the config files and get the bin directory from there
-            // THIS is a workaround to get the original PATH value so we can append ourselves to it
             String omnetppBin = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT)+"\\bin";
-//            IEnvironmentVariable oldVariable = provider.getVariable(getName(), ManagedBuildManager.getBuildInfo(project.getOwner()).getDefaultConfiguration(), true);
-//            return omnetppBin + (oldVariable != null ? getDelimiter()+ oldVariable.getValue() : "");
             return omnetppBin;
         }
         

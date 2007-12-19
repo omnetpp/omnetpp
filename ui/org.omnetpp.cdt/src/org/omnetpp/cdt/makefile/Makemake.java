@@ -98,6 +98,7 @@ public class Makemake {
         List<String> includeDirs = new ArrayList<String>();
         List<String> libDirs = new ArrayList<String>();
 
+        // FIXME target should not cotain relative path (just a name)
         target = abs2rel(target);
 
         // isRecursive and deep do not mix
@@ -165,14 +166,18 @@ public class Makemake {
         }
 
         String objExt = isNMake ? "obj" : "o";
-
+        String targetPrefix = "";  // FIXME add to perl too
         String targetSuffix = "";
         if (p.type == MakemakeOptions.Type.EXE)
             targetSuffix = isNMake ? ".exe" : "";
-        else if (p.type == MakemakeOptions.Type.SHAREDLIB)
+        else if (p.type == MakemakeOptions.Type.SHAREDLIB) {
             targetSuffix = isNMake ? ".dll" : ".so";
-        else if (p.type == MakemakeOptions.Type.STATICLIB)
+            targetPrefix = isNMake ? "" : "lib";
+        }
+        else if (p.type == MakemakeOptions.Type.STATICLIB) {
             targetSuffix = isNMake ? ".lib" : ".a";
+            targetPrefix = isNMake ? "" : "lib";
+        }
 
         // prepare subdirs. First, check that all specified subdirs exist
         List<String> subdirs = new ArrayList<String>();
@@ -316,7 +321,7 @@ public class Makemake {
         m.put("lbrace", "{");
         m.put("rbrace", "}");
         m.put("nmake", isNMake);
-        m.put("target", target + targetSuffix);
+        m.put("target", targetPrefix+ target + targetSuffix);
         m.put("outdir", outdir); 
         m.put("subpath", subpath); 
         m.put("isdeep", isDeep);
@@ -327,7 +332,7 @@ public class Makemake {
         m.put("-l", isNMake ? "" : "-l");
         m.put(".lib", isNMake ? ".lib" : "");
         m.put("-u", isNMake ? "/include:" : "-u");
-        m.put("-out", isNMake ? "/out:" : "-o");
+        m.put("-out", isNMake ? "/out:" : "-o ");
         m.put("_dir", "_dir");
         m.put("cc", ccExt);
         m.put("obj", objExt);

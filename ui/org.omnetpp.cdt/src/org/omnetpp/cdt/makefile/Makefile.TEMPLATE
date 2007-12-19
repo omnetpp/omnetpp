@@ -147,7 +147,7 @@ all: $O/$(TARGET)
 {sharedlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
 {staticlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{staticlib:}	$(AR) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
+{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
 {nolink:}$O/$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
@@ -169,18 +169,16 @@ print-info:
 {msgfiles:}
 .SUFFIXES: .{cc}
 
-{nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {~nmake:}$O/%.{obj}: %.{cc}
+{~nmake:}	@mkdir -p $(dir $@)
+{~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
+{nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\) 2>nul
-{~nmake:}	@mkdir -p $O
-	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
-
+{nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {@dir:sourcedirs,bsdir:backslashedsourcedirs}
 {nmake:}{lbrace}{dir}{rbrace}.cc{lbrace}$O/{dir}{rbrace}.{obj}:
-{~nmake:}$O/{dir}/%.{obj}: {dir}/%.{cc}
 {nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
-{~nmake:}	@mkdir -p $O/{dir}
-	$(CXX) -c $(COPTS) {nmake?/Fo"$@"}{~nmake?-o $@} {nmake?-Tp} $<
+{nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {/@}
 
 generateheaders: $(MSG_H_FILES)

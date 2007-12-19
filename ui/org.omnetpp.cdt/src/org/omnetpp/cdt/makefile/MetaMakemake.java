@@ -154,7 +154,7 @@ public class MetaMakemake {
      * are filesystem paths.
      */
     protected static List<String> getIncludePathsFor(IContainer folder) {
-        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder);
+        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, false);
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.INCLUDE_PATH));
     }
 
@@ -164,7 +164,7 @@ public class MetaMakemake {
      * are filesystem paths.
      */
     protected static List<String> getLibraryPathsFor(IContainer folder) {
-        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder);
+        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, true);
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.LIBRARY_PATH));
     }
 
@@ -173,7 +173,7 @@ public class MetaMakemake {
      * in the active configuration and for the C++ language. Built-in ones are skipped.
      */
     protected static List<String> getMacrosFor(IContainer folder) {
-        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder);
+        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, false);
         ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);
         List<String> result = new ArrayList<String>();
         for (ICLanguageSettingEntry pathEntry : settingEntries) {
@@ -212,9 +212,9 @@ public class MetaMakemake {
     }
 
     /**
-     * Returns the C++ language settings for the given folder in the active configuration, or null if not found. 
+     * Returns the language settings for the given folder in the active configuration, or null if not found.
      */
-    protected static ICLanguageSetting findCCLanguageSettingFor(IContainer folder) {
+    protected static ICLanguageSetting findCCLanguageSettingFor(IContainer folder, boolean forLinker) {
         // find folder description
         IProject project = folder.getProject();
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
@@ -224,9 +224,11 @@ public class MetaMakemake {
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
         ICLanguageSetting languageSetting = null;
-        for (ICLanguageSetting l : languageSettings)
-            if (l.getName().contains("C++"))  //XXX a bit dodgy, but languageId is usually "org.eclipse.cdt.core.g++" which is not good for MSVC 
+        for (ICLanguageSetting l : languageSettings) {
+            System.out.println("*** language setting: "+l.getName()+" "+l.getId());
+            if (l.getName().contains(forLinker ? "Object" : "C++"))  //XXX a bit dodgy, but languageId is usually "org.eclipse.cdt.core.g++" which is not good for MSVC 
                 languageSetting = l;
+        }
         return languageSetting;
     }
 

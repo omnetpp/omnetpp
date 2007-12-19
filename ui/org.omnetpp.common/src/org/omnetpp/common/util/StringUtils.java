@@ -611,7 +611,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                     boolean isNegated = key.charAt(0)=='~';
                     if (isNegated) 
                         key = key.substring(1);  // drop "~"
-                    boolean isOptLine = key.endsWith(":");
+                    boolean isOptLine = key.endsWith(":") && key.indexOf('?') == -1;
                     if (isOptLine)
                         key = key.substring(0, key.length()-1);  // drop trailing ":"
                     int questionmarkPos = key.indexOf('?');
