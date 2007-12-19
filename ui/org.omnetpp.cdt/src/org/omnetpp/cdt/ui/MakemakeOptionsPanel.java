@@ -372,6 +372,7 @@ public class MakemakeOptionsPanel extends Composite {
         // re-parse options text modified by user
         MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
         populate(updatedOptions, makefragText.getText());
+        translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions, null).toString());
     }
 
     protected void updateDialogState() {
