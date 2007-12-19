@@ -42,7 +42,7 @@ MAKEDEPEND = @MAKEDEPEND@
 DOT = @DOT@
 DOXYGEN = @DOXYGEN@
 
-ifeq ($(MODE),"debug")
+ifeq ("$(MODE)","debug")
 CFLAGS = $(CFLAGS_DEBUG)
 else
 CFLAGS = $(CFLAGS_RELEASE)
