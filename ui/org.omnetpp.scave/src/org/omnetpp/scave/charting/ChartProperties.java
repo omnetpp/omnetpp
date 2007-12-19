@@ -112,7 +112,7 @@ public class ChartProperties extends PropertySource {
 		Dots("Dots", "dots"),
 		Points("Points", "points"), 
 		SampleHold("Sample-Hold", "samplehold"),
-		BackwardSampleHold("Backward Sample-Hold", "bksamplehold");  //XXX not yet supported
+		BackwardSampleHold("Backward Sample-Hold", "bksamplehold");
 
 		private String name;
 		private String imageId;

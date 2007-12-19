@@ -323,24 +323,32 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		private boolean getDisplayLine(String lineId) {
 			if (displayLineCheckbox.getGrayed()) {
-				return props.getLineProperties(lineId).getDisplayLine();
+				if (props != null)
+					return props.getLineProperties(lineId).getDisplayLine();
+				else
+					return ChartDefaults.DEFAULT_DISPLAY_LINE;
 			}
 			else
 				return displayLineCheckbox.getSelection();
 		}
 		
 		private IVectorPlotter getVectorPlotter(String lineId) {
-			LineType lineType = 
-				getEnumProperty(lineTypeCombo,
+			LineType lineType = null;
+			if (props != null)
+				lineType = getEnumProperty(lineTypeCombo,
 								props.getLineProperties(lineId).getLineType(),
 								ChartDefaults.DEFAULT_LINE_STYLE,
 								LineType.class);
+			if (lineType == null)
+				lineType = LineType.Linear; // XXX should use interpolationmode as in VectorChart?
+			
 			return VectorPlotterFactory.createVectorPlotter(lineType);
 		}
 		
 		private IChartSymbol getChartSymbol(String lineId) {
-			SymbolType type = 
-				getEnumProperty(symbolTypeCombo,
+			SymbolType type = null;
+			if (props != null)
+				type = getEnumProperty(symbolTypeCombo,
 								props.getLineProperties(lineId).getSymbolType(),
 								null,
 								SymbolType.class);
@@ -375,7 +383,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		private int getSymbolSize(String lineId) {
 			String sizeStr = symbolSizeCombo.getText();
-			if (sizeStr == null || sizeStr.equals(NO_CHANGE))
+			if ((sizeStr == null || sizeStr.equals(NO_CHANGE)) && props != null)
 				sizeStr = props.getLineProperties(lineId).getSymbolSize();
 
 			if (sizeStr != null) {
@@ -389,7 +397,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		public Color getLineColor(String lineId) {
 			String colorStr = colorEdit.getText();
-			if (colorStr == null)
+			if (colorStr == null && props != null)
 				colorStr = props.getLineProperties(lineId).getLineColor();
 			RGB rgb = ColorFactory.asRGB(colorStr);
 			if (rgb != null)
@@ -406,9 +414,6 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
 			drawBackground(gc, e.x, e.y, e.width, e.height);
-			
-			if (props == null)
-				return;
 			
 			IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
 			List selectedIds = selection.toList();

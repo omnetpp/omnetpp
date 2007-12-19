@@ -5,6 +5,7 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
@@ -17,19 +18,23 @@ import org.omnetpp.scave.model2.ResultItemValueFormatter;
 // TODO bounds should be read from the vector files
 public class VectorDataset extends XYDatasetSupport implements IStringValueXYDataset {
 	
-	private IDList idlist;
-	private String[] seriesKeys;
-	private XYArray[] seriesData;
-	private ResultItemValueFormatter[] formatters; 
+	private static class SeriesData
+	{
+		String key;
+		long id;
+		Type type;
+		InterpolationMode interpolationMode;
+		ResultItemValueFormatter formatter;
+		XYArray xyarray;
+	}
+	
+	private SeriesData[] data;
 
 	/**
 	 * Creates an empty dataset.
 	 */
 	public VectorDataset() {
-		this.idlist = new IDList();
-		this.seriesKeys = new String[] {};
-		this.seriesData = new XYArray[] {};
-		this.formatters = new ResultItemValueFormatter[] {};
+		this.data = new SeriesData[] {};
 	}
 	
 	/**
@@ -42,9 +47,18 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	public VectorDataset(IDList idlist, String lineNameFormat, ResultFileManager manager) {
 		Assert.isLegal(idlist != null);
 		Assert.isLegal(manager != null);
-		this.idlist = idlist;
-		this.seriesKeys = DatasetManager.getResultItemNames(idlist, lineNameFormat, manager);
-		Assert.isTrue(idlist.size() == seriesKeys.length);
+		String[] keys = DatasetManager.getResultItemNames(idlist, lineNameFormat, manager);
+		Assert.isTrue(idlist.size() == keys.length);
+		this.data = new SeriesData[keys.length];
+		for (int i = 0; i < data.length; ++i) {
+			long id = idlist.get(i);
+			VectorResult vector = manager.getVector(id);
+			SeriesData series = data[i] = new SeriesData();
+			series.id = id;
+			series.key = keys[i];
+			series.type = getType(vector);
+			series.interpolationMode = getInterpolationMode(vector);
+		}
 	}
 
 	/**
@@ -54,33 +68,43 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 */
 	public VectorDataset(IDList idlist, XYArray[] seriesData, String lineNameFormat, ResultFileManager manager) {
 		this(idlist, lineNameFormat, manager);
-		Assert.isTrue(seriesData != null || idlist.size() == seriesData.length);
-		this.seriesData = seriesData;
-		this.formatters = new ResultItemValueFormatter[idlist.size()];
-		for (int i = 0; i < formatters.length; ++i) {
-			ResultItem vector = manager.getItem(idlist.get(i));
-			formatters[i] = new ResultItemValueFormatter(vector);
+		Assert.isTrue(seriesData != null && data.length == seriesData.length);
+		for (int i = 0; i < data.length; ++i) {
+			SeriesData series = data[i];
+			ResultItem vector = manager.getItem(series.id);
+			series.formatter = new ResultItemValueFormatter(vector);
+			series.xyarray = seriesData[i];
 		}
 	}
 	
 	public int getSeriesCount() {
-		return seriesKeys.length;
+		return data.length;
 	}
 
 	public String getSeriesKey(int series) {
-		return seriesKeys[series];
+		return data[series].key;
+	}
+	
+	@Override
+	public Type getSeriesType(int series) {
+		return data[series].type;
+	}
+
+	@Override
+	public InterpolationMode getSeriesInterpolationMode(int series) {
+		return data[series].interpolationMode;
 	}
 
 	public int getItemCount(int series) {
-		return seriesData != null ? seriesData[series].length() : 0;
+		return data[series].xyarray != null ? data[series].xyarray.length() : 0;
 	}
 
 	public double getX(int series, int item) {
-		return seriesData[series].getX(item);
+		return data[series].xyarray.getX(item);
 	}
 	
 	public BigDecimal getPreciseX(int series, int item) {
-		return seriesData[series].getPreciseX(item);
+		return data[series].xyarray.getPreciseX(item);
 	}
 	
 	public String getXAsString(int series, int item) {
@@ -89,7 +113,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	}
 	
 	public double getY(int series, int item) {
-		return seriesData[series].getY(item);
+		return data[series].xyarray.getY(item);
 	}
 
 	public BigDecimal getPreciseY(int series, int item) {
@@ -97,11 +121,37 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	}
 	
 	public String getYAsString(int series, int item) {
-		ResultItemValueFormatter formatter = formatters[series];
+		ResultItemValueFormatter formatter = data[series].formatter;
 		return formatter.format(getY(series, item));
 	}
 	
 	public long getID(int series) {
-		return idlist.get(series);
+		return data[series].id;
+	}
+
+	private static Type getType(VectorResult vector) {
+		ResultItem.Type type = vector.getType();
+		if (type == ResultItem.Type.TYPE_ENUM)
+			return Type.Enum;
+		else if (type == ResultItem.Type.TYPE_INT)
+			return Type.Int;
+		else
+			return Type.Double;
+	}
+	
+	@SuppressWarnings("static-access")
+	private static InterpolationMode getInterpolationMode(VectorResult vector) {
+		org.omnetpp.scave.engine.InterpolationMode mode = vector.getInterpolationMode();
+		if (mode == null || mode == mode.UNSPECIFIED)
+			return InterpolationMode.Unspecified;
+		else if (mode == mode.NONE)
+			return InterpolationMode.None;
+		else if (mode == mode.LINEAR)
+			return InterpolationMode.Linear;
+		else if (mode == mode.SAMPLE_HOLD)
+			return InterpolationMode.SampleHold;
+		else if (mode == mode.BACKWARD_SAMPLE_HOLD)
+			return InterpolationMode.BackwardSampleHold;
+		return InterpolationMode.Unspecified;
 	}
 }

@@ -1,10 +1,19 @@
 package org.omnetpp.scave.charting.dataset;
 
+
 abstract class XYDatasetSupport implements IXYDataset {
 	
 	protected boolean initialized;
 	protected double minX, maxX;
 	protected double minY, maxY;
+
+	public Type getSeriesType(int series) {
+		return Type.Double;
+	}
+
+	public InterpolationMode getSeriesInterpolationMode(int series) {
+		return InterpolationMode.Linear;
+	}
 
 	public double getMinX() {
 		if (!initialized)

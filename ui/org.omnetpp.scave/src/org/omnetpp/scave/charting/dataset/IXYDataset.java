@@ -10,6 +10,20 @@ import org.omnetpp.common.engine.BigDecimal;
  * @author tomi
  */
 public interface IXYDataset extends IDataset {
+	
+	public enum Type {
+		Int,
+		Double,
+		Enum
+	}
+	
+	public enum InterpolationMode {
+		Unspecified,
+		None,
+		Linear,
+		SampleHold,
+		BackwardSampleHold
+	}
 
 	/**
      * Returns the number of series in the dataset.
@@ -25,6 +39,16 @@ public interface IXYDataset extends IDataset {
      * @return The key for the series.
      */
     public String getSeriesKey(int series);
+    
+    /**
+     * Returns the type of the y values in the specified series.
+     */
+    public Type getSeriesType(int series);
+    
+    /**
+     * Returns the interpolation mode of the specified series.
+     */
+    public InterpolationMode getSeriesInterpolationMode(int series);
     
     /**
      * Returns the number of items in a series.

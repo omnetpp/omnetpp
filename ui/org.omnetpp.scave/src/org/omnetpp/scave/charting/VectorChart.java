@@ -50,6 +50,7 @@ import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
@@ -161,10 +162,10 @@ public class VectorChart extends ChartCanvas {
 		}
 		
 		public LineType getLineType() {
-			if (lineType == null && fallback != null)
-				return fallback.getLineType();
-			Assert.isTrue(lineType != null);
-			return lineType;
+			if (lineType == null && fallback != null && fallback.lineType != null)
+				return fallback.lineType;
+			//Assert.isTrue(lineType != null);
+			return lineType == null ? lineTypeFromInterpolationMode() : lineType;
 		}
 		
 		public void setLineType(LineType lineType) {
@@ -205,6 +206,19 @@ public class VectorChart extends ChartCanvas {
 				return new Color(null, color);
 			else
 				return ColorFactory.getGoodDarkColor(series);
+		}
+		
+		private LineType lineTypeFromInterpolationMode() {
+			if (series < 0)
+				return LineType.Linear;
+			InterpolationMode mode = dataset.getSeriesInterpolationMode(series);
+			switch (mode) {
+				case None: return LineType.Points;
+				case Linear: return LineType.Linear;
+				case SampleHold: return LineType.SampleHold;
+				case BackwardSampleHold: return LineType.BackwardSampleHold;
+			}
+			return LineType.Linear;
 		}
 	}
 	
