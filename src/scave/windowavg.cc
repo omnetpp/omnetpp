@@ -87,3 +87,7 @@ Node *WindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
+void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+	attrs["type"] = "double";
+}
