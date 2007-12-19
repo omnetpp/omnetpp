@@ -71,6 +71,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //	private IAction zoomOutYAction;
 	private IAction zoomInAction;
 	private IAction zoomOutAction;
+	private IAction zoomToFitAction;
 	private IAction switchChartToPanModeAction;
 	private IAction switchChartToZoomModeAction;
 	private IAction copyChartToClipboardAction;
@@ -132,6 +133,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //        zoomOutYAction = registerAction(page, new ZoomChartAction(false, true, 1/1.5));
         zoomInAction = registerAction(page, new ZoomChartAction(true, true, 2.0));
         zoomOutAction = registerAction(page, new ZoomChartAction(true, true, 1/2.0));
+        zoomToFitAction = registerAction(page, new ZoomChartAction(true, true, 0.0));
         switchChartToPanModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
         switchChartToZoomModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
         copyChartToClipboardAction = registerAction(page, new CopyChartToClipboardAction());
@@ -237,6 +239,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
 		manager.insertBefore("scavemodel-additions", zoomInAction);
 		manager.insertBefore("scavemodel-additions", zoomOutAction);
+		manager.insertBefore("scavemodel-additions", zoomToFitAction);
 		manager.insertBefore("scavemodel-additions", refreshChartAction);
 		manager.insertBefore("scavemodel-additions", createChartTemplateAction);
 	}
@@ -341,6 +344,9 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     public IAction getZoomOutAction() {
 		return zoomOutAction;
 	}
+    public IAction getZoomToFitAction() {
+    	return zoomToFitAction;
+    }
     public IAction getSwitchChartToPanModeAction() {
 		return switchChartToPanModeAction;
 	}

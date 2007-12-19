@@ -128,14 +128,18 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		
 		ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
 		if (contributor != null) {
-			IAction action = contributor.getZoomOutAction();
-			if (action instanceof ZoomChartAction) {
-				final ZoomChartAction zoomOutAction = (ZoomChartAction)action;
+			final IAction zoomOutAction = contributor.getZoomOutAction();
+			final IAction zoomToFitAction = contributor.getZoomToFitAction();
+			if (zoomOutAction instanceof ZoomChartAction) {
 				addPropertyChangeListener(new IPropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent event) {
 						if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
-								event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-							zoomOutAction.updateEnabled();
+								event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y) {
+							if (zoomOutAction instanceof ZoomChartAction)
+								((ZoomChartAction)zoomOutAction).updateEnabled();
+							if (zoomToFitAction instanceof ZoomChartAction)
+								((ZoomChartAction)zoomToFitAction).updateEnabled();
+						}
 					}
 				});
 			}

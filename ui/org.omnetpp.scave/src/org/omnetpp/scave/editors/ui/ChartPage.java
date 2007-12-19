@@ -208,6 +208,7 @@ public class ChartPage extends ScaveEditorPage {
 		if (editorContributor != null) {
 			contextMenuManager.add(editorContributor.getZoomInAction());
 			contextMenuManager.add(editorContributor.getZoomOutAction());
+			contextMenuManager.add(editorContributor.getZoomToFitAction());
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
 			if (chart instanceof LineChart || chart instanceof ScatterChart)

@@ -23,12 +23,15 @@ public class ZoomChartAction extends AbstractScaveAction {
 		this.vertically = vertically;
 		this.zoomFactor = zoomFactor;
 
-		String inout = (zoomFactor > 1.0 ? "In" : "Out");
+		String inout = (zoomFactor == 0.0 ? "To Fit" :
+						zoomFactor > 1.0 ? "In" : "Out");
 		String dir = (horizontally && vertically) ? "" : (horizontally ? " X" : " Y");
 		String dir2 = (horizontally && vertically) ? "" : (horizontally ? " Horizontally" : " Vertically");
 		setText("Zoom " +  inout + dir);
 		setDescription("Zoom " + inout.toLowerCase() + " chart " + dir2.toLowerCase());
-		String imageId = zoomFactor > 1.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS : ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS;
+		String imageId =
+			zoomFactor == 0.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMTOFIT :
+			zoomFactor > 1.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS : ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS;
 		setImageDescriptor(ImageFactory.getDescriptor(imageId));
 	}
 
@@ -37,10 +40,18 @@ public class ZoomChartAction extends AbstractScaveAction {
 		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
 		if (page != null && page instanceof ChartPage) {
 			ChartCanvas canvas = ((ChartPage)page).getChartView();
-			if (horizontally)
-				canvas.zoomXBy(zoomFactor);
-			if (vertically)
-				canvas.zoomYBy(zoomFactor);
+			if (horizontally) {
+				if (zoomFactor == 0.0)
+					canvas.zoomToFitX();
+				else
+					canvas.zoomXBy(zoomFactor);
+			}
+			if (vertically) {
+				if (zoomFactor == 0.0)
+					canvas.zoomToFitY();
+				else
+					canvas.zoomYBy(zoomFactor);
+			}
 		}
 	}
 
