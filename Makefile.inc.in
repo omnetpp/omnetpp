@@ -5,6 +5,9 @@
 OMNETPP_VERSION = @OMNETPP_VERSION@
 OMNETPP_EDITION = @OMNETPP_EDITION@
 
+#
+# Directories
+#
 OMNETPP_ROOT = @OMNETPP_ROOT@
 OMNETPP_BIN_DIR = @OMNETPP_BIN_DIR@
 OMNETPP_INCL_DIR = @OMNETPP_INCL_DIR@
@@ -18,6 +21,30 @@ OMNETPP_UTILS_DIR = @OMNETPP_UTILS_DIR@
 OMNETPP_DOC_DIR = @OMNETPP_DOC_DIR@
 OMNETPP_SAMPLES_DIR = @OMNETPP_SAMPLES_DIR@
 OMNETPP_TEST_DIR = @OMNETPP_TEST_DIR@
+
+#
+# Make "debug" the default mode
+#
+ifndef MODE
+MODE = debug
+endif
+
+#
+# Configname selects where (in which subdirectory of obj/ and lib/)
+# to put the resulting object files and libs.
+#
+ifndef CONFIGNAME
+CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
+endif
+
+#
+# Various tools and options
+#
+ifeq ("$(MODE)","debug")
+CFLAGS = $(CFLAGS_DEBUG)
+else
+CFLAGS = $(CFLAGS_RELEASE)
+endif
 
 PERL = @PERL@
 YACC = @YACC@
@@ -41,12 +68,6 @@ WISH = @WISH@
 MAKEDEPEND = @MAKEDEPEND@
 DOT = @DOT@
 DOXYGEN = @DOXYGEN@
-
-ifeq ("$(MODE)","debug")
-CFLAGS = $(CFLAGS_DEBUG)
-else
-CFLAGS = $(CFLAGS_RELEASE)
-endif
 
 A_LIB_SUFFIX = @A_LIB_SUFFIX@
 SO_LIB_SUFFIX = @SO_LIB_SUFFIX@
@@ -87,20 +108,5 @@ WITH_PARSIM = @WITH_PARSIM@
 
 JAVA_CFLAGS = @JAVA_CFLAGS@
 SWIG = @SWIG@
-
-#
-# Make "debug" the default mode
-#
-ifndef MODE
-MODE = debug
-endif
-
-#
-# Configname selects where (in which subdirectory of obj/ and lib/)
-# to put the resulting object files and libs.
-#
-ifndef CONFIGNAME
-CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
-endif
 
 
