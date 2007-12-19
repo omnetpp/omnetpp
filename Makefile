@@ -40,7 +40,7 @@ common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv : common
 sim : nedxml
 makefiles: utils
-$(SAMPLES) clean depend: makefiles
+$(SAMPLES) clean depend: makefiles base
 
 # create some additional dependecies required to build windows DLLs
 ifeq ($(LIB_SUFFIX),$(DLL_LIB_SUFFIX))
