@@ -971,8 +971,11 @@ $progname [options] [object files or libraries]
                           Defaults to "debug". This setting can still be
                           overridden on the make command line, by specifying
                           "MAKE=debug" or "MAKE=release" as an extra argument.
-    -Dname=value, -D name=value, --define name=value
+    -Dname[=value], -D name[=value], --define name[=value]
                           Preprocessor symbol to be passed to the C++ compiler.
+    -Kname=value, -K name=value, --makefile-define name=value
+                          Defines a makefile variable, i.e. causes name=value
+                          line to get inserted into the makefile.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
                           directories. With this option, -u and -l have
