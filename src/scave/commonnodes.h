@@ -113,6 +113,15 @@ class SCAVE_API FilterNodeType : public NodeType
         virtual Port *getPort(Node *node, const char *portname) const;
 };
 
+/**
+ * NodeType for ReaderNode.
+ */
+class SCAVE_API ReaderNodeType : public NodeType
+{
+    public:
+        virtual const char *category() const {return "reader-node";}
+        virtual bool isHidden() const {return true;}
+};
 
 #endif
 

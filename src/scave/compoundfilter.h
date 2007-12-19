@@ -119,6 +119,10 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
          */
         virtual Subfilter& subfilter(int pos);
         /**
+         * Access subfilter.
+         */
+        virtual const Subfilter& subfilter(int pos) const;
+        /**
          * Insert subfilter at given position (old filter at pos and following ones
          * are shifted up).
          */
@@ -127,6 +131,14 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
          * Remove subfilter at given position (following ones are shifted down).
          */
         virtual void removeSubfilter(int pos);
+        //@}
+
+        /** Vector attribute mapping */
+        //@{
+        /**
+         * Maps attributes of the input vector to attributes of the output vector.
+         */ 
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
         //@}
 };
 

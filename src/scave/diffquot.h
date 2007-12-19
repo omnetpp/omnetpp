@@ -41,6 +41,7 @@ class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
 
 #endif

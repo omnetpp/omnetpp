@@ -104,6 +104,13 @@ CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos)
     return _subfilters[pos];
 }
 
+const CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos) const
+{
+    if (pos<0 || pos>=(int)_subfilters.size())
+        throw opp_runtime_error("%s: invalid subfilter index %d", name(), pos);
+    return _subfilters[pos];
+}
+
 void CompoundFilterType::insertSubfilter(int pos, const Subfilter& f)
 {
     if (pos<0 || pos>(int)_subfilters.size())
@@ -190,4 +197,13 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
     return subnode->nodeType()->getPort(subnode, name);
 }
 
-
+void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+{
+    int n = numSubfilters();
+	for (int i=0; i<n; i++)
+	{
+		const char *nodetypename = subfilter(i).nodeType();
+		NodeType *nodeType = NodeTypeRegistry::instance()->getNodeType(nodetypename);
+		nodeType->mapVectorAttributes(attrs);
+	}
+}
