@@ -5,7 +5,7 @@ import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
-
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.ide.OmnetppMainPlugin;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
@@ -33,7 +33,7 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
         
         public String getValue() {
             // FIXME in fact we have to look into the config files and get the bin directory from there
-            String omnetppBin = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT)+"\\bin";
+            String omnetppBin = new Path(OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT)).append("bin").toOSString();
             return omnetppBin;
         }
         

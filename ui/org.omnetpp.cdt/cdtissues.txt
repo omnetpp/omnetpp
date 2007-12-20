@@ -1,3 +1,7 @@
+- managed build system should not report errors/warnings on the standard error.
+  example:Managed Build system manifest file error: Unable to resolve the 
+  superClass identifier org.eclipse.cdt.msvc.toolchain.base in the toolChain 
+  org.omnetpp.cdt.msvc.toolchain.base.  
 - EnvVarOperationProcessor : 62 line - IEnvironmentVariable.ENVVAR_PREPEND, ki van kommentzve. miert?
 - olyan toolt nem lehet felvenni ami source file-t general. (ld msg compiler)
   ha a tool megvaltoztatja az output directoryt (ImanagedOutpuFileNameProvider) 

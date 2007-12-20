@@ -147,6 +147,7 @@
       <feature id="org.eclipse.gef" version="3.3.1.v20070814"/>
       <feature id="org.eclipse.gmf" version="1.0.100.v20070921-0000-7d-ETjEYjiMWQYLSEejlRjypkm71"/>
       <feature id="org.eclipse.gmf.runtime.thirdparty" version="1.0.0.v20070809-0000-7G8D-ED-z0UWCVxojl60L"/>
+      <feature id="org.eclipse.cdt" version="4.0.2.200711280800"/>
       <feature id="org.eclipse.platform" version="3.3.2.R33x_v20071022-_19UEksF-G8Yc6bUv3Dz"/>
       <feature id="org.omnetpp.ide" version="4.0.0"/>
    </features>

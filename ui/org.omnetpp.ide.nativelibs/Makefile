@@ -33,7 +33,7 @@ EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
 SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
-OBJS = $(CXXFILES:.cxx=.o)
+OBJS = $(CXXFILES:.cxx=.o) jprogressmonitor.o
 
 LIBS=-L$L -lcommon -lnedxml -lscave -llayout -leventlog
 
