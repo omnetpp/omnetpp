@@ -6,6 +6,17 @@
 
 include Makefile.inc
 
+# check if the output directories are not empty
+ifeq ("$(strip $(OMNETPP_BIN_DIR))","")                                                                               
+$(error OMNETPP_BIN_DIR must be correctly set)
+endif
+ifeq ("$(strip $(OMNETPP_OUT_DIR))","")                                                                               
+$(error OMNETPP_OUT_DIR must be correctly set)
+endif
+ifeq ("$(strip $(OMNETPP_LIB_DIR))","")                                                                               
+$(error OMNETPP_LIB_DIR must be correctly set)
+endif
+
 #=====================================================================
 #
 # Main targets
@@ -116,10 +127,10 @@ check-env:
 	fi
 
 clean:
-	rm -f $(OMNETPP_BIN_DIR)/*
-	rm -f $(OMNETPP_LIB_DIR)/*
-	rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
-	rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+	-rm -f $(OMNETPP_BIN_DIR)/*
+	-rm -f $(OMNETPP_LIB_DIR)/*.*
+	-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
+	-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
@@ -129,9 +140,9 @@ clean:
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
 cleanall: clean
-	rm -rf $(OMNETPP_BIN_DIR)/*
-	rm -rf $(OMNETPP_OUT_DIR)/*
-	rm -rf $(OMNETPP_LIB_DIR)/*
+	-rm -rf $(OMNETPP_BIN_DIR)/*
+	-rm -rf $(OMNETPP_OUT_DIR)/*
+	-rm -rf $(OMNETPP_LIB_DIR)/*
 
 depend:
 	for i in $(BASE); do \

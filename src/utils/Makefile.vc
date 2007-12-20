@@ -3,6 +3,17 @@
 #
 !include ..\..\configuser.vc
 
+# check if the output directories are not empty                                                                   
+!if "$(OMNETPP_BIN_DIR)"==""                                                                                      
+!error OMNETPP_BIN_DIR must be correctly set                                                                      
+!endif                                                                                                            
+!if "$(OMNETPP_OUT_DIR)"==""                                                                                      
+!error OMNETPP_OUT_DIR must be correctly set                                                                      
+!endif                                                                                                            
+!if "$(OMNETPP_LIB_DIR)"==""                                                                                      
+!error OMNETPP_LIB_DIR must be correctly set                                                                      
+!endif
+
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/tkenv
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
