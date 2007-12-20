@@ -3,15 +3,15 @@
 #
 !include ..\..\configuser.vc
 
-# check if the output directories are not empty                                                                   
-!if "$(OMNETPP_BIN_DIR)"==""                                                                                      
-!error OMNETPP_BIN_DIR must be correctly set                                                                      
-!endif                                                                                                            
-!if "$(OMNETPP_OUT_DIR)"==""                                                                                      
-!error OMNETPP_OUT_DIR must be correctly set                                                                      
-!endif                                                                                                            
-!if "$(OMNETPP_LIB_DIR)"==""                                                                                      
-!error OMNETPP_LIB_DIR must be correctly set                                                                      
+# Make sure that output locations are set
+!if "$(OMNETPP_BIN_DIR)"==""
+!error OMNETPP_BIN_DIR must be correctly set
+!endif
+!if "$(OMNETPP_OUT_DIR)"==""
+!error OMNETPP_OUT_DIR must be correctly set
+!endif
+!if "$(OMNETPP_LIB_DIR)"==""
+!error OMNETPP_LIB_DIR must be correctly set
 !endif
 
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/tkenv
@@ -26,7 +26,7 @@ COPTS=$(CFLAGS)
 #
 # Targets
 #
-all: seedtool.exe opp_replace.exe opp_neddoc
+all: seedtool.exe opp_replace.exe
 	echo @echo $(OMNETPP_ROOT:/=\)\configuser.vc >opp_configfilepath.cmd
 	copy opp_configfilepath.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -37,10 +37,6 @@ all: seedtool.exe opp_replace.exe opp_neddoc
 	copy splitvec $(OMNETPP_BIN_DIR:/=\)
 	copy opp_test.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_test $(OMNETPP_BIN_DIR:/=\)
-	copy opp_neddoc.cmd $(OMNETPP_BIN_DIR:/=\)
-	copy opp_neddoc $(OMNETPP_BIN_DIR:/=\)
-	copy neddoc.xsl $(OMNETPP_BIN_DIR:/=\)
-	copy neddocproc.pl $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -52,18 +48,6 @@ seedtool.exe : seedtool.cc
 
 opp_replace.exe: opp_replace.c
 	$(CXX) $(CFLAGS) opp_replace.c
-
-opp_neddoc: opp_neddoc.in ..\..\configuser.vc
-	copy opp_neddoc.in opp_neddoc
-	$(PERL) -i.bak -pe "s|\@NEDTOOL\@|$(OMNETPP_BIN_DIR:\=/)/nedtool.exe|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@GNED\@|$(OMNETPP_BIN_DIR:\=/)/gned.exe|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@XSLTPROC\@|$(XSLTPROC:\=/)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@GHOSTSCRIPT\@|$(GHOSTSCRIPT:\=/)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@CONVERT\@|$(CONVERT:\=/)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@GIFTRANS\@|$(GIFTRANS:\=/)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@DOT\@|$(DOT:\=/)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@PERL\@|$(PERL:\=/)|" opp_neddoc
-	del opp_neddoc.bak
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc *.c
