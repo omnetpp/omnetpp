@@ -11,6 +11,9 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -18,11 +21,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.NodeTypeVector;
@@ -59,6 +64,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	private Combo operationCombo;
 	private Label description;
 	private Table paramsTable;
+	private TableEditor tableEditor;
 	
 	/**
 	 * Number of visible items in combos.
@@ -142,12 +148,13 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		column.setText("Description");
 		column.setWidth(200);
 		
-		Button button = new Button(group, SWT.NONE);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		button.setText("Change...");
-		button.addSelectionListener(new SelectionAdapter() {
+		tableEditor = new TableEditor(paramsTable);
+		tableEditor.horizontalAlignment = SWT.LEFT;
+		tableEditor.grabHorizontal = true;
+		tableEditor.minimumWidth = 50;
+		paramsTable.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				handleChangeButtonPressed();
+				handleParamsTableSelectionChange(e);
 			}
 		});
 	}
@@ -157,18 +164,27 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		updateTable();
 	}
 	
-	private void handleChangeButtonPressed() {
-		int index = paramsTable.getSelectionIndex();
-		if (index >= 0) {
-			TableItem item = paramsTable.getItem(index);
-			String message = String.format("%s (%s)", item.getText(COLUMN_NAME), item.getText(COLUMN_DESC));
-			String value = item.getText(1);
-			InputDialog dialog =
-				new InputDialog(paramsTable.getShell(), "Set parameter", message, value, null);
-			if (dialog.open() == Window.OK) {
-				item.setText(COLUMN_VALUE, dialog.getValue());
+	private void handleParamsTableSelectionChange(SelectionEvent e) {
+		// Clean up any previous editor control
+		Control oldEditor = tableEditor.getEditor();
+		if (oldEditor != null) oldEditor.dispose();
+
+		// Identify the selected row
+		TableItem item = (TableItem)e.item;
+		if (item == null) return;
+
+		// The control that will be the editor must be a child of the Table
+		Text newEditor = new Text(paramsTable, SWT.NONE);
+		newEditor.setText(item.getText(COLUMN_VALUE));
+		newEditor.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text)tableEditor.getEditor();
+				tableEditor.getItem().setText(COLUMN_VALUE, text.getText());
 			}
-		}
+		});
+		newEditor.selectAll();
+		newEditor.setFocus();
+		tableEditor.setEditor(newEditor, item, COLUMN_VALUE);
 	}
 	
 	private void updateDescription() {
