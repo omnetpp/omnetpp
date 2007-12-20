@@ -98,8 +98,9 @@ public class Makemake {
         List<String> includeDirs = new ArrayList<String>();
         List<String> libDirs = new ArrayList<String>();
 
-        // FIXME target should not cotain relative path (just a name)
-        target = abs2rel(target);
+        // target should only be a name, cannot contain relative path
+        if (target.contains("/") || target.contains("\\"))
+            throw new IllegalStateException("target (-o option) should only be a name, it cannot contain relative path");
 
         // isRecursive and deep do not mix
         if (isRecursive) 
@@ -166,7 +167,7 @@ public class Makemake {
         }
 
         String objExt = isNMake ? "obj" : "o";
-        String targetPrefix = "";  // FIXME add to perl too
+        String targetPrefix = ""; 
         String targetSuffix = "";
         if (p.type == MakemakeOptions.Type.EXE)
             targetSuffix = isNMake ? ".exe" : "";

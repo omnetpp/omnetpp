@@ -295,7 +295,10 @@ sub makemake()
         }
     }
 
-    $target = abs2rel($target,$projectDir);
+    # target should only be a name, cannot contain relative path
+    if ($target =~ /.*[\/\\].*/) {
+        error("target (-o option) should only be a name, it cannot contain relative path");
+    }
 
     # recursive and deep do not mix
     if ($isRecursive) {
@@ -380,13 +383,17 @@ sub makemake()
 
     $objExt = $isNMake ? "obj" : "o";
 
+    $targetPrefix = "";
     $targetSuffix = "";
     if ($type eq "EXE") {
         $targetSuffix = $isNMake ? ".exe" : "";
     } elsif ($type eq "SHAREDLIB") {
         $targetSuffix = $isNMake ? ".dll" : ".so";
+        $targetPrefix = $isNMake ? "" : "lib";
+
     } elsif ($type eq "STATICLIB") {
         $targetSuffix = $isNMake ? ".lib" : ".a";
+        $targetPrefix = $isNMake ? "" : "lib";
     }
 
     # prepare subdirs. First, check that all specified subdirs exist
