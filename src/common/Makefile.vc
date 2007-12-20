@@ -7,17 +7,14 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"=="."
-O=.
-L=$(OMNETPP_LIB_DIR)
-!else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/common
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 #
 # Local definitions
 #
+LIBNAME=common
+
 COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DBUILDING_COMMON /Fd"$O/common.pdb"
 
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
@@ -87,12 +84,9 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del expression.tab.h expression.tab.cc lex.expressionyy.cc
-	-del matchexpression.tab.h matchexpression.tab.cc lex.matchexpressionyy.cc
-	-del $(O:/=\)\*.obj 2> nul
-	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
-	-cd /d $(O:/=\) && del common.lib common.dll 2> nul
-	-cd /d $(L:/=\) && del common.lib common.dll 2> nul
+	-del *.tab.* lex.*yy.* 2>nul
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.obj: bigdecimal.cc \

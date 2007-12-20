@@ -4,13 +4,8 @@
 
 include ../../Makefile.inc
 
-ifeq ("$(strip $(CONFIGNAME))",".")
-O=.
-L=$(OMNETPP_LIB_DIR)
-else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/sim
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/sim
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-endif
 
 #
 # Local definitions
@@ -123,9 +118,9 @@ sim_std_m.cc sim_std_m.h : sim_std.msg
 	$(MSGC) -Xnc -Xns sim_std.msg
 
 clean:
-	rm -f expr.tab.h expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
-	rm -f $O/*.o $O/parsim/*.o $O/netbuilder/*.o
-	rm -f $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) 
+	rm -f expr.tab.h expr.tab.cc lex.expryy.cc *_m.cc *_m.h
+	rm -rf $O
+	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/carray.o: carray.cc \

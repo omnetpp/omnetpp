@@ -4,13 +4,8 @@
 
 include ../../Makefile.inc
 
-ifeq ("$(strip $(CONFIGNAME))",".")
-O=.
-L=$(OMNETPP_LIB_DIR)
-else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/nedxml
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-endif
 
 #
 # Local definitions
@@ -109,10 +104,11 @@ doc:
 	$(DOXYGEN) doxy.cfg
 
 clean:
-	rm -f ned1.tab.h ned1.tab.cc lex.ned1yy.cc ned2.tab.h ned2.tab.cc lex.ned2yy.cc msg2.tab.h msg2.tab.cc lex.msg2yy.cc
+	rm *.tab.* lex.*yy.* 2>nul
 	rm -f nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h
-	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
-	rm -f $O/nedtool$(EXE_SUFFIX)
+	rm -rf $O
+	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
+	cd $(OMNETPP_BIN_DIR) && rm -f nedtool(EXE_SUFFIX) nedc opp_msgc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cppexprgenerator.o: cppexprgenerator.cc \

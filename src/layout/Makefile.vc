@@ -4,20 +4,17 @@
 !include ..\..\configuser.vc
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) /DWIN32_DLL
+CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"=="."
-O=.
-L=$(OMNETPP_LIB_DIR)
-!else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/layout
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/layout
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 #
 # Local definitions
 #
+LIBNAME=layout
+
 COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"$O/layout.pdb"
 IMPLIBS= $O/../common/common.lib
 
@@ -59,9 +56,8 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del $(O:/=\)\*.obj 2> nul
-	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
-	-cd /d $(L:/=\) && del layout.lib layout.dll 2> nul
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/basicspringembedderlayout.obj: basicspringembedderlayout.cc \

@@ -4,13 +4,8 @@
 
 include ../../Makefile.inc
 
-ifeq ("$(strip $(CONFIGNAME))",".")
-O=.
-L=$(OMNETPP_LIB_DIR)
-else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/utils
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/utils
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-endif
 
 all: $O/seedtool
 	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
@@ -39,7 +34,8 @@ depend:
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc *.c
 
 clean:
-	rm -f $O/*.o $O/seedtool$(EXE_SUFFIX) 
+	rm -rf $O
+	cd $(OMNETPP_BIN_DIR) && rm -f seedtool$(EXE_SUFFIX) opp_replace$(EXE_SUFFIX)
 #	rm -f opp_configfilepath
 #	rm -f opp_configfilepath.cmd
 

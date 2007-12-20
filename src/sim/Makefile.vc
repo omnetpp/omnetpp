@@ -7,17 +7,14 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"=="."
-O=.
-L=$(OMNETPP_LIB_DIR)
-!else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/sim
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/sim
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 #
 # Local definitions
 #
+LIBNAME=sim_std
+
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SIM /Fd"$O/sim_std.pdb"
 #COPTS=/C /P $(COPTS)
 IMPLIBS=../envir/envir.lib ../common/common.lib
@@ -134,9 +131,8 @@ depend:
 
 clean:
 	-del expr.tab.h expr.tab.cc lex.expryy.cc *_m.cc *_m.h
-	-del $(O:/=\)\*.obj $(O:/=\)\netbuilder\*.obj $(O:/=\)\parsim\*.obj
-	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
-	-cd /d $(O:/=\) && del sim_std.lib sim_std.dll 2> nul
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/carray.obj: carray.cc \

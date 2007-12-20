@@ -3,13 +3,8 @@
 #
 !include ..\..\configuser.vc
 
-!if "$(CONFIGNAME)"=="."
-O=.
-L=$(OMNETPP_LIB_DIR)
-!else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/tkenv
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/tkenv
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 #
 # Local definitions
@@ -40,6 +35,7 @@ all: seedtool.exe opp_replace.exe opp_neddoc
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 
 seedtool.exe : seedtool.cc
+	:rem FIXME into $O/ !!!
 	$(CXX) $(CFLAGS) /Tp seedtool.cc
 	copy seedtool.exe $(OMNETPP_BIN_DIR:/=\)
 
@@ -62,8 +58,9 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc *.c
 
 clean:
-	-del *.obj seedtool.exe opp_replace.exe ver.h 2> nul
-	-del $(VC_AUX_FILES) 2> nul
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe opp_replace.exe 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 seedtool.obj: seedtool.cc

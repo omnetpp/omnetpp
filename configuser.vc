@@ -80,7 +80,7 @@ LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
 # Doxygen is needed for generating HTML documentation from C++
 DOXYGEN_DIR=$(TOOLS_DIR:\=/)/doxygen
 
-# dot is part of the GraphViz package, and is used for generating model 
+# dot is part of the GraphViz package, and is used for generating model
 # documentation.
 DOT=$(TOOLS_DIR:\=/)/Graphviz/bin/dot.exe
 
@@ -153,7 +153,7 @@ OMNETPP_DOC_DIR=$(OMNETPP_ROOT)/doc
 OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_ROOT)/include
 OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
-OMNETPP_OBJ_DIR=$(OMNETPP_ROOT)/obj
+OMNETPP_OUT_DIR=$(OMNETPP_ROOT)/out
 
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_IMAGE_PATH=./images;./bitmaps;$(OMNETPP_ROOT)/images

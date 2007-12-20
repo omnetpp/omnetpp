@@ -4,13 +4,8 @@
 
 include ../../Makefile.inc
 
-ifeq ("$(strip $(CONFIGNAME))",".")
-O=.
-L=$(OMNETPP_LIB_DIR)
-else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/scave
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-endif
 
 #
 # Local definitions
@@ -72,7 +67,9 @@ doc:
 	$(DOXYGEN) doxy.cfg
 
 clean:
-	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX) 
+	rm -rf $O
+	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
+	cd $(OMNETPP_BIN_DIR) && rm -f scavetool$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arraybuilder.o: arraybuilder.cc \

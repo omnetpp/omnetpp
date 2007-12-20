@@ -4,13 +4,8 @@
 
 include ../../Makefile.inc
 
-ifeq ("$(strip $(CONFIGNAME))",".")
-O=.
-L=$(OMNETPP_LIB_DIR)
-else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/common
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-endif
 
 #
 # Local definitions
@@ -81,8 +76,9 @@ depend:
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc
 
 clean:
-	rm -f expression.tab.cc expression.tab.h lex.expressionyy.cc lex.matchexpressionyy.cc
-	rm -f $O/*.o $O/$(LIBNAME)$(A_LIB_SUFFIX) $O/$(LIBNAME)$(SO_LIB_SUFFIX) $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
+	rm -f *.tab.* lex.*yy.*
+	rm -rf $O
+	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.o: bigdecimal.cc \

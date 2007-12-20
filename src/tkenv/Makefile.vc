@@ -7,13 +7,8 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"=="."
-O=.
-L=$(OMNETPP_LIB_DIR)
-!else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/tkenv
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/tkenv
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 #
 # Local setup
@@ -27,6 +22,8 @@ TKENV_EMBED_SUFFIX=
 #
 # Local definitions
 #
+LIBNAME=tkenv
+
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV /Fd"$O/tkenv.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib $O/../layout/layout.lib $O/../common/common.lib $(TK_LIBS) $(ZLIB_LIBS)
 
@@ -91,9 +88,8 @@ depend:
 
 clean:
 	-del tclcode.cc
-	-del $(O:/=\)\*.obj  $(O:/=\)\tcl2c.exe
-	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
-	-cd /d $(L:/=\) && del tkenv.lib tkenv.dll 2> nul
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arrow.obj: arrow.cc \

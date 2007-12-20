@@ -7,17 +7,14 @@
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-!if "$(CONFIGNAME)"=="."
-O=.
-L=$(OMNETPP_LIB_DIR)
-!else
-O=$(OMNETPP_OBJ_DIR)/$(CONFIGNAME)/src/cmdenv
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/cmdenv
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 #
 # Local definitions
 #
+LIBNAME=cmdenv
+
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir -DBUILDING_CMDENV /Fd"$O/cmdenv.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib
 
@@ -57,9 +54,8 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del $(O:/=\)\*.obj
-	-cd /d $(O:/=\) && del $(VC_AUX_FILES) 2> nul
-	-cd /d $(L:/=\) && del cmdenv.lib cmdenv.dll 2> nul
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cmdenv.obj: cmdenv.cc \
