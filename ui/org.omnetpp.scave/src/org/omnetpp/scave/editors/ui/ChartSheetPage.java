@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -13,11 +14,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
@@ -65,6 +63,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 		view.setLayoutData(new GridData(320,200));
 		chartsArea.configureChild(view);
 		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
+		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
+		view.setMenu(menuManager.createContextMenu(view));
 	}
 	
 	@SuppressWarnings("unchecked")
