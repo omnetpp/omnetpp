@@ -24,7 +24,7 @@ components: base jnilibs samples
 #
 #=====================================================================
 
-BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils 
+BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo queueinglib queuenet routing tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 
@@ -116,16 +116,22 @@ check-env:
 	fi
 
 clean:
+	rm -f $(OMNETPP_BIN_DIR)/*
+	rm -f $(OMNETPP_LIB_DIR)/*
+	rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
+	rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	- rm -f -r $(OMNETPP_OBJ_DIR)/*
-	- rm -f -r $(OMNETPP_LIB_DIR)/*
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
-	- rm -f $(OMNETPP_BIN_DIR)/*
+
+cleanall: clean
+	rm -rf $(OMNETPP_BIN_DIR)/*
+	rm -rf $(OMNETPP_OUT_DIR)/*
+	rm -rf $(OMNETPP_LIB_DIR)/*
 
 depend:
 	for i in $(BASE); do \

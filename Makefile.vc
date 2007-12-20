@@ -130,12 +130,20 @@ ver_h:
 	@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && copy ver.h.base ver.h && echo #define OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h
 
 clean:
+	-del /q $(OMNETPP_BIN_DIR:/=\)\*.* 2>nul
+	-del /q $(OMNETPP_LIB_DIR:/=\)\*.* 2>nul
+	-rmdir /s /q $(OMNETPP_OUT_DIR:/=\)\$(CONFIGNAME) 2>nul
+	-rmdir /s /q $(OMNETPP_LIB_DIR:/=\)\$(CONFIGNAME) 2>nul
 	-for %%i in ( $(BASE) $(JNILIBS) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
-	-del /q $(OMNETPP_BIN_DIR:/=\)\*.*
-	-del /q $(OMNETPP_LIB_DIR:/=\)\*.*
 	-for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
+	-cd $(OMNETPP_TEST_DIR:/=\) && $(MAKE) clean
+
+cleanall: clean
+	-rmdir /s /q $(OMNETPP_BIN_DIR:/=\)\*.* 2>nul
+	-rmdir /s /q $(OMNETPP_OUT_DIR:/=\)\*.* 2>nul
+	-rmdir /s /q $(OMNETPP_LIB_DIR:/=\)\*.* 2>nul
 
 depend:
 	for %%i in ( $(BASE) ) do \
