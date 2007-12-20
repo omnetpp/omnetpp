@@ -7,8 +7,6 @@ import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 
 /**
  * Switches mouse mode between zoom/pan for chart on the active chart page in the active Scave editor.
@@ -38,9 +36,8 @@ public class ChartMouseModeAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-		if (page != null && page instanceof ChartPage) {
-			ChartCanvas canvas = ((ChartPage)page).getChartView();
+		ChartCanvas canvas = scaveEditor.getActiveChartCanvas();
+		if (canvas != null) {
 			canvas.setMouseMode(destMode);
 			this.setChecked(true); 
 			scaveEditor.fakeSelectionChange(); // fire an update so that the other tool gets unchecked
@@ -49,17 +46,9 @@ public class ChartMouseModeAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		ChartCanvas canvas = getChart(editor, selection);
+		ChartCanvas canvas = editor.getActiveChartCanvas();
 		if (canvas!=null)
 			setChecked(canvas.getMouseMode()==destMode); //FIXME we probably get invoked all too rarely for this to be useful...
 		return canvas!=null;
-	}
-	
-	protected ChartCanvas getChart(ScaveEditor editor, IStructuredSelection selection) {
-		ScaveEditorPage page = editor.getActiveEditorPage();
-		if (page == null || !(page instanceof ChartPage)) 
-			return null;
-		ChartCanvas canvas = ((ChartPage)page).getChartView();
-		return canvas;
 	}
 }

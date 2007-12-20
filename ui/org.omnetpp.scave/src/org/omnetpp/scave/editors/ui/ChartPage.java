@@ -79,8 +79,6 @@ public class ChartPage extends ScaveEditorPage {
 		super.dispose();
 	}
 
-
-
 	public Chart getChart() {
 		return chart;
 	}
@@ -97,6 +95,19 @@ public class ChartPage extends ScaveEditorPage {
 		return updater;
 	}
 	
+	public void updateChart() {
+		if (updater != null)
+			updater.updateDataset();
+	}
+	
+	/**
+	 * The only chart on this page is always active.
+	 */
+	@Override
+	public ChartCanvas getActiveChartCanvas() {
+		return chartView;
+	}
+
 	public void updatePage(Notification notification) {
 		if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
 			return;

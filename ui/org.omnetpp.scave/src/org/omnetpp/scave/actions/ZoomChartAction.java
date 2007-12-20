@@ -4,8 +4,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 
 /**
  * Zooms in/out the chart of the active chart page in the active Scave editor.
@@ -37,9 +35,8 @@ public class ZoomChartAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-		if (page != null && page instanceof ChartPage) {
-			ChartCanvas canvas = ((ChartPage)page).getChartView();
+		ChartCanvas canvas = scaveEditor.getActiveChartCanvas();
+		if (canvas != null) {
 			if (horizontally) {
 				if (zoomFactor == 0.0)
 					canvas.zoomToFitX();
@@ -57,9 +54,8 @@ public class ZoomChartAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		if (editor.getActiveEditorPage() instanceof ChartPage) {
-			ChartPage page = (ChartPage)editor.getActiveEditorPage();
-			ChartCanvas canvas = page.getChartView();
+		ChartCanvas canvas = editor.getActiveChartCanvas();
+		if (canvas != null) {
 			return zoomFactor > 1.0 ||
 				   horizontally && canvas.getMinZoomX() < canvas.getZoomX() ||
 				   vertically && canvas.getMinZoomY() < canvas.getZoomY();

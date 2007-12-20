@@ -314,6 +314,13 @@ public class ScaveEditorPage extends ScrolledForm {
 	public void pageSelected() {
 	}
 	
+	/**
+	 * Returns the active chart on this page.
+	 */
+	public ChartCanvas getActiveChartCanvas() {
+		return null;
+	}
+	
 	public boolean gotoObject(Object object) {
 		return false;
 	}

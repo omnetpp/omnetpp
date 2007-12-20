@@ -52,6 +52,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
@@ -326,6 +327,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			return (ScaveEditorPage)page;
 		else
 			return null;
+	}
+	
+	public ChartCanvas getActiveChartCanvas() {
+		ScaveEditorPage activePage = getActiveEditorPage();
+		return activePage != null ? activePage.getActiveChartCanvas() : null;
 	}
 	
 	/**

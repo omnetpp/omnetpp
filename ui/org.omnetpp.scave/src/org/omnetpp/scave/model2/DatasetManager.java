@@ -276,6 +276,7 @@ public class DatasetManager {
 			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
 			
+			// process scalars
 			XYDatasetVector xyScalars = null;
 			if (!scalars.isEmpty()) {
 				ModuleAndData xData = ModuleAndData.fromFilterPattern(chart.getXDataPattern());
@@ -320,6 +321,7 @@ public class DatasetManager {
 				
 			}
 			
+			// process vectors
 			XYArray[] xyVectors = null;
 			IDList yVectors = null;
 			if (!vectors.isEmpty()) {
@@ -338,6 +340,7 @@ public class DatasetManager {
 				}
 			}
 			
+			// compose results
 			if (xyScalars != null && xyVectors == null)
 				return createScatterPlotDataset(xyScalars);
 			else if (xyScalars == null && xyVectors != null)

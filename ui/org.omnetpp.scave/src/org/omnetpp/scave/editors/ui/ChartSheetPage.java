@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -49,6 +51,11 @@ public class ChartSheetPage extends ScaveEditorPage {
 			updater.updateChart(notification);
 	}
 	
+	public void updateCharts() {
+		for (ChartUpdater updater : updaters)
+			updater.updateDataset();
+	}
+	
 	public Composite getChartSheetComposite() {
 		//return getBody();
 		return chartsArea;
@@ -70,16 +77,6 @@ public class ChartSheetPage extends ScaveEditorPage {
 		//setExpandVertical(true);
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
-		
-		Button refreshButton = new Button(getBody(), SWT.NONE);
-		refreshButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		refreshButton.setText("Refresh");
-		refreshButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				for (ChartUpdater updater : updaters)
-					updater.updateDataset();
-			}
-		});
 		
 		chartsArea = new LiveTable(getBody(), SWT.DOUBLE_BUFFERED);
 		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
@@ -141,5 +138,17 @@ public class ChartSheetPage extends ScaveEditorPage {
 				}
 		}
 		return false;
+	}
+
+	@Override
+	public ChartCanvas getActiveChartCanvas() {
+		ISelection selection = chartsArea.getSelection();
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+			if (structuredSelection.size() == 1 &&
+					structuredSelection.getFirstElement() instanceof ChartCanvas)
+				return (ChartCanvas)structuredSelection.getFirstElement();
+		}
+		return null;
 	}
 }
