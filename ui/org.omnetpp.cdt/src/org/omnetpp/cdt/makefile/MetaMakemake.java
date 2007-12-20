@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -68,21 +69,12 @@ public class MetaMakemake {
         translatedOptions.libDirs.addAll(getLibraryPathsFor(folder));
         translatedOptions.defines.addAll(getMacrosFor(folder));
 
-        //TODO interpret meta-options (currently none)
-        
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
-        if (referencedProjects.length > 0) {
-            for (IProject referencedProject : referencedProjects) {
-                String name = Makemake.makeSymbolicProjectName(referencedProject);
-                String path;
-                // use relative path if the two projects are in the same OS directory, otherwise absolute path
-                if (project.getLocation().removeLastSegments(1).equals(referencedProject.getLocation().removeLastSegments(1)))
-                    path = MakefileTools.makeRelativePath(referencedProject.getLocation(), folder.getLocation()).toString();
-                else
-                    path = referencedProject.getLocation().toString();
-                translatedOptions.makefileDefines.add(name + "=" + path);
-            }
+        for (IProject referencedProject : referencedProjects) {
+            String name = Makemake.makeSymbolicProjectName(referencedProject);
+            String path = makeRelativePath(referencedProject, project);
+            translatedOptions.makefileDefines.add(name + "=" + path);
         }
 
         // add extra include folders
@@ -93,7 +85,7 @@ public class MetaMakemake {
                 srcFolders = collectSourceFolders(folder); // every folder under this makemake folder
             else
                 srcFolders = Arrays.asList(new IContainer[]{ folder });
-            
+
             // find the referenced folders for each srcFolder, and add to include path if it's outside this deep makefile
             for (IContainer srcFolder : srcFolders)
                 if (folderDeps.containsKey(srcFolder))  
@@ -104,6 +96,32 @@ public class MetaMakemake {
 
             // clear processed setting
             translatedOptions.metaAutoIncludePath = false;
+        }
+
+        // add libraries from other projects, if requested
+        if (options.metaUseExportedLibs) {
+            for (IProject referencedProject : referencedProjects) {
+                BuildSpecification buildSpec = null;
+                try {
+                    buildSpec = BuildSpecUtils.readBuildSpecFile(referencedProject);
+                }
+                catch (IOException e) { 
+                    //XXX ?
+                } 
+                if (buildSpec != null) {
+                    for (IContainer f : buildSpec.getMakemakeFolders()) {
+                        MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
+                        if ((opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB) && opt.metaExportLibrary) {
+                            String libname = StringUtils.isEmpty(opt.target) ? f.getName() : opt.target;
+                            String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
+                            String libdir = makeRelativePath(f.getProject(), folder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
+                            translatedOptions.libs.add(libname);
+                            translatedOptions.libDirs.add(libdir);
+                        }
+                    }
+                }
+            }
+            translatedOptions.metaUseExportedLibs = false;
         }
 
         System.out.println("Translated makemake options for " + folder + ": " + translatedOptions.toString());
@@ -147,7 +165,7 @@ public class MetaMakemake {
         }
         return result;
     }
-    
+
     /**
      * Returns the include paths for the given folder, in the active configuration
      * and for the C++ language. Built-in paths are skipped. The returned strings
@@ -230,6 +248,16 @@ public class MetaMakemake {
                 languageSetting = l;
         }
         return languageSetting;
+    }
+
+    protected static String makeRelativePath(IContainer input, IContainer reference) {
+        String path;
+        // use relative path if the two projects are in the same OS directory, otherwise absolute path
+        if (input.getProject().getLocation().removeLastSegments(1).equals(reference.getProject().getLocation().removeLastSegments(1)))
+            path = MakefileTools.makeRelativePath(input.getLocation(), reference.getLocation()).toString();
+        else
+            path = input.getLocation().toString();
+        return path;
     }
 
 }

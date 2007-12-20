@@ -342,7 +342,7 @@ public class Makemake {
         m.put("sharedlib", p.type == MakemakeOptions.Type.SHAREDLIB);
         m.put("staticlib", p.type == MakemakeOptions.Type.STATICLIB);
         m.put("nolink", p.type == MakemakeOptions.Type.NOLINK);
-        m.put("defaultmode", p.defaultMode);
+        m.put("defaultmode", StringUtils.nullToEmpty(p.defaultMode));
         m.put("allenv", p.userInterface.startsWith("A"));
         m.put("cmdenv", p.userInterface.startsWith("C"));
         m.put("tkenv", p.userInterface.startsWith("T"));

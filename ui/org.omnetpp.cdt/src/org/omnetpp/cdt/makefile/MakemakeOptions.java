@@ -26,7 +26,7 @@ public class MakemakeOptions implements Cloneable {
     public boolean noDeepIncludes = false;
     public boolean force = false;
     public boolean linkWithObjects = false;
-    public String defaultMode = "debug";
+    public String defaultMode = null;
     public String userInterface = "ALL";
     public String ccext = null;
     public String dllExportMacro = "";
@@ -45,6 +45,8 @@ public class MakemakeOptions implements Cloneable {
     // "meta" options (--meta:...): they get interpreted by MetaMakemake, 
     // and translated to normal makemake options.
     public boolean metaAutoIncludePath = false;
+    public boolean metaExportLibrary = false;
+    public boolean metaUseExportedLibs = false;
 
     /**
      * Create makemake options with the default settings.
@@ -222,6 +224,12 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("--meta:auto-include-path")) {
                 metaAutoIncludePath = true;
             }
+            else if (arg.equals("--meta:export-library")) {
+                metaExportLibrary = true;
+            }
+            else if (arg.equals("--meta:use-exported-libs")) {
+                metaUseExportedLibs = true;
+            }
             else if (arg.equals("--")) {
                 break;
             }
@@ -295,6 +303,10 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, makefileDefines, "-K");
         if (metaAutoIncludePath)
             result.add("--meta:auto-include-path");
+        if (metaExportLibrary)
+            result.add("--meta:export-library");
+        if (metaUseExportedLibs)
+            result.add("--meta:use-exported-libs");
         if (!extraArgs.isEmpty())
             result.add("--");
         result.addAll(extraArgs);
@@ -354,6 +366,8 @@ public class MakemakeOptions implements Cloneable {
         result.makefileDefines.addAll(defines);
         result.extraArgs.addAll(extraArgs);
         result.metaAutoIncludePath = metaAutoIncludePath;
+        result.metaExportLibrary = metaExportLibrary;
+        result.metaUseExportedLibs = metaUseExportedLibs;
         return result;
     }
 }

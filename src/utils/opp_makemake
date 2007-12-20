@@ -55,7 +55,7 @@ sub makemake()
     $noDeepIncludes = 0;
     $force = 0;
     $linkWithObjects = 0;
-    $defaultMode = "debug";
+    $defaultMode = "";
     $userInterface = "ALL";
     $ccExt = "";
     $configFile = "";
@@ -470,7 +470,7 @@ sub makemake()
 
     # determine outdir
     if ($outRoot eq "") {
-        $outdir = ".";
+        $outdir = ".";  #FIXME why not "out"???
     }
     else {
         my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
