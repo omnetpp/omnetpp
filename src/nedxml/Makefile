@@ -46,6 +46,7 @@ $O/%.o: %.cc
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(CONFIGNAME)/$(LIBNAME)$(LIB_SUFFIX)* .
 	chmod +x nedc opp_msgc
 	cp nedc opp_msgc $(OMNETPP_BIN_DIR)
 

@@ -39,6 +39,7 @@ $O/%.o: %.cc
 # Targets
 #
 all: eventlogentries.cc $L/$(LIBNAME)$(LIB_SUFFIX) $O/eventlogtool
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(CONFIGNAME)/$(LIBNAME)$(LIB_SUFFIX)* .
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
