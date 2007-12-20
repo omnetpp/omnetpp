@@ -40,11 +40,14 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     numReadBytes = 0;
 
     fileSize = -1;
-    bufferFileOffset = 0;
+
+    bufferFileOffset = -1;
+    storedBufferFileOffset = -1;
 
     dataBegin = NULL;
     dataEnd = NULL;
     currentDataPointer = NULL;
+    storedDataPointer = NULL;
 
     lastLineOffset = -1;
     lastLineLength = -1;
@@ -59,50 +62,19 @@ FileReader::~FileReader()
     ensureFileClosed();
 }
 
-FileReader::FileChangedState FileReader::getFileChangedState()
-{
-    if (fileSize != getFileSizeInternal()) {
-        seekTo(lastLineOffset);
-        char *currentLastLine = getNextLineBufferPointer();
-        int currentLineLength = getCurrentLineLength();
-
-        if (currentLastLine && currentLineLength == lastLineLength && !strncmp(currentLastLine, lastLine.c_str(), lastLineLength))
-            return APPENDED;
-        else
-            return OVERWRITTEN;
-    }
-
-    return UNCHANGED;
-}
-
-void FileReader::synchronize()
-{
-    int64 fileSize = getFileSizeInternal();
-
-    if (fileSize != this->fileSize) {
-        this->fileSize = fileSize;
-        dataBegin = dataEnd = NULL;
-
-        // read in last line
-        seekTo(getFileSize());
-        char *line = getPreviousLineBufferPointer();
-        lastLineLength = getCurrentLineLength();
-        lastLineOffset = getCurrentLineStartOffset();
-        lastLine.assign(line, lastLineLength);
-    }
-}
-
 void FileReader::ensureFileOpen()
 {
     if (!f) {
-        // open file. Note: 'b' mode turns off CR/LF translation and might be faster
+        // Note: 'b' mode turns off CR/LF translation and might be faster
         f = fopen(fileName.c_str(), "rb");
 
         if (!f)
             throw opp_runtime_error("Cannot open file `%s'", fileName.c_str());
 
+        if (bufferFileOffset == -1)
+            seekTo(0);
+
         synchronize();
-        seekTo(0);
     }
 }
 
@@ -111,6 +83,67 @@ void FileReader::ensureFileClosed()
     if (f) {
         fclose(f);
         f = NULL;
+    }
+}
+
+void FileReader::storePosition()
+{
+    Assert(storedBufferFileOffset == -1 && !storedDataPointer);
+    storedBufferFileOffset = bufferFileOffset;
+    storedDataPointer = currentDataPointer;
+}
+
+void FileReader::restorePosition()
+{
+    Assert(storedBufferFileOffset != -1 && storedDataPointer);
+    bufferFileOffset = storedBufferFileOffset;
+    currentDataPointer = storedDataPointer;
+    dataBegin = dataEnd = NULL;
+    storedBufferFileOffset = -1;
+    storedDataPointer = NULL;
+}
+
+FileReader::FileChangedState FileReader::getFileChangedState()
+{
+    int64 newFileSize = getFileSizeInternal();
+
+    if (newFileSize > fileSize) {
+        // compare the stored last line with the one in the file
+        storePosition();
+        char *currentLastLine = getLastLineBufferPointer(false);
+        int currentLineLength = getCurrentLineLength();
+        restorePosition();
+
+        if (currentLastLine && currentLineLength == lastLineLength && !strncmp(currentLastLine, lastLine.c_str(), lastLineLength))
+            return APPENDED;
+        else
+            return OVERWRITTEN;
+    }
+    else if (newFileSize < fileSize)
+        return OVERWRITTEN;
+    else
+        return UNCHANGED;
+}
+
+void FileReader::synchronize()
+{
+    int64 newFileSize = getFileSizeInternal();
+
+    if (newFileSize != fileSize || lastLineOffset == -1) {
+        fileSize = newFileSize;
+        dataBegin = dataEnd = NULL;
+
+        // read in the last line from the file
+        storePosition();
+        char *line = getLastLineBufferPointer(false);
+
+        if (line) {
+            lastLineLength = getCurrentLineLength();
+            lastLineOffset = getCurrentLineStartOffset();
+            lastLine.assign(line, lastLineLength);
+        }
+
+        restorePosition();
     }
 }
 
@@ -123,10 +156,20 @@ void FileReader::checkConsistence()
         throw opp_runtime_error("FileReader: internal error");
 }
 
+void FileReader::checkFileChangedAndSynchronize()
+{
+    switch (getFileChangedState()) {
+        case OVERWRITTEN:
+            throw opp_runtime_error("File `%s' has been overwritten", fileName.c_str());
+        case APPENDED:
+            synchronize();
+        default:
+           break;
+    }
+}
+
 void FileReader::fillBuffer(bool forward)
 {
-    ensureFileOpen();
-
     char *dataPointer;
     int dataLength;
 
@@ -285,21 +328,15 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
     return s + 1;
 }
 
-char *FileReader::getNextLineBufferPointer()
+char *FileReader::getNextLineBufferPointer(bool checkFileChanged)
 {
     numReadLines++;
     ensureFileOpen();
     Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
-    switch (getFileChangedState()) {
-        case OVERWRITTEN:
-            throw opp_runtime_error("File `%s' has been overwritten", fileName.c_str());
-        case APPENDED:
-            synchronize();
-        default:
-           break;
-    }
+    if (checkFileChanged)
+        checkFileChangedAndSynchronize();
 
     fillBuffer(true);
 
@@ -331,15 +368,15 @@ char *FileReader::getNextLineBufferPointer()
     }
 }
 
-char *FileReader::getPreviousLineBufferPointer()
+char *FileReader::getPreviousLineBufferPointer(bool checkFileChanged)
 {
     numReadLines++;
     ensureFileOpen();
     Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
-    if (getFileChangedState() == OVERWRITTEN)
-        throw opp_runtime_error("File `%s' has been overwritten", fileName.c_str());
+    if (checkFileChanged)
+        checkFileChangedAndSynchronize();
 
     fillBuffer(false);
 
@@ -369,6 +406,21 @@ char *FileReader::getPreviousLineBufferPointer()
 
         return NULL;
     }
+}
+
+char *FileReader::getFirstLineBufferPointer(bool checkFileChanged)
+{
+    seekTo(0);
+    return getNextLineBufferPointer(checkFileChanged);
+}
+
+char *FileReader::getLastLineBufferPointer(bool checkFileChanged)
+{
+    if (checkFileChanged)
+        checkFileChangedAndSynchronize();
+
+    seekTo(getFileSize());
+    return getPreviousLineBufferPointer(checkFileChanged);
 }
 
 const char *strnistr(const char *haystack, const char *needle, int n)
@@ -420,19 +472,6 @@ int64 FileReader::getFileSizeInternal()
     struct stat s;
     fstat(fileno(f), &s);
     return s.st_size;
-
-    /* TODO: remove this
-    // TODO: check if this is hell slow
-    file_offset_t tmp = filereader_ftell(f);
-    filereader_fseek(f, 0, SEEK_END);
-    int64 fileSize = filereader_ftell(f);
-    filereader_fseek(f, tmp, SEEK_SET);
-
-    if (ferror(f))
-        throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-
-    return fileSize;
-    */
 }
 
 void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
@@ -444,7 +483,8 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 
     ensureFileOpen();
 
-    if (bufferFileOffset + ensureBufferSizeAround <= fileOffset &&
+    if (bufferFileOffset != -1 &&
+        bufferFileOffset + ensureBufferSizeAround <= fileOffset &&
         fileOffset <= (file_offset_t)(bufferFileOffset + bufferSize - ensureBufferSizeAround))
     {
         currentDataPointer = fileOffsetToPointer(fileOffset);

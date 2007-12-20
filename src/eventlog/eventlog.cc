@@ -68,7 +68,8 @@ void EventLog::synchronize()
 
     firstEvent = NULL;
 
-    IEvent *lastEvent = getLastEvent();
+    // always delete the last event because it might be incomplete
+    lastEvent = getLastEvent();
     if (lastEvent) {
         eventNumberToEventMap.erase(lastEvent->getEventNumber());
         offsetToEventMap.erase(lastEvent->getBeginOffset());

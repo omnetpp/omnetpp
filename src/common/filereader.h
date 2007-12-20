@@ -59,6 +59,10 @@ typedef int64 file_offset_t;  // off_t on Linux
  * buffer must be able to contain at least two lines, therefore
  * the maximum line length is limited to buffer size divided by 2.
  *
+ * It maintains a position which is used to return subsequent lines from 
+ * the file in both directions from both ends. Automatically follows file 
+ * content when appended, but overwriting the file causes an exception to be thrown.
+ *
  * All functions throw class opp_runtime_error on error.
  */
 class COMMON_API FileReader
@@ -73,6 +77,7 @@ class COMMON_API FileReader
     char *bufferBegin;
     char *bufferEnd;  // = buffer + bufferSize
     file_offset_t bufferFileOffset;
+    file_offset_t storedBufferFileOffset;
     int64 fileSize;
 
     // the currently used (filled with data) region in buffer
@@ -87,6 +92,7 @@ class COMMON_API FileReader
 
     // the position where readNextLine() or readPreviousLine() starts from
     char *currentDataPointer;
+    char *storedDataPointer;
 
     // the pointer returned by readNextLine() or readPreviousLine()
     file_offset_t currentLineStartOffset;
@@ -100,12 +106,18 @@ class COMMON_API FileReader
 
   private:
     /**
-     * Reads data into the buffer till the end in the given direction.
+     * Reads data into the buffer till the end of the buffer in the given direction.
+     * May read from 0 up to bufferSize number of bytes.
      */
     void fillBuffer(bool forward);
 
     // assert data structure consistence
     void checkConsistence();
+    void checkFileChangedAndSynchronize();
+
+    // store and restore state to be able to read at another position
+    void storePosition();
+    void restorePosition();
 
     file_offset_t pointerToFileOffset(char *pointer) { return pointer - bufferBegin + bufferFileOffset; }
     char* fileOffsetToPointer(file_offset_t offset) { return offset - bufferFileOffset + bufferBegin; }
@@ -128,9 +140,8 @@ class COMMON_API FileReader
     };
 
     /**
-     * Creates a tokenizer object for the given file, with the given
-     * buffer size. The file doesn't get opened yet.
-     * Automatically follows file content when appended.
+     * Creates a tokenizer object for the given file, with the given buffer size.
+     * The file doesn't get opened yet.
      */
     FileReader(const char *fileName, size_t bufferSize = 64 * 1024);
 
@@ -140,7 +151,7 @@ class COMMON_API FileReader
     virtual ~FileReader();
 
     /**
-     * This method is called automatically whenever the file is accessed.
+     * This method is called automatically whenever the file is accessed through a public function.
      */
     void ensureFileOpen();
 
@@ -152,14 +163,25 @@ class COMMON_API FileReader
 
     /**
      * Checks if file has been changed on disk. A file change is considered to be an append if it did not change the 
-     * content of the line (starting at the same offset) which was the last before the change.
+     * content of the line (starting at the very same offset) which was the last before the change.
      */
     FileChangedState getFileChangedState();
 
     /**
-     * Updates internal state to reflect file changes on disk.
+     * Updates internal state to reflect file changes on disk, it does not move the current position
+     * and thus it may become invalid for truncated files.
      */
     void synchronize();
+
+    /**
+     * Returns the first line from the file, see getNextLineBufferPointer.
+     */
+    char *getFirstLineBufferPointer(bool checkFileChanged = true);
+
+    /**
+     * Returns the last line from the file, see getPreviousLineBufferPointer.
+     */
+    char *getLastLineBufferPointer(bool checkFileChanged = true);
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.
@@ -168,14 +190,14 @@ class COMMON_API FileReader
      * calls will return non NULL and continue reading lines from that on.
      * Moves the current position to the end of the line just returned.
      */
-    char *getNextLineBufferPointer();
+    char *getNextLineBufferPointer(bool checkFileChanged = true);
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
      * It returns NULL when the beginning of file reached.
      * Moves the current position to the beginning of the line just returned.
      */
-    char *getPreviousLineBufferPointer();
+    char *getPreviousLineBufferPointer(bool checkFileChanged = true);
 
     /**
      * Searches through the file from the current position for the given text and returns the first matching line.
