@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -1125,7 +1126,22 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				IPath location = sequenceChart.getInput().getFile().getLocation().makeAbsolute();
 				fileDialog.setFileName(location.removeFileExtension().addFileExtension("svg").lastSegment());
 				fileDialog.setFilterPath(location.removeLastSegments(1).toPortableString());
-				return fileDialog.open();
+				String fileName = fileDialog.open();
+
+				if (fileName != null) {
+                    File file = new File(fileName);
+
+                    if (file.exists()) {
+    		            MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
+    		            messageBox.setText("File already exists");
+    		            messageBox.setMessage("The file " + fileName + " already exists and will be overwritten. Do you want to continue the operation?");
+
+    		            if (messageBox.open() == SWT.CANCEL)
+    		                fileName = null;
+                    }
+				}
+
+                return fileName;
 			}
 
 			private int[] askExportRegion() {
@@ -1179,10 +1195,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
 				SVGGraphics2D g = graphics.getSVGGraphics2D();
+				g.setClip(0, 0, exportEndX - exportBeginX, height);
 				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                //graphics.setClip(new Rectangle(-1000, -100, 1000, 100));
 				graphics.translate(0, 1);
 				graphics.setAntialias(SWT.ON);
-				
+
 				return graphics;
 			}
 

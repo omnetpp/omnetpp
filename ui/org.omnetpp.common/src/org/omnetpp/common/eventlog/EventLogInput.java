@@ -9,6 +9,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.RecurringJob;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
+import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntVector;
@@ -101,7 +102,7 @@ public class EventLogInput
 	}
 
 	private void checkEventLogForChanges() {
-		if (eventLog.getFileReader().isChanged()) {
+		if (eventLog.getFileReader().getFileChangedState() == FileReader.FileChangedState.APPENDED) {
 			if (debug)
 				System.out.println("Notifying listeners about new content being appended to the event log");
 

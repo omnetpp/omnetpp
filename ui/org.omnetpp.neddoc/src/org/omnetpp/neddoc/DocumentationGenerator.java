@@ -97,17 +97,17 @@ import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
  * This class generates documentation for a single OMNeT++/OMNEST project. It calls doxygen if requested and generates
  * documentation from NED and MSG files found in the project. The result is a bunch of HTML and PNG files.
  * 
- * The tool relies on the doxygen and graphviz dot executable which are invoked through the runtime's exec facility.
+ * The tool relies on the doxygen and graphviz dot executables which are invoked through the runtime's exec facility.
  * The documentation generation takes place in a background job (thread) and a progress monitor is used to present
  * its state to the user. The whole process might take several minutes for large projects such as the INET framework.
  * 
  * The generated documentation consists of the following things:
  *  - doxygen documentation (several different kind of pages)
  *  - one page for each NED and MSG file showing its content and a list of declared types
- *  - one page for each type defined in NED and MSG files showing the type's figure, an inheritance, a usage diagram and 
- *    various other tables.
- *  - several index pages each listing the declared types of a kind
- *  - other pages extracted from NED and MSG file comments
+ *  - one page for each type defined in NED and MSG files showing the type's figure,
+ *    an inheritance and a usage diagram and various other tables.
+ *  - several index pages each listing the declared types of a kind such as simple modules, compound modules, channels, etc.
+ *  - other pages written by the user and extracted from NED and MSG file comments
  *  - separate full inheritance and usage diagrams for NED and MSG files
  */
 public class DocumentationGenerator {
