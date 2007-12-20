@@ -6,14 +6,14 @@
 
 include Makefile.inc
 
-# check if the output directories are not empty
-ifeq ("$(strip $(OMNETPP_BIN_DIR))","")                                                                               
+# Make sure that output locations are set
+ifeq ("$(strip $(OMNETPP_BIN_DIR))","")
 $(error OMNETPP_BIN_DIR must be correctly set)
 endif
-ifeq ("$(strip $(OMNETPP_OUT_DIR))","")                                                                               
+ifeq ("$(strip $(OMNETPP_OUT_DIR))","")
 $(error OMNETPP_OUT_DIR must be correctly set)
 endif
-ifeq ("$(strip $(OMNETPP_LIB_DIR))","")                                                                               
+ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
 $(error OMNETPP_LIB_DIR must be correctly set)
 endif
 

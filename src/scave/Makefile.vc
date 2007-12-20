@@ -3,15 +3,15 @@
 #
 !include ..\..\configuser.vc
 
-# check if the output directories are not empty                                                                   
-!if "$(OMNETPP_BIN_DIR)"==""                                                                                      
-!error OMNETPP_BIN_DIR must be correctly set                                                                      
-!endif                                                                                                            
-!if "$(OMNETPP_OUT_DIR)"==""                                                                                      
-!error OMNETPP_OUT_DIR must be correctly set                                                                      
-!endif                                                                                                            
-!if "$(OMNETPP_LIB_DIR)"==""                                                                                      
-!error OMNETPP_LIB_DIR must be correctly set                                                                      
+# Make sure that output locations are set
+!if "$(OMNETPP_BIN_DIR)"==""
+!error OMNETPP_BIN_DIR must be correctly set
+!endif
+!if "$(OMNETPP_OUT_DIR)"==""
+!error OMNETPP_OUT_DIR must be correctly set
+!endif
+!if "$(OMNETPP_LIB_DIR)"==""
+!error OMNETPP_LIB_DIR must be correctly set
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
