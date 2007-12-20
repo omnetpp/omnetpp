@@ -20,7 +20,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getParams <em>Params</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getComputedFile <em>Computed File</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.ProcessingOp#isComputedFileUpToDate <em>Computed File Up To Date</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getComputationHash <em>Computation Hash</em>}</li>
  * </ul>
  * </p>
  *
@@ -114,29 +114,29 @@ public interface ProcessingOp extends DatasetItem {
 	void setComputedFile(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Computed File Up To Date</b></em>' attribute.
+	 * Returns the value of the '<em><b>Computation Hash</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Computed File Up To Date</em>' attribute isn't clear,
+	 * If the meaning of the '<em>Computation Hash</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Computed File Up To Date</em>' attribute.
-	 * @see #setComputedFileUpToDate(boolean)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getProcessingOp_ComputedFileUpToDate()
-	 * @model required="true" transient="true"
+	 * @return the value of the '<em>Computation Hash</em>' attribute.
+	 * @see #setComputationHash(long)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getProcessingOp_ComputationHash()
+	 * @model transient="true"
 	 * @generated
 	 */
-	boolean isComputedFileUpToDate();
+	long getComputationHash();
 
 	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.ProcessingOp#isComputedFileUpToDate <em>Computed File Up To Date</em>}' attribute.
+	 * Sets the value of the '{@link org.omnetpp.scave.model.ProcessingOp#getComputationHash <em>Computation Hash</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Computed File Up To Date</em>' attribute.
-	 * @see #isComputedFileUpToDate()
+	 * @param value the new value of the '<em>Computation Hash</em>' attribute.
+	 * @see #getComputationHash()
 	 * @generated
 	 */
-	void setComputedFileUpToDate(boolean value);
+	void setComputationHash(long value);
 
 } // ProcessingOp

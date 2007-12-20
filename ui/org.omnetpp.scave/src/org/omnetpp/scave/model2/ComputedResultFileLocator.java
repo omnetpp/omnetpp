@@ -44,7 +44,7 @@ public class ComputedResultFileLocator {
 				try {
 					File file = File.createTempFile("computed", ".vec", dirPath.toFile());
 					operation.setComputedFile(file.getAbsolutePath());
-					operation.setComputedFileUpToDate(false);
+					operation.setComputationHash(0);
 					file.deleteOnExit();
 					File indexFile = IndexFile.getIndexFileFor(file);
 					indexFile.deleteOnExit();

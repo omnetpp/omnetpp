@@ -13,6 +13,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.DataflowNetworkBuilder;
+import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionCallback;
 
@@ -79,7 +80,7 @@ public class GenerateComputedFileJob extends WorkspaceJob
 			if (monitor != null && monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 			
-			operation.setComputedFileUpToDate(true);
+			operation.setComputationHash(DatasetManager.getComputationHash(operation, manager));
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return ScavePlugin.getErrorStatus(e);

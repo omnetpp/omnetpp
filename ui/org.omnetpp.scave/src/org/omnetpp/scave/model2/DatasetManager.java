@@ -54,6 +54,7 @@ import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
@@ -71,7 +72,11 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
 public class DatasetManager {
 
 	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastItemToProcess, ResultType type) {
-		ProcessDatasetSwitch processor = new ProcessDatasetSwitch(manager, lastItemToProcess, type);
+		return getIDListFromDataset(manager, dataset, lastItemToProcess, false, type);
+	}
+
+	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem target, boolean stopBefore, ResultType type) {
+		ProcessDatasetSwitch processor = new ProcessDatasetSwitch(manager, target, stopBefore, type);
 		processor.doSwitch(dataset);
 		return processor.getIDList();
 	}
@@ -86,13 +91,15 @@ public class DatasetManager {
 		private ResultType type;
 		private IDList idlist;
 		private EObject target;
+		private boolean stopBefore;
 		private boolean finished;
 		private List<IStatus> warnings;
 
-		public ProcessDatasetSwitch(ResultFileManager manager, EObject target, ResultType type) {
+		public ProcessDatasetSwitch(ResultFileManager manager, EObject target, boolean stopBefore, ResultType type) {
 			this.manager = manager;
 			this.type = type;
 			this.target = target;
+			this.stopBefore = stopBefore;
 			this.idlist = new IDList();
 			this.warnings = new ArrayList<IStatus>();
 		}
@@ -105,9 +112,13 @@ public class DatasetManager {
 		protected Object doSwitch(int classifierID, EObject object) {
 			Object result = this;
 			if (!finished) {
-				result = super.doSwitch(classifierID, object);
-				if (object == target)
+				if (object == target && stopBefore)
 					finished = true;
+				else {
+					result = super.doSwitch(classifierID, object);
+					if (object == target)
+						finished = true;
+				}
 			}
 			return result;
 		}
@@ -477,6 +488,10 @@ public class DatasetManager {
 		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(filterPattern), manager);
 	}
 	
+	/*
+	 * Computed vectors
+	 */
+	
 	static long ensureComputedResultItem(ProcessingOp operation, long inputID, int vectorId, ResultFileManager manager, /*out*/ List<IStatus> warnings) {
 		long computationID = getFilterNodeID(operation);
 		long id = manager.getComputedVector(computationID, inputID);
@@ -507,5 +522,34 @@ public class DatasetManager {
 		NodeType type = NodeTypeRegistry.instance().getNodeType(operation);
 		type.mapVectorAttributes(outAttrs); // TODO pass warnings
 		return outAttrs;
+	}
+	
+	public static long getComputationHash(ProcessingOp processingOp, ResultFileManager manager) {
+		long hash = 0;
+		IDList inputIDs = getComputationInput(processingOp, manager);
+		if (inputIDs != null)
+			for (int i = 0; i < inputIDs.size(); ++i)
+				hash = 31 * hash + inputIDs.get(i);
+		String operation = processingOp.getOperation();
+		if (operation != null)
+			hash = 31 * hash + operation.hashCode();
+		List<Param> params = processingOp.getParams();
+		if (params != null)
+			for (Param param : params) {
+				String name = param.getName();
+				String value = param.getValue();
+				if (name != null)
+					hash = 31 * hash + name.hashCode();
+				if (value != null)
+					hash = 31 * hash + value.hashCode();
+			}
+		return hash;
+	}
+	
+	public static IDList getComputationInput(ProcessingOp processingOp, ResultFileManager manager) {
+		Dataset dataset = ScaveModelUtil.findEnclosingDataset(processingOp);
+		if (dataset == null)
+			return null;
+		return getIDListFromDataset(manager, dataset, processingOp, true, ResultType.VECTOR_LITERAL);
 	}
 }

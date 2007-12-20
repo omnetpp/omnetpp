@@ -177,13 +177,14 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			if (computation instanceof ProcessingOp) {
 				ProcessingOp operation =  (ProcessingOp)computation;
 				VectorResult origInput = (VectorResult)viewer.getInput();
+				ComputedResultFileUpdater updater = ComputedResultFileUpdater.instance();
 				if (origInput == null || operation != origInput.getComputation() ||
-						operation.getComputedFile() == null || !operation.isComputedFileUpToDate()) {
+						 !updater.isComputedFileUpToDate(operation, manager)) {
 					setViewerInput((VectorResult)null);
 					showMessage("Computing vectors...");
 					final VectorResult finalVector = selectedVector;
 					final int serialToShow = dataPointIndex;
-					ComputedResultFileUpdater.instance().ensureComputedFile(operation, manager,
+					updater.ensureComputedFile(operation, manager,
 						new ComputedResultFileUpdater.CompletionCallback() {
 							public void completed(final CompletionEvent event) {
 								if (Display.getCurrent() == null) {

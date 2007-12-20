@@ -59,9 +59,16 @@ public class ComputedResultFileUpdater {
 		return instance;
 	}
 	
+	public boolean isComputedFileUpToDate(ProcessingOp operation, ResultFileManager manager) {
+		String fileName = operation.getComputedFile();
+		if (fileName == null || !new File(fileName).exists())
+			return false;
+		long hash = DatasetManager.getComputationHash(operation, manager);
+		return hash == operation.getComputationHash();
+	}
+	
 	public synchronized boolean ensureComputedFile(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
-		String fileName = operation.getComputedFile(); 
-		if (!operation.isComputedFileUpToDate() || fileName == null || !new File(fileName).exists()) {
+		if (!isComputedFileUpToDate(operation, manager)) {
 			updateComputedFile(operation, manager, callback);
 			return false;
 		}

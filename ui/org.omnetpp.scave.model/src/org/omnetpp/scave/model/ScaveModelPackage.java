@@ -460,13 +460,13 @@ public interface ScaveModelPackage extends EPackage {
 	int PROCESSING_OP__COMPUTED_FILE = DATASET_ITEM_FEATURE_COUNT + 3;
 
 	/**
-	 * The feature id for the '<em><b>Computed File Up To Date</b></em>' attribute.
+	 * The feature id for the '<em><b>Computation Hash</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE = DATASET_ITEM_FEATURE_COUNT + 4;
+	int PROCESSING_OP__COMPUTATION_HASH = DATASET_ITEM_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of structural features of the '<em>Processing Op</em>' class.
@@ -974,13 +974,13 @@ public interface ScaveModelPackage extends EPackage {
 	int APPLY__COMPUTED_FILE = PROCESSING_OP__COMPUTED_FILE;
 
 	/**
-	 * The feature id for the '<em><b>Computed File Up To Date</b></em>' attribute.
+	 * The feature id for the '<em><b>Computation Hash</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int APPLY__COMPUTED_FILE_UP_TO_DATE = PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE;
+	int APPLY__COMPUTATION_HASH = PROCESSING_OP__COMPUTATION_HASH;
 
 	/**
 	 * The number of structural features of the '<em>Apply</em>' class.
@@ -1039,13 +1039,13 @@ public interface ScaveModelPackage extends EPackage {
 	int COMPUTE__COMPUTED_FILE = PROCESSING_OP__COMPUTED_FILE;
 
 	/**
-	 * The feature id for the '<em><b>Computed File Up To Date</b></em>' attribute.
+	 * The feature id for the '<em><b>Computation Hash</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPUTE__COMPUTED_FILE_UP_TO_DATE = PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE;
+	int COMPUTE__COMPUTATION_HASH = PROCESSING_OP__COMPUTATION_HASH;
 
 	/**
 	 * The number of structural features of the '<em>Compute</em>' class.
@@ -1907,15 +1907,15 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getProcessingOp_ComputedFile();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ProcessingOp#isComputedFileUpToDate <em>Computed File Up To Date</em>}'.
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ProcessingOp#getComputationHash <em>Computation Hash</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Computed File Up To Date</em>'.
-	 * @see org.omnetpp.scave.model.ProcessingOp#isComputedFileUpToDate()
+	 * @return the meta object for the attribute '<em>Computation Hash</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp#getComputationHash()
 	 * @see #getProcessingOp()
 	 * @generated
 	 */
-	EAttribute getProcessingOp_ComputedFileUpToDate();
+	EAttribute getProcessingOp_ComputationHash();
 
 	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
@@ -2572,12 +2572,12 @@ public interface ScaveModelPackage extends EPackage {
 		EAttribute PROCESSING_OP__COMPUTED_FILE = eINSTANCE.getProcessingOp_ComputedFile();
 
 		/**
-		 * The meta object literal for the '<em><b>Computed File Up To Date</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Computation Hash</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute PROCESSING_OP__COMPUTED_FILE_UP_TO_DATE = eINSTANCE.getProcessingOp_ComputedFileUpToDate();
+		EAttribute PROCESSING_OP__COMPUTATION_HASH = eINSTANCE.getProcessingOp_ComputationHash();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ComputeImpl <em>Compute</em>}' class.
