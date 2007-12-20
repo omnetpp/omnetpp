@@ -473,7 +473,7 @@ AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, not found)
 
 if test "$DOXYGEN" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  doxygen"
-   AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc.)
+   AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference.)
    AC_MSG_WARN(It is available from http://www.doxygen.org/)
 fi
 
@@ -482,7 +482,7 @@ AC_ARG_VAR(PERL, The Perl interpreter)
 AC_CHECK_PROG(PERL, perl, perl, not found)
 if test "$PERL" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
-   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_neddoc and other features.)
+   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_makemake and other features.)
 fi
 if test ! -x /usr/bin/perl; then
    this_perl=`which perl`
@@ -495,7 +495,7 @@ AC_CHECK_PROG(DOT, dot, dot,)
 
 if test "$DOT" = ""; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
-   AC_MSG_WARN(dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams.)
+   AC_MSG_WARN(dot program from Graphviz not found -- it is needed to generate documentation with diagrams.)
 fi
 
 # swig is used for building the ui support libs
@@ -849,7 +849,6 @@ fi
 #----------------------
 AC_CONFIG_FILES(
   Makefile.inc
-  src/utils/opp_neddoc
   test/core/runtest
 )
 
