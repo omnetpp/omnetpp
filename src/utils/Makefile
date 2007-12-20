@@ -14,12 +14,12 @@ endif
 
 all: $O/seedtool
 	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
-	cp opp_configfilepath $(OMNETPP_BIN_DIR)
+	chmod +x opp_makemake opp_test opp_makedep opp_neddoc splitvec opp_configfilepath
 	if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
 	fi
-	chmod +x opp_makemake opp_test opp_makedep opp_neddoc splitvec opp_configfilepath
+	cp opp_configfilepath $(OMNETPP_BIN_DIR)
 	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp opp_test $(OMNETPP_BIN_DIR)
 	cp opp_makedep $(OMNETPP_BIN_DIR)

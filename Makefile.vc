@@ -48,16 +48,15 @@ JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 # Group targets.
 #
 base: $(BASE)
-jnilibs : $(JNILIBS)
+jnilibs : $(JNILIBS) base
 samples: $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
+clean depend: makefiles                                                                                           
 common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: ver_h utils
 layout eventlog scave nedxml sim envir cmdenv : common
 sim : nedxml
-makefiles: utils
-$(SAMPLES) clean depend : makefiles
-$(SAMPLES) : rundemo
+$(SAMPLES) : makefiles base rundemo
 
 !if "$(LIB_SUFFIX)"==".dll"
 sim : nedxml envir-implib

@@ -32,15 +32,15 @@ JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 # Group targets.
 #
 base: $(BASE)
-jnilibs : $(JNILIBS)
+jnilibs : $(JNILIBS) base
 samples: $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
+clean depend: makefiles
 common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv : common
 sim : nedxml
-makefiles: utils
-$(SAMPLES) clean depend: makefiles
+$(SAMPLES) : makefiles base
 
 # create some additional dependecies required to build windows DLLs
 ifeq ($(LIB_SUFFIX),$(DLL_LIB_SUFFIX))

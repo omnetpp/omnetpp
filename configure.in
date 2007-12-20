@@ -182,6 +182,8 @@ AC_MSG_NOTICE(-----------------------------------------------)
 #----------------------
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+WHOLE_ARCHIVE_ON=
+WHOLE_ARCHIVE_OFF=
 
 NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
@@ -397,6 +399,8 @@ then
       AC_MSG_NOTICE([containing simple modules and other dynamically registered components:])
       AC_MSG_NOTICE([   $CXX ... $silly1 <libs> $silly2 ...])
       silly_ok="yes"
+      WHOLE_ARCHIVE_ON=$silly1
+      WHOLE_ARCHIVE_OFF=$silly2
    fi
 
    # 3rd try.
@@ -406,11 +410,13 @@ then
       $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
       ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
    then
-      AC_MSG_RESULT(--whole-archive)
+      AC_MSG_RESULT([-z,allextract])
       AC_MSG_NOTICE([NOTE: Use the following syntax when linking with static libraries])
       AC_MSG_NOTICE([containing simple modules and other dynamically registered components:])
       AC_MSG_NOTICE([   $CXX ... $silly1 <libs> $silly2 ...])
       silly_ok="yes"
+      WHOLE_ARCHIVE_ON=$silly1
+      WHOLE_ARCHIVE_OFF=$silly2
    fi
 
    # no solution found
@@ -877,6 +883,8 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_RELEASE)
 AC_SUBST(LDFLAGS)
+AC_SUBST(WHOLE_ARCHIVE_ON)
+AC_SUBST(WHOLE_ARCHIVE_OFF)
 AC_SUBST(TOOLCHAIN_NAME)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)

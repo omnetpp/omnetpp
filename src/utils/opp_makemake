@@ -541,7 +541,7 @@ sub makemake()
     close OUT;
 
     print "$makefile created.\n";
-    print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
+    print "Please type `$makecommand depend' NOW to add dependencies!\n";
 }
 
 sub collectDirs($;$);

@@ -663,6 +663,8 @@ OMNETPP_SAMPLES_DIR
 OMNETPP_TEST_DIR
 CFLAGS_DEBUG
 CFLAGS_RELEASE
+WHOLE_ARCHIVE_ON
+WHOLE_ARCHIVE_OFF
 TOOLCHAIN_NAME
 MYPWD
 NEDC
@@ -1989,6 +1991,8 @@ echo "$as_me: -----------------------------------------------" >&6;}
 #----------------------
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+WHOLE_ARCHIVE_ON=
+WHOLE_ARCHIVE_OFF=
 
 NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
@@ -3465,6 +3469,8 @@ echo "$as_me: containing simple modules and other dynamically registered compone
       { echo "$as_me:$LINENO:    $CXX ... $silly1 <libs> $silly2 ..." >&5
 echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
       silly_ok="yes"
+      WHOLE_ARCHIVE_ON=$silly1
+      WHOLE_ARCHIVE_OFF=$silly2
    fi
 
    # 3rd try.
@@ -3474,8 +3480,8 @@ echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
       $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
       ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
    then
-      { echo "$as_me:$LINENO: result: --whole-archive" >&5
-echo "${ECHO_T}--whole-archive" >&6; }
+      { echo "$as_me:$LINENO: result: -z,allextract" >&5
+echo "${ECHO_T}-z,allextract" >&6; }
       { echo "$as_me:$LINENO: NOTE: Use the following syntax when linking with static libraries" >&5
 echo "$as_me: NOTE: Use the following syntax when linking with static libraries" >&6;}
       { echo "$as_me:$LINENO: containing simple modules and other dynamically registered components:" >&5
@@ -3483,6 +3489,8 @@ echo "$as_me: containing simple modules and other dynamically registered compone
       { echo "$as_me:$LINENO:    $CXX ... $silly1 <libs> $silly2 ..." >&5
 echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
       silly_ok="yes"
+      WHOLE_ARCHIVE_ON=$silly1
+      WHOLE_ARCHIVE_OFF=$silly2
    fi
 
    # no solution found
@@ -6867,6 +6875,8 @@ ac_config_files="$ac_config_files Makefile.inc src/utils/opp_neddoc test/core/ru
 
 
 
+
+
 #
 # Generate files
 #
@@ -7586,6 +7596,8 @@ OMNETPP_SAMPLES_DIR!$OMNETPP_SAMPLES_DIR$ac_delim
 OMNETPP_TEST_DIR!$OMNETPP_TEST_DIR$ac_delim
 CFLAGS_DEBUG!$CFLAGS_DEBUG$ac_delim
 CFLAGS_RELEASE!$CFLAGS_RELEASE$ac_delim
+WHOLE_ARCHIVE_ON!$WHOLE_ARCHIVE_ON$ac_delim
+WHOLE_ARCHIVE_OFF!$WHOLE_ARCHIVE_OFF$ac_delim
 TOOLCHAIN_NAME!$TOOLCHAIN_NAME$ac_delim
 MYPWD!$MYPWD$ac_delim
 NEDC!$NEDC$ac_delim
@@ -7595,8 +7607,6 @@ AS!$AS$ac_delim
 AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
-MAKEDEPEND!$MAKEDEPEND$ac_delim
-A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -7638,6 +7648,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+MAKEDEPEND!$MAKEDEPEND$ac_delim
+A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 DLL_LIB_SUFFIX!$DLL_LIB_SUFFIX$ac_delim
 LIB_SUFFIX!$LIB_SUFFIX$ac_delim
@@ -7671,7 +7683,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 31; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 33; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
