@@ -1,3 +1,31 @@
+2007-12-21
+----------
+
+Additions:
+
+   + Added 'Zoom To Fit' action to toolbar and chart menus. (Icon is not yet created.)
+
+   + Computations keeps the enum types where possible (e.g. time shift).
+
+   + Interpolation-mode attributes of vectors used to set their default line style on charts.
+
+Fixes:
+
+   + Discard operation did not worked on computed vectors.
+
+   + Indexer sometimes generated index files that contained the same vectors more than once.
+
+   + In the edit dialog of Apply/Compute the parameters can be edited in the table.
+     (No separate dialog need to be opened.)
+
+   + Computed files are now recomputed when their input or their computation changes.
+     Manual refresh is still accessible from the menu.
+
+   + Toolbar icons and context menu items are now working for the chart on a chart sheet.
+
+   + The rubberband sometimes was not drawn.
+
+
 2007-12-07
 ----------
 
