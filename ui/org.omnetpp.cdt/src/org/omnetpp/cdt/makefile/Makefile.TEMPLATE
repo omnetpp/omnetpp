@@ -143,7 +143,7 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 all: $O/$(TARGET)
 
 {exe:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
 {sharedlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
 {staticlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}

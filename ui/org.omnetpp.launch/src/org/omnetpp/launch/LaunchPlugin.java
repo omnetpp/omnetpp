@@ -252,6 +252,8 @@ public class LaunchPlugin extends AbstractUIPlugin {
                  stringBuffer.append(new String(bytes, 0, lastRead));
              }
 
+             proc.waitFor();
+             
              //FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
              // --Andras
              if (proc.exitValue() == 0)
@@ -261,7 +263,9 @@ public class LaunchPlugin extends AbstractUIPlugin {
             LaunchPlugin.logError("Error starting the executable", e);
         } catch (IOException e) {
             LaunchPlugin.logError("Error getting output stream from the executable", e);
-        }
+        } catch (InterruptedException e) {
+            LaunchPlugin.logError("Error: thread interrupted while waiting for process to exit", e);
+		}
         return "";
     }
 
