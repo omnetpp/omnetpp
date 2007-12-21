@@ -639,7 +639,7 @@ public class VectorChart extends ChartCanvas {
 	
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
-		System.out.println("paintNoncachableLayer()");
+		//System.out.println("paintNoncachableLayer()");
 		if (getClientArea().isEmpty())
 			return;
 		
