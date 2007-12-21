@@ -92,6 +92,7 @@
             id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
             name="Microsoft Visual C++ for OMNEST/OMNeT++"
+            osList="win32"
             superClass="org.eclipse.cdt.msvc.toolchain.base"
             supportsManagedBuild="false">
          <builder
@@ -130,20 +131,6 @@
             projectEnvironmentSupplier="org.omnetpp.cdt.OmnetppProjectEnvironmentSupplier"
             projectMacroSupplier="org.omnetpp.cdt.OmnetppProjectMacroSupplier">
          <configuration
-               id="org.omnetpp.cdt.msvc.config.release"
-               name="msvc-release"
-               parent="org.eclipse.cdt.msvc.configuration">
-            <toolChain
-                  id="org.omnetpp.cdt.msvc.toolchain.release"
-                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
-               <builder
-                     arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
-                     id="org.omnetpp.cdt.msvc.builder.release"
-                     superClass="org.omnetpp.cdt.msvc.builder">
-               </builder>
-            </toolChain>
-         </configuration>
-         <configuration
                id="org.omnetpp.cdt.msvc.config.debug"
                name="msvc-debug"
                parent="org.eclipse.cdt.msvc.configuration">
@@ -157,21 +144,21 @@
                </builder>
             </toolChain>
          </configuration>
-
          <configuration
-               id="org.omnetpp.cdt.mingw.config.release"
-               name="mingw-release"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               id="org.omnetpp.cdt.msvc.config.release"
+               name="msvc-release"
+               parent="org.eclipse.cdt.msvc.configuration">
             <toolChain
-                  id="org.omnetpp.cdt.mingw.toolchain.release"
-                  superClass="org.omnetpp.cdt.mingw.toolchain.base">
+                  id="org.omnetpp.cdt.msvc.toolchain.release"
+                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
                <builder
-                     arguments="MODE=release CONFIGNAME=${ConfigName}"
-                     id="org.omnetpp.cdt.mingw.builder.release"
-                     superClass="org.omnetpp.cdt.mingw.builder">
+                     arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
+                     id="org.omnetpp.cdt.msvc.builder.release"
+                     superClass="org.omnetpp.cdt.msvc.builder">
                </builder>
             </toolChain>
          </configuration>
+
          <configuration
                id="org.omnetpp.cdt.mingw.config.debug"
                name="mingw-debug"
@@ -186,21 +173,21 @@
                </builder>
             </toolChain>
          </configuration>
-
          <configuration
-               id="org.omnetpp.cdt.gnu.config.release"
-               name="gcc-release"
-               parent="cdt.managedbuild.config.gnu.base">
+               id="org.omnetpp.cdt.mingw.config.release"
+               name="mingw-release"
+               parent="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
-                  id="org.omnetpp.cdt.gnu.toolchain.release"
-                  superClass="org.omnetpp.cdt.gnu.toolchain.base">
+                  id="org.omnetpp.cdt.mingw.toolchain.release"
+                  superClass="org.omnetpp.cdt.mingw.toolchain.base">
                <builder
                      arguments="MODE=release CONFIGNAME=${ConfigName}"
-                     id="org.omnetpp.cdt.gnu.builder.release"
-                     superClass="org.omnetpp.cdt.gnu.builder">
+                     id="org.omnetpp.cdt.mingw.builder.release"
+                     superClass="org.omnetpp.cdt.mingw.builder">
                </builder>
             </toolChain>
          </configuration>
+
          <configuration
                id="org.omnetpp.cdt.gnu.config.debug"
                name="gcc-debug"
@@ -211,6 +198,20 @@
                <builder
                      arguments="MODE=debug CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.gnu.builder.debug"
+                     superClass="org.omnetpp.cdt.gnu.builder">
+               </builder>
+            </toolChain>
+         </configuration>
+         <configuration
+               id="org.omnetpp.cdt.gnu.config.release"
+               name="gcc-release"
+               parent="cdt.managedbuild.config.gnu.base">
+            <toolChain
+                  id="org.omnetpp.cdt.gnu.toolchain.release"
+                  superClass="org.omnetpp.cdt.gnu.toolchain.base">
+               <builder
+                     arguments="MODE=release CONFIGNAME=${ConfigName}"
+                     id="org.omnetpp.cdt.gnu.builder.release"
                      superClass="org.omnetpp.cdt.gnu.builder">
                </builder>
             </toolChain>

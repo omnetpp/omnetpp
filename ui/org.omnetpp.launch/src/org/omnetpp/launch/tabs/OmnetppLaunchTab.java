@@ -13,6 +13,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
@@ -107,9 +108,24 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
     protected IFile getExeFile() {
         IFile exefile = null;
         String name;
+        String projectName;
         try {
-            name = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
-            exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
+            ILaunchConfiguration currentLaunchConfiguration = getCurrentLaunchConfiguration();
+            if (currentLaunchConfiguration == null)
+            	return null;
+            
+			name = currentLaunchConfiguration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+            if (StringUtils.isEmpty(name))
+            	return null;
+            
+            projectName = currentLaunchConfiguration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
+            // depending whether we are in a CDT launch dialog or in our own simulation start launcher
+            // the name has to be created differently. our dialog provides the exename with the projectName
+            // while the CDT dialog provides the project name separately
+            if (StringUtils.isEmpty(projectName))
+            	exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
+            else
+            	exefile = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(new Path(name));
         } catch (CoreException e) {
             LaunchPlugin.logError("Error getting program name from configuration", e);
         }

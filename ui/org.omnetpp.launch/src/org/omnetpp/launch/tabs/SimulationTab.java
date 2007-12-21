@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -34,7 +35,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -67,6 +68,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
     protected Text fAdditionalText;
     private boolean cdtContributed = true;
     private String infoText = null;
+	private Composite messageComposite;
+	private Composite simComposite;
 
     /**
      * Reads the ini file and enumerates all config sections. resolves include directives recursively
@@ -180,14 +183,40 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     public void createControl(Composite parent) {
-		Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
-		createLibraryGroup(comp, 1);
-		createIniGroup(comp, 1);
-        createConfigGroup(comp, 1);
-        createUIGroup(comp, 1);
-        createNedPathGroup(comp, 1);
-        createAdditionalGroup(comp, 1);
-        setControl(comp);
+    	Composite mainComposite = new Composite(parent, SWT.NONE);
+    	GridLayout mainGridLayout = new GridLayout();
+    	mainGridLayout.marginHeight = mainGridLayout.marginWidth = 0;
+		mainComposite.setLayout(mainGridLayout);
+
+		messageComposite = SWTFactory.createComposite(mainComposite, 1, 1, GridData.FILL_HORIZONTAL);
+		SWTFactory.createLabel(messageComposite, "The currently selected project is not an OMNEST/OMNeT++ project.", 1);
+    	
+		simComposite = SWTFactory.createComposite(mainComposite, 1, 1, GridData.FILL_HORIZONTAL);
+		createLibraryGroup(simComposite, 1);
+		createIniGroup(simComposite, 1);
+        createConfigGroup(simComposite, 1);
+        createUIGroup(simComposite, 1);
+        createNedPathGroup(simComposite, 1);
+        createAdditionalGroup(simComposite, 1);
+        setControl(mainComposite);
+	}
+    
+    @Override
+    public void activated(ILaunchConfigurationWorkingCopy workingCopy) {
+    	// hide the tab content if not an omnetpp project
+    	boolean isOmnetProject = isOmnetppProject();
+    	
+    	((GridData)simComposite.getLayoutData()).exclude = !isOmnetProject;
+    	((GridData)messageComposite.getLayoutData()).exclude = isOmnetProject;
+    	simComposite.setVisible(isOmnetProject);
+    	messageComposite.setVisible(!isOmnetProject);
+    	((Composite)getControl()).layout();
+    	super.activated(workingCopy);
+    }
+
+	protected boolean isOmnetppProject() {
+		IProject project = getProject();
+    	return project != null && ProjectUtils.hasOmnetppNature(project);
 	}
 
 	protected void createIniGroup(Composite parent, int colSpan) {
@@ -455,6 +484,9 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
+		if (!isOmnetppProject())
+			return;
+		
         String arg = "";
         if (StringUtils.isNotBlank(fInifileText.getText()))
             arg += "-f "+ StringUtils.join(StringUtils.split(fInifileText.getText())," -f ")+" ";
@@ -544,6 +576,9 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	    setErrorMessage(null);
 	    setMessage(null);
 
+	    if (!isOmnetppProject())
+			return true;
+
 		IFile ifiles[] = getIniFiles();
         if (ifiles == null) {
             setErrorMessage("Initialization file does not exist, or not accessible in workspace");
@@ -590,7 +625,10 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy config) {
-        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/}");
+		// FIXME not added correctly if first we assign a non omnet project and we want to chnage
+		// it only later
+		if (isOmnetppProject())
+			config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/}");
 	}
 
 	@Override

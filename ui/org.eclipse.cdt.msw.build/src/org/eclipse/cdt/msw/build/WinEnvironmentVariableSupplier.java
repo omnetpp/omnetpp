@@ -85,6 +85,8 @@ public class WinEnvironmentVariableSupplier
 	
 	public static String getSDKDir() {
 		WindowsRegistry reg = WindowsRegistry.getRegistry();
+		if (reg == null)
+			return null;
 		
 		String[] keys = {
 				"SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.1",
@@ -103,6 +105,8 @@ public class WinEnvironmentVariableSupplier
 	
 	public static String getVCDir() {
 		WindowsRegistry reg = WindowsRegistry.getRegistry();
+		if (reg == null)
+			return null;
 
 		String vcDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VC7", "9.0");
 		if (vcDir != null)
@@ -118,6 +122,8 @@ public class WinEnvironmentVariableSupplier
 	
 	public static String getVSDir() {
 		WindowsRegistry reg = WindowsRegistry.getRegistry();
+		if (reg == null)
+			return null;
 		return reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS7", "9.0");
 	}
 	
@@ -130,6 +136,8 @@ public class WinEnvironmentVariableSupplier
 			return;
 		
 		String vcDir = getVCDir();
+		if (vcDir == null)
+			return;
 		
 		// INCLUDE
 		StringBuffer buff = new StringBuffer();
