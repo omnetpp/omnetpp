@@ -142,20 +142,14 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 # Main target
 all: $O/$(TARGET)
 
-{exe:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{exe:}$O/$(TARGET): $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
-{sharedlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{sharedlib:}$O/$(TARGET): $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
-{staticlib:}$O/$(TARGET): print-info $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{staticlib:}$O/$(TARGET): $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
-{nolink:}$O/$(TARGET): print-info $(OBJS) {subdirs?subdirs} {makefile}
+{nolink:}$O/$(TARGET): $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
-
-print-info:
-{~nmake:}	@if [ -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** Info: MODE=$(MODE), using libs from \"$(OMNETPP_LIB_SUBDIR)\""; fi
-{~nmake:}	@if [ ! -d "$(OMNETPP_LIB_SUBDIR)" ]; then echo "*** WARNING: Selected libs not available: directory \"$(OMNETPP_LIB_SUBDIR)\" doesn't exist"; fi
-{nmake:}	@if exist "$(OMNETPP_LIB_SUBDIR)" echo *** Info: MODE=$(MODE), using libs from "$(OMNETPP_LIB_SUBDIR)"
-{nmake:}	@if not exist "$(OMNETPP_LIB_SUBDIR)" echo *** WARNING: Selected libs not available: directory "$(OMNETPP_LIB_SUBDIR)" doesn't exist
 
 {subdirs:}subdirs: $(SUBDIR_TARGETS)
 {subdirs:}

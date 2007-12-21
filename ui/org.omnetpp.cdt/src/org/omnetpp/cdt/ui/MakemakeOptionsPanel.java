@@ -34,6 +34,15 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
+//XXX use [Advanced] button on Link page
+//XXX use tabs for makefrag / makefrag.vc
+//XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
+//XXX create "CDT Overview" page in the project properties dialog! should show if: excludes/include paths are inconsistent for different configurations;
+//XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
+//XXX "Out" dir should not overlap with source folders (check!!!)
+//XXX verify that a .msg file alone can create folder dependency!
+//XXX new View: cross-folder dependencies (use DOT to render the graph?)
+//XXX totally eliminate possibility of in-directory build!
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -154,14 +163,11 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.setToolTipText(tooltip);
         outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         
-        // "Include" page
-
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include", 1);
-        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders of deep makefile to the include path", null); 
-        autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatic include path, inferred from #include lines", null);
-        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders under deep makefile to the include path", null); 
+        autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatically add other folders where #included files are located", "This project and its referenced projects are considered.");
         createLabel(includeGroup, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
@@ -366,6 +372,7 @@ public class MakemakeOptionsPanel extends Composite {
         useExportedLibs.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
         libsList.setEnabled(type!=Type.NOLINK);
         linkObjectsList.setEnabled(type!=Type.NOLINK);
+        deepIncludesCheckbox.setEnabled(deepMakefileRadioButton.getSelection());
         
         // checkbox checked state
         if (type!=Type.STATICLIB && type!=Type.SHAREDLIB)
