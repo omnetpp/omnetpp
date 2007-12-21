@@ -31,16 +31,18 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * UI for editing MakemakeOptions
+ * 
  * @author Andras
  */
-//TODO update enable/disable state on changes
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
     protected static final int BROWSE_NONE = 0;
     protected static final int BROWSE_FILE = 1;
     protected static final int BROWSE_DIR = 2;
-    
+
+    private static final String CCEXT_AUTODETECT = "autodetect";
+
     // controls
     private TabFolder tabfolder;
     private Composite scopePage;
@@ -127,7 +129,6 @@ public class MakemakeOptionsPanel extends Composite {
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
         createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         subdirsDirsList = new FileListControl(scopePage, "Sub-make directories", BROWSE_DIR);
-        //subdirsDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
@@ -154,7 +155,6 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText = new Text(outGroup, SWT.BORDER);
         outputDirText.setToolTipText(tooltip);
         outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
         
         // "Include" page
         includePage.setLayout(new GridLayout(1,false));
@@ -163,18 +163,12 @@ public class MakemakeOptionsPanel extends Composite {
         autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
         createLabel(includePage, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
 
-//        createLabel(includePage, "Additional include directories:");
-//        includeDirsList = new FileListControl(includePage, SWT.NONE);
-//        includeDirsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//        includeDirsList.setAddDialogTitle("Add Include Directory");
-//        includeDirsList.setAddDialogMessage("Enter include directory:");
-
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
-        ccextCombo = new Combo(srcGroup, SWT.BORDER | SWT.READ_ONLY);  //XXX new
-        ccextCombo.add("autodetect");
+        ccextCombo = new Combo(srcGroup, SWT.BORDER | SWT.READ_ONLY);
+        ccextCombo.add(CCEXT_AUTODETECT);
         ccextCombo.add(".cc");
         ccextCombo.add(".cpp");
         
@@ -182,7 +176,7 @@ public class MakemakeOptionsPanel extends Composite {
         compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines WIN32_DLL as preprocessor symbol"); //XXX new
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         Label dllExportMacroLabel = createLabel(dllGroup, "DLL export symbol for msg files:");
-        dllExportMacroText = new Text(dllGroup, SWT.BORDER); //XXX needs to be validated! no spaces etc
+        dllExportMacroText = new Text(dllGroup, SWT.BORDER);
         dllExportMacroText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         String dllExportMacroTooltip = 
             "Name of the macro (#define) which expands to __dllexport/__dllimport \n" +
@@ -193,47 +187,25 @@ public class MakemakeOptionsPanel extends Composite {
 
         createLabel(compilePage, "NOTE: Additional preprocessor symbols can be specified in the C/C++ General -> Paths and symbols page.");
 
-//        createLabel(compilePage, "Preprocessor symbols to define:");
-//        definesList = new FileListControl(compilePage, SWT.NONE); 
-//        definesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//        definesList.setAddDialogTitle("Add Preprocessor Symbol");
-//        definesList.setAddDialogMessage("Enter symbol in NAME or NAME=value format:");
-//        definesList.setInputValidator(new IInputValidator() {
-//            public String isValid(String newText) {
-//                String name = newText.contains("=") ? StringUtils.substringBefore(newText, "=") : newText;
-//                String value = newText.contains("=") ? StringUtils.substringAfter(newText, "=") : null;
-//                if (name.equals(""))
-//                    return "Symbol name is empty";
-//                if (!name.matches("(?i)[A-Z_][A-Z0-9_]*"))
-//                    return "Invalid symbol name \""+ name +"\"";
-//                if (value != null && (value.contains(" ") || value.contains("\t")))
-//                    return "Value should not contain whitespace";
-//                return null;
-//            }
-//        });
-
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
 
-        Group envGroup = createGroup(linkPage, "User interface:", 2);
-        createLabel(envGroup, "User interface libraries to link with:");
-        userInterfaceCombo = new Combo(envGroup, SWT.BORDER | SWT.READ_ONLY);
+        Group linkGroup = createGroup(linkPage, "Link", 2);
+        useExportedLibs = createCheckbox(linkGroup, "Use libraries exported from referenced projects", null);
+        ((GridData)useExportedLibs.getLayoutData()).horizontalSpan = 2;
+        createLabel(linkGroup, "User interface libraries to link with:");
+        userInterfaceCombo = new Combo(linkGroup, SWT.BORDER | SWT.READ_ONLY);
         for (String i : new String[] {"All", "Tkenv", "Cmdenv"}) // note: should be consistent with populate()!
             userInterfaceCombo.add(i);
-        useExportedLibs = createCheckbox(envGroup, "Use libraries exported from referenced projects", null);
         
 //        Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
 //        //FIXME are these combo boxes needed? do they correspond to any makemake settings?
 //        Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
 //        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
 //        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
-//        createLabel(linkGroup, "Libraries to link with (-l):");
-        libsList = new FileListControl(linkPage, "Libraries to link with: (-l option)", BROWSE_NONE);
-        //libsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
         createLabel(linkPage, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
-        //createLabel(linkPage, "Extra object files and libs to link with (wildcards allowed):");
-        linkObjectsList = new FileListControl(linkPage, "Link additionally with: (folder-relative path, wildcards; macros allowed)", BROWSE_NONE);
-        //linkObjectsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
 
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
@@ -242,7 +214,6 @@ public class MakemakeOptionsPanel extends Composite {
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(customPage, "Other fragment files to include:");
         makefragsList = new FileListControl(customPage, "Make fragments", BROWSE_NONE);
-        //makefragsList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // "Preview" page
         previewPage.setLayout(new GridLayout(1,false));
@@ -301,18 +272,6 @@ public class MakemakeOptionsPanel extends Composite {
         item.setControl(composite);
         return composite;
     }
-
-//  public void setEnabled(boolean enabled) {
-//  for (TabItem item : tabfolder.getItems())
-//  setEnabledRecursive(item.getControl(), enabled);
-//  }
-
-//  private static void setEnabledRecursive(Control control, boolean enabled) {
-//  control.setEnabled(enabled);
-//  if (control instanceof Composite)
-//  for (Control child : ((Composite)control).getChildren())
-//  setEnabledRecursive(child, enabled);
-//  }
 
     protected void hookListeners() {
         // maintain consistency between dialog controls and the "Preview" page
@@ -415,9 +374,18 @@ public class MakemakeOptionsPanel extends Composite {
         if (type!=Type.EXE && type!=Type.SHAREDLIB)
             useExportedLibs.setSelection(false);
         
-        //TODO also validate textfield contents etc!!!
+        // validate text field contents
+        setMessage(null);
+        String dllExportMacro = dllExportMacroText.getText();
+        if (!dllExportMacro.trim().matches("(?i)[A-Z_][A-Z0-9_]*"))
+            setMessage("DLL export macro: contains illegal characters");
+        //TODO others...
     }
     
+    protected void setMessage(String string) {
+        // TODO Auto-generated method stub
+    }
+
     public void setFolder(IContainer folder) {
         this.folder = folder;
     }
@@ -447,7 +415,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Compile" page
         if (data.ccext == null)
-            ccextCombo.setText("autodetect"); //XXX duplicate string literal
+            ccextCombo.setText(CCEXT_AUTODETECT);
         else
             ccextCombo.setText("." + data.ccext);
         compileForDllCheckbox.setSelection(data.compileForDll);
