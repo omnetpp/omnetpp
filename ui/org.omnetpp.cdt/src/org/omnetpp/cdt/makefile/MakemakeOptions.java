@@ -11,7 +11,8 @@ import org.omnetpp.common.util.StringUtils;
  * Value object to represent opp_makemake command-line options in a parsed form.
  * @author Andras
  */
-//FIXME parse() probably shouldn't throw exception, as it blows up reading the .oppbuildspec file if there's any errors in it 
+//FIXME parse() probably shouldn't throw exception, as it blows up reading the .oppbuildspec file if there's any errors in it
+//FIXME "-q" option: into perl too!
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     
@@ -29,8 +30,9 @@ public class MakemakeOptions implements Cloneable {
     public String defaultMode = null;
     public String userInterface = "ALL";
     public String ccext = null;
-    public String dllExportMacro = "";
     public boolean compileForDll;
+    public String dllExportMacro = "";
+    public String buildingDllMacro = "";
     public boolean ignoreNedFiles = true; // note: no option for this
     public List<String> fragmentFiles = new ArrayList<String>();
     public List<String> subdirs = new ArrayList<String>();
@@ -221,6 +223,13 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-p")) {
                 dllExportMacro = arg.substring(2);
             }
+            else if (arg.equals("-q")) {
+                checkArg(argv, i);
+                buildingDllMacro = argv[++i];
+            }
+            else if (arg.startsWith("-q")) {
+                buildingDllMacro = arg.substring(2);
+            }
             else if (arg.equals("--meta:auto-include-path")) {
                 metaAutoIncludePath = true;
             }
@@ -287,6 +296,8 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-e", ccext); 
         if (!StringUtils.isEmpty(dllExportMacro))
             add(result, "-p" + dllExportMacro);
+        if (!StringUtils.isEmpty(buildingDllMacro))
+            add(result, "-q" + buildingDllMacro);
         if (compileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
         if (noDeepIncludes)
@@ -354,6 +365,7 @@ public class MakemakeOptions implements Cloneable {
         result.userInterface = userInterface;
         result.ccext = ccext;
         result.dllExportMacro = dllExportMacro;
+        result.buildingDllMacro = buildingDllMacro;
         result.compileForDll = compileForDll;
         result.ignoreNedFiles = ignoreNedFiles;
         result.fragmentFiles.addAll(fragmentFiles);

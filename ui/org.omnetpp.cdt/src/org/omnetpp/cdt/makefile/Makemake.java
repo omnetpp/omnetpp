@@ -97,6 +97,7 @@ public class Makemake {
         List<String> backslashedSourceDirs = new ArrayList<String>();
         List<String> includeDirs = new ArrayList<String>();
         List<String> libDirs = new ArrayList<String>();
+        List<String> defines = new ArrayList<String>();
 
         // target should only be a name, cannot contain relative path
         if (target.contains("/") || target.contains("\\"))
@@ -259,6 +260,11 @@ public class Makemake {
             }
         }
 
+        // defines
+        defines.addAll(p.defines);
+        if (!StringUtils.isEmpty(p.buildingDllMacro))
+            defines.add(p.buildingDllMacro);
+
         // determine outDir
         String outdir;
         if (StringUtils.isEmpty(p.outRoot)) {
@@ -350,7 +356,7 @@ public class Makemake {
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
         m.put("libs", p.libs);
-        m.put("defines", prefixQuoteJoin(p.defines, "-D"));
+        m.put("defines", prefixQuoteJoin(defines, "-D"));
         m.put("makefiledefines", p.makefileDefines);
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");

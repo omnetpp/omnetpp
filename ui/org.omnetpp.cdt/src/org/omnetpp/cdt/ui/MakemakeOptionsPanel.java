@@ -6,6 +6,7 @@ import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -20,9 +21,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
@@ -34,6 +38,7 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
+//XXX introduce "buildingDllMacro" option into MakemakeOptions
 //XXX use [Advanced] button on Link page
 //XXX use tabs for makefrag / makefrag.vc
 //XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
@@ -41,7 +46,7 @@ import org.omnetpp.common.util.StringUtils;
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
 //XXX "Out" dir should not overlap with source folders (check!!!)
 //XXX verify that a .msg file alone can create folder dependency!
-//XXX new View: cross-folder dependencies (use DOT to render the graph?)
+//XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
@@ -51,7 +56,12 @@ public class MakemakeOptionsPanel extends Composite {
     protected static final int BROWSE_DIR = 2;
 
     private static final String CCEXT_AUTODETECT = "autodetect";
+    private static final String PROPERTYPAGE_PATH_AND_SYMBOLS = "org.eclipse.cdt.managedbuilder.ui.properties.Page_PathAndSymb";
 
+    // the folder whose properties we're editing; needed for Preview panel / translated options
+    private IContainer folder;
+    private PropertyPage ownerPage;
+    
     // controls
     private TabFolder tabfolder;
     private Composite scopePage;
@@ -60,7 +70,6 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite linkPage;
     private Composite customPage;
     private Composite previewPage;
-
 
     // "Scope" page
     private Button deepMakefileRadioButton;
@@ -87,6 +96,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Combo ccextCombo;
     private Button compileForDllCheckbox;
     private Text dllExportMacroText;
+    private Text buildingDllMacroText;
 
     // "Link" page
     private Combo userInterfaceCombo;
@@ -102,9 +112,6 @@ public class MakemakeOptionsPanel extends Composite {
     private Text optionsText;
     private Text translatedOptionsText;
     
-    // the folder whose properties we're editing; needed for Preview panel / translated options
-    private IContainer folder;
-
 
     public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
@@ -156,19 +163,14 @@ public class MakemakeOptionsPanel extends Composite {
         targetNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         Group outGroup = createGroup(targetPage, "Output:", 2);
-        String tooltip = "Specify project relative path. When empty, defaults to \"out\".";
-        Label outputDirLabel = createLabel(outGroup, "Output directory:");
-        outputDirLabel.setToolTipText(tooltip);
-        outputDirText = new Text(outGroup, SWT.BORDER);
-        outputDirText.setToolTipText(tooltip);
-        outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        outputDirText = createLabelAndText(outGroup, "Output directory:", "Specify project relative path. When empty, defaults to \"out\".");
         
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
-        Group includeGroup = createGroup(compilePage, "Include", 1);
-        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders under deep makefile to the include path", null); 
-        autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatically add other folders where #included files are located", "This project and its referenced projects are considered.");
-        createLabel(includeGroup, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
+        Group includeGroup = createGroup(compilePage, "Include Path", 1);
+        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders under this deep makefile", null); 
+        autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatically add other folders where included files are located", "This project and its referenced projects are considered.");
+        Link pathsPageLink1 = createLink(includeGroup, "NOTE: Additional include directories can be specified in the <A>Paths and symbols</A> page.");
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
@@ -178,19 +180,23 @@ public class MakemakeOptionsPanel extends Composite {
         ccextCombo.add(".cpp");
         
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
-        compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines WIN32_DLL as preprocessor symbol"); //XXX new
+        compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the WIN32_DLL preprocessor symbol");
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-        Label dllExportMacroLabel = createLabel(dllGroup, "DLL export symbol for msg files:");
-        dllExportMacroText = new Text(dllGroup, SWT.BORDER);
-        dllExportMacroText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        String dllExportMacroTooltip = 
-            "Name of the macro (#define) which expands to __dllexport/__dllimport \n" +
-            "when WIN32_DLL is defined. The message compiler needs to know it \n" +
-            "in order to be able to add it to generated classes.";
-        dllExportMacroLabel.setToolTipText(dllExportMacroTooltip);
-        dllExportMacroText.setToolTipText(dllExportMacroTooltip);
-
-        createLabel(compilePage, "NOTE: Additional preprocessor symbols can be specified in the C/C++ General -> Paths and symbols page.");
+        dllExportMacroText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO_API):", 
+                "Name of the macro (#define) which expands to \n" +
+                "__dllexport/__dllimport when WIN32_DLL is defined.\n" +
+                "It will be used to annotate C++ classes generated\n" +
+                "from msg files.");
+        buildingDllMacroText = createLabelAndText(dllGroup, "Symbol to define when building this DLL (e.g. BUILDING_FOO):", 
+                "The following code needs to be present in one of your\n" +
+                "header files, and be included in all sources (replace FOO\n" +
+                "with a name of your choice):\n" +
+                "#ifdef BUILDING_FOO\n" +
+                "#  define FOO_API  OPP_DLLEXPORT\n" +
+                "#else\n" +
+                "#  define FOO_API  OPP_DLLIMPORT\n" +
+                "#endif");
+        Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
 
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
@@ -206,12 +212,12 @@ public class MakemakeOptionsPanel extends Composite {
 //        Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
 //        //FIXME are these combo boxes needed? do they correspond to any makemake settings?
 //        Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
-//        Button cb2 = createCheckbox(linkGroup, "All object files in this project, except in folders with custom Makefiles", null);
-//        Button cb3 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
+//        Button cb2 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
-        createLabel(linkPage, "NOTE: Library paths can be specified in the C/C++ General -> Paths and symbols page.");
+        Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
         linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
-
+        createToggleControlsButton(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
+        
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         createLabel(customPage, "Code fragment to be inserted into the Makefile (Makefrag):");
@@ -228,10 +234,23 @@ public class MakemakeOptionsPanel extends Composite {
         createLabel(previewPage, "Makemake options modified with CDT settings:");
         translatedOptionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
         translatedOptionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        translatedOptionsText.setBackground(translatedOptionsText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
         Dialog.applyDialogFont(composite);
 
         hookListeners();
+        
+        SelectionListener gotoListener = new SelectionListener(){
+            public void widgetSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+            public void widgetDefaultSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+        };
+        pathsPageLink1.addSelectionListener(gotoListener);
+        pathsPageLink2.addSelectionListener(gotoListener);
+        pathsPageLink3.addSelectionListener(gotoListener);
         
         return composite;
     }
@@ -243,6 +262,13 @@ public class MakemakeOptionsPanel extends Composite {
         return label;
     }
 
+    protected Link createLink(Composite composite, String text) {
+        Link link = new Link(composite, SWT.NONE);
+        link.setText(text);
+        link.setLayoutData(new GridData());
+        return link;
+    }
+
     protected Group createGroup(Composite composite, String text, int numColumns) {
         Group group = new Group(composite, SWT.NONE);
         group.setText(text);
@@ -251,17 +277,20 @@ public class MakemakeOptionsPanel extends Composite {
         return group;
     }
 
+    protected Button createButton(Composite parent, String text, String tooltip) {
+        return createButton(parent, SWT.NONE, text, tooltip);
+    }
+
     protected Button createCheckbox(Composite parent, String text, String tooltip) {
-        Button button = new Button(parent, SWT.CHECK);
-        button.setText(text);
-        if (tooltip != null)
-            button.setToolTipText(tooltip);
-        button.setLayoutData(new GridData());
-        return button;
+        return createButton(parent, SWT.CHECK, text, tooltip);
     }
 
     protected Button createRadioButton(Composite parent, String text, String tooltip) {
-        Button button = new Button(parent, SWT.RADIO);
+        return createButton(parent, SWT.RADIO, text, tooltip);
+    }
+
+    private Button createButton(Composite parent, int style, String text, String tooltip) {
+        Button button = new Button(parent, style);
         button.setText(text);
         if (tooltip != null)
             button.setToolTipText(tooltip);
@@ -269,6 +298,17 @@ public class MakemakeOptionsPanel extends Composite {
         return button;
     }
 
+    protected Text createLabelAndText(Composite parent, String labelText, String tooltip) {
+        Label label = createLabel(parent, labelText);
+        Text text = new Text(parent, SWT.BORDER);
+        text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        if (tooltip != null) {
+            label.setToolTipText(tooltip);
+            text.setToolTipText(tooltip);
+        }
+        return text;
+    }
+    
     protected Composite createTabPage(String text) {
         TabItem item = new TabItem(tabfolder, SWT.NONE);
         item.setText(text);
@@ -276,6 +316,29 @@ public class MakemakeOptionsPanel extends Composite {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         item.setControl(composite);
         return composite;
+    }
+
+    protected Link createToggleControlsButton(Composite parent, final Control[] controls) {
+        //XXX start state not exactly correct
+        //XXX use this on more pages
+        final String lessLabel = "<A><< Less</A>";
+        final String moreLabel = "<A>More >></A>";
+        final Link toggle = createLink(parent, moreLabel);
+        toggle.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetDefaultSelected(e);
+            }
+            public void widgetSelected(SelectionEvent e) {
+                boolean isClosed = toggle.getText().equals(lessLabel);
+                for (Control c : controls) {
+                    ((GridData)c.getLayoutData()).exclude = isClosed;
+                    c.setVisible(!isClosed);
+                }
+                toggle.setText(isClosed ? moreLabel : lessLabel);
+                toggle.getParent().layout();
+            }
+        });
+        return toggle;
     }
 
     protected void hookListeners() {
@@ -326,6 +389,7 @@ public class MakemakeOptionsPanel extends Composite {
         ccextCombo.addSelectionListener(sel);
         compileForDllCheckbox.addSelectionListener(sel);
         dllExportMacroText.addModifyListener(mod);
+        buildingDllMacroText.addModifyListener(mod);
 
         userInterfaceCombo.addSelectionListener(sel);
         useExportedLibs.addSelectionListener(sel);
@@ -382,18 +446,27 @@ public class MakemakeOptionsPanel extends Composite {
         
         // validate text field contents
         setMessage(null);
-        String dllExportMacro = dllExportMacroText.getText();
-        if (!dllExportMacro.trim().matches("(?i)[A-Z_][A-Z0-9_]*"))
+        if (!dllExportMacroText.getText().trim().matches("(?i)[A-Z_][A-Z0-9_]*"))
             setMessage("DLL export macro: contains illegal characters");
+        if (!buildingDllMacroText.getText().trim().matches("(?i)[A-Z_][A-Z0-9_]*"))
+            setMessage("\"Building DLL\" macro: contains illegal characters");
         //TODO others...
     }
-    
-    protected void setMessage(String string) {
-        // TODO Auto-generated method stub
+
+    @SuppressWarnings("restriction")
+    protected void gotoPathsAndSymbolsPage() {
+        IPreferencePageContainer container = ownerPage.getContainer();
+        if (container instanceof PropertyDialog)
+            ((PropertyDialog)container).setCurrentPageId(PROPERTYPAGE_PATH_AND_SYMBOLS);
     }
 
-    public void setFolder(IContainer folder) {
-        this.folder = folder;
+    protected void setMessage(String string) {
+        ownerPage.setMessage(string);  //XXX does not seem to work...
+    }
+
+    public void setOwner(PropertyPage page) {
+        this.ownerPage = page;
+        this.folder = (IContainer) page.getElement();  // must be a folder!
     }
 
     public void populate(MakemakeOptions data, String makefragContents) {
@@ -426,6 +499,7 @@ public class MakemakeOptionsPanel extends Composite {
             ccextCombo.setText("." + data.ccext);
         compileForDllCheckbox.setSelection(data.compileForDll);
         dllExportMacroText.setText(StringUtils.nullToEmpty(data.dllExportMacro));
+        buildingDllMacroText.setText(StringUtils.nullToEmpty(data.buildingDllMacro));
 
         // "Link" page
         userInterfaceCombo.setText(StringUtils.capitalize(data.userInterface.toLowerCase()));
@@ -467,6 +541,7 @@ public class MakemakeOptionsPanel extends Composite {
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.compileForDll = compileForDllCheckbox.getSelection();
         result.dllExportMacro = dllExportMacroText.getText().trim();
+        result.buildingDllMacro = buildingDllMacroText.getText().trim();
 
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();

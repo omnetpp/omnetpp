@@ -53,7 +53,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     // controls
     protected Button enableMakefileCheckbox;
-    protected Text informationalMessage;
+    protected Text errorMessageText;
     protected MakemakeOptionsPanel contents;
 
     /**
@@ -70,13 +70,15 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         Group group = new Group(parent, SWT.NONE);
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         group.setLayout(new GridLayout(1,false));
-        enableMakefileCheckbox = createCheckbox(group, "Generate Makefile automatically");
+        enableMakefileCheckbox = createCheckbox(group, "Generate OMNeT++/OMNEST Makefile automatically");
         enableMakefileCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        //FIXME TODO add label: "CDT Makefile generation must be turned off at the <A>C/C++ Build</A> page"
 
-        informationalMessage = new Text(group, SWT.MULTI);
-        informationalMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        informationalMessage.setEditable(false);
-        informationalMessage.setForeground(ColorFactory.RED2);
+        errorMessageText = new Text(group, SWT.MULTI);
+        errorMessageText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        errorMessageText.setEditable(false);
+        errorMessageText.setForeground(ColorFactory.RED2);
+        errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
         contents = new MakemakeOptionsPanel(parent, SWT.NONE); 
         contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -89,7 +91,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             } 
         });
 
-        contents.setFolder(getResource());
+        contents.setOwner(this);
         
         loadBuildSpecFile();
         String makefragContents = readMakefrag();
@@ -113,9 +115,9 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         //setErrorMessage(getInformationalMessage());
         String message = getInformationalMessage();
         if (message == null)
-            informationalMessage.setText("");
+            errorMessageText.setText("");
         else
-            informationalMessage.setText(message);
+            errorMessageText.setText(message);
     }
 
     protected String getInformationalMessage() {
