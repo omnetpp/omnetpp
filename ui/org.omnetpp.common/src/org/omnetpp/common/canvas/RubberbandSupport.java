@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * Adds rubber-band selection support to a canvas. When the user drags out
@@ -22,7 +23,7 @@ import org.eclipse.swt.widgets.Display;
  * @author andras
  */
 public abstract class RubberbandSupport {
-
+	
 	private Canvas canvas;
 	private int modifierKeys = 0; // modifier key that needs to be held down for rubber-band (e.g. SWT.CTRL)
 	private Rectangle rubberBand = null;
@@ -147,19 +148,40 @@ public abstract class RubberbandSupport {
 	    });
 	}
 
-	private static void drawRubberBand(GC gc, Rectangle rect) {
+	private void drawRubberBand(GC gc, Rectangle rect) {
 		// System.out.println("rubberBand="+rect);
 		Rectangle r = new Rectangle(rect.x, rect.y, rect.width, rect.height);
 		// needed because gc.drawFocus() doesn't accept negative width/height
 		fixNegativeSizes(r);
-		gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS 
-		gc.drawFocus(r.x, r.y, r.width, r.height);
+		
+		
+		if (drawRubberBand) {
+			// On windows when Desktop Control Panel/Appearance/Effects/"Hide underlined letters for keyboard navigation until I press the Alt key"
+			// is turned on, the focus rectangles are not displayed until the user press the Alt key or switch to another 
+			// window and back. See WM_QUERYUISTATE,WM_UPDATEUISTATE.
+			// Commenting out the following lines can solve the problem, but uses discouraged access
+			
+//					GCData data = gc.getGCData();
+//					data.uiState &= (~OS.UISF_HIDEFOCUS);
+			gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS 
+			gc.drawFocus(r.x, r.y, r.width, r.height);
+		}
+		else {
+			gc.setForeground(ColorFactory.GREY8);
+			int antialias = gc.getAntialias();
+			gc.setAntialias(SWT.OFF);
+			gc.setLineStyle(SWT.LINE_DOT);
+			gc.drawRectangle(r);
+			gc.setAntialias(antialias);
+		}
 	}
 	
 	/**
 	 * To be called from the Paint handler of the canvas if draw == false.
 	 */
 	public void drawRubberband(GC gc) {
+		//System.out.format("Focus: %s %x%n", canvas.getDisplay().getFocusControl(), canvas.getDisplay().getFocusControl().hashCode());
+		//System.out.format("UIState: "+OS.SendMessage (canvas.handle, OS.WM_QUERYUISTATE, 0, 0));
 		if (rubberBand != null)
 			drawRubberBand(gc, rubberBand);
 	}
