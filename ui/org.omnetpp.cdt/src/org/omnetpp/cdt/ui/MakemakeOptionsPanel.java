@@ -47,7 +47,6 @@ public class MakemakeOptionsPanel extends Composite {
     private TabFolder tabfolder;
     private Composite scopePage;
     private Composite targetPage;
-    private Composite includePage;
     private Composite compilePage;
     private Composite linkPage;
     private Composite customPage;
@@ -113,7 +112,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         scopePage = createTabPage("Scope");
         targetPage = createTabPage("Target");
-        includePage = createTabPage("Include");
         compilePage = createTabPage("Compile");
         linkPage = createTabPage("Link");
         customPage = createTabPage("Custom");
@@ -157,14 +155,15 @@ public class MakemakeOptionsPanel extends Composite {
         outputDirText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         
         // "Include" page
-        includePage.setLayout(new GridLayout(1,false));
-        deepIncludesCheckbox = createCheckbox(includePage, "Add all source folders of deep makefile to the include path", null); 
-        autoIncludePathCheckbox = createCheckbox(includePage, "Automatic include path, inferred from #include lines", null);
-        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
-        createLabel(includePage, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
 
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
+        Group includeGroup = createGroup(compilePage, "Include", 1);
+        deepIncludesCheckbox = createCheckbox(includeGroup, "Add all source folders of deep makefile to the include path", null); 
+        autoIncludePathCheckbox = createCheckbox(includeGroup, "Automatic include path, inferred from #include lines", null);
+        autoIncludePathCheckbox.setToolTipText(StringUtils.breakLines("Automatically add directories where #included files are located. Only workspace locations (open projects marked as \"referenced project\") are considered.", 60));
+        createLabel(includeGroup, "NOTE: Additional include directories can be specified in the C/C++ General -> Paths and symbols page.");
+
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
         ccextCombo = new Combo(srcGroup, SWT.BORDER | SWT.READ_ONLY);
