@@ -499,14 +499,16 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			}
 		};
 		
-		cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(getImage())), owner);
+		int width = getClientArea().width, height = getClientArea().height;
+		Image image = getImage(width, height);
+		cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(image)), owner);
 	}
 	
 	/**
 	 * Returns the image of the chart.
 	 */
-	public Image getImage() {
-		Image image = new Image(getDisplay(), getClientArea().width, getClientArea().height);
+	public Image getImage(int width, int height) {
+		Image image = new Image(getDisplay(), width, height);
 		GC gc = new GC(image);
 		paint(gc);
 		gc.dispose();
