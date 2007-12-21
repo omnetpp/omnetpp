@@ -97,6 +97,10 @@ class EVENTLOG_API Event : public IEvent
         virtual IMessageDependencyList *getConsequences();
 
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true);
+
+	protected:
+		void deleteState();
+		void clearState();
 };
 
 #endif

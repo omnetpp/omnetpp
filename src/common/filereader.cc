@@ -30,6 +30,7 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     this->bufferSize = bufferSize;
 
     f = NULL;
+	synchronizeWhenAppended = true;
 
     bufferBegin = new char[bufferSize];
     bufferEnd = bufferBegin + bufferSize;
@@ -103,6 +104,13 @@ void FileReader::restorePosition()
     storedDataPointer = NULL;
 }
 
+file_offset_t FileReader::pointerToFileOffset(char *pointer)
+{
+	file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
+	Assert(fileOffset >= 0 && fileOffset <= fileSize);
+	return fileOffset;
+}
+
 FileReader::FileChangedState FileReader::getFileChangedState()
 {
     int64 newFileSize = getFileSizeInternal();
@@ -160,9 +168,12 @@ void FileReader::checkFileChangedAndSynchronize()
 {
     switch (getFileChangedState()) {
         case OVERWRITTEN:
-            throw opp_runtime_error("File `%s' has been overwritten", fileName.c_str());
+			throw opp_runtime_error("Eventlog file changed: `%s' has been overwritten", fileName.c_str());
         case APPENDED:
-            synchronize();
+			if (synchronizeWhenAppended)
+	            synchronize();
+			else
+	            throw opp_runtime_error("Eventlog file changed: `%s' has been appended", fileName.c_str());
         default:
            break;
     }
@@ -236,12 +247,11 @@ void FileReader::fillBuffer(bool forward)
 }
 
 bool FileReader::isLineStart(char *&s) {
-    file_offset_t fileOffset = pointerToFileOffset(s);
-
-    if (fileOffset == 0)
+    if (bufferFileOffset == 0 && bufferBegin == s)
         return true;
 
     if (dataBegin == s) {
+	    file_offset_t fileOffset = pointerToFileOffset(s);
         seekTo(fileOffset, 1);
         fillBuffer(false);
         s = fileOffsetToPointer(fileOffset);

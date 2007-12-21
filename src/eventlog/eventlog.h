@@ -109,6 +109,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 
     protected:
         Event *cacheEvent(Event *event);
+		void deleteState();
+		void clearState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 };
 
 #endif

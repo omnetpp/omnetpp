@@ -32,8 +32,7 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
 {
     timelineMode = NONLINEAR;
     timelineCoordinateSystemVersion = -1;
-    timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
-    timelineCoordinateOriginSimulationTime = -1;
+	undefineTimelineCoordinateSystem();
 
     nonLinearMinimumTimelineCoordinateDelta = 0.1;
     setNonLinearFocus(calculateNonLinearFocus());
@@ -43,10 +42,16 @@ void SequenceChartFacade::synchronize()
 {
     EventLogFacade::synchronize();
 
-    setNonLinearFocus(calculateNonLinearFocus());
+	setNonLinearFocus(calculateNonLinearFocus());
 
-    if (timelineCoordinateOriginEventNumber != -1)
-        relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+	if (timelineCoordinateOriginEventNumber != -1) {
+		IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber);
+
+		if (event)
+	        relocateTimelineCoordinateSystem(event);
+		else
+			undefineTimelineCoordinateSystem();
+	}
 }
 
 double SequenceChartFacade::calculateNonLinearFocus()
@@ -78,6 +83,13 @@ void SequenceChartFacade::setNonLinearFocus(double nonLinearFocus)
 {
     Assert(nonLinearFocus >= 0);
     this->nonLinearFocus = nonLinearFocus;
+}
+
+void SequenceChartFacade::undefineTimelineCoordinateSystem()
+{
+	timelineCoordinateSystemVersion++;
+    timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
+    timelineCoordinateOriginSimulationTime = -1;
 }
 
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
@@ -141,6 +153,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
             case NONLINEAR:
                 {
                     IEvent *previousEvent = NULL;
+					// do we go forward from end or backward from start of known range
                     bool forward = event->getEventNumber() > timelineCoordinateRangeEndEventNumber;
                     IEvent *currentEvent = eventLog->getEventForEventNumber(forward ? timelineCoordinateRangeEndEventNumber : timelineCoordinateRangeStartEventNumber);
 
@@ -150,6 +163,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                         Assert(currentEvent);
                         previousEvent = currentEvent;
                         currentEvent = forward ? currentEvent->getNextEvent() : currentEvent->getPreviousEvent();
+                        Assert(currentEvent);
 
                         double previousSimulationTime = previousEvent->getSimulationTime().dbl();
                         double previousTimelineCoordinate = previousEvent->cachedTimelineCoordinate;

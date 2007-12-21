@@ -19,6 +19,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
 
+	// filter parameters
     tracedEventNumber = -1;
     firstEventNumber = -1;
     lastEventNumber = -1;
@@ -27,11 +28,6 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     traceMessageReuses = false;
     traceSelfMessages = true;
 
-    approximateNumberOfEvents = -1;
-    approximateMatchingEventRatio = -1;
-    firstMatchingEvent = NULL;
-    lastMatchingEvent = NULL;
-
     maximumNumberOfCauses = maximumNumberOfConsequences = 10;
     maximumCauseDepth = maximumConsequenceDepth = 30;
 
@@ -39,25 +35,52 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     enableMessageFilter = false;
     setModuleExpression("");
     setMessageExpression("");
+
+	clearState();
 }
 
 FilteredEventLog::~FilteredEventLog()
 {
-    for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-        delete it->second;
+	deleteState();
+}
+
+void FilteredEventLog::deleteState()
+{
+	for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+		delete it->second;
+}
+
+void FilteredEventLog::clearState(FileReader::FileChangedState change)
+{
+    approximateNumberOfEvents = -1;
+    approximateMatchingEventRatio = -1;
+    lastMatchingEvent = NULL;
+
+	if (change == FileReader::OVERWRITTEN) {
+	    firstMatchingEvent = NULL;
+
+		eventNumberToFilteredEventMap.clear();
+		eventNumberToFilterMatchesFlagMap.clear();
+		eventNumberToTraceableEventFlagMap.clear();
+	}
 }
 
 void FilteredEventLog::synchronize()
 {
-    eventLog->synchronize();
+	FileReader::FileChangedState change = getFileReader()->getFileChangedState();
 
-    approximateNumberOfEvents = -1;
-    approximateMatchingEventRatio = -1;
-    firstMatchingEvent = NULL;
-    lastMatchingEvent = NULL;
+	if (change != FileReader::UNCHANGED) {
+		if (change == FileReader::OVERWRITTEN)
+			deleteState();
 
-    for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-        it->second->synchronize();
+		clearState(change);
+
+		eventLog->synchronize();
+
+		if (change == FileReader::APPENDED)
+			for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+				it->second->synchronize();
+	}
 }
 
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath)

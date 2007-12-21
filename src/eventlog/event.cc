@@ -21,20 +21,18 @@
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
-
-    beginOffset = -1;
-    endOffset = -1;
-    eventEntry = NULL;
-    cause = NULL;
-    causes = NULL;
-    consequences = NULL;
-    numEventLogMessages = -1;
-    numBeginSendEntries = -1;
+	
+	clearState();
 }
 
 Event::~Event()
 {
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+	deleteState();
+}
+
+void Event::deleteState()
+{
+	for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
         delete *it;
 
     if (!causes)
@@ -55,6 +53,19 @@ Event::~Event()
     }
 }
 
+void Event::clearState()
+{
+    beginOffset = -1;
+    endOffset = -1;
+    numEventLogMessages = -1;
+    numBeginSendEntries = -1;
+
+	eventEntry = NULL;
+    cause = NULL;
+	causes = NULL;
+	consequences = NULL;
+}
+
 void Event::synchronize()
 {
     if (consequences)
@@ -62,7 +73,6 @@ void Event::synchronize()
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
-
         consequences = NULL;
     }
 }
@@ -81,14 +91,14 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
     eventLog->progress();
 
-    Assert(offset >= 0);
-    Assert(!eventEntry);
-
-    beginOffset = offset;
-    reader->seekTo(offset);
-
+	deleteState();
+	clearState();
     numEventLogMessages = 0;
     numBeginSendEntries = 0;
+
+	Assert(offset >= 0);
+    beginOffset = offset;
+    reader->seekTo(offset);
 
     if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %lld\n", offset);
 

@@ -35,14 +35,24 @@ EventLogIndex::~EventLogIndex()
 
 void EventLogIndex::synchronize()
 {
-    reader->synchronize();
+	FileReader::FileChangedState change = reader->getFileChangedState();
 
-    firstEventNumber = EVENT_NOT_YET_CALCULATED;
-    lastEventNumber = EVENT_NOT_YET_CALCULATED;
-    firstSimulationTime = -1;
-    lastSimulationTime = -1;
-    firstEventOffset = -1;
-    lastEventOffset = -1;
+	if (change != FileReader::UNCHANGED) {
+		if (change != FileReader::APPENDED) {
+			eventNumberToOffsetMap.clear();
+			simulationTimeToOffsetMap.clear();
+
+			firstEventNumber = EVENT_NOT_YET_CALCULATED;
+			firstSimulationTime = -1;
+			firstEventOffset = -1;
+		}
+
+		lastEventNumber = EVENT_NOT_YET_CALCULATED;
+		lastSimulationTime = -1;
+		lastEventOffset = -1;
+
+		reader->synchronize();
+	}
 }
 
 long EventLogIndex::getFirstEventNumber()

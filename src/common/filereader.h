@@ -71,6 +71,7 @@ class COMMON_API FileReader
     // the file
     std::string fileName;
     FILE *f;
+	bool synchronizeWhenAppended;
 
     // the buffer
     size_t bufferSize;
@@ -119,7 +120,7 @@ class COMMON_API FileReader
     void storePosition();
     void restorePosition();
 
-    file_offset_t pointerToFileOffset(char *pointer) { return pointer - bufferBegin + bufferFileOffset; }
+    file_offset_t pointerToFileOffset(char *pointer);
     char* fileOffsetToPointer(file_offset_t offset) { return offset - bufferFileOffset + bufferBegin; }
 
     file_offset_t getDataBeginFileOffset() { return pointerToFileOffset(dataBegin); }
@@ -149,6 +150,11 @@ class COMMON_API FileReader
      * Destructor.
      */
     virtual ~FileReader();
+
+	/**
+	 * Controls what happens when new content is appended to the file.
+	 */
+	void setSynchronizeWhenAppended(bool value) { synchronizeWhenAppended = value; }
 
     /**
      * This method is called automatically whenever the file is accessed through a public function.

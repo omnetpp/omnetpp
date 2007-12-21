@@ -41,3 +41,5 @@ Features:
 
 Known bugs:
  - filtering seems to be slower than expected, further investigation and measurements needed
+ - remove calls to getEventForEventNumber where possible, because it results in a binary search for fitlered logs
+   use next/previous events where appropriate

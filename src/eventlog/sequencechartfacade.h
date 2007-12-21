@@ -67,6 +67,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         double getTimelineCoordinate(IEvent *event, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
         double getCachedTimelineCoordinate(IEvent *event);
         double Event_getTimelineCoordinate(int64 ptr);
+		void undefineTimelineCoordinateSystem();
         void relocateTimelineCoordinateSystem(IEvent *event);
 
         IEvent *getEventForNonLinearTimelineCoordinate(double timelineCoordinate, bool &forward);
