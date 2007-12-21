@@ -230,6 +230,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		// void
 	}
 
+    public void eventLogOverwritten() {
+        // void
+    }
+
 	public void eventLogFilterRemoved() {
 		update();
 	}

@@ -1081,7 +1081,15 @@ public class SequenceChart
 	}
 
 	public void eventLogAppended() {
-		if (debug)
+		eventLogChanged();
+	}
+
+    public void eventLogOverwritten() {
+        eventLogChanged();
+    }
+
+    private void eventLogChanged() {
+        if (debug)
 			System.out.println("SequenceChart got notification about event log change");
 
 		if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
@@ -1100,7 +1108,7 @@ public class SequenceChart
 		}
 		else
 			redraw();
-	}
+    }
 
 	public void eventLogFiltered() {
 		eventLog = eventLogInput.getEventLog();

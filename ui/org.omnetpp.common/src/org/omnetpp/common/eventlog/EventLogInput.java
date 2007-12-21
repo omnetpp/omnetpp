@@ -93,7 +93,13 @@ public class EventLogInput
 		this.eventLogProgressManager = new EventLogProgressManager();
 		this.eventLogWatcher = new RecurringJob(3000) {
 			public void run() {
-				checkEventLogForChanges();
+	            Display.getDefault().asyncExec(new Runnable() {
+	                // synchronize may destructively modify the underlying structure of the event log 
+	                // and thus it must be called from the UI thread to prevent UI concurrent paints
+	                public void run() {
+	                    checkEventLogForChanges();
+	                }
+	            });
 			}
 		};
 		
@@ -102,20 +108,22 @@ public class EventLogInput
 	}
 
 	private void checkEventLogForChanges() {
-		if (eventLog.getFileReader().getFileChangedState() == FileReader.FileChangedState.APPENDED) {
-			if (debug)
-				System.out.println("Notifying listeners about new content being appended to the event log");
-
-			eventLog.synchronize();
-			getEventLogTableFacade().synchronize();
-			getSequenceChartFacade().synchronize();
-
-			eventLogAppended();
-
-			if (debug)
-				System.out.println("Event log append notification done");
-		}
+	    switch (eventLog.getFileReader().getFileChangedState()) {
+	        case FileReader.FileChangedState.APPENDED:
+	            synchronize();
+	            eventLogAppended();
+	            break;
+            case FileReader.FileChangedState.OVERWRITTEN:
+                synchronize();
+                eventLogOverwritten();
+                break;
+	    }
 	}
+
+    public synchronized void synchronize() {
+        getSequenceChartFacade().synchronize();
+        getEventLogTableFacade().synchronize();
+    }
 
 	public void dispose() {
 		if (eventLogWatcher != null)
@@ -348,18 +356,47 @@ public class EventLogInput
 	}
 
 	private void eventLogAppended() {
+        if (debug)
+            System.out.println("Notifying listeners about new content being appended to the event log");
+
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogAppended();
+
+		if (debug)
+            System.out.println("Event log append notification done");
 	}
 
+    private void eventLogOverwritten() {
+        if (debug)
+            System.out.println("Notifying listeners about new content being appended to the event log");
+
+        for (IEventLogChangeListener listener : eventLogChangeListeners)
+            listener.eventLogOverwritten();
+
+        if (debug)
+            System.out.println("Event log append notification done");
+    }
+
 	private void eventLogFiltered() {
+        if (debug)
+            System.out.println("Notifying listeners about new filter applied to the event log");
+
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogFiltered();
+
+		if (debug)
+            System.out.println("Event log filter notification done");
 	}
 
 	private void eventLogFilterRemoved() {
-		for (IEventLogChangeListener listener : eventLogChangeListeners)
+        if (debug)
+            System.out.println("Notifying listeners about removing filter from the event log");
+
+        for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogFilterRemoved();
+
+        if (debug)
+            System.out.println("Event log filter removing notification done");
 	}
 
 	private void eventLogLongOperationStarted() {
@@ -428,6 +465,15 @@ public class EventLogInput
 	    else
 	        return t.getMessage() != null && t.getMessage().contains("LongRunningOperationCanceled");
 	}
+	
+    public boolean isEventLogChangedException(Throwable t) {
+        if (t instanceof InvocationTargetException)
+            return isEventLogChangedException(((InvocationTargetException)t).getTargetException());
+        else if (t.getCause() != null)
+            return isEventLogChangedException(t.getCause());
+        else
+            return t.getMessage() != null && t.getMessage().contains("Eventlog file changed");
+    }
 
 	public void progress() {
 		if (eventLogProgressManager.isInRunWithProgressMonitor()) {

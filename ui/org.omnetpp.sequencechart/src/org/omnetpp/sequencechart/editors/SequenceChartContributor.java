@@ -386,7 +386,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		// void
 	}
 
-	public void eventLogFilterRemoved() {
+    public void eventLogOverwritten() {
+        // void
+    }
+
+    public void eventLogFilterRemoved() {
 		update();
 	}
 

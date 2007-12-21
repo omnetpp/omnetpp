@@ -277,7 +277,15 @@ public class EventLogTable
 	 */
 
 	public void eventLogAppended() {
-		if (debug)
+		eventLogChanged();
+	}
+
+    public void eventLogOverwritten() {
+        eventLogChanged();
+    }
+
+    private void eventLogChanged() {
+        if (debug)
 			System.out.println("EventLogTable got notification about event log change");
 
 		configureVerticalScrollBar();
@@ -292,7 +300,7 @@ public class EventLogTable
 		}
 		else
 			redraw();
-	}
+    }
 	
 	public void eventLogFiltered() {
 		eventLog = eventLogInput.getEventLog();
