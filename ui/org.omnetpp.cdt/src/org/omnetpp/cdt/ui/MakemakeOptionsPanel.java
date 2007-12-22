@@ -30,6 +30,7 @@ import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
+import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.StringUtils;
 
 
@@ -39,7 +40,6 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
-//XXX use [Advanced] button on Link page
 //XXX use tabs for makefrag / makefrag.vc
 //XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
 //XXX create "CDT Overview" page in the project properties dialog! should show if: excludes/include paths are inconsistent for different configurations;
@@ -141,8 +141,9 @@ public class MakemakeOptionsPanel extends Composite {
         recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
         localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
-        createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
+        Label subdirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         subdirsDirsList = new FileListControl(scopePage, "Sub-make directories", BROWSE_DIR);
+        createToggleLink(scopePage, new Control[] {subdirsLabel, subdirsDirsList.getListControl().getParent()});
 
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
@@ -216,15 +217,16 @@ public class MakemakeOptionsPanel extends Composite {
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
         Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
         linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
-        createToggleControlsButton(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
+        createToggleLink(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
         
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         createLabel(customPage, "Code fragment to be inserted into the Makefile (Makefrag):");
         makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        createLabel(customPage, "Other fragment files to include:");
+        Label makefragsLabel = createLabel(customPage, "Other fragment files to include:");
         makefragsList = new FileListControl(customPage, "Make fragments", BROWSE_NONE);
+        createToggleLink(customPage, new Control[] {makefragsLabel, makefragsList.getListControl().getParent()});
 
         // "Preview" page
         previewPage.setLayout(new GridLayout(1,false));
@@ -318,27 +320,10 @@ public class MakemakeOptionsPanel extends Composite {
         return composite;
     }
 
-    protected Link createToggleControlsButton(Composite parent, final Control[] controls) {
-        //XXX start state not exactly correct
-        //XXX use this on more pages
-        final String lessLabel = "<A><< Less</A>";
-        final String moreLabel = "<A>More >></A>";
-        final Link toggle = createLink(parent, moreLabel);
-        toggle.addSelectionListener(new SelectionListener() {
-            public void widgetDefaultSelected(SelectionEvent e) {
-                widgetDefaultSelected(e);
-            }
-            public void widgetSelected(SelectionEvent e) {
-                boolean isClosed = toggle.getText().equals(lessLabel);
-                for (Control c : controls) {
-                    ((GridData)c.getLayoutData()).exclude = isClosed;
-                    c.setVisible(!isClosed);
-                }
-                toggle.setText(isClosed ? moreLabel : lessLabel);
-                toggle.getParent().layout();
-            }
-        });
-        return toggle;
+    protected ToggleLink createToggleLink(Composite parent, Control[] controls) {
+        ToggleLink toggleLink = new ToggleLink(parent, SWT.NONE);
+        toggleLink.setControls(controls);
+        return toggleLink;
     }
 
     protected void hookListeners() {
@@ -445,11 +430,13 @@ public class MakemakeOptionsPanel extends Composite {
             useExportedLibs.setSelection(false);
         
         // validate text field contents
-        setMessage(null);
-        if (!dllExportMacroText.getText().trim().matches("(?i)[A-Z_][A-Z0-9_]*"))
-            setMessage("DLL export macro: contains illegal characters");
-        if (!buildingDllMacroText.getText().trim().matches("(?i)[A-Z_][A-Z0-9_]*"))
-            setMessage("\"Building DLL\" macro: contains illegal characters");
+        setErrorMessage(null);
+        if (outputDirText.getText().matches(".*[:/\\\\].*"))
+            setErrorMessage("Output folder: cannot contain /, \\ or :.");
+        if (!dllExportMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+            setErrorMessage("DLL export macro: contains illegal characters");
+        if (!buildingDllMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+            setErrorMessage("\"Building DLL\" macro: contains illegal characters");
         //TODO others...
     }
 
@@ -460,8 +447,8 @@ public class MakemakeOptionsPanel extends Composite {
             ((PropertyDialog)container).setCurrentPageId(PROPERTYPAGE_PATH_AND_SYMBOLS);
     }
 
-    protected void setMessage(String string) {
-        ownerPage.setMessage(string);  //XXX does not seem to work...
+    protected void setErrorMessage(String text) {
+        ownerPage.setErrorMessage(text);
     }
 
     public void setOwner(PropertyPage page) {
