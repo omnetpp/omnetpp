@@ -50,7 +50,7 @@ sub makemake()
     $type = "EXE";
     $target = "";
     $outRoot = "";
-    $isDeep = 1;
+    $isDeep = 0;
     $isRecursive = 0;
     $noDeepIncludes = 0;
     $force = 0;
@@ -103,9 +103,6 @@ sub makemake()
         }
         elsif ($arg eq "--deep") {
             $isDeep = 1;
-        }
-        elsif ($arg eq "--nodeep") {
-            $isDeep = 0;
         }
         elsif ($arg eq "-r" || $arg eq "--recurse") {
             $isRecursive = 1;
@@ -301,8 +298,8 @@ sub makemake()
     }
 
     # recursive and deep do not mix
-    if ($isRecursive) {
-        $isDeep = 0;
+    if ($isDeep) {
+        $isRecursive = 0;
     }
 
     $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
@@ -941,15 +938,13 @@ $progname [options] [object files or libraries]
                           the current directory (for <projectroot> see -P).
                           An absolute directory path can also be specified,
                           resulting in <absolute-dir>/$(CONFIGNAME)/<subpath>.
-    --deep                Generates a "deep" Makefile; this is also the default.
-                          A deep Makefile will compile the whole source tree
-                          under the current directory, not just files in the
-                          make directory. The include path will be set up to
-                          include all directories in the source tree. Deep is
-                          not compatible with -r (recursive make), but -d
-                          (directory to recurse into) may be used. Directories
-                          may be excluded using -X.
-    --nodeep              Turns off --deep.
+    --deep                Generates a "deep" Makefile. A deep Makefile will
+                          cover the whole source tree under the make directory,
+                          not just files in that directory. Directories may be
+                          excluded using -X. The include path will contain all
+                          directories in the source tree. Deep is not
+                          compatible with -r (recursive make), but -d
+                          (directory to recurse into) can still be used.
     -r, --recurse         Causes make to recursively descend into all subdir-
                           ectories; subdirectories are expected to contain
                           makefiles themselves. If you need to maintain a

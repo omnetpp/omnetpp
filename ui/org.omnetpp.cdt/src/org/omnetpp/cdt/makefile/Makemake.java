@@ -104,8 +104,8 @@ public class Makemake {
             throw new IllegalStateException("target (-o option) should only be a name, it cannot contain relative path");
 
         // isRecursive and deep do not mix
-        if (isRecursive) 
-            isDeep = false;
+        if (isDeep) 
+            isRecursive = false;
 
         String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 

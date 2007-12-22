@@ -22,7 +22,7 @@ public class MakemakeOptions implements Cloneable {
     public Type type = Type.EXE;
     public String target = null;
     public String outRoot = null;
-    public boolean isDeep = true;
+    public boolean isDeep = false;
     public boolean isRecursive = false;
     public boolean noDeepIncludes = false;
     public boolean force = false;
@@ -104,9 +104,6 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("--deep")) {
                 isDeep = true;
-            }
-            else if (arg.equals("--nodeep")) {
-                isDeep = false;
             }
             else if (arg.equals("-r") || arg.equals("--recurse")) {
                 isRecursive = true;
@@ -277,7 +274,8 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-s");
         else if (type == Type.STATICLIB)
             add(result, "-a");
-        add(result, isDeep ? "--deep" : "--nodeep");
+        if (isDeep)
+            add(result, "--deep");
         if (isRecursive)
             add(result, "-r");
         if (!StringUtils.isEmpty(projectDir))
