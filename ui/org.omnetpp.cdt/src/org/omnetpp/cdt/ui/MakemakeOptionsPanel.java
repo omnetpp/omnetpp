@@ -391,7 +391,7 @@ public class MakemakeOptionsPanel extends Composite {
             MakemakeOptions options = getResult();
             optionsText.setText(options.toString());
             try {
-                translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options, null).toString());
+                translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options).toString());
             } catch (CoreException e) {
                 //XXX
             }
@@ -403,8 +403,8 @@ public class MakemakeOptionsPanel extends Composite {
         MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
         populate(updatedOptions, makefragText.getText());
         try {
-            //FIXME pass in folderDeps too! (ask from builder)
-            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions, null).toString());
+            //FIXME this may take long (while DependencyCache parses all files for includes)
+            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
         } catch (CoreException e) {
             //XXX
         }

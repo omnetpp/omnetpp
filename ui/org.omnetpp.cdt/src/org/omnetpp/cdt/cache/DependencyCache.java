@@ -17,6 +17,8 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -46,8 +48,7 @@ import org.omnetpp.common.util.StringUtils;
  *  
  * @author Andras
  */
-//FIXME change methods should be synchronized etc
-//FIXME should be a ResourceChangeListener
+//FIXME Base/Ext test project: hulyeseget general dependenciakent
 public class DependencyCache {
     /**
      * Represents an #include in a C++ file
@@ -82,15 +83,65 @@ public class DependencyCache {
         }
     }
 
-    //XXX TODO later: private Set<IProject> dirtyProjects = new HashSet<IProject>(); // projects that need to be processed again
-    //XXX TODO later: private Map<IFile,Long> fileLastRead = new HashMap<IFile, Long>(); // modification timestamps 
-    private Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
-    //XXX TODO later: private Set<IResource> linkedResources = new HashSet<IResource>(); // because we want to generate warnings for them
+    static class Includes {
+        List<Include> includes; // list of #includes in the file
+        long modificationStamp; // date/time of file when it was parsed
+    }
+    
+    // main data structure: per-file includes
+    private Map<IFile,Includes> fileIncludes = new HashMap<IFile, Includes>();
+    
+    // list of projects whose include lists are up-to-date in the cache
+    private Set<IProject> upToDateProjects = new HashSet<IProject>();
+    
+    // because we want to generate warnings for them
+    private Set<IResource> linkedResources = new HashSet<IResource>(); 
 
+    // cached dependencies; null if invalidated
+    private Map<IContainer,Set<IContainer>> folderDependencies = null;
+    private Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = null;
 
-    public void collectIncludesFully(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
+    public DependencyCache() {
+        hookListeners();
+    }
+
+    protected void hookListeners() {
+        // on resource change events, mark the corresponding project(s) as not up to date
+        //XXX can be optimized so that we only invalidate when really needed (better look on the change event)
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
+            public void resourceChanged(IResourceChangeEvent event) {
+                try {
+                    event.getDelta().accept(new IResourceDeltaVisitor() {
+                        public boolean visit(IResourceDelta delta) throws CoreException {
+                            if (delta.getResource() instanceof IProject) {
+                                upToDateProjects.remove((IProject)delta.getResource());
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+                }
+                catch (CoreException e) {
+                    Activator.logError(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Returns true if all file includes are up to date, i.e. no file scanning
+     * is needed to produce dependencies etc. Wherever UI responsiveness is an
+     * issue, if this function returns false then other functions are to be
+     * invoked in the background (i.e. in a workspace job).
+     */
+    // Note: should NOT be synchronized (otherwise the whole point is lost)
+    public boolean isUpToDate() {
+        return true;  //FIXME todo; make API per-project...?
+    }
+
+    synchronized public void collectIncludesFully(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
         // parse all C++ source files for #include; also warn for linked-in files
-        // (note: warning for linked-in folders will be issued in generateMakefiles())
+        //XXX obsolete comment==> (note: warning for linked-in folders will be issued in generateMakefiles())
         monitor.subTask("Scanning source files in project " + project.getName() + "...");
 
         // since we're doing a "full build" on this project, remove existing entries from fileIncludes[]
@@ -104,16 +155,27 @@ public class DependencyCache {
             public boolean visit(IResource resource) throws CoreException {
                 warnIfLinkedResource(resource);
                 if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
-                    processFileIncludes((IFile)resource);
+                    checkFileIncludes((IFile)resource);
                 return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
             }
         });
+
+        // project is OK now
+        upToDateProjects.add(project);
     }
 
-    public void collectIncludesIncrementally(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
+    /**
+     * To be called from a platform incremental builder
+     */
+    synchronized public void collectIncludesIncrementally(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
         if (monitor != null)
             monitor.subTask("Scanning changed files in project " + delta.getResource().getProject().getName() + "...");
+
+        // check files in this delta
         processDelta(delta);
+
+        // project is OK now
+        upToDateProjects.add(delta.getResource().getProject());
     }
 
     protected void processDelta(IResourceDelta delta) throws CoreException {
@@ -128,12 +190,12 @@ public class DependencyCache {
                     case IResourceDelta.ADDED:
                         warnIfLinkedResource(resource);
                         if (isSourceFile)
-                            processFileIncludes((IFile)resource);
+                            checkFileIncludes((IFile)resource);
                         break;
                     case IResourceDelta.CHANGED:
                         warnIfLinkedResource(resource);
                         if (isSourceFile)
-                            processFileIncludes((IFile)resource);
+                            checkFileIncludes((IFile)resource);
                         break;
                     case IResourceDelta.REMOVED: 
                         if (isSourceFile) 
@@ -146,25 +208,36 @@ public class DependencyCache {
     }
 
     /**
-     * Parses the file for the list of #includes, and returns true if it changed 
-     * since the previous state.
+     * Parses the file for the list of #includes, if it's not up to date already.
      */
-    protected boolean processFileIncludes(IFile file) throws CoreException {
-        //XXX check / update timestamp
-        List<Include> includes = parseIncludes(file);
+    protected void checkFileIncludes(IFile file) throws CoreException {
+        long fileTime = file.getModificationStamp();
+        Includes fileData = fileIncludes.get(file);
+        if (fileData == null || fileData.modificationStamp < fileTime) {
+            if (fileData == null)
+                fileIncludes.put(file, (fileData = new Includes()));
 
-        if (!includes.equals(fileIncludes.get(file))) {
-            fileIncludes.put(file, includes);
-            return true;
+            // re-parse file for includes
+            fileData.includes = parseIncludes(file);;
+            fileData.modificationStamp = fileTime;
+            
+            // clear cached dependencies (needs to be recalculated)
+            folderDependencies = null;
+            perFileDependencies = null;
         }
-        return false;
     }
 
     protected void warnIfLinkedResource(IResource resource) {
-        if (resource.isLinked() && !(resource instanceof IProject))
-            ; //TODO addMarker(resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
+        if (resource.isLinked())
+            linkedResources.add(resource);
+        else
+            linkedResources.remove(resource);
     }
 
+    public IResource[] getLinkedResources() {
+        return linkedResources.toArray(new IResource[]{});
+    }
+    
     /**
      * Collect #includes from a C++ source file
      */
@@ -191,34 +264,34 @@ public class DependencyCache {
         return result;
     }
 
-    
-//    //XXX currently not used
-//    public Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
-//        final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
-//
-//        for (IContainer container : containers) {
-//            for (IResource member : container.members()) {
-//                if (MakefileTools.isCppFile(member) || MakefileTools.isMsgFile(member)) {
-//                    monitor.subTask(member.getFullPath().toString());
-//                    IFile file = (IFile)member;
-//                    List<Include> includes = parseIncludes(file);
-//                    result.put(file, includes);
-//
-//                    if (MakefileTools.isMsgFile(file)) {
-//                        // pretend that the generated _m.h file also exists
-//                        String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");
-//                        IFile msgHFile = file.getParent().getFile(new Path(msgHFileName));
-//                        if (!msgHFile.exists()) // otherwise it'll be visited as well
-//                            result.put(msgHFile, includes);
-//                    }
-//                    monitor.worked(1);
-//                    if (monitor.isCanceled())
-//                        return null;
-//                }
-//            }
-//        }
-//        return result;
-//    }
+
+//  //XXX currently not used
+//  public Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
+//  final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
+
+//  for (IContainer container : containers) {
+//  for (IResource member : container.members()) {
+//  if (MakefileTools.isCppFile(member) || MakefileTools.isMsgFile(member)) {
+//  monitor.subTask(member.getFullPath().toString());
+//  IFile file = (IFile)member;
+//  List<Include> includes = parseIncludes(file);
+//  result.put(file, includes);
+
+//  if (MakefileTools.isMsgFile(file)) {
+//  // pretend that the generated _m.h file also exists
+//  String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");
+//  IFile msgHFile = file.getParent().getFile(new Path(msgHFileName));
+//  if (!msgHFile.exists()) // otherwise it'll be visited as well
+//  result.put(msgHFile, includes);
+//  }
+//  monitor.worked(1);
+//  if (monitor.isCanceled())
+//  return null;
+//  }
+//  }
+//  }
+//  return result;
+//  }
 
     protected void resolveIncludes() {
         // we'll ignore the standard C/C++ headers
@@ -240,7 +313,7 @@ public class DependencyCache {
 
         for (IFile file : fileIncludes.keySet()) {
             IContainer container = file.getParent();
-            for (Include include : fileIncludes.get(file)) {
+            for (Include include : fileIncludes.get(file).includes) {
                 include.resolvesTo = null;
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore
@@ -290,9 +363,10 @@ public class DependencyCache {
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      */
-    public Map<IContainer,Set<IContainer>> getFolderDependencies() {
-        //FIXME if not changed etc...
-        return calculateFolderDependencies();
+    synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies() {
+        if (folderDependencies == null)
+            folderDependencies = calculateFolderDependencies();
+        return folderDependencies; 
     }
 
     protected Map<IContainer,Set<IContainer>> calculateFolderDependencies() {
@@ -309,7 +383,7 @@ public class DependencyCache {
                 result.put(container, new HashSet<IContainer>());
             Set<IContainer> currentDeps = result.get(container);
 
-            for (Include include : fileIncludes.get(file)) {
+            for (Include include : fileIncludes.get(file).includes) {
                 if (include.resolvesTo != null) {
                     // include resolved successfully and unambiguously
                     IFile includedFile = include.resolvesTo;
@@ -352,9 +426,10 @@ public class DependencyCache {
      * it contains, and each file maps to its dependencies (everything it #includes, directly
      * or indirectly). Grouping by folders significantly speeds up makefile generation. 
      */
-    public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies() {
-        //FIXME if not changed etc...
-        return calculatePerFileDependencies();
+    synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies() {
+        if (perFileDependencies == null)
+            perFileDependencies = calculatePerFileDependencies();
+        return perFileDependencies; 
     }
 
     protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies() {
@@ -363,7 +438,7 @@ public class DependencyCache {
         Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
         for (IFile file : fileIncludes.keySet()) {
             Set<IFile> includedFiles = new HashSet<IFile>();
-            for (Include include : fileIncludes.get(file))
+            for (Include include : fileIncludes.get(file).includes)
                 if (include.resolvesTo != null)
                     includedFiles.add(include.resolvesTo);
             includedFilesMap.put(file, includedFiles);

@@ -27,6 +27,7 @@ import org.omnetpp.common.project.ProjectUtils;
  */
 //FIXME msg files don't generate proper cross-folder and cross-file dependencies!!!!!!!
 //TODO test that cross-project includes work well
+//FIXME dependencia generalas szar...
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem";
@@ -59,7 +60,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                         Activator.getDependencyCache().collectIncludesIncrementally(delta, monitor);
                 }
             }
-            
+
+            // warn for linked resources
+            for (IResource linkedResource : Activator.getDependencyCache().getLinkedResources())
+                addMarker(linkedResource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
+
             // refresh makefiles
             generateMakefiles(monitor);
             return projectGroup;
@@ -78,8 +83,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     }
 
     protected void generateMakefiles(IProgressMonitor monitor) throws CoreException, IOException {
-        monitor.subTask("Analyzing dependencies...");
-        long startTime1 = System.currentTimeMillis();
+        monitor.subTask("Analyzing dependencies..."); //XXX not really -- all such code moved into DependencyCache... 
+//        long startTime1 = System.currentTimeMillis();
+//        System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
+
 
         // collect folders
         IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
@@ -87,19 +94,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // register folders in the marker synchronizer
         for (IContainer makemakeFolder : makemakeFolders)
             markerSynchronizer.register(makemakeFolder);
-        
-        // discover cross-folder dependencies
-        Map<IContainer,Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies();
-        //MakefileTools.dumpDeps(folderDeps);
-
-        Map<IContainer, Map<IFile, Set<IFile>>> perFileDeps = Activator.getDependencyCache().getPerFileDependencies();
-        System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
 
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
         monitor.subTask("Updating makefiles...");
         for (IContainer makemakeFolder : makemakeFolders)
-            generateMakefileFor(makemakeFolder, folderDeps, perFileDeps);
+            generateMakefileFor(makemakeFolder);
         System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
@@ -145,12 +145,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     /**
      * Generate makefile in the given folder.
      */
-    protected boolean generateMakefileFor(IContainer folder, Map<IContainer,Set<IContainer>> folderDeps, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) {
+    protected boolean generateMakefileFor(IContainer folder) {
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            boolean changed = MetaMakemake.generateMakefile(folder, options, folderDeps, perFileDeps);
+            boolean changed = MetaMakemake.generateMakefile(folder, options);
             //FIXME remove makefile if any exception occurred here, so that build won't continue with CDT?
             if (changed)
                 folder.refreshLocal(IResource.DEPTH_INFINITE, null);

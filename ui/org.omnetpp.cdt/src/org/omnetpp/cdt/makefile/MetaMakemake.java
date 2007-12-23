@@ -26,6 +26,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.project.ProjectUtils;
@@ -43,19 +44,20 @@ public class MetaMakemake {
     /**
      * Returns true if Makefile was overwritten, and false if it was already up to date.
      */
-    public static boolean generateMakefile(IContainer folder, MakemakeOptions options, 
-            Map<IContainer,Set<IContainer>> folderDeps, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        MakemakeOptions translatedOptions = translateOptions(folder, options, folderDeps);
-        return new Makemake().generateMakefile(folder, translatedOptions, perFileDeps);
+    public static boolean generateMakefile(IContainer folder, MakemakeOptions options) throws IOException, CoreException {
+        MakemakeOptions translatedOptions = translateOptions(folder, options);
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies();
+        return new Makemake().generateMakefile(folder, translatedOptions, perFileDependencies);
     }
 
     /** 
      * Translates makemake options
      */
-    public static MakemakeOptions translateOptions(IContainer folder, MakemakeOptions options, Map<IContainer, Set<IContainer>> folderDeps) throws CoreException {
+    public static MakemakeOptions translateOptions(IContainer folder, MakemakeOptions options) throws CoreException {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = folder.getProject();
+        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies();
 
         // add -f, and potentially --nmake 
         translatedOptions.force = true;
