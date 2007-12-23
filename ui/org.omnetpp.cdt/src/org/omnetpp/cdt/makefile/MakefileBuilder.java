@@ -2,27 +2,21 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.cdt.makefile.MakefileTools.Include;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 
@@ -37,12 +31,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem";
     
-    private Map<IFile,List<Include>> fileIncludes = new HashMap<IFile, List<Include>>();
-
     private BuildSpecification buildSpec = null;  // re-read for each build
     private ProblemMarkerSynchronizer markerSynchronizer = null; // new instance for each build
-
-    private boolean generateMakemakefile = false;
 
     /**
      * Method declared on IncrementalProjectBuilder. Main entry point.
@@ -60,88 +50,32 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             IProject[] projectGroup = (IProject[]) ArrayUtils.add(referencedProjects, 0, getProject());
             for (IProject project : projectGroup) {
                 if (kind == FULL_BUILD)
-                    collectIncludesFully(project, monitor);
+                    Activator.getDependencyCache().collectIncludesFully(project, monitor);
                 else {
                     IResourceDelta delta = getDelta(project);
                     if (delta == null)
-                        collectIncludesFully(project, monitor);
+                        Activator.getDependencyCache().collectIncludesFully(project, monitor);
                     else 
-                        collectIncludesIncrementally(delta, monitor);
+                        Activator.getDependencyCache().collectIncludesIncrementally(delta, monitor);
                 }
             }
             
             // refresh makefiles
             generateMakefiles(monitor);
+            return projectGroup;
         }
         catch (Exception e) {
             // This is expected to catch mostly IOExceptions. Other (non-fatal) errors 
             // are already converted to markers inside the build methods.
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
+            return null;
         }
         finally {
             markerSynchronizer.runAsWorkspaceJob();
             markerSynchronizer = null;
             buildSpec = null;
         }
-        return null;
     }
-
-    protected void collectIncludesFully(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
-        // parse all C++ source files for #include; also warn for linked-in files
-        // (note: warning for linked-in folders will be issued in generateMakefiles())
-        monitor.subTask("Scanning source files in project " + project.getName() + "...");
-        
-        // since we're doing a "full build" on this project, remove existing entries from fileIncludes[]
-        for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
-            if (f.getProject().equals(project))
-                fileIncludes.remove(f);
-        
-        // parse all C++ files for #includes
-        final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
-        project.accept(new IResourceVisitor() {
-            public boolean visit(IResource resource) throws CoreException {
-                warnIfLinkedResource(resource);
-                if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
-                    processFileIncludes((IFile)resource);
-                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
-            }
-        });
-    }
-
-    protected void collectIncludesIncrementally(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
-        monitor.subTask("Scanning changed files in project " + getProject().getName() + "...");
-        processDelta(delta);
-    }
-
-    protected void processDelta(IResourceDelta delta) throws CoreException {
-        // re-parse changed C++ source files for #include; also warn for linked-in files
-        // (note: warning for linked-in folders will be issued in generateMakefiles())
-        final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist((IProject)delta.getResource());
-        delta.accept(new IResourceDeltaVisitor() {
-            public boolean visit(IResourceDelta delta) throws CoreException {
-                IResource resource = delta.getResource();
-                boolean isSourceFile = MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource);
-                switch (delta.getKind()) {
-                    case IResourceDelta.ADDED:
-                        warnIfLinkedResource(resource);
-                        if (isSourceFile)
-                            processFileIncludes((IFile)resource);
-                        break;
-                    case IResourceDelta.CHANGED:
-                        warnIfLinkedResource(resource);
-                        if (isSourceFile)
-                            processFileIncludes((IFile)resource);
-                        break;
-                    case IResourceDelta.REMOVED: 
-                        if (isSourceFile) 
-                            fileIncludes.remove(resource);
-                        break;
-                }
-                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
-            }
-        });
-    }
-
 
     protected void generateMakefiles(IProgressMonitor monitor) throws CoreException, IOException {
         monitor.subTask("Analyzing dependencies...");
@@ -155,19 +89,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             markerSynchronizer.register(makemakeFolder);
         
         // discover cross-folder dependencies
-        Map<IContainer,Set<IContainer>> folderDeps = MakefileTools.calculateDependencies(fileIncludes);
+        Map<IContainer,Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies();
         //MakefileTools.dumpDeps(folderDeps);
 
-        Map<IContainer, Map<IFile, Set<IFile>>> perFileDeps = MakefileTools.calculatePerFileDependencies(fileIncludes);
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDeps = Activator.getDependencyCache().getPerFileDependencies();
         System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
-
-        if (generateMakemakefile) {
-            //XXX this should probably become body of some Action
-            Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(makemakeFolders);
-            String makeMakeFile = MakefileTools.generateMakeMakeFile(makemakeFolders, folderDeps, targetNames);
-            IFile file = getProject().getFile("Makemakefile");
-            MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
-        }
 
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
@@ -236,25 +162,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    /**
-     * Parses the file for the list of #includes, and returns true if it changed 
-     * since the previous state.
-     */
-    protected boolean processFileIncludes(IFile file) throws CoreException {
-        List<Include> includes = MakefileTools.parseIncludes(file);
-
-        if (!includes.equals(fileIncludes.get(file))) {
-            fileIncludes.put(file, includes);
-            return true;
-        }
-        return false;
-    }
-    
-    protected void warnIfLinkedResource(IResource resource) {
-        if (resource.isLinked() && !(resource instanceof IProject))
-            addMarker(resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
-    }
-    
     protected void addMarker(IResource resource, int severity, String message) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(IMarker.SEVERITY, severity);

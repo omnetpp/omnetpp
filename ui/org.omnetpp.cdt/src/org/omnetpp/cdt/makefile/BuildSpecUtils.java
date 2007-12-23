@@ -15,7 +15,7 @@ import org.omnetpp.common.util.StringUtils;
 
 
 /**
- * Utilities to manage OMNeT++ projects.
+ * Utilities to manage the C++ build specifications for OMNeT++ projects.
  *
  * @author Andras
  */

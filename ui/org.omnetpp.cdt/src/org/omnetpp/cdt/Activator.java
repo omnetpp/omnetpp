@@ -7,14 +7,14 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.cdt.cache.DependencyCache;
 import org.osgi.framework.BundleContext;
-
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
+    private DependencyCache dependencyCache = new DependencyCache();
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.omnetpp.cdt";
@@ -105,4 +105,7 @@ public class Activator extends AbstractUIPlugin {
         return image;
     }
     
+    public static DependencyCache getDependencyCache() {
+        return getDefault().dependencyCache;
+    }
 }
