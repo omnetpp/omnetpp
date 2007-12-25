@@ -3880,8 +3880,8 @@ fi
 
 if test "$DOXYGEN" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  doxygen"
-   { echo "$as_me:$LINENO: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc." >&5
-echo "$as_me: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc." >&2;}
+   { echo "$as_me:$LINENO: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference." >&5
+echo "$as_me: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference." >&2;}
    { echo "$as_me:$LINENO: WARNING: It is available from http://www.doxygen.org/" >&5
 echo "$as_me: WARNING: It is available from http://www.doxygen.org/" >&2;}
 fi
@@ -3980,8 +3980,8 @@ fi
 
 if test "$DOT" = ""; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
-   { echo "$as_me:$LINENO: WARNING: dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams." >&5
-echo "$as_me: WARNING: dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams." >&2;}
+   { echo "$as_me:$LINENO: WARNING: dot program from Graphviz not found -- it is needed to generate documentation with diagrams." >&5
+echo "$as_me: WARNING: dot program from Graphviz not found -- it is needed to generate documentation with diagrams." >&2;}
 fi
 
 # swig is used for building the ui support libs
@@ -6787,7 +6787,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile.inc src/utils/opp_neddoc test/core/runtest"
+ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 
 
 #----------------------
@@ -7448,7 +7448,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
-    "src/utils/opp_neddoc") CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
     "test/core/runtest") CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
