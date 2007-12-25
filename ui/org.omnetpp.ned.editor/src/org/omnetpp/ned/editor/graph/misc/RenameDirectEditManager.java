@@ -73,6 +73,8 @@ public class RenameDirectEditManager extends DirectEditManager {
                 gc.dispose();
                 if (size.x != 0)
                     size = text.computeSize(size.x, SWT.DEFAULT);
+                if (size.x == 0)
+                	size.x = 1; // on GTK, setSize(0,?) causes hide() and thus focusLost()
                 getCellEditor().getControl().setSize(size.x, size.y);
             }
         };
