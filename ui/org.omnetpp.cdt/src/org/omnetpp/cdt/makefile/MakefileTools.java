@@ -24,8 +24,7 @@ import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * Scans all C++ files, etc....
- * TODO
+ * Utility functions for Makefile generation.
  *  
  * @author Andras
  */

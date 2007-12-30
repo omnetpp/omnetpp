@@ -90,6 +90,7 @@ public class MetaMakemake {
                 srcFolders = Arrays.asList(new IContainer[]{ folder });
 
             // find the referenced folders for each srcFolder, and add to include path if it's outside this deep makefile
+            //FIXME does not work -- adds everything
             for (IContainer srcFolder : srcFolders)
                 if (folderDeps.containsKey(srcFolder))  
                     for (IContainer dep : folderDeps.get(srcFolder))

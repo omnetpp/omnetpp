@@ -15,6 +15,7 @@ import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -27,11 +28,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.cdt.makefile.MakefileBuilder;
 import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -50,7 +52,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //TODO test with the Base/Ext test projects
-//XXX turn ProjectData.unresolvedIncludes, ProjectData.ambiguousIncludes etc into markers
+//XXX markers: if I mark INET/Obsolete as "excluded", existing markers will not be removed!!!
 //XXX handle _m.h files! (pretend that _m.h files exist, create IFiles for them)
 //XXX how to obey "make clean" ?
 public class DependencyCache {
@@ -60,9 +62,10 @@ public class DependencyCache {
     /**
      * Represents an #include in a C++ file
      */
-    public static class Include {
+    static class Include {
         public String filename;
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
+        public int line = -1; //XXX todo fill in while parsing
 
         public Include(String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
@@ -77,7 +80,7 @@ public class DependencyCache {
 
         @Override
         public int hashCode() {
-            return filename.hashCode()*31 + (isSysInclude ? 1231 : 1237);
+            return line*1231 + filename.hashCode()*31 + (isSysInclude ? 1231 : 1237);
         }
 
         @Override
@@ -85,7 +88,7 @@ public class DependencyCache {
             if (obj == null || getClass() != obj.getClass())
                 return false;
             Include other = (Include) obj;
-            return this == obj || (filename.equals(other.filename) && isSysInclude == other.isSysInclude);
+            return this == obj || (line==other.line && filename.equals(other.filename) && isSysInclude == other.isSysInclude);
         }
     }
 
@@ -101,11 +104,6 @@ public class DependencyCache {
         Map<Include,IFile> resolvedIncludes;
         Map<IContainer,Set<IContainer>> folderDependencies;
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies;
-
-        // store errors/warnings during resolving #include directives
-        Set<Include> unresolvedIncludes = new HashSet<Include>();
-        Set<Include> ambiguousIncludes = new HashSet<Include>();
-        Set<Include> unsupportedIncludes = new HashSet<Include>();
     }
 
     // per-file includes
@@ -159,7 +157,6 @@ public class DependencyCache {
                 projectData.remove(p);
     }
 
-    
     /**
      * Returns true if all file includes are up to date, i.e. no file scanning
      * is needed to produce dependencies etc. Wherever UI responsiveness is an
@@ -171,27 +168,31 @@ public class DependencyCache {
         return true;  //FIXME todo; make API per-project...?
     }
 
-    synchronized public void collectIncludes(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
+    protected void collectIncludes(IProject project, ProblemMarkerSynchronizer markers) {
         System.out.println("collectIncludesFully(): " + project);
-        
-        // parse all C++ source files for #include; also warn for linked-in files
-        //XXX obsolete comment==> (note: warning for linked-in folders will be issued in generateMakefiles())
-        if (monitor != null)
-            monitor.subTask("Scanning source files in project " + project.getName() + "...");
 
-        // parse all C++ files for #includes
-        final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
-        project.accept(new IResourceVisitor() {
-            public boolean visit(IResource resource) throws CoreException {
-                warnIfLinkedResource(resource);
-                if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
-                    checkFileIncludes((IFile)resource);
-                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
-            }
-        });
-
-        // project is OK now
-        fileIncludesUpToDate.add(project);
+        try {
+            // parse all C++ source files for #include; also warn for linked-in files
+            //XXX obsolete comment==> (note: warning for linked-in folders will be issued in generateMakefiles())
+            
+            // parse all C++ files for #includes
+            final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
+            project.accept(new IResourceVisitor() {
+                public boolean visit(IResource resource) throws CoreException {
+                    warnIfLinkedResource(resource);
+                    if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
+                        checkFileIncludes((IFile)resource);
+                    return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
+                }
+            });
+            
+            // project is OK now
+            fileIncludesUpToDate.add(project);
+        }
+        catch (CoreException e) {
+            addMarker(markers, project, IMarker.SEVERITY_ERROR, "Error scanning source files for #includes: " + StringUtils.nullToEmpty(e.getMessage()), -1);
+            Activator.logError(e);
+        }
     }
 
     /** 
@@ -247,7 +248,8 @@ public class DependencyCache {
         try {
             String contents = FileUtils.readTextFile(file.getContents()) + "\n";
             return parseIncludes(contents);
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             throw Activator.wrap("Error collecting #includes from " + file.getFullPath(), e); 
         }
     }
@@ -261,7 +263,7 @@ public class DependencyCache {
         while (matcher.find()) {
             boolean isSysInclude = matcher.group(1).equals("<");
             String fileName = matcher.group(2);
-            result.add(new Include(fileName.trim().replace('\\','/'), isSysInclude));
+            result.add(new Include(fileName.trim().replace('\\','/'), isSysInclude)); //XXX fill in line number
         }
         return result;
     }
@@ -297,51 +299,50 @@ public class DependencyCache {
         if (!projectData.containsKey(project)) {
             ProjectData data = new ProjectData();
             data.project = project;
-
+            
             // determine project group (this project plus all referenced projects)
             data.projectGroup = new ArrayList<IProject>();
             data.projectGroup.add(project);
             data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
             
+            ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
+            markerSync.register(project); // ignore referenced projects, as they are processed on their own right
+
             // ensure all files in this project group have been parsed for #includes
-            try {
-                long begin = System.currentTimeMillis();
-                for (IProject p : data.projectGroup)
-                    if (!fileIncludesUpToDate.contains(p))
-                        collectIncludes(p, null);
-                System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
-            }
-            catch (CoreException e) {
-                Activator.logError(e); //XXX or: wrap into RuntimeError?
-            }
-            catch (IOException e) {
-                Activator.logError(e); //XXX or: wrap into RuntimeError?
-            }
+            long begin = System.currentTimeMillis();
+            for (IProject p : data.projectGroup)
+                if (!fileIncludesUpToDate.contains(p))
+                    collectIncludes(p, markerSync);
+            System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
 
             // collect list of .h and .cc files in this project group
             data.sourceFiles = new ArrayList<IFile>();
             for (IFile file : fileIncludes.keySet())
-                if (data.projectGroup.contains(file.getProject()))
+                if (data.projectGroup.contains(file.getProject())) {
                     data.sourceFiles.add(file);
+                    markerSync.register(file); //XXX this will remove markers added by other projects too...
+                }
 
             // resolve includes
-            resolveIncludes(data);
+            resolveIncludes(data, markerSync);
 
             // calculate per-file dependencies
-            data.perFileDependencies = calculatePerFileDependencies(data);
+            data.perFileDependencies = calculatePerFileDependencies(data, markerSync);
 
             // calculate folder dependencies
-            data.folderDependencies = calculateFolderDependencies(data);
+            data.folderDependencies = calculateFolderDependencies(data, markerSync);
 
             data.sourceFiles = null; // no longer needed
 
             // store
             projectData.put(project, data);
+            
+            markerSync.runAsWorkspaceJob();
         }
         return projectData.get(project);
     }
 
-    protected void resolveIncludes(ProjectData data) {
+    protected void resolveIncludes(ProjectData data, ProblemMarkerSynchronizer markerSync) {
         // build a hash table of files in this project group, for easy lookup by name
         Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
         for (IFile file : data.sourceFiles) {
@@ -357,17 +358,16 @@ public class DependencyCache {
             IContainer container = file.getParent();
             for (Include include : fileIncludes.get(file).includes) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
+                    //FIXME also ignore omnetpp.h!
                     // this is a standard C/C++ header file, just ignore
                 }
-                if (include.filename.contains("..")) {
+                else if (include.filename.contains("..")) {
                     // we only recognize an include containing ".." if it's relative to the current dir
                     String filename = include.filename.replaceFirst("_m\\.h$", ".msg");
                     IPath includeFileLocation = container.getLocation().append(new Path(filename));
                     IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
-                    if (f.length == 0 || !f[0].exists()) {
-                        System.out.println("CANNOT HANDLE INCLUDE WITH '..' UNLESS IT'S RELATIVE TO THE CURRENT DIR: " + include.filename); //XXX
-                        data.unsupportedIncludes.add(include);
-                    }
+                    if (f.length == 0 || !f[0].exists())
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodependencies: cannot resolve #include with '..' unless it is relative to the current dir", include.line); //XXX implement instead of warning!!!
                 }
                 else {
                     // determine which IFile(s) the include maps to
@@ -386,18 +386,18 @@ public class DependencyCache {
                     }
                     else if (count == 0) {
                         // included file not found
-                        data.unresolvedIncludes.add(include);
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodependencies: cannot resolve #include: " + include.toString(), include.line);
                     }
                     else {
                         // count > 1: ambiguous include file
-                        data.ambiguousIncludes.add(include);
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodependencies: ambiguous #include: " + include.toString(), include.line);
                     }
                 }
             }
         }
     }
 
-    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(ProjectData data) {
+    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(ProjectData data, ProblemMarkerSynchronizer markerSync) {
         // for each file, collect the list of files it includes
         Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
         for (IFile file : data.sourceFiles) {
@@ -432,7 +432,7 @@ public class DependencyCache {
         return result;
     }
 
-    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies(ProjectData data) {
+    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies(ProjectData data, ProblemMarkerSynchronizer markerSync) {
         // process each file, and gradually expand dependencies list
         Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
 
@@ -451,7 +451,7 @@ public class DependencyCache {
                     for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
                         dependency = dependency.getParent();
                     if (dependency instanceof IWorkspaceRoot)
-                        data.unsupportedIncludes.add(include); //XXX error: cannot represent included dir in the workspace: it is higher than project root
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile generation: cannot represent included directory in the workspace: it is higher than project root: " + include.toString(), include.line);
                     Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
 
                     // add folder to the dependent folders
@@ -484,5 +484,14 @@ public class DependencyCache {
             }
             System.out.println();
         }
+    }
+
+    protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, IResource file, int severity, String message, int line) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(IMarker.SEVERITY, severity);
+        if (line >= 0)
+            map.put(IMarker.LINE_NUMBER, line);
+        map.put(IMarker.MESSAGE, message);
+        markerSynchronizer.addMarker(file, MakefileBuilder.MARKER_ID, map);
     }
 }

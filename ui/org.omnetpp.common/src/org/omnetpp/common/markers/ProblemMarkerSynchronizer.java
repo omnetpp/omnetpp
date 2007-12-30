@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
@@ -84,7 +84,7 @@ public class ProblemMarkerSynchronizer {
         return markerTable.isEmpty();
     }
 
-	/**
+    /**
 	 * Stores data for a marker to be added to the given file (or other resource).
 	 * Implies registerFile().
 	 */

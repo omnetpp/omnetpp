@@ -25,7 +25,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 //FIXME dependencia generalas szar...
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
-    public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem";
+    public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem"; //XXX this is shared with DependencyCache
     
     private BuildSpecification buildSpec = null;  // re-read for each build
     private ProblemMarkerSynchronizer markerSynchronizer = null; // new instance for each build

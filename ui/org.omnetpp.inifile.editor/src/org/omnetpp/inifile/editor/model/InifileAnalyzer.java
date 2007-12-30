@@ -240,7 +240,7 @@ public class InifileAnalyzer {
 		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber());
 	}
 
-	private void addMarker(final IFile file, final String type, int severity, String message, int line) {
+	protected void addMarker(final IFile file, final String type, int severity, String message, int line) {
 	    Map<String, Object> map = new HashMap<String, Object>();
 		map.put(IMarker.SEVERITY, severity);
 		map.put(IMarker.LINE_NUMBER, line);
