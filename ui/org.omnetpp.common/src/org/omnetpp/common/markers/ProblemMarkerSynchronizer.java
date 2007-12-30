@@ -70,7 +70,7 @@ public class ProblemMarkerSynchronizer {
 	 * Include the given file (or other resource) in the synchronization process. 
 	 * This is not needed when you call addMarker() for the file; however if there's 
 	 * no addMarker() for that file, that file will be ignored (existing markers left 
-	 * untouched) unless you register them with registerFile().
+	 * untouched) unless you register them with register().
 	 */
 	public void register(IResource file) {
 		if (!markerTable.containsKey(file))

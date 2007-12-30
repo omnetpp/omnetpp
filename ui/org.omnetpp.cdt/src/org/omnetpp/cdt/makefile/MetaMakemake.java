@@ -176,6 +176,8 @@ public class MetaMakemake {
      */
     protected static List<String> getIncludePathsFor(IContainer folder) {
         ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, false);
+        if (languageSetting == null)
+            return new ArrayList<String>();
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.INCLUDE_PATH));
     }
 
@@ -186,7 +188,8 @@ public class MetaMakemake {
      */
     protected static List<String> getLibraryPathsFor(IContainer folder) {
         ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, true);
-        //FIXME possible NPE if languageSetting is not present
+        if (languageSetting == null)
+            return new ArrayList<String>();
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.LIBRARY_PATH));
     }
 
@@ -196,6 +199,8 @@ public class MetaMakemake {
      */
     protected static List<String> getMacrosFor(IContainer folder) {
         ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, false);
+        if (languageSetting == null)
+            return new ArrayList<String>();
         ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);
         List<String> result = new ArrayList<String>();
         for (ICLanguageSettingEntry pathEntry : settingEntries) {
@@ -242,9 +247,16 @@ public class MetaMakemake {
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
         ICFolderDescription folderDescription = (ICFolderDescription)activeConfiguration.getResourceDescription(folder.getProjectRelativePath(), false);
-
+        
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
+
+//XXX debug code        
+//        String buf = "Languages:";
+//        for (ICLanguageSetting l : languageSettings)
+//            buf += l.getId() + "=" + l.getName() + ",  ";
+//        System.out.println(buf);
+        
         ICLanguageSetting languageSetting = null;
         for (ICLanguageSetting l : languageSettings) 
             if (l.getName().contains(forLinker ? "Object" : "C++"))  //FIXME ***must*** use languageId!!!! (usually "org.eclipse.cdt.core.g++" or something) 

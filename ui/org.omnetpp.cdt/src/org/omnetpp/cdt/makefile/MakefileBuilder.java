@@ -41,26 +41,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
 
-//FIXME why exactly the next lines are needed at all??? chuck them out!            
-//            // (re)parse #include statements from C++ files in this folder and referenced folders
-//            IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(getProject());
-//            IProject[] projectGroup = (IProject[]) ArrayUtils.add(referencedProjects, 0, getProject());
-//            for (IProject project : projectGroup) {
-//XXX                
-//                if (kind == FULL_BUILD)
-//                    Activator.getDependencyCache().collectIncludesFully(project, monitor);
-//                else {
-//                    IResourceDelta delta = getDelta(project);
-//                    if (delta == null)
-//                        Activator.getDependencyCache().collectIncludesFully(project, monitor);
-//                    else 
-//                        Activator.getDependencyCache().collectIncludesIncrementally(delta, monitor);
-//                }
-//            }
-
-
             // warn for linked resources
-            //FIXME throw out these too!!! instead, use "messages" from DependencyCache!!!
+            //FIXME why here?
             for (IResource linkedResource : Activator.getDependencyCache().getLinkedResources())
                 addMarker(linkedResource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
 
@@ -83,9 +65,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
     protected void generateMakefiles(IProgressMonitor monitor) throws CoreException, IOException {
         monitor.subTask("Analyzing dependencies..."); //XXX not really -- all such code moved into DependencyCache... 
-//        long startTime1 = System.currentTimeMillis();
-//        System.out.println("Folder collection and dependency analysis: " + (System.currentTimeMillis()-startTime1) + "ms");
-
 
         // collect folders
         IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
@@ -101,45 +80,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             generateMakefileFor(makemakeFolder);
         System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
-
-//    /**
-//     * Collect "interesting" folders in this project and all referenced projects;
-//     * that is, omits excluded folders, team-private folders ("CVS", ".svn"), etc.
-//     */
-//    // XXX not needed anymore 
-//    protected IContainer[] collectFolders() throws CoreException, IOException {
-//        final List<IContainer> result = new ArrayList<IContainer>();
-//        
-//        class FolderCollector implements IResourceVisitor {
-//            BuildSpecification buildSpec;
-//            List<IContainer> result;
-//            public FolderCollector(BuildSpecification buildSpec, List<IContainer> result) {
-//                this.buildSpec = buildSpec;
-//                this.result = result;
-//            }
-//            public boolean visit(IResource resource) throws CoreException {
-//                if (MakefileTools.isGoodFolder(resource) /*FIXME and not excluded from build*/) { 
-//                    result.add((IContainer)resource);
-//                    return true;
-//                }
-//                return false;
-//            }
-//        };
-//        
-//        // collect folders from this project and all referenced projects
-//        getProject().accept(new FolderCollector(buildSpec, result));
-//        for (IProject referencedProject : getProject().getReferencedProjects()) {
-//            BuildSpecification referencedBuildSpec = BuildSpecUtils.readBuildSpecFile(referencedProject);
-//            referencedProject.accept(new FolderCollector(referencedBuildSpec, result));
-//        }
-//
-//        // sort by full path
-//        Collections.sort(result, new Comparator<IContainer>() {
-//            public int compare(IContainer o1, IContainer o2) {
-//                return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
-//            }});
-//        return result.toArray(new IContainer[]{});
-//    }
 
     /**
      * Generate makefile in the given folder.

@@ -48,7 +48,6 @@ import org.omnetpp.common.util.StringUtils;
 //XXX verify that a .msg file alone can create folder dependency!
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
-//XXX makefrag Text: if contents is too long, it becomes too tall!!!
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -223,8 +222,9 @@ public class MakemakeOptionsPanel extends Composite {
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         createLabel(customPage, "Code fragment to be inserted into the Makefile (Makefrag):");
-        makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER);
+        makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)makefragText.getLayoutData()).heightHint = 100;
         Label makefragsLabel = createLabel(customPage, "Other fragment files to include:");
         makefragsList = new FileListControl(customPage, "Make fragments", BROWSE_NONE);
         createToggleLink(customPage, new Control[] {makefragsLabel, makefragsList.getListControl().getParent()});
@@ -232,10 +232,10 @@ public class MakemakeOptionsPanel extends Composite {
         // "Preview" page
         previewPage.setLayout(new GridLayout(1,false));
         createLabel(previewPage, "Makemake options:");
-        optionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.WRAP);
+        optionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         optionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(previewPage, "Makemake options modified with CDT settings:");
-        translatedOptionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
+        translatedOptionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         translatedOptionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         translatedOptionsText.setBackground(translatedOptionsText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 

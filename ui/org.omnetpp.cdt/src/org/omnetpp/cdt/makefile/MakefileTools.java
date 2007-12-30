@@ -127,6 +127,7 @@ public class MakefileTools {
      * Generate a script to re-generate makefiles from the command line.
      */
     protected static String generateMakeMakefile(IContainer[] containers, Map<IContainer, Set<IContainer>> deps,Map<IContainer, String> targetNames) {
+        //FIXME this method totally out of date -- should use translateOptions()!!!
         // generate the makefile
         String result = BOILERPLATE;
         String allTargetNames = StringUtils.join(targetNames.values(), " ");

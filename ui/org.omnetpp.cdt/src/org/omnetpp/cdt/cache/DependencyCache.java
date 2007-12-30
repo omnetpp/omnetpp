@@ -36,8 +36,6 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 /**
  * Keeps track of which cc/h files include which other files, to be used
  * for dependency generation in Makefiles.
@@ -114,7 +112,7 @@ public class DependencyCache {
     private Map<IFile,FileIncludes> fileIncludes = new HashMap<IFile, FileIncludes>();
 
     // list of projects whose include lists are up-to-date in the cache
-    private Set<IProject> upToDateProjects = new HashSet<IProject>();
+    private Set<IProject> fileIncludesUpToDate = new HashSet<IProject>();
 
     // because we want to generate warnings for them
     private Set<IResource> linkedResources = new HashSet<IResource>(); 
@@ -136,7 +134,7 @@ public class DependencyCache {
                         event.getDelta().accept(new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) throws CoreException {
                                 if (delta.getResource() instanceof IProject) {
-                                    upToDateProjects.remove((IProject)delta.getResource());
+                                    projectChanged((IProject)delta.getResource());
                                     return false;
                                 }
                                 return true;
@@ -149,7 +147,19 @@ public class DependencyCache {
             }
         });
     }
+    
+    /**
+     * A file or something in the project has changed. We need to invalidate
+     * relevant parts of the cache.
+     */
+    protected void projectChanged(IProject project) {
+        fileIncludesUpToDate.remove(project);
+        for (IProject p : projectData.keySet().toArray(new IProject[]{}))
+            if (projectData.get(p).projectGroup.contains(project))
+                projectData.remove(p);
+    }
 
+    
     /**
      * Returns true if all file includes are up to date, i.e. no file scanning
      * is needed to produce dependencies etc. Wherever UI responsiveness is an
@@ -161,18 +171,13 @@ public class DependencyCache {
         return true;  //FIXME todo; make API per-project...?
     }
 
-    synchronized public void collectIncludesFully(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
+    synchronized public void collectIncludes(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
         System.out.println("collectIncludesFully(): " + project);
         
         // parse all C++ source files for #include; also warn for linked-in files
         //XXX obsolete comment==> (note: warning for linked-in folders will be issued in generateMakefiles())
         if (monitor != null)
             monitor.subTask("Scanning source files in project " + project.getName() + "...");
-
-        // since we're doing a "full build" on this project, remove existing entries from fileIncludes[]
-        for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
-            if (f.getProject().equals(project))
-                fileIncludes.remove(f);
 
         // parse all C++ files for #includes
         final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
@@ -186,62 +191,30 @@ public class DependencyCache {
         });
 
         // project is OK now
-        upToDateProjects.add(project);
+        fileIncludesUpToDate.add(project);
     }
 
-//XXX following is not used because we don't get a full build first time after startup.    
-//    /**
-//     * To be called from a platform incremental builder
-//     */
-//    synchronized public void collectIncludesIncrementally(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
-//        System.out.println("collectIncludesIncrementally(): " + delta.getResource().getProject());
-//        if (monitor != null)
-//            monitor.subTask("Scanning changed files in project " + delta.getResource().getProject().getName() + "...");
-//
-//        // check files in this delta
-//        processDelta(delta);
-//
-//        // project is OK now
-//        upToDateProjects.add(delta.getResource().getProject());
-//    }
-//
-//    protected void processDelta(IResourceDelta delta) throws CoreException {
-//        // re-parse changed C++ source files for #include; also warn for linked-in files
-//        // (note: warning for linked-in folders will be issued in generateMakefiles())
-//        final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist((IProject)delta.getResource());
-//        delta.accept(new IResourceDeltaVisitor() {
-//            public boolean visit(IResourceDelta delta) throws CoreException {
-//                IResource resource = delta.getResource();
-//                boolean isSourceFile = MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource);
-//                switch (delta.getKind()) {
-//                    case IResourceDelta.ADDED:
-//                        warnIfLinkedResource(resource);
-//                        if (isSourceFile)
-//                            checkFileIncludes((IFile)resource);
-//                        break;
-//                    case IResourceDelta.CHANGED:
-//                        warnIfLinkedResource(resource);
-//                        if (isSourceFile)
-//                            checkFileIncludes((IFile)resource);
-//                        break;
-//                    case IResourceDelta.REMOVED: 
-//                        if (isSourceFile) 
-//                            fileIncludes.remove(resource);
-//                        break;
-//                }
-//                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
-//            }
-//        });
-//    }
+    /** 
+     * Forces re-parsing of all files in the project for #includes. 
+     * Currently unused.
+     */
+    public void clean(IProject project) {
+        // discard all parsed #includes within this project
+        for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
+            if (f.getProject().equals(project))
+                fileIncludes.remove(f);
+        projectChanged(project);
+    }
 
     /**
      * Parses the file for the list of #includes, if it's not up to date already.
      */
     protected void checkFileIncludes(IFile file) throws CoreException {
-        System.out.println("   checkFileIncludes(): " + file);
+        //System.out.println("   checkFileIncludes(): " + file);
         long fileTime = file.getModificationStamp();
         FileIncludes fileData = fileIncludes.get(file);
         if (fileData == null || fileData.modificationStamp < fileTime) {
+            System.out.println("   parsing includes from: " + file);
             if (fileData == null)
                 fileIncludes.put(file, (fileData = new FileIncludes()));
 
@@ -334,8 +307,8 @@ public class DependencyCache {
             try {
                 long begin = System.currentTimeMillis();
                 for (IProject p : data.projectGroup)
-                    if (!upToDateProjects.contains(p))
-                        collectIncludesFully(p, null);
+                    if (!fileIncludesUpToDate.contains(p))
+                        collectIncludes(p, null);
                 System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
             }
             catch (CoreException e) {
@@ -422,10 +395,6 @@ public class DependencyCache {
                 }
             }
         }
-
-        System.out.println("resolveIncludes: unresolved includes: " + StringUtils.join(data.unresolvedIncludes, " "));
-        System.out.println("resolveIncludes: ambiguous includes: " + StringUtils.join(data.ambiguousIncludes, " "));
-        System.out.println("resolveIncludes: cannot process: " + StringUtils.join(data.unsupportedIncludes, " "));
     }
 
     protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(ProjectData data) {
@@ -492,8 +461,6 @@ public class DependencyCache {
             }
         }
 
-        System.out.println("calculateDependencies: cannot represent with -I: " + StringUtils.join(data.unsupportedIncludes, " "));
-
         // calculate transitive closure
         boolean again = true;
         while (again) {
@@ -518,32 +485,4 @@ public class DependencyCache {
             System.out.println();
         }
     }
-
-//  //XXX currently not used
-//  public Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
-//  final Map<IFile,List<Include>> result = new HashMap<IFile,List<Include>>();
-
-//  for (IContainer container : containers) {
-//  for (IResource member : container.members()) {
-//  if (MakefileTools.isCppFile(member) || MakefileTools.isMsgFile(member)) {
-//  monitor.subTask(member.getFullPath().toString());
-//  IFile file = (IFile)member;
-//  List<Include> includes = parseIncludes(file);
-//  result.put(file, includes);
-
-//  if (MakefileTools.isMsgFile(file)) {
-//  // pretend that the generated _m.h file also exists
-//  String msgHFileName = file.getName().replaceFirst("\\.[^.]*$", "_m.h");
-//  IFile msgHFile = file.getParent().getFile(new Path(msgHFileName));
-//  if (!msgHFile.exists()) // otherwise it'll be visited as well
-//  result.put(msgHFile, includes);
-//  }
-//  monitor.worked(1);
-//  if (monitor.isCanceled())
-//  return null;
-//  }
-//  }
-//  }
-//  return result;
-//  }
 }
