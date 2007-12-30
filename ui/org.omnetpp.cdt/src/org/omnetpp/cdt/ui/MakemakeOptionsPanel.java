@@ -48,6 +48,7 @@ import org.omnetpp.common.util.StringUtils;
 //XXX verify that a .msg file alone can create folder dependency!
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
+//XXX makefrag Text: if contents is too long, it becomes too tall!!!
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188

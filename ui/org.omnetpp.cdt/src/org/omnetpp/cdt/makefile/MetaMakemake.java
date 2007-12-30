@@ -46,7 +46,8 @@ public class MetaMakemake {
      */
     public static boolean generateMakefile(IContainer folder, MakemakeOptions options) throws IOException, CoreException {
         MakemakeOptions translatedOptions = translateOptions(folder, options);
-        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies();
+        IProject project = folder.getProject();
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project);
         return new Makemake().generateMakefile(folder, translatedOptions, perFileDependencies);
     }
 
@@ -57,7 +58,7 @@ public class MetaMakemake {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = folder.getProject();
-        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies();
+        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project);
 
         // add -f, and potentially --nmake 
         translatedOptions.force = true;
@@ -185,6 +186,7 @@ public class MetaMakemake {
      */
     protected static List<String> getLibraryPathsFor(IContainer folder) {
         ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, true);
+        //FIXME possible NPE if languageSetting is not present
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.LIBRARY_PATH));
     }
 
@@ -244,11 +246,9 @@ public class MetaMakemake {
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
         ICLanguageSetting languageSetting = null;
-        for (ICLanguageSetting l : languageSettings) {
-            System.out.println("*** language setting: "+l.getName()+" "+l.getId());
-            if (l.getName().contains(forLinker ? "Object" : "C++"))  //XXX a bit dodgy, but languageId is usually "org.eclipse.cdt.core.g++" which is not good for MSVC 
+        for (ICLanguageSetting l : languageSettings) 
+            if (l.getName().contains(forLinker ? "Object" : "C++"))  //FIXME ***must*** use languageId!!!! (usually "org.eclipse.cdt.core.g++" or something) 
                 languageSetting = l;
-        }
         return languageSetting;
     }
 

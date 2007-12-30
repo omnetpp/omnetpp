@@ -117,7 +117,7 @@ public class MakefileTools {
         BuildSpecification buildSpec = BuildSpecUtils.readBuildSpecFile(project); //XXX possible IllegalArgumentException
         IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
         Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(makemakeFolders);
-        Map<IContainer, Set<IContainer>> folderDependencies = Activator.getDependencyCache().getFolderDependencies();
+        Map<IContainer, Set<IContainer>> folderDependencies = Activator.getDependencyCache().getFolderDependencies(project);
         String makeMakeFile = MakefileTools.generateMakeMakefile(makemakeFolders, folderDependencies, targetNames);
         IFile file = project.getFile("Makemakefile");
         MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);

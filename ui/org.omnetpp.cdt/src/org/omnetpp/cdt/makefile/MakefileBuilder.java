@@ -3,22 +3,17 @@ package org.omnetpp.cdt.makefile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
-import org.omnetpp.common.project.ProjectUtils;
 
 /**
  * Keeps makefiles up to date
@@ -46,28 +41,32 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
 
-            // (re)parse #include statements from C++ files in this folder and referenced folders
-            IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(getProject());
-            IProject[] projectGroup = (IProject[]) ArrayUtils.add(referencedProjects, 0, getProject());
-            for (IProject project : projectGroup) {
-                if (kind == FULL_BUILD)
-                    Activator.getDependencyCache().collectIncludesFully(project, monitor);
-                else {
-                    IResourceDelta delta = getDelta(project);
-                    if (delta == null)
-                        Activator.getDependencyCache().collectIncludesFully(project, monitor);
-                    else 
-                        Activator.getDependencyCache().collectIncludesIncrementally(delta, monitor);
-                }
-            }
+//FIXME why exactly the next lines are needed at all??? chuck them out!            
+//            // (re)parse #include statements from C++ files in this folder and referenced folders
+//            IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(getProject());
+//            IProject[] projectGroup = (IProject[]) ArrayUtils.add(referencedProjects, 0, getProject());
+//            for (IProject project : projectGroup) {
+//XXX                
+//                if (kind == FULL_BUILD)
+//                    Activator.getDependencyCache().collectIncludesFully(project, monitor);
+//                else {
+//                    IResourceDelta delta = getDelta(project);
+//                    if (delta == null)
+//                        Activator.getDependencyCache().collectIncludesFully(project, monitor);
+//                    else 
+//                        Activator.getDependencyCache().collectIncludesIncrementally(delta, monitor);
+//                }
+//            }
+
 
             // warn for linked resources
+            //FIXME throw out these too!!! instead, use "messages" from DependencyCache!!!
             for (IResource linkedResource : Activator.getDependencyCache().getLinkedResources())
                 addMarker(linkedResource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
 
             // refresh makefiles
             generateMakefiles(monitor);
-            return projectGroup;
+            return Activator.getDependencyCache().getProjectGroup(getProject());
         }
         catch (Exception e) {
             // This is expected to catch mostly IOExceptions. Other (non-fatal) errors 

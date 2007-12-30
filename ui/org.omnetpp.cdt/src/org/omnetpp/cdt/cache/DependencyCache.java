@@ -32,8 +32,11 @@ import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
+
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
 /**
  * Keeps track of which cc/h files include which other files, to be used
@@ -48,15 +51,20 @@ import org.omnetpp.common.util.StringUtils;
  *  
  * @author Andras
  */
-//FIXME Base/Ext test project: hulyeseget general dependenciakent
+//TODO test with the Base/Ext test projects
+//XXX turn ProjectData.unresolvedIncludes, ProjectData.ambiguousIncludes etc into markers
+//XXX handle _m.h files! (pretend that _m.h files exist, create IFiles for them)
+//XXX how to obey "make clean" ?
 public class DependencyCache {
+    // the standard C/C++ headers (we'll ignore those #include directives)
+    protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
+
     /**
      * Represents an #include in a C++ file
      */
     public static class Include {
         public String filename;
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
-        public IFile resolvesTo;
 
         public Include(String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
@@ -83,23 +91,36 @@ public class DependencyCache {
         }
     }
 
-    static class Includes {
+    static class FileIncludes {
         List<Include> includes; // list of #includes in the file
         long modificationStamp; // date/time of file when it was parsed
     }
-    
-    // main data structure: per-file includes
-    private Map<IFile,Includes> fileIncludes = new HashMap<IFile, Includes>();
-    
+
+    static class ProjectData {
+        IProject project;
+        List<IProject> projectGroup;  // this project and its referenced projects
+        List<IFile> sourceFiles;  // only used during calculations
+        Map<Include,IFile> resolvedIncludes;
+        Map<IContainer,Set<IContainer>> folderDependencies;
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies;
+
+        // store errors/warnings during resolving #include directives
+        Set<Include> unresolvedIncludes = new HashSet<Include>();
+        Set<Include> ambiguousIncludes = new HashSet<Include>();
+        Set<Include> unsupportedIncludes = new HashSet<Include>();
+    }
+
+    // per-file includes
+    private Map<IFile,FileIncludes> fileIncludes = new HashMap<IFile, FileIncludes>();
+
     // list of projects whose include lists are up-to-date in the cache
     private Set<IProject> upToDateProjects = new HashSet<IProject>();
-    
+
     // because we want to generate warnings for them
     private Set<IResource> linkedResources = new HashSet<IResource>(); 
 
-    // cached dependencies; null if invalidated
-    private Map<IContainer,Set<IContainer>> folderDependencies = null;
-    private Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = null;
+    // cached dependencies
+    private Map<IProject,ProjectData> projectData = new HashMap<IProject, ProjectData>();
 
     public DependencyCache() {
         hookListeners();
@@ -111,15 +132,16 @@ public class DependencyCache {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
             public void resourceChanged(IResourceChangeEvent event) {
                 try {
-                    event.getDelta().accept(new IResourceDeltaVisitor() {
-                        public boolean visit(IResourceDelta delta) throws CoreException {
-                            if (delta.getResource() instanceof IProject) {
-                                upToDateProjects.remove((IProject)delta.getResource());
-                                return false;
+                    if (event.getDelta() != null)
+                        event.getDelta().accept(new IResourceDeltaVisitor() {
+                            public boolean visit(IResourceDelta delta) throws CoreException {
+                                if (delta.getResource() instanceof IProject) {
+                                    upToDateProjects.remove((IProject)delta.getResource());
+                                    return false;
+                                }
+                                return true;
                             }
-                            return true;
-                        }
-                    });
+                        });
                 }
                 catch (CoreException e) {
                     Activator.logError(e);
@@ -140,9 +162,12 @@ public class DependencyCache {
     }
 
     synchronized public void collectIncludesFully(IProject project, final IProgressMonitor monitor) throws CoreException, IOException {
+        System.out.println("collectIncludesFully(): " + project);
+        
         // parse all C++ source files for #include; also warn for linked-in files
         //XXX obsolete comment==> (note: warning for linked-in folders will be issued in generateMakefiles())
-        monitor.subTask("Scanning source files in project " + project.getName() + "...");
+        if (monitor != null)
+            monitor.subTask("Scanning source files in project " + project.getName() + "...");
 
         // since we're doing a "full build" on this project, remove existing entries from fileIncludes[]
         for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
@@ -164,66 +189,70 @@ public class DependencyCache {
         upToDateProjects.add(project);
     }
 
-    /**
-     * To be called from a platform incremental builder
-     */
-    synchronized public void collectIncludesIncrementally(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
-        if (monitor != null)
-            monitor.subTask("Scanning changed files in project " + delta.getResource().getProject().getName() + "...");
-
-        // check files in this delta
-        processDelta(delta);
-
-        // project is OK now
-        upToDateProjects.add(delta.getResource().getProject());
-    }
-
-    protected void processDelta(IResourceDelta delta) throws CoreException {
-        // re-parse changed C++ source files for #include; also warn for linked-in files
-        // (note: warning for linked-in folders will be issued in generateMakefiles())
-        final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist((IProject)delta.getResource());
-        delta.accept(new IResourceDeltaVisitor() {
-            public boolean visit(IResourceDelta delta) throws CoreException {
-                IResource resource = delta.getResource();
-                boolean isSourceFile = MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource);
-                switch (delta.getKind()) {
-                    case IResourceDelta.ADDED:
-                        warnIfLinkedResource(resource);
-                        if (isSourceFile)
-                            checkFileIncludes((IFile)resource);
-                        break;
-                    case IResourceDelta.CHANGED:
-                        warnIfLinkedResource(resource);
-                        if (isSourceFile)
-                            checkFileIncludes((IFile)resource);
-                        break;
-                    case IResourceDelta.REMOVED: 
-                        if (isSourceFile) 
-                            fileIncludes.remove(resource);
-                        break;
-                }
-                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
-            }
-        });
-    }
+//XXX following is not used because we don't get a full build first time after startup.    
+//    /**
+//     * To be called from a platform incremental builder
+//     */
+//    synchronized public void collectIncludesIncrementally(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
+//        System.out.println("collectIncludesIncrementally(): " + delta.getResource().getProject());
+//        if (monitor != null)
+//            monitor.subTask("Scanning changed files in project " + delta.getResource().getProject().getName() + "...");
+//
+//        // check files in this delta
+//        processDelta(delta);
+//
+//        // project is OK now
+//        upToDateProjects.add(delta.getResource().getProject());
+//    }
+//
+//    protected void processDelta(IResourceDelta delta) throws CoreException {
+//        // re-parse changed C++ source files for #include; also warn for linked-in files
+//        // (note: warning for linked-in folders will be issued in generateMakefiles())
+//        final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist((IProject)delta.getResource());
+//        delta.accept(new IResourceDeltaVisitor() {
+//            public boolean visit(IResourceDelta delta) throws CoreException {
+//                IResource resource = delta.getResource();
+//                boolean isSourceFile = MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource);
+//                switch (delta.getKind()) {
+//                    case IResourceDelta.ADDED:
+//                        warnIfLinkedResource(resource);
+//                        if (isSourceFile)
+//                            checkFileIncludes((IFile)resource);
+//                        break;
+//                    case IResourceDelta.CHANGED:
+//                        warnIfLinkedResource(resource);
+//                        if (isSourceFile)
+//                            checkFileIncludes((IFile)resource);
+//                        break;
+//                    case IResourceDelta.REMOVED: 
+//                        if (isSourceFile) 
+//                            fileIncludes.remove(resource);
+//                        break;
+//                }
+//                return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
+//            }
+//        });
+//    }
 
     /**
      * Parses the file for the list of #includes, if it's not up to date already.
      */
     protected void checkFileIncludes(IFile file) throws CoreException {
+        System.out.println("   checkFileIncludes(): " + file);
         long fileTime = file.getModificationStamp();
-        Includes fileData = fileIncludes.get(file);
+        FileIncludes fileData = fileIncludes.get(file);
         if (fileData == null || fileData.modificationStamp < fileTime) {
             if (fileData == null)
-                fileIncludes.put(file, (fileData = new Includes()));
+                fileIncludes.put(file, (fileData = new FileIncludes()));
 
             // re-parse file for includes
-            fileData.includes = parseIncludes(file);;
+            fileData.includes = parseIncludes(file);
             fileData.modificationStamp = fileTime;
-            
-            // clear cached dependencies (needs to be recalculated)
-            folderDependencies = null;
-            perFileDependencies = null;
+
+            // clear cached dependencies (need to be recalculated)
+            for (IProject p : projectData.keySet().toArray(new IProject[]{}))
+                if (projectData.get(p).projectGroup.contains(file.getProject()))
+                    projectData.remove(p);
         }
     }
 
@@ -237,7 +266,7 @@ public class DependencyCache {
     public IResource[] getLinkedResources() {
         return linkedResources.toArray(new IResource[]{});
     }
-    
+
     /**
      * Collect #includes from a C++ source file
      */
@@ -264,6 +293,231 @@ public class DependencyCache {
         return result;
     }
 
+    /**
+     * For each folder, it determines which other folders it depends on (i.e. includes files from).
+     */
+    synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
+        ProjectData projectData = getOrCreateProjectData(project);
+        return projectData.folderDependencies; 
+    }
+
+    /**
+     * For each folder, it determines which other folders it depends on (i.e. includes files from).
+     * Returns the results grouped by folders; that is, each folder maps to the set of files
+     * it contains, and each file maps to its dependencies (everything it #includes, directly
+     * or indirectly). Grouping by folders significantly speeds up makefile generation. 
+     */
+    synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
+        ProjectData projectData = getOrCreateProjectData(project);
+        return projectData.perFileDependencies; 
+    }
+
+    /**
+     * Return the given project and all projects referenced from it (transitively)
+     */ 
+    synchronized public IProject[] getProjectGroup(IProject project) {
+        ProjectData projectData = getOrCreateProjectData(project);
+        return projectData.projectGroup.toArray(new IProject[]{}); 
+    }
+
+    protected ProjectData getOrCreateProjectData(IProject project) {
+        if (!projectData.containsKey(project)) {
+            ProjectData data = new ProjectData();
+            data.project = project;
+
+            // determine project group (this project plus all referenced projects)
+            data.projectGroup = new ArrayList<IProject>();
+            data.projectGroup.add(project);
+            data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
+            
+            // ensure all files in this project group have been parsed for #includes
+            try {
+                long begin = System.currentTimeMillis();
+                for (IProject p : data.projectGroup)
+                    if (!upToDateProjects.contains(p))
+                        collectIncludesFully(p, null);
+                System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
+            }
+            catch (CoreException e) {
+                Activator.logError(e); //XXX or: wrap into RuntimeError?
+            }
+            catch (IOException e) {
+                Activator.logError(e); //XXX or: wrap into RuntimeError?
+            }
+
+            // collect list of .h and .cc files in this project group
+            data.sourceFiles = new ArrayList<IFile>();
+            for (IFile file : fileIncludes.keySet())
+                if (data.projectGroup.contains(file.getProject()))
+                    data.sourceFiles.add(file);
+
+            // resolve includes
+            resolveIncludes(data);
+
+            // calculate per-file dependencies
+            data.perFileDependencies = calculatePerFileDependencies(data);
+
+            // calculate folder dependencies
+            data.folderDependencies = calculateFolderDependencies(data);
+
+            data.sourceFiles = null; // no longer needed
+
+            // store
+            projectData.put(project, data);
+        }
+        return projectData.get(project);
+    }
+
+    protected void resolveIncludes(ProjectData data) {
+        // build a hash table of files in this project group, for easy lookup by name
+        Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
+        for (IFile file : data.sourceFiles) {
+            String name = file.getName();
+            if (!filesByName.containsKey(name))
+                filesByName.put(name, new ArrayList<IFile>());
+            filesByName.get(name).add(file);
+        }
+
+        // resolve includes in each file
+        data.resolvedIncludes = new HashMap<Include, IFile>();
+        for (IFile file : data.sourceFiles) {
+            IContainer container = file.getParent();
+            for (Include include : fileIncludes.get(file).includes) {
+                if (include.isSysInclude && standardHeaders.contains(include.filename)) {
+                    // this is a standard C/C++ header file, just ignore
+                }
+                if (include.filename.contains("..")) {
+                    // we only recognize an include containing ".." if it's relative to the current dir
+                    String filename = include.filename.replaceFirst("_m\\.h$", ".msg");
+                    IPath includeFileLocation = container.getLocation().append(new Path(filename));
+                    IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
+                    if (f.length == 0 || !f[0].exists()) {
+                        System.out.println("CANNOT HANDLE INCLUDE WITH '..' UNLESS IT'S RELATIVE TO THE CURRENT DIR: " + include.filename); //XXX
+                        data.unsupportedIncludes.add(include);
+                    }
+                }
+                else {
+                    // determine which IFile(s) the include maps to
+                    List<IFile> list = filesByName.get(include.filename.replaceFirst("^.*/", ""));
+                    if (list == null) list = new ArrayList<IFile>();
+
+                    int count = 0;
+                    IFile includedFile = null;
+                    for (IFile i : list)
+                        if (i.getLocation().toString().endsWith("/"+include.filename)) // note: we check "real" path (ie. location) not the workspace path!
+                        {count++; includedFile = i;}
+
+                    if (count == 1) {
+                        // include resolved successfully and unambiguously
+                        data.resolvedIncludes.put(include, includedFile);
+                    }
+                    else if (count == 0) {
+                        // included file not found
+                        data.unresolvedIncludes.add(include);
+                    }
+                    else {
+                        // count > 1: ambiguous include file
+                        data.ambiguousIncludes.add(include);
+                    }
+                }
+            }
+        }
+
+        System.out.println("resolveIncludes: unresolved includes: " + StringUtils.join(data.unresolvedIncludes, " "));
+        System.out.println("resolveIncludes: ambiguous includes: " + StringUtils.join(data.ambiguousIncludes, " "));
+        System.out.println("resolveIncludes: cannot process: " + StringUtils.join(data.unsupportedIncludes, " "));
+    }
+
+    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(ProjectData data) {
+        // for each file, collect the list of files it includes
+        Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
+        for (IFile file : data.sourceFiles) {
+            Set<IFile> includedFiles = new HashSet<IFile>();
+            for (Include include : fileIncludes.get(file).includes)
+                if (data.resolvedIncludes.containsKey(include))
+                    includedFiles.add(data.resolvedIncludes.get(include));
+            includedFilesMap.put(file, includedFiles);
+        }
+
+        // calculate transitive closure
+        boolean again = true;
+        while (again) {
+            again = false;
+            // if x includes y, add y's includes to x as well.
+            // and if anything changed, repeat the whole thing
+            for (IFile x : includedFilesMap.keySet())
+                for (IFile y : includedFilesMap.get(x).toArray(new IFile[]{}))
+                    if (includedFilesMap.get(x).addAll(includedFilesMap.get(y))) 
+                        again = true; 
+        }
+
+        // group by folders
+        Map<IContainer,Map<IFile,Set<IFile>>> result = new HashMap<IContainer, Map<IFile,Set<IFile>>>();
+        for (IFile file : includedFilesMap.keySet()) {
+            IContainer folder = file.getParent();
+            if (!result.containsKey(folder))
+                result.put(folder, new HashMap<IFile, Set<IFile>>());
+            result.get(folder).put(file, includedFilesMap.get(file));
+        }
+
+        return result;
+    }
+
+    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies(ProjectData data) {
+        // process each file, and gradually expand dependencies list
+        Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
+
+        for (IFile file : data.sourceFiles) {
+            IContainer container = file.getParent();
+            if (!result.containsKey(container))
+                result.put(container, new HashSet<IContainer>());
+            Set<IContainer> currentDeps = result.get(container);
+
+            for (Include include : fileIncludes.get(file).includes) {
+                if (data.resolvedIncludes.containsKey(include)) {
+                    // include resolved successfully and unambiguously
+                    IFile includedFile = data.resolvedIncludes.get(include);
+                    IContainer dependency = includedFile.getParent();
+                    int numSubdirs = StringUtils.countMatches(include.filename, "/");
+                    for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
+                        dependency = dependency.getParent();
+                    if (dependency instanceof IWorkspaceRoot)
+                        data.unsupportedIncludes.add(include); //XXX error: cannot represent included dir in the workspace: it is higher than project root
+                    Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
+
+                    // add folder to the dependent folders
+                    if (dependency != container && !currentDeps.contains(dependency))
+                        currentDeps.add(dependency);
+                }
+            }
+        }
+
+        System.out.println("calculateDependencies: cannot represent with -I: " + StringUtils.join(data.unsupportedIncludes, " "));
+
+        // calculate transitive closure
+        boolean again = true;
+        while (again) {
+            again = false;
+            for (IContainer x : result.keySet())
+                for (IContainer y : result.keySet())
+                    if (x != y && result.get(y).contains(x))  // if y depends on x
+                        if (result.get(y).addAll(result.get(x)))  // then add x's dependencies to y 
+                            again = true; // and if anything changed, repeat the whole thing
+        }
+
+        return result;
+    }
+
+    public static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
+        System.out.println("Folder dependencies:");
+        for (IContainer folder : deps.keySet()) {
+            System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
+            for (IContainer dep : deps.get(folder)) {
+                System.out.print(" " + MakefileTools.makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
+            }
+            System.out.println();
+        }
+    }
 
 //  //XXX currently not used
 //  public Map<IFile,List<Include>> collectIncludes(IContainer[] containers, final IProgressMonitor monitor) throws CoreException {
@@ -292,190 +546,4 @@ public class DependencyCache {
 //  }
 //  return result;
 //  }
-
-    protected void resolveIncludes() {
-        // we'll ignore the standard C/C++ headers
-        final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
-
-        // build a hash table of all files, for easy lookup by name
-        Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
-        for (IFile file : fileIncludes.keySet()) {
-            String name = file.getName();
-            if (!filesByName.containsKey(name))
-                filesByName.put(name, new ArrayList<IFile>());
-            filesByName.get(name).add(file);
-        }
-
-        // process each file, and gradually expand dependencies list
-        Set<Include> unresolvedIncludes = new HashSet<Include>();
-        Set<Include> ambiguousIncludes = new HashSet<Include>();
-        Set<Include> unsupportedIncludes = new HashSet<Include>();
-
-        for (IFile file : fileIncludes.keySet()) {
-            IContainer container = file.getParent();
-            for (Include include : fileIncludes.get(file).includes) {
-                include.resolvesTo = null;
-                if (include.isSysInclude && standardHeaders.contains(include.filename)) {
-                    // this is a standard C/C++ header file, just ignore
-                }
-                if (include.filename.contains("..")) {
-                    // we only recognize an include containing ".." if it's relative to the current dir
-                    String filename = include.filename.replaceFirst("_m\\.h$", ".msg");
-                    IPath includeFileLocation = container.getLocation().append(new Path(filename));
-                    IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
-                    if (f.length == 0 || !f[0].exists()) {
-                        System.out.println("CANNOT HANDLE INCLUDE WITH '..' UNLESS IT'S RELATIVE TO THE CURRENT DIR: " + include.filename); //XXX
-                        unsupportedIncludes.add(include);
-                    }
-                }
-                else {
-                    // determine which IFile(s) the include maps to
-                    List<IFile> list = filesByName.get(include.filename.replaceFirst("^.*/", ""));
-                    if (list == null) list = new ArrayList<IFile>();
-
-                    int count = 0;
-                    IFile includedFile = null;
-                    for (IFile i : list)
-                        if (i.getLocation().toString().endsWith("/"+include.filename)) // note: we check "real" path (ie. location) not the workspace path!
-                        {count++; includedFile = i;}
-
-                    if (count == 0) {
-                        // included file not found. XXX what do we do?
-                        unresolvedIncludes.add(include);
-                    }
-                    else if (count > 1) {
-                        // ambiguous include file.  XXX what do we do?
-                        ambiguousIncludes.add(include);
-                    }
-                    else {
-                        // include resolved successfully and unambiguously
-                        include.resolvesTo = includedFile;
-                    }
-                }
-            }
-        }
-
-        System.out.println("resolveIncludes: unresolved includes: " + StringUtils.join(unresolvedIncludes, " "));
-        System.out.println("resolveIncludes: ambiguous includes: " + StringUtils.join(ambiguousIncludes, " "));
-        System.out.println("resolveIncludes: cannot process: " + StringUtils.join(unsupportedIncludes, " "));
-    }
-
-    /**
-     * For each folder, it determines which other folders it depends on (i.e. includes files from).
-     */
-    synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies() {
-        if (folderDependencies == null)
-            folderDependencies = calculateFolderDependencies();
-        return folderDependencies; 
-    }
-
-    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies() {
-        // find out which files the #includes correspond to
-        resolveIncludes();
-
-        // process each file, and gradually expand dependencies list
-        Set<Include> unsupportedIncludes = new HashSet<Include>();
-        Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
-
-        for (IFile file : fileIncludes.keySet()) {
-            IContainer container = file.getParent();
-            if (!result.containsKey(container))
-                result.put(container, new HashSet<IContainer>());
-            Set<IContainer> currentDeps = result.get(container);
-
-            for (Include include : fileIncludes.get(file).includes) {
-                if (include.resolvesTo != null) {
-                    // include resolved successfully and unambiguously
-                    IFile includedFile = include.resolvesTo;
-                    IContainer dependency = includedFile.getParent();
-                    int numSubdirs = StringUtils.countMatches(include.filename, "/");
-                    for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
-                        dependency = dependency.getParent();
-                    if (dependency instanceof IWorkspaceRoot) {
-                        //XXX error: cannot represent included dir in the workspace: it is higher than project root
-                        unsupportedIncludes.add(include);
-                    }
-                    Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
-
-                    // add folder to the dependent folders
-                    if (dependency != container && !currentDeps.contains(dependency))
-                        currentDeps.add(dependency);
-                }
-            }
-        }
-
-        System.out.println("calculateDependencies: cannot represent with -I: " + StringUtils.join(unsupportedIncludes, " "));
-
-        // calculate transitive closure
-        boolean again = true;
-        while (again) {
-            again = false;
-            for (IContainer x : result.keySet())
-                for (IContainer y : result.keySet())
-                    if (x != y && result.get(y).contains(x))  // if y depends on x
-                        if (result.get(y).addAll(result.get(x)))  // then add x's dependencies to y 
-                            again = true; // and if anything changed, repeat the whole thing
-        }
-
-        return result;
-    }
-
-    /**
-     * For each folder, it determines which other folders it depends on (i.e. includes files from).
-     * Returns the results grouped by folders; that is, each folder maps to the set of files
-     * it contains, and each file maps to its dependencies (everything it #includes, directly
-     * or indirectly). Grouping by folders significantly speeds up makefile generation. 
-     */
-    synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies() {
-        if (perFileDependencies == null)
-            perFileDependencies = calculatePerFileDependencies();
-        return perFileDependencies; 
-    }
-
-    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies() {
-        resolveIncludes();
-
-        Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
-        for (IFile file : fileIncludes.keySet()) {
-            Set<IFile> includedFiles = new HashSet<IFile>();
-            for (Include include : fileIncludes.get(file).includes)
-                if (include.resolvesTo != null)
-                    includedFiles.add(include.resolvesTo);
-            includedFilesMap.put(file, includedFiles);
-        }
-
-        // calculate transitive closure
-        boolean again = true;
-        while (again) {
-            again = false;
-            // if x includes y, add y's includes to x as well.
-            // and if anything changed, repeat the whole thing
-            for (IFile x : includedFilesMap.keySet())
-                for (IFile y : includedFilesMap.get(x).toArray(new IFile[]{}))
-                    if (includedFilesMap.get(x).addAll(includedFilesMap.get(y))) 
-                        again = true; 
-        }
-
-        // group by folders
-        Map<IContainer,Map<IFile,Set<IFile>>> result = new HashMap<IContainer, Map<IFile,Set<IFile>>>();
-        for (IFile file : includedFilesMap.keySet()) {
-            IContainer folder = file.getParent();
-            if (!result.containsKey(folder))
-                result.put(folder, new HashMap<IFile, Set<IFile>>());
-            result.get(folder).put(file, includedFilesMap.get(file));
-        }
-
-        return result;
-    }
-
-    public static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
-        System.out.println("Folder dependencies:");
-        for (IContainer folder : deps.keySet()) {
-            System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
-            for (IContainer dep : deps.get(folder)) {
-                System.out.print(" " + MakefileTools.makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
-            }
-            System.out.println();
-        }
-    }
 }

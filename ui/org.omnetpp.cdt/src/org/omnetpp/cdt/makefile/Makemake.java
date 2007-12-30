@@ -287,15 +287,17 @@ public class Makemake {
             Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
             if (fileDepsMap != null) {
                 for (IFile sourceFile : fileDepsMap.keySet()) {
-                    String objFileName;
+                    String objFileName = null;
                     if (sourceFile.getFileExtension().equals("msg"))
                         objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "_m." + objExt);
-                    else
+                    else if (sourceFile.getFileExtension().equals(ccExt))
                         objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
-                    deps.append(objFileName + ":");
-                    for (IFile includeFile : fileDepsMap.get(sourceFile))
-                        deps.append(" " + abs2rel(includeFile.getLocation()).toString());
-                    deps.append("\n");
+                    if (objFileName != null) {
+                        deps.append(objFileName + ":");
+                        for (IFile includeFile : fileDepsMap.get(sourceFile))
+                            deps.append(" " + abs2rel(includeFile.getLocation()).toString());
+                        deps.append("\n");
+                    }
                 }
                 deps.append("\n");
             }
@@ -308,16 +310,17 @@ public class Makemake {
                 if (StringUtils.isNotEmpty(makefolderRelPath))
                     makefolderRelPath += "/";
                 for (IFile sourceFile : fileDepsMap.keySet()) {
-                    String objFileName;
+                    String objFileName = null;
                     if (sourceFile.getFileExtension().equals("msg"))
                         objFileName = makefolderRelPath+sourceFile.getName().replaceFirst("\\.[^.]+$", "_m." + objExt);
-                    else
+                    else if (sourceFile.getFileExtension().equals(ccExt))
                         objFileName = makefolderRelPath+sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
-                    
-                    deps.append(objFileName + ": "+makefolderRelPath+sourceFile.getName());
-                    for (IFile includeFile : fileDepsMap.get(sourceFile))
-                        deps.append(" " + abs2rel(includeFile.getLocation()).toString());
-                    deps.append("\n");
+                    if (objFileName != null) {
+                        deps.append(objFileName + ": "+makefolderRelPath+sourceFile.getName());
+                        for (IFile includeFile : fileDepsMap.get(sourceFile))
+                            deps.append(" " + abs2rel(includeFile.getLocation()).toString());
+                        deps.append("\n");
+                    }
                 }
             }
             
