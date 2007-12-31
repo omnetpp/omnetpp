@@ -531,14 +531,14 @@ sub makemake()
         "backslashedsourcedirs" => \@backslashedSourceDirs
     );
 
-    $content = substituteIntoTemplate(template(), \%m, "{", "}");
+    my $content = substituteIntoTemplate(template(), \%m, "{", "}");
 
     open(OUT, ">$makefile");
     print OUT $content;
     close OUT;
 
-    print "$makefile created.\n";
-    print "Please type `$makecommand depend' NOW to add dependencies!\n";
+    print "$makefile created, running \"$makecommand depend\" to add dependencies...\n";
+    runprog("$makecommand depend");
 }
 
 sub collectDirs($;$);
@@ -902,6 +902,16 @@ sub readTextFile($)
     return $content;
 }
 
+sub runprog
+{
+    my $cmd = shift;
+    if ($isWindows) {
+        system($ENV{COMSPEC}, "/c", split(' ', $cmd));
+    } else {
+        system($cmd);
+    }
+}
+
 sub error($)
 {
     my($text) = @_;
@@ -1227,7 +1237,7 @@ clean:
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- *.{cc}{@d:sourcedirs} \
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- *.{cc}{@d:sourcedirs} \
 	    {d}/*.{cc}{/@}
 
 {nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
