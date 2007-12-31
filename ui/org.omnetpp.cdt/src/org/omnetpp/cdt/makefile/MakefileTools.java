@@ -146,7 +146,7 @@ public class MakefileTools {
 
     public static Map<IContainer, String> generateTargetNames(IContainer[] containers) {
         // generate unique target name for each folder
-        String reservedNames = "all clean makefiles dist";
+        String reservedNames = "all clean makefiles dist install";
         for (IContainer folder : containers)
             reservedNames += " " + folder.getName(); 
         Map<IContainer,String> targetNames = new LinkedHashMap<IContainer, String>();

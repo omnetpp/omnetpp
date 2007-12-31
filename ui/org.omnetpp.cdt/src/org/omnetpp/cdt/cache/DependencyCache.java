@@ -52,9 +52,10 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //TODO test with the Base/Ext test projects
-//XXX markers: if I mark INET/Obsolete as "excluded", existing markers will not be removed!!!
 //XXX handle _m.h files! (pretend that _m.h files exist, create IFiles for them)
 //XXX how to obey "make clean" ?
+//XXX markers: if I mark INET/Obsolete as "excluded", existing markers will not be removed!!!
+//  ===> mindenki a SAJAT projektre tegye csak rá a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz! Es: minden cc/h/msg file-t regisztralni kell (excludalt-at is), hogy a regi markerek el tudjanak tunni rola! 
 public class DependencyCache {
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
@@ -65,12 +66,15 @@ public class DependencyCache {
     static class Include {
         public String filename;
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
-        public int line = -1; //XXX todo fill in while parsing
+        public IFile file; // in which file the #include occurs
+        //FIXME introduce "file" everywhere, and bring back resolvesTo too!
+        public int line = -1; //XXX todo fill in while parsing; NOTE: using file/line means that #include "foo.h" has to be resolved individually in every file it occurs!!!
 
-        public Include(String filename, boolean isSysInclude) {
+        public Include(int line, String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
             this.isSysInclude = isSysInclude;
             this.filename = filename;
+            this.line = line;
         }
 
         @Override
@@ -112,9 +116,6 @@ public class DependencyCache {
     // list of projects whose include lists are up-to-date in the cache
     private Set<IProject> fileIncludesUpToDate = new HashSet<IProject>();
 
-    // because we want to generate warnings for them
-    private Set<IResource> linkedResources = new HashSet<IResource>(); 
-
     // cached dependencies
     private Map<IProject,ProjectData> projectData = new HashMap<IProject, ProjectData>();
 
@@ -150,56 +151,18 @@ public class DependencyCache {
      * A file or something in the project has changed. We need to invalidate
      * relevant parts of the cache.
      */
-    protected void projectChanged(IProject project) {
+    synchronized protected void projectChanged(IProject project) {
         fileIncludesUpToDate.remove(project);
         for (IProject p : projectData.keySet().toArray(new IProject[]{}))
             if (projectData.get(p).projectGroup.contains(project))
                 projectData.remove(p);
     }
 
-    /**
-     * Returns true if all file includes are up to date, i.e. no file scanning
-     * is needed to produce dependencies etc. Wherever UI responsiveness is an
-     * issue, if this function returns false then other functions are to be
-     * invoked in the background (i.e. in a workspace job).
-     */
-    // Note: should NOT be synchronized (otherwise the whole point is lost)
-    public boolean isUpToDate() {
-        return true;  //FIXME todo; make API per-project...?
-    }
-
-    protected void collectIncludes(IProject project, ProblemMarkerSynchronizer markers) {
-        System.out.println("collectIncludesFully(): " + project);
-
-        try {
-            // parse all C++ source files for #include; also warn for linked-in files
-            //XXX obsolete comment==> (note: warning for linked-in folders will be issued in generateMakefiles())
-            
-            // parse all C++ files for #includes
-            final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
-            project.accept(new IResourceVisitor() {
-                public boolean visit(IResource resource) throws CoreException {
-                    warnIfLinkedResource(resource);
-                    if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
-                        checkFileIncludes((IFile)resource);
-                    return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
-                }
-            });
-            
-            // project is OK now
-            fileIncludesUpToDate.add(project);
-        }
-        catch (CoreException e) {
-            addMarker(markers, project, IMarker.SEVERITY_ERROR, "Error scanning source files for #includes: " + StringUtils.nullToEmpty(e.getMessage()), -1);
-            Activator.logError(e);
-        }
-    }
-
     /** 
      * Forces re-parsing of all files in the project for #includes. 
      * Currently unused.
      */
-    public void clean(IProject project) {
+    synchronized public void clean(IProject project) {
         // discard all parsed #includes within this project
         for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
             if (f.getProject().equals(project))
@@ -208,68 +171,8 @@ public class DependencyCache {
     }
 
     /**
-     * Parses the file for the list of #includes, if it's not up to date already.
-     */
-    protected void checkFileIncludes(IFile file) throws CoreException {
-        //System.out.println("   checkFileIncludes(): " + file);
-        long fileTime = file.getModificationStamp();
-        FileIncludes fileData = fileIncludes.get(file);
-        if (fileData == null || fileData.modificationStamp < fileTime) {
-            System.out.println("   parsing includes from: " + file);
-            if (fileData == null)
-                fileIncludes.put(file, (fileData = new FileIncludes()));
-
-            // re-parse file for includes
-            fileData.includes = parseIncludes(file);
-            fileData.modificationStamp = fileTime;
-
-            // clear cached dependencies (need to be recalculated)
-            for (IProject p : projectData.keySet().toArray(new IProject[]{}))
-                if (projectData.get(p).projectGroup.contains(file.getProject()))
-                    projectData.remove(p);
-        }
-    }
-
-    protected void warnIfLinkedResource(IResource resource) {
-        if (resource.isLinked())
-            linkedResources.add(resource);
-        else
-            linkedResources.remove(resource);
-    }
-
-    public IResource[] getLinkedResources() {
-        return linkedResources.toArray(new IResource[]{});
-    }
-
-    /**
-     * Collect #includes from a C++ source file
-     */
-    protected static List<Include> parseIncludes(IFile file) throws CoreException {
-        try {
-            String contents = FileUtils.readTextFile(file.getContents()) + "\n";
-            return parseIncludes(contents);
-        } 
-        catch (IOException e) {
-            throw Activator.wrap("Error collecting #includes from " + file.getFullPath(), e); 
-        }
-    }
-
-    /**
-     * Collect #includes from C++ source file contents
-     */
-    protected static List<Include> parseIncludes(String source) {
-        List<Include> result = new ArrayList<Include>();
-        Matcher matcher = Pattern.compile("(?m)^\\s*#\\s*include\\s+([\"<])(.*?)[\">].*$").matcher(source);
-        while (matcher.find()) {
-            boolean isSysInclude = matcher.group(1).equals("<");
-            String fileName = matcher.group(2);
-            result.add(new Include(fileName.trim().replace('\\','/'), isSysInclude)); //XXX fill in line number
-        }
-        return result;
-    }
-
-    /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
+     * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
@@ -280,7 +183,9 @@ public class DependencyCache {
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      * Returns the results grouped by folders; that is, each folder maps to the set of files
      * it contains, and each file maps to its dependencies (everything it #includes, directly
-     * or indirectly). Grouping by folders significantly speeds up makefile generation. 
+     * or indirectly). Grouping by folders significantly speeds up makefile generation.
+     *  
+     * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
@@ -288,7 +193,8 @@ public class DependencyCache {
     }
 
     /**
-     * Return the given project and all projects referenced from it (transitively)
+     * Return the given project and all projects referenced from it (transitively).
+     * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */ 
     synchronized public IProject[] getProjectGroup(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
@@ -342,6 +248,83 @@ public class DependencyCache {
         return projectData.get(project);
     }
 
+    protected void collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
+        System.out.println("collectIncludes(): " + project);
+
+        try {
+            // parse all C++ source files for #include; also warn for linked-in files
+            final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
+            project.accept(new IResourceVisitor() {
+                public boolean visit(IResource resource) throws CoreException {
+                    // warn for linked resources
+                    if (resource.isLinked())
+                        addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles", -1);
+                    if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
+                        checkFileIncludes((IFile)resource);
+                    return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
+                }
+            });
+            
+            // project is OK now
+            fileIncludesUpToDate.add(project);
+        }
+        catch (CoreException e) {
+            addMarker(markerSync, project, IMarker.SEVERITY_ERROR, "Error scanning source files for #includes: " + StringUtils.nullToEmpty(e.getMessage()), -1);
+            Activator.logError(e);
+        }
+    }
+
+    /**
+     * Parses the file for the list of #includes, if it's not up to date already.
+     */
+    protected void checkFileIncludes(IFile file) throws CoreException {
+        //System.out.println("   checkFileIncludes(): " + file);
+        long fileTime = file.getModificationStamp();
+        FileIncludes fileData = fileIncludes.get(file);
+        if (fileData == null || fileData.modificationStamp < fileTime) {
+            System.out.println("   parsing includes from: " + file);
+            if (fileData == null)
+                fileIncludes.put(file, (fileData = new FileIncludes()));
+
+            // re-parse file for includes
+            fileData.includes = parseIncludes(file);
+            fileData.modificationStamp = fileTime;
+
+            // clear cached dependencies (need to be recalculated)
+            for (IProject p : projectData.keySet().toArray(new IProject[]{}))
+                if (projectData.get(p).projectGroup.contains(file.getProject()))
+                    projectData.remove(p);
+        }
+    }
+
+    /**
+     * Collect #includes from a C++ source file
+     */
+    protected static List<Include> parseIncludes(IFile file) throws CoreException {
+        try {
+            String contents = FileUtils.readTextFile(file.getContents()) + "\n";
+            return parseIncludes(contents);
+        } 
+        catch (IOException e) {
+            throw Activator.wrap("Error collecting #includes from " + file.getFullPath(), e); 
+        }
+    }
+
+    /**
+     * Collect #includes from C++ source file contents
+     */
+    protected static List<Include> parseIncludes(String source) {
+        List<Include> result = new ArrayList<Include>();
+        Matcher matcher = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$").matcher(source);
+        while (matcher.find()) {
+            boolean isSysInclude = matcher.group(1).equals("<");
+            String fileName = matcher.group(2);
+            int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
+            result.add(new Include(line, fileName.trim().replace('\\','/'), isSysInclude));
+        }
+        return result;
+    }
+
     protected void resolveIncludes(ProjectData data, ProblemMarkerSynchronizer markerSync) {
         // build a hash table of files in this project group, for easy lookup by name
         Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
@@ -358,8 +341,10 @@ public class DependencyCache {
             IContainer container = file.getParent();
             for (Include include : fileIncludes.get(file).includes) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
-                    //FIXME also ignore omnetpp.h!
-                    // this is a standard C/C++ header file, just ignore
+                    // this is a standard C/C++ header file, just ignore.
+                    // Note: non-standards angle-bracket #includes will be resolved and 
+                    // used as dependency if found, but there's no warning if they're 
+                    // not found.
                 }
                 else if (include.filename.contains("..")) {
                     // we only recognize an include containing ".." if it's relative to the current dir
@@ -367,7 +352,7 @@ public class DependencyCache {
                     IPath includeFileLocation = container.getLocation().append(new Path(filename));
                     IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
                     if (f.length == 0 || !f[0].exists())
-                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodependencies: cannot resolve #include with '..' unless it is relative to the current dir", include.line); //XXX implement instead of warning!!!
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot resolve #include with '..' unless it is relative to the current dir", include.line); //XXX implement instead of warning!!!
                 }
                 else {
                     // determine which IFile(s) the include maps to
@@ -385,12 +370,13 @@ public class DependencyCache {
                         data.resolvedIncludes.put(include, includedFile);
                     }
                     else if (count == 0) {
-                        // included file not found
-                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodependencies: cannot resolve #include: " + include.toString(), include.line);
+                        // included file not found; skip warning if it's a system include (see comment above)
+                        if (!include.isSysInclude)
+                            addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot find included file: " + include.toString(), include.line);
                     }
                     else {
                         // count > 1: ambiguous include file
-                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodependencies: ambiguous #include: " + include.toString(), include.line);
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: ambiguous include (more than one matching file found): " + include.toString(), include.line);
                     }
                 }
             }

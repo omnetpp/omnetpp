@@ -41,11 +41,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
 
-            // warn for linked resources
-            //FIXME why here?
-            for (IResource linkedResource : Activator.getDependencyCache().getLinkedResources())
-                addMarker(linkedResource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
-
             // refresh makefiles
             generateMakefiles(monitor);
             return Activator.getDependencyCache().getProjectGroup(getProject());
