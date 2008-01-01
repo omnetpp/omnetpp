@@ -39,13 +39,15 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
+//XXX: USE ONE MAKEMAKE PER SOURCE LOCATION???? (CDT "Paths and Symbols" page) (maskepp: minden source location entry kulon makefile lenne; igy az egymasba agyazas is jobban menne)
+//XXX: MetaMakemake.translateOptions(): call it in the background!!!
+//XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
 //XXX use tabs for makefrag / makefrag.vc
 //XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
 //XXX create "CDT Overview" page in the project properties dialog! should show if: excludes/include paths are inconsistent for different configurations;
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
 //XXX "Out" dir should not overlap with source folders (check!!!)
-//XXX verify that a .msg file alone can create folder dependency!
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
 public class MakemakeOptionsPanel extends Composite {

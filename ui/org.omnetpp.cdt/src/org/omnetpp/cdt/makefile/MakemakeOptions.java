@@ -268,14 +268,14 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-f");
         if (isNMake)
             add(result, "--nmake");
-        if (type == Type.NOLINK)
-            add(result, "-n");
-        else if (type == Type.SHAREDLIB)
-            add(result, "-s");
-        else if (type == Type.STATICLIB)
-            add(result, "-a");
         if (isDeep)
             add(result, "--deep");
+        if (type == Type.NOLINK)
+            add(result, "--nolink");
+        else if (type == Type.SHAREDLIB)
+            add(result, "--make-so");
+        else if (type == Type.STATICLIB)
+            add(result, "--make-lib");
         if (isRecursive)
             add(result, "-r");
         if (!StringUtils.isEmpty(projectDir))

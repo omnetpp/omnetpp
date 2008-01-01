@@ -54,8 +54,6 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//XXX revise makemake deps generation, "_m"-wise...
-//XXX how to obey "make clean" ?
 //XXX markers: if I mark INET/Obsolete as "excluded", existing markers will not be removed!!!
 //  ===> mindenki a SAJAT projektre tegye csak rá a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz! Es: minden cc/h/msg file-t regisztralni kell (excludalt-at is), hogy a regi markerek el tudjanak tunni rola! 
 public class DependencyCache {
@@ -161,11 +159,10 @@ public class DependencyCache {
     }
 
     /** 
-     * Forces re-parsing of all files in the project for #includes. 
-     * Currently unused.
+     * Discards cached #include information for this project. Useful for incremental 
+     * builder invocations with type==CLEAN_BUILD.
      */
     synchronized public void clean(IProject project) {
-        // discard all parsed #includes within this project
         for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
             if (f.getProject().equals(project))
                 fileIncludes.remove(f);

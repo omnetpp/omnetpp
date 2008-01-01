@@ -33,6 +33,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  */
 //FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
 //FIXME makefrag vs makefrag.vc: which one to include??? use only one, but send that through template processing?
+//XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -280,48 +281,25 @@ public class Makemake {
         String subpath = folder.getProjectRelativePath().toString(); 
         
         // write dependencies
-        // FIXME factor out common parts
-        //FIXME msg file magic probably not needed -- deps already contain _m.cc/h files!
         StringBuilder deps = new StringBuilder();
-        if (!isDeep) {
-            Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
-            if (fileDepsMap != null) {
-                for (IFile sourceFile : fileDepsMap.keySet()) {
-                    if (sourceFile.getFileExtension().equals(ccExt) && folder.getFullPath().isPrefixOf(sourceFile.getFullPath())) {
-                        String objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
-                        deps.append("$O/" + objFileName + ":");
-                        for (IFile includeFile : fileDepsMap.get(sourceFile))
-                            deps.append(" " + abs2rel(includeFile.getLocation()).toString());
-                        deps.append("\n");
-                    }
-                }
-                deps.append("\n");
-            }
-        }
-        else {
-            for (IContainer depfolder : perFileDeps.keySet()) {
-                // FIXME only within the make folder... also filter out .h files
-                Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(depfolder);
-                String makefolderRelPath = abs2rel(depfolder.getLocation()).toString();
-                if (StringUtils.isNotEmpty(makefolderRelPath))
-                    makefolderRelPath += "/";
-                for (IFile sourceFile : fileDepsMap.keySet()) {
-                    String objFileName = null;
-                    if (sourceFile.getFileExtension().equals("msg"))
-                        objFileName = makefolderRelPath+sourceFile.getName().replaceFirst("\\.[^.]+$", "_m." + objExt);
-                    else if (sourceFile.getFileExtension().equals(ccExt))
-                        objFileName = makefolderRelPath+sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
-                    if (objFileName != null) {
-                        deps.append(objFileName + ": "+makefolderRelPath+sourceFile.getName());
-                        for (IFile includeFile : fileDepsMap.get(sourceFile))
-                            deps.append(" " + abs2rel(includeFile.getLocation()).toString());
+        //String sep = " ";
+        String sep = " \\\n\t";
+        for (IContainer srcFolder : perFileDeps.keySet()) {
+            if (MakefileTools.folderContains(folder, srcFolder, options.isDeep, options.exceptSubdirs)) {  
+                Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
+                for (IFile srcFile : fileDepsMap.keySet()) {
+                    if (srcFile.getFileExtension().equals(ccExt)) {
+                        String objFileName = "$O/" + srcFile.getProjectRelativePath().toString().replaceFirst("\\.[^.]+$", "." + objExt);
+                        deps.append(objFileName + ":");
+                        for (IFile includeFile : fileDepsMap.get(srcFile))
+                            deps.append(sep + abs2rel(includeFile.getLocation()).toString());
                         deps.append("\n");
                     }
                 }
             }
-            
         }
 
+        // collect data for the template
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("rem", "");  // allows putting comments into the template
         m.put("lbrace", "{");

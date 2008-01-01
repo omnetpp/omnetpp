@@ -16,13 +16,10 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 
 /**
- * Keeps makefiles up to date
+ * Keeps makefiles up to date.
  * 
  * @author Andras
  */
-//FIXME msg files don't generate proper cross-folder and cross-file dependencies!!!!!!!
-//TODO test that cross-project includes work well
-//FIXME dependencia generalas szar...
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem"; //XXX this is shared with DependencyCache
@@ -36,11 +33,14 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     @Override @SuppressWarnings("unchecked")
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         try {
+            if (kind == CLEAN_BUILD)
+                Activator.getDependencyCache().clean(getProject());
+
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecUtils.readBuildSpecFile(getProject()); //XXX possible IllegalArgumentException
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
-
+            
             // refresh makefiles
             generateMakefiles(monitor);
             return Activator.getDependencyCache().getProjectGroup(getProject());
@@ -59,7 +59,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     }
 
     protected void generateMakefiles(IProgressMonitor monitor) throws CoreException, IOException {
-        monitor.subTask("Analyzing dependencies..."); //XXX not really -- all such code moved into DependencyCache... 
+        monitor.subTask("Analyzing dependencies and updating makefiles...");
 
         // collect folders
         IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
@@ -70,7 +70,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
-        monitor.subTask("Updating makefiles...");
         for (IContainer makemakeFolder : makemakeFolders)
             generateMakefileFor(makemakeFolder);
         System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
