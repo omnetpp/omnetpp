@@ -266,3 +266,6 @@ dirs
 subpath
 listbox
 timestamps
+cc
+msg
+ifdef

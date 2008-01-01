@@ -42,13 +42,13 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class MetaMakemake {
     /**
-     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     * Generates Makefile in the given folder.
      */
-    public static boolean generateMakefile(IContainer folder, MakemakeOptions options) throws IOException, CoreException {
+    public static void generateMakefile(IContainer folder, MakemakeOptions options) throws IOException, CoreException {
         MakemakeOptions translatedOptions = translateOptions(folder, options);
         IProject project = folder.getProject();
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project);
-        return new Makemake().generateMakefile(folder, translatedOptions, perFileDependencies);
+        new Makemake().generateMakefile(folder, translatedOptions, perFileDependencies);
     }
 
     /** 
@@ -128,6 +128,8 @@ public class MetaMakemake {
             translatedOptions.metaUseExportedLibs = false;
         }
 
+        translatedOptions.metaExportLibrary = false;
+        
         System.out.println("Translated makemake options for " + folder + ": " + translatedOptions.toString());
         return translatedOptions;
     }

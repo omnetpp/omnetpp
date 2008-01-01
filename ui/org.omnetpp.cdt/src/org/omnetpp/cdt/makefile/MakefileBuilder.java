@@ -79,20 +79,16 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     /**
      * Generate makefile in the given folder.
      */
-    protected boolean generateMakefileFor(IContainer folder) {
+    protected void generateMakefileFor(IContainer folder) {
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            boolean changed = MetaMakemake.generateMakefile(folder, options);
+            MetaMakemake.generateMakefile(folder, options);
             //FIXME remove makefile if any exception occurred here, so that build won't continue with CDT?
-            if (changed)
-                folder.refreshLocal(IResource.DEPTH_INFINITE, null);
-            return changed;
         }
         catch (Exception e) {
             addMarker(folder, IMarker.SEVERITY_ERROR, "Error refreshing Makefile: " + e.getMessage());
-            return true;
         }
     }
 

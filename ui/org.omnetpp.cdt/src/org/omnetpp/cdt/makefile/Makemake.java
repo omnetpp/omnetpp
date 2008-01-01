@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,23 +50,23 @@ public class Makemake {
     }
 
     /**
-     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     * Generates Makefile in the given folder.
      */
-    public boolean generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        return generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
+    public void generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
     }
 
     /**
-     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     * Generates Makefile in the given folder.
      */
-    public boolean generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        return generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
+    public void generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+        generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
     }
 
     /**
-     * Returns true if Makefile was overwritten, and false if it was already up to date.
+     * Generates Makefile in the given folder.
      */
-    public boolean generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+    public void generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         this.folder = folder;
         this.p = options;
         
@@ -79,9 +78,9 @@ public class Makemake {
         boolean isRecursive = p.isRecursive;
         boolean isDeep = p.isDeep;
 
-        String makefile = isNMake ? "Makefile.vc" : "Makefile";
-        if (file(makefile).isFile() && !p.force)
-            throw new IllegalStateException("use -f to force overwriting existing " + makefile);
+        String makefileName = isNMake ? "Makefile.vc" : "Makefile";
+        if (file(makefileName).isFile() && !p.force)
+            throw new IllegalStateException("use -f to force overwriting existing " + makefileName);
         boolean compileForDll = p.compileForDll || p.type==MakemakeOptions.Type.SHAREDLIB;
 
         String target = p.target == null ? folder.getName() : p.target;
@@ -282,18 +281,15 @@ public class Makemake {
         
         // write dependencies
         // FIXME factor out common parts
+        //FIXME msg file magic probably not needed -- deps already contain _m.cc/h files!
         StringBuilder deps = new StringBuilder();
         if (!isDeep) {
             Map<IFile,Set<IFile>> fileDepsMap = perFileDeps == null ? null : perFileDeps.get(folder);
             if (fileDepsMap != null) {
                 for (IFile sourceFile : fileDepsMap.keySet()) {
-                    String objFileName = null;
-                    if (sourceFile.getFileExtension().equals("msg"))
-                        objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "_m." + objExt);
-                    else if (sourceFile.getFileExtension().equals(ccExt))
-                        objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
-                    if (objFileName != null) {
-                        deps.append(objFileName + ":");
+                    if (sourceFile.getFileExtension().equals(ccExt) && folder.getFullPath().isPrefixOf(sourceFile.getFullPath())) {
+                        String objFileName = sourceFile.getName().replaceFirst("\\.[^.]+$", "." + objExt);
+                        deps.append("$O/" + objFileName + ":");
                         for (IFile includeFile : fileDepsMap.get(sourceFile))
                             deps.append(" " + abs2rel(includeFile.getLocation()).toString());
                         deps.append("\n");
@@ -304,7 +300,7 @@ public class Makemake {
         }
         else {
             for (IContainer depfolder : perFileDeps.keySet()) {
-                // FIXME only within the make folder
+                // FIXME only within the make folder... also filter out .h files
                 Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(depfolder);
                 String makefolderRelPath = abs2rel(depfolder.getLocation()).toString();
                 if (StringUtils.isNotEmpty(makefolderRelPath))
@@ -381,19 +377,14 @@ public class Makemake {
             template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
             template = template.replace("\r\n", "\n");
         }
-
         String content = StringUtils.substituteIntoTemplate(template, m);
         content = content.replace("\r\n", "\n");  // make line endings consistent 
-        byte[] bytes = content.getBytes();
 
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
-        File file = new File(directory.getPath() + File.separator + makefile);
-        if (!file.exists() || !Arrays.equals(FileUtils.readBinaryFile(file), bytes)) { // NOTE: byte[].equals does NOT compare the bytes, only the two object references!!!
-            FileUtils.writeBinaryFile(file, bytes);
-            return true;  // no change
-        }
-        return false;  // it was already OK
+        byte[] bytes = content.getBytes();
+        IFile makefile = folder.getFile(new Path(makefileName));
+        MakefileTools.ensureFileContent(makefile, bytes, null);
     }
 
     protected List<String> collectDirs(IContainer dir, List<String> exceptSubdirs) throws CoreException {
@@ -491,6 +482,7 @@ public class Makemake {
 
     public static String makeSymbolicProjectName(IProject project) {
         //FIXME must not begin with number! must not collide with symbolic name of another project!
+        // ==> why not use MakefileTools.generateTargetNames() ??
         return project.getName().replaceAll("[^0-9a-zA-Z_]", "_").toUpperCase()+"_PROJ";
     }
 }

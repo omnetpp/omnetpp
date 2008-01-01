@@ -49,10 +49,12 @@ import org.omnetpp.common.util.StringUtils;
  * dependencies to be generated, and in general has much more advantages
  * than drawbacks.
  *  
+ * Strategy of handling msg files: pretend that _m.cc/h files exist, then
+ * extract dependencies from them as from normal .cc/h files.
+ * 
  * @author Andras
  */
-//TODO test with the Base/Ext test projects
-//XXX handle _m.h files! (pretend that _m.h files exist, create IFiles for them)
+//XXX revise makemake deps generation, "_m"-wise...
 //XXX how to obey "make clean" ?
 //XXX markers: if I mark INET/Obsolete as "excluded", existing markers will not be removed!!!
 //  ===> mindenki a SAJAT projektre tegye csak rá a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz! Es: minden cc/h/msg file-t regisztralni kell (excludalt-at is), hogy a regi markerek el tudjanak tunni rola! 
@@ -66,7 +68,7 @@ public class DependencyCache {
     static class Include {
         public String filename;
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
-        public IFile file; // in which file the #include occurs
+        public IFile file; // in which file the #include occurs  XXX needed?
         //FIXME introduce "file" everywhere, and bring back resolvesTo too!
         public int line = -1; //XXX todo fill in while parsing; NOTE: using file/line means that #include "foo.h" has to be resolved individually in every file it occurs!!!
 
@@ -104,13 +106,13 @@ public class DependencyCache {
     static class ProjectData {
         IProject project;
         List<IProject> projectGroup;  // this project and its referenced projects
-        List<IFile> sourceFiles;  // only used during calculations
+        Map<IFile,List<Include>> cppSourceFiles;  // only used during calculations; contains _m.cc/h instead of msg files; filtered for projectGroup
         Map<Include,IFile> resolvedIncludes;
         Map<IContainer,Set<IContainer>> folderDependencies;
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies;
     }
 
-    // per-file includes
+    // per-file includes; contains .msg files but not _m.cc/h files
     private Map<IFile,FileIncludes> fileIncludes = new HashMap<IFile, FileIncludes>();
 
     // list of projects whose include lists are up-to-date in the cache
@@ -172,7 +174,9 @@ public class DependencyCache {
 
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
-     * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
+     * 
+     * Note: may be a long-running operation, so it needs to invoked from a background job 
+     * where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
@@ -180,12 +184,14 @@ public class DependencyCache {
     }
 
     /**
-     * For each folder, it determines which other folders it depends on (i.e. includes files from).
-     * Returns the results grouped by folders; that is, each folder maps to the set of files
-     * it contains, and each file maps to its dependencies (everything it #includes, directly
-     * or indirectly). Grouping by folders significantly speeds up makefile generation.
+     * For each file, it determines which other files it includes (directly or indirectly).
+     * Message files (.msg) are represented as _m.cc and _m.h files. 
+     * 
+     * The result is grouped by folders; that is, each folder maps to the set of files
+     * it contains. Grouping by folders significantly speeds up makefile generation.
      *  
-     * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
+     * Note: may be a long-running operation, so it needs to invoked from a background job 
+     * where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
@@ -221,14 +227,9 @@ public class DependencyCache {
                     collectIncludes(p, markerSync);
             System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
 
-            // collect list of .h and .cc files in this project group
-            data.sourceFiles = new ArrayList<IFile>();
-            for (IFile file : fileIncludes.keySet())
-                if (data.projectGroup.contains(file.getProject())) {
-                    data.sourceFiles.add(file);
-                    markerSync.register(file); //XXX this will remove markers added by other projects too...
-                }
-
+            // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
+            collectCppSourceFilesInProjectGroup(data, markerSync);
+            
             // resolve includes
             resolveIncludes(data, markerSync);
 
@@ -238,7 +239,7 @@ public class DependencyCache {
             // calculate folder dependencies
             data.folderDependencies = calculateFolderDependencies(data, markerSync);
 
-            data.sourceFiles = null; // no longer needed
+            data.cppSourceFiles = null; // no longer needed
 
             // store
             projectData.put(project, data);
@@ -325,10 +326,35 @@ public class DependencyCache {
         return result;
     }
 
+    protected void collectCppSourceFilesInProjectGroup(ProjectData data, ProblemMarkerSynchronizer markerSync) {
+        // collect list of .h and .cc files in this project group 
+        // (meanwhile resolve msg files to _m.cc and _m.h)
+        data.cppSourceFiles = new HashMap<IFile,List<Include>>();
+        for (IFile file : fileIncludes.keySet()) {
+            if (data.projectGroup.contains(file.getProject())) {
+                markerSync.register(file); //XXX this will remove markers added by other projects too...
+                if (file.getFileExtension().equals("msg")) {
+                    // from a msg file, the build process will generate:
+                    // - an _m.h file gets generated with all the #include from the msg file 
+                    // - an _m.cc file which includes the _m.h file 
+                    IFile mhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.h")));
+                    IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc"))); //XXX or .cpp?
+                    data.cppSourceFiles.put(mhFile, fileIncludes.get(file).includes);
+                    List<Include> mccIncludes = new ArrayList<Include>();
+                    mccIncludes.add(new Include(1, mhFile.getName(), false));
+                    data.cppSourceFiles.put(mccFile, mccIncludes);
+                }
+                else {
+                    data.cppSourceFiles.put(file, fileIncludes.get(file).includes);
+                }
+            }
+        }
+    }
+
     protected void resolveIncludes(ProjectData data, ProblemMarkerSynchronizer markerSync) {
         // build a hash table of files in this project group, for easy lookup by name
         Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
-        for (IFile file : data.sourceFiles) {
+        for (IFile file : data.cppSourceFiles.keySet()) {
             String name = file.getName();
             if (!filesByName.containsKey(name))
                 filesByName.put(name, new ArrayList<IFile>());
@@ -337,9 +363,9 @@ public class DependencyCache {
 
         // resolve includes in each file
         data.resolvedIncludes = new HashMap<Include, IFile>();
-        for (IFile file : data.sourceFiles) {
+        for (IFile file : data.cppSourceFiles.keySet()) {
             IContainer container = file.getParent();
-            for (Include include : fileIncludes.get(file).includes) {
+            for (Include include : data.cppSourceFiles.get(file)) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore.
                     // Note: non-standards angle-bracket #includes will be resolved and 
@@ -348,8 +374,7 @@ public class DependencyCache {
                 }
                 else if (include.filename.contains("..")) {
                     // we only recognize an include containing ".." if it's relative to the current dir
-                    String filename = include.filename.replaceFirst("_m\\.h$", ".msg");
-                    IPath includeFileLocation = container.getLocation().append(new Path(filename));
+                    IPath includeFileLocation = container.getLocation().append(new Path(include.filename));
                     IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
                     if (f.length == 0 || !f[0].exists())
                         addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot resolve #include with '..' unless it is relative to the current dir", include.line); //XXX implement instead of warning!!!
@@ -386,9 +411,9 @@ public class DependencyCache {
     protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(ProjectData data, ProblemMarkerSynchronizer markerSync) {
         // for each file, collect the list of files it includes
         Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
-        for (IFile file : data.sourceFiles) {
+        for (IFile file : data.cppSourceFiles.keySet()) {
             Set<IFile> includedFiles = new HashSet<IFile>();
-            for (Include include : fileIncludes.get(file).includes)
+            for (Include include : data.cppSourceFiles.get(file))
                 if (data.resolvedIncludes.containsKey(include))
                     includedFiles.add(data.resolvedIncludes.get(include));
             includedFilesMap.put(file, includedFiles);
@@ -422,13 +447,13 @@ public class DependencyCache {
         // process each file, and gradually expand dependencies list
         Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
 
-        for (IFile file : data.sourceFiles) {
+        for (IFile file : data.cppSourceFiles.keySet()) {
             IContainer container = file.getParent();
             if (!result.containsKey(container))
                 result.put(container, new HashSet<IContainer>());
             Set<IContainer> currentDeps = result.get(container);
 
-            for (Include include : fileIncludes.get(file).includes) {
+            for (Include include : data.cppSourceFiles.get(file)) {
                 if (data.resolvedIncludes.containsKey(include)) {
                     // include resolved successfully and unambiguously
                     IFile includedFile = data.resolvedIncludes.get(include);

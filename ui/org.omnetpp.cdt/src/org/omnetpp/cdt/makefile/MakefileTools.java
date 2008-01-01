@@ -60,24 +60,9 @@ public class MakefileTools {
     // directories we'll not search for source files
     public static final String IGNORABLE_DIRS[] = "CVS RCS SCCS _darcs blib .git .svn .git .bzr .hg backups".split(" ");
 
-    // boilerplate code for Makemakefile
-    public static final String BOILERPLATE = 
-        "#\n" + 
-        "# Makefile to create all other makefiles for the project.\n" + 
-        "# This same file is used on all platforms including Linux (gnu make) and Windows (nmake).\n" + 
-        "#\n" + 
-        "# GENERATED FILE -- DO NOT MODIFY.\n" + 
-        "#\n" + 
-        "# The vars ROOT, MAKEMAKE and EXT have to be specified externally, on the 'make' command line.\n" + 
-        "#ROOT=/home/user/projects/foo\n" + 
-        "#MAKEMAKE=opp_nmakemake\n" + 
-        "#EXT=.vc\n" + 
-        "\n" + 
-        "# To build Windows DLLs, add this to OPTS below: -PINET_API\n" + 
-        "OPTS=-f -b $(ROOT) -c $(ROOT)/inetconfig$(EXT)\n" + 
-        "\n" + 
-        "all:\n";
-
+    private MakefileTools() {
+    }
+    
     public static boolean isNonGeneratedCppFile(IResource resource) {
         // not an _m.cc or _n.cc file
         return isCppFile(resource) && !resource.getName().matches("_[mn]\\.[^.]+$"); 
@@ -109,64 +94,6 @@ public class MakefileTools {
                 !resource.getName().startsWith(".") &&
                 !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, resource.getName()) &&
                 !((IContainer)resource).isTeamPrivateMember()); 
-    }
-
-    //XXX currently unused; we may create some Action to invoke it
-    public static void generateMakeMakefile(IProject project, IProgressMonitor monitor) throws IOException, CoreException {
-        BuildSpecification buildSpec = BuildSpecUtils.readBuildSpecFile(project); //XXX possible IllegalArgumentException
-        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
-        Map<IContainer, String> targetNames = MakefileTools.generateTargetNames(makemakeFolders);
-        Map<IContainer, Set<IContainer>> folderDependencies = Activator.getDependencyCache().getFolderDependencies(project);
-        String makeMakeFile = MakefileTools.generateMakeMakefile(makemakeFolders, folderDependencies, targetNames);
-        IFile file = project.getFile("Makemakefile");
-        MakefileTools.ensureFileContent(file, makeMakeFile.getBytes(), monitor);
-    }
-
-    /**
-     * Generate a script to re-generate makefiles from the command line.
-     */
-    protected static String generateMakeMakefile(IContainer[] containers, Map<IContainer, Set<IContainer>> deps,Map<IContainer, String> targetNames) {
-        //FIXME this method totally out of date -- should use translateOptions()!!!
-        // generate the makefile
-        String result = BOILERPLATE;
-        String allTargetNames = StringUtils.join(targetNames.values(), " ");
-        result += StringUtils.indentLines(StringUtils.breakLines(allTargetNames, 90), "\t") + "\n\n";
-        for (IContainer folder : containers) {
-            List<String> includeOptions = new ArrayList<String>();
-            if (deps.containsKey(folder))
-                for (IContainer dep : deps.get(folder))
-                    includeOptions.add("-I" + makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
-            String folderPath = folder.getProjectRelativePath().toString();  //XXX refine: only relative if it fits best
-
-            result += targetNames.get(folder) + ":\n";
-            result += "\tcd " + folderPath + " && $(MAKEMAKE) $(OPTS) -n -r " + StringUtils.join(includeOptions, " ") + "\n";
-        }
-        return result;
-    }
-
-    public static Map<IContainer, String> generateTargetNames(IContainer[] containers) {
-        // generate unique target name for each folder
-        String reservedNames = "all clean makefiles dist install";
-        for (IContainer folder : containers)
-            reservedNames += " " + folder.getName(); 
-        Map<IContainer,String> targetNames = new LinkedHashMap<IContainer, String>();
-        for (IContainer folder : containers) {
-            String targetName = folder.getName().toString().replaceAll("[^a-zA-Z0-9]+", "_") + "_dir";
-            targetName = targetName.replaceFirst("_$", "");
-            if (targetNames.values().contains(targetName)) {
-                int k = 2;
-                while (targetNames.values().contains(tweakName(targetName,k)) || reservedNames.contains(tweakName(targetName,k)))
-                    k++;
-                targetName = tweakName(targetName,k);
-            }
-            targetNames.put(folder, targetName);
-        }
-        return targetNames;
-    }
-
-    private static String tweakName(String name, int k) {
-        Assert.isTrue(name.endsWith("_dir"));
-        return name.replaceAll("_dir$", "_" + k + "_dir");
     }
 
     public static IPath makeRelativePath(IPath inputPath, IPath referenceDir) {
