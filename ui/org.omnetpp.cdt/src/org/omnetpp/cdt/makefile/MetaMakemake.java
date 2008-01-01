@@ -2,7 +2,6 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,20 +43,20 @@ public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public static void generateMakefile(IContainer folder, MakemakeOptions options) throws IOException, CoreException {
-        MakemakeOptions translatedOptions = translateOptions(folder, options);
-        IProject project = folder.getProject();
+    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws IOException, CoreException {
+        MakemakeOptions translatedOptions = translateOptions(makefileFolder, options);
+        IProject project = makefileFolder.getProject();
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project);
-        new Makemake().generateMakefile(folder, translatedOptions, perFileDependencies);
+        new Makemake().generateMakefile(makefileFolder, translatedOptions, perFileDependencies);
     }
 
     /** 
      * Translates makemake options
      */
-    public static MakemakeOptions translateOptions(IContainer folder, MakemakeOptions options) throws CoreException {
+    public static MakemakeOptions translateOptions(IContainer makefileFolder, MakemakeOptions options) throws CoreException {
         MakemakeOptions translatedOptions = options.clone();
 
-        IProject project = folder.getProject();
+        IProject project = makefileFolder.getProject();
         Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project);
 
         // add -f, and potentially --nmake 
@@ -65,12 +64,12 @@ public class MetaMakemake {
         translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
 
         // add -X option for each excluded folder in CDT
-        translatedOptions.exceptSubdirs.addAll(getExcludedPathsWithinFolder(folder));
+        translatedOptions.exceptSubdirs.addAll(getExcludedPathsWithinFolder(makefileFolder));
 
         // add -I, -L and -D options configured in CDT
-        translatedOptions.includeDirs.addAll(getIncludePathsFor(folder));
-        translatedOptions.libDirs.addAll(getLibraryPathsFor(folder));
-        translatedOptions.defines.addAll(getMacrosFor(folder));
+        translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder));
+        translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder));
+        translatedOptions.defines.addAll(getMacrosFor(makefileFolder));
 
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
@@ -82,20 +81,11 @@ public class MetaMakemake {
 
         // add extra include folders
         if (options.metaAutoIncludePath && folderDeps != null) {
-            // we're looking for include path of the source folders covered by this makefile
-            List<IContainer> srcFolders;
-            if (options.isDeep)
-                srcFolders = collectSourceFolders(folder); // every folder under this makemake folder
-            else
-                srcFolders = Arrays.asList(new IContainer[]{ folder });
-
-            // find the referenced folders for each srcFolder, and add to include path if it's outside this deep makefile
-            //FIXME does not work -- adds everything
-            for (IContainer srcFolder : srcFolders)
-                if (folderDeps.containsKey(srcFolder))  
+            for (IContainer srcFolder : folderDeps.keySet())
+                if (MakefileTools.folderContains(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs))  
                     for (IContainer dep : folderDeps.get(srcFolder))
-                        if (!srcFolder.getFullPath().isPrefixOf(dep.getFullPath()))  // only add if "dep" is outside "folder"!
-                            if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not already in there
+                        if (!MakefileTools.folderContains(makefileFolder, dep, options.isDeep, options.exceptSubdirs)) // only add if "dep" is outside "folder"!  
+                            if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not added yet
                                 translatedOptions.includeDirs.add(dep.getLocation().toString());
 
             // clear processed setting
@@ -118,7 +108,7 @@ public class MetaMakemake {
                         if ((opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB) && opt.metaExportLibrary) {
                             String libname = StringUtils.isEmpty(opt.target) ? f.getName() : opt.target;
                             String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
-                            String libdir = makeRelativePath(f.getProject(), folder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
+                            String libdir = makeRelativePath(f.getProject(), makefileFolder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
                             translatedOptions.libs.add(libname);
                             translatedOptions.libDirs.add(libdir);
                         }
@@ -130,25 +120,26 @@ public class MetaMakemake {
 
         translatedOptions.metaExportLibrary = false;
         
-        System.out.println("Translated makemake options for " + folder + ": " + translatedOptions.toString());
+        System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
 
-    protected static List<IContainer> collectSourceFolders(IContainer folder) throws CoreException {
-        List<IContainer> result = new ArrayList<IContainer>();
-        ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(folder.getProject()).getDefaultConfiguration().getSourceEntries();//XXX can something be null here?
-        collectSourceFolders(folder, result, sourceEntries);
-        return result;
-    }    
-
-    protected static void collectSourceFolders(IContainer folder, List<IContainer> result, ICSourceEntry[] sourceEntries) throws CoreException {
-        if (!CDataUtil.isExcluded(folder.getProjectRelativePath(), sourceEntries)) {
-            result.add(folder);
-            for (IResource member : folder.members())
-                if (MakefileTools.isGoodFolder(member))
-                    collectSourceFolders((IContainer)member, result, sourceEntries);
-        }
-    }
+//    //XXX check if actually used!!!
+//    protected static List<IContainer> collectSourceFolders(IContainer folder) throws CoreException {
+//        List<IContainer> result = new ArrayList<IContainer>();
+//        ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(folder.getProject()).getDefaultConfiguration().getSourceEntries();//XXX can something be null here?
+//        collectSourceFolders(folder, result, sourceEntries);
+//        return result;
+//    }    
+//
+//    protected static void collectSourceFolders(IContainer folder, List<IContainer> result, ICSourceEntry[] sourceEntries) throws CoreException {
+//        if (!CDataUtil.isExcluded(folder.getProjectRelativePath(), sourceEntries)) {
+//            result.add(folder);
+//            for (IResource member : folder.members())
+//                if (MakefileTools.isGoodFolder(member))
+//                    collectSourceFolders((IContainer)member, result, sourceEntries);
+//        }
+//    }
 
     /**
      * Returns the (folder-relative) paths of directories and files excluded from build 

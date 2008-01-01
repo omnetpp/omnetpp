@@ -2,19 +2,13 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -63,14 +57,20 @@ public class MakefileTools {
     private MakefileTools() {
     }
     
+    /**
+     * Returns true if the given resource is a file with "cc", "cpp" or "h" extension,
+     * but not _m.cc/cpp/h or _n.cc/cpp/h.
+     */
     public static boolean isNonGeneratedCppFile(IResource resource) {
         // not an _m.cc or _n.cc file
         return isCppFile(resource) && !resource.getName().matches("_[mn]\\.[^.]+$"); 
     }
 
+    /**
+     * Returns true if the given resource is a file with "cc", "cpp" or "h" extension.
+     */
     public static boolean isCppFile(IResource resource) {
         if (resource instanceof IFile) {
-            //TODO: ask CDT about registered file extensions?
             String fileExtension = ((IFile)resource).getFileExtension();
             if ("cc".equalsIgnoreCase(fileExtension) || "cpp".equalsIgnoreCase(fileExtension) || "h".equalsIgnoreCase(fileExtension))
                 return true;
@@ -78,6 +78,9 @@ public class MakefileTools {
         return false;
     }
 
+    /**
+     * Returns true if the given resource is a file with "msg" extension.
+     */
     public static boolean isMsgFile(IResource resource) {
         return resource instanceof IFile && "msg".equals(((IFile)resource).getFileExtension());
     }
@@ -117,4 +120,25 @@ public class MakefileTools {
         }
     }
     
+    /**
+     * Utility function to determine whether a given resource is under a given
+     * makefile folder. excludedFolders is to be understood as folder-relative paths.
+     */
+    public static boolean folderContains(IContainer folder, IResource resource, boolean deep, List<String> excludedFolders) {
+        if (!deep) {
+            if (!resource.getParent().equals(folder))
+                return false; // not in that folder
+        }
+        else {
+            if (!folder.getFullPath().isPrefixOf(resource.getFullPath()))
+                return false; // not under that folder
+        }
+        if (excludedFolders != null) {
+            IPath folderRelativePath = resource.getFullPath().removeFirstSegments(folder.getFullPath().segmentCount());
+            for (String exludedFolder : excludedFolders) 
+                if (new Path(exludedFolder).isPrefixOf(folderRelativePath))
+                    return false; // excluded
+        }
+        return true;
+    }
 }
