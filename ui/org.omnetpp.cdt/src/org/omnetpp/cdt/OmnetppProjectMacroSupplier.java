@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
+
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
 
@@ -129,7 +130,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
 
         public String getStringValue() throws BuildMacroException {
             IProject prj = (IProject)project.getOwner();
-            ICSourceEntry srcEntries[] = CDTUtils.getSourceEntriesIfExist(prj);
+            ICSourceEntry srcEntries[] = CDTUtils.getSourceEntries(prj);
             if (srcEntries.length > 0) {
                 return prj.getFullPath().append(srcEntries[0]. getFullPath()).toString();
             }

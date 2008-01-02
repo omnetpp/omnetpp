@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -151,7 +152,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         // show/hide makemake options panel
         IProject project = getResource().getProject();
         List<IPath> sourceFolders = CDTUtils.getSourcePaths(project);
-        selectedSourceFolder = sourceFolders.contains(path) ? project.getFolder(path) : null;
+        selectedSourceFolder = sourceFolders.contains(path) ? ResourcesPlugin.getWorkspace().getRoot().getFolder(path) : null;
         contents.setVisible(selectedSourceFolder != null);
 
         // configure options panel

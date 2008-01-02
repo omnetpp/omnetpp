@@ -34,6 +34,8 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 //FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
 //FIXME makefrag vs makefrag.vc: which one to include??? use only one, but send that through template processing?
 //XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
+// FIXME remove subdirtargets
+// copy temlate cntents t per script opp_makemake
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -344,7 +346,7 @@ public class Makemake {
         m.put("objs", quoteJoin(objs));
         m.put("subdirs", quoteJoin(subdirs));
         m.put("subdirtargets", quoteJoin(subdirTargets));
-        m.put("fordllopt", compileForDll ? "/DWIN32_DLL" : "");
+        m.put("fordllopt", compileForDll ? "-DWIN32_DLL" : "");  // FIXME remove the similar stuff from the template or from here (check also in perl script)
         m.put("dllexportmacro", StringUtils.isEmpty(p.dllExportMacro) ? "" : ("-P" + p.dllExportMacro));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);

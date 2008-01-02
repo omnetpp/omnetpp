@@ -45,7 +45,6 @@ MSG_H_FILES = {msghfiles}
 
 {subdirs:}# Subdirectories to recurse into
 {subdirs:}SUBDIRS = {subdirs}
-{subdirs:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
 {subdirs:}
 {defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {defaultmode:}{nmake?!}ifndef MODE
@@ -151,12 +150,10 @@ all: $O/$(TARGET)
 {nolink:}$O/$(TARGET): $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
-{subdirs:}subdirs: $(SUBDIR_TARGETS)
-{subdirs:}
-{subdirs:}$(SUBDIR_TARGETS):
-{subdirs:}{~nmake:}	cd $@ && {makecommand}
-{subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
-{subdirs:}
+{subdirs:}subdirs:
+{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @pushd %%i && nmake /nologo /f Makefile.vc && @popd || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE)) || exit 1; done
+
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES) # FIXME does not work - use iteration
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $?
@@ -176,8 +173,8 @@ all: $O/$(TARGET)
 {/@}
 
 generateheaders: $(MSG_H_FILES)
-{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
-{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && @popd || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) generateheaders) || exit 1; done
 
 clean:
 {nmake:}	-cd $(O:/=\) && del $(VC_AUX_FILES) $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
@@ -186,19 +183,19 @@ clean:
 {nmake:}	-cd $(O:/=\)\{bsdir} && del *.obj 2>NUL
 {~nmake:}	-cd $O/{dir} && rm -f *.o
 	-cd {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
-{subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
+{subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- *.{cc}{@d:sourcedirs} \
 	    {d}/*.{cc}{/@}
 
-{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @pushd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && @popd || exit /b 1
 {~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
 
 makefiles:
 	{progname} {args}
-{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @pushd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && @popd || exit /b 1
 {~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefiles) || exit 1; done
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

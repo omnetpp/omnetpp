@@ -182,7 +182,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             }
         }
         // the OMNET nature is always added
-        ProjectUtils.addOmnetppNature(projectPage.getProjectHandle());
+        IProject project = projectPage.getProjectHandle();
+        ProjectUtils.addOmnetppNature(project);
+        
         return true;
     }    
 
