@@ -364,7 +364,7 @@ void OctaveTextExport::saveTable(const DataTable &table, int startIndex, int end
 
 void OctaveTextExport::writeStructHeader(const DataTable &table)
 {
-    out << "# name: " << makeIdentifier(table.name) << "\n"
+    out << "# name: " << makeUniqueIdentifier(table.name) << "\n"
            "# type: struct\n"
            "# length: " << table.numOfColumns() + 1 // description + columns
         << "\n";
