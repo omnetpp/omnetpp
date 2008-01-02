@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -43,7 +45,6 @@ import org.omnetpp.common.util.StringUtils;
 //XXX: MetaMakemake.translateOptions(): call it in the background!!!
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
-//XXX use tabs for makefrag / makefrag.vc
 //XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
 //XXX create "CDT Overview" page in the project properties dialog! should show if: excludes/include paths are inconsistent for different configurations;
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
@@ -108,6 +109,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Custom" page
     private Text makefragText;
+    private Text makefragvcText;
     private FileListControl makefragsList;
     
     // "Preview" page
@@ -128,12 +130,12 @@ public class MakemakeOptionsPanel extends Composite {
         tabfolder = new TabFolder(composite, SWT.TOP);
         tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        scopePage = createTabPage("Scope");
-        targetPage = createTabPage("Target");
-        compilePage = createTabPage("Compile");
-        linkPage = createTabPage("Link");
-        customPage = createTabPage("Custom");
-        previewPage = createTabPage("Preview");
+        scopePage = createTabPage(tabfolder, "Scope");
+        targetPage = createTabPage(tabfolder, "Target");
+        compilePage = createTabPage(tabfolder, "Compile");
+        linkPage = createTabPage(tabfolder, "Link");
+        customPage = createTabPage(tabfolder, "Custom");
+        previewPage = createTabPage(tabfolder, "Preview");
         tabfolder.setSelection(0);
 
         // "Scope" page
@@ -223,13 +225,26 @@ public class MakemakeOptionsPanel extends Composite {
         
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
-        createLabel(customPage, "Code fragment to be inserted into the Makefile (Makefrag):");
-        makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        CTabFolder makefragTabFolder = new CTabFolder(customPage, SWT.TOP | SWT.BORDER);
+        makefragTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)makefragTabFolder.getLayoutData()).heightHint = 100;
+
+        Composite makefragComposite = createCTabPage(makefragTabFolder, "Makefrag");
+        makefragComposite.setLayout(new GridLayout(1, false));
+        createLabel(makefragComposite, "Code fragment to be inserted into Makefile:");
+        makefragText = new Text(makefragComposite, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        ((GridData)makefragText.getLayoutData()).heightHint = 100;
+
+        Composite makefragvcComposite = createCTabPage(makefragTabFolder, "Makefrag.vc");
+        makefragvcComposite.setLayout(new GridLayout(1, false));
+        createLabel(makefragvcComposite, "Code fragment to be inserted into Makefile.vc:");
+        makefragvcText = new Text(makefragvcComposite, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        makefragvcText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
         Label makefragsLabel = createLabel(customPage, "Other fragment files to include:");
         makefragsList = new FileListControl(customPage, "Make fragments", BROWSE_NONE);
         createToggleLink(customPage, new Control[] {makefragsLabel, makefragsList.getListControl().getParent()});
+        makefragTabFolder.setSelection(0);
 
         // "Preview" page
         previewPage.setLayout(new GridLayout(1,false));
@@ -314,8 +329,17 @@ public class MakemakeOptionsPanel extends Composite {
         return text;
     }
     
-    protected Composite createTabPage(String text) {
+    protected Composite createTabPage(TabFolder tabfolder, String text) {
         TabItem item = new TabItem(tabfolder, SWT.NONE);
+        item.setText(text);
+        Composite composite = new Composite(tabfolder, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        item.setControl(composite);
+        return composite;
+    }
+
+    protected Composite createCTabPage(CTabFolder tabfolder, String text) {
+        CTabItem item = new CTabItem(tabfolder, SWT.NONE);
         item.setText(text);
         Composite composite = new Composite(tabfolder, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -385,6 +409,7 @@ public class MakemakeOptionsPanel extends Composite {
         linkObjectsList.getListControl().addSelectionListener(sel);
 
         makefragText.addModifyListener(mod);
+        makefragvcText.addModifyListener(mod);
         makefragsList.getListControl().addSelectionListener(sel);  //XXX does not work for list control
     }
 
@@ -404,7 +429,7 @@ public class MakemakeOptionsPanel extends Composite {
     protected void optionsTextChanged() {
         // re-parse options text modified by user
         MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
-        populate(updatedOptions, makefragText.getText());
+        populate(updatedOptions, makefragText.getText(), makefragvcText.getText());
         try {
             //FIXME this may take long (while DependencyCache parses all files for includes)
             translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
@@ -459,7 +484,7 @@ public class MakemakeOptionsPanel extends Composite {
         this.folder = (IContainer) page.getElement();  // must be a folder!
     }
 
-    public void populate(MakemakeOptions data, String makefragContents) {
+    public void populate(MakemakeOptions data, String makefragContents, String makefragvcContents) {
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
         recursiveMakefileRadioButton.setSelection(data.isRecursive);
@@ -499,6 +524,7 @@ public class MakemakeOptionsPanel extends Composite {
         
         // "Custom" page
         makefragText.setText(StringUtils.nullToEmpty(makefragContents));
+        makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
         makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
         
         // to the "Link" page:
@@ -563,5 +589,9 @@ public class MakemakeOptionsPanel extends Composite {
     
     public String getMakefragContents() {
         return makefragText.getText();
+    }
+
+    public String getMakefragvcContents() {
+        return makefragvcText.getText();
     }
 }

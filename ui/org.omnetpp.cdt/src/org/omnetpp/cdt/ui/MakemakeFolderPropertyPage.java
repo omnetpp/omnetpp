@@ -47,6 +47,7 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class MakemakeFolderPropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
+    public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
 
     // state
     protected BuildSpecification buildSpec;
@@ -94,10 +95,11 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         contents.setOwner(this);
         
         loadBuildSpecFile();
-        String makefragContents = readMakefrag();
+        String makefragContents = readMakefrag(MAKEFRAG_FILENAME);
+        String makefragvcContents = readMakefrag(MAKEFRAGVC_FILENAME);
         MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(getResource());
         enableMakefileCheckbox.setSelection(folderOptions != null);
-        contents.populate(folderOptions != null ? folderOptions : new MakemakeOptions(), makefragContents);
+        contents.populate(folderOptions != null ? folderOptions : new MakemakeOptions(), makefragContents, makefragvcContents);
 
         updatePageState();
 
@@ -182,7 +184,8 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         else
             buildSpec.setMakemakeOptions(getResource(), null);
         saveBuildSpecFile();
-        saveMakefrag(contents.getMakefragContents());
+        saveMakefrag(MAKEFRAG_FILENAME, contents.getMakefragContents());
+        saveMakefrag(MAKEFRAGVC_FILENAME, contents.getMakefragvcContents());
         return true;
     }
 
@@ -211,8 +214,8 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         }
     } 
 
-    protected String readMakefrag() {
-        IFile makefragFile = getResource().getFile(new Path(MAKEFRAG_FILENAME));
+    protected String readMakefrag(String makefragFilename) {
+        IFile makefragFile = getResource().getFile(new Path(makefragFilename));
         if (makefragFile.exists()) {
             try {
                 return FileUtils.readTextFile(makefragFile.getContents());
@@ -227,12 +230,12 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return null;
     }
 
-    protected void saveMakefrag(String makefragContents) {
-        String currentContents = readMakefrag();
+    protected void saveMakefrag(String makefragFilename, String makefragContents) {
+        String currentContents = readMakefrag(makefragFilename);
         if (StringUtils.isBlank(makefragContents))
             makefragContents = null;
         if (!StringUtils.equals(currentContents, makefragContents)) {
-            IFile makefragFile = getResource().getFile(new Path(MAKEFRAG_FILENAME));
+            IFile makefragFile = getResource().getFile(new Path(makefragFilename));
             try {
                 if (makefragContents == null)
                     makefragFile.delete(true, null);
