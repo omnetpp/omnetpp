@@ -530,6 +530,12 @@ public class MakemakeOptionsPanel extends Composite {
         
         // to the "Link" page:
         data.linkWithObjects = false; //TODO; also explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
+
+        // update dialog state
+        updateDialogState();
+        
+        // update preview page contents if it is shown
+        //activeTabChanged();  FIXME this would be recursive!!! calls populate again...  
     }
     
     /**

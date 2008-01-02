@@ -50,7 +50,8 @@ import org.omnetpp.common.util.StringUtils;
  */
 //XXX add [Make source folder] [Remove source folder] buttons next to the combo box...
 //XXX add link which goes to the "paths & symbols" page... (if it has the "source path" tab!!!)
-//XXX makefile generation: excludolasokat csak a sajat CSourceEntry-jebol vegye!!!!
+//XXX before switching away from a folder, ask whether to save changes!
+//XXX --deep should be the default!
 public class MakemakeFolderPropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
