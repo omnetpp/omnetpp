@@ -254,6 +254,9 @@ public class DatasetManager {
 			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
 		}
 		
+		if (progressMonitor.isCanceled())
+			return null;
+		
 		return dataValues != null ?
 				new VectorDataset(idlist, dataValues, lineNameFormat, manager) :
 				new VectorDataset(idlist, lineNameFormat, manager);
@@ -375,7 +378,7 @@ public class DatasetManager {
 	public static IXYDataset createXYDataset(Chart chart, Dataset dataset, boolean computeData, ResultFileManager manager, IProgressMonitor monitor) {
 		if (chart instanceof LineChart) {
 			LineChart lineChart = (LineChart)chart;
-			return createVectorDataset(lineChart, dataset, lineChart.getLineNameFormat(), computeData, manager, null);
+			return createVectorDataset(lineChart, dataset, lineChart.getLineNameFormat(), computeData, manager, monitor);
 		}
 		else if (chart instanceof ScatterChart)
 			return createScatterPlotDataset((ScatterChart)chart, dataset, manager, monitor);
