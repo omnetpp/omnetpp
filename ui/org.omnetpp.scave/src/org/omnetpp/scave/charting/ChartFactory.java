@@ -7,6 +7,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -134,7 +136,7 @@ public class ChartFactory {
 		//
 		chartCanvas.setStatusText("Please wait...");
 		//chartCanvas.setDataset(null);
-		Job job = new Job("Evaluating dataset...") {
+		final Job job = new Job("Evaluating dataset...") {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					// calculate
@@ -173,6 +175,13 @@ public class ChartFactory {
 					}});
 			}
 		};
+		
+		chartCanvas.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				job.cancel();
+			}
+		});
+		
 		job.setPriority(Job.INTERACTIVE); // high priority
 		job.schedule();
 	}
