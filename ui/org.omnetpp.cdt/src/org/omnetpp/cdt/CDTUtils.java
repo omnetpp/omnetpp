@@ -45,5 +45,5 @@ public class CDTUtils {
         IConfiguration activeConfiguration = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
         return activeConfiguration==null ? new ICSourceEntry[0] : activeConfiguration.getSourceEntries();
     }
-
+    
 }

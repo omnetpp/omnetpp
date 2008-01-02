@@ -481,7 +481,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     public void setOwner(PropertyPage page) {
         this.ownerPage = page;
-        this.folder = (IContainer) page.getElement();  // must be a folder!
+        this.folder = (IContainer) page.getElement().getAdapter(IContainer.class); 
     }
 
     public void populate(MakemakeOptions data, String makefragContents, String makefragvcContents) {

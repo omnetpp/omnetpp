@@ -27,7 +27,6 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class ProjectUtils {
-	public static final String OMNETPP_NATURE = "org.omnetpp.main.omnetppnature";
 	public static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
 	/**
@@ -39,7 +38,7 @@ public class ProjectUtils {
 	public static boolean isOpenOmnetppProject(IProject project) {
 		try {
 			// project is open, nature is set and also enabled
-			return project.isAccessible() && project.isNatureEnabled(OMNETPP_NATURE);
+			return project.isAccessible() && project.isNatureEnabled(IConstants.OMNETPP_NATURE_ID);
 		}
 		catch (CoreException e) {
 			throw new RuntimeException(e);

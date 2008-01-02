@@ -23,12 +23,14 @@ import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
 
 public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
-    private static String INCLUDE_DIRS_MACRO = "IncludeDirs";
-    private static String MESSAGE_DIRS_MACRO = "MessageDirs";
+    private static String INCLUDE_DIRS_MACRO = "IncludeDirs"; // all non excluded dirs containing a *.h file in the project
+    private static String MESSAGE_DIRS_MACRO = "MessageDirs";  // all non excluded dirs containing a *.msg file in the project
+    private static String PRIMARY_SOURCE_DIRS_MACRO = "PrimarySourceDir";  // the first source directory
 
     private static final String fProjectMacros[] = new String[]{
-        INCLUDE_DIRS_MACRO, //$NON-NLS-1$
-        MESSAGE_DIRS_MACRO, //$NON-NLS-1$
+        INCLUDE_DIRS_MACRO,
+        MESSAGE_DIRS_MACRO,
+        PRIMARY_SOURCE_DIRS_MACRO,
     };
     
     class SourcePathMacro implements IBuildMacro {
@@ -42,10 +44,6 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
             this.pattern = pattern;
             this.cdtProject = project;
             this.optionPrefix = optionPrefix;
-        }
-
-        public int getMacroValueType() {
-            return getValueType();
         }
 
         public String[] getStringListValue() throws BuildMacroException {
@@ -64,6 +62,10 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
             return name;
         }
 
+        public int getMacroValueType() {
+            return getValueType();
+        }
+        
         public int getValueType() {
             return VALUE_TEXT;
         }
@@ -111,13 +113,51 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         }
     }
     
+    /**
+     * A macro that returns the first source directory (used to store the primary makefile)
+     */
+    class PrimarySourceDirMacro implements IBuildMacro {
+        private IManagedProject project;
+
+        public PrimarySourceDirMacro(IManagedProject project) {
+            this.project = project;
+        }
+
+        public String[] getStringListValue() throws BuildMacroException {
+            return null;
+        }
+
+        public String getStringValue() throws BuildMacroException {
+            IProject prj = (IProject)project.getOwner();
+            ICSourceEntry srcEntries[] = CDTUtils.getSourceEntriesIfExist(prj);
+            if (srcEntries.length > 0) {
+                return prj.getFullPath().append(srcEntries[0]. getFullPath()).toString();
+            }
+            // if no source entry is specified we return the project root
+            return prj.getFullPath().toString();
+        }
+
+        public String getName() {
+            return PRIMARY_SOURCE_DIRS_MACRO;
+        }
+
+        public int getMacroValueType() {
+            return getValueType();
+        }
+        
+        public int getValueType() {
+            return VALUE_TEXT;
+        }
+    }
+    
     public IBuildMacro getMacro(String macroName, IManagedProject project, IBuildMacroProvider provider) {
         IBuildMacro macro = null;
         if(INCLUDE_DIRS_MACRO.equals(macroName))
             macro = new SourcePathMacro(macroName, project, "-I", ".*\\.h");
-        if(MESSAGE_DIRS_MACRO.equals(macroName)) {
+        if(MESSAGE_DIRS_MACRO.equals(macroName)) 
             macro = new SourcePathMacro(macroName, project, "", ".*\\.msg");
-        }
+        if(PRIMARY_SOURCE_DIRS_MACRO.equals(macroName))
+            macro = new PrimarySourceDirMacro(project);
         return macro;
     }
 
