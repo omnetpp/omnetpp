@@ -76,7 +76,7 @@ public class DatasetPage extends ScaveEditorPage {
 	@Override
 	public void dispose() {
 		// deregister listeners we hooked on external objects
-		scaveEditor.getResultFileManager().removeListener(resultFilesChangeListener);
+		scaveEditor.getResultFileManager().removeChangeListener(resultFilesChangeListener);
 		IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 		notifier.removeListener(modelChangeListener);
 

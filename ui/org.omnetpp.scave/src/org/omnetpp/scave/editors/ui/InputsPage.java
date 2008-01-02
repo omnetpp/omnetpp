@@ -92,7 +92,7 @@ public class InputsPage extends ScaveEditorPage {
         getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider());
         getLogicalDataTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
-        scaveEditor.getResultFileManager().addListener(new IResultFilesChangeListener() {
+        scaveEditor.getResultFileManager().addChangeListener(new IResultFilesChangeListener() {
 			public void resultFileManagerChanged(final ResultFileManager manager) {
 				getDisplay().asyncExec(new Runnable() {
 					public void run() {

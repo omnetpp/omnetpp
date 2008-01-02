@@ -192,7 +192,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 					});
 				}
 			};
-			scaveEditor.getResultFileManager().addListener(fileChangeListener);
+			scaveEditor.getResultFileManager().addChangeListener(fileChangeListener);
 		}
 
 		// when they double-click in the vectors panel, open chart
@@ -229,7 +229,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private void unhookListeners() {
 		if (fileChangeListener != null) {
 			ResultFileManagerEx manager = scaveEditor.getResultFileManager();
-			manager.removeListener(fileChangeListener);
+			manager.removeChangeListener(fileChangeListener);
 			fileChangeListener = null;
 		}
 		if (selectionChangeListener != null) {

@@ -247,7 +247,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private void hookEditorListeners(IEditorPart editor) {
 		if (editor instanceof ScaveEditor) {
 			ScaveEditor scaveEditor = (ScaveEditor)editor;
-			scaveEditor.getResultFileManager().addListener(resultFilesChangeListener =
+			scaveEditor.getResultFileManager().addChangeListener(resultFilesChangeListener =
 				new IResultFilesChangeListener() {
 				public void resultFileManagerChanged(ResultFileManager manager) {
 					Display.getDefault().asyncExec(new Runnable() {
@@ -287,7 +287,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (editor instanceof ScaveEditor) {
 			ScaveEditor scaveEditor = (ScaveEditor)editor;
 			if (resultFilesChangeListener != null)
-				scaveEditor.getResultFileManager().removeListener(resultFilesChangeListener);
+				scaveEditor.getResultFileManager().removeChangeListener(resultFilesChangeListener);
 	
 			if (modelChangeListener != null) {
 				IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();

@@ -1,7 +1,6 @@
 package org.omnetpp.scave.engineext;
 
-import java.util.ArrayList;
-
+import org.eclipse.core.runtime.ListenerList;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -27,31 +26,54 @@ import org.omnetpp.scave.engine.VectorResult;
  */
 public class ResultFileManagerEx extends ResultFileManager {
 
-	private ArrayList<IResultFilesChangeListener> listeners = new ArrayList<IResultFilesChangeListener>();
+	private ListenerList changeListeners = new ListenerList();
+	private ListenerList disposeListeners = new ListenerList();
 	
 	private void checkDeleted() {
 		if (getCPtr(this) == 0)
 			throw new IllegalStateException("Tried to access a deleted ResultFileManagerEx.");
 	}
-
-	public void addListener(IResultFilesChangeListener listener) {
-		listeners.add(listener);
-	}
-
-	public void removeListener(IResultFilesChangeListener listener) {
-		listeners.remove(listener);
+	
+	public boolean isDisposed() {
+		return getCPtr(this) == 0;
 	}
 	
-	protected void notifyListeners() {
-		for (IResultFilesChangeListener listener : listeners.toArray(new IResultFilesChangeListener[listeners.size()]))
-			listener.resultFileManagerChanged(this);
+	public void dispose() {
+		delete();
+		notifyDisposeListeners();
+	}
+	
+	public void addChangeListener(IResultFilesChangeListener listener) {
+		changeListeners.add(listener);
+	}
+
+	public void removeChangeListener(IResultFilesChangeListener listener) {
+		changeListeners.remove(listener);
+	}
+	
+	protected void notifyChangeListeners() {
+		for (Object listener : changeListeners.getListeners())
+			((IResultFilesChangeListener)listener).resultFileManagerChanged(this);
+	}
+	
+	public void addDisposeListener(IResultFileManagerDisposeListener listener) {
+		disposeListeners.add(listener);
+	}
+	
+	public void removeDisposeListener(IResultFileManagerDisposeListener listener) {
+		disposeListeners.remove(listener);
+	}
+	
+	protected void notifyDisposeListeners() {
+		for (Object listener : disposeListeners.getListeners())
+			((IResultFileManagerDisposeListener)listener).resultFileManagerDisposed(this);
 	}
 
 	@Override
 	public ResultFile loadFile(String filename) {
 		checkDeleted();
 		ResultFile file = super.loadFile(filename);
-		notifyListeners();
+		notifyChangeListeners();
 		return file;
 	}
 
@@ -59,7 +81,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	public ResultFile loadFile(String filename, String osFileName) {
 		checkDeleted();
 		ResultFile file = super.loadFile(filename, osFileName);
-		notifyListeners();
+		notifyChangeListeners();
 		return file;
 	}
 	
@@ -67,7 +89,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	public void unloadFile(ResultFile file) {
 		checkDeleted();
 		super.unloadFile(file);
-		notifyListeners();
+		notifyChangeListeners();
 	}
 
 	private IDListEx wrap(IDList obj) {
@@ -409,7 +431,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	public long addComputedVector(int vectorId, String name, String file, StringMap attributes, long computationID, long input, Object processingOp) {
 		checkDeleted();
 		long id = super.addComputedVector(vectorId, name, file, attributes, computationID, input, processingOp);
-		notifyListeners();
+		notifyChangeListeners();
 		return id;
 	}
 
