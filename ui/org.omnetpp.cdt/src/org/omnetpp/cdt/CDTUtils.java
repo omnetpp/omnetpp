@@ -8,6 +8,7 @@ import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
@@ -62,5 +63,14 @@ public class CDTUtils {
             sourceFolders.add(project.getFullPath().append(i.getFullPath()));
         return sourceFolders;
     }
-
+ 
+    /**
+     * Returns the source entry which exactly corresponds to the given folder.
+     */
+    public static ICSourceEntry getSourceEntryFor(IContainer folder) {
+        for (ICSourceEntry sourceEntry : getSourceEntries(folder.getProject()))
+            if (sourceEntry.getFullPath().equals(folder.getProjectRelativePath()))
+                return sourceEntry;
+        return null;
+    }
 }

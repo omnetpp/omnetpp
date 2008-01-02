@@ -29,10 +29,12 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * as well as via a Java API. Note: we work with filesystem dirs and files
  * not workspace resources, because "make" will know about the filesystem only.
  *
+ * This class MUST NOT make any reference to CDT data structures, DependencyCache etc;
+ * all input should be passed in via MakemakeOptions.
+ * 
  * @author Andras
  */
 //FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
-//FIXME makefrag vs makefrag.vc: which one to include??? use only one, but send that through template processing?
 //XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
 // FIXME remove subdirtargets
 // copy temlate cntents t per script opp_makemake
@@ -206,9 +208,10 @@ public class Makemake {
             }
         }
 
-        List<String> subdirTargets = new ArrayList<String>();
-        for (String subdir : subdirs)
-            subdirTargets.add(subdir + (isNMake ? "_dir" : ""));  //XXX make sure none contains "_dir" as substring
+//XXX remove this code from Perl too        
+//        List<String> subdirTargets = new ArrayList<String>();
+//        for (String subdir : subdirs)
+//            subdirTargets.add(subdir + (isNMake ? "_dir" : ""));  //XXX make sure none contains "_dir" as substring
 
         for (String arg : p.extraArgs) {
             Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
@@ -345,7 +348,7 @@ public class Makemake {
         m.put("msgfiles", quoteJoin(msgfiles));
         m.put("objs", quoteJoin(objs));
         m.put("subdirs", quoteJoin(subdirs));
-        m.put("subdirtargets", quoteJoin(subdirTargets));
+//XXX        m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", compileForDll ? "-DWIN32_DLL" : "");  // FIXME remove the similar stuff from the template or from here (check also in perl script)
         m.put("dllexportmacro", StringUtils.isEmpty(p.dllExportMacro) ? "" : ("-P" + p.dllExportMacro));
         m.put("sourcedirs", sourceDirs);

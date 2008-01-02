@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
@@ -14,12 +15,13 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -62,7 +64,7 @@ public class MetaMakemake {
         translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
 
         // add -X option for each excluded folder in CDT
-        translatedOptions.exceptSubdirs.addAll(getExcludedPathsWithinFolder(makefileFolder));
+        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder));
 
         // add -I, -L and -D options configured in CDT
         translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder));
@@ -117,48 +119,36 @@ public class MetaMakemake {
         }
 
         translatedOptions.metaExportLibrary = false;
-        
+
         System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
 
-//    //XXX check if actually used!!!
-//    protected static List<IContainer> collectSourceFolders(IContainer folder) throws CoreException {
-//        List<IContainer> result = new ArrayList<IContainer>();
-//        ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(folder.getProject()).getDefaultConfiguration().getSourceEntries();//XXX can something be null here?
-//        collectSourceFolders(folder, result, sourceEntries);
-//        return result;
-//    }    
-//
-//    protected static void collectSourceFolders(IContainer folder, List<IContainer> result, ICSourceEntry[] sourceEntries) throws CoreException {
-//        if (!CDataUtil.isExcluded(folder.getProjectRelativePath(), sourceEntries)) {
-//            result.add(folder);
-//            for (IResource member : folder.members())
-//                if (MakefileTools.isGoodFolder(member))
-//                    collectSourceFolders((IContainer)member, result, sourceEntries);
-//        }
-//    }
-
     /**
-     * Returns the (folder-relative) paths of directories and files excluded from build 
-     * in the active CDT configuration under the given folder . 
+     * Returns the (folder-relative) paths of directories excluded from build 
+     * in the active CDT configuration under the given source folder.
+     * Excluded files are not considered. 
      */
-    protected static List<String> getExcludedPathsWithinFolder(IContainer folder) {
+    protected static List<String> getExcludedSubpathsWithinFolder(IContainer sourceFolder) throws CoreException {
+        ICSourceEntry sourceEntry = CDTUtils.getSourceEntryFor(sourceFolder);
+        Assert.isTrue(sourceEntry != null, "no such sourceEntry: " + sourceFolder.getFullPath());
         List<String> result = new ArrayList<String>();
-        IPath folderPath = folder.getFullPath();
-        IProject project = folder.getProject();
-        ICSourceEntry[] sourceEntries = ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration().getSourceEntries();//XXX can something be null here?
-        for (ICSourceEntry sourceEntry : sourceEntries) {
-            IPath sourceFolderPath = project.getFullPath().append(sourceEntry.getFullPath());
-            for (IPath exclusionPattern : sourceEntry.getExclusionPatterns()) {
-                IPath exclusionPath = sourceFolderPath.append(exclusionPattern);
-                if (folderPath.isPrefixOf(exclusionPath)) {
-                    IPath subpath = exclusionPath.removeFirstSegments(folderPath.segmentCount());
-                    result.add(subpath.segmentCount()==0 ? "." : subpath.toString());
-                }
+        collectExcludedSubpaths(sourceFolder, sourceEntry, result);
+        return result;
+    }
+
+    private static void collectExcludedSubpaths(IContainer folder, ICSourceEntry sourceEntry, List<String> result) throws CoreException {
+        if (MakefileTools.isGoodFolder(folder)) {
+            if (CoreModelUtil.isExcluded(folder.getProjectRelativePath(), sourceEntry.fullExclusionPatternChars())) {
+                IPath sourceFolderRelativePath = folder.getProjectRelativePath().removeFirstSegments(sourceEntry.getFullPath().segmentCount());
+                result.add(sourceFolderRelativePath.toString());
+            }
+            else {
+                for (IResource member : folder.members())
+                    if (member instanceof IContainer)
+                        collectExcludedSubpaths((IContainer)member, sourceEntry, result);
             }
         }
-        return result;
     }
 
     /**
@@ -239,16 +229,16 @@ public class MetaMakemake {
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
         ICFolderDescription folderDescription = (ICFolderDescription)activeConfiguration.getResourceDescription(folder.getProjectRelativePath(), false);
-        
+
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
 
-//XXX debug code        
-//        String buf = "Languages:";
-//        for (ICLanguageSetting l : languageSettings)
-//            buf += l.getId() + "=" + l.getName() + ",  ";
-//        System.out.println(buf);
-        
+//      XXX debug code        
+//      String buf = "Languages:";
+//      for (ICLanguageSetting l : languageSettings)
+//      buf += l.getId() + "=" + l.getName() + ",  ";
+//      System.out.println(buf);
+
         ICLanguageSetting languageSetting = null;
         for (ICLanguageSetting l : languageSettings) 
             if (l.getName().contains(forLinker ? "Object" : "C++"))  //FIXME ***must*** use languageId!!!! (usually "org.eclipse.cdt.core.g++" or something) 

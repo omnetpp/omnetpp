@@ -20,6 +20,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
  * 
  * @author Andras
  */
+//XXX only in source folders (based on ICSourceEntry)
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem"; //XXX this is shared with DependencyCache
