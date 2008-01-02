@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -628,9 +629,16 @@ public class ScalarChart extends ChartCanvas {
 				}
 				String line1 = StringEscapeUtils.escapeHtml(key);
 				String line2 = "value: " + valueStr;
-				int maxLength = Math.max(line1.length(), line2.length());
-				outSizeConstraint.preferredWidth = 20 + maxLength * 7;
-				outSizeConstraint.preferredHeight = 25 + 2 * 12;
+				//int maxLength = Math.max(line1.length(), line2.length());
+				TextLayout textLayout = new TextLayout(ScalarChart.this.getDisplay());
+				textLayout.setText(line1 + "\n" + line2);
+				textLayout.setWidth(320);
+				org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
+				outSizeConstraint.preferredWidth = 20 + bounds.width;
+				outSizeConstraint.preferredHeight = 20 + bounds.height;
+				
+//				outSizeConstraint.preferredWidth = 20 + maxLength * 7;
+//				outSizeConstraint.preferredHeight = 25 + 2 * 12;
 				return HoverSupport.addHTMLStyleSheet(line1 + "<br>" + line2);
 			}
 			return null;
