@@ -1,11 +1,17 @@
 package org.omnetpp.scave.charting;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.internal.text.html.HTML2TextReader;
+import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
@@ -17,7 +23,9 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
@@ -257,32 +265,48 @@ class CrossHair {
 		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT); 
 		
 		if (!dataPoints.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
+			StringBuilder htmlText = new StringBuilder();
+			StringBuilder plainText  = new StringBuilder();
 			int maxTextLength = 0;
-			sb.append("<table>");
+			htmlText.append("<table>");
+			int lineNo = 0;
 			for (DataPoint dp : dataPoints) {
 				LineProperties props = chart.getLineProperties(dp.series);
 				Color color = props.getColor();
 				String text = getText(dp);
 				IChartSymbol symbol = props.getSymbol();
 				String imageFile = SymbolImageFactory.getImageFile(color, symbol, true);
-				sb.append("<tr>");
-				sb.append("<td>");
+				htmlText.append("<tr>");
+				htmlText.append("<td>");
 				if (imageFile != null)
-					sb.append(String.format("<img src='%s'>", imageFile));
-				sb.append("</td>");
-				sb.append("<td>");
-				sb.append(StringEscapeUtils.escapeHtml(text));
-				sb.append("</td>");
-				sb.append("</tr>");
+					htmlText.append(String.format("<img src='%s'>", imageFile));
+				htmlText.append("</td>");
+				htmlText.append("<td>");
+				htmlText.append(StringEscapeUtils.escapeHtml(text));
+				if (lineNo > 0)
+					plainText.append("\n");
+				plainText.append(text);
+				htmlText.append("</td>");
+				htmlText.append("</tr>");
 				maxTextLength = Math.max(maxTextLength, text.length());
+				++lineNo;
 			}
 			if (totalFound > dataPoints.size())
-				sb.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
-			sb.append("</table>");
-			preferredSize.preferredWidth = 20 + maxTextLength * 7;
-			preferredSize.preferredHeight = 25 + dataPoints.size() * 12;
-			return HoverSupport.addHTMLStyleSheet(sb.toString());
+				htmlText.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
+			htmlText.append("</table>");
+			
+			TextLayout textLayout = new TextLayout(chart.getDisplay());
+			textLayout.setText(plainText.toString());
+			textLayout.setWidth(320); // comes from HoverSupport
+			org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
+			preferredSize.preferredWidth = 20 + bounds.width;
+			preferredSize.preferredHeight = 25 + bounds.height + (lineNo > 1 ? (lineNo - 1) * 6 : 0);
+			
+//			Point preferredSize2 = computePreferedSize(htmlText.toString(), 320);
+//			preferredSize.preferredWidth =  preferredSize2.x; //20 + maxTextLength * 7;
+//			preferredSize.preferredHeight = preferredSize2.y; //25 + dataPoints.size() * 12;
+			
+			return HoverSupport.addHTMLStyleSheet(htmlText.toString());
 		}
 		else
 			return null;
@@ -317,7 +341,7 @@ class CrossHair {
 		//seriesStr = StringUtils.abbreviate(series, series.length(), 25);
 		return String.format("%s, %s - %s", xStr, yStr, seriesStr);
 	}
-
+	
 	// XXX move this method into a VectorPlot class
 	protected int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount) {
 		IXYDataset dataset = chart.getDataset();
