@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -248,9 +249,9 @@ public class HoverSupport {
 		informationControl.setSizeConstraints(hoverSizeConstraints.x, hoverSizeConstraints.y);
 		informationControl.setInformation(hoverText);
 		Point size = informationControl.computeSizeHint(); //XXX issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
-		informationControl.setSize(
-				calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth),
-				calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight));
+		size.x = calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth);
+		size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight); 
+		informationControl.setSize(size.x, size.y);
 		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
 		informationControl.setVisible(true);
 	}
@@ -268,12 +269,24 @@ public class HoverSupport {
 	}
 
 	protected Point calculateHoverPosition(Point mouse, Point size) {
-		Rectangle screen = Display.getCurrent().getBounds();
+		Monitor monitor = findMonitorByPosition(mouse);
+		if (monitor == null)
+			monitor = Display.getCurrent().getPrimaryMonitor();
+		
+		Rectangle screen = monitor.getBounds();
 		Point p = new Point(mouse.x + 5, mouse.y + 20);
-		p.x = Math.min(p.x, screen.width - size.x - 5);
+		p.x = Math.min(p.x, screen.x + screen.width - size.x - 5);
 		if (p.y + 20 + size.y > screen.y + screen.height)
 			p.y = mouse.y - size.y - 20; // if no room below mouse, show it above
 		return p;
+	}
+	
+	private Monitor findMonitorByPosition(Point position) {
+		Monitor[] monitors = Display.getCurrent().getMonitors();
+		for (Monitor monitor : monitors)
+			if (monitor.getBounds().contains(position))
+				return monitor;
+		return null;
 	}
 
 	/**
