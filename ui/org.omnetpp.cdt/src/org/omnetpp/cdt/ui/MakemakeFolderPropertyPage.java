@@ -1,9 +1,8 @@
 package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -14,6 +13,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -24,14 +24,16 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
@@ -45,15 +47,19 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//XXX add [Make source folder] [Remove source folder] buttons next to the combo box...
+//XXX add link which goes to the "paths & symbols" page... (if it has the "source path" tab!!!)
+//XXX makefile generation: excludolasokat csak a sajat CSourceEntry-jebol vegye!!!!
 public class MakemakeFolderPropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
 
     // state
     protected BuildSpecification buildSpec;
+    protected IContainer selectedSourceFolder; // follows combo box; null if selection is not a source folder
 
     // controls
-    protected Button enableMakefileCheckbox;
+    protected Combo sourceFolderCombo;
     protected Text errorMessageText;
     protected MakemakeOptionsPanel contents;
 
@@ -70,13 +76,14 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     protected Control createContents(Composite parent) {
         Group group = new Group(parent, SWT.NONE);
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        group.setLayout(new GridLayout(1,false));
-        enableMakefileCheckbox = createCheckbox(group, "Generate OMNeT++/OMNEST Makefile automatically");
-        enableMakefileCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        //FIXME TODO add label: "CDT Makefile generation must be turned off at the <A>C/C++ Build</A> page"
+        group.setLayout(new GridLayout(2,false));
+        createLabel(group, "Source folder:");
+        sourceFolderCombo = new Combo(group, SWT.READ_ONLY | SWT.BORDER);
+        sourceFolderCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         errorMessageText = new Text(group, SWT.MULTI);
         errorMessageText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        ((GridData)errorMessageText.getLayoutData()).horizontalSpan = 2;
         errorMessageText.setEditable(false);
         errorMessageText.setForeground(ColorFactory.RED2);
         errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -84,36 +91,82 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         contents = new MakemakeOptionsPanel(parent, SWT.NONE); 
         contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        enableMakefileCheckbox.addSelectionListener(new SelectionAdapter() {
+        sourceFolderCombo.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean enabled = enableMakefileCheckbox.getSelection();
-                contents.setVisible(enabled);
+                comboSelectionChanged();
             } 
         });
 
         contents.setOwner(this);
         
         loadBuildSpecFile();
-        String makefragContents = readMakefrag(MAKEFRAG_FILENAME);
-        String makefragvcContents = readMakefrag(MAKEFRAGVC_FILENAME);
-        MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(getResource());
-        enableMakefileCheckbox.setSelection(folderOptions != null);
-        contents.populate(folderOptions != null ? folderOptions : new MakemakeOptions(), makefragContents, makefragvcContents);
 
         updatePageState();
 
         return contents;
     }
 
+    protected Label createLabel(Composite composite, String text) {
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(text);
+        label.setLayoutData(new GridData());
+        return label;
+    }
+
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
-        updatePageState();
+        if (visible == true)
+            updatePageState();
     }
 
     protected void updatePageState() {
-        contents.setVisible(enableMakefileCheckbox.getSelection());
+        // fill/refresh combo contents
+        String oldComboSelection = sourceFolderCombo.getText();
+        List<IPath> sourceFolders = CDTUtils.getSourcePaths(getResource().getProject());
+        int thisFolderIndex = sourceFolders.indexOf(getResource().getFullPath());
+
+        sourceFolderCombo.removeAll();
+        if (thisFolderIndex == -1)
+            sourceFolderCombo.add(getResource().getFullPath().toString() + " <selected>");
+        for (int i = 0; i < sourceFolders.size(); i++)
+            if (i != thisFolderIndex)
+                sourceFolderCombo.add(sourceFolders.get(i).toString());
+            else
+                sourceFolderCombo.add(sourceFolders.get(i).toString() + " <selected>");
+        if (!StringUtils.isEmpty(oldComboSelection))
+            sourceFolderCombo.setText(oldComboSelection);  // preserve old
+        else
+            sourceFolderCombo.select(thisFolderIndex==-1 ? 0 : thisFolderIndex);
+
+        // update rest of the page
+        comboSelectionChanged();
+    }
+
+    protected void comboSelectionChanged() {
+        String text = StringUtils.removeEnd(sourceFolderCombo.getText(), " <selected>");
+        IPath path = new Path(text);
+
+        // show/hide makemake options panel
+        IProject project = getResource().getProject();
+        List<IPath> sourceFolders = CDTUtils.getSourcePaths(project);
+        selectedSourceFolder = sourceFolders.contains(path) ? project.getFolder(path) : null;
+        contents.setVisible(selectedSourceFolder != null);
+
+        // configure options panel
+        if (selectedSourceFolder != null) {
+            String makefragContents = readMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME);
+            String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
+            MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedSourceFolder);
+            if (folderOptions == null)
+                folderOptions = new MakemakeOptions(); //XXX set defaults!
+            contents.populate(selectedSourceFolder, folderOptions, makefragContents, makefragvcContents);
+        }
+        else {
+            //XXX display some message
+        }
+        
         //setErrorMessage(getInformationalMessage());
         String message = getInformationalMessage();
         if (message == null)
@@ -121,6 +174,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         else
             errorMessageText.setText(message);
     }
+
 
     protected String getInformationalMessage() {
         // Check CDT settings
@@ -132,23 +186,25 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             return "No active CDT configuration -- please create one.";
         if (configuration.isManagedBuildOn())
             return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the \"C/C++ Build\" page.";
-        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
-        if (CDataUtil.isExcluded(getResource().getProjectRelativePath(), sourceEntries)) 
-            return "This folder is excluded from build (or not marked as source folder).";  //XXX clear & disable checkbox too?
-        //FIXME does not work: macro resolver returns "" so buildLocation becomes empty path. why???
-        //IPath buildLocation = configuration.getBuilder().getBuildLocation();
-        //IPath projectLocation = getResource().getProject().getLocation();
-        //if (!projectLocation.isPrefixOf(buildLocation))
-        //    return "Build directory is outside the project! Please adjust it on the \"C/C++ Build\" page.";
-
-        // check build command; check builder type
-
-        IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
-        if (ancestorMakemakeFolder != null) {
-            MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
-            if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
-                return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
-        }
+        
+//FIXME revise/remove or something...        
+//        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+//        if (CDataUtil.isExcluded(getResource().getProjectRelativePath(), sourceEntries)) 
+//            return "This folder is excluded from build (or not marked as source folder).";  //XXX clear & disable checkbox too?
+//        //FIXME does not work: macro resolver returns "" so buildLocation becomes empty path. why???
+//        //IPath buildLocation = configuration.getBuilder().getBuildLocation();
+//        //IPath projectLocation = getResource().getProject().getLocation();
+//        //if (!projectLocation.isPrefixOf(buildLocation))
+//        //    return "Build directory is outside the project! Please adjust it on the \"C/C++ Build\" page.";
+//
+//        // check build command; check builder type
+//
+//        IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
+//        if (ancestorMakemakeFolder != null) {
+//            MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
+//            if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
+//                return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
+//        }
 
         //XXX return some message to be displayed to the user, if:
         //  - CDT make folder is not the project root (or: if a makefile is unreachable)
@@ -157,17 +213,12 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return null;
     }
 
+    //XXX needed??
     protected IContainer ancestorMakemakeFolder() {
         IContainer folder = getResource().getParent();
         while (!(folder instanceof IWorkspaceRoot) && buildSpec.getMakemakeOptions(folder)==null)
             folder = folder.getParent();
         return buildSpec.getMakemakeOptions(folder)==null ? null : folder;
-    }
-
-    protected Button createCheckbox(Composite parent, String text) {
-        Button button = new Button(parent, SWT.CHECK);
-        button.setText(text);
-        return button;
     }
 
     /**
@@ -178,14 +229,15 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return container;
     }
 
+    @Override
     public boolean performOk() {
-        if (enableMakefileCheckbox.getSelection() == true)
-            buildSpec.setMakemakeOptions(getResource(), contents.getResult());
-        else
-            buildSpec.setMakemakeOptions(getResource(), null);
-        saveBuildSpecFile();
-        saveMakefrag(MAKEFRAG_FILENAME, contents.getMakefragContents());
-        saveMakefrag(MAKEFRAGVC_FILENAME, contents.getMakefragvcContents());
+        // note: performApply() delegates here too
+        if (selectedSourceFolder != null) {
+            buildSpec.setMakemakeOptions(selectedSourceFolder, contents.getResult());
+            saveBuildSpecFile();
+            saveMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME, contents.getMakefragContents());
+            saveMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME, contents.getMakefragvcContents());
+        }
         return true;
     }
 
@@ -206,6 +258,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     protected void saveBuildSpecFile() {
         try {
+            //XXX remove obsolete entries from buildSpec? (i.e. those folders that are no longer source folder)
             IProject project = getResource().getProject();
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
         } 
@@ -214,8 +267,8 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         }
     } 
 
-    protected String readMakefrag(String makefragFilename) {
-        IFile makefragFile = getResource().getFile(new Path(makefragFilename));
+    protected String readMakefrag(IContainer sourceFolder, String makefragFilename) {
+        IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
         if (makefragFile.exists()) {
             try {
                 return FileUtils.readTextFile(makefragFile.getContents());
@@ -230,12 +283,12 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return null;
     }
 
-    protected void saveMakefrag(String makefragFilename, String makefragContents) {
-        String currentContents = readMakefrag(makefragFilename);
+    protected void saveMakefrag(IContainer sourceFolder, String makefragFilename, String makefragContents) {
+        String currentContents = readMakefrag(sourceFolder, makefragFilename);
         if (StringUtils.isBlank(makefragContents))
             makefragContents = null;
         if (!StringUtils.equals(currentContents, makefragContents)) {
-            IFile makefragFile = getResource().getFile(new Path(makefragFilename));
+            IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
             try {
                 if (makefragContents == null)
                     makefragFile.delete(true, null);

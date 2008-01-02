@@ -41,7 +41,6 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//XXX: USE ONE MAKEMAKE PER SOURCE LOCATION???? (CDT "Paths and Symbols" page) (maskepp: minden source location entry kulon makefile lenne; igy az egymasba agyazas is jobban menne)
 //XXX: MetaMakemake.translateOptions(): call it in the background!!!
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
@@ -51,6 +50,7 @@ import org.omnetpp.common.util.StringUtils;
 //XXX "Out" dir should not overlap with source folders (check!!!)
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
+//XXX copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -429,7 +429,7 @@ public class MakemakeOptionsPanel extends Composite {
     protected void optionsTextChanged() {
         // re-parse options text modified by user
         MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
-        populate(updatedOptions, makefragText.getText(), makefragvcText.getText());
+        populate(folder, updatedOptions, makefragText.getText(), makefragvcText.getText());
         try {
             //FIXME this may take long (while DependencyCache parses all files for includes)
             translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
@@ -481,10 +481,11 @@ public class MakemakeOptionsPanel extends Composite {
 
     public void setOwner(PropertyPage page) {
         this.ownerPage = page;
-        this.folder = (IContainer) page.getElement().getAdapter(IContainer.class); 
     }
 
-    public void populate(MakemakeOptions data, String makefragContents, String makefragvcContents) {
+    public void populate(IContainer folder, MakemakeOptions data, String makefragContents, String makefragvcContents) {
+        this.folder = folder;
+        
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
         recursiveMakefileRadioButton.setSelection(data.isRecursive);

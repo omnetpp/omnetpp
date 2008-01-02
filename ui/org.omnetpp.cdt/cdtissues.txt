@@ -23,6 +23,7 @@
   to run the buildsteps even if the cc files up to date; 
   filed under https://bugs.eclipse.org/bugs/show_bug.cgi?id=211862
 - typo: CWizardHandler.canFinich
+- typo in class names: MakeCDataFacroty, CDataFacroty
 - method names start with capital letter: ManagedBuildManager.OutputDuplicateIdError()
   and other Output...() methods
 - ManagedBuildManager.getBuildInfo(IResource): since the returned IManagedBuildInfo is

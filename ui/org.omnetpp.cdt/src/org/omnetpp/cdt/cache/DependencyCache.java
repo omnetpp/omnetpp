@@ -251,7 +251,7 @@ public class DependencyCache {
 
         try {
             // parse all C++ source files for #include; also warn for linked-in files
-            final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntriesIfExist(project);
+            final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
             project.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) throws CoreException {
                     // warn for linked resources

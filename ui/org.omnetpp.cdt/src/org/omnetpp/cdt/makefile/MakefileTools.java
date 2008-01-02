@@ -122,7 +122,9 @@ public class MakefileTools {
     
     /**
      * Utility function to determine whether a given resource is under a given
-     * makefile folder. excludedFolders is to be understood as folder-relative paths.
+     * makefile folder. CDT source dirs and exclusions (CSourceEntry) are ignored, 
+     * instead there is excludedFolders (list of folder-relative paths to be excluded;
+     * it excludes subtrees not single folders).
      */
     public static boolean folderContains(IContainer folder, IResource resource, boolean deep, List<String> excludedFolders) {
         if (!deep) {
