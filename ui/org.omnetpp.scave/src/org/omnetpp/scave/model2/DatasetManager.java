@@ -254,7 +254,7 @@ public class DatasetManager {
 			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
 		}
 		
-		if (progressMonitor.isCanceled())
+		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;
 		
 		return dataValues != null ?
