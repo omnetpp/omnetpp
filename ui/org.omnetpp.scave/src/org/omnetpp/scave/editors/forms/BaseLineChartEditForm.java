@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.ImageCombo;
@@ -70,6 +71,10 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
 	protected String[] lineNames;
 	
+	// "Axes" page controls
+	private Text xAxisMinText;
+	private Text xAxisMaxText;
+	// "Lines" page controls
 	protected TableViewer linesTableViewer;
 	private TristateButton displayLineCheckbox;
 	private ColorEdit colorEdit;
@@ -94,7 +99,12 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
 		
-		if (TAB_LINES.equals(name)) {
+		if (TAB_AXES.equals(name)) {
+			Group group = getAxisBoundsGroup();
+			xAxisMinText = createTextField("X axis", group, getMaxBoundLabel());
+			xAxisMaxText = createTextField(null, group, xAxisMinText);
+		}
+		else if (TAB_LINES.equals(name)) {
 			Label label = new Label(panel, SWT.NONE);
 			label.setText("Select line(s) to apply changes to:");
 			linesTableViewer = new TableViewer(panel, SWT.BORDER | SWT.MULTI);
@@ -212,6 +222,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		// when this returns, newProps will be set on the model (overwriting existing properties).
 		super.collectProperties(newProps);
 		
+		VectorChartProperties newProperties = (VectorChartProperties)newProps;
+		
+		// Axis properties 
+		newProperties.setXAxisMin(xAxisMinText.getText());
+		newProperties.setXAxisMax(xAxisMaxText.getText());
+		
+		// Line properties
+		
 		// read dialog contents
 		List<?> selection = ((IStructuredSelection) linesTableViewer.getSelection()).toList();
 		boolean applyToAll = (selection.size() == ((String[])linesTableViewer.getInput()).length);
@@ -277,12 +295,18 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	protected void setProperties(ChartProperties props) {
 		// initializes form contents from the model (i.e. props)
 		super.setProperties(props);
-		previewCanvas.props = (VectorChartProperties)props;
-		updateLinePropertyEditFields((VectorChartProperties)props);
+		
+		VectorChartProperties properties = (VectorChartProperties)props;
+		// Axis properties
+		xAxisMinText.setText(properties.getXAxisMin());
+		xAxisMaxText.setText(properties.getXAxisMax());
+		// Line properties
+		updateLinePropertyEditFields(properties);
 	}
 
 	private void updateLinePropertyEditFields(VectorChartProperties props) {
 		// initializes form contents from the model (i.e. props)
+		previewCanvas.props = props;
 		IStructuredSelection selection = (IStructuredSelection) linesTableViewer.getSelection();
 		if (selection.size() == 1) {
 			String lineId = (String) selection.getFirstElement();

@@ -1,12 +1,5 @@
 package org.omnetpp.scave.editors.forms;
 
-import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +52,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * 
  * @author tomi
  */
+// TODO use validator for font and number fields
 public class ChartEditForm implements IScaveObjectEditForm {
 	public static final String TAB_MAIN = "Main";
 	public static final String TAB_TITLES = "Titles";
@@ -102,8 +96,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Text labelFontText;
 	private Combo xLabelsRotateByCombo;
 
-	private Text xAxisMinText;
-	private Text xAxisMaxText;
+	private Group axisBoundsGroup;
+	private Label maxBoundLabel;
 	private Text yAxisMinText;
 	private Text yAxisMaxText;
 	private Button yAxisLogCheckbox;
@@ -215,15 +209,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			xLabelsRotateByCombo = createComboField("Rotate X labels by:", axisTitlesGroup, new String[] {"0", "30", "45", "60", "90"});
 		}
 		else if (TAB_AXES.equals(name)) {
-			group = createGroup("Axis bounds", panel, 3);
-			group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			createLabel("", group);
-			createLabel("Min", group);
-			createLabel("Max", group);
-			xAxisMinText = createTextField("X axis", group);
-			xAxisMaxText = createTextField(null, group);
-			yAxisMinText = createTextField("Y axis", group);
-			yAxisMaxText = createTextField(null, group);
+			axisBoundsGroup = createGroup("Axis bounds", panel, 3);
+			axisBoundsGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+			createLabel("", axisBoundsGroup);
+			createLabel("Min", axisBoundsGroup);
+			maxBoundLabel = createLabel("Max", axisBoundsGroup);
+			yAxisMinText = createTextField("Y axis", axisBoundsGroup);
+			yAxisMaxText = createTextField(null, axisBoundsGroup);
 			group = createGroup("Axis options", panel, 1);
 			yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", group);
 			group = createGroup("Grid", panel, 1);
@@ -244,6 +236,14 @@ public class ChartEditForm implements IScaveObjectEditForm {
 				}
 			});
 		}
+	}
+	
+	protected Group getAxisBoundsGroup() {
+		return axisBoundsGroup;
+	}
+	
+	protected Label getMaxBoundLabel() {
+		return maxBoundLabel;
 	}
 
 	private TabFolder createTabFolder(Composite parent) {
@@ -289,6 +289,23 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			createLabel(labelText, parent);
 		Text text = new Text(parent, SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		return text;
+	}
+	
+	protected Text createTextField(String labelText, Composite parent, Control prevSibling) {
+		Label label = null;
+		if (labelText != null)
+			label = createLabel(labelText, parent);
+		Text text = new Text(parent, SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+		if (label != null) {
+			label.moveBelow(prevSibling);
+			text.moveBelow(label);
+		}
+		else {
+			text.moveBelow(prevSibling);
+		}
 		return text;
 	}
 
@@ -492,15 +509,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		newProps.setCaching(cachingCheckbox.getSelection());
 		// Titles
 		newProps.setGraphTitle(graphTitleText.getText());
-		newProps.setProperty(PROP_GRAPH_TITLE_FONT, graphTitleFontText.getText()); // XXX font
+		newProps.setGraphTitleFont(Converter.stringToFontdata(graphTitleFontText.getText()));
 		newProps.setXAxisTitle(xAxisTitleText.getText());
 		newProps.setYAxisTitle(yAxisTitleText.getText());
-		newProps.setProperty(PROP_AXIS_TITLE_FONT, axisTitleFontText.getText()); // XXX font
-		newProps.setProperty(PROP_LABEL_FONT, labelFontText.getText()); // XXX font
+		newProps.setAxisTitleFont(Converter.stringToFontdata(axisTitleFontText.getText()));
+		newProps.setLabelsFont(Converter.stringToFontdata(labelFontText.getText()));
 		newProps.setXLabelsRotate(xLabelsRotateByCombo.getText());
 		// Axes
-		newProps.setProperty(PROP_X_AXIS_MIN, xAxisMinText.getText()); // XXX
-		newProps.setProperty(PROP_X_AXIS_MAX, xAxisMaxText.getText()); // XXX
 		newProps.setYAxisMin(yAxisMinText.getText());
 		newProps.setYAxisMax(yAxisMaxText.getText());
 		newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
@@ -508,7 +523,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Legend
 		newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
 		newProps.setLegendBorder(displayBorderCheckbox.getSelection());
-		newProps.setProperty(PROP_LEGEND_FONT, legendFontText.getText()); // XXX font
+		newProps.setLegendFont(Converter.stringToFontdata(legendFontText.getText()));
 		newProps.setLegendPosition(getSelection(legendPositionRadios, LegendPosition.class));
 		newProps.setLegendAnchoring(getSelection(legendAnchorRadios, LegendAnchor.class));
 	}
@@ -542,15 +557,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		cachingCheckbox.setSelection(props.getCaching());
 		// Titles
 		graphTitleText.setText(props.getGraphTitle());
-		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT)); // XXX font
+		graphTitleFontText.setText(asString(props.getGraphTitleFont()));
 		xAxisTitleText.setText(props.getXAxisTitle());
 		yAxisTitleText.setText(props.getYAxisTitle());
-		axisTitleFontText.setText(props.getStringProperty(PROP_AXIS_TITLE_FONT)); // XXX font
-		labelFontText.setText(props.getStringProperty(PROP_LABEL_FONT)); // XXX font
+		axisTitleFontText.setText(asString(props.getAxisTitleFont()));
+		labelFontText.setText(asString(props.getLabelsFont()));
 		xLabelsRotateByCombo.setText(props.getXLabelsRotate());
 		// Axes
-		xAxisMinText.setText(props.getStringProperty(PROP_X_AXIS_MIN)); // XXX for vector chart only
-		xAxisMaxText.setText(props.getStringProperty(PROP_X_AXIS_MAX)); // XXX for vector chart only
 		yAxisMinText.setText(props.getYAxisMin());
 		yAxisMaxText.setText(props.getYAxisMax());
 		yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
@@ -558,13 +571,18 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Legend
 		displayLegendCheckbox.setSelection(props.getDisplayLegend());
 		displayBorderCheckbox.setSelection(props.getLegendBorder());
-		legendFontText.setText(props.getStringProperty(PROP_LEGEND_FONT)); // XXX font
+		legendFontText.setText(asString(props.getLegendFont()));
 		setSelection(legendPositionRadios, props.getLegendPosition());
 		setSelection(legendAnchorRadios, props.getLegendAnchoring());
 		setEnabledDescendants(
 				displayLegendCheckbox.getParent(),
 				displayLegendCheckbox.getSelection(),
 				displayLegendCheckbox);
+	}
+	
+	private static String asString(FontData fontData) {
+		String str = Converter.fontdataToString(fontData);
+		return str != null ? str : "";
 	}
 
 	/**
