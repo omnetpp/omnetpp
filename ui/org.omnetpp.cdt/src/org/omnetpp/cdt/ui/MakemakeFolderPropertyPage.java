@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -49,8 +50,6 @@ import org.omnetpp.common.util.StringUtils;
  */
 //XXX add [Make source folder] [Remove source folder] buttons next to the combo box...
 //XXX add link which goes to the "paths & symbols" page... (if it has the "source path" tab!!!)
-//XXX before switching away from a folder, ask whether to save changes!
-//XXX --deep should be the default!
 public class MakemakeFolderPropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
@@ -153,31 +152,46 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
         IContainer folder = path.segmentCount()>1 ? wsRoot.getFolder(path) : wsRoot.getProject(text);
 
-        // show/hide makemake options panel
         IProject project = getResource().getProject();
         List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
-        selectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
-        contents.setVisible(selectedSourceFolder != null);
+        IContainer newSelectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
 
-        // configure options panel
-        if (selectedSourceFolder != null) {
-            String makefragContents = readMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME);
-            String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
-            MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedSourceFolder);
-            if (folderOptions == null)
-                folderOptions = MakemakeOptions.createInitial();
-            contents.populate(selectedSourceFolder, folderOptions, makefragContents, makefragvcContents);
+        if (newSelectedSourceFolder != selectedSourceFolder) {
+            // save the folder we're switching away from
+            if (selectedSourceFolder != null && isDirty())
+                if (MessageDialog.openQuestion(getShell(), "Save?", "Makemake options for folder \"" + selectedSourceFolder.getFullPath() + "\" changed. Save changes?"))
+                    performApply();
+
+            // switch to the new folder
+            selectedSourceFolder = newSelectedSourceFolder;
+
+            contents.setVisible(selectedSourceFolder != null);
+
+            // configure options panel
+            if (selectedSourceFolder != null) {
+                String makefragContents = readMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME);
+                String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
+                MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedSourceFolder);
+                if (folderOptions == null)
+                    folderOptions = MakemakeOptions.createInitial();
+                contents.populate(selectedSourceFolder, folderOptions, makefragContents, makefragvcContents);
+            }
+            else {
+                //XXX display some message
+            }
+
+            //setErrorMessage(getInformationalMessage());
+            String message = getInformationalMessage();
+            if (message == null)
+                errorMessageText.setText("");
+            else
+                errorMessageText.setText(message);
         }
-        else {
-            //XXX display some message
-        }
-        
-        //setErrorMessage(getInformationalMessage());
-        String message = getInformationalMessage();
-        if (message == null)
-            errorMessageText.setText("");
-        else
-            errorMessageText.setText(message);
+    }
+
+    protected boolean isDirty() {
+        boolean optionsDirty = contents.getResult().equals(buildSpec.getMakemakeOptions(selectedSourceFolder));
+        return optionsDirty; //XXX todo check makefrag too
     }
 
 

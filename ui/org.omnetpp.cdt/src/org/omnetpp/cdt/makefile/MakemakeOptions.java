@@ -358,6 +358,11 @@ public class MakemakeOptions implements Cloneable {
         return StringUtils.join(tmp, " ");  //FIXME quote args that contain whitespace
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && obj.getClass() == getClass() && Arrays.equals(((MakemakeOptions)obj).toArgs(), toArgs());
+    }
+    
     ///FIXME make sure it's up to date!!!!!
     @Override
     public MakemakeOptions clone() {
