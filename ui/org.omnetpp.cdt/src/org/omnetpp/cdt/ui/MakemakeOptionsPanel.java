@@ -5,6 +5,10 @@ import java.util.Arrays;
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.swt.SWT;
@@ -21,6 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -29,6 +34,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.internal.dialogs.PropertyDialog;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
@@ -41,14 +47,15 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//XXX: MetaMakemake.translateOptions(): call it in the background!!!
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
 //XXX "Out" dir should not overlap with source folders (check!!!)
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
-//XXX copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
+//TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
+//XXX -Dalma ==> -Dalma -Kalma ???
+//XXX kezzel beirt -D elveszik!!!
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -113,8 +120,10 @@ public class MakemakeOptionsPanel extends Composite {
     // "Preview" page
     private Text optionsText;
     private Text translatedOptionsText;
-    
+
+    // auxiliary variables
     private boolean beingUpdated = false;
+    private int jobSerial = 0; 
 
 
     public MakemakeOptionsPanel(Composite parent, int style) {
@@ -528,13 +537,41 @@ public class MakemakeOptionsPanel extends Composite {
         }
     }
 
-    private void refreshTranslatedOptions(MakemakeOptions updatedOptions) {
-        try {
-            //FIXME this may take long (while DependencyCache parses all files for includes)
-            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
-        } catch (CoreException e) {
-            //XXX
-        }
+    protected void refreshTranslatedOptions(final MakemakeOptions updatedOptions) {
+        // All the following is basically just for running the following code asynchronously:
+        //   translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
+
+        if (translatedOptionsText.getText().equals(""))
+            translatedOptionsText.setText("Processing...");
+        
+        // start background job with a new job serial number. Serial number is needed
+        // so that we only put the result of the latest job into the dialog.
+        final int thisJobSerial = ++jobSerial;
+        Job job = new Job("Scanning source files...") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    // calculate
+                    final String translatedOptions = MetaMakemake.translateOptions(folder, updatedOptions).toString();
+
+                    // display result if it's still relevant 
+                    if (jobSerial == thisJobSerial) {
+                        Display.getDefault().asyncExec(new Runnable() {
+                            public void run() {
+                                if (jobSerial == thisJobSerial && !translatedOptionsText.isDisposed()) {
+                                    translatedOptionsText.setText(translatedOptions);
+                                }
+                            }});
+                    }
+                }
+                catch (CoreException e) {
+                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "An error occurred during processing makemake options.", e);
+                }
+                return Status.OK_STATUS;
+            }
+        };
+        job.setPriority(Job.INTERACTIVE); // high priority
+        job.schedule();
     }
 
     @SuppressWarnings("restriction")

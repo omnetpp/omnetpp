@@ -51,6 +51,7 @@ import org.omnetpp.common.util.StringUtils;
 //XXX add [Make source folder] [Remove source folder] buttons next to the combo box...
 //XXX add link which goes to the "paths & symbols" page... (if it has the "source path" tab!!!)
 public class MakemakeFolderPropertyPage extends PropertyPage {
+    private static final String SELECTED = " <selected>";
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
 
@@ -122,37 +123,46 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     }
 
     protected void updatePageState() {
-        // fill/refresh combo contents
-        String oldComboSelection = sourceFolderCombo.getText();
-        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(getResource().getProject());
-        int thisFolderIndex = sourceFolders.indexOf(getResource());
-
-        sourceFolderCombo.removeAll();
-        if (thisFolderIndex == -1)
-            sourceFolderCombo.add(getResource().getFullPath().toString() + " <selected>");
-        for (int i = 0; i < sourceFolders.size(); i++)
-            if (i != thisFolderIndex)
-                sourceFolderCombo.add(sourceFolders.get(i).getFullPath().toString());
-            else
-                sourceFolderCombo.add(sourceFolders.get(i).getFullPath().toString() + " <selected>");
-        if (!StringUtils.isEmpty(oldComboSelection))
-            sourceFolderCombo.setText(oldComboSelection);  // preserve old
-        else
-            sourceFolderCombo.select(thisFolderIndex==-1 ? 0 : thisFolderIndex);
+        refreshComboContents();
 
         // update rest of the page
         comboSelectionChanged();
     }
 
+    private void refreshComboContents() {
+        String oldComboSelection = sourceFolderCombo.getText();
+        IContainer folder = getFolder();
+        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(folder.getProject());
+        int thisFolderIndex = sourceFolders.indexOf(folder);
+
+        // fill combo
+        sourceFolderCombo.removeAll();
+        if (thisFolderIndex == -1)
+            sourceFolderCombo.add(folder.getFullPath().toString() + SELECTED);
+        for (int i = 0; i < sourceFolders.size(); i++)
+            sourceFolderCombo.add(sourceFolders.get(i).getFullPath() + (i==thisFolderIndex ? SELECTED : ""));
+        
+        // select one entry 
+        if (StringUtils.isEmpty(oldComboSelection)) {
+            // initialize combo and variable
+            selectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
+            sourceFolderCombo.select(thisFolderIndex==-1 ? 0 : thisFolderIndex);
+        }
+        else {
+            // preserve old setting
+            sourceFolderCombo.setText(oldComboSelection);  
+        }
+    }
+
     protected void comboSelectionChanged() {
-        String text = StringUtils.removeEnd(sourceFolderCombo.getText(), " <selected>");
+        String text = StringUtils.removeEnd(sourceFolderCombo.getText(), SELECTED);
         
         // map combo selection to an IContainer
         Path path = new Path(text);
         IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
         IContainer folder = path.segmentCount()>1 ? wsRoot.getFolder(path) : wsRoot.getProject(text);
 
-        IProject project = getResource().getProject();
+        IProject project = getFolder().getProject();
         List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
         IContainer newSelectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
 
@@ -164,8 +174,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
             // switch to the new folder
             selectedSourceFolder = newSelectedSourceFolder;
-
-            contents.setVisible(selectedSourceFolder != null);
 
             // configure options panel
             if (selectedSourceFolder != null) {
@@ -187,17 +195,27 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             else
                 errorMessageText.setText(message);
         }
+        
+        // this needs to be done unconditionally, so that it runs when page is first displayed
+        contents.setVisible(selectedSourceFolder != null);
     }
 
     protected boolean isDirty() {
-        boolean optionsDirty = contents.getResult().equals(buildSpec.getMakemakeOptions(selectedSourceFolder));
-        return optionsDirty; //XXX todo check makefrag too
+        if (!contents.getResult().equals(buildSpec.getMakemakeOptions(selectedSourceFolder)))
+            return true;
+        String makefragContents = readMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME);
+        if (!contents.getMakefragContents().equals(StringUtils.nullToEmpty(makefragContents)))
+            return true;
+        String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
+        if (!contents.getMakefragvcContents().equals(StringUtils.nullToEmpty(makefragvcContents)))
+            return true;
+        return false;
     }
 
 
     protected String getInformationalMessage() {
         // Check CDT settings
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getResource().getProject());
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getFolder().getProject());
         if (buildInfo == null)
             return "Cannot access CDT build information for this project. Is this a CDT project?";
         IConfiguration configuration = buildInfo.getDefaultConfiguration();
@@ -234,18 +252,17 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     //XXX needed??
     protected IContainer ancestorMakemakeFolder() {
-        IContainer folder = getResource().getParent();
+        IContainer folder = getFolder().getParent();
         while (!(folder instanceof IWorkspaceRoot) && buildSpec.getMakemakeOptions(folder)==null)
             folder = folder.getParent();
         return buildSpec.getMakemakeOptions(folder)==null ? null : folder;
     }
 
     /**
-     * The resource whose properties we are editing.
+     * The resource for which the Properties dialog was brought up.
      */
-    protected IContainer getResource() {
-        IContainer container = (IContainer) getElement().getAdapter(IContainer.class);
-        return container;
+    protected IContainer getFolder() {
+        return (IContainer) getElement().getAdapter(IContainer.class);
     }
 
     @Override
@@ -262,7 +279,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     protected void loadBuildSpecFile() {
         try {
-            IProject project = getResource().getProject();
+            IProject project = getFolder().getProject();
             buildSpec = BuildSpecUtils.readBuildSpecFile(project);
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
@@ -278,7 +295,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     protected void saveBuildSpecFile() {
         try {
             //XXX remove obsolete entries from buildSpec? (i.e. those folders that are no longer source folder)
-            IProject project = getResource().getProject();
+            IProject project = getFolder().getProject();
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
         } 
         catch (CoreException e) {
