@@ -54,8 +54,7 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//XXX markers: if I mark INET/Obsolete as "excluded", existing markers will not be removed!!!
-//  ===> mindenki a SAJAT projektre tegye csak rá a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz! Es: minden cc/h/msg file-t regisztralni kell (excludalt-at is), hogy a regi markerek el tudjanak tunni rola! 
+//XXX mindenki a SAJAT projektre tegye csak rá a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz! 
 public class DependencyCache {
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
@@ -64,11 +63,10 @@ public class DependencyCache {
      * Represents an #include in a C++ file
      */
     static class Include {
-        public String filename;
+        public String filename; // the included file name
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
-        public IFile file; // in which file the #include occurs  XXX needed?
-        //FIXME introduce "file" everywhere, and bring back resolvesTo too!
-        public int line = -1; //XXX todo fill in while parsing; NOTE: using file/line means that #include "foo.h" has to be resolved individually in every file it occurs!!!
+        //public IFile file; // the file in which the #include occurs -- not needed
+        public int line = -1; // line number of the #include line  
 
         public Include(int line, String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
@@ -129,7 +127,7 @@ public class DependencyCache {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
             public void resourceChanged(IResourceChangeEvent event) {
                 try {
-                    if (event.getDelta() != null)
+                    if (event.getDelta() != null) {
                         event.getDelta().accept(new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) throws CoreException {
                                 if (delta.getResource() instanceof IProject) {
@@ -139,6 +137,7 @@ public class DependencyCache {
                                 return true;
                             }
                         });
+                    }
                 }
                 catch (CoreException e) {
                     Activator.logError(e);
@@ -215,7 +214,13 @@ public class DependencyCache {
             data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
             
             ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
-            markerSync.register(project); // ignore referenced projects, as they are processed on their own right
+
+            // Register all source files (including excluded ones!) in the marker synchronizer;
+            // we need to register all, because the "excluded" state of a folder may change
+            // over time, and we don't want to leave stale problem markers around.
+            // Also, ignore referenced projects, as they are processed on their own right
+            //XXX does not work somehow (try on INET/Obsolete!)
+            registerAllFilesInMarkerSynchronizer(project, markerSync);
 
             // ensure all files in this project group have been parsed for #includes
             long begin = System.currentTimeMillis();
@@ -244,6 +249,22 @@ public class DependencyCache {
             markerSync.runAsWorkspaceJob();
         }
         return projectData.get(project);
+    }
+    
+    protected void registerAllFilesInMarkerSynchronizer(IProject project, final ProblemMarkerSynchronizer markerSync) {
+        try {
+            project.accept(new IResourceVisitor() {
+                public boolean visit(IResource resource) throws CoreException {
+                    if (MakefileTools.isCppFile(resource) || MakefileTools.isMsgFile(resource))
+                        markerSync.register(resource);
+                    return true;
+                }
+            });
+        }
+        catch (CoreException e) {
+            addMarker(markerSync, project, IMarker.SEVERITY_ERROR, "Error traversing directory tree: " + StringUtils.nullToEmpty(e.getMessage()), -1);
+            Activator.logError(e);
+        }
     }
 
     protected void collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
@@ -329,7 +350,6 @@ public class DependencyCache {
         data.cppSourceFiles = new HashMap<IFile,List<Include>>();
         for (IFile file : fileIncludes.keySet()) {
             if (data.projectGroup.contains(file.getProject())) {
-                markerSync.register(file); //XXX this will remove markers added by other projects too...
                 if (file.getFileExtension().equals("msg")) {
                     // from a msg file, the build process will generate:
                     // - an _m.h file gets generated with all the #include from the msg file 
