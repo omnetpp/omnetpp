@@ -2,6 +2,7 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -13,6 +14,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 
 /**
@@ -20,7 +22,6 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
  * 
  * @author Andras
  */
-//XXX only in source folders (based on ICSourceEntry)
 public class MakefileBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
     public static final String MARKER_ID = "org.omnetpp.cdt.makefileproblem"; //XXX this is shared with DependencyCache
@@ -63,7 +64,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         monitor.subTask("Analyzing dependencies and updating makefiles...");
 
         // collect folders
-        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
+        List<IContainer> makemakeFolders = CDTUtils.getSourceFolders(getProject());
         
         // register folders in the marker synchronizer
         for (IContainer makemakeFolder : makemakeFolders)
@@ -73,7 +74,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime = System.currentTimeMillis();
         for (IContainer makemakeFolder : makemakeFolders)
             generateMakefileFor(makemakeFolder);
-        System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
+        System.out.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**

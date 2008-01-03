@@ -10,7 +10,6 @@ import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 
 /**
  * Utility class dealing with CDT's managed build classes.
@@ -53,14 +52,14 @@ public class CDTUtils {
     }
     
     /**
-     * Returns the source folders for the given project. Paths are workspace-relative 
-     * (not project-relative as with ICSourceEntry).
+     * Returns the source folders (ICSourceEntry) for the given project and the
+     * active configuration.
      */
-    public static List<IPath> getSourcePaths(IProject project) {
+    public static List<IContainer> getSourceFolders(IProject project) {
         ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
-        List<IPath> sourceFolders = new ArrayList<IPath>();
+        List<IContainer> sourceFolders = new ArrayList<IContainer>();
         for (ICSourceEntry i : sourceEntries)
-            sourceFolders.add(project.getFullPath().append(i.getFullPath()));
+            sourceFolders.add(i.getFullPath().isEmpty() ? project : project.getFolder(i.getFullPath()));
         return sourceFolders;
     }
  

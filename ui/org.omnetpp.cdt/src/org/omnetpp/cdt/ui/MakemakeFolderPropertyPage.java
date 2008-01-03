@@ -8,13 +8,13 @@ import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -126,17 +126,17 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     protected void updatePageState() {
         // fill/refresh combo contents
         String oldComboSelection = sourceFolderCombo.getText();
-        List<IPath> sourceFolders = CDTUtils.getSourcePaths(getResource().getProject());
-        int thisFolderIndex = sourceFolders.indexOf(getResource().getFullPath());
+        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(getResource().getProject());
+        int thisFolderIndex = sourceFolders.indexOf(getResource());
 
         sourceFolderCombo.removeAll();
         if (thisFolderIndex == -1)
             sourceFolderCombo.add(getResource().getFullPath().toString() + " <selected>");
         for (int i = 0; i < sourceFolders.size(); i++)
             if (i != thisFolderIndex)
-                sourceFolderCombo.add(sourceFolders.get(i).toString());
+                sourceFolderCombo.add(sourceFolders.get(i).getFullPath().toString());
             else
-                sourceFolderCombo.add(sourceFolders.get(i).toString() + " <selected>");
+                sourceFolderCombo.add(sourceFolders.get(i).getFullPath().toString() + " <selected>");
         if (!StringUtils.isEmpty(oldComboSelection))
             sourceFolderCombo.setText(oldComboSelection);  // preserve old
         else
@@ -148,12 +148,16 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     protected void comboSelectionChanged() {
         String text = StringUtils.removeEnd(sourceFolderCombo.getText(), " <selected>");
-        IPath path = new Path(text);
+        
+        // map combo selection to an IContainer
+        Path path = new Path(text);
+        IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
+        IContainer folder = path.segmentCount()>1 ? wsRoot.getFolder(path) : wsRoot.getProject(text);
 
         // show/hide makemake options panel
         IProject project = getResource().getProject();
-        List<IPath> sourceFolders = CDTUtils.getSourcePaths(project);
-        selectedSourceFolder = sourceFolders.contains(path) ? ResourcesPlugin.getWorkspace().getRoot().getFolder(path) : null;
+        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
+        selectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
         contents.setVisible(selectedSourceFolder != null);
 
         // configure options panel
