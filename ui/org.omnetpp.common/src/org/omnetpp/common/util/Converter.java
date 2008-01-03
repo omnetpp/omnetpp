@@ -78,7 +78,7 @@ public class Converter {
 	}
 	
 	public static String booleanToString(Boolean value) {
-		return StringConverter.asString(value);
+		return value != null ? StringConverter.asString(value) : null;
 	}
 	
 	public static Boolean stringToBoolean(String value) {
@@ -91,8 +91,8 @@ public class Converter {
 		}
 	}
 	
-	public String doubleToString(Double value) {
-		return StringConverter.asString(value);
+	public static String doubleToString(Double value) {
+		return value != null ? StringConverter.asString(value) : null;
 	}
 	
 	public static Double stringToDouble(String value) {
@@ -106,7 +106,7 @@ public class Converter {
 	}
 	
 	public static String integerToString(Integer value) {
-		return StringConverter.asString(value);
+		return value != null ? StringConverter.asString(value) : null;
 	}
 	
 	public static Integer stringToInteger(String value) {

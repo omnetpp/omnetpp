@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.StringUtils;
 
 public class NumberPropertyDescriptor extends TextPropertyDescriptor {
 
@@ -27,12 +29,12 @@ class NumberCellEditor extends TextCellEditor
 	
 	@Override
 	protected Object doGetValue() {
-		return Double.parseDouble((String)super.doGetValue());
+		return Converter.stringToDouble((String)super.doGetValue());
 	}
 
 	@Override
 	protected void doSetValue(Object value) {
-		super.doSetValue(value.toString());
+		super.doSetValue(StringUtils.defaultString(Converter.doubleToString((Double)value)));
 	}
 }
 
@@ -50,8 +52,15 @@ class NumberCellEditorValidator implements ICellEditorValidator
 		if (value instanceof Double)
 			return null;
 		
+		if (value != null && !(value instanceof String))
+			return "Unexpected type: " + value.getClass().getName();
+		
+		String strValue = (String)value;
+		if (StringUtils.isEmpty(strValue))
+			return null;
+		
 		try {
-			Double.parseDouble((String)value);
+			Double.parseDouble(strValue);
 			return null;
 		} catch (NumberFormatException e) {
 			return "Not a number";

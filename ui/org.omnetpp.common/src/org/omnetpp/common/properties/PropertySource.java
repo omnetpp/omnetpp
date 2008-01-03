@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -258,6 +259,8 @@ public abstract class PropertySource implements IPropertySource2 {
 				return TextPropertyDescriptor.class;
 			if (propType == Boolean.class || propType == boolean.class)
 				return CheckboxPropertyDescriptor.class;
+			else if (propType == Integer.class || propType == int.class)
+				return IntegerPropertyDescriptor.class;
 			else if (propType == Double.class || propType == double.class)
 				return NumberPropertyDescriptor.class;
 			else if (propType == RGB.class)
@@ -268,12 +271,6 @@ public abstract class PropertySource implements IPropertySource2 {
 				return EnumPropertyDescriptor.class;
 		}
 		return declaredDescriptorClass;
-	}
-
-	// TODO: this method should exists somewhere else
-	public static boolean equals(Object obj1, Object obj2) {
-		return obj1 == null && obj2 == null ||
-			   obj1 != null && obj1.equals(obj2);
 	}
 
 	@Override
@@ -332,7 +329,7 @@ public abstract class PropertySource implements IPropertySource2 {
 			try {
 				Object defaultValue = info.defaultGetter.invoke(this);
 				Object currentValue = info.getter.invoke(this);
-				return !equals(currentValue, defaultValue);
+				return !ObjectUtils.equals(currentValue, defaultValue);
 			} catch (Exception e) {}
 		}
 		return true;
