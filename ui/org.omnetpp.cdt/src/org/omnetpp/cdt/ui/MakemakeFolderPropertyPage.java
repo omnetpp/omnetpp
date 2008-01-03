@@ -8,7 +8,6 @@ import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -166,7 +165,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
             MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedSourceFolder);
             if (folderOptions == null)
-                folderOptions = new MakemakeOptions(); //XXX set defaults!
+                folderOptions = MakemakeOptions.createInitial();
             contents.populate(selectedSourceFolder, folderOptions, makefragContents, makefragvcContents);
         }
         else {

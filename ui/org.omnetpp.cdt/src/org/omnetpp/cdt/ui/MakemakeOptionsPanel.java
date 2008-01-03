@@ -44,7 +44,6 @@ import org.omnetpp.common.util.StringUtils;
 //XXX: MetaMakemake.translateOptions(): call it in the background!!!
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
-//XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
 //XXX "Out" dir should not overlap with source folders (check!!!)
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)

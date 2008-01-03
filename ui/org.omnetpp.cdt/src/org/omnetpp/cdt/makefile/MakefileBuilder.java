@@ -83,8 +83,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void generateMakefileFor(IContainer folder) {
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
-            Assert.isTrue(folder.getProject().equals(getProject()) && buildSpec.isMakemakeFolder(folder));
+            Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            if (options == null)
+                options = MakemakeOptions.createInitial();
             MetaMakemake.generateMakefile(folder, options);
             //FIXME remove makefile if any exception occurred here, so that build won't continue with CDT?
         }

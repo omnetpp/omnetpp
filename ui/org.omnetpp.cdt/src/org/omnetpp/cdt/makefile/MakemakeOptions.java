@@ -68,6 +68,19 @@ public class MakemakeOptions implements Cloneable {
     }
 
     /**
+     * Create a new MakemakeOptions for a new source folder. 
+     */
+    public static MakemakeOptions createInitial() {
+        MakemakeOptions result = new MakemakeOptions();
+        result.outRoot = "out"; 
+        result.isDeep = true;
+        result.metaAutoIncludePath = true;
+        result.metaExportLibrary = true;
+        result.metaUseExportedLibs = true;
+        return result;
+    }
+    
+    /**
      * Parse the argument list into the member variables
      */
     public void parseArgs(String[] argv) {
