@@ -45,7 +45,6 @@ import org.omnetpp.common.util.StringUtils;
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX introduce "buildingDllMacro" option into MakemakeOptions
 //XXX if there's no buildspec, assume makefile generation in the project root folder (if no makefile exists already?) turn on "export", "autoincludes", "use exports" etc by default!
-//XXX create "CDT Overview" page in the project properties dialog! should show if: excludes/include paths are inconsistent for different configurations;
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
 //XXX "Out" dir should not overlap with source folders (check!!!)
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
@@ -64,7 +63,7 @@ public class MakemakeOptionsPanel extends Composite {
     // the folder whose properties we're editing; needed for Preview panel / translated options
     private IContainer folder;
     private PropertyPage ownerPage;
-    
+
     // controls
     private TabFolder tabfolder;
     private Composite scopePage;
@@ -111,11 +110,13 @@ public class MakemakeOptionsPanel extends Composite {
     private Text makefragText;
     private Text makefragvcText;
     private FileListControl makefragsList;
-    
+
     // "Preview" page
     private Text optionsText;
     private Text translatedOptionsText;
     
+    private boolean beingUpdated = false;
+
 
     public MakemakeOptionsPanel(Composite parent, int style) {
         super(parent, style);
@@ -158,7 +159,7 @@ public class MakemakeOptionsPanel extends Composite {
         exportLibraryCheckbox = createCheckbox(group, "Export this shared/static library for other projects", "Let dependent projects automatically use this library");
         ((GridData)exportLibraryCheckbox.getLayoutData()).horizontalIndent = 20;
         targetCompileOnlyRadioButton = createRadioButton(group, "Compile only", null);
-        
+
         Group targetNameGroup = createGroup(targetPage, "Target name:", 2);
         defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "Default target name will be derived from the directory name");
         defaultTargetNameRadionButton.setLayoutData(new GridData());
@@ -169,7 +170,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         Group outGroup = createGroup(targetPage, "Output:", 2);
         outputDirText = createLabelAndText(outGroup, "Output directory:", "Specify project relative path. When empty, defaults to \"out\".");
-        
+
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
@@ -183,7 +184,7 @@ public class MakemakeOptionsPanel extends Composite {
         ccextCombo.add(CCEXT_AUTODETECT);
         ccextCombo.add(".cc");
         ccextCombo.add(".cpp");
-        
+
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
         compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the WIN32_DLL preprocessor symbol");
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
@@ -191,7 +192,7 @@ public class MakemakeOptionsPanel extends Composite {
                 "Name of the macro (#define) which expands to \n" +
                 "__dllexport/__dllimport when WIN32_DLL is defined.\n" +
                 "It will be used to annotate C++ classes generated\n" +
-                "from msg files.");
+        "from msg files.");
         buildingDllMacroText = createLabelAndText(dllGroup, "Symbol to define when building this DLL (e.g. BUILDING_FOO):", 
                 "The following code needs to be present in one of your\n" +
                 "header files, and be included in all sources (replace FOO\n" +
@@ -200,7 +201,7 @@ public class MakemakeOptionsPanel extends Composite {
                 "#  define FOO_API  OPP_DLLEXPORT\n" +
                 "#else\n" +
                 "#  define FOO_API  OPP_DLLIMPORT\n" +
-                "#endif");
+        "#endif");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
 
         // "Link" page
@@ -213,16 +214,16 @@ public class MakemakeOptionsPanel extends Composite {
         userInterfaceCombo = new Combo(linkGroup, SWT.BORDER | SWT.READ_ONLY);
         for (String i : new String[] {"All", "Tkenv", "Cmdenv"}) // note: should be consistent with populate()!
             userInterfaceCombo.add(i);
-        
-//        Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
-//        //FIXME are these combo boxes needed? do they correspond to any makemake settings?
-//        Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
-//        Button cb2 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
+
+//      Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
+//      //FIXME are these combo boxes needed? do they correspond to any makemake settings?
+//      Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
+//      Button cb2 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
         Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
         linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
         createToggleLink(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
-        
+
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         CTabFolder makefragTabFolder = new CTabFolder(customPage, SWT.TOP | SWT.BORDER);
@@ -240,7 +241,7 @@ public class MakemakeOptionsPanel extends Composite {
         createLabel(makefragvcComposite, "Code fragment to be inserted into Makefile.vc:");
         makefragvcText = new Text(makefragvcComposite, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         makefragvcText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         Label makefragsLabel = createLabel(customPage, "Other fragment files to include:");
         makefragsList = new FileListControl(customPage, "Make fragments", BROWSE_NONE);
         createToggleLink(customPage, new Control[] {makefragsLabel, makefragsList.getListControl().getParent()});
@@ -259,7 +260,7 @@ public class MakemakeOptionsPanel extends Composite {
         Dialog.applyDialogFont(composite);
 
         hookListeners();
-        
+
         SelectionListener gotoListener = new SelectionListener(){
             public void widgetSelected(SelectionEvent e) {
                 gotoPathsAndSymbolsPage();
@@ -271,7 +272,7 @@ public class MakemakeOptionsPanel extends Composite {
         pathsPageLink1.addSelectionListener(gotoListener);
         pathsPageLink2.addSelectionListener(gotoListener);
         pathsPageLink3.addSelectionListener(gotoListener);
-        
+
         return composite;
     }
 
@@ -328,7 +329,7 @@ public class MakemakeOptionsPanel extends Composite {
         }
         return text;
     }
-    
+
     protected Composite createTabPage(TabFolder tabfolder, String text) {
         TabItem item = new TabItem(tabfolder, SWT.NONE);
         item.setText(text);
@@ -362,10 +363,10 @@ public class MakemakeOptionsPanel extends Composite {
         });
         optionsText.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
-                optionsTextChanged();
+                updateDialogState();
             }
         });
-        
+
         // validate dialog contents on changes
         SelectionListener sel = new SelectionAdapter() {
             @Override
@@ -414,78 +415,32 @@ public class MakemakeOptionsPanel extends Composite {
     }
 
     protected void activeTabChanged() {
-        if (tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage) {
+        if (isPreviewPageSelected()) {
             // switched to "Preview" page -- update its contents
             MakemakeOptions options = getResult();
             optionsText.setText(options.toString());
-            try {
-                translatedOptionsText.setText(MetaMakemake.translateOptions(folder, options).toString());
-            } catch (CoreException e) {
-                //XXX
-            }
+            refreshTranslatedOptions(options);
         }
     }
 
-    protected void optionsTextChanged() {
-        // re-parse options text modified by user
-        MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
-        populate(folder, updatedOptions, makefragText.getText(), makefragvcText.getText());
-        try {
-            //FIXME this may take long (while DependencyCache parses all files for includes)
-            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
-        } catch (CoreException e) {
-            //XXX
-        }
-    }
-
-    protected void updateDialogState() {
-        // enabled state
-        Type type = getSelectedType();
-        defaultTargetNameRadionButton.setEnabled(type!=Type.NOLINK);
-        specifyTargetNameRadioButton.setEnabled(type!=Type.NOLINK);
-        targetNameText.setEnabled(specifyTargetNameRadioButton.getSelection() && type!=Type.NOLINK);
-        exportLibraryCheckbox.setEnabled(type==Type.STATICLIB || type==Type.SHAREDLIB);
-        userInterfaceCombo.setEnabled(targetExecutableRadioButton.getSelection());
-        useExportedLibs.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
-        libsList.setEnabled(type!=Type.NOLINK);
-        linkObjectsList.setEnabled(type!=Type.NOLINK);
-        deepIncludesCheckbox.setEnabled(deepMakefileRadioButton.getSelection());
-        
-        // checkbox checked state
-        if (type!=Type.STATICLIB && type!=Type.SHAREDLIB)
-            exportLibraryCheckbox.setSelection(false);
-        if (type!=Type.EXE && type!=Type.SHAREDLIB)
-            useExportedLibs.setSelection(false);
-        
-        // validate text field contents
-        setErrorMessage(null);
-        if (outputDirText.getText().matches(".*[:/\\\\].*"))
-            setErrorMessage("Output folder: cannot contain /, \\ or :.");
-        if (!dllExportMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
-            setErrorMessage("DLL export macro: contains illegal characters");
-        if (!buildingDllMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
-            setErrorMessage("\"Building DLL\" macro: contains illegal characters");
-        //TODO others...
-    }
-
-    @SuppressWarnings("restriction")
-    protected void gotoPathsAndSymbolsPage() {
-        IPreferencePageContainer container = ownerPage.getContainer();
-        if (container instanceof PropertyDialog)
-            ((PropertyDialog)container).setCurrentPageId(PROPERTYPAGE_PATH_AND_SYMBOLS);
-    }
-
-    protected void setErrorMessage(String text) {
-        ownerPage.setErrorMessage(text);
-    }
-
-    public void setOwner(PropertyPage page) {
-        this.ownerPage = page;
+    protected boolean isPreviewPageSelected() {
+        return tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage;
     }
 
     public void populate(IContainer folder, MakemakeOptions data, String makefragContents, String makefragvcContents) {
         this.folder = folder;
-        
+
+        makefragText.setText(StringUtils.nullToEmpty(makefragContents));
+        makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
+        if (isPreviewPageSelected())
+            optionsText.setText(data.toString());
+        else
+            populateControls(data);
+
+        updateDialogState();
+    }
+
+    protected void populateControls(MakemakeOptions data) {
         // "Scope" page
         deepMakefileRadioButton.setSelection(data.isDeep);
         recursiveMakefileRadioButton.setSelection(data.isRecursive);
@@ -522,22 +477,82 @@ public class MakemakeOptionsPanel extends Composite {
         useExportedLibs.setSelection(data.metaUseExportedLibs);
         libsList.setList(data.libs.toArray(new String[]{}));
         linkObjectsList.setList(data.extraArgs.toArray(new String[]{}));
-        
-        // "Custom" page
-        makefragText.setText(StringUtils.nullToEmpty(makefragContents));
-        makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
-        makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
-        
-        // to the "Link" page:
-        data.linkWithObjects = false; //TODO; also explain: "link with object files in directories given as extra include dirs" -- probably not needed... 
 
-        // update dialog state
-        updateDialogState();
-        
-        // update preview page contents if it is shown
-        //activeTabChanged();  FIXME this would be recursive!!! calls populate again...  
+        // "Custom" page
+        // Note: makefrag texts need to be set differently
+        makefragsList.setList(data.fragmentFiles.toArray(new String[]{}));
     }
-    
+
+    protected void updateDialogState() {
+        if (beingUpdated)
+            return;  // prevent recursive invocations via listeners
+        try {
+            beingUpdated = true;
+
+            if (isPreviewPageSelected()) {
+                // re-parse options text modified by user
+                MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
+                populateControls(updatedOptions);
+                refreshTranslatedOptions(updatedOptions);
+            }
+            else {
+                // update enabled states
+                Type type = getSelectedType();
+                defaultTargetNameRadionButton.setEnabled(type!=Type.NOLINK);
+                specifyTargetNameRadioButton.setEnabled(type!=Type.NOLINK);
+                targetNameText.setEnabled(specifyTargetNameRadioButton.getSelection() && type!=Type.NOLINK);
+                exportLibraryCheckbox.setEnabled(type==Type.STATICLIB || type==Type.SHAREDLIB);
+                userInterfaceCombo.setEnabled(targetExecutableRadioButton.getSelection());
+                useExportedLibs.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
+                libsList.setEnabled(type!=Type.NOLINK);
+                linkObjectsList.setEnabled(type!=Type.NOLINK);
+                deepIncludesCheckbox.setEnabled(deepMakefileRadioButton.getSelection());
+
+                // update checkbox checked states
+                if (type!=Type.STATICLIB && type!=Type.SHAREDLIB)
+                    exportLibraryCheckbox.setSelection(false);
+                if (type!=Type.EXE && type!=Type.SHAREDLIB)
+                    useExportedLibs.setSelection(false);
+
+                // validate text field contents
+                setErrorMessage(null);
+                if (outputDirText.getText().matches(".*[:/\\\\].*"))
+                    setErrorMessage("Output folder: cannot contain /, \\ or :.");
+                if (!dllExportMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+                    setErrorMessage("DLL export macro: contains illegal characters");
+                if (!buildingDllMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+                    setErrorMessage("\"Building DLL\" macro: contains illegal characters");
+                //TODO others...
+            }
+        } finally {
+            beingUpdated = false;
+        }
+    }
+
+    private void refreshTranslatedOptions(MakemakeOptions updatedOptions) {
+        try {
+            //FIXME this may take long (while DependencyCache parses all files for includes)
+            translatedOptionsText.setText(MetaMakemake.translateOptions(folder, updatedOptions).toString());
+        } catch (CoreException e) {
+            //XXX
+        }
+    }
+
+    @SuppressWarnings("restriction")
+    protected void gotoPathsAndSymbolsPage() {
+        IPreferencePageContainer container = ownerPage.getContainer();
+        if (container instanceof PropertyDialog)
+            ((PropertyDialog)container).setCurrentPageId(PROPERTYPAGE_PATH_AND_SYMBOLS);
+    }
+
+    protected void setErrorMessage(String text) {
+        ownerPage.setErrorMessage(text);
+    }
+
+    public void setOwner(PropertyPage page) {
+        this.ownerPage = page;
+    }
+
     /**
      * Returns the current settings
      */
@@ -571,7 +586,7 @@ public class MakemakeOptionsPanel extends Composite {
         result.metaUseExportedLibs = useExportedLibs.getSelection();
         result.libs.addAll(Arrays.asList(libsList.getItems()));
         result.extraArgs.addAll(Arrays.asList(linkObjectsList.getItems()));
-        
+
         // "Custom" page
         result.fragmentFiles.addAll(Arrays.asList(makefragsList.getItems()));
 
@@ -593,7 +608,7 @@ public class MakemakeOptionsPanel extends Composite {
         else
             return Type.EXE; // cannot happen
     }
-    
+
     public String getMakefragContents() {
         return makefragText.getText();
     }
