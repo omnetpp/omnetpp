@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.INullSelectionListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
@@ -38,7 +39,6 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
  *
  * @author tomi
  */
-//XXX if last editor is closed, view still displays the last vector
 public class VectorBrowserView extends ViewWithMessagePart {
 	public static final String ID = "org.omnetpp.scave.VectorBrowserView";
 	
@@ -123,7 +123,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	}
 	
 	private void hookSelectionChangedListener() {
-		selectionChangedListener = new ISelectionListener() {
+		selectionChangedListener = new INullSelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				setViewerInput(selection);
 			}
