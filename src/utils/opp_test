@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # opp_test: regression testing tool for OMNeT++/OMNEST
 #

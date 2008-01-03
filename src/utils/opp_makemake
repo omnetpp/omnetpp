@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Creates a makefile for a given OMNeT++/OMNEST model.
 # Assumes that .ned, .msg, .cc and .h files are in one directory.
@@ -525,7 +525,7 @@ sub makemake()
         "objs" =>  quoteJoin(\@objs),
         "subdirs" =>  quoteJoin(\@subdirs),
         "subdirtargets" =>  quoteJoin(\@subdirTargets),
-        "fordllopt" =>  $compileForDll ? "/DWIN32_DLL" : "",
+        "fordllopt" =>  $compileForDll ? "-DWIN32_DLL" : "",
         "dllexportmacro" =>  $dllExportMacro ? "-P$dllExportMacro" : "",
         "sourcedirs" => \@sourceDirs,
         "backslashedsourcedirs" => \@backslashedSourceDirs

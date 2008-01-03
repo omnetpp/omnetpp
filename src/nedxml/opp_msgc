@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # opp_msgc: supports message subclassing: compiles NED files with message
 # declarations into C++ code.
