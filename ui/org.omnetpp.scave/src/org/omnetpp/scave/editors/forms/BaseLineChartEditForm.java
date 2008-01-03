@@ -225,8 +225,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		VectorChartProperties newProperties = (VectorChartProperties)newProps;
 		
 		// Axis properties 
-		newProperties.setXAxisMin(xAxisMinText.getText());
-		newProperties.setXAxisMax(xAxisMaxText.getText());
+		newProperties.setXAxisMin(Converter.stringToDouble(xAxisMinText.getText()));
+		newProperties.setXAxisMax(Converter.stringToDouble(xAxisMaxText.getText()));
 		
 		// Line properties
 		
@@ -298,8 +298,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		VectorChartProperties properties = (VectorChartProperties)props;
 		// Axis properties
-		xAxisMinText.setText(properties.getXAxisMin());
-		xAxisMaxText.setText(properties.getXAxisMax());
+		xAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(properties.getXAxisMin())));
+		xAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(properties.getXAxisMax())));
 		// Line properties
 		updateLinePropertyEditFields(properties);
 	}
@@ -407,16 +407,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		private int getSymbolSize(String lineId) {
 			String sizeStr = symbolSizeCombo.getText();
-			if ((sizeStr == null || sizeStr.equals(NO_CHANGE)) && props != null)
-				sizeStr = props.getLineProperties(lineId).getSymbolSize();
-
-			if (sizeStr != null) {
-				Integer value = Converter.stringToInteger(sizeStr);
-				if (value != null)
-					return value; 
-			}
+			Integer size = null;
 			
-			return ChartDefaults.DEFAULT_SYMBOL_SIZE;
+			if ((sizeStr == null || sizeStr.equals(NO_CHANGE)) && props != null)
+				size = props.getLineProperties(lineId).getSymbolSize();
+			else
+				size = Converter.stringToInteger(sizeStr);
+			
+			return size != null ? size : ChartDefaults.DEFAULT_SYMBOL_SIZE;
 		}
 		
 		public Color getLineColor(String lineId) {

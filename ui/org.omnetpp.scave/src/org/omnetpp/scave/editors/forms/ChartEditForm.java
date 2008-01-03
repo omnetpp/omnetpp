@@ -514,10 +514,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		newProps.setYAxisTitle(yAxisTitleText.getText());
 		newProps.setAxisTitleFont(Converter.stringToFontdata(axisTitleFontText.getText()));
 		newProps.setLabelsFont(Converter.stringToFontdata(labelFontText.getText()));
-		newProps.setXLabelsRotate(xLabelsRotateByCombo.getText());
+		newProps.setXLabelsRotate(Converter.stringToDouble(xLabelsRotateByCombo.getText()));
 		// Axes
-		newProps.setYAxisMin(yAxisMinText.getText());
-		newProps.setYAxisMax(yAxisMaxText.getText());
+		newProps.setYAxisMin(Converter.stringToDouble(yAxisMinText.getText()));
+		newProps.setYAxisMax(Converter.stringToDouble(yAxisMaxText.getText()));
 		newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
 		newProps.setXYGrid(resolveEnum(showGridCombo.getText(), ShowGrid.class));
 		// Legend
@@ -562,10 +562,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		yAxisTitleText.setText(props.getYAxisTitle());
 		axisTitleFontText.setText(asString(props.getAxisTitleFont()));
 		labelFontText.setText(asString(props.getLabelsFont()));
-		xLabelsRotateByCombo.setText(props.getXLabelsRotate());
+		xLabelsRotateByCombo.setText(StringUtils.defaultString(Converter.doubleToString(props.getXLabelsRotate())));
 		// Axes
-		yAxisMinText.setText(props.getYAxisMin());
-		yAxisMaxText.setText(props.getYAxisMax());
+		yAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMin())));
+		yAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMax())));
 		yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
 		showGridCombo.setText(props.getXYGrid().name());
 		// Legend

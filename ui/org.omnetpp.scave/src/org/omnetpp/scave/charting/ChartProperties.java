@@ -247,20 +247,20 @@ public class ChartProperties extends PropertySource {
 	public FontData defaultLabelsFont() { return getDefaultFontProperty(PROP_LABEL_FONT); }
 	
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by")
-	public String getXLabelsRotate() { return getStringProperty(PROP_X_LABELS_ROTATE_BY); }
-	public void setXLabelsRotate(String title) { setProperty(PROP_X_LABELS_ROTATE_BY, title); }
-	public String defaultXLabelsRotate() { return String.valueOf(ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY); } // XXX: use Double
+	public Double getXLabelsRotate() { return getDoubleProperty(PROP_X_LABELS_ROTATE_BY); }
+	public void setXLabelsRotate(Double value) { setProperty(PROP_X_LABELS_ROTATE_BY, value); }
+	public Double defaultXLabelsRotate() { return ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY; }
 
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MIN)
-	public String getYAxisMin() { return getStringProperty(PROP_Y_AXIS_MIN); }
-	public void setYAxisMin(String min) { setProperty(PROP_Y_AXIS_MIN, min); }
+	public Double getYAxisMin() { return getDoubleProperty(PROP_Y_AXIS_MIN); }
+	public void setYAxisMin(Double min) { setProperty(PROP_Y_AXIS_MIN, min); }
 
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MAX)
-	public String getYAxisMax() { return getStringProperty(PROP_Y_AXIS_MAX); }
-	public void setYAxisMax(String max) { setProperty(PROP_Y_AXIS_MAX, max); }
+	public Double getYAxisMax() { return getDoubleProperty(PROP_Y_AXIS_MAX); }
+	public void setYAxisMax(Double max) { setProperty(PROP_Y_AXIS_MAX, max); }
 
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_LOGARITHMIC)
 	public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
@@ -332,9 +332,9 @@ public class ChartProperties extends PropertySource {
 		public SymbolType defaultSymbolType() { return null; }
 
 		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
-		public String getSymbolSize() { return getStringProperty(propertyName(PROP_SYMBOL_SIZE)); }
-		public void setSymbolSize(String size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
-		public String defaultSymbolSize() { return null; }
+		public Integer getSymbolSize() { return getIntegerProperty(propertyName(PROP_SYMBOL_SIZE)); }
+		public void setSymbolSize(Integer size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
+		public Integer defaultSymbolSize() { return ChartDefaults.DEFAULT_SYMBOL_SIZE; }
 
 		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
 		public LineType getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineType.class); }
@@ -390,12 +390,12 @@ public class ChartProperties extends PropertySource {
 		 *                             Axes
 		 *======================================================================*/
 		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MIN)
-		public String getXAxisMin() { return getStringProperty(PROP_X_AXIS_MIN); }
-		public void setXAxisMin(String min) { setProperty(PROP_X_AXIS_MIN, min); }
+		public Double getXAxisMin() { return getDoubleProperty(PROP_X_AXIS_MIN); }
+		public void setXAxisMin(Double min) { setProperty(PROP_X_AXIS_MIN, min); }
 
 		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MAX)
-		public String getXAxisMax() { return getStringProperty(PROP_X_AXIS_MAX); }
-		public void setXAxisMax(String max) { setProperty(PROP_X_AXIS_MAX, max); }
+		public Double getXAxisMax() { return getDoubleProperty(PROP_X_AXIS_MAX); }
+		public void setXAxisMax(Double max) { setProperty(PROP_X_AXIS_MAX, max); }
 
 		/*======================================================================
 		 *                             Lines
@@ -481,9 +481,9 @@ public class ChartProperties extends PropertySource {
 		 *                             Bars
 		 *======================================================================*/
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_BASELINE)
-		public String getBarBaseline() { return getStringProperty(PROP_BAR_BASELINE); } // XXX return Double
-		public void setBarBaseline(String baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
-		public String defaultBarBaseline() { return String.valueOf(ChartDefaults.DEFAULT_BAR_BASELINE); }
+		public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
+		public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
+		public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
 
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_PLACEMENT)
 		public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
@@ -500,7 +500,7 @@ public class ChartProperties extends PropertySource {
 			super(chart, properties, manager);
 		}
 
-		// TODO
+		// TODO histogram chart properties
 	}
 
 	public static class ScatterChartProperties extends VectorChartProperties
@@ -550,6 +550,18 @@ public class ChartProperties extends PropertySource {
 		Property property = getProperty(propertyName);
 		return property != null ? Converter.stringToRGB(property.getValue()) :
 								  getDefaultColorProperty(propertyName);
+	}
+	
+	public Integer getIntegerProperty(String propertyName) {
+		Property property = getProperty(propertyName);
+		return property != null ? Converter.stringToInteger(property.getValue()) :
+									getDefaultIntegerProperty(propertyName);
+	}
+
+	public Double getDoubleProperty(String propertyName) {
+		Property property = getProperty(propertyName);
+		return property != null ? Converter.stringToDouble(property.getValue()) :
+									getDefaultDoubleProperty(propertyName);
 	}
 
 	/**
@@ -624,6 +636,20 @@ public class ChartProperties extends PropertySource {
 			propertyValue = null;
 		doSetProperty(propertyName, Converter.rgbToString(propertyValue));
 	}
+	
+	public void setProperty(String propertyName, Integer propertyValue) {
+		Integer defaultValue = getDefaultIntegerProperty(propertyName);
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, Converter.integerToString(propertyValue));
+	}
+
+	public void setProperty(String propertyName, Double propertyValue) {
+		Double defaultValue = getDefaultDoubleProperty(propertyName);
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, Converter.doubleToString(propertyValue));
+	}
 
 	public String getDefaultStringProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
@@ -662,6 +688,22 @@ public class ChartProperties extends PropertySource {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
 		if (defaultValue instanceof RGB)
 			return (RGB)defaultValue;
+		else
+			return null;
+	}
+	
+	public Integer getDefaultIntegerProperty(String propertyName) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue instanceof Integer)
+			return (Integer)defaultValue;
+		else
+			return null;
+	}
+
+	public Double getDefaultDoubleProperty(String propertyName) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue instanceof Double)
+			return (Double)defaultValue;
 		else
 			return null;
 	}

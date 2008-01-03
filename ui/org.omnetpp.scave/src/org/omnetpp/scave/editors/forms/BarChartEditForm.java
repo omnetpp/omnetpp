@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
@@ -217,7 +219,7 @@ public class BarChartEditForm extends ChartEditForm {
 	protected void collectProperties(ChartProperties newProps) {
 		super.collectProperties(newProps);
 		ScalarChartProperties props = (ScalarChartProperties)newProps;
-		props.setBarBaseline(baselineText.getText());
+		props.setBarBaseline(Converter.stringToDouble(baselineText.getText()));
 		props.setBarPlacement(resolveEnum(barPlacementCombo.getText(), BarPlacement.class));
 		props.setWrapLabels(wrapLabelsCheckbox.getSelection());
 	}
@@ -226,7 +228,7 @@ public class BarChartEditForm extends ChartEditForm {
 	protected void setProperties(ChartProperties props) {
 		super.setProperties(props);
 		ScalarChartProperties scalarProps = (ScalarChartProperties)props;
-		baselineText.setText(scalarProps.getBarBaseline());
+		baselineText.setText(StringUtils.defaultString(Converter.doubleToString(scalarProps.getBarBaseline())));
 		barPlacementCombo.setText(scalarProps.getBarPlacement()==null ? NO_CHANGE : scalarProps.getBarPlacement().toString());
 		wrapLabelsCheckbox.setSelection(scalarProps.getWrapLabels());
 	}
