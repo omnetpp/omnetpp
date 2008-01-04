@@ -30,9 +30,10 @@ public class ChartSheetItemProvider extends
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case ScaveModelPackage.CHART_SHEET__CHARTS:
+				// Set labelUpdate to true, because the number of the charts is
+				// displayed in the label of the ChartSheet
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, true));
 				return;
 		}
-		// XXX super.notifyChanged(notification);
 	}
 }

@@ -53,7 +53,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 // TODO use validator for font and number fields
-// TODO PROP_BACKROUND_COLOR
 public class ChartEditForm implements IScaveObjectEditForm {
 	public static final String TAB_MAIN = "Main";
 	public static final String TAB_TITLES = "Titles";

@@ -41,9 +41,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.datatable.DataTable;
-import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave.editors.datatable.IDataTableListener;
 import org.omnetpp.scave.model.Chart;
 
 /**
@@ -277,26 +274,6 @@ public class ScaveEditorPage extends ScrolledForm {
 		view.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
 				scaveEditor.setSelection(new StructuredSelection(chart));
-			}
-		});
-	}
-	
-	/**
-	 * Utility function configure data panel to display selection count in the status bar.
-	 */
-	//FIXME does it really have to be in this class?
-	public void configureFilteredDataPanel(FilteredDataPanel panel) {
-		final DataTable table = panel.getTable();
-		table.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				showStatusMessage(String.format("Selected %d out of %d rows",
-						table.getSelectionCount(), table.getItemCount()));
-			}
-		});
-		table.addDataTableListener(new IDataTableListener() {
-			public void contentChanged(DataTable table) {
-				showStatusMessage(String.format("Selected %d out of %d rows",
-						table.getSelectionCount(), table.getItemCount()));
 			}
 		});
 	}

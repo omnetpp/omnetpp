@@ -20,6 +20,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.editors.datatable.IDataTableListener;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
@@ -115,9 +116,9 @@ public class BrowseDataPage extends ScaveEditorPage {
 		label.setBackground(this.getBackground());
 		createTabFolder();
 
-		configurePanel(scalarsPanel);
-		configurePanel(vectorsPanel);
-		configurePanel(histogramsPanel);
+		configureContextMenu(scalarsPanel);
+		configureContextMenu(vectorsPanel);
+		configureContextMenu(histogramsPanel);
 
 		// set up contents
 		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
@@ -158,7 +159,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		return item;
 	}
 
-	private void configurePanel(FilteredDataPanel panel) {
+	private void configureContextMenu(FilteredDataPanel panel) {
 		// populate the popup menu of the panel
 		IMenuManager contextMenuManager = panel.getTable().getContextMenuManager();
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
@@ -177,6 +178,25 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
 		}
 		// XXX call getSite().registerContexMenu() ?
+	}
+	
+	/**
+	 * Utility function configure data panel to display selection count in the status bar.
+	 */
+	private void configureFilteredDataPanel(FilteredDataPanel panel) {
+		final DataTable table = panel.getTable();
+		table.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				showStatusMessage(String.format("Selected %d out of %d rows",
+						table.getSelectionCount(), table.getItemCount()));
+			}
+		});
+		table.addDataTableListener(new IDataTableListener() {
+			public void contentChanged(DataTable table) {
+				showStatusMessage(String.format("Selected %d out of %d rows",
+						table.getSelectionCount(), table.getItemCount()));
+			}
+		});
 	}
 
 	private void hookListeners() {
