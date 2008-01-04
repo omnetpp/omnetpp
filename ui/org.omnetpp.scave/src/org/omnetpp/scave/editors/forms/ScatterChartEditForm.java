@@ -42,7 +42,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		pkg.getChart_Properties(),
 	};
 	
-	private static final String TAB_CONTENT = "Content";
+	public static final String TAB_CONTENT = "Content";
 	
 	private Combo xModuleAndDataCombo;
 	private Table isoModuleAndDataTable;

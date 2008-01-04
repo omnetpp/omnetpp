@@ -19,6 +19,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.forms.BarChartEditForm;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.editors.forms.LineChartEditForm;
+import org.omnetpp.scave.editors.forms.ScatterChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -54,10 +55,14 @@ public class ChartMenuManager extends MenuManager {
 			add(editorContributor.getZoomToFitAction());
 			add(new Separator());
 			add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
-			if (chart instanceof LineChart || chart instanceof ScatterChart)
+			if (chart instanceof LineChart)
 				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
 			else if (chart instanceof BarChart)
 				add(new EditAction("Bars...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, BarChartEditForm.TAB_BARS)));
+			else if (chart instanceof ScatterChart) {
+				add(new EditAction("Content...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ScatterChartEditForm.TAB_CONTENT)));
+				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
+			}
 			add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
 			add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
 			add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
