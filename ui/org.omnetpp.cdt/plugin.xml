@@ -241,5 +241,14 @@
             projectType="org.omnetpp.cdt.omnetppProjectType">
       </template>
    </extension>
+   <extension
+         id="omnetppConfigDiscoveryProfile"
+         name="OMNEST/OMNeT++ Scanner Info Provider"
+         point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
+      <scannerInfoCollector
+            class="org.omnetpp.cdt.OmnetppScannerInfoCollector"
+            scope="project">
+      </scannerInfoCollector>
+   </extension>
 
 </plugin>
