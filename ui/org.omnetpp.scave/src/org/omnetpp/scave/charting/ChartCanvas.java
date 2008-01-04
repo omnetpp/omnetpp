@@ -14,6 +14,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_POSITION;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_ANTIALIAS;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE;
@@ -51,6 +52,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -58,6 +60,7 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
@@ -86,6 +89,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected static final double CONFIDENCE_LEVEL = 0.95;
 
 	protected boolean antialias = DEFAULT_ANTIALIAS;
+	protected Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	protected LegendTooltip legendTooltip = new LegendTooltip();
@@ -116,7 +120,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
-		setBackground(DEFAULT_BACKGROUND_COLOR);
+		setBackground(backgroundColor);
 
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 		
@@ -281,6 +285,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			setAntialias(Converter.stringToBoolean(value));
 		else if (PROP_CACHING.equals(name))
 			setCaching(Converter.stringToBoolean(value));
+		else if (PROP_BACKGROUND_COLOR.equals(name))
+			setBackgroundColor(ColorFactory.asRGB(value));
 		// Axes
 		else if (PROP_Y_AXIS_MIN.equals(name))
 			setYMin(Converter.stringToDouble(value));
@@ -301,6 +307,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	public void setCaching(Boolean caching) {
 		super.setCaching(caching != null ? caching : DEFAULT_CANVAS_CACHING);
+		chartChanged();
+	}
+	
+	public void setBackgroundColor(RGB rgb) {
+		this.backgroundColor = rgb != null ? new Color(null, rgb) : DEFAULT_BACKGROUND_COLOR;
 		chartChanged();
 	}
 	
@@ -440,10 +451,10 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	/**
 	 * Resets all GC settings except clipping and transform.
 	 */
-	public static void resetDrawingStylesAndColors(GC gc) {
+	public void resetDrawingStylesAndColors(GC gc) {
 		gc.setAntialias(SWT.DEFAULT);
 		gc.setAlpha(255);
-		gc.setBackground(DEFAULT_BACKGROUND_COLOR);
+		gc.setBackground(backgroundColor);
 		gc.setBackgroundPattern(null);
 		//gc.setFillRule();
 		gc.setFont(null);

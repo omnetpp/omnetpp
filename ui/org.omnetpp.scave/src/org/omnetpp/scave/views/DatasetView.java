@@ -206,6 +206,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				setFilterAction.update(panel);
 			}
 		});
+		// XXX call getSite().registerContexMenu() ?
 	}
 	
 	@Override

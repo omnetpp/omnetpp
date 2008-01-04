@@ -154,20 +154,19 @@ public class ScaveModelUtil {
 	}
 	
 	/**
-	 * Returns the data type displayed on the chart.
+	 * Returns the data types displayed on the chart.
 	 */
-	public static ResultType getDataTypeOfChart(Chart chart) {
+	public static ResultType[] getDataTypesOfChart(Chart chart) {
 		if (chart instanceof BarChart)
-			return ResultType.SCALAR_LITERAL;
+			return new ResultType[] {ResultType.SCALAR_LITERAL};
 		else if (chart instanceof LineChart)
-			return ResultType.VECTOR_LITERAL;
+			return new ResultType[] {ResultType.VECTOR_LITERAL};
 		else if (chart instanceof HistogramChart)
-			return ResultType.HISTOGRAM_LITERAL;
+			return new ResultType[] {ResultType.HISTOGRAM_LITERAL};
 		else if (chart instanceof ScatterChart)
-			return ResultType.SCALAR_LITERAL; // XXX vectors and histograms can be displayed too
-
-		Assert.isTrue(false, "Unknown chart type: " + chart.getClass().getName());
-		return ResultType.SCALAR_LITERAL;
+			return new ResultType[] {ResultType.SCALAR_LITERAL,ResultType.VECTOR_LITERAL,ResultType.HISTOGRAM_LITERAL};
+		else
+			throw new IllegalArgumentException("Unknown chart type: " + chart.getClass().getName());
 	}
 	
 	/**

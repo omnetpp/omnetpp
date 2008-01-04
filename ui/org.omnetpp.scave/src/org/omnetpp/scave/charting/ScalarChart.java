@@ -77,7 +77,7 @@ public class ScalarChart extends ChartCanvas {
 	}
 	
 	static class BarSelection implements IChartSelection {
-		// TODO
+		// TODO selection on ScalarCharts
 	}
 	
 	public ScalarChart(Composite parent, int style) {
@@ -443,8 +443,10 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		public void draw(GC gc) {
+			resetDrawingStylesAndColors(gc);
+			gc.fillRectangle(gc.getClipping());
+
 			if (dataset != null) {
-				resetDrawingStylesAndColors(gc);
 				Graphics graphics = new SWTGraphics(gc);
 				graphics.pushState();
 

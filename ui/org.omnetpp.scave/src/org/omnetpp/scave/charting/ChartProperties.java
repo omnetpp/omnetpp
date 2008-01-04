@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.BasePropertySource;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
@@ -76,7 +77,8 @@ public class ChartProperties extends PropertySource {
 		PROP_LEGEND_ANCHORING	= "Legend.Anchoring",
 		// Plot
 		PROP_ANTIALIAS			= "Plot.Antialias",
-		PROP_CACHING			= "Plot.Caching";
+		PROP_CACHING			= "Plot.Caching",
+		PROP_BACKGROUND_COLOR	= "Plot.BackgroundColor";
 
 	public enum SymbolType {
 		None("None", "none"), //XXX allowed?
@@ -213,6 +215,11 @@ public class ChartProperties extends PropertySource {
 	public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
 	public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
 
+	@org.omnetpp.common.properties.Property(category="Main",id=PROP_BACKGROUND_COLOR,displayName="background color",descriptorClass=ColorPropertyDescriptor.class)
+	public String getBackgroundColor() { return getStringProperty(PROP_BACKGROUND_COLOR); }
+	public void setBackgroundColor(String rgb) { setProperty(PROP_BACKGROUND_COLOR, rgb); }
+	public String defaultBackgroundColor() { return ColorFactory.asString(ChartDefaults.DEFAULT_BACKGROUND_COLOR.getRGB()); }
+
 	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
@@ -342,7 +349,7 @@ public class ChartProperties extends PropertySource {
 		public LineType defaultLineType() { return null; }
 
 		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
-		public String getLineColor() { return getStringProperty(propertyName(PROP_LINE_COLOR)); }
+		public String getLineColor() { return getStringProperty(propertyName(PROP_LINE_COLOR)); } // FIXME use RGB
 		public void setLineColor(String color) { setProperty(propertyName(PROP_LINE_COLOR), color); }
 		public String defaultLineColor() { return null; }
 	}

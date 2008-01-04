@@ -1,9 +1,12 @@
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.views.VectorBrowserView;
 
@@ -21,7 +24,9 @@ public class ShowVectorBrowserViewAction extends AbstractScaveAction {
 			workbenchPage.showView(VectorBrowserView.ID);
 		} 
 		catch (PartInitException e) {
-			// TODO log the exception
+			IStatus error = ScavePlugin.getErrorStatus(0, "Failed to open Vector Data View", e);
+			ErrorDialog dialog = new ErrorDialog(scaveEditor.getSite().getShell(), null, null, error, IStatus.ERROR);
+			dialog.open();
 		}
 	}
 

@@ -19,7 +19,7 @@ import org.omnetpp.scave.editors.ui.EditDialog;
  * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
  */
 public class EditAction extends AbstractScaveAction {
-	private Map<String,Object> formParameters = null;  //FIXME use java.util.Properties !!!!
+	private Map<String,Object> formParameters = null;
 	
 	public EditAction() {
         setText("Properties...");

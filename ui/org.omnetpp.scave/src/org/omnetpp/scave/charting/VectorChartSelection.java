@@ -40,7 +40,7 @@ public class VectorChartSelection implements IChartSelection {
 		this.key = dataset.getSeriesKey(series);
 		this.id = dataset instanceof VectorDataset ? ((VectorDataset)dataset).getID(series) : -1L;
 		this.index = point.index;
-		this.eventNum = -1; // TODO
+		this.eventNum = -1; // TODO set eventNum
 		this.preciseX = dataset.getPreciseX(series, index);
 		this.x = dataset.getX(series, index);
 		this.y = dataset.getY(series, index);

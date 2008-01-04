@@ -151,7 +151,7 @@ public class ExportJob extends WorkspaceJob
 		if (histograms != null && histograms.size() > 0) {
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
-			// TODO: do export
+			// TODO: export histogram
 			monitor.worked(1);
 		}
 		return Status.OK_STATUS;

@@ -132,7 +132,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 
 		// set default selection in the type combo
 		ResultType datatype = (setOperation instanceof SelectDeselectOp && parent instanceof Chart ?
-				ScaveModelUtil.getDataTypeOfChart((Chart)parent) : ResultType.SCALAR_LITERAL);
+				ScaveModelUtil.getDataTypesOfChart((Chart)parent)[0] : ResultType.SCALAR_LITERAL);
 		selectDatatype(datatype);
 	}
 	

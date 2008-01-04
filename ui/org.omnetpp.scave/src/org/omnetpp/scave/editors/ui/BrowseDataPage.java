@@ -43,7 +43,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private FilteredDataPanel histogramsPanel;
 
 	private IResultFilesChangeListener fileChangeListener;
-	private SelectionListener selectionChangeListener;
 	
 	private SetFilterAction2 setFilterAction = new SetFilterAction2();
 
@@ -177,6 +176,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(new Separator());
 			contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
 		}
+		// XXX call getSite().registerContexMenu() ?
 	}
 
 	private void hookListeners() {
@@ -196,34 +196,31 @@ public class BrowseDataPage extends ScaveEditorPage {
 		}
 
 		// when they double-click in the vectors panel, open chart
-		//FIXME remembering selectionChangeListener, and unhooking it in unhookListeners() is probably redundant
-		if (selectionChangeListener == null) {
-			selectionChangeListener = new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					Object source = e.getSource();
-					if (source instanceof DataTable) {
-						FilteredDataPanel panel = getActivePanel();
-						if (panel != null && source == panel.getTable())
-							updateSelection();
-					}
-					else if (source == tabfolder) {
+		SelectionListener selectionChangeListener = new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Object source = e.getSource();
+				if (source instanceof DataTable) {
+					FilteredDataPanel panel = getActivePanel();
+					if (panel != null && source == panel.getTable())
 						updateSelection();
-					}
 				}
+				else if (source == tabfolder) {
+					updateSelection();
+				}
+			}
 
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-					ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-					if (editorContributor != null)
-						editorContributor.getCreateTempChartAction().run();
-				}
-			};
-			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
-			scalarsPanel.getTable().addSelectionListener(selectionChangeListener);
-			histogramsPanel.getTable().addSelectionListener(selectionChangeListener);
-			tabfolder.addSelectionListener(selectionChangeListener);
-		}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
+				if (editorContributor != null)
+					editorContributor.getCreateTempChartAction().run();
+			}
+		};
+		vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
+		scalarsPanel.getTable().addSelectionListener(selectionChangeListener);
+		histogramsPanel.getTable().addSelectionListener(selectionChangeListener);
+		tabfolder.addSelectionListener(selectionChangeListener);
 	}
 
 	private void unhookListeners() {
@@ -231,13 +228,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 			ResultFileManagerEx manager = scaveEditor.getResultFileManager();
 			manager.removeChangeListener(fileChangeListener);
 			fileChangeListener = null;
-		}
-		if (selectionChangeListener != null) {
-			vectorsPanel.getTable().removeSelectionListener(selectionChangeListener);
-			scalarsPanel.getTable().removeSelectionListener(selectionChangeListener);
-			histogramsPanel.getTable().removeSelectionListener(selectionChangeListener);
-			tabfolder.removeSelectionListener(selectionChangeListener);
-			selectionChangeListener = null;
 		}
 	}
 
@@ -266,7 +256,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	protected void refreshPage(final ResultFileManager manager) {
 		IDList vectors = manager.getAllVectors();
 		IDList scalars = manager.getAllScalars();
-		IDList histograms = new IDList(); // TODO
+		IDList histograms = new IDList(); // TODO histograms
 
 		vectorsTab.setText("Vectors ("+vectors.size()+")");
 		scalarsTab.setText("Scalars ("+scalars.size()+")");

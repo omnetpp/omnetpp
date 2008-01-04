@@ -81,10 +81,6 @@ class DomainAxis {
 					label.dispose();
 	}
 	
-	public LinearTicks getTicks() {
-		return new LinearTicks(1.0, 0.0, 1.0); // TODO
-	}
-
 	/**
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 

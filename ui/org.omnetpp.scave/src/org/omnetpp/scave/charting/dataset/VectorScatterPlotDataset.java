@@ -13,7 +13,7 @@ public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDat
 
 	public VectorScatterPlotDataset(IDList vectors, XYArray[] vectorsData, ResultFileManager manager) {
 		this.vectors = vectorsData;
-		this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX
+		this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
 	}
 
 	public int getSeriesCount() {

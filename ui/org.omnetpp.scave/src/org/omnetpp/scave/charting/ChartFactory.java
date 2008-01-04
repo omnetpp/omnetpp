@@ -49,7 +49,7 @@ public class ChartFactory {
 		else if (chart instanceof LineChart)
 			populateVectorChart((LineChart)chart, manager, (VectorChart)chartCanvas);
 		else if (chart instanceof HistogramChart)
-			;//TODO
+			;//TODO histogram chart
 		else if (chart instanceof ScatterChart)
 			populateScatterChart((ScatterChart)chart, manager, (VectorChart)chartCanvas);
 		else
@@ -76,7 +76,7 @@ public class ChartFactory {
 	}
 
 	public static ChartCanvas createHistogramChart(Composite parent, HistogramChart chart, Dataset dataset, ResultFileManager manager) {
-		return null; //TODO
+		return null; //TODO histogram chart
 	}
 	
 	public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager) {

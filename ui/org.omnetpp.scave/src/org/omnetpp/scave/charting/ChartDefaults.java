@@ -18,7 +18,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartProperties.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +66,6 @@ public class ChartDefaults {
 	public static final String DEFAULT_X_AXIS_TITLE = "";
 	public static final String DEFAULT_Y_AXIS_TITLE = "";
 	public static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
-	public static final Font DEFAULT_TICK_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	public static final Color DEFAULT_AXIS_COLOR = ColorFactory.BLACK;
 	public static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	public static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
@@ -84,7 +83,7 @@ public class ChartDefaults {
 
 	// lines
 	public static final boolean DEFAULT_DISPLAY_LINE = true;
-	public static final LineType DEFAULT_LINE_STYLE = null; // use interpolationmode attr of vectors
+	public static final LineType DEFAULT_LINE_STYLE = null; // = use interpolationmode attr of vectors
 	public static final Integer DEFAULT_SYMBOL_SIZE = 4;
 	
 	
@@ -96,11 +95,11 @@ public class ChartDefaults {
 		
 		defaults.put(PROP_ANTIALIAS, DEFAULT_ANTIALIAS);
 		defaults.put(PROP_CACHING, DEFAULT_CANVAS_CACHING);
+		defaults.put(PROP_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR.getRGB());
 		
 		defaults.put(PROP_GRAPH_TITLE, DEFAULT_TITLE);
 		defaults.put(PROP_GRAPH_TITLE_FONT, DEFAULT_TITLE_FONT);
 		
-		// TODO: BACKGROUND_COLOR
 		// TODO: INSETS_BACKGROUND_COLOR
 		// TODO: INSETS_LINE_COLOR
 
@@ -113,7 +112,6 @@ public class ChartDefaults {
 		defaults.put(PROP_X_AXIS_TITLE, DEFAULT_X_AXIS_TITLE);
 		defaults.put(PROP_Y_AXIS_TITLE, DEFAULT_Y_AXIS_TITLE);
 		defaults.put(PROP_AXIS_TITLE_FONT, DEFAULT_AXIS_TITLE_FONT);
-		// TODO: TICK_FONT
 		// TODO: AXIS_COLOR
 		defaults.put(PROP_LABEL_FONT, DEFAULT_LABELS_FONT);
 		defaults.put(PROP_X_LABELS_ROTATE_BY, DEFAULT_X_LABELS_ROTATED_BY);
@@ -124,8 +122,9 @@ public class ChartDefaults {
 		defaults.put(PROP_BAR_BASELINE, DEFAULT_BAR_BASELINE);
 		defaults.put(PROP_BAR_PLACEMENT, DEFAULT_BAR_PLACEMENT);
 		// TODO: BAR_OUTLINE_COLOR
-		// TODO: DEFAULT_LINE_STYLE, DEFAULT_SYMBOL_SIZE
 		defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
+		defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
+		defaults.put(PROP_LINE_TYPE, DEFAULT_LINE_STYLE);
 	}
 	
 	public static Object getDefaultPropertyValue(String propertyName) {

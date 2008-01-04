@@ -53,6 +53,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 // TODO use validator for font and number fields
+// TODO PROP_BACKROUND_COLOR
 public class ChartEditForm implements IScaveObjectEditForm {
 	public static final String TAB_MAIN = "Main";
 	public static final String TAB_TITLES = "Titles";
@@ -86,6 +87,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected Group optionsGroup;
 	private Button antialiasCheckbox;
 	private Button cachingCheckbox;
+	private Group colorGroup;
+	private ColorEdit backgroundColor;
 
 	protected Group axisTitlesGroup;
 	private Text graphTitleText;
@@ -196,6 +199,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			antialiasCheckbox.setSelection(ChartDefaults.DEFAULT_ANTIALIAS);
 			cachingCheckbox = createCheckboxField("Use caching", optionsGroup);
 			cachingCheckbox.setSelection(ChartDefaults.DEFAULT_CANVAS_CACHING);
+			colorGroup = createGroup("Colors", panel, 2);
+			backgroundColor = createColorField("Background color", colorGroup);
 		}
 		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);
@@ -507,6 +512,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Main
 		newProps.setAntialias(antialiasCheckbox.getSelection());
 		newProps.setCaching(cachingCheckbox.getSelection());
+		newProps.setBackgroundColor(backgroundColor.getText());
 		// Titles
 		newProps.setGraphTitle(graphTitleText.getText());
 		newProps.setGraphTitleFont(Converter.stringToFontdata(graphTitleFontText.getText()));
@@ -555,6 +561,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Main
 		antialiasCheckbox.setSelection(props.getAntialias());
 		cachingCheckbox.setSelection(props.getCaching());
+		backgroundColor.setText(props.getBackgroundColor());
 		// Titles
 		graphTitleText.setText(props.getGraphTitle());
 		graphTitleFontText.setText(asString(props.getGraphTitleFont()));

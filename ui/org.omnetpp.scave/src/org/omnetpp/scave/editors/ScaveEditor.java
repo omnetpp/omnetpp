@@ -659,10 +659,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		return null;
 	}
 
-	public void reportError(String message) {
-		// TODO
-	}
-
 	/**
 	 * Utility method.
 	 */

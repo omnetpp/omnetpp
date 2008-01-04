@@ -133,7 +133,7 @@ public class DataTable extends Table {
 	private IDList idlist;
 	private ListenerList listeners;
 	private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
-	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore(); // XXX
+	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
 
 	// holds actions for the context menu for this data table
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
@@ -161,7 +161,6 @@ public class DataTable extends Table {
 		});
 
 		setMenu(contextMenuManager.createContextMenu(this));
-		//XXX getSite.registerContextMenu(contextMenuManager, this);
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {
@@ -360,7 +359,6 @@ public class DataTable extends Table {
 			idlist.sortByRunAttribute(manager, MEASUREMENT, ascending);
 		else if (COL_REPLICATION.equals(column))
 			idlist.sortByRunAttribute(manager, REPLICATION, ascending);
-		// TODO: min,max,mean,count,stddev
 	}
 
 	protected void layoutColumns() {
@@ -452,7 +450,7 @@ public class DataTable extends Table {
 				}
 			}
 			else if (type == ResultType.HISTOGRAM_LITERAL) {
-				// TODO
+				// TODO histogram table columns
 			}
 		}
 	}
@@ -526,7 +524,7 @@ public class DataTable extends Table {
 				}
 			}
 			else if (type == ResultType.HISTOGRAM_LITERAL) {
-				// TODO
+				// TODO histogram table columns
 			}
 		}
 

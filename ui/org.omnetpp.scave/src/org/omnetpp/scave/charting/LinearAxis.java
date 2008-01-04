@@ -4,7 +4,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_GRID_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TICK_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 
@@ -36,7 +36,7 @@ public class LinearAxis {
 	private boolean drawTitle = true;
 	private String title; 
 	private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
-	private Font tickFont = DEFAULT_TICK_FONT;
+	private Font tickFont = DEFAULT_LABELS_FONT;
 
 	
 	/* Layout parameters */

@@ -201,10 +201,10 @@ public class ModelObjectPalette {
 			return "Discard operations remove (a subset of) previously added scalars, vectors or histograms from the dataset.";
 		if (c == e.getApply()) 
 			return "An Apply operation replaces (a subset of the) data in the dataset with the result of some transformation. " +
-					"Currently all operations operate on vector data only."; //XXX
+					"Currently all operations operate on vector data only."; //XXX implement scalar operations
 		if (c == e.getCompute()) 
 			return "A Compute operation performs a calculation on (a subset of the) data in the dataset, and adds the result to the dataset. " +
-					"Currently all operations operate on vector data only."; //XXX
+					"Currently all operations operate on vector data only."; //XXX implement scalar operations
 		if (c == e.getGroup()) 
 			return "A Group object creates a local copy of the dataset (conceptually), and lets you apply various processing steps without affecting the dataset's main flow.";
 

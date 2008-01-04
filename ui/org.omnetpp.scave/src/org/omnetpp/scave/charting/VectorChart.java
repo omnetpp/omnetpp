@@ -1,6 +1,7 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
@@ -61,6 +62,8 @@ import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
  * Line chart.
  */
 public class VectorChart extends ChartCanvas {
+	
+	private static final boolean debug = false;
 	
 	private IXYDataset dataset = null;
 
@@ -269,7 +272,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public void updateLineProperties() {
-		System.out.println("updateLineProperties()");
+		if (debug) System.out.println("updateLineProperties()");
 		
 		int seriesCount = dataset != null ? dataset.getSeriesCount() : 0;
 		List<LineProperties> newProps = new ArrayList<LineProperties>(seriesCount);
@@ -342,7 +345,7 @@ public class VectorChart extends ChartCanvas {
 	 *==================================*/
 	public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
-		System.out.println("VectorChart.setProperty: "+name+"='"+value+"'");
+		if (debug) System.out.println("VectorChart.setProperty: "+name+"='"+value+"'");
 		// Titles
 		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);
@@ -353,7 +356,7 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_LABEL_FONT.equals(name))
 			setTickLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-			; //TODO
+			; //TODO PROP_X_LABELS_ROTATE_BY
 		// Axes
 		else if (PROP_X_AXIS_MIN.equals(name))
 			setXMin(Converter.stringToDouble(value));
@@ -451,11 +454,13 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public void setTickLabelFont(Font font) {
+		if (font == null)
+			font = DEFAULT_LABELS_FONT;
 		if (font != null) {
 			xAxis.setTickFont(font);
 			yAxis.setTickFont(font);
+			chartChanged();
 		}
-		chartChanged();
 	}
 	
 	protected RectangularArea calculatePlotArea() {
@@ -487,7 +492,7 @@ public class VectorChart extends ChartCanvas {
 					}
 				}
 				long duration = System.currentTimeMillis() - startTime;
-				System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
+				if (debug) System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
 			}
 			else {
 				minX = dataset.getMinX();
@@ -579,7 +584,7 @@ public class VectorChart extends ChartCanvas {
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
-		System.out.println("paintCachableLayer()");
+		if (debug) System.out.println("paintCachableLayer()");
 //		System.out.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f",
 //				getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
 //		System.out.println(String.format("view port=%s, vxy=%d, %d",
@@ -590,6 +595,7 @@ public class VectorChart extends ChartCanvas {
 		
 		
 		resetDrawingStylesAndColors(gc);
+		gc.fillRectangle(gc.getClipping());
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
 
@@ -611,7 +617,7 @@ public class VectorChart extends ChartCanvas {
 					if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, mapper) >= smartModeLimit) {
 						//XXX this may have unwanted effects when caching is on,
 						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
-						System.out.println("\"smart mode\": turning off symbols");
+						if (debug) System.out.println("\"smart mode\": turning off symbols");
 						symbol = null;
 					}
 
@@ -626,7 +632,7 @@ public class VectorChart extends ChartCanvas {
 				}
 			}
 			getShell().setCursor(null);
-			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+			if (debug) System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 
 			if (mapper.getNumCoordinateOverflows()>0) {
 				resetDrawingStylesAndColors(gc);
@@ -639,7 +645,7 @@ public class VectorChart extends ChartCanvas {
 	
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
-		//System.out.println("paintNoncachableLayer()");
+		if (debug) System.out.println("paintNoncachableLayer()");
 		if (getClientArea().isEmpty())
 			return;
 		

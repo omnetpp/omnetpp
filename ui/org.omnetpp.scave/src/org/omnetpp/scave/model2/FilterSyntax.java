@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 
 /**
  * Parser for filter texts with error recovery.
@@ -422,7 +423,10 @@ public class FilterSyntax {
 				input.unread(ch);
 				pos--;
 			} catch (IOException e) {
-				// XXX
+				// Should never happen, because an ungetChar() call
+				// always preceded by a getChar() call. (No two adjacent
+				// ungetChar() calls.)
+				ScavePlugin.logError(e);
 			}
 		}
 	}
