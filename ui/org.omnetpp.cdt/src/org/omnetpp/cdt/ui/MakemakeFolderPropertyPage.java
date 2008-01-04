@@ -5,10 +5,14 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -156,15 +160,24 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
                 "It will be added to all configurations. You can check the result or revert " +
                 "this operation on the \"Paths and symbols\" page of the project properties dialog."
                 )) {
+
             IProject project = getFolder().getProject();
-            IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-            IConfiguration activeConfiguration = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
-            ICSourceEntry[] entries = activeConfiguration.getSourceEntries();
-            ICSourceEntry entry = new CSourceEntry(folder.getProjectRelativePath(), new IPath[0], 0);
-            entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
-            activeConfiguration.setSourceEntries(entries);
-            ManagedBuildManager.saveBuildInfo(project, true); // this will apply other changes (made on CDT pages) too!
-            //XXX how to get CDT's Path and Symbols page updated?
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(this, project);
+            for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
+                ICSourceEntry[] entries = configuration.getSourceEntries();
+                ICSourceEntry entry = new CSourceEntry(folder.getProjectRelativePath(), new IPath[0], 0);
+                entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
+                try {
+                    configuration.setSourceEntries(entries);
+                }
+                catch (WriteAccessException e) {
+                    Activator.logError(e);
+                }
+                catch (CoreException e) {
+                    Activator.logError(e);
+                }
+            }
+            CDTPropertyManager.performOk(this);
             updatePageState();
         }
     }
