@@ -54,7 +54,11 @@ import org.omnetpp.common.util.StringUtils;
 //XXX totally eliminate possibility of in-directory build!
 //XXX kezzel beirt -D elveszik!!!
 //TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
-// TODO add a checkbox Primary makefile
+//TODO display which makefile is the primaty makefile, and add "Make primary Makefile" button
+//TODO open ToggleLinks if those controls contain some data (ie subdirmake)
+//TODO DLLs: FOO_API, FOO_IMPORT, FOO_EXPORT; FOO = toupper(targetname); detect if a lib (-l) is implib, and define FOO_IMPORT automatically
+// TODO checkbox: link with all object files in the project
+//TODO use "linkall" as LINK command in configuser.vc
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
