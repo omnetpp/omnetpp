@@ -3,6 +3,9 @@ package org.omnetpp.cdt.ui;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -14,25 +17,31 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
@@ -63,6 +72,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     protected Combo sourceFolderCombo;
     protected Text errorMessageText;
     protected MakemakeOptionsPanel contents;
+    protected Composite nonSourceFolderComposite;
 
     /**
      * Constructor.
@@ -101,6 +111,30 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
         contents.setOwner(this);
         
+        nonSourceFolderComposite = new Composite(parent, SWT.NONE);
+        nonSourceFolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        nonSourceFolderComposite.setLayout(new GridLayout(1,false));
+        Link link = createLink(nonSourceFolderComposite, "This is not a source folder. Source folders can be specified in the <A>Paths and symbols</A> page.");
+        createLabel(nonSourceFolderComposite, "To generate a Makefile, you need to make this folder a source folder.");
+        Button button = createButton(nonSourceFolderComposite, SWT.PUSH, "Make source folder", null);
+        button.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                makeSourceFolder();
+            }
+            public void widgetSelected(SelectionEvent e) {
+                makeSourceFolder();
+            }
+        });
+        link.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+            public void widgetDefaultSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+        });
+        
+        
         loadBuildSpecFile();
 
         updatePageState();
@@ -108,11 +142,62 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return contents;
     }
 
+    @SuppressWarnings("restriction")
+    protected void gotoPathsAndSymbolsPage() {
+        IPreferencePageContainer container = getContainer();
+        if (container instanceof PropertyDialog)
+            ((PropertyDialog)container).setCurrentPageId(MakemakeOptionsPanel.PROPERTYPAGE_PATH_AND_SYMBOLS);
+    }
+
+    protected void makeSourceFolder() {
+        IContainer folder = getComboSelection();
+        if (MessageDialog.openQuestion(getShell(), "Make Source Folder", 
+                "Do you want to add \"" + folder.getFullPath() + "\" to the list of source folders? " +
+                "It will be added to all configurations. You can check the result or revert " +
+                "this operation on the \"Paths and symbols\" page of the project properties dialog."
+                )) {
+            IProject project = getFolder().getProject();
+            IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+            IConfiguration activeConfiguration = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
+            ICSourceEntry[] entries = activeConfiguration.getSourceEntries();
+            ICSourceEntry entry = new CSourceEntry(folder.getProjectRelativePath(), new IPath[0], 0);
+            entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
+            activeConfiguration.setSourceEntries(entries);
+            ManagedBuildManager.saveBuildInfo(project, true); // this will apply other changes (made on CDT pages) too!
+            //XXX how to get CDT's Path and Symbols page updated?
+            updatePageState();
+        }
+    }
+
+    protected Group createGroup(Composite composite, String text, int numColumns) {
+        Group group = new Group(composite, SWT.NONE);
+        group.setText(text);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        group.setLayout(new GridLayout(numColumns,false));
+        return group;
+    }
+
     protected Label createLabel(Composite composite, String text) {
         Label label = new Label(composite, SWT.NONE);
         label.setText(text);
         label.setLayoutData(new GridData());
         return label;
+    }
+
+    protected Button createButton(Composite parent, int style, String text, String tooltip) {
+        Button button = new Button(parent, style);
+        button.setText(text);
+        if (tooltip != null)
+            button.setToolTipText(tooltip);
+        button.setLayoutData(new GridData());
+        return button;
+    }
+
+    protected Link createLink(Composite composite, String text) {
+        Link link = new Link(composite, SWT.NONE);
+        link.setText(text);
+        link.setLayoutData(new GridData());
+        return link;
     }
 
     @Override
@@ -155,12 +240,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     }
 
     protected void comboSelectionChanged() {
-        String text = StringUtils.removeEnd(sourceFolderCombo.getText(), SELECTED);
-        
-        // map combo selection to an IContainer
-        Path path = new Path(text);
-        IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
-        IContainer folder = path.segmentCount()>1 ? wsRoot.getFolder(path) : wsRoot.getProject(text);
+        IContainer folder = getComboSelection();
 
         IProject project = getFolder().getProject();
         List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
@@ -197,7 +277,23 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         }
         
         // this needs to be done unconditionally, so that it runs when page is first displayed
-        contents.setVisible(selectedSourceFolder != null);
+        setControlVisible(contents, selectedSourceFolder != null);
+        setControlVisible(nonSourceFolderComposite, selectedSourceFolder == null);
+    }
+
+    protected IContainer getComboSelection() {
+        // returns the IContainer selected in the combo
+        String text = StringUtils.removeEnd(sourceFolderCombo.getText(), SELECTED);
+        Path path = new Path(text);
+        IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
+        IContainer folder = path.segmentCount()>1 ? wsRoot.getFolder(path) : wsRoot.getProject(text);
+        return folder;
+    }
+
+    protected void setControlVisible(Control control, boolean visible) {
+        control.setVisible(visible);
+        ((GridData)control.getLayoutData()).exclude = !visible;
+        control.getParent().layout();
     }
 
     protected boolean isDirty() {

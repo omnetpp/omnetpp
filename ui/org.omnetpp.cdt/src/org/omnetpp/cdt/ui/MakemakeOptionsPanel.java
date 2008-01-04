@@ -63,8 +63,8 @@ public class MakemakeOptionsPanel extends Composite {
     protected static final int BROWSE_FILE = 1;
     protected static final int BROWSE_DIR = 2;
 
+    public static final String PROPERTYPAGE_PATH_AND_SYMBOLS = "org.eclipse.cdt.managedbuilder.ui.properties.Page_PathAndSymb";
     private static final String CCEXT_AUTODETECT = "autodetect";
-    private static final String PROPERTYPAGE_PATH_AND_SYMBOLS = "org.eclipse.cdt.managedbuilder.ui.properties.Page_PathAndSymb";
 
     // the folder whose properties we're editing; needed for Preview panel / translated options
     private IContainer folder;
