@@ -61,8 +61,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//XXX add [Make source folder] [Remove source folder] buttons next to the combo box...
-//XXX add link which goes to the "paths & symbols" page... (if it has the "source path" tab!!!)
 public class MakemakeFolderPropertyPage extends PropertyPage {
     private static final String SELECTED = " <selected>";
     public static final String MAKEFRAG_FILENAME = "makefrag";
@@ -277,9 +275,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
                     folderOptions = MakemakeOptions.createInitial();
                 contents.populate(selectedSourceFolder, folderOptions, makefragContents, makefragvcContents);
             }
-            else {
-                //XXX display some message
-            }
 
             //setErrorMessage(getInformationalMessage());
             String message = getInformationalMessage();
@@ -360,12 +355,12 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     }
 
     //XXX needed??
-    protected IContainer ancestorMakemakeFolder() {
-        IContainer folder = getFolder().getParent();
-        while (!(folder instanceof IWorkspaceRoot) && buildSpec.getMakemakeOptions(folder)==null)
-            folder = folder.getParent();
-        return buildSpec.getMakemakeOptions(folder)==null ? null : folder;
-    }
+//    protected IContainer ancestorMakemakeFolder() {
+//        IContainer folder = getFolder().getParent();
+//        while (!(folder instanceof IWorkspaceRoot) && buildSpec.getMakemakeOptions(folder)==null)
+//            folder = folder.getParent();
+//        return buildSpec.getMakemakeOptions(folder)==null ? null : folder;
+//    }
 
     /**
      * The resource for which the Properties dialog was brought up.
@@ -403,7 +398,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     protected void saveBuildSpecFile() {
         try {
-            //XXX remove obsolete entries from buildSpec? (i.e. those folders that are no longer source folder)
             IProject project = getFolder().getProject();
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
         } 

@@ -363,7 +363,6 @@ public class MakemakeOptions implements Cloneable {
         return obj != null && obj.getClass() == getClass() && Arrays.equals(((MakemakeOptions)obj).toArgs(), toArgs());
     }
     
-    ///FIXME make sure it's up to date!!!!!
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = new MakemakeOptions();
@@ -391,7 +390,7 @@ public class MakemakeOptions implements Cloneable {
         result.libDirs.addAll(libDirs);
         result.libs.addAll(libs);
         result.defines.addAll(defines);
-        result.makefileDefines.addAll(defines);
+        result.makefileDefines.addAll(makefileDefines);
         result.extraArgs.addAll(extraArgs);
         result.metaAutoIncludePath = metaAutoIncludePath;
         result.metaExportLibrary = metaExportLibrary;

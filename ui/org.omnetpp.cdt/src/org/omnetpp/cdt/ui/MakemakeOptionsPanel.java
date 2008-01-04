@@ -48,14 +48,12 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
-//XXX introduce "buildingDllMacro" option into MakemakeOptions
 //XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
 //XXX "Out" dir should not overlap with source folders (check!!!)
 //XXX create new View: cross-folder dependencies (use DOT to render the graph?)
 //XXX totally eliminate possibility of in-directory build!
-//TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
-//XXX -Dalma ==> -Dalma -Kalma ???
 //XXX kezzel beirt -D elveszik!!!
+//TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
