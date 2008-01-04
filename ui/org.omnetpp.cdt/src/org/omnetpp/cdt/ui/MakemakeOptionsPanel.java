@@ -497,7 +497,8 @@ public class MakemakeOptionsPanel extends Composite {
 
             if (isPreviewPageSelected()) {
                 // re-parse options text modified by user
-                MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText()); //FIXME exception if invalid option is entered!
+                MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText());
+                //XXX check makemakeOptions.getParseErrors() !!!
                 populateControls(updatedOptions);
                 refreshTranslatedOptions(updatedOptions);
             }

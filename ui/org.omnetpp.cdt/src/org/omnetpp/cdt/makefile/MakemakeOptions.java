@@ -11,7 +11,6 @@ import org.omnetpp.common.util.StringUtils;
  * Value object to represent opp_makemake command-line options in a parsed form.
  * @author Andras
  */
-//FIXME parse() probably shouldn't throw exception, as it blows up reading the .oppbuildspec file if there's any errors in it
 //FIXME "-q" option: into perl too!
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
@@ -50,6 +49,8 @@ public class MakemakeOptions implements Cloneable {
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
 
+    private List<String> errors = null; 
+    
     /**
      * Create makemake options with the default settings.
      */
@@ -84,6 +85,8 @@ public class MakemakeOptions implements Cloneable {
      * Parse the argument list into the member variables
      */
     public void parseArgs(String[] argv) {
+        errors = null;
+        
         // process arguments
         int i;
         for (i = 0; i < argv.length; i++) {
@@ -98,19 +101,19 @@ public class MakemakeOptions implements Cloneable {
                 isNMake = true;
             }
             else if (arg.equals("-e") || arg.equals("--ext")) {
-                checkArg(argv, i);
-                ccext = argv[++i];
+                if (checkArg(argv, i))
+                    ccext = argv[++i];
             }
             else if (arg.equals("-o")) {
-                checkArg(argv, i);
-                target = argv[++i];
+                if (checkArg(argv, i))
+                    target = argv[++i];
             }
             else if (arg.startsWith("-o")) {
                 target = arg.substring(2);
             }
             else if (arg.equals("-O") || arg.equals("--out")) {
-                checkArg(argv, i);
-                outRoot = argv[++i];
+                if (checkArg(argv, i))
+                    outRoot = argv[++i];
             }
             else if (arg.startsWith("-O")) {
                 outRoot = arg.substring(2);
@@ -122,9 +125,8 @@ public class MakemakeOptions implements Cloneable {
                 isRecursive = true;
             }
             else if (arg.equals("-X") || arg.equals("--except")) {
-                checkArg(argv, i);
-                String dir = argv[++i];
-                exceptSubdirs.add(dir);
+                if (checkArg(argv, i))
+                    exceptSubdirs.add(argv[++i]);
             }
             else if (arg.startsWith("-X")) {
                 String dir = arg.substring(2);
@@ -134,42 +136,42 @@ public class MakemakeOptions implements Cloneable {
                 noDeepIncludes = true;
             }
             else if (arg.equals("-D") || arg.equals("--define")) {
-                checkArg(argv, i);
-                defines.add(argv[++i]);
+                if (checkArg(argv, i))
+                    defines.add(argv[++i]);
             }
             else if (arg.startsWith("-D")) {
                 defines.add(arg.substring(2));
             }
             else if (arg.equals("-K") || arg.equals("--makefile-define")) {
-                checkArg(argv, i);
-                makefileDefines.add(argv[++i]);
+                if (checkArg(argv, i))
+                    makefileDefines.add(argv[++i]);
             }
             else if (arg.startsWith("-K")) {
                 makefileDefines.add(arg.substring(2));
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
-                throw new IllegalArgumentException(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
+                addError(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
             }
             else if (arg.equals("-P") || arg.equals("--projectdir")) {
-                checkArg(argv, i);
-                projectDir = argv[++i];
+                if (checkArg(argv, i))
+                    projectDir = argv[++i];
             }
             else if (arg.startsWith("-P")) {
                 projectDir = arg.substring(2);
             }
             else if (arg.equals("-M") || arg.equals("--mode")) {
-                checkArg(argv, i);
-                defaultMode = argv[++i];
+                if (checkArg(argv, i))
+                    defaultMode = argv[++i];
             }
             else if (arg.startsWith("-M")) {
                 defaultMode = arg.substring(2);
             }
             else if (arg.equals("-c") || arg.equals("--configfile")) {
-                throw new IllegalArgumentException("option "+arg+" is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
+                addError("option "+arg+" is no longer supported, config file is located using variables (OMNETPP_CONFIGFILE or OMNETPP_ROOT), or by invoking opp_configfilepath");
             }
             else if (arg.equals("-d") || arg.equals("--subdir")) {
-                checkArg(argv, i);
-                subdirs.add(argv[++i]);
+                if (checkArg(argv, i))
+                    subdirs.add(argv[++i]);
             }
             else if (arg.startsWith("-d")) {
                 subdirs.add(arg.substring(2));
@@ -190,33 +192,30 @@ public class MakemakeOptions implements Cloneable {
                 linkWithObjects = true;
             }
             else if (arg.equals("-x") || arg.equals("--notstamp")) {
-                throw new IllegalArgumentException(arg + ": obsolete option, please remove");
+                addError(arg + ": obsolete option, please remove");
             }
             else if (arg.equals("-u") || arg.equals("--userinterface")) {
-                checkArg(argv, i);
-                userInterface = argv[++i];
-                userInterface = userInterface.toUpperCase();
-                if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("TKENV"))
-                    throw new IllegalArgumentException("-u option: specify All, Cmdenv or Tkenv");
+                if (checkArg(argv, i)) {
+                    userInterface = argv[++i].toUpperCase();
+                    if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("TKENV"))
+                        addError("-u option: specify All, Cmdenv or Tkenv");
+                }
             }
             else if (arg.equals("-i") || arg.equals("--includefragment")) {
-                checkArg(argv, i);
-                String frag = argv[++i];
-                fragmentFiles.add(frag);
+                if (checkArg(argv, i))
+                    fragmentFiles.add(argv[++i]);
             }
             else if (arg.equals("-I")) {
-                checkArg(argv, i);
-                String dir = argv[++i];
-                includeDirs.add(dir);
+                if (checkArg(argv, i))
+                    includeDirs.add(argv[++i]);
             }
             else if (arg.startsWith("-I")) {
                 String dir = arg.substring(2);
                 includeDirs.add(dir);
             }
             else if (arg.equals("-L")) {
-                checkArg(argv, i);
-                String dir = argv[++i];
-                libDirs.add(dir);
+                if (checkArg(argv, i))
+                    libDirs.add(argv[++i]);
             }
             else if (arg.startsWith("-L")) {
                 String dir = arg.substring(2);
@@ -227,15 +226,15 @@ public class MakemakeOptions implements Cloneable {
                 libs.add(lib);
             }
             else if (arg.equals("-p")) {
-                checkArg(argv, i);
-                dllExportMacro = argv[++i];
+                if (checkArg(argv, i))
+                    dllExportMacro = argv[++i];
             }
             else if (arg.startsWith("-p")) {
                 dllExportMacro = arg.substring(2);
             }
             else if (arg.equals("-q")) {
-                checkArg(argv, i);
-                buildingDllMacro = argv[++i];
+                if (checkArg(argv, i))
+                    buildingDllMacro = argv[++i];
             }
             else if (arg.startsWith("-q")) {
                 buildingDllMacro = arg.substring(2);
@@ -255,7 +254,7 @@ public class MakemakeOptions implements Cloneable {
             else {
                 Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
                 if (arg.startsWith("-"))
-                    throw new IllegalArgumentException("unrecognized option: " + arg);
+                    addError("unrecognized option: " + arg);
                 extraArgs.add(arg);
             }
         }
@@ -267,9 +266,26 @@ public class MakemakeOptions implements Cloneable {
         }
     }
 
-    protected void checkArg(String[] argv, int i) {
-        if (i+1 >= argv.length)
-            throw new IllegalArgumentException("option " + argv[i] +  " requires an argument");
+    protected boolean checkArg(String[] argv, int i) {
+        if (i+1 >= argv.length) {
+            addError("option " + argv[i] +  " requires an argument");
+            return false;
+        }
+        return true;
+    }
+    
+    protected void addError(String message) {
+        if (errors == null)
+            errors = new ArrayList<String>();
+        errors.add(message);
+    }
+
+    public List<String> getParseErrors() {
+        return errors==null ? new ArrayList<String>() : errors;
+    }
+
+    public void clearErrors() {
+        errors = null;
     }
 
     /**

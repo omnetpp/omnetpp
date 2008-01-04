@@ -59,6 +59,7 @@ public class Makemake {
      */
     public void generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
+        //XXX check makemakeOptions.getParseErrors() !!!
     }
 
     /**
@@ -66,6 +67,7 @@ public class Makemake {
      */
     public void generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
         generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
+        //XXX check makemakeOptions.getParseErrors() !!!
     }
 
     /**
