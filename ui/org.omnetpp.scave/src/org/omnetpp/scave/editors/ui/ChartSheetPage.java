@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -107,19 +108,23 @@ public class ChartSheetPage extends ScaveEditorPage {
 		getContent().setSize(getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 	
-	@Override
 	public void configureChartView(ChartCanvas view, final Chart chart) {
+		// hide legend
 		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
 		
-		view.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
+		view.addMouseListener(new MouseAdapter() {
+			// double click in the view opens the chart in a separate page
 			public void mouseDoubleClick(MouseEvent e) {
 				scaveEditor.openChart(chart);
 			}
+
+			// mouse click on the view selects the chart object in the model
+			public void mouseUp(MouseEvent e) {
+				scaveEditor.setSelection(new StructuredSelection(chart));
+			}
 		});
-
-		super.configureChartView(view, chart);
 	}
-
+	
 	private static String getChartSheetName(ChartSheet chartSheet) {
 		return chartSheet.getName() != null ? chartSheet.getName() : "<unnamed>";
 	}

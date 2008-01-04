@@ -1,14 +1,14 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
@@ -22,8 +22,6 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -34,14 +32,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.model.Chart;
 
 /**
  * Common functionality of Scave multi-page editor pages.
@@ -162,7 +158,9 @@ public class ScaveEditorPage extends ScrolledForm {
 		// convert OS path to workspace path
 		IFile iFile = ScaveEditor.findFileInWorkspace(fileName);
 		if (iFile==null) {
-			System.out.println("path not in workspace: "+fileName); //XXX error dialog?
+			IStatus error =
+				ScavePlugin.getErrorStatus(0, "Path not found in the workspace" + fileName, null);
+			ErrorDialog.openError(getShell(), null, null, error);
 			return;
 		}
 		scaveEditor.addWorkspaceFileToInputs(iFile);
@@ -210,25 +208,6 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * when the button is pressed, and the button is enabled/disabled when 
 	 * the action becomes enabled/disabled. 
 	 * 
-	 * The action will be enabled/disabled based on the selection service's
-	 * selection.
-	 */
-	//XXX not currently used, remove?
-	public static void configureGlobalButton(IWorkbenchWindow workbenchWindow, final Button button, final IScaveAction action) {
-		doConfigureButton(button, action);
-		 // hook action on selection change
-		workbenchWindow.getSelectionService().addSelectionListener(new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				action.selectionChanged(selection);
-			}
-		});
-	}
-	
-	/* 
-	 * Connects the button with an action, so that the action is executed 
-	 * when the button is pressed, and the button is enabled/disabled when 
-	 * the action becomes enabled/disabled. 
-	 * 
 	 * The action will be enabled/disabled based on a viewer's selection.
 	 * 
 	 * See also: ActionContributionItem, ActionContributionItem2
@@ -264,20 +243,6 @@ public class ScaveEditorPage extends ScrolledForm {
 		});
 	}
 	
-	/**
-	 * Adds event adapter to the chart view so that clicking on the view
-	 * will select the chart object in the model.
-	 */
-	//FIXME find a better place for this method
-	public void configureChartView(final ChartCanvas view, final Chart chart) {
-		// mouse click on the view selects the chart object in the model
-		view.addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
-				scaveEditor.setSelection(new StructuredSelection(chart));
-			}
-		});
-	}
-	
 	public void showStatusMessage(String message) {
 		IWorkbenchWindow window = scaveEditor.getSite().getWorkbenchWindow();
 		if (window instanceof ApplicationWindow)
@@ -285,10 +250,10 @@ public class ScaveEditorPage extends ScrolledForm {
 	}
 	
 	/**
-	 * Notification about the selection of the page of the
+	 * Notification about the activation of the page of the
 	 * multipage editor.
 	 */
-	public void pageSelected() {
+	public void pageActivated() {
 	}
 	
 	/**

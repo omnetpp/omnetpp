@@ -117,7 +117,6 @@ import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
  * This is an abstract base class for EMF-based editors. Compare
  * with EMF-generated multi-page editors.
  */
-//FIXME "New Children" etc context menu is only available after clicking in the outline page at least once
 //FIXME if Datasets is empty, context menu offers "New Input File" if Inputs is selected in the content outline
 public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, IGotoMarker {

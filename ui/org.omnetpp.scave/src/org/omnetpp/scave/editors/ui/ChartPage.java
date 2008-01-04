@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -102,11 +103,8 @@ public class ChartPage extends ScaveEditorPage {
 		//setBackground(ColorFactory.asColor("lightGray"));
 		getBody().setLayout(new GridLayout(2,false));
 
-		// set up contents
-		Composite parent = getBody();
-		chartView = (ChartCanvas) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
+		chartView = (ChartCanvas) ChartFactory.createChart(getBody(), this.chart, scaveEditor.getResultFileManager());
 		chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		// configureChartView(chartView, chart); //FIXME bring this method into this class
 		
 		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor); 
 		chartView.setMenu(menuManager.createContextMenu(chartView));
@@ -164,6 +162,12 @@ public class ChartPage extends ScaveEditorPage {
 		}
 	}
 	
+	@Override
+	public void pageActivated() {
+		if (chartSelectionListener != null)
+			chartSelectionListener.selectionChanged(chartView.getSelection());
+	}
+
 	private void unhookListeners() {
 		if (chartSelectionListener != null) {
 			chartView.removeChartSelectionListener(chartSelectionListener);

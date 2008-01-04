@@ -13,9 +13,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
@@ -27,10 +24,28 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.*;
+import org.omnetpp.scave.actions.AddFilterToDatasetAction;
+import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
+import org.omnetpp.scave.actions.ChartMouseModeAction;
+import org.omnetpp.scave.actions.CopyChartToClipboardAction;
+import org.omnetpp.scave.actions.CopyToClipboardAction;
+import org.omnetpp.scave.actions.CreateChartTemplateAction;
+import org.omnetpp.scave.actions.CreateTempChartAction;
+import org.omnetpp.scave.actions.EditAction;
+import org.omnetpp.scave.actions.ExportDataAction;
+import org.omnetpp.scave.actions.GotoChartDefinitionAction;
+import org.omnetpp.scave.actions.GroupAction;
+import org.omnetpp.scave.actions.IScaveAction;
+import org.omnetpp.scave.actions.OpenAction;
+import org.omnetpp.scave.actions.RefreshChartAction;
+import org.omnetpp.scave.actions.RefreshComputedDataFileAction;
+import org.omnetpp.scave.actions.RemoveAction;
+import org.omnetpp.scave.actions.SelectAllAction;
+import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
+import org.omnetpp.scave.actions.UngroupAction;
+import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 import org.omnetpp.scave.views.DatasetView;
 
@@ -63,12 +78,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction selectAllAction;
 	private IAction refreshComputedFilesAction;
 
-	// ChartPage actions
-//XXX
-//	private IAction zoomInXAction;
-//	private IAction zoomOutXAction;
-//	private IAction zoomInYAction;
-//	private IAction zoomOutYAction;
+	// ChartPage/ChartSheetPage actions
 	private IAction zoomInAction;
 	private IAction zoomOutAction;
 	private IAction zoomToFitAction;
@@ -126,11 +136,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 
         // ChartPage actions
-//XXX
-//        zoomInXAction = registerAction(page, new ZoomChartAction(true, false, 1.5));
-//        zoomOutXAction = registerAction(page, new ZoomChartAction(true, false, 1/1.5));
-//        zoomInYAction = registerAction(page, new ZoomChartAction(false, true, 1.5));
-//        zoomOutYAction = registerAction(page, new ZoomChartAction(false, true, 1/1.5));
         zoomInAction = registerAction(page, new ZoomChartAction(true, true, 2.0));
         zoomOutAction = registerAction(page, new ZoomChartAction(true, true, 1/2.0));
         zoomToFitAction = registerAction(page, new ZoomChartAction(true, true, 0.0));
@@ -196,7 +201,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	@Override
     public void contributeToMenu(IMenuManager manager) {
-		// super.contributeToMenu(manager);
+		// do not contribute to the menu bar
 	}
 
 	@Override
@@ -228,13 +233,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 		manager.insertBefore("scavemodel-additions", createTempChartAction);
 
-//XXX
-//		manager.insertBefore("scavemodel-additions", zoomInXAction);
-//		manager.insertBefore("scavemodel-additions", zoomOutXAction);
-//		manager.insertBefore("scavemodel-additions", zoomInYAction);
-//		manager.insertBefore("scavemodel-additions", zoomOutYAction);
-//		manager.insertBefore("scavemodel-additions", zoomInAction);
-//		manager.insertBefore("scavemodel-additions", zoomOutAction);
 		manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
 		manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
 		manager.insertBefore("scavemodel-additions", zoomInAction);
@@ -297,27 +295,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertAfter("ui-actions", refreshViewerAction);
 	}
 
-	@Override
-    public void update()
-	{
-		super.update();
-		// FIXME explain the intention of the code below
-
-		ISelectionProvider selectionProvider =
-			activeEditor instanceof ISelectionProvider ?
-				(ISelectionProvider)activeEditor :
-					activeEditor.getEditorSite().getSelectionProvider();
-
-		if (selectionProvider != null)
-		{
-			ISelection selection = selectionProvider.getSelection();
-			IStructuredSelection structuredSelection =
-				selection instanceof IStructuredSelection ?  (IStructuredSelection)selection : StructuredSelection.EMPTY;
-
-			deleteAction.selectionChanged(structuredSelection);
-		}
-	}
-
 	public IAction getOpenAction() {
 		return openAction;
 	}
@@ -325,20 +302,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public IAction getEditAction() {
 		return editAction;
 	}
-//XXX
-//    public IAction getZoomInXAction() {
-//		return zoomInXAction;
-//	}
-//    public IAction getZoomOutXAction() {
-//		return zoomOutXAction;
-//	}
-//    public IAction getZoomInYAction() {
-//		return zoomInYAction;
-//	}
-//    public IAction getZoomOutYAction() {
-//		return zoomOutYAction;
-//	}
-    public IAction getZoomInAction() {
+
+	public IAction getZoomInAction() {
 		return zoomInAction;
 	}
     public IAction getZoomOutAction() {

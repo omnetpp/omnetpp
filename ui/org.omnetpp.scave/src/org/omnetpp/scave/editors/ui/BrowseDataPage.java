@@ -252,7 +252,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	}
 
 	@Override
-	public void pageSelected() {
+	public void pageActivated() {
 		// when the user switches to this page, try to show a tab that actually
 		// contains some data
 		if (getActivePanel().getTable().getItemCount() == 0) {

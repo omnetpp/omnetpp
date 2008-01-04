@@ -77,7 +77,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 //TODO copy/paste doesn't work on the model
 //TODO Chart sheet: should modify order of charts in the ChartSheet#getCharts collection
-//TODO chart page: "view numbers" feature
 //TODO label provider: print attributes in "quotes"
 public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLocationProvider {
 
@@ -198,7 +197,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	public void createModel() {
 		super.createModel();
 
-		// ensure mandatory objects exist; XXX must also prevent them from being deleted
+		// ensure mandatory objects exist.
+		// it is ensured that these objects can not be replaced
+		// or deleted from the model (using commands)
+		// see AnalysisItemProvider
 		Analysis analysis = getAnalysis();
 		if (analysis.getInputs()==null)
 			analysis.setInputs(factory.createInputs());
@@ -207,10 +209,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		if (analysis.getChartSheets()==null)
 			analysis.setChartSheets(factory.createChartSheets());
 
+		// create resource for temporary charts and datasets
 		tempResource = createTempResource();
 
 		IFile inputFile = ((IFileEditorInput)getEditorInput()).getFile();
-		tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath()); //XXX must ensure that Inputs never gets deleted or replaced!!!
+		tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
 
 		// listen to model changes
 		if (adapterFactory instanceof IChangeNotifier) {
@@ -732,7 +735,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		super.pageChange(newPageIndex);
 		Control page = getControl(newPageIndex);
 		if (page instanceof ScaveEditorPage) {
-			((ScaveEditorPage)page).pageSelected();
+			((ScaveEditorPage)page).pageActivated();
 		}
 		fakeSelectionChange();
 	}
