@@ -1,3 +1,33 @@
+2008-01-04
+----------
+
+Fixes:
+
+   + Add "Background color" chart property.
+
+   + Add "Content..." to scatter chart's context menu.
+
+   + The interpolation mode of the vector us used to set the default line style
+     in the preview too.
+
+   + "Copy to clipboard" works on "ChartSheet" page
+
+   + Activating a ChartPage select the chart displayed on the page.
+
+   + "Add Selected Data to Dataset..." was disabled when the filter was empty.
+
+   + "X axis bounds" removed from the edit dialog of bar charts.
+
+   + Fixed: if last editor is closed, VectorBrowserView still displays the last vector.
+
+   + Wrapping is taken into account when computing the preferred size of the tooltip.
+
+   + Tooltip positioning on multiple monitors (not yet tested).
+
+   + Octave export generates identifiers which are unique in the file.
+
+   + Fixed: crash when the editor is closed while calculating the dataset.
+
 2007-12-21
 ----------
 
