@@ -54,6 +54,7 @@ import org.omnetpp.common.util.StringUtils;
 //XXX totally eliminate possibility of in-directory build!
 //XXX kezzel beirt -D elveszik!!!
 //TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
+// TODO add a checkbox Primary makefile
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188

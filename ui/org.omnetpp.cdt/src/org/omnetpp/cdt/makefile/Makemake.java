@@ -38,6 +38,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 //XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
 // FIXME remove subdirtargets
 // copy temlate cntents t per script opp_makemake
+// FIXME $O/./ remove . from path
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -424,7 +425,7 @@ public class Makemake {
         List<String> result = new ArrayList<String>();
         if (files != null)
             for (String name : files)
-                result.add(subFolder+"/"+name);
+                result.add(subFolder.equals(".") ? name : subFolder+"/"+name);
         return result;
     }
 
