@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemFields;
@@ -72,10 +73,15 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		IXYDataset xydataset = DatasetManager.createVectorDataset((LineChart)chart, dataset, formatString, false, manager, null);
 		lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
+		lineInterpolationModes = null;
 		if (xydataset != null) {
-			lineNames = new String[xydataset.getSeriesCount()];
-			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
+			int count = xydataset.getSeriesCount();
+			lineNames = new String[count];
+			lineInterpolationModes = new InterpolationMode[count];
+			for (int i = 0; i < count; ++i) {
 				lineNames[i] = xydataset.getSeriesKey(i);
+				lineInterpolationModes[i] = xydataset.getSeriesInterpolationMode(i);
+			}
 		}
 
 		if (linesTableViewer != null)

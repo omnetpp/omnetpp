@@ -12,12 +12,14 @@ import org.omnetpp.common.engine.BigDecimal;
 public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 
 	String[] seriesKeys;
+	InterpolationMode[] interpolationModes;
 	double[][] xCoords;
 	double[][] yCoords;
 	
-	public RandomXYDataset(long seed, String[] seriesKeys, int numOfItems) {
-		Random rg = new Random(seed);
+	public RandomXYDataset(long seed, String[] seriesKeys, InterpolationMode[] interpolationModes,int numOfItems) {
 		this.seriesKeys = seriesKeys;
+		this.interpolationModes = interpolationModes;
+		Random rg = new Random(seed);
 		xCoords = new double[seriesKeys.length][];
 		yCoords = new double[seriesKeys.length][];
 		for (int series = 0; series < seriesKeys.length; ++series) {
@@ -36,6 +38,12 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 
 	public String getSeriesKey(int series) {
 		return seriesKeys[series];
+	}
+	
+	@Override
+	public InterpolationMode getSeriesInterpolationMode(int series) {
+		return interpolationModes != null && series < interpolationModes.length ?
+				interpolationModes[series] : InterpolationMode.Unspecified;
 	}
 
 	public int getItemCount(int series) {

@@ -190,7 +190,7 @@ public class VectorChart extends ChartCanvas {
 		public IVectorPlotter getPlotter() {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
-			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);  // XXX cache
+			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);
 			plotter.setDatasetTransformation(transform);
 			return plotter; 
 		}
@@ -199,14 +199,14 @@ public class VectorChart extends ChartCanvas {
 			Assert.isTrue(this != defaultProperties);
 			SymbolType type = getSymbolType();
 			int size = getSymbolSize();
-			return ChartSymbolFactory.createChartSymbol(type, size);  // XXX cache
+			return ChartSymbolFactory.createChartSymbol(type, size);
 		}
 		
-		public Color getColor() { // XXX cache
+		public Color getColor() {
 			Assert.isTrue(this != defaultProperties);
 			RGB color = getLineColor();
 			if (color != null)
-				return new Color(null, color);
+				return ColorFactory.asColor(ColorFactory.asString(color));
 			else
 				return ColorFactory.getGoodDarkColor(series);
 		}
@@ -215,14 +215,18 @@ public class VectorChart extends ChartCanvas {
 			if (series < 0)
 				return LineType.Linear;
 			InterpolationMode mode = dataset.getSeriesInterpolationMode(series);
-			switch (mode) {
-				case None: return LineType.Points;
-				case Linear: return LineType.Linear;
-				case SampleHold: return LineType.SampleHold;
-				case BackwardSampleHold: return LineType.BackwardSampleHold;
-			}
-			return LineType.Linear;
+			return getLineTypeForInterpolationMode(mode);
 		}
+	}
+	
+	public static LineType getLineTypeForInterpolationMode(InterpolationMode mode) {
+		switch (mode) {
+		case None: return LineType.Points;
+		case Linear: return LineType.Linear;
+		case SampleHold: return LineType.SampleHold;
+		case BackwardSampleHold: return LineType.BackwardSampleHold;
+		}
+		return LineType.Linear;
 	}
 	
 	public VectorChart(Composite parent, int style) {

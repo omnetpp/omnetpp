@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -46,12 +47,14 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
+import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.RandomXYDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
@@ -69,7 +72,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	private static final String AUTO = "Auto";
 	private static final String[] SYMBOL_SIZES = StringUtils.split("1 2 3 4 5 6 7 8 10 12 16 20");
 
-	protected String[] lineNames;
+	protected String[] lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
+	protected InterpolationMode[] lineInterpolationModes;
 	
 	// "Axes" page controls
 	private Text xAxisMinText;
@@ -340,7 +344,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public PreviewCanvas(Composite parent) {
 			super(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
 			setBackground(ColorFactory.WHITE);
-			dataset = new RandomXYDataset(0, lineNames, 4);
+			dataset = new RandomXYDataset(0, lineNames, lineInterpolationModes, 4);
 			coordsMapping = createCoordsMapping();
 			addPaintListener(this);
 		}
@@ -356,15 +360,16 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				return displayLineCheckbox.getSelection();
 		}
 		
-		private IVectorPlotter getVectorPlotter(String lineId) {
+		private IVectorPlotter getVectorPlotter(String lineId, InterpolationMode mode) {
 			LineType lineType = null;
 			if (props != null)
 				lineType = getEnumProperty(lineTypeCombo,
 								props.getLineProperties(lineId).getLineType(),
 								ChartDefaults.DEFAULT_LINE_STYLE,
 								LineType.class);
-			if (lineType == null)
-				lineType = LineType.Linear; // XXX should use interpolationmode as in VectorChart?
+			if (lineType == null) {
+				lineType = mode != null ? VectorChart.getLineTypeForInterpolationMode(mode) : LineType.Linear;
+			}
 			
 			return VectorPlotterFactory.createVectorPlotter(lineType);
 		}
@@ -442,8 +447,9 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			
 			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
 				String lineId = dataset.getSeriesKey(series);
+				InterpolationMode interpolationMode = dataset.getSeriesInterpolationMode(series);
 				if (selectedIds.contains(lineId) && getDisplayLine(lineId)) {
-					IVectorPlotter plotter = getVectorPlotter(lineId);
+					IVectorPlotter plotter = getVectorPlotter(lineId, interpolationMode);
 					IChartSymbol symbol = getChartSymbol(lineId);
 					Color color = getLineColor(lineId);
 					gc.setAntialias(SWT.ON);
