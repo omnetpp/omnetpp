@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -37,8 +38,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 //FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
 //XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
 // FIXME remove subdirtargets
-// copy temlate cntents t per script opp_makemake
-// FIXME $O/./ remove . from path
+//XXX  copy template contents to perl script opp_makemake
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -270,8 +270,8 @@ public class Makemake {
 
         // defines
         defines.addAll(p.defines);
-        if (!StringUtils.isEmpty(p.buildingDllMacro))
-            defines.add(p.buildingDllMacro);
+        if ((p.compileForDll || p.type == Type.SHAREDLIB) && !StringUtils.isEmpty(p.dllSymbol))  //XXX put this into perl too!!!
+            defines.add(p.dllSymbol+"_EXPORT");
 
         // determine outDir
         String outdir;
@@ -353,7 +353,7 @@ public class Makemake {
         m.put("subdirs", quoteJoin(subdirs));
 //XXX        m.put("subdirtargets", quoteJoin(subdirTargets));
         m.put("fordllopt", compileForDll ? "-DWIN32_DLL" : "");  // FIXME remove the similar stuff from the template or from here (check also in perl script)
-        m.put("dllexportmacro", StringUtils.isEmpty(p.dllExportMacro) ? "" : ("-P" + p.dllExportMacro));
+        m.put("dllexportmacro", StringUtils.isEmpty(p.dllSymbol) ? "" : ("-P" + p.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
 

@@ -63,6 +63,8 @@ import org.omnetpp.common.util.StringUtils;
 //TODO use "linkall" as LINK command in configuser.vc
 //TODO DLLs: FOO_API, FOO_IMPORT, FOO_EXPORT; FOO = toupper(targetname); detect if a lib (-l) is implib, and define FOO_IMPORT automatically
 //TODO dlls: options.dllExportMacro/buildingDllMacro with options.dllSymbol (FOO)
+//TODO perl: dllExportMacro --> dllSymbol, buildingDllMacro -> out!
+//TODO: validate DLLSYMBOL !!! (no spaces etc)
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -482,7 +484,7 @@ public class MakemakeOptionsPanel extends Composite {
         else
             ccextCombo.setText("." + data.ccext);
         compileForDllCheckbox.setSelection(data.compileForDll);
-        dllSymbolText.setText(StringUtils.nullToEmpty(data.dllExportMacro));
+        dllSymbolText.setText(StringUtils.nullToEmpty(data.dllSymbol));
 
         // "Link" page
         userInterfaceCombo.setText(StringUtils.capitalize(data.userInterface.toLowerCase()));
@@ -617,7 +619,7 @@ public class MakemakeOptionsPanel extends Composite {
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.compileForDll = compileForDllCheckbox.getSelection();
-        result.dllExportMacro = dllSymbolText.getText().trim();
+        result.dllSymbol = dllSymbolText.getText().trim();
 
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();

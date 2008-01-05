@@ -111,6 +111,8 @@ public class MetaMakemake {
                             String libdir = makeRelativePath(f.getProject(), makefileFolder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
                             translatedOptions.libs.add(libname);
                             translatedOptions.libDirs.add(libdir);
+                            if (opt.type==Type.SHAREDLIB && !StringUtils.isEmpty(opt.dllSymbol))
+                                translatedOptions.defines.add(opt.dllSymbol + "_IMPORT");
                         }
                     }
                 }
@@ -118,8 +120,11 @@ public class MetaMakemake {
             translatedOptions.metaUseExportedLibs = false;
         }
 
-        translatedOptions.metaExportLibrary = false;
-
+        if (translatedOptions.metaExportLibrary) {
+            // no processing required
+            translatedOptions.metaExportLibrary = false;
+        }
+        
         System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
