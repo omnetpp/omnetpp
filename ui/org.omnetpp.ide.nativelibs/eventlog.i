@@ -35,6 +35,7 @@ COMMON_ENGINE_BIGDECIMAL();
 
 // hide export/import macros from swig
 #define COMMON_API
+#define EVENTLOG_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 

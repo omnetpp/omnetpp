@@ -26,6 +26,7 @@
 
 // hide export/import macros from swig
 #define COMMON_API
+#define NEDXML_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 

@@ -6,14 +6,10 @@ OMNETPP_ROOT=..\..
 !include $(OMNETPP_ROOT)\configuser.vc
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
 !endif
 
-!if "$(CONFIGNAME)"=="."
-L=$(OMNETPP_LIB_DIR)
-!else
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-!endif
 
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"

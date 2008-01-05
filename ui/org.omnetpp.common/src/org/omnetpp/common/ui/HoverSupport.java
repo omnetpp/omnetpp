@@ -178,6 +178,7 @@ public class HoverSupport {
 	 * be called when the widget gets disposed, because this class listens on
 	 * widgetDisposed() automatically.
 	 */
+	//XXX but widgetDisposed is not always called when the widget gets disposed
 	public void forget(Control c) {
 		c.removeMouseTrackListener(mouseTrackListener);
 		hoverTextProviders.remove(c);
@@ -213,35 +214,43 @@ public class HoverSupport {
 	 * Makes the currently displayed hover "sticky". This is the method to be called
 	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default).
 	 */
-	public void makeHoverSticky() {
-		removeHover();
+    public void makeHoverSticky() {
+        Control control = Display.getDefault().getCursorControl();
+        if (control != null)
+            makeHoverSticky(control);
+    }
 
-		Display.getDefault().getCursorLocation();
-		Control control = Display.getDefault().getCursorControl();
-		Point p = Display.getDefault().getCursorLocation();
+    /**
+     * Creates a sticky hover for the given widget. 
+     */
+    public void makeHoverSticky(Control control) {
+        removeHover();
 
-		IHoverTextProvider hoverProvider = hoverTextProviders.get(control);
-		SizeConstraint preferredSize = new SizeConstraint();
-		String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
-		if (hoverText != null) {
-			// create the control
-			informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
-			configureControl(informationControl, hoverText, p, preferredSize);
-			informationControl.setFocus();
+        IHoverTextProvider hoverProvider = hoverTextProviders.get(control);
+        if (hoverProvider != null) {
+            Point p = Display.getDefault().getCursorLocation();
+            SizeConstraint preferredSize = new SizeConstraint();
+            String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
+            if (hoverText != null) {
+                // create the control
+                informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
+                configureControl(informationControl, hoverText, p, preferredSize);
+                informationControl.setFocus();
 
-			// it should close on losing the focus
-			informationControl.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent e) {
-					informationControl = null;
-				}
-			});
-			informationControl.addFocusListener(new FocusListener() {
-				public void focusGained(FocusEvent e) {
-				}
-				public void focusLost(FocusEvent e) {
-					informationControl.dispose();
-				}
-			});
+                // it should close on losing the focus
+                informationControl.addDisposeListener(new DisposeListener() {
+                    public void widgetDisposed(DisposeEvent e) {
+                        informationControl = null;
+                    }
+                });
+                informationControl.addFocusListener(new FocusListener() {
+                    public void focusGained(FocusEvent e) {
+                    }
+                    public void focusLost(FocusEvent e) {
+                        informationControl.dispose();
+                    }
+                });
+            }
 		}
 	}
 
@@ -371,8 +380,6 @@ public class HoverSupport {
 
 	/**
 	 * Wraps an HTML formatted string with a stylesheet for hover display
-	 * @param htmlText
-	 * @return
 	 */
 	public static String addHTMLStyleSheet(String htmlText) {
 	    return htmlText != null ? HTML_PROLOG + htmlText + HTML_EPILOG : null;
