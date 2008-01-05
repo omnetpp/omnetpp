@@ -221,9 +221,13 @@ SYS_LIBS=wsock32.lib
 # Tools
 #
 
-# MSVC programs
+# MSVC programs. 
+# Note that we use our linkall.cmd which is a wrapper around link.exe; this makes it 
+# possible to link with static libs containing simple modules and other dynamically
+# registered compontents.
+#
 CXX=cl.exe /nologo
-LINK=link.exe /nologo
+LINK=linkall.cmd /nologo
 AS=cl.exe /nologo
 AR=lib.exe /nologo
 SHLIB_LD=$(LINK) /dll $(LDFLAGS)

@@ -43,7 +43,7 @@ public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws IOException, CoreException {
+    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws CoreException {
         MakemakeOptions translatedOptions = translateOptions(makefileFolder, options);
         IProject project = makefileFolder.getProject();
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project);

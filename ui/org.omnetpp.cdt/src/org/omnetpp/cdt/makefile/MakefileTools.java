@@ -116,7 +116,7 @@ public class MakefileTools {
                 file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
         }
         catch (IOException e) {
-            throw Activator.wrap(e);
+            throw Activator.wrapIntoCoreException(e);
         }
     }
     

@@ -59,7 +59,7 @@ sub makemake()
     $userInterface = "ALL";
     $ccExt = "";
     $configFile = "";
-    $dllExportMacro = "";
+    $dllSymbol = "";
     $compileForDll = 0;
     $ignoreNedFiles = 1;
     @fragmentFiles = ();
@@ -203,10 +203,10 @@ sub makemake()
             push(@libs, $lib);
         }
         elsif ($arg eq "-p") {
-            $dllExportMacro = shift @ARGV;
+            $dllSymbol = shift @ARGV;
         }
         elsif ($arg =~ /^-p/) {
-            $dllExportMacro = substr($arg, 2);
+            $dllSymbol = substr($arg, 2);
         }
         elsif ($arg =~ /^--meta:/) {
             error("$progname: --meta options not supported: they rely on information only available inside the IDE");
@@ -327,10 +327,11 @@ sub makemake()
         error("too many subdirs for --deep") if (@sourceDirs > 1000);
         #print join('  ', @sourceDirs);
         foreach $f (@sourceDirs) {
-            push(@ccfiles, glob("$f/*.cc"));
-            push(@cppfiles, glob("$f/*.cpp"));
-            push(@msgfiles, glob("$f/*.msg"));
-            push(@nedfiles, glob("$f/*.ned"));
+            my $fslash = ($f eq ".") ? "" : "$f/";
+            push(@ccfiles,  glob("$fslash*.cc"));
+            push(@cppfiles, glob("$fslash*.cpp"));
+            push(@msgfiles, glob("$fslash*.msg"));
+            push(@nedfiles, glob("$fslash*.ned"));
         }
     }
 
@@ -408,11 +409,6 @@ sub makemake()
         }
     }
 
-    @subdirTargets = ();
-    foreach $subdir (@subdirs) {
-        push(@subdirTargets, $subdir . ($isNMake ? "_dir" : ""));  #XXX make sure none contains "_dir" as substring
-    }
-
     @extraObjs = @extraArgs;  #FIXME rename extraArgs?
 
     if ($linkWithObjects) {
@@ -464,22 +460,22 @@ sub makemake()
         }
     }
 
+    # defines
+    if ($compileForDll && $dllSymbol ne "") {
+        push(@defines, $dllSymbol."_EXPORT");
+    }
 
-    # determine outdir
-    if ($outRoot eq "") {
-        $outdir = ".";  #FIXME why not "out"???
-    }
-    else {
-        my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
-        my $outRootRel = abs2rel($outRootAbs, $projectDir);
-        $outdir = canonicalize("$outRootRel");
-    }
+    # determine outdir (defaults to "out")
+    if ($outRoot eq "") {$outRoot = "out";}
+    my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
+    my $outRootRel = abs2rel($outRootAbs, $projectDir);
+    $outdir = canonicalize("$outRootRel");
 
     # determine subpath: the project-relative path of this folder
     my $subpath = cwd();
     $subpath =~ s|^\Q$projectDir\E||;
 
-    $deps = "";  #FIXME
+    $deps = "";  # we'll run opp_makedep afterwards
 
     %m = (
         "rem" => "",  # allows putting comments into the template
@@ -491,14 +487,13 @@ sub makemake()
         "subpath" => $subpath,
         "isdeep" => $isDeep,
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
-        "args" =>  quoteJoin(\@args),
+        "args" =>  join(" ", @args),
         "configfile" =>  $configFile,
         "-L" =>  $isNMake ? "/libpath:" : "-L",
         "-l" =>  $isNMake ? "" : "-l",
         ".lib" =>  $isNMake ? ".lib" : "",
         "-u" =>  $isNMake ? "/include:" : "-u",
         "-out" =>  $isNMake ? "/out:" : "-o",
-        "_dir" =>  "_dir",
         "cc" =>  $ccExt,
         "obj" =>  $objExt,
         "deps" =>  $deps,
@@ -524,9 +519,7 @@ sub makemake()
         "msgfiles" =>  quoteJoin(\@msgfiles),
         "objs" =>  quoteJoin(\@objs),
         "subdirs" =>  quoteJoin(\@subdirs),
-        "subdirtargets" =>  quoteJoin(\@subdirTargets),
-        "fordllopt" =>  $compileForDll ? "-DWIN32_DLL" : "",
-        "dllexportmacro" =>  $dllExportMacro ? "-P$dllExportMacro" : "",
+        "dllsymbol" =>  $dllSymbol,
         "sourcedirs" => \@sourceDirs,
         "backslashedsourcedirs" => \@backslashedSourceDirs
     );
@@ -940,9 +933,9 @@ $progname [options] [object files or libraries]
                           existing files in the directory.
     -o filename           Name of simulation executable/library
     -O directory, --out directory
-                          Turns on out-of-directory build, and specifies the
-                          name of the output directory tree. Usual value
-                          is "out". The actual output directory will be
+                          Specifies the name of the output directory tree
+                          for out-of-directory build; defaults to "out".
+                          The actual output directory will be
                           <projectroot>/<dir>/$(CONFIGNAME)/<subpath>,
                           where <subpath> is the project-relative path of
                           the current directory (for <projectroot> see -P).
@@ -1014,7 +1007,14 @@ $progname [options] [object files or libraries]
                           will link with libfoo.so or libfoo.a; on Windows,
                           with foo.lib. The library path (see -L) will be
                           searched in both cases.
-    -p symbol, -psymbol   -P option to be passed to opp_msgc
+    -p symbol, -psymbol   The DLL export/import symbol. It will cause
+                          -P<symbol>_API to be passed to opp_msgc. Also,
+                          if target is a DLL or --fordll is specified, the
+                          <symbol>_EXPORT macro will be passed to the compiler;
+                          the source code is expected to be set up so that
+                          dll-public declarations are annotated with
+                          <symbol>_API, and <symbol>_EXPORT causes <symbol>_API
+                          to be defined as __declspec(dllexport).
     -i filename, --includefragment filename
                           Append file to near end of Makefile. The file
                           makefrag.vc (if exists) is appended automatically
@@ -1071,14 +1071,7 @@ EXTRA_OBJS = {extraobjs}
 LIBS = {libpath}{@lib:libs} {-l}{lib}{.lib}{/@}
 
 # Output directory
-{~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
-{nmake:}!if "$(CONFIGNAME)"=="."
-O = .
-{~nmake:}else
-{nmake:}!else
 O = {outdir}/$(CONFIGNAME)/{subpath}
-{nmake:}!endif
-{~nmake:}endif
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
@@ -1092,7 +1085,6 @@ MSG_H_FILES = {msghfiles}
 
 {subdirs:}# Subdirectories to recurse into
 {subdirs:}SUBDIRS = {subdirs}
-{subdirs:}{nmake:}SUBDIR_TARGETS = {subdirtargets}
 {subdirs:}
 {defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {defaultmode:}{nmake?!}ifndef MODE
@@ -1171,13 +1163,8 @@ KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} $(MPI_LIBS)
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)-$(MODE)
 OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
-{nmake:}# When using simkernel in DLL form, declare symbols in simkernel headers as "dllimport"
-{nmake:}!if "$(LIB_SUFFIX)"==".dll"
-{nmake:}CFLAGS=$(CFLAGS) -DWIN32_DLL
-{nmake:}!endif
-
-COPTS = $(CFLAGS) {fordllopt} {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
+COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
@@ -1189,21 +1176,19 @@ MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
 # Main target
 all: $O/$(TARGET)
 
-{exe:}$O/$(TARGET): $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{exe:}$O/$(TARGET): generateheaders $(OBJS) {subdirs?subdirs} $(EXTRA_OBJS) {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
-{sharedlib:}$O/$(TARGET): $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {subdirs?subdirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
-{staticlib:}$O/$(TARGET): $(OBJS) $(EXTRA_OBJS) {subdirs?subdirs} {makefile}
+{staticlib:}$O/$(TARGET): generateheaders $(OBJS) {subdirs?subdirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
-{nolink:}$O/$(TARGET): $(OBJS) {subdirs?subdirs} {makefile}
+{nolink:}$O/$(TARGET): generateheaders $(OBJS) {subdirs?subdirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
-{subdirs:}subdirs: $(SUBDIR_TARGETS)
-{subdirs:}
-{subdirs:}$(SUBDIR_TARGETS):
-{subdirs:}{~nmake:}	cd $@ && {makecommand}
-{subdirs:}{nmake:}	cd $(@:{_dir}=) && echo [Entering $(@:{_dir}=)] && {makecommand} && echo [Leaving $(@:{_dir}=)]
-{subdirs:}
+{subdirs:}subdirs:
+{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS:/=\) ) do @pushd %%i && echo [Entering %%i] && nmake /nologo /f Makefile.vc && echo [Leaving %%i] && @popd || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE)) || exit 1; done
+
 {msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES) # FIXME does not work - use iteration
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $?
@@ -1223,29 +1208,25 @@ all: $O/$(TARGET)
 {/@}
 
 generateheaders: $(MSG_H_FILES)
-{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
-{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+{subdirs:}{nmake:}	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && @popd || exit /b 1
+{subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) generateheaders) || exit 1; done
 
 clean:
-{nmake:}	-cd $(O:/=\) && del $(VC_AUX_FILES) $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O && rm -f $(TARGET)
-{@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}	-cd $(O:/=\)\{bsdir} && del *.obj 2>NUL
-{~nmake:}	-cd $O/{dir} && rm -f *.o
-	-cd {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
-{subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
+{nmake:}	-rmdir /s /q $(O:/=\) 2>nul
+{~nmake:}	-rm -rf $O
+{subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS:/=\) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- *.{cc}{@d:sourcedirs} \
 	    {d}/*.{cc}{/@}
 
-{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS:/=\) ) do @pushd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && @popd || exit /b 1
 {~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) depend) || exit 1; done
 
 makefiles:
 	{progname} {args}
-{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
+{nmake:}	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS:/=\) ) do @pushd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && @popd || exit /b 1
 {~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefiles) || exit 1; done
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

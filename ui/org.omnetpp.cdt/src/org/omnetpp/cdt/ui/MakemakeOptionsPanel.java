@@ -50,21 +50,13 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
+//XXX implement linkAllObjectsCheckbox
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
-//XXX "Out" dir should be marked as "output path" and as excluded in CDT !!!
-//XXX "Out" dir should not overlap with source folders (check!!!)
-//XXX create new View: cross-folder dependencies (use DOT to render the graph?)
-//XXX totally eliminate possibility of in-directory build!
 //XXX kezzel beirt -D elveszik!!!
-//TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
-//TODO display which makefile is the primary makefile, and add "Make primary Makefile" button
-//TODO open ToggleLinks if those controls contain some data (ie subdirmake)
-//TODO checkbox: link with all object files in the project
-//TODO use "linkall" as LINK command in configuser.vc
-//TODO DLLs: FOO_API, FOO_IMPORT, FOO_EXPORT; FOO = toupper(targetname); detect if a lib (-l) is implib, and define FOO_IMPORT automatically
-//TODO dlls: options.dllExportMacro/buildingDllMacro with options.dllSymbol (FOO)
-//TODO perl: dllExportMacro --> dllSymbol, buildingDllMacro -> out!
-//TODO: validate DLLSYMBOL !!! (no spaces etc)
+//XXX display which makefile is the primary makefile, and add "Make primary Makefile" button
+//XXX open ToggleLinks if those controls contain some data (ie subdirmake)
+//improvement: create new View: cross-folder dependencies (use DOT to render the graph?)
+//improvement: copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -113,7 +105,7 @@ public class MakemakeOptionsPanel extends Composite {
     // "Compile" page
     private Combo ccextCombo;
     private Button compileForDllCheckbox;
-    private Text dllSymbolText; //XXX put thought into MakemakeOptions, makefile generation, etc
+    private Text dllSymbolText;
 
     // "Link" page
     private Button useExportedLibs;

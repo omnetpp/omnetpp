@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -35,12 +36,8 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * 
  * @author Andras
  */
+//XXX "Out" dir should be excluded implicitly
 //FIXME in CDT one can exclude files too, but currently makemake can only exclude whole folders
-//XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
-// FIXME remove subdirtargets
-//XXX  copy template contents to perl script opp_makemake
-///XXX dllexportmacro: remove from the template
-//XXX template: make clean doesn't work
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 
@@ -76,7 +73,7 @@ public class Makemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+    public void generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException {
         this.folder = folder;
         this.p = options;
         
@@ -91,7 +88,6 @@ public class Makemake {
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
         if (file(makefileName).isFile() && !p.force)
             throw new IllegalStateException("use -f to force overwriting existing " + makefileName);
-        boolean compileForDll = p.compileForDll || p.type==MakemakeOptions.Type.SHAREDLIB;
 
         String target = p.target == null ? folder.getName() : p.target;
         List<String> objs = new ArrayList<String>();
@@ -213,11 +209,6 @@ public class Makemake {
             }
         }
 
-//XXX remove this code from Perl too        
-//        List<String> subdirTargets = new ArrayList<String>();
-//        for (String subdir : subdirs)
-//            subdirTargets.add(subdir + (isNMake ? "_dir" : ""));  //XXX make sure none contains "_dir" as substring
-
         for (String arg : p.extraArgs) {
             Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
             extraObjs.add(arg);
@@ -256,36 +247,35 @@ public class Makemake {
         }
 
         String makefrags = "";
-        if (!p.fragmentFiles.isEmpty()) {
-            for (String frag : p.fragmentFiles) {
-                makefrags += "# inserted from file '" + frag + "':\n";
-                makefrags += FileUtils.readTextFile(file(frag)) + "\n";
+        try {
+            if (!p.fragmentFiles.isEmpty()) {
+                for (String frag : p.fragmentFiles) {
+                    makefrags += "# inserted from file '" + frag + "':\n";
+                    makefrags += FileUtils.readTextFile(file(frag)) + "\n";
+                }
             }
-        }
-        else {
-            String makefragFilename = isNMake ? "makefrag.vc" : "makefrag";
-            if (file(makefragFilename).isFile()) {
-                makefrags += "# inserted from file '" + makefragFilename + "':\n";
-                makefrags += FileUtils.readTextFile(file(makefragFilename)) + "\n";
+            else {
+                String makefragFilename = isNMake ? "makefrag.vc" : "makefrag";
+                if (file(makefragFilename).isFile()) {
+                    makefrags += "# inserted from file '" + makefragFilename + "':\n";
+                    makefrags += FileUtils.readTextFile(file(makefragFilename)) + "\n";
+                }
             }
+        } catch (IOException e) {
+            throw Activator.wrapIntoCoreException(e);
         }
 
         // defines
         defines.addAll(p.defines);
-        if ((p.compileForDll || p.type == Type.SHAREDLIB) && !StringUtils.isEmpty(p.dllSymbol))  //XXX put this into perl too!!!
+        if ((p.compileForDll || p.type == Type.SHAREDLIB) && !StringUtils.isEmpty(p.dllSymbol))
             defines.add(p.dllSymbol+"_EXPORT");
 
-        // determine outDir
+        // determine outDir (defaults to "out")
         String outdir;
-        if (StringUtils.isEmpty(p.outRoot)) {
-            outdir = ".";
-        }
-        else {
-            IPath outRootPath = new Path(p.outRoot);
-            IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
-            IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
-            outdir = outRootRel.toString();
-        }
+        IPath outRootPath = new Path(StringUtils.isEmpty(p.outRoot) ? "out" : p.outRoot);
+        IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
+        IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
+        outdir = outRootRel.toString();
 
         // determine subpath: the project-relative path of this folder
         String subpath = folder.getProjectRelativePath().toString(); 
@@ -327,7 +317,6 @@ public class Makemake {
         m.put(".lib", isNMake ? ".lib" : "");
         m.put("-u", isNMake ? "/include:" : "-u");
         m.put("-out", isNMake ? "/out:" : "-o ");
-        m.put("_dir", "_dir");
         m.put("cc", ccExt);
         m.put("obj", objExt);
         m.put("deps", deps.toString());
@@ -353,17 +342,19 @@ public class Makemake {
         m.put("msgfiles", quoteJoin(msgfiles));
         m.put("objs", quoteJoin(objs));
         m.put("subdirs", quoteJoin(subdirs));
-//XXX        m.put("subdirtargets", quoteJoin(subdirTargets));
-        m.put("fordllopt", compileForDll ? "-DWIN32_DLL" : "");  // FIXME remove the similar stuff from the template or from here (check also in perl script)
-        m.put("dllexportmacro", StringUtils.isEmpty(p.dllSymbol) ? "" : ("-P" + p.dllSymbol));
+        m.put("dllsymbol", StringUtils.nullToEmpty(p.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
 
         // now generate the makefile
         System.out.println("generating makefile for " + folder.toString());
         if (template == null) {
-            template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
-            template = template.replace("\r\n", "\n");
+            try {
+                template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));
+                template = template.replace("\r\n", "\n");
+            } catch (IOException e) {
+                throw Activator.wrapIntoCoreException(e);
+            }
         }
         String content = StringUtils.substituteIntoTemplate(template, m);
         content = content.replace("\r\n", "\n");  // make line endings consistent 

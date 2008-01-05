@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -88,10 +89,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (options == null)
                 options = MakemakeOptions.createInitial();
             MetaMakemake.generateMakefile(folder, options);
-            //FIXME remove makefile if any exception occurred here, so that build won't continue with CDT?
         }
-        catch (Exception e) {
+        catch (CoreException e) {
             addMarker(folder, IMarker.SEVERITY_ERROR, "Error refreshing Makefile: " + e.getMessage());
+            // remove stale/incomplete makefile, so that build won't continue with CDT
+            //XXX makefile.vc ???
+            try { folder.getFile(new Path("Makefile")).delete(true, null); } catch (CoreException e1) {}
         }
     }
 

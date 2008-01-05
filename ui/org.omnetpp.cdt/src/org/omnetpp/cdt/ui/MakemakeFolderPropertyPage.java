@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -68,12 +69,12 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     // state
     protected BuildSpecification buildSpec;
-    protected IContainer selectedSourceFolder; // follows combo box; null if selection is not a source folder
+    protected IContainer selectedFolder; // follows combo box
 
     // controls
     protected Combo sourceFolderCombo;
     protected Text errorMessageText;
-    protected MakemakeOptionsPanel contents;
+    protected MakemakeOptionsPanel optionsPanel;
     protected Composite nonSourceFolderComposite;
 
     /**
@@ -101,8 +102,8 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         errorMessageText.setForeground(ColorFactory.RED2);
         errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-        contents = new MakemakeOptionsPanel(parent, SWT.NONE); 
-        contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        optionsPanel = new MakemakeOptionsPanel(parent, SWT.NONE); 
+        optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         sourceFolderCombo.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -111,7 +112,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             } 
         });
 
-        contents.setOwner(this);
+        optionsPanel.setOwner(this);
         
         nonSourceFolderComposite = new Composite(parent, SWT.NONE);
         nonSourceFolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -136,12 +137,11 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             }
         });
         
-        
         loadBuildSpecFile();
 
         updatePageState();
 
-        return contents;
+        return optionsPanel;  //XXX why?
     }
 
     @SuppressWarnings("restriction")
@@ -238,42 +238,43 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         for (int i = 0; i < sourceFolders.size(); i++)
             sourceFolderCombo.add(sourceFolders.get(i).getFullPath() + (i==thisFolderIndex ? SELECTED : ""));
         
-        // select one entry 
-        if (StringUtils.isEmpty(oldComboSelection)) {
-            // initialize combo and variable
-            selectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
+        // select one entry
+        boolean stillContainsOldSelection = ArrayUtils.indexOf(sourceFolderCombo.getItems(), oldComboSelection) != -1;
+        if (StringUtils.isEmpty(oldComboSelection) || !stillContainsOldSelection) {
             sourceFolderCombo.select(thisFolderIndex==-1 ? 0 : thisFolderIndex);
         }
         else {
             // preserve old setting
-            sourceFolderCombo.setText(oldComboSelection);  
+            sourceFolderCombo.setText(oldComboSelection);
         }
     }
 
     protected void comboSelectionChanged() {
-        IContainer folder = getComboSelection();
+        IContainer newSelectedFolder = getComboSelection();
+        Assert.isNotNull(newSelectedFolder);
 
         IProject project = getFolder().getProject();
         List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
-        IContainer newSelectedSourceFolder = sourceFolders.contains(folder) ? folder : null;
+        boolean isSourceFolder = sourceFolders.contains(selectedFolder);
 
-        if (newSelectedSourceFolder != selectedSourceFolder) {
-            // save the folder we're switching away from
-            if (selectedSourceFolder != null && isDirty())
-                if (MessageDialog.openQuestion(getShell(), "Save?", "Makemake options for folder \"" + selectedSourceFolder.getFullPath() + "\" changed. Save changes?"))
+        if (!newSelectedFolder.equals(selectedFolder) || isOptionsPanelVisible() != isSourceFolder) {
+            // save the folder we're switching away from, if: old folder was and still is a source folder, 
+            // and panel contents are dirty. (i.e. if it meanwhile ceased to be a source folder, don't save)
+            if (!newSelectedFolder.equals(selectedFolder) && isSourceFolder && isOptionsPanelVisible() && isDirty())
+                if (MessageDialog.openQuestion(getShell(), "Save?", "Makemake options for folder \"" + selectedFolder.getFullPath() + "\" changed. Save changes?"))
                     performApply();
 
             // switch to the new folder
-            selectedSourceFolder = newSelectedSourceFolder;
-
-            // configure options panel
-            if (selectedSourceFolder != null) {
-                String makefragContents = readMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME);
-                String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
-                MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedSourceFolder);
+            selectedFolder = newSelectedFolder;
+            isSourceFolder = sourceFolders.contains(selectedFolder);
+            setOptionsPanelVisible(isSourceFolder);
+            if (isOptionsPanelVisible()) {
+                String makefragContents = readMakefrag(selectedFolder, MAKEFRAG_FILENAME);
+                String makefragvcContents = readMakefrag(selectedFolder, MAKEFRAGVC_FILENAME);
+                MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedFolder);
                 if (folderOptions == null)
                     folderOptions = MakemakeOptions.createInitial();
-                contents.populate(selectedSourceFolder, folderOptions, makefragContents, makefragvcContents);
+                optionsPanel.populate(selectedFolder, folderOptions, makefragContents, makefragvcContents);
             }
 
             //setErrorMessage(getInformationalMessage());
@@ -283,10 +284,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             else
                 errorMessageText.setText(message);
         }
-        
-        // this needs to be done unconditionally, so that it runs when page is first displayed
-        setControlVisible(contents, selectedSourceFolder != null);
-        setControlVisible(nonSourceFolderComposite, selectedSourceFolder == null);
     }
 
     protected IContainer getComboSelection() {
@@ -298,20 +295,28 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return folder;
     }
 
-    protected void setControlVisible(Control control, boolean visible) {
-        control.setVisible(visible);
-        ((GridData)control.getLayoutData()).exclude = !visible;
-        control.getParent().layout();
+    protected void setOptionsPanelVisible(boolean visible) {
+        optionsPanel.setVisible(visible);
+        nonSourceFolderComposite.setVisible(!visible);
+        ((GridData)optionsPanel.getLayoutData()).exclude = !visible;
+        ((GridData)nonSourceFolderComposite.getLayoutData()).exclude = visible;
+        optionsPanel.getParent().layout();
+    }
+    
+    protected boolean isOptionsPanelVisible() {
+        // note: control.isVisible() is not good, because it might return false 
+        // even just after control.setVisible(true)!
+        return ((GridData)optionsPanel.getLayoutData()).exclude == false;
     }
 
     protected boolean isDirty() {
-        if (!contents.getResult().equals(buildSpec.getMakemakeOptions(selectedSourceFolder)))
+        if (!optionsPanel.getResult().equals(buildSpec.getMakemakeOptions(selectedFolder)))
             return true;
-        String makefragContents = readMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME);
-        if (!contents.getMakefragContents().equals(StringUtils.nullToEmpty(makefragContents)))
+        String makefragContents = readMakefrag(selectedFolder, MAKEFRAG_FILENAME);
+        if (!optionsPanel.getMakefragContents().equals(StringUtils.nullToEmpty(makefragContents)))
             return true;
-        String makefragvcContents = readMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME);
-        if (!contents.getMakefragvcContents().equals(StringUtils.nullToEmpty(makefragvcContents)))
+        String makefragvcContents = readMakefrag(selectedFolder, MAKEFRAGVC_FILENAME);
+        if (!optionsPanel.getMakefragvcContents().equals(StringUtils.nullToEmpty(makefragvcContents)))
             return true;
         return false;
     }
@@ -327,6 +332,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             return "No active CDT configuration -- please create one.";
         if (configuration.isManagedBuildOn())
             return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the \"C/C++ Build\" page.";
+      //XXX "Out" dir should not overlap with source folders (check!!!)
         
 //FIXME revise/remove or something...        
 //        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
@@ -372,11 +378,11 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     @Override
     public boolean performOk() {
         // note: performApply() delegates here too
-        if (selectedSourceFolder != null) {
-            buildSpec.setMakemakeOptions(selectedSourceFolder, contents.getResult());
+        if (isOptionsPanelVisible()) {
+            buildSpec.setMakemakeOptions(selectedFolder, optionsPanel.getResult());
             saveBuildSpecFile();
-            saveMakefrag(selectedSourceFolder, MAKEFRAG_FILENAME, contents.getMakefragContents());
-            saveMakefrag(selectedSourceFolder, MAKEFRAGVC_FILENAME, contents.getMakefragvcContents());
+            saveMakefrag(selectedFolder, MAKEFRAG_FILENAME, optionsPanel.getMakefragContents());
+            saveMakefrag(selectedFolder, MAKEFRAGVC_FILENAME, optionsPanel.getMakefragvcContents());
         }
         return true;
     }

@@ -24,14 +24,7 @@ EXTRA_OBJS = {extraobjs}
 LIBS = {libpath}{@lib:libs} {-l}{lib}{.lib}{/@}
 
 # Output directory
-{~nmake:}ifeq ("$(strip $(CONFIGNAME))",".")
-{nmake:}!if "$(CONFIGNAME)"=="."
-O = .
-{~nmake:}else
-{nmake:}!else
 O = {outdir}/$(CONFIGNAME)/{subpath}
-{nmake:}!endif
-{~nmake:}endif
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
@@ -123,13 +116,8 @@ KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} $(MPI_LIBS)
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)-$(MODE)
 OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
-{nmake:}# When using simkernel in DLL form, declare symbols in simkernel headers as "dllimport"
-{nmake:}!if "$(LIB_SUFFIX)"==".dll"
-{nmake:}CFLAGS=$(CFLAGS) -DWIN32_DLL
-{nmake:}!endif
-
-COPTS = $(CFLAGS) {fordllopt} {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-MSGCOPTS = $(INCLUDE_PATH) {dllexportmacro}
+COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
@@ -177,12 +165,8 @@ generateheaders: $(MSG_H_FILES)
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) generateheaders) || exit 1; done
 
 clean:
-{nmake:}	-cd $(O:/=\) && del $(VC_AUX_FILES) $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-{~nmake:}	-cd $O && rm -f $(TARGET)
-{@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}	-cd $(O:/=\)\{bsdir} && del *.obj 2>NUL
-{~nmake:}	-cd $O/{dir} && rm -f *.o
-	-cd {dir} && {nmake?del}{~nmake?rm -f} *_n.{cc} *_n.h *_m.{cc} *_m.h {nmake?2>nul}{/@}
+{nmake:}	-rmdir /s /q $(O:/=\) 2>nul
+{~nmake:}	-rm -rf $O
 {subdirs:}{nmake:}	-if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS:/=\) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
 {subdirs:}{~nmake:}	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
