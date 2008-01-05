@@ -38,6 +38,9 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.StringUtils;
 
@@ -54,11 +57,12 @@ import org.omnetpp.common.util.StringUtils;
 //XXX totally eliminate possibility of in-directory build!
 //XXX kezzel beirt -D elveszik!!!
 //TODO copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
-//TODO display which makefile is the primaty makefile, and add "Make primary Makefile" button
+//TODO display which makefile is the primary makefile, and add "Make primary Makefile" button
 //TODO open ToggleLinks if those controls contain some data (ie subdirmake)
-//TODO DLLs: FOO_API, FOO_IMPORT, FOO_EXPORT; FOO = toupper(targetname); detect if a lib (-l) is implib, and define FOO_IMPORT automatically
-// TODO checkbox: link with all object files in the project
+//TODO checkbox: link with all object files in the project
 //TODO use "linkall" as LINK command in configuser.vc
+//TODO DLLs: FOO_API, FOO_IMPORT, FOO_EXPORT; FOO = toupper(targetname); detect if a lib (-l) is implib, and define FOO_IMPORT automatically
+//TODO dlls: options.dllExportMacro/buildingDllMacro with options.dllSymbol (FOO)
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -81,6 +85,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite linkPage;
     private Composite customPage;
     private Composite previewPage;
+    private HoverSupport hoverSupport;
 
     // "Scope" page
     private Button deepMakefileRadioButton;
@@ -106,12 +111,12 @@ public class MakemakeOptionsPanel extends Composite {
     // "Compile" page
     private Combo ccextCombo;
     private Button compileForDllCheckbox;
-    private Text dllExportMacroText;
-    private Text buildingDllMacroText;
+    private Text dllSymbolText; //XXX put thought into MakemakeOptions, makefile generation, etc
 
     // "Link" page
-    private Combo userInterfaceCombo;
     private Button useExportedLibs;
+    private Button linkAllObjectsCheckbox; //XXX use it
+    private Combo userInterfaceCombo;
     private FileListControl libsList;
     private FileListControl linkObjectsList;
 
@@ -149,6 +154,9 @@ public class MakemakeOptionsPanel extends Composite {
         customPage = createTabPage(tabfolder, "Custom");
         previewPage = createTabPage(tabfolder, "Preview");
         tabfolder.setSelection(0);
+
+        hoverSupport = new HoverSupport();
+        hoverSupport.setHoverSizeConstaints(500, 400); // DLL help text is long & wide
 
         // "Scope" page
         scopePage.setLayout(new GridLayout(1,false));
@@ -197,39 +205,23 @@ public class MakemakeOptionsPanel extends Composite {
         ccextCombo.add(".cpp");
 
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
-        compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the WIN32_DLL preprocessor symbol");
+        compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the FOO_EXPORT macro, where FOO is the DLL export/import symbol");
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-        dllExportMacroText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO_API):", 
-                "Name of the macro (#define) which expands to \n" +
-                "__dllexport/__dllimport when WIN32_DLL is defined.\n" +
-                "It will be used to annotate C++ classes generated\n" +
-        "from msg files.");
-        buildingDllMacroText = createLabelAndText(dllGroup, "Symbol to define when building this DLL (e.g. BUILDING_FOO):", 
-                "The following code needs to be present in one of your\n" +
-                "header files, and be included in all sources (replace FOO\n" +
-                "with a name of your choice):\n" +
-                "#ifdef BUILDING_FOO\n" +
-                "#  define FOO_API  OPP_DLLEXPORT\n" +
-                "#else\n" +
-                "#  define FOO_API  OPP_DLLIMPORT\n" +
-        "#endif");
+        dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros"); 
+        final Link dllHelpLink = createLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
 
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
 
-        Group linkGroup = createGroup(linkPage, "Link", 2);
-        useExportedLibs = createCheckbox(linkGroup, "Use libraries exported from referenced projects", null);
+        Group linkGroup = createGroup(linkPage, "Link:", 2);
+        linkAllObjectsCheckbox = createCheckbox(linkGroup, "Link with all object files in this project", null);
+        useExportedLibs = createCheckbox(linkGroup, "Link with libraries exported from referenced projects", null);
         ((GridData)useExportedLibs.getLayoutData()).horizontalSpan = 2;
         createLabel(linkGroup, "User interface libraries to link with:");
         userInterfaceCombo = new Combo(linkGroup, SWT.BORDER | SWT.READ_ONLY);
         for (String i : new String[] {"All", "Tkenv", "Cmdenv"}) // note: should be consistent with populate()!
             userInterfaceCombo.add(i);
-
-//      Group linkGroup = createGroup(linkPage, "Link additionally with:", 1);
-//      //FIXME are these combo boxes needed? do they correspond to any makemake settings?
-//      Button cb1 = createCheckbox(linkGroup, "All object files in this project", null); //XXX radiobutton?
-//      Button cb2 = createCheckbox(linkGroup, "All objects from referenced projects", null); //XXX or static/dynamic libs?
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
         Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
         linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
@@ -270,7 +262,16 @@ public class MakemakeOptionsPanel extends Composite {
 
         Dialog.applyDialogFont(composite);
 
-        hookListeners();
+        hoverSupport.adapt(dllHelpLink, new IHoverTextProvider() {
+            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+                return HoverSupport.addHTMLStyleSheet(getHelpTextForBuildingDLLs());
+            }
+        });
+        dllHelpLink.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                hoverSupport.makeHoverSticky(dllHelpLink);
+            }
+        });
 
         SelectionListener gotoListener = new SelectionListener(){
             public void widgetSelected(SelectionEvent e) {
@@ -283,6 +284,8 @@ public class MakemakeOptionsPanel extends Composite {
         pathsPageLink1.addSelectionListener(gotoListener);
         pathsPageLink2.addSelectionListener(gotoListener);
         pathsPageLink3.addSelectionListener(gotoListener);
+
+        hookListeners();
 
         return composite;
     }
@@ -412,8 +415,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         ccextCombo.addSelectionListener(sel);
         compileForDllCheckbox.addSelectionListener(sel);
-        dllExportMacroText.addModifyListener(mod);
-        buildingDllMacroText.addModifyListener(mod);
+        dllSymbolText.addModifyListener(mod);
 
         userInterfaceCombo.addSelectionListener(sel);
         useExportedLibs.addSelectionListener(sel);
@@ -480,8 +482,7 @@ public class MakemakeOptionsPanel extends Composite {
         else
             ccextCombo.setText("." + data.ccext);
         compileForDllCheckbox.setSelection(data.compileForDll);
-        dllExportMacroText.setText(StringUtils.nullToEmpty(data.dllExportMacro));
-        buildingDllMacroText.setText(StringUtils.nullToEmpty(data.buildingDllMacro));
+        dllSymbolText.setText(StringUtils.nullToEmpty(data.dllExportMacro));
 
         // "Link" page
         userInterfaceCombo.setText(StringUtils.capitalize(data.userInterface.toLowerCase()));
@@ -530,10 +531,8 @@ public class MakemakeOptionsPanel extends Composite {
                 setErrorMessage(null);
                 if (outputDirText.getText().matches(".*[:/\\\\].*"))
                     setErrorMessage("Output folder: cannot contain /, \\ or :.");
-                if (!dllExportMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+                if (!dllSymbolText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
                     setErrorMessage("DLL export macro: contains illegal characters");
-                if (!buildingDllMacroText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
-                    setErrorMessage("\"Building DLL\" macro: contains illegal characters");
                 //TODO others...
             }
         } finally {
@@ -547,7 +546,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         if (translatedOptionsText.getText().equals(""))
             translatedOptionsText.setText("Processing...");
-        
+
         // start background job with a new job serial number. Serial number is needed
         // so that we only put the result of the latest job into the dialog.
         final int thisJobSerial = ++jobSerial;
@@ -618,8 +617,7 @@ public class MakemakeOptionsPanel extends Composite {
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
         result.compileForDll = compileForDllCheckbox.getSelection();
-        result.dllExportMacro = dllExportMacroText.getText().trim();
-        result.buildingDllMacro = buildingDllMacroText.getText().trim();
+        result.dllExportMacro = dllSymbolText.getText().trim();
 
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();
@@ -655,5 +653,60 @@ public class MakemakeOptionsPanel extends Composite {
 
     public String getMakefragvcContents() {
         return makefragvcText.getText();
+    }
+
+    protected String getHelpTextForBuildingDLLs() {
+        return 
+        "Unlike Linux shared libraries which can be built from any C/C++ code,\n" + 
+        "Windows has special rules for code that goes into DLLs.\n" + 
+        "When a DLL is built, all symbols (functions, global variables, etc.)\n" + 
+        "that you want to expose as C/C++ API to users of your DLL need to be\n" + 
+        "marked with the <tt>__declspec(dllexport)</tt> qualifier.\n" + 
+        "Likewise, when you refer a symbol (function, variable, etc) that\n" + 
+        "comes from a DLL, the C/C++ declaration of that symbol needs to be\n" + 
+        "annotated with <tt>__declspec(dllimport)</tt>.\n" + 
+        "\n" + 
+        "<p>\n" + 
+        "In OMNeT++, we introduce a convention to automate the process\n" + 
+        "as far as possible, using macros. To build a DLL, you need to pick\n" + 
+        "a short name for it, say <tt>FOO</tt>, and add the following code\n" + 
+        "to a header file (say <tt>foodefs.h</tt>):\n" + 
+        "\n" + 
+        "<pre>\n" + 
+        "#include &lt;omnetpp.h&gt;\n" + 
+        "\n" + 
+        "#if defined(FOO_EXPORT)\n" + 
+        "#  define FOO_API OPP_DLLEXPORT\n" + 
+        "#elif defined(FOO_IMPORT)\n" + 
+        "#  define FOO_API OPP_DLLIMPORT\n" + 
+        "#else\n" + 
+        "#  define FOO_API\n" + 
+        "#endif\n" + 
+        "</pre>\n" + 
+        "\n" + 
+        "Then you need to include <tt>foodefs.h</tt> into all your header files, and\n" + 
+        "annotate public symbols in them with <tt>FOO_API</tt>. When building the\n" + 
+        "DLL, OMNeT++-generated makefiles will ensure that <tt>FOO_EXPORT</tt> is\n" + 
+        "defined, and so <tt>FOO_API</tt> becomes <tt>__declspec(dllexport)</tt>.\n" + 
+        "Likewise, when you use the DLL from external code, the makefile will define\n" + 
+        "<tt>FOO_IMPORT</tt>, causing <tt>FOO_API</tt> to become\n" + 
+        "<tt>__declspec(dllimport)</tt>. In all other cases, for example when compiling on\n" + 
+        "Linux, <tt>FOO_API</tt> will be empty.\n" + 
+        "\n" + 
+        "<p>\n" + 
+        "Here\'s how to annotate classes, functions and global variables:\n" + 
+        "\n" + 
+        "<pre>\n" + 
+        "class FOO_API SomeClass {\n" + 
+        "  ...\n" + 
+        "};\n" + 
+        "\n" + 
+        "int FOO_API someFunction(double a, int b);\n" + 
+        "\n" + 
+        "extern int FOO_API globalVariable; //note: global variables are discouraged\n" + 
+        "</pre>\n" +
+        "If you have 3rd-party DLLs which use a different convention to handle " +
+        "dllexport/dllimport, you need to manually specify the corresponding " +
+        "macros on the \"Paths and symbols\" page of the project properties dialog."; 
     }
 }
