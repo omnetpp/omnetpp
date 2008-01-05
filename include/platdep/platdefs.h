@@ -26,14 +26,10 @@
 #  endif
 #endif
 
-// OPP_DLLIMPORT/EXPORT are empty if not needed
+// macros needed for building Windows DLLs
 #if defined(__WIN32__)
 #  define OPP_DLLEXPORT  __declspec(dllexport)
-#  if defined(WIN32_DLL)
-#    define OPP_DLLIMPORT  __declspec(dllimport)
-#  else
-#    define OPP_DLLIMPORT
-#  endif
+#  define OPP_DLLIMPORT  __declspec(dllimport)
 #else
 #  define OPP_DLLIMPORT
 #  define OPP_DLLEXPORT

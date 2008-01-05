@@ -27,18 +27,21 @@
 //XXX move to platdefs.h? and remove NEDC_VERSION
 #define OMNETPP_VERSION 0x0400
 
-// SIM_API, ENVIR_API etc are also empty if not needed
-#ifdef BUILDING_SIM
-#  define SIM_API  OPP_DLLEXPORT
+#if defined(SIM_EXPORT)
+#  define SIM_API OPP_DLLEXPORT
+#elif defined(SIM_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define SIM_API OPP_DLLIMPORT
 #else
-#  define SIM_API  OPP_DLLIMPORT
+#  define SIM_API
 #endif
 
 // we need this because cenvir.h is in our directory
-#ifdef BUILDING_ENVIR
-#  define ENVIR_API  OPP_DLLEXPORT
+#if defined(ENVIR_EXPORT)
+#  define ENVIR_API OPP_DLLEXPORT
+#elif defined(ENVIR_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define ENVIR_API OPP_DLLIMPORT
 #else
-#  define ENVIR_API  OPP_DLLIMPORT
+#  define ENVIR_API
 #endif
 
 // NULL
@@ -46,15 +49,13 @@
 #define NULL ((void*)0)
 #endif
 
-// maximum lengths for className(), fullPath() and old info(buf) strings
-#define MAX_CLASSNAME       100
+// maximum lengths for className() and fullPath() strings
+#define MAX_CLASSNAME       100        //FIXME remove!!!
 #define MAX_OBJECTFULLPATH  1024
-#define MAX_OBJECTINFO      500
 
-// in case someone still needs the old name
-#define FULLPATHBUF_SIZE  MAX_OBJECTFULLPATH
-
-//=== other common defines
+//
+// other common defines
+//
 
 #ifndef PI
 #define PI        3.141592653589793
