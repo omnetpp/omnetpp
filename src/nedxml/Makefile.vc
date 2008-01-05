@@ -15,7 +15,7 @@
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
 !endif
 
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
@@ -26,7 +26,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 LIBNAME=nedxml
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"$O/nedxml.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DNEDXML_EXPORT /Fd"$O/nedxml.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
@@ -73,7 +73,7 @@ $O/nedxml.dll : $(OBJS) $L
 	- copy /b $(O:/=\)\nedxml.pdb $(L:/=\) 2>nul
 
 $O/nedtool.obj : nedtool.cc $O
-	@: Note: not in OBJS because nedtool.cc must be compiled *without* -DBUILDING_NEDXML
+	@: Note: not in OBJS because nedtool.cc must be compiled *without* -DNEDXML_EXPORT
 	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp nedtool.cc
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd

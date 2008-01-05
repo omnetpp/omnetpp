@@ -17,14 +17,14 @@
 #ifndef __TKDEFS_H
 #define __TKDEFS_H
 
-#include "simkerneldefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "platdefs.h"
 
-// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
-#ifdef BUILDING_TKENV
-#  define TKENV_API  OPP_DLLEXPORT
+#if defined(TKENV_EXPORT)
+#  define TKENV_API OPP_DLLEXPORT
+#elif defined(TKENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define TKENV_API OPP_DLLIMPORT
 #else
-#  define TKENV_API  OPP_DLLIMPORT
+#  define TKENV_API
 #endif
-
 
 #endif

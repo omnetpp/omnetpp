@@ -17,13 +17,14 @@
 #ifndef __CMDDEFS_H
 #define __CMDDEFS_H
 
-#include "simkerneldefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "platdefs.h"
 
-// OPP_DLLIMPORT/EXPORT are empty if not needed
-#ifdef BUILDING_CMDENV
-#  define CMDENV_API  OPP_DLLEXPORT
+#if defined(CMDENV_EXPORT)
+#  define CMDENV_API OPP_DLLEXPORT
+#elif defined(CMDENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define CMDENV_API OPP_DLLIMPORT
 #else
-#  define CMDENV_API  OPP_DLLIMPORT
+#  define CMDENV_API
 #endif
 
 

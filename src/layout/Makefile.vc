@@ -15,7 +15,7 @@
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
 !endif
 
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/layout
@@ -26,7 +26,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 LIBNAME=layout
 
-COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"$O/layout.pdb"
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DLAYOUT_EXPORT /Fd"$O/layout.pdb"
 IMPLIBS= $O/../common/common.lib
 
 OBJS= $O/geometry.obj $O/graphcomponent.obj $O/heapembedding.obj $O/startreeembedding.obj \

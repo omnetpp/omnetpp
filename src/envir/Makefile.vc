@@ -15,7 +15,7 @@
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
 !endif
 
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/envir
@@ -33,7 +33,7 @@ CFLAGS=$(CFLAGS) -DWITH_NETBUILDER
 #
 LIBNAME=envir
 
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/envir.pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DENVIR_EXPORT -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/envir.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../nedxml/nedxml.lib $O/../common/common.lib
 
 OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \

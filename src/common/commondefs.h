@@ -17,10 +17,12 @@
 
 #include "platdefs.h"
 
-#ifdef BUILDING_COMMON
-#  define COMMON_API  OPP_DLLEXPORT
+#if defined(COMMON_EXPORT)
+#  define COMMON_API OPP_DLLEXPORT
+#elif defined(COMMON_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define COMMON_API OPP_DLLIMPORT
 #else
-#  define COMMON_API  OPP_DLLIMPORT
+#  define COMMON_API
 #endif
 
 #endif

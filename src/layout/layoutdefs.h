@@ -17,10 +17,12 @@
 
 #include "platdefs.h"
 
-#ifdef BUILDING_LAYOUT
-#  define LAYOUT_API  OPP_DLLEXPORT
+#if defined(LAYOUT_EXPORT)
+#  define LAYOUT_API OPP_DLLEXPORT
+#elif defined(LAYOUT_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define LAYOUT_API OPP_DLLIMPORT
 #else
-#  define LAYOUT_API  OPP_DLLIMPORT
+#  define LAYOUT_API
 #endif
 
 #endif

@@ -22,10 +22,12 @@
 #include "bigdecimal.h"
 
 
-#ifdef BUILDING_EVENTLOG
-#  define EVENTLOG_API  OPP_DLLEXPORT
+#if defined(EVENTLOG_EXPORT)
+#  define EVENTLOG_API OPP_DLLEXPORT
+#elif defined(EVENTLOG_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define EVENTLOG_API OPP_DLLIMPORT
 #else
-#  define EVENTLOG_API  OPP_DLLIMPORT
+#  define EVENTLOG_API
 #endif
 
 #define PRINT_DEBUG_MESSAGES false
@@ -39,7 +41,7 @@ typedef BigDecimal simtime_t;
 #endif
 
 /**
- * Variables which store event numbers throughout the API may have these 
+ * Variables which store event numbers throughout the API may have these
  * additional values (positive values are real event numbers).
  */
 enum EventNumberKind
@@ -74,10 +76,10 @@ enum MatchKind
 };
 
 enum TimelineMode {
-	SIMULATION_TIME,
+    SIMULATION_TIME,
     EVENT_NUMBER,
     STEP,
-	NONLINEAR
+    NONLINEAR
 };
 
 #endif

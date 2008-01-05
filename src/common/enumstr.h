@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    EnumStringIterator:   loops through numbers in a string like "1,2,5-10"
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

@@ -19,12 +19,13 @@
 #include "platdefs.h"
 #include "bigdecimal.h"
 
-#ifdef BUILDING_SCAVE
-#  define SCAVE_API  OPP_DLLEXPORT
+#if defined(SCAVE_EXPORT)
+#  define SCAVE_API OPP_DLLEXPORT
+#elif defined(SCAVE_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define SCAVE_API OPP_DLLIMPORT
 #else
-#  define SCAVE_API  OPP_DLLIMPORT
+#  define SCAVE_API
 #endif
-
 
 #define DEFAULT_PRECISION  14
 

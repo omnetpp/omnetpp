@@ -15,7 +15,7 @@
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
 !endif
 
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/sim
@@ -26,7 +26,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 LIBNAME=sim_std
 
-COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SIM /Fd"$O/sim_std.pdb"
+COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -DSIM_EXPORT /Fd"$O/sim_std.pdb"
 #COPTS=/C /P $(COPTS)
 IMPLIBS=../envir/envir.lib ../common/common.lib
 

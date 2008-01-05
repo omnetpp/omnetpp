@@ -15,7 +15,7 @@
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DWIN32_DLL
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
 !endif
 
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave
@@ -26,7 +26,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 #
 LIBNAME=scave
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SCAVE /Fd"$O/scave.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DSCAVE_EXPORT /Fd"$O/scave.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \
@@ -70,7 +70,7 @@ $O/scavetool.exe : $O/scavetool.obj $O/scave$(LIB_SUFFIX)
 	copy $(O:/=\)\scavetool.exe $(OMNETPP_BIN_DIR:/=\)
 
 $O/scavetool.obj : scavetool.cc $O
-	@: Note: not in OBJS because scavetool.cc must be compiled *without* -DBUILDING_SCAVE
+	@: Note: not in OBJS because scavetool.cc must be compiled *without* -DSCAVE_EXPORT
 	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp scavetool.cc
 
 $(OBJS): $O

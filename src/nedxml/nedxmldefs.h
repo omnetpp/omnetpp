@@ -19,10 +19,12 @@
 
 #include "platdefs.h"
 
-#ifdef BUILDING_NEDXML
-#  define NEDXML_API  OPP_DLLEXPORT
+#if defined(NEDXML_EXPORT)
+#  define NEDXML_API OPP_DLLEXPORT
+#elif defined(NEDXML_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define NEDXML_API OPP_DLLIMPORT
 #else
-#  define NEDXML_API  OPP_DLLIMPORT
+#  define NEDXML_API
 #endif
 
 #endif

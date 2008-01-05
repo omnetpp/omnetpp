@@ -17,13 +17,14 @@
 #ifndef __ENVDEFS_H
 #define __ENVDEFS_H
 
-#include "simkerneldefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "platdefs.h"
 
-// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
-#ifdef BUILDING_ENVIR
-#  define ENVIR_API  OPP_DLLEXPORT
+#if defined(ENVIR_EXPORT)
+#  define ENVIR_API OPP_DLLEXPORT
+#elif defined(ENVIR_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define ENVIR_API OPP_DLLIMPORT
 #else
-#  define ENVIR_API  OPP_DLLIMPORT
+#  define ENVIR_API
 #endif
 
 
